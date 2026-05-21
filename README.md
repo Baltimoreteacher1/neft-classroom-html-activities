@@ -45,7 +45,7 @@ Every activity can have its own `index.html` inside its folder. Cloudflare Pages
 
 Use these settings:
 
-- Framework preset: `None`
+- Framework preset: None
 - Build command: leave blank or use `exit 0`
 - Build output directory: `/`
 - Root directory: leave blank unless deploying a subfolder
