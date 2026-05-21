@@ -1,42 +1,32 @@
-# neft-classroom-html-activities Agent Instructions
+# Repository Instructions For Future Codex Work
 
-This repository is a plain static HTML collection for Mr. Neft's classroom activities. Keep it Cloudflare Pages-compatible and easy to maintain.
+This is `neft-classroom-html-activities`, a plain static HTML repository for Mr. Neft's classroom activity hub.
 
 ## Core Rules
 
 - Keep this as a static HTML repo unless Mr. Neft explicitly asks for Vite, React, npm, or another build system.
-- Add each new activity as its own folder with its own `index.html`.
+- Add each new activity as its own folder with an `index.html` file.
+- Activity folders may live at the top level or inside an organized unit folder such as `unit-5/activity-name/`.
 - Preserve existing activities unless explicitly asked to replace them.
-- Do not rename activity folders without updating the root dashboard links.
+- Do not rename activity folders, unit folders, or category folders without updating dashboard links, collection links, `README.md`, and `source-repos.md`.
 - Keep files classroom-safe, student-friendly, and Cloudflare Pages-compatible.
 - Do not add external dependencies unless explicitly requested.
-- Use local shared assets from `assets/` for common styling or small shared behavior.
 
-## Activity Structure
+## Organization Rules
 
-Each activity should follow this pattern:
-
-```text
-activity-folder/
-  index.html
-```
-
-Public URLs should use folder-style paths:
-
-```text
-/activity-folder/
-```
-
-## Dashboard Rules
-
-- Keep the root `index.html` as the launch dashboard.
-- Add a clear card or link for each activity folder.
-- Verify dashboard links whenever an activity is added, removed, or renamed.
-- Keep the dashboard polished, accessible, and usable on Chromebooks and teacher laptops.
+- Use the root `index.html` as the student-facing launch dashboard.
+- Use unit/category folder `index.html` files as collection pages.
+- Use `source-repos.md` to track where source repository names should be placed in the organized folder structure.
+- When replacing a placeholder with a full activity, keep the URL path stable whenever possible.
+- Preserve the shared stylesheet path: `/assets/shared.css`.
 
 ## Before Finishing
 
-- Verify every activity folder has an `index.html`.
-- Verify root `index.html` links to every activity folder.
-- Verify internal asset paths are correct.
-- Verify there are no broken local links introduced by the change.
+Verify:
+
+- All internal links resolve to existing folders or files.
+- Every activity folder has an `index.html`.
+- Root dashboard links and collection links are current.
+- Every HTML file links to `/assets/shared.css`.
+- There are no unexpected external dependencies.
+- The repo remains deployable to Cloudflare Pages with framework preset `None`, build command blank or `exit 0`, output directory `/`, and root directory blank.
