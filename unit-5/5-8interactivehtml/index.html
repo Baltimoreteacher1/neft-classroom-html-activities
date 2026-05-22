@@ -1,37 +1,857 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 5.8 Interactive Html classroom activity.">
-  <title>5.8 Interactive Html</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surface Area of Square Pyramids | Interactive Activity</title>
+  <style>
+    :root {
+      --ink: #14213d;
+      --muted: #52616b;
+      --line: #d7dee8;
+      --paper: #ffffff;
+      --soft: #f6f8fb;
+      --soft2: #eef4ff;
+      --accent: #2563eb;
+      --accent2: #0f766e;
+      --warn: #b45309;
+      --good: #15803d;
+      --bad: #b91c1c;
+      --shadow: 0 14px 40px rgba(20,33,61,.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Calibri, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 34%),
+        linear-gradient(180deg, #f7f9fd 0%, #eef3f9 100%);
+      line-height: 1.35;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 24px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: -.03em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .progress-wrap {
+      width: min(300px, 100%);
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .bar {
+      height: 12px;
+      background: #e8edf5;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      color: var(--ink);
+      border-radius: 16px;
+      padding: 13px 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .tab:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(20,33,61,.08); }
+    .tab.active {
+      color: white;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .formula-card, .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .formula-card {
+      position: sticky;
+      top: 14px;
+      padding: 18px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .formula {
+      margin: 8px 0 14px;
+      background: #f8fbff;
+      border: 2px solid #d8e7ff;
+      border-radius: 18px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .formula .big {
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    .formula .small {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .mini-steps {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .mini-step {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: center;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      font-size: 15px;
+    }
+
+    .num {
+      height: 32px;
+      width: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--accent);
+      font-weight: 800;
+    }
+
+    .panel { padding: 26px; min-height: 590px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: clamp(26px, 3vw, 36px);
+      letter-spacing: -.02em;
+    }
+
+    h3 { font-size: 23px; margin: 20px 0 10px; }
+    p { font-size: 18px; color: var(--muted); margin: 0 0 14px; }
+
+    .callout {
+      background: #fff7ed;
+      border: 2px solid #fed7aa;
+      color: #7c2d12;
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 18px;
+      font-weight: 700;
+      margin: 16px 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .visual-card {
+      min-height: 245px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #ffffff, #f2f6fb);
+    }
+
+    svg { width: 100%; max-width: 310px; height: auto; }
+
+    .task-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      background: var(--soft2);
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      padding: 7px 12px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .given {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 18px;
+    }
+
+    .given span {
+      background: #ecfeff;
+      color: #155e75;
+      border: 1px solid #a5f3fc;
+      border-radius: 14px;
+      padding: 10px 13px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+    }
+
+    .work-step {
+      display: grid;
+      grid-template-columns: 48px 1fr 150px;
+      gap: 12px;
+      align-items: center;
+      background: #fbfdff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+    }
+
+    .step-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .step-equation {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    input[type="number"], textarea, select {
+      width: 100%;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 18px;
+      font-family: inherit;
+      background: white;
+      color: var(--ink);
+    }
+
+    input[type="number"]:focus, textarea:focus, select:focus {
+      outline: 3px solid rgba(37,99,235,.18);
+      border-color: var(--accent);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button.action {
+      border: 0;
+      background: var(--accent);
+      color: white;
+      border-radius: 15px;
+      padding: 12px 18px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    button.action.secondary {
+      background: #e8eef8;
+      color: var(--ink);
+    }
+
+    button.action.ghost {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid #bfdbfe;
+    }
+
+    button.action:hover { filter: brightness(.96); transform: translateY(-1px); }
+
+    .feedback {
+      margin-top: 14px;
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 17px;
+      font-weight: 700;
+      display: none;
+    }
+    .feedback.good { display: block; background: #ecfdf5; color: var(--good); border: 1px solid #bbf7d0; }
+    .feedback.bad { display: block; background: #fef2f2; color: var(--bad); border: 1px solid #fecaca; }
+    .feedback.note { display: block; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+
+    .practice-shell {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .problem-list {
+      display: grid;
+      gap: 8px;
+      max-height: 540px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .problem-chip {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: left;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .problem-chip strong { display: block; font-size: 16px; color: var(--ink); }
+    .problem-chip span { display: block; font-size: 14px; color: var(--muted); margin-top: 2px; }
+    .problem-chip.active { border-color: var(--accent); background: #eff6ff; }
+    .problem-chip.done { border-color: #86efac; background: #f0fdf4; }
+
+    .answer-key {
+      margin-top: 20px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    details {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    summary { cursor: pointer; font-weight: 800; }
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .vocab {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 104px;
+    }
+
+    .vocab strong { display: block; font-size: 18px; margin-bottom: 6px; }
+    .vocab span { color: var(--muted); font-size: 15px; }
+
+    textarea { min-height: 120px; resize: vertical; }
+
+    .print-note { font-size: 14px; color: var(--muted); margin-top: 14px; }
+
+    @media (max-width: 960px) {
+      header, .main-grid, .practice-shell, .two-col { grid-template-columns: 1fr; }
+      .formula-card { position: static; }
+      .tabs { grid-template-columns: repeat(2, 1fr); }
+      .work-step { grid-template-columns: 42px 1fr; }
+      .work-step input { grid-column: 1 / -1; }
+      .vocab-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 560px) {
+      .app { padding: 12px; }
+      .panel, header { padding: 18px; }
+      .tabs { grid-template-columns: 1fr; }
+      .vocab-grid { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body { background: white; }
+      .tabs, .button-row, .progress-wrap, .answer-key, .formula-card { display: none !important; }
+      .app { max-width: none; padding: 0; }
+      header, .panel { box-shadow: none; border: 1px solid #ccc; }
+      .screen { display: block !important; page-break-after: always; }
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/unit-5/">Unit 5 Geometry and Measurement</a><span>/</span><span>5.8 Interactive Html</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>5.8 Interactive Html</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
-
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 5.8InteractiveHtml</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/unit-5/5-8interactivehtml/</span></p>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Surface Area of Square Pyramids</h1>
+        <p class="subtitle">Find the outside area by adding the square base and the four triangle faces.</p>
       </div>
-    </section>
+      <div class="progress-wrap" aria-label="Progress">
+        <div class="progress-label"><span>Practice progress</span><strong id="progressText">0 / 10</strong></div>
+        <div class="bar"><span id="progressBar"></span></div>
+      </div>
+    </header>
 
-    <div class="button-row">
-      <a class="primary-button" href="/unit-5/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+    <nav class="tabs" aria-label="Activity sections">
+      <button class="tab active" data-screen="start">1. Start</button>
+      <button class="tab" data-screen="learn">2. Learn</button>
+      <button class="tab" data-screen="guided">3. Guided</button>
+      <button class="tab" data-screen="practice">4. Practice</button>
+      <button class="tab" data-screen="exit">5. Exit Ticket</button>
+    </nav>
+
+    <div class="main-grid">
+      <aside class="formula-card" aria-label="Formula support">
+        <div class="eyebrow">Keep this visible</div>
+        <div class="formula">
+          <div class="big">SA = b² + 4(½bs)</div>
+          <div class="small"><strong>b</strong> = base side &nbsp; | &nbsp; <strong>s</strong> = slant height</div>
+        </div>
+        <div class="mini-steps">
+          <div class="mini-step"><span class="num">1</span><span><strong>Base:</strong> b × b</span></div>
+          <div class="mini-step"><span class="num">2</span><span><strong>Triangles:</strong> 4 × (½ × b × s)</span></div>
+          <div class="mini-step"><span class="num">3</span><span><strong>Total:</strong> base + triangles</span></div>
+        </div>
+        <div class="callout">Slant height is the height of one triangle face.</div>
+      </aside>
+
+      <main class="panel">
+        <section id="start" class="screen active">
+          <h2>Today’s Goal</h2>
+          <p>Use a simple formula to find the total surface area of a square pyramid.</p>
+          <div class="two-col">
+            <div class="card visual-card" aria-label="Square pyramid diagram">
+              <svg viewBox="0 0 360 260" role="img" aria-label="Square pyramid with base and slant height labeled">
+                <defs>
+                  <linearGradient id="faceA" x1="0" x2="1">
+                    <stop offset="0" stop-color="#fde68a"/>
+                    <stop offset="1" stop-color="#facc15"/>
+                  </linearGradient>
+                  <linearGradient id="baseA" x1="0" x2="1">
+                    <stop offset="0" stop-color="#bfdbfe"/>
+                    <stop offset="1" stop-color="#60a5fa"/>
+                  </linearGradient>
+                </defs>
+                <polygon points="180,28 70,185 290,185" fill="url(#faceA)" stroke="#92400e" stroke-width="3"/>
+                <polygon points="70,185 145,225 315,225 290,185" fill="url(#baseA)" stroke="#1d4ed8" stroke-width="3"/>
+                <line x1="180" y1="28" x2="180" y2="185" stroke="#dc2626" stroke-width="5" stroke-linecap="round" stroke-dasharray="8 8"/>
+                <text x="190" y="110" font-size="21" font-weight="700" fill="#991b1b">s</text>
+                <text x="175" y="246" font-size="21" font-weight="700" fill="#1d4ed8">base side b</text>
+                <text x="105" y="155" font-size="20" font-weight="700" fill="#92400e">triangle faces</text>
+              </svg>
+            </div>
+            <div class="card">
+              <h3>What you will do</h3>
+              <div class="mini-steps">
+                <div class="mini-step"><span class="num">1</span><span>Find the square base area.</span></div>
+                <div class="mini-step"><span class="num">2</span><span>Find the area of all 4 triangles.</span></div>
+                <div class="mini-step"><span class="num">3</span><span>Add them together.</span></div>
+              </div>
+              <div class="button-row">
+                <button class="action" onclick="goTo('learn')">Begin</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="learn" class="screen">
+          <h2>Learn the Parts</h2>
+          <p>Only two measurements are needed: the side of the square base and the slant height of a triangle face.</p>
+          <div class="two-col">
+            <div class="card visual-card">
+              <svg viewBox="0 0 360 260" role="img" aria-label="Net of square pyramid">
+                <rect x="130" y="98" width="100" height="100" rx="4" fill="#93c5fd" stroke="#1d4ed8" stroke-width="3"/>
+                <polygon points="130,98 180,28 230,98" fill="#fde68a" stroke="#92400e" stroke-width="3"/>
+                <polygon points="130,198 180,240 230,198" fill="#fde68a" stroke="#92400e" stroke-width="3"/>
+                <polygon points="130,98 58,148 130,198" fill="#fde68a" stroke="#92400e" stroke-width="3"/>
+                <polygon points="230,98 302,148 230,198" fill="#fde68a" stroke="#92400e" stroke-width="3"/>
+                <line x1="180" y1="28" x2="180" y2="98" stroke="#dc2626" stroke-width="5" stroke-linecap="round"/>
+                <text x="190" y="68" font-size="20" font-weight="800" fill="#991b1b">s</text>
+                <line x1="130" y1="209" x2="230" y2="209" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round"/>
+                <text x="170" y="231" font-size="20" font-weight="800" fill="#1d4ed8">b</text>
+                <text x="238" y="152" font-size="18" font-weight="800" fill="#92400e">4 triangles</text>
+              </svg>
+            </div>
+            <div class="card">
+              <h3>Vocabulary</h3>
+              <div class="vocab-grid">
+                <div class="vocab"><strong>Surface Area</strong><span>Total outside area.</span></div>
+                <div class="vocab"><strong>Base</strong><span>The bottom square.</span></div>
+                <div class="vocab"><strong>Face</strong><span>One side triangle.</span></div>
+                <div class="vocab"><strong>Slant Height</strong><span>Height of a triangle face.</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="callout">Use the triangle’s slant height, not the straight height inside the pyramid.</div>
+          <div class="button-row">
+            <button class="action secondary" onclick="goTo('start')">Back</button>
+            <button class="action" onclick="goTo('guided')">Go to Guided Practice</button>
+          </div>
+        </section>
+
+        <section id="guided" class="screen">
+          <div class="task-head">
+            <div>
+              <span class="pill">Do Together</span>
+              <h2>Guided Practice</h2>
+            </div>
+            <button class="action secondary" onclick="loadGuided(0)">Reset Guided</button>
+          </div>
+          <div id="guidedProblem"></div>
+        </section>
+
+        <section id="practice" class="screen">
+          <div class="task-head">
+            <div>
+              <span class="pill">One problem at a time</span>
+              <h2>Independent Practice</h2>
+            </div>
+            <button class="action secondary" onclick="resetPractice()">Reset Practice</button>
+          </div>
+          <div class="practice-shell">
+            <aside class="card">
+              <h3 style="margin-top:0">Problems</h3>
+              <div class="problem-list" id="problemList"></div>
+            </aside>
+            <div id="practiceProblem"></div>
+          </div>
+          <div class="answer-key">
+            <details>
+              <summary>Teacher answer key</summary>
+              <div class="key-grid" id="answerKey"></div>
+            </details>
+          </div>
+        </section>
+
+        <section id="exit" class="screen">
+          <h2>Exit Ticket</h2>
+          <p>Answer these before you finish.</p>
+          <div class="card">
+            <h3>1. What does slant height mean?</h3>
+            <select id="exitSelect">
+              <option value="">Choose one...</option>
+              <option value="inside">The straight height inside the pyramid</option>
+              <option value="face">The height of one triangle face</option>
+              <option value="base">The side length of the square base</option>
+            </select>
+            <h3>2. Explain the 3 steps in your own words.</h3>
+            <textarea id="exitText" placeholder="First, I... Then, I... Last, I..."></textarea>
+            <div class="button-row">
+              <button class="action" onclick="checkExit()">Check Exit Ticket</button>
+              <button class="action secondary" onclick="window.print()">Print / Save</button>
+            </div>
+            <div id="exitFeedback" class="feedback"></div>
+          </div>
+          <p class="print-note">Teacher note: Student written responses are not submitted anywhere. Use Canvas, Google Classroom, or screenshots if you need collection.</p>
+        </section>
+      </main>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+  </div>
+
+  <script>
+    const guidedProblems = [
+      { id: 1, b: 4, s: 5 },
+      { id: 2, b: 6, s: 8 }
+    ];
+
+    const practiceProblems = [
+      { id: 3, b: 3, s: 4 },
+      { id: 4, b: 5, s: 6 },
+      { id: 5, b: 7, s: 5 },
+      { id: 6, b: 8, s: 6 },
+      { id: 7, b: 9, s: 7 },
+      { id: 8, b: 10, s: 8 },
+      { id: 9, b: 12, s: 9 },
+      { id: 10, b: 4, s: 7 },
+      { id: 11, b: 6, s: 5 },
+      { id: 12, b: 11, s: 6 }
+    ];
+
+    let currentGuided = 0;
+    let currentPractice = 0;
+    let completed = new Set(JSON.parse(localStorage.getItem('sqPyramidDone') || '[]'));
+
+    function answers(p) {
+      const base = p.b * p.b;
+      const triangles = 4 * (0.5 * p.b * p.s);
+      const total = base + triangles;
+      return { base, triangles, total };
+    }
+
+    function pyramidSvg(b, s) {
+      return `
+        <svg viewBox="0 0 360 240" role="img" aria-label="Square pyramid with b=${b} and s=${s}">
+          <polygon points="180,24 78,166 282,166" fill="#fde68a" stroke="#92400e" stroke-width="3"/>
+          <polygon points="78,166 142,205 308,205 282,166" fill="#93c5fd" stroke="#1d4ed8" stroke-width="3"/>
+          <line x1="180" y1="24" x2="180" y2="166" stroke="#dc2626" stroke-width="5" stroke-linecap="round" stroke-dasharray="8 8"/>
+          <text x="190" y="101" font-size="22" font-weight="800" fill="#991b1b">s = ${s}</text>
+          <text x="157" y="229" font-size="22" font-weight="800" fill="#1d4ed8">b = ${b}</text>
+        </svg>`;
+    }
+
+    function problemTemplate(p, mode) {
+      const a = answers(p);
+      const prefix = mode === 'guided' ? 'g' : 'p';
+      return `
+        <div class="two-col">
+          <div class="card visual-card">${pyramidSvg(p.b, p.s)}</div>
+          <div class="card">
+            <h3 style="margin-top:0">Problem ${p.id}</h3>
+            <div class="given"><span>base side b = ${p.b}</span><span>slant height s = ${p.s}</span></div>
+            <div class="steps">
+              <div class="work-step">
+                <span class="num">1</span>
+                <div><div class="step-title">Base Area</div><div class="step-equation">${p.b} × ${p.b} =</div></div>
+                <input type="number" id="${prefix}Base" aria-label="Base area answer" />
+              </div>
+              <div class="work-step">
+                <span class="num">2</span>
+                <div><div class="step-title">4 Triangle Faces</div><div class="step-equation">4 × (½ × ${p.b} × ${p.s}) =</div></div>
+                <input type="number" id="${prefix}Tri" aria-label="Triangle faces answer" />
+              </div>
+              <div class="work-step">
+                <span class="num">3</span>
+                <div><div class="step-title">Total Surface Area</div><div class="step-equation">base area + triangle faces =</div></div>
+                <input type="number" id="${prefix}Total" aria-label="Total surface area answer" />
+              </div>
+            </div>
+            <div class="button-row">
+              <button class="action" onclick="checkProblem('${mode}', ${p.id})">Check</button>
+              <button class="action ghost" onclick="showHint('${mode}', ${p.id})">Hint</button>
+              ${mode === 'guided' ? `<button class="action secondary" onclick="nextGuided()">Next Guided</button>` : `<button class="action secondary" onclick="nextPractice()">Next Problem</button>`}
+            </div>
+            <div id="${prefix}Feedback" class="feedback"></div>
+          </div>
+        </div>`;
+    }
+
+    function goTo(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.screen === id));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => goTo(tab.dataset.screen)));
+
+    function loadGuided(index) {
+      currentGuided = Math.max(0, Math.min(index, guidedProblems.length - 1));
+      document.getElementById('guidedProblem').innerHTML = problemTemplate(guidedProblems[currentGuided], 'guided');
+    }
+
+    function nextGuided() {
+      if (currentGuided < guidedProblems.length - 1) loadGuided(currentGuided + 1);
+      else goTo('practice');
+    }
+
+    function renderProblemList() {
+      const list = document.getElementById('problemList');
+      list.innerHTML = practiceProblems.map((p, i) => `
+        <button class="problem-chip ${i === currentPractice ? 'active' : ''} ${completed.has(p.id) ? 'done' : ''}" onclick="loadPractice(${i})">
+          <strong>Problem ${p.id}${completed.has(p.id) ? ' ✓' : ''}</strong>
+          <span>b = ${p.b}, s = ${p.s}</span>
+        </button>`).join('');
+    }
+
+    function loadPractice(index) {
+      currentPractice = Math.max(0, Math.min(index, practiceProblems.length - 1));
+      document.getElementById('practiceProblem').innerHTML = problemTemplate(practiceProblems[currentPractice], 'practice');
+      renderProblemList();
+    }
+
+    function nextPractice() {
+      if (currentPractice < practiceProblems.length - 1) loadPractice(currentPractice + 1);
+      else goTo('exit');
+    }
+
+    function getProblem(mode, id) {
+      const arr = mode === 'guided' ? guidedProblems : practiceProblems;
+      return arr.find(p => p.id === id);
+    }
+
+    function readNumber(id) {
+      const value = document.getElementById(id).value.trim();
+      if (value === '') return NaN;
+      return Number(value);
+    }
+
+    function checkProblem(mode, id) {
+      const p = getProblem(mode, id);
+      const a = answers(p);
+      const prefix = mode === 'guided' ? 'g' : 'p';
+      const base = readNumber(`${prefix}Base`);
+      const tri = readNumber(`${prefix}Tri`);
+      const total = readNumber(`${prefix}Total`);
+      const fb = document.getElementById(`${prefix}Feedback`);
+      fb.className = 'feedback';
+
+      const correct = base === a.base && tri === a.triangles && total === a.total;
+      if (correct) {
+        fb.classList.add('good');
+        fb.innerHTML = `Correct. Base = ${a.base}, triangles = ${a.triangles}, total surface area = ${a.total} square units.`;
+        if (mode === 'practice') {
+          completed.add(id);
+          localStorage.setItem('sqPyramidDone', JSON.stringify([...completed]));
+          renderProblemList();
+          updateProgress();
+        }
+      } else {
+        fb.classList.add('bad');
+        const parts = [];
+        if (base !== a.base) parts.push('Check Step 1: base area is b × b.');
+        if (tri !== a.triangles) parts.push('Check Step 2: use 4 × (½ × b × s).');
+        if (total !== a.total) parts.push('Check Step 3: add base area and triangle area.');
+        fb.innerHTML = parts.join(' ');
+      }
+    }
+
+    function showHint(mode, id) {
+      const p = getProblem(mode, id);
+      const prefix = mode === 'guided' ? 'g' : 'p';
+      const fb = document.getElementById(`${prefix}Feedback`);
+      fb.className = 'feedback note';
+      fb.innerHTML = `Hint: First do ${p.b} × ${p.b}. Then do 4 × (½ × ${p.b} × ${p.s}). Last, add those two answers.`;
+    }
+
+    function updateProgress() {
+      const count = completed.size;
+      document.getElementById('progressText').textContent = `${count} / ${practiceProblems.length}`;
+      document.getElementById('progressBar').style.width = `${(count / practiceProblems.length) * 100}%`;
+    }
+
+    function resetPractice() {
+      completed = new Set();
+      localStorage.removeItem('sqPyramidDone');
+      currentPractice = 0;
+      loadPractice(0);
+      updateProgress();
+    }
+
+    function renderAnswerKey() {
+      document.getElementById('answerKey').innerHTML = practiceProblems.map(p => {
+        const a = answers(p);
+        return `<div><strong>Problem ${p.id}:</strong> ${a.total} sq units<br><span>base ${a.base}; triangles ${a.triangles}</span></div>`;
+      }).join('');
+    }
+
+    function checkExit() {
+      const choice = document.getElementById('exitSelect').value;
+      const text = document.getElementById('exitText').value.trim();
+      const fb = document.getElementById('exitFeedback');
+      fb.className = 'feedback';
+      if (choice === 'face' && text.length >= 20) {
+        fb.classList.add('good');
+        fb.textContent = 'Ready to submit. You identified slant height and explained your steps.';
+      } else {
+        fb.classList.add('bad');
+        fb.textContent = 'Check your answer. Slant height is the height of one triangle face, and your explanation should include all 3 steps.';
+      }
+    }
+
+    loadGuided(0);
+    loadPractice(0);
+    renderAnswerKey();
+    updateProgress();
+  </script>
 </body>
 </html>

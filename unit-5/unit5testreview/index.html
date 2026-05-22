@@ -1,37 +1,966 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Unit 5 Test Review classroom activity.">
-  <title>Unit 5 Test Review</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unit 5 Geometry Prep Studio</title>
+  <style>
+    :root{
+      --navy:#102A43;
+      --navy2:#173B5C;
+      --teal:#2E7D7B;
+      --sage:#8FAF9B;
+      --cream:#FFF7E6;
+      --paper:#FFFCF4;
+      --gold:#E2A947;
+      --terracotta:#C96C4A;
+      --blush:#F5D6CF;
+      --ink:#172033;
+      --muted:#5D6B7A;
+      --line:#D9E2EC;
+      --ok:#1F7A4D;
+      --bad:#B42318;
+      --shadow:0 18px 42px rgba(16,42,67,.14);
+      --softshadow:0 10px 24px rgba(16,42,67,.10);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Calibri, Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(226,169,71,.18), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(46,125,123,.14), transparent 28%),
+        linear-gradient(180deg,#F7FBFB 0%,#FFF9EE 42%,#F7FAF6 100%);
+      line-height:1.45;
+    }
+    header{
+      background:linear-gradient(135deg,var(--navy),var(--navy2));
+      color:white;
+      padding:24px 18px 18px;
+      border-bottom:6px solid var(--gold);
+      position:relative;
+      overflow:hidden;
+    }
+    header:before{
+      content:"";
+      position:absolute;
+      width:360px;height:360px;border-radius:999px;
+      right:-100px;top:-190px;
+      background:rgba(255,255,255,.08);
+    }
+    .wrap{max-width:1180px;margin:0 auto;position:relative;z-index:1}
+    .hero{display:grid;grid-template-columns:1.35fr .65fr;gap:22px;align-items:center}
+    h1{font-size:clamp(2rem,4vw,3.6rem);line-height:1.02;margin:0 0 10px;font-weight:900;letter-spacing:-.04em}
+    .tagline{font-size:1.18rem;max-width:760px;color:#DDEAF3;margin:0 0 16px}
+    .pillrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .pill{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.10);padding:8px 12px;border-radius:999px;font-weight:700;color:#F8FBFD;font-size:.96rem}
+    .mission-card{background:rgba(255,252,244,.96);color:var(--ink);border:1px solid rgba(255,255,255,.4);border-radius:24px;padding:18px;box-shadow:var(--shadow)}
+    .mission-card h2{margin:0 0 8px;color:var(--navy);font-size:1.25rem}
+    .mini-list{display:grid;gap:8px;margin:12px 0 0;padding:0;list-style:none}
+    .mini-list li{display:flex;gap:9px;align-items:flex-start;font-size:.98rem}
+    .dot{width:11px;height:11px;border-radius:50%;background:var(--teal);margin-top:6px;flex:none}
+    nav{
+      position:sticky;top:0;z-index:10;background:rgba(255,252,244,.94);backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--line);box-shadow:0 8px 20px rgba(16,42,67,.06)
+    }
+    .tabs{max-width:1180px;margin:0 auto;display:flex;gap:8px;overflow:auto;padding:10px 12px}
+    .tab-button{border:1px solid var(--line);background:white;color:var(--navy);border-radius:14px;padding:10px 13px;font-weight:800;white-space:nowrap;cursor:pointer;transition:.18s ease;box-shadow:0 2px 8px rgba(16,42,67,.04)}
+    .tab-button:hover{transform:translateY(-1px);border-color:var(--sage)}
+    .tab-button.active{background:var(--navy);color:white;border-color:var(--navy)}
+    main{max-width:1180px;margin:0 auto;padding:22px 16px 70px}
+    .progress-shell{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:white;border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:18px;box-shadow:var(--softshadow)}
+    .progressbar{height:14px;border-radius:999px;background:#E9EEF2;overflow:hidden}
+    .progressfill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:999px;transition:width .4s ease}
+    .progress-label{font-weight:900;color:var(--navy)}
+    .tab-panel{display:none;animation:fade .25s ease}
+    .tab-panel.active{display:block}
+    @keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .section-title{display:flex;align-items:center;gap:12px;margin:10px 0 14px}
+    .section-title .badge{background:var(--navy);color:white;border-radius:14px;padding:9px 12px;font-weight:900}
+    h2{font-size:clamp(1.55rem,2.7vw,2.35rem);margin:0;color:var(--navy);letter-spacing:-.02em}
+    h3{font-size:1.25rem;margin:0 0 8px;color:var(--navy)}
+    p{margin:.35rem 0 .8rem}
+    .grid{display:grid;gap:16px}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card{background:rgba(255,252,244,.94);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--softshadow)}
+    .card.white{background:#fff}
+    .card.teal{background:linear-gradient(180deg,#F2FAF8,#FFFFFF)}
+    .card.quest{background:linear-gradient(145deg,#FFFFFF 0%,#F8FBFD 55%,#FFF7E6 100%);border:1px solid rgba(46,125,123,.22);position:relative;overflow:hidden}
+    .card.quest:before{content:"";position:absolute;right:-42px;top:-42px;width:130px;height:130px;border-radius:999px;background:rgba(226,169,71,.16)}
+    .quest-kicker{display:inline-flex;align-items:center;gap:6px;background:#102A43;color:white;border-radius:999px;padding:6px 10px;font-weight:900;font-size:.86rem;margin-bottom:8px}
+    .callout{background:#F1F7F6;border-left:6px solid var(--teal);border-radius:16px;padding:14px 16px;margin:12px 0;color:#183B46}
+    .formula{display:inline-flex;align-items:center;gap:8px;background:#FFF3D4;border:1px solid #F2D18A;border-radius:14px;padding:8px 11px;font-weight:900;color:#553A00;margin:4px 4px 4px 0}
+    .formula.big{font-size:1.18rem;padding:12px 14px}
+    .visual{background:linear-gradient(180deg,#FFFFFF,#F7FBFB);border:1px solid #DCE7EA;border-radius:20px;padding:14px;display:flex;align-items:center;justify-content:center;min-height:190px}
+    svg{max-width:100%;height:auto}
+    .choice-row{display:grid;gap:10px;margin-top:10px}
+    .choice-row.inline{grid-template-columns:repeat(2,minmax(0,1fr))}
+    button,.btn{font-family:inherit}
+    .choice,.action-btn,.small-btn{
+      border:1px solid var(--line);background:white;color:var(--ink);padding:11px 13px;border-radius:14px;font-weight:800;cursor:pointer;text-align:left;transition:.15s ease;box-shadow:0 3px 10px rgba(16,42,67,.05)
+    }
+    .choice:hover,.action-btn:hover,.small-btn:hover{transform:translateY(-1px);border-color:var(--teal)}
+    .choice.correct{border-color:rgba(31,122,77,.5);background:#EAF7EF;color:#145334}
+    .choice.incorrect{border-color:rgba(180,35,24,.45);background:#FFF0EE;color:#7A211A}
+    .action-btn{background:var(--navy);color:white;text-align:center;border-color:var(--navy)}
+    .action-btn.alt{background:var(--teal);border-color:var(--teal)}
+    .action-btn.gold{background:var(--gold);border-color:var(--gold);color:#2B1F00}
+    .small-btn{padding:8px 10px;font-size:.93rem;text-align:center}
+    input[type="number"], input[type="text"], textarea, select{
+      width:100%;border:2px solid #D8E1E8;border-radius:14px;padding:11px 12px;font:inherit;background:white;color:var(--ink);outline:none
+    }
+    textarea{min-height:96px;resize:vertical}
+    input:focus,textarea:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(46,125,123,.13)}
+    label{font-weight:800;color:var(--navy);display:block;margin-bottom:5px}
+    .feedback{margin-top:10px;border-radius:14px;padding:10px 12px;display:none;font-weight:800}
+    .feedback.show{display:block}
+    .feedback.ok{background:#EAF7EF;color:#145334;border:1px solid #B9E2C7}
+    .feedback.bad{background:#FFF0EE;color:#7A211A;border:1px solid #F0B5AD}
+    .mathline{font-weight:900;background:#F7FAFC;border:1px dashed #CBD8E2;border-radius:13px;padding:9px 10px;margin:8px 0;color:var(--navy)}
+    .anchor-grid{display:grid;gap:10px;margin-top:10px}
+    .anchor-card{background:white;border:1px solid #D8E7E3;border-radius:16px;padding:12px;box-shadow:0 6px 14px rgba(16,42,67,.05)}
+    .anchor-card strong{display:block;color:var(--navy);font-size:1.03rem;margin-bottom:6px}
+    .anchor-row{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;margin:6px 0}
+    .anchor-label{font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;color:#5D6B7A;font-weight:900}
+    .anchor-formula{background:#FFF7E6;border:1px solid #F2D18A;border-radius:11px;padding:7px 9px;font-weight:900;color:#553A00}
+    .live-machine-visual{min-height:205px;margin:10px 0 12px;background:linear-gradient(135deg,#FFFFFF,#F2FAF8)}
+    .mini-problem{background:#FFFFFF;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 18px rgba(16,42,67,.06)}
+    .mini-problem h4{margin:0 0 6px;color:var(--navy);font-size:1.05rem}
+    .section-sprint{margin-top:16px;border:1px solid rgba(226,169,71,.45);background:linear-gradient(135deg,#FFFDF7,#F2FAF8);border-radius:24px;padding:16px;box-shadow:var(--softshadow)}
+    .section-sprint-title{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:var(--navy);font-weight:900;font-size:1.2rem}
+    .spark{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:12px;background:var(--gold);color:#2B1F00;font-weight:900}
+    .steps{counter-reset:step;display:grid;gap:9px;margin:10px 0}
+    .step{display:flex;gap:10px;align-items:flex-start;background:white;border:1px solid var(--line);border-radius:15px;padding:10px}
+    .step:before{counter-increment:step;content:counter(step);background:var(--teal);color:white;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font-weight:900;flex:none}
+    .slider-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}
+    .range-line{display:grid;gap:6px}
+    input[type="range"]{width:100%;accent-color:var(--teal)}
+    .live-result{font-size:1.45rem;font-weight:900;color:var(--teal);background:#F2FAF8;border:1px solid #B9DAD5;border-radius:18px;padding:12px;text-align:center}
+    .vocab{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .vocab-card{background:white;border:1px solid var(--line);border-radius:18px;padding:14px;min-height:138px;box-shadow:0 8px 18px rgba(16,42,67,.06)}
+    .vocab-card strong{display:block;color:var(--navy);font-size:1.07rem;margin-bottom:4px}
+    .mini-svg{height:52px;margin-bottom:6px}
+    .practice-question{background:white;border:1px solid var(--line);border-left:7px solid var(--teal);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 8px 18px rgba(16,42,67,.06)}
+    .practice-question.correct-card{border-left-color:var(--ok);background:linear-gradient(180deg,#FFFFFF,#F4FBF6)}
+    .practice-question.retry-card{border-left-color:var(--gold);background:linear-gradient(180deg,#FFFFFF,#FFFBF0)}
+    .practice-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+    .attempt-chip{font-size:.86rem;font-weight:900;color:#5D6B7A;background:#F3F6F8;border:1px solid #DDE7EE;border-radius:999px;padding:6px 9px}
+    .test-feedback{margin-top:10px;border-radius:14px;padding:10px 12px;font-weight:800;display:none}
+    .test-feedback.show{display:block}
+    .test-feedback.ok{background:#EAF7EF;color:#145334;border:1px solid #B9E2C7}
+    .test-feedback.bad{background:#FFF7E6;color:#6B4500;border:1px solid #F2D18A}
+    .practice-question h3{font-size:1.1rem;display:flex;gap:8px;align-items:center}
+    .qnum{background:var(--navy);color:white;border-radius:999px;width:30px;height:30px;display:inline-grid;place-items:center;font-size:.92rem;flex:none}
+    .option{display:block;background:#F8FBFD;border:1px solid #DDE7EE;padding:10px 12px;border-radius:13px;margin:8px 0;cursor:pointer}
+    .option input{width:auto;margin-right:8px}
+    .test-results{background:linear-gradient(135deg,#F2FAF8,#FFF7E6);border:1px solid #D3E6E1;border-radius:22px;padding:18px;margin-top:16px;display:none}
+    .score-big{font-size:2.2rem;font-weight:900;color:var(--navy);margin:0}
+    .explain-list{display:grid;gap:10px;margin-top:12px}
+    .explain-item{background:white;border:1px solid var(--line);border-radius:14px;padding:11px}
+    .flashgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .flashcard{height:145px;perspective:1000px;cursor:pointer}
+    .flash-inner{position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+    .flashcard.flipped .flash-inner{transform:rotateY(180deg)}
+    .flash-front,.flash-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;font-weight:900;box-shadow:var(--softshadow)}
+    .flash-front{background:linear-gradient(135deg,var(--navy),#255D7A);color:white}
+    .flash-back{background:#FFF7E6;color:var(--navy);transform:rotateY(180deg)}
+    .table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line);background:white}
+    table{border-collapse:collapse;width:100%;min-width:520px}
+    th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+    th{background:#EAF3F1;color:var(--navy);font-weight:900}
+    tr:last-child td{border-bottom:none}
+    .print-note{font-size:.95rem;color:var(--muted)}
+    .checklist{display:grid;gap:8px;margin-top:10px}
+    .checkitem{display:flex;gap:10px;align-items:flex-start;background:#FFF; border:1px solid var(--line);border-radius:14px;padding:10px}
+    .checkbox-dot{width:20px;height:20px;border:2px solid var(--teal);border-radius:6px;flex:none;margin-top:2px;background:#F2FAF8}
+    .teacher-key{display:none;margin-top:12px;background:#F8FBFD;border:1px dashed var(--teal);padding:12px;border-radius:16px}
+    .printable-work{display:none;background:white;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
+    .workline{height:44px;border-bottom:1px solid #CBD8E2}
+    .subtle{color:var(--muted);font-size:.98rem}
+    @media (max-width:900px){.hero,.grid.two,.grid.three,.grid.four,.vocab,.flashgrid{grid-template-columns:1fr}.choice-row.inline{grid-template-columns:1fr}.slider-grid{grid-template-columns:1fr}.mission-card{margin-top:6px}}
+    @media print{
+      header,nav,.progress-shell,.action-btn,.small-btn{display:none!important}
+      body{background:white}
+      main{padding:0;max-width:100%}
+      .tab-panel{display:block!important;page-break-after:always}
+      .card,.practice-question{box-shadow:none;border:1px solid #999}
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/unit-5/">Unit 5 Geometry and Measurement</a><span>/</span><span>Unit 5 Test Review</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Unit 5 Test Review</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <h1>Unit 5 Geometry Prep Studio</h1>
+        <p class="tagline">A visual, interactive review for area, missing dimensions, regular polygons, volume comparisons, nets, and surface area.</p>
+        <div class="pillrow" aria-label="skills covered">
+          <span class="pill">Area formulas</span>
+          <span class="pill">Work backward</span>
+          <span class="pill">Real-world reasoning</span>
+          <span class="pill">Nets and surface area</span>
+          <span class="pill">Practice test</span>
+        </div>
+      </div>
+      <aside class="mission-card">
+        <h2>Recommended timing</h2>
+        <ul class="mini-list">
+          <li><span class="dot"></span><span><strong>1 class period:</strong> complete Tabs 1, 3, 4, and the Practice Test.</span></li>
+          <li><span class="dot"></span><span><strong>2 class periods:</strong> complete every lab, game, and practice question.</span></li>
+          <li><span class="dot"></span><span><strong>Goal:</strong> show the formula, substitute numbers, solve, and label units.</span></li>
+        </ul>
+      </aside>
+    </div>
+  </header>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Unit5TestReview</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/unit-5/unit5testreview/</span></p>
+  <nav aria-label="Unit 5 review tabs">
+    <div class="tabs">
+      <button class="tab-button active" data-tab="home">Start Here</button>
+      <button class="tab-button" data-tab="area">Area Lab</button>
+      <button class="tab-button" data-tab="backward">Missing Dimensions</button>
+      <button class="tab-button" data-tab="realworld">Real-World Problems</button>
+      <button class="tab-button" data-tab="nets">Nets + Surface Area</button>
+      <button class="tab-button" data-tab="game">Review Game</button>
+      <button class="tab-button" data-tab="test">Practice Test</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="progress-shell">
+      <div class="progressbar" aria-label="progress"><div class="progressfill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0% complete</div>
+    </div>
+
+    <section id="home" class="tab-panel active">
+      <div class="section-title"><span class="badge">Map</span><h2>What you need to be ready for</h2></div>
+      <div class="grid two">
+        <div class="card white">
+          <h3>Test skill map</h3>
+          <p>The assessment is mostly about choosing the right formula, using the correct measurements, and explaining the steps clearly.</p>
+          <div class="checklist">
+            <div class="checkitem"><span class="checkbox-dot"></span><span><strong>Area of 2D shapes:</strong> parallelogram, rhombus, triangle, trapezoid.</span></div>
+            <div class="checkitem"><span class="checkbox-dot"></span><span><strong>Missing measurements:</strong> use the area and one dimension to solve for height or base.</span></div>
+            <div class="checkitem"><span class="checkbox-dot"></span><span><strong>Real-world area:</strong> find area first, then decide how many items or how much money is needed.</span></div>
+            <div class="checkitem"><span class="checkbox-dot"></span><span><strong>3D figures:</strong> use volume or surface area depending on what the question asks.</span></div>
+            <div class="checkitem"><span class="checkbox-dot"></span><span><strong>Nets:</strong> add all faces, and do not confuse slant height with side length.</span></div>
+          </div>
+        </div>
+        <div class="card teal">
+          <h3>How to answer every problem</h3>
+          <div class="steps">
+            <div class="step"><span><strong>Circle the question.</strong> Are you finding area, height, volume, surface area, or better buy?</span></div>
+            <div class="step"><span><strong>Choose the formula.</strong> Match the shape first. Do not start multiplying until you know the formula.</span></div>
+            <div class="step"><span><strong>Substitute numbers.</strong> Put the given measurements in the formula.</span></div>
+            <div class="step"><span><strong>Solve and label.</strong> Area uses square units. Volume uses cubic units. Length uses regular units.</span></div>
+          </div>
+          <button class="action-btn alt" data-complete="home-read">Mark Start Here Complete</button>
+        </div>
+      </div>
+      <div class="card white" style="margin-top:16px">
+        <h3>Vocabulary snapshot</h3>
+        <div class="vocab">
+          <div class="vocab-card">
+            <svg class="mini-svg" viewBox="0 0 100 55" role="img" aria-label="base and height"><polygon points="18,45 78,45 64,10 6,10" fill="#DDEFEA" stroke="#102A43" stroke-width="3"/><line x1="61" y1="10" x2="61" y2="45" stroke="#C96C4A" stroke-width="3" stroke-dasharray="4 4"/><text x="36" y="53" font-size="10" fill="#102A43">base</text><text x="66" y="32" font-size="10" fill="#C96C4A">height</text></svg>
+            <strong>Height</strong> The straight up-and-down distance to the base. It makes a right angle.
+          </div>
+          <div class="vocab-card">
+            <svg class="mini-svg" viewBox="0 0 100 55" role="img" aria-label="net"><rect x="35" y="20" width="28" height="28" fill="#FFF3D4" stroke="#102A43" stroke-width="2"/><polygon points="35,20 49,2 63,20" fill="#F5D6CF" stroke="#102A43" stroke-width="2"/><polygon points="35,48 49,54 63,48" fill="#F5D6CF" stroke="#102A43" stroke-width="2"/><polygon points="35,20 18,34 35,48" fill="#F5D6CF" stroke="#102A43" stroke-width="2"/><polygon points="63,20 82,34 63,48" fill="#F5D6CF" stroke="#102A43" stroke-width="2"/></svg>
+            <strong>Net</strong> A flat picture of every face of a 3D figure.
+          </div>
+          <div class="vocab-card">
+            <svg class="mini-svg" viewBox="0 0 100 55" role="img" aria-label="surface area"><rect x="26" y="12" width="42" height="32" fill="#EAF3F1" stroke="#102A43" stroke-width="2"/><polygon points="68,12 84,22 84,52 68,44" fill="#D6E6FF" stroke="#102A43" stroke-width="2"/><polygon points="26,12 43,2 84,22 68,12" fill="#FFF3D4" stroke="#102A43" stroke-width="2"/></svg>
+            <strong>Surface area</strong> The total area covering the outside faces.
+          </div>
+          <div class="vocab-card">
+            <svg class="mini-svg" viewBox="0 0 100 55" role="img" aria-label="volume"><rect x="25" y="16" width="38" height="28" fill="#F5D6CF" stroke="#102A43" stroke-width="2"/><polygon points="63,16 80,8 80,36 63,44" fill="#EAD5BC" stroke="#102A43" stroke-width="2"/><polygon points="25,16 42,8 80,8 63,16" fill="#FFF3D4" stroke="#102A43" stroke-width="2"/></svg>
+            <strong>Volume</strong> The space inside a 3D figure. Use cubic units.
+          </div>
+        </div>
       </div>
     </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/unit-5/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
-    </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
+    <section id="area" class="tab-panel">
+      <div class="section-title"><span class="badge">Lab 1</span><h2>Area formula lab</h2></div>
+      <div class="grid two">
+        <div class="card white">
+          <h3>Formula wall</h3>
+          <p>Use the shape to pick the formula. The base and height must be perpendicular.</p>
+          <div class="formula big">Parallelogram / Rhombus: A = b × h</div>
+          <div class="formula big">Triangle: A = ½ × b × h</div>
+          <div class="formula big">Trapezoid: A = ½ × (b₁ + b₂) × h</div>
+          <div class="callout"><strong>Common mistake:</strong> using the slanted side as the height. Height must make a right angle with the base.</div>
+        </div>
+        <div class="card white">
+          <h3>Live area machine</h3>
+          <p>Move the sliders. The figure updates with the side lengths, height, and second base when needed.</p>
+          <div class="visual live-machine-visual" id="liveFigure" aria-live="polite"></div>
+          <div class="slider-grid">
+            <div class="range-line"><label for="shapeSelect">Shape</label><select id="shapeSelect"><option value="parallelogram">Parallelogram</option><option value="triangle">Triangle</option><option value="trapezoid">Trapezoid</option></select></div>
+            <div class="range-line"><label>Area</label><div class="live-result" id="liveArea">60 square units</div></div>
+            <div class="range-line"><label for="baseRange">Base b: <span id="baseVal">10</span></label><input id="baseRange" type="range" min="4" max="24" value="10" /></div>
+            <div class="range-line"><label for="heightRange">Height h: <span id="heightVal">6</span></label><input id="heightRange" type="range" min="3" max="18" value="6" /></div>
+            <div class="range-line" id="base2Wrap" style="display:none"><label for="base2Range">Second base b₂: <span id="base2Val">16</span></label><input id="base2Range" type="range" min="5" max="30" value="16" /></div>
+          </div>
+          <div class="mathline" id="liveFormula">A = 10 × 6 = 60</div>
+        </div>
+      </div>
+
+      <div class="grid three" style="margin-top:16px">
+        <div class="card white">
+          <h3>Visual 1: parallelogram</h3>
+          <div class="visual">
+            <svg viewBox="0 0 260 170" role="img" aria-label="parallelogram with base 14 meters and height 9 meters">
+              <polygon points="60,140 210,140 180,40 30,40" fill="#DDEFEA" stroke="#102A43" stroke-width="4"/>
+              <line x1="180" y1="40" x2="180" y2="140" stroke="#C96C4A" stroke-width="4" stroke-dasharray="6 5"/>
+              <path d="M180 140 l-14 0 l0 -14" fill="none" stroke="#102A43" stroke-width="3"/>
+              <text x="110" y="160" font-size="18" fill="#102A43" font-weight="700">b = 14 m</text>
+              <text x="190" y="94" font-size="18" fill="#C96C4A" font-weight="700">h = 9 m</text>
+            </svg>
+          </div>
+          <p>What is the area?</p>
+          <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="Use base × height, not base + height.">23 m²</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: A = 14 × 9 = 126 m².">126 m²</button><button class="choice" data-check-choice data-correct="false" data-feedback="That would be half the parallelogram. Do not divide by 2 for a parallelogram.">63 m²</button></div>
+          <div class="feedback"></div>
+        </div>
+        <div class="card white">
+          <h3>Visual 2: triangle</h3>
+          <div class="visual">
+            <svg viewBox="0 0 260 170" role="img" aria-label="right triangle with base 18 feet and height 8 feet">
+              <polygon points="42,136 218,136 42,46" fill="#FFF3D4" stroke="#102A43" stroke-width="4"/>
+              <path d="M42 136 l16 0 l0 -16" fill="none" stroke="#102A43" stroke-width="3"/>
+              <text x="104" y="158" font-size="18" fill="#102A43" font-weight="700">b = 18 ft</text>
+              <text x="8" y="96" font-size="18" fill="#C96C4A" font-weight="700">h = 8 ft</text>
+            </svg>
+          </div>
+          <p>What is the area?</p>
+          <div class="choice-row"><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: A = ½ × 18 × 8 = 72 ft².">72 ft²</button><button class="choice" data-check-choice data-correct="false" data-feedback="144 is base × height. For a triangle, divide by 2.">144 ft²</button><button class="choice" data-check-choice data-correct="false" data-feedback="26 is base + height, but area needs multiplication.">26 ft²</button></div>
+          <div class="feedback"></div>
+        </div>
+        <div class="card white">
+          <h3>Visual 3: trapezoid</h3>
+          <div class="visual">
+            <svg viewBox="0 0 260 170" role="img" aria-label="trapezoid with bases 10 and 22 and height 7">
+              <polygon points="78,45 178,45 225,135 35,135" fill="#F5D6CF" stroke="#102A43" stroke-width="4"/>
+              <line x1="178" y1="45" x2="178" y2="135" stroke="#2E7D7B" stroke-width="4" stroke-dasharray="6 5"/>
+              <path d="M178 135 l-14 0 l0 -14" fill="none" stroke="#102A43" stroke-width="3"/>
+              <text x="105" y="35" font-size="17" fill="#102A43" font-weight="700">b₁ = 10</text>
+              <text x="98" y="158" font-size="17" fill="#102A43" font-weight="700">b₂ = 22</text>
+              <text x="188" y="95" font-size="17" fill="#2E7D7B" font-weight="700">h = 7</text>
+            </svg>
+          </div>
+          <p>What is the area?</p>
+          <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="You added the bases and height. Area needs multiplication too.">39 square units</button><button class="choice" data-check-choice data-correct="false" data-feedback="224 is (10+22)×7. A trapezoid uses half of that.">224 square units</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: A = ½ × (10 + 22) × 7 = 112 square units.">112 square units</button></div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+
+      <div class="section-sprint">
+        <div class="section-sprint-title"><span class="spark">★</span>Area level-up: 3 extra quick checks</div>
+        <div class="grid three">
+          <div class="mini-problem">
+            <h4>Rhombus floor tile</h4>
+            <p>A rhombus has base 11 cm and height 6 cm. What is the area?</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: A = b × h = 11 × 6 = 66 cm².">66 cm²</button><button class="choice" data-check-choice data-correct="false" data-feedback="That adds the dimensions. Area needs base × height.">17 cm²</button><button class="choice" data-check-choice data-correct="false" data-feedback="Do not divide by 2 for a rhombus.">33 cm²</button></div><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Triangle banner</h4>
+            <p>A triangle has base 22 ft and height 5 ft. What is the area?</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="That is base × height. A triangle needs half of that.">110 ft²</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: A = ½ × 22 × 5 = 55 ft².">55 ft²</button><button class="choice" data-check-choice data-correct="false" data-feedback="27 is close to adding, but area uses multiplication and half.">27 ft²</button></div><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Trapezoid tabletop</h4>
+            <p>A trapezoid has bases 12 in. and 20 in. and height 4 in. What is the area?</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="You still need to divide by 2.">128 in²</button><button class="choice" data-check-choice data-correct="false" data-feedback="That only multiplies one base by the height.">80 in²</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: A = ½ × (12 + 20) × 4 = 64 in².">64 in²</button></div><div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="backward" class="tab-panel">
+      <div class="section-title"><span class="badge">Lab 2</span><h2>Missing dimensions: work backward</h2></div>
+      <div class="grid two">
+        <div class="card white">
+          <h3>Backward strategy</h3>
+          <p>When the question gives the area and asks for a missing height or base, do not guess. Undo the formula.</p>
+          <div class="steps">
+            <div class="step"><span>Write the correct area formula.</span></div>
+            <div class="step"><span>Substitute the numbers you know.</span></div>
+            <div class="step"><span>Use inverse operations to solve for the missing measurement.</span></div>
+            <div class="step"><span>Label the answer with regular units, not square units.</span></div>
+          </div>
+        </div>
+        <div class="card teal">
+          <h3>Missing-dimension mini charts</h3>
+          <p>Start with the original area formula. Then use the new formula that matches the missing measurement.</p>
+          <div class="anchor-grid">
+            <div class="anchor-card">
+              <strong>Parallelogram or rhombus</strong>
+              <div class="anchor-row"><span class="anchor-label">Original</span><span class="anchor-formula">A = b × h</span></div>
+              <div class="anchor-row"><span class="anchor-label">Find height</span><span class="anchor-formula">h = A ÷ b</span></div>
+              <div class="anchor-row"><span class="anchor-label">Find base</span><span class="anchor-formula">b = A ÷ h</span></div>
+            </div>
+            <div class="anchor-card">
+              <strong>Triangle</strong>
+              <div class="anchor-row"><span class="anchor-label">Original</span><span class="anchor-formula">A = ½ × b × h</span></div>
+              <div class="anchor-row"><span class="anchor-label">Find height</span><span class="anchor-formula">h = (2 × A) ÷ b</span></div>
+              <div class="anchor-row"><span class="anchor-label">Find base</span><span class="anchor-formula">b = (2 × A) ÷ h</span></div>
+            </div>
+            <div class="anchor-card">
+              <strong>Trapezoid</strong>
+              <div class="anchor-row"><span class="anchor-label">Original</span><span class="anchor-formula">A = ½ × (b₁ + b₂) × h</span></div>
+              <div class="anchor-row"><span class="anchor-label">Find height</span><span class="anchor-formula">h = (2 × A) ÷ (b₁ + b₂)</span></div>
+            </div>
+          </div>
+          <div class="callout"><strong>Unit warning:</strong> missing height/base is a length, so the answer is cm, m, ft, or in. It is not cm².</div>
+        </div>
+      </div>
+
+      <div class="grid three" style="margin-top:16px">
+        <div class="card white">
+          <h3>Checkpoint A</h3>
+          <div class="visual">
+            <svg viewBox="0 0 260 155" role="img" aria-label="parallelogram area 210 square meters base 14 meters">
+              <polygon points="60,125 220,125 190,30 30,30" fill="#DDEFEA" stroke="#102A43" stroke-width="4"/>
+              <line x1="190" y1="30" x2="190" y2="125" stroke="#C96C4A" stroke-width="4" stroke-dasharray="6 5"/>
+              <text x="96" y="146" font-size="17" fill="#102A43" font-weight="700">b = 14 m</text>
+              <text x="74" y="84" font-size="17" fill="#102A43" font-weight="700">A = 210 m²</text>
+              <text x="200" y="82" font-size="18" fill="#C96C4A" font-weight="900">h = ?</text>
+            </svg>
+          </div>
+          <label for="inputParH">Height</label><input id="inputParH" type="number" placeholder="Type the height" />
+          <button class="action-btn" data-check-input="inputParH" data-answer="15" data-unit="m" data-explain="A = b × h, so h = 210 ÷ 14 = 15 m.">Check</button>
+          <div class="feedback"></div>
+        </div>
+        <div class="card white">
+          <h3>Checkpoint B</h3>
+          <div class="visual">
+            <svg viewBox="0 0 260 155" role="img" aria-label="triangle area 84 square inches base 14 inches">
+              <polygon points="48,128 220,128 48,36" fill="#FFF3D4" stroke="#102A43" stroke-width="4"/>
+              <text x="104" y="148" font-size="17" fill="#102A43" font-weight="700">b = 14 in.</text>
+              <text x="73" y="78" font-size="17" fill="#102A43" font-weight="700">A = 84 in²</text>
+              <text x="4" y="92" font-size="18" fill="#C96C4A" font-weight="900">h = ?</text>
+            </svg>
+          </div>
+          <label for="inputTriH">Height</label><input id="inputTriH" type="number" placeholder="Type the height" />
+          <button class="action-btn" data-check-input="inputTriH" data-answer="12" data-unit="in." data-explain="A = ½bh. Double the area first: 2 × 84 = 168. Then 168 ÷ 14 = 12 in.">Check</button>
+          <div class="feedback"></div>
+        </div>
+        <div class="card white">
+          <h3>Checkpoint C</h3>
+          <div class="visual">
+            <svg viewBox="0 0 260 155" role="img" aria-label="trapezoid area 252 square centimeters bases 18 and 24 centimeters">
+              <polygon points="74,34 190,34 226,130 32,130" fill="#F5D6CF" stroke="#102A43" stroke-width="4"/>
+              <line x1="190" y1="34" x2="190" y2="130" stroke="#2E7D7B" stroke-width="4" stroke-dasharray="6 5"/>
+              <text x="98" y="26" font-size="15" fill="#102A43" font-weight="700">b₁ = 18 cm</text>
+              <text x="88" y="150" font-size="15" fill="#102A43" font-weight="700">b₂ = 24 cm</text>
+              <text x="78" y="84" font-size="16" fill="#102A43" font-weight="700">A = 252 cm²</text>
+            </svg>
+          </div>
+          <label for="inputTrapH">Height</label><input id="inputTrapH" type="number" placeholder="Type the height" />
+          <button class="action-btn" data-check-input="inputTrapH" data-answer="12" data-unit="cm" data-explain="A = ½(b₁+b₂)h. Double 252 to get 504. Add bases: 18+24=42. Then 504 ÷ 42 = 12 cm.">Check</button>
+          <div class="feedback"></div>
+        </div>
+      </div>
+
+      <div class="section-sprint">
+        <div class="section-sprint-title"><span class="spark">↩</span>Backward level-up: solve for the missing measurement</div>
+        <div class="grid three">
+          <div class="mini-problem">
+            <h4>Missing rhombus base</h4>
+            <p>A rhombus has area 96 cm² and height 8 cm. Find the base.</p>
+            <label for="inputRhombusBase">Base</label><input id="inputRhombusBase" type="number" placeholder="Type the base" />
+            <button class="action-btn" data-check-input="inputRhombusBase" data-answer="12" data-unit="cm" data-explain="Use b = A ÷ h. 96 ÷ 8 = 12 cm.">Check</button><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Missing triangle base</h4>
+            <p>A triangle has area 45 m² and height 9 m. Find the base.</p>
+            <label for="inputTriBase">Base</label><input id="inputTriBase" type="number" placeholder="Type the base" />
+            <button class="action-btn" data-check-input="inputTriBase" data-answer="10" data-unit="m" data-explain="Use b = (2 × A) ÷ h. 2 × 45 = 90, and 90 ÷ 9 = 10 m.">Check</button><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Missing trapezoid height</h4>
+            <p>A trapezoid has area 105 ft² and bases 12 ft and 18 ft. Find the height.</p>
+            <label for="inputTrapH2">Height</label><input id="inputTrapH2" type="number" placeholder="Type the height" />
+            <button class="action-btn" data-check-input="inputTrapH2" data-answer="7" data-unit="ft" data-explain="Use h = (2 × A) ÷ (b₁ + b₂). 210 ÷ 30 = 7 ft.">Check</button><div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="realworld" class="tab-panel">
+      <div class="section-title"><span class="badge">Lab 3</span><h2>Real-world geometry problems</h2></div>
+      <div class="grid two">
+        <div class="card white">
+          <h3>Sod, paint, fabric, or stickers?</h3>
+          <p>Real-world problems usually have two jobs: find the geometry amount, then use it to make a decision.</p>
+          <div class="steps">
+            <div class="step"><span><strong>Geometry first:</strong> area, surface area, or volume?</span></div>
+            <div class="step"><span><strong>Then the real world:</strong> divide by coverage, multiply by price, or compare values.</span></div>
+            <div class="step"><span><strong>Round only when needed:</strong> if you buy whole rolls or boxes, round up.</span></div>
+          </div>
+        </div>
+        <div class="card white">
+          <h3>Triangle lawn challenge</h3>
+          <div class="visual">
+            <svg viewBox="0 0 320 180" role="img" aria-label="triangular lawn with base 18 feet and height 7 feet">
+              <defs><pattern id="grass" patternUnits="userSpaceOnUse" width="14" height="14"><rect width="14" height="14" fill="#B8D7A8"/><path d="M2 14 L8 0 M8 14 L14 0" stroke="#78A664" stroke-width="2"/></pattern></defs>
+              <polygon points="48,145 270,145 48,54" fill="url(#grass)" stroke="#102A43" stroke-width="4"/>
+              <path d="M48 145 l16 0 l0 -16" fill="none" stroke="#102A43" stroke-width="3"/>
+              <text x="132" y="168" font-size="18" fill="#102A43" font-weight="800">18 ft</text>
+              <text x="12" y="104" font-size="18" fill="#102A43" font-weight="800">7 ft</text>
+            </svg>
+          </div>
+          <p>Each roll of sod covers 9 ft² and costs $11. Which statements are true?</p>
+          <div class="choice-row">
+            <label class="option"><input type="checkbox" name="sod" value="area63">The lawn area is 63 ft².</label>
+            <label class="option"><input type="checkbox" name="sod" value="roll7">The yard needs 7 rolls of sod.</label>
+            <label class="option"><input type="checkbox" name="sod" value="cost77">The total cost is $77.</label>
+            <label class="option"><input type="checkbox" name="sod" value="area126">The lawn area is 126 ft².</label>
+          </div>
+          <button class="action-btn alt" data-check-multi="sod" data-answers="area63,roll7,cost77" data-explain="Area = ½ × 18 × 7 = 63 ft². Rolls = 63 ÷ 9 = 7. Cost = 7 × $11 = $77.">Check statements</button>
+          <div class="feedback"></div>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:16px">
+        <div class="card white">
+          <h3>Regular octagon sign</h3>
+          <div class="visual">
+            <svg viewBox="0 0 280 220" role="img" aria-label="regular octagon with side 8 inches and apothem 9.7 inches">
+              <polygon points="96,20 184,20 246,82 246,170 184,210 96,210 34,170 34,82" fill="#F5D6CF" stroke="#102A43" stroke-width="5"/>
+              <line x1="140" y1="115" x2="140" y2="20" stroke="#2E7D7B" stroke-width="4" stroke-dasharray="6 5"/>
+              <text x="111" y="16" font-size="16" fill="#102A43" font-weight="900">side = 8 in.</text>
+              <text x="150" y="78" font-size="16" fill="#2E7D7B" font-weight="900">a = 9.7 in.</text>
+              <circle cx="140" cy="115" r="4" fill="#102A43"/>
+            </svg>
+          </div>
+          <p>A regular octagon has 8 equal sides. Find the approximate area.</p>
+          <label for="octInput">Area in square inches</label><input id="octInput" type="number" step="0.1" placeholder="Type the area" />
+          <button class="action-btn" data-check-input="octInput" data-answer="310.4" data-tolerance="0.2" data-unit="in²" data-explain="Perimeter = 8 × 8 = 64 in. Area = ½ × 64 × 9.7 = 310.4 in².">Check</button>
+          <div class="feedback"></div>
+        </div>
+        <div class="card white">
+          <h3>Better buy: volume per dollar</h3>
+          <p>For boxes, first find volume. Then compare how many cubic inches you get for each dollar.</p>
+          <div class="table-wrap">
+            <table aria-label="box dimensions and prices">
+              <thead><tr><th>Box</th><th>Length</th><th>Width</th><th>Height</th><th>Price</th></tr></thead>
+              <tbody><tr><td>Small</td><td>4 in.</td><td>6 in.</td><td>3 in.</td><td>$7.20</td></tr><tr><td>Large</td><td>5 in.</td><td>8 in.</td><td>4 in.</td><td>$12.00</td></tr></tbody>
+            </table>
+          </div>
+          <p>Which box is the better buy?</p>
+          <div class="choice-row inline"><button class="choice" data-check-choice data-correct="false" data-feedback="Small has 72 in³. 72 ÷ 7.20 = 10 in³ per dollar.">Small box</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct. Large has 160 in³. 160 ÷ 12 = about 13.3 in³ per dollar, which is more.">Large box</button></div>
+          <div class="feedback"></div>
+          <div class="printable-work"><div class="workline"></div><div class="workline"></div><div class="workline"></div></div>
+        </div>
+      </div>
+
+      <div class="section-sprint">
+        <div class="section-sprint-title"><span class="spark">$</span>Real-world level-up: area first, decision second</div>
+        <div class="grid three">
+          <div class="mini-problem">
+            <h4>Fabric flag</h4>
+            <p>A triangular flag has base 16 in. and height 9 in. Fabric costs $2 for every 12 in². What is the cost?</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="72 in² is the area, but the question asks cost.">$72</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: Area = ½ × 16 × 9 = 72 in². 72 ÷ 12 = 6 groups. 6 × $2 = $12.">$12</button><button class="choice" data-check-choice data-correct="false" data-feedback="First find the triangle area, then divide by 12 and multiply by $2.">$24</button></div><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Painted trapezoid wall</h4>
+            <p>A trapezoid wall has bases 9 ft and 15 ft and height 8 ft. One can covers 30 ft². Choose all true statements.</p>
+            <label class="option"><input type="checkbox" name="paint" value="area96">The wall area is 96 ft².</label>
+            <label class="option"><input type="checkbox" name="paint" value="cans4">The painter needs 4 cans.</label>
+            <label class="option"><input type="checkbox" name="paint" value="area192">The wall area is 192 ft².</label>
+            <label class="option"><input type="checkbox" name="paint" value="cans3">The painter needs exactly 3 cans.</label>
+            <button class="action-btn alt" data-check-multi="paint" data-answers="area96,cans4" data-explain="Area = ½ × (9 + 15) × 8 = 96 ft². 96 ÷ 30 = 3.2, so round up to 4 cans.">Check statements</button><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Snack-box value</h4>
+            <p>Box A has volume 90 in³ and costs $9. Box B has volume 132 in³ and costs $11. Which gives more volume per dollar?</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="Box A gives 90 ÷ 9 = 10 in³ per dollar.">Box A</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: Box B gives 132 ÷ 11 = 12 in³ per dollar, which is more.">Box B</button><button class="choice" data-check-choice data-correct="false" data-feedback="Compare volume per dollar, not just price.">They are equal</button></div><div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="nets" class="tab-panel">
+      <div class="section-title"><span class="badge">Lab 4</span><h2>Nets and surface area</h2></div>
+      <div class="grid two">
+        <div class="card white">
+          <h3>Rectangular prism surface area</h3>
+          <div class="formula big">SA = 2lw + 2lh + 2wh</div>
+          <div class="visual">
+            <svg viewBox="0 0 320 210" role="img" aria-label="rectangular prism 5 centimeters by 4 centimeters by 8 centimeters">
+              <rect x="64" y="74" width="135" height="90" fill="#EAF3F1" stroke="#102A43" stroke-width="4"/>
+              <polygon points="199,74 255,45 255,135 199,164" fill="#D6E6FF" stroke="#102A43" stroke-width="4"/>
+              <polygon points="64,74 120,45 255,45 199,74" fill="#FFF3D4" stroke="#102A43" stroke-width="4"/>
+              <text x="106" y="185" font-size="18" fill="#102A43" font-weight="900">5 cm</text>
+              <text x="265" y="98" font-size="18" fill="#102A43" font-weight="900">8 cm</text>
+              <text x="160" y="38" font-size="18" fill="#102A43" font-weight="900">4 cm</text>
+            </svg>
+          </div>
+          <p>Find the surface area.</p>
+          <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="That is volume: 5 × 4 × 8 = 160 cm³. The question asks outside area.">160 cm³</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: 2(5×4) + 2(5×8) + 2(4×8) = 40 + 80 + 64 = 184 cm².">184 cm²</button><button class="choice" data-check-choice data-correct="false" data-feedback="34 is the sum of three dimensions doubled? Surface area needs each face area.">34 cm²</button></div>
+          <div class="feedback"></div>
+        </div>
+        <div class="card white">
+          <h3>Square pyramid net</h3>
+          <div class="visual">
+            <svg viewBox="0 0 330 250" role="img" aria-label="square pyramid net with side 10 meters and slant height 7 meters">
+              <rect x="115" y="90" width="100" height="100" fill="#FFF3D4" stroke="#102A43" stroke-width="4"/>
+              <polygon points="115,90 165,20 215,90" fill="#F5D6CF" stroke="#102A43" stroke-width="4"/>
+              <polygon points="115,190 165,235 215,190" fill="#F5D6CF" stroke="#102A43" stroke-width="4"/>
+              <polygon points="115,90 45,140 115,190" fill="#F5D6CF" stroke="#102A43" stroke-width="4"/>
+              <polygon points="215,90 285,140 215,190" fill="#F5D6CF" stroke="#102A43" stroke-width="4"/>
+              <line x1="165" y1="20" x2="165" y2="90" stroke="#2E7D7B" stroke-width="3" stroke-dasharray="6 5"/>
+              <text x="126" y="210" font-size="17" fill="#102A43" font-weight="900">side = 10 m</text>
+              <text x="174" y="59" font-size="17" fill="#2E7D7B" font-weight="900">slant h = 7 m</text>
+            </svg>
+          </div>
+          <p>What is the total surface area?</p>
+          <div class="choice-row"><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: base = 10×10 = 100. Each triangle = ½×10×7 = 35. Four triangles = 140. Total = 240 m².">240 m²</button><button class="choice" data-check-choice data-correct="false" data-feedback="140 m² is only the four triangular faces. The total surface area includes the square base.">140 m²</button><button class="choice" data-check-choice data-correct="false" data-feedback="This uses the wrong height or counts too many faces.">340 m²</button></div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:16px">
+        <div class="card white">
+          <h3>Net detective</h3>
+          <p>Which calculation matches a square pyramid with side length 12 m and slant height 8 m?</p>
+          <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="This uses only one triangle and the base.">12×12 + ½×12×8</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: square base plus 4 congruent triangles.">12×12 + 4(½×12×8)</button><button class="choice" data-check-choice data-correct="false" data-feedback="This multiplies all three numbers like volume, but this is surface area.">12×12×8</button></div>
+          <div class="feedback"></div>
+        </div>
+        <div class="card teal">
+          <h3>Sticker area: sides only</h3>
+          <p>A square pyramid has base side 6 cm and slant height 8 cm. A sticker covers only the four triangular sides, not the bottom.</p>
+          <label for="stickerInput">Sticker area</label><input id="stickerInput" type="number" placeholder="Type the lateral area" />
+          <button class="action-btn alt" data-check-input="stickerInput" data-answer="96" data-unit="cm²" data-explain="Each triangle is ½×6×8 = 24 cm². Four triangles: 4×24 = 96 cm². Do not add the base because the sticker covers sides only.">Check</button>
+          <div class="feedback"></div>
+        </div>
+      </div>
+
+      <div class="section-sprint">
+        <div class="section-sprint-title"><span class="spark">▣</span>Nets level-up: count every outside face</div>
+        <div class="grid three">
+          <div class="mini-problem">
+            <h4>Rectangular prism wrap</h4>
+            <p>A box measures 6 cm by 3 cm by 4 cm. What is the surface area?</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="That is the volume: 6 × 3 × 4 = 72 cm³.">72 cm³</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: 2(6×3)+2(6×4)+2(3×4)=36+48+24=108 cm².">108 cm²</button><button class="choice" data-check-choice data-correct="false" data-feedback="Add all six faces, not just three dimensions.">26 cm²</button></div><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Pyramid sides only</h4>
+            <p>A square pyramid has side 8 ft and slant height 11 ft. Find the lateral area only.</p>
+            <label for="inputPyrLat">Lateral area</label><input id="inputPyrLat" type="number" placeholder="Type the area" />
+            <button class="action-btn" data-check-input="inputPyrLat" data-answer="176" data-unit="ft²" data-explain="Each triangle is ½ × 8 × 11 = 44 ft². Four triangles: 4 × 44 = 176 ft².">Check</button><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Pyramid total area</h4>
+            <p>A square pyramid has side 5 m and slant height 6 m. Find the total surface area.</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="60 m² is only the four triangular sides. Add the square base too.">60 m²</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: base = 25. Triangles = 4(½×5×6)=60. Total = 85 m².">85 m²</button><button class="choice" data-check-choice data-correct="false" data-feedback="This is multiplying dimensions like volume, but this is surface area.">150 m²</button></div><div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="game" class="tab-panel">
+      <div class="section-title"><span class="badge">Game</span><h2>Review game: formula flip + quick battle</h2></div>
+      <div class="card white">
+        <h3>Formula flip cards</h3>
+        <p>Click each card. Say the formula before flipping.</p>
+        <div class="flashgrid">
+          <div class="flashcard"><div class="flash-inner"><div class="flash-front">Parallelogram</div><div class="flash-back">A = b × h</div></div></div>
+          <div class="flashcard"><div class="flash-inner"><div class="flash-front">Triangle</div><div class="flash-back">A = ½ × b × h</div></div></div>
+          <div class="flashcard"><div class="flash-inner"><div class="flash-front">Trapezoid</div><div class="flash-back">A = ½(b₁+b₂)h</div></div></div>
+          <div class="flashcard"><div class="flash-inner"><div class="flash-front">Rectangular Prism SA</div><div class="flash-back">2lw + 2lh + 2wh</div></div></div>
+        </div>
+      </div>
+      <div class="grid two" style="margin-top:16px">
+        <div class="card white">
+          <h3>Quick battle</h3>
+          <p>Solve one at a time. Get 5 correct to finish the battle.</p>
+          <div class="mathline" id="battlePrompt">Press Start Battle.</div>
+          <label for="battleInput">Answer</label><input id="battleInput" type="number" step="0.1" placeholder="Type answer" />
+          <div class="choice-row inline"><button class="action-btn" id="battleStart">Start Battle</button><button class="action-btn alt" id="battleCheck">Check Answer</button></div>
+          <div class="feedback" id="battleFeedback"></div>
+        </div>
+        <div class="card quest">
+          <span class="quest-kicker">Boss Level</span>
+          <h3>Mistake fixer</h3>
+          <p>Pick the best fix for each common mistake before the final practice test.</p>
+          <div class="mini-problem" style="margin-bottom:10px">
+            <h4>Mistake 1</h4>
+            <p>Student work: Triangle area = 18 × 7 = 126 ft².</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: for a triangle, divide base × height by 2.">Divide by 2 because it is a triangle.</button><button class="choice" data-check-choice data-correct="false" data-feedback="The height matters, but the missing step is dividing by 2.">Use the slanted side.</button></div><div class="feedback"></div>
+          </div>
+          <div class="mini-problem">
+            <h4>Mistake 2</h4>
+            <p>Student work: Surface area of a 4 × 5 × 8 prism = 160 cm³.</p>
+            <div class="choice-row"><button class="choice" data-check-choice data-correct="false" data-feedback="160 is volume, not outside area.">Keep it because 4 × 5 × 8 is correct.</button><button class="choice" data-check-choice data-correct="true" data-feedback="Correct: surface area adds the six rectangular faces, and the unit is square units.">Use 2lw + 2lh + 2wh and label cm².</button></div><div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="test" class="tab-panel">
+      <div class="section-title"><span class="badge">Final</span><h2>Practice test</h2></div>
+      <div class="card white">
+        <h3>Directions</h3>
+        <p>Answer each question, then press <strong>Check this question</strong>. If it is not correct yet, the page gives a hint instead of the answer so students can try again.</p>
+        <div class="pillrow" style="margin-bottom:4px"><span class="pill" style="background:#EAF3F1;color:#102A43;border-color:#C9DDD9">12 questions</span><span class="pill" style="background:#FFF3D4;color:#3B2A00;border-color:#F2D18A">Try + hint + retry</span><span class="pill" style="background:#F5D6CF;color:#5E2115;border-color:#E9B8AE">Answers hidden until checked</span></div>
+      </div>
+      <form id="practiceForm" aria-label="Unit 5 practice test"></form>
+      <div class="choice-row inline">
+        <button type="button" class="action-btn alt" id="gradeTest">Grade Practice Test</button>
+        <button type="button" class="action-btn gold" id="resetTest">Reset Test</button>
+      </div>
+      <div class="test-results" id="testResults"></div>
+      <div class="card white" style="margin-top:16px">
+        <h3>After the practice test</h3>
+        <p>Review any missed explanations. Then redo only the tabs connected to the missed skills.</p>
+        <button class="small-btn" id="toggleKey" type="button">Show teacher answer key</button>
+        <div class="teacher-key" id="teacherKey">
+          <strong>Answer key:</strong> 1) 12 ft, 2) 63 cm², 3) area 90 / 6 rolls / $108, 4) 6 ft, 5) 11 m, 6) 120 in², 7) Large box, 8) 189 m², 9) 184 cm², 10) 175 in², 11) 14 cm, 12) 132 cm².
+        </div>
+      </div>
+    </section>
   </main>
-  <script src="/assets/app.js" defer></script>
+
+  <script>
+    const completed = new Set(JSON.parse(localStorage.getItem('unit5GeometryCompleted') || '[]'));
+    const totalTasks = 34;
+    function saveProgress(){localStorage.setItem('unit5GeometryCompleted', JSON.stringify([...completed])); updateProgress();}
+    function markComplete(id){completed.add(id); saveProgress();}
+    function updateProgress(){const pct = Math.min(100, Math.round((completed.size/totalTasks)*100)); document.getElementById('progressFill').style.width = pct + '%'; document.getElementById('progressLabel').textContent = pct + '% complete';}
+    updateProgress();
+
+    document.querySelectorAll('.tab-button').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    });
+
+    function feedbackNear(el, ok, text){
+      const scope = el.closest('.card') || el.parentElement;
+      const fb = scope.querySelector('.feedback') || document.createElement('div');
+      fb.className = 'feedback show ' + (ok ? 'ok' : 'bad');
+      fb.textContent = text;
+      if(!fb.parentElement) scope.appendChild(fb);
+    }
+
+    document.querySelectorAll('[data-check-choice]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const row = btn.parentElement;
+        row.querySelectorAll('.choice').forEach(b=>b.classList.remove('correct','incorrect'));
+        const ok = btn.dataset.correct === 'true';
+        btn.classList.add(ok?'correct':'incorrect');
+        feedbackNear(btn, ok, btn.dataset.feedback || (ok?'Correct.':'Try again.'));
+        if(ok) markComplete('choice-' + [...document.querySelectorAll('[data-check-choice]')].indexOf(btn));
+      });
+    });
+
+    document.querySelectorAll('[data-check-input]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const input = document.getElementById(btn.dataset.checkInput);
+        const val = parseFloat(input.value);
+        const ans = parseFloat(btn.dataset.answer);
+        const tol = parseFloat(btn.dataset.tolerance || '0.01');
+        const ok = !Number.isNaN(val) && Math.abs(val-ans) <= tol;
+        const unit = btn.dataset.unit || '';
+        feedbackNear(btn, ok, ok ? `Correct: ${ans} ${unit}. ${btn.dataset.explain}` : `Not yet. ${btn.dataset.explain}`);
+        if(ok) markComplete('input-' + btn.dataset.checkInput);
+      });
+    });
+
+    document.querySelectorAll('[data-check-multi]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const name = btn.dataset.checkMulti;
+        const correct = btn.dataset.answers.split(',').sort();
+        const selected = [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>x.value).sort();
+        const ok = selected.length === correct.length && selected.every((v,i)=>v===correct[i]);
+        feedbackNear(btn, ok, ok ? `Correct. ${btn.dataset.explain}` : `Check again. ${btn.dataset.explain}`);
+        if(ok) markComplete('multi-' + name);
+      });
+    });
+
+    document.querySelectorAll('[data-complete]').forEach(btn=>btn.addEventListener('click',()=>{markComplete(btn.dataset.complete); feedbackNear(btn,true,'Marked complete.');}));
+    document.querySelectorAll('.flashcard').forEach(card=>card.addEventListener('click',()=>{card.classList.toggle('flipped'); markComplete('flashcards');}));
+
+    const shapeSelect = document.getElementById('shapeSelect');
+    const baseRange = document.getElementById('baseRange');
+    const base2Range = document.getElementById('base2Range');
+    const heightRange = document.getElementById('heightRange');
+    function updateAreaMachine(){
+      const shape = shapeSelect.value;
+      const b = +baseRange.value, b2 = +base2Range.value, h = +heightRange.value;
+      document.getElementById('baseVal').textContent=b;
+      document.getElementById('base2Val').textContent=b2;
+      document.getElementById('heightVal').textContent=h;
+      document.getElementById('base2Wrap').style.display = shape === 'trapezoid' ? 'block' : 'none';
+      let area, formula, svg;
+      if(shape==='triangle'){
+        area = .5*b*h;
+        formula = `A = ½ × ${b} × ${h} = ${area}`;
+        svg = `<svg viewBox="0 0 320 190" role="img" aria-label="triangle with base ${b} and height ${h}"><polygon points="58,150 268,150 58,42" fill="#FFF3D4" stroke="#102A43" stroke-width="5"/><path d="M58 150 l18 0 l0 -18" fill="none" stroke="#102A43" stroke-width="3"/><line x1="58" y1="42" x2="58" y2="150" stroke="#C96C4A" stroke-width="4" stroke-dasharray="7 5"/><text x="132" y="176" font-size="20" fill="#102A43" font-weight="900">b = ${b}</text><text x="14" y="102" font-size="20" fill="#C96C4A" font-weight="900">h = ${h}</text><text x="170" y="68" font-size="18" fill="#2E7D7B" font-weight="900">triangle</text></svg>`;
+      }
+      else if(shape==='trapezoid'){
+        area = .5*(b+b2)*h;
+        formula = `A = ½ × (${b} + ${b2}) × ${h} = ${area}`;
+        svg = `<svg viewBox="0 0 340 205" role="img" aria-label="trapezoid with bases ${b} and ${b2} and height ${h}"><polygon points="104,44 230,44 286,160 54,160" fill="#F5D6CF" stroke="#102A43" stroke-width="5"/><line x1="230" y1="44" x2="230" y2="160" stroke="#2E7D7B" stroke-width="4" stroke-dasharray="7 5"/><path d="M230 160 l-18 0 l0 -18" fill="none" stroke="#102A43" stroke-width="3"/><text x="133" y="30" font-size="19" fill="#102A43" font-weight="900">b₁ = ${b}</text><text x="133" y="188" font-size="19" fill="#102A43" font-weight="900">b₂ = ${b2}</text><text x="242" y="108" font-size="19" fill="#2E7D7B" font-weight="900">h = ${h}</text><text x="114" y="108" font-size="18" fill="#8A3B2B" font-weight="900">trapezoid</text></svg>`;
+      }
+      else {
+        area = b*h;
+        formula = `A = ${b} × ${h} = ${area}`;
+        svg = `<svg viewBox="0 0 330 195" role="img" aria-label="parallelogram with base ${b} and height ${h}"><polygon points="70,154 274,154 230,44 28,44" fill="#DDEFEA" stroke="#102A43" stroke-width="5"/><line x1="230" y1="44" x2="230" y2="154" stroke="#C96C4A" stroke-width="4" stroke-dasharray="7 5"/><path d="M230 154 l-18 0 l0 -18" fill="none" stroke="#102A43" stroke-width="3"/><text x="132" y="180" font-size="20" fill="#102A43" font-weight="900">b = ${b}</text><text x="242" y="105" font-size="20" fill="#C96C4A" font-weight="900">h = ${h}</text><text x="84" y="98" font-size="18" fill="#2E7D7B" font-weight="900">parallelogram</text></svg>`;
+      }
+      document.getElementById('liveArea').textContent = area + ' square units';
+      document.getElementById('liveFormula').textContent = formula;
+      document.getElementById('liveFigure').innerHTML = svg;
+      markComplete('area-machine');
+    }
+    [shapeSelect,baseRange,base2Range,heightRange].forEach(el=>el.addEventListener('input',updateAreaMachine));
+    updateAreaMachine();
+
+    const battleProblems = [
+      {p:'Triangle: b = 16, h = 5. Find area.', a:40, e:'½×16×5 = 40'},
+      {p:'Parallelogram: A = 144, b = 12. Find h.', a:12, e:'144÷12 = 12'},
+      {p:'Trapezoid: b₁ = 8, b₂ = 14, h = 6. Find area.', a:66, e:'½×(8+14)×6 = 66'},
+      {p:'Rectangular prism: 3 by 5 by 7. Find surface area.', a:142, e:'2(15)+2(21)+2(35)=142'},
+      {p:'Square pyramid: side 8, slant height 5. Find total surface area.', a:144, e:'Base 64 + 4 triangles of 20 = 144'},
+      {p:'Rhombus: A = 90, h = 9. Find base.', a:10, e:'Use base = area ÷ height.'},
+      {p:'Rectangular prism: 4 by 6 by 8. Find surface area.', a:208, e:'Add two of each face: 2(lw)+2(lh)+2(wh).'}
+    ];
+    let battleIndex = -1, battleCorrect = 0;
+    document.getElementById('battleStart').addEventListener('click',()=>{battleCorrect=0; battleIndex=0; document.getElementById('battlePrompt').textContent = battleProblems[0].p; document.getElementById('battleInput').value=''; document.getElementById('battleFeedback').className='feedback show ok'; document.getElementById('battleFeedback').textContent='Battle started. Solve the first problem.';});
+    document.getElementById('battleCheck').addEventListener('click',()=>{
+      if(battleIndex<0){document.getElementById('battleStart').click(); return;}
+      const prob = battleProblems[battleIndex];
+      const val = parseFloat(document.getElementById('battleInput').value);
+      const ok = Math.abs(val-prob.a)<.01;
+      const fb = document.getElementById('battleFeedback');
+      fb.className = 'feedback show ' + (ok?'ok':'bad');
+      if(ok){battleCorrect++; battleIndex++; if(battleIndex>=battleProblems.length){fb.textContent=`Correct. ${prob.e}. Battle complete: ${battleCorrect}/${battleProblems.length}.`; document.getElementById('battlePrompt').textContent='Battle complete. You are ready for the practice test.'; markComplete('battle');} else {fb.textContent=`Correct. ${prob.e}. Next problem loaded.`; document.getElementById('battlePrompt').textContent=battleProblems[battleIndex].p; document.getElementById('battleInput').value='';}}
+      else {fb.textContent=`Try again. Hint: ${prob.e}.`;}
+    });
+
+    const practiceQuestions = [
+      {type:'mc', answer:'12', skill:'Missing height of parallelogram', prompt:'A parallelogram has an area of 168 ft² and a base of 14 ft. What is the height?', visual:'par', options:[['10 ft','10'],['12 ft','12'],['14 ft','14'],['24 ft','24']], hints:['Use A = b × h. Put 168 in for A and 14 in for b.','Undo multiplication by dividing the area by the base.'], explanation:'Correct: h = 168 ÷ 14 = 12 ft.'},
+      {type:'input', answer:63, unit:'cm²', skill:'Rhombus area', prompt:'A rhombus has a base of 9 cm and a height of 7 cm. What is the area?', hints:['A rhombus uses the same area formula as a parallelogram: base × height.','Multiply 9 by 7 and use square centimeters.'], explanation:'Correct: A = b × h = 9 × 7 = 63 cm².'},
+      {type:'multi', answer:['a','b','c'], skill:'Triangle area with cost', prompt:'A triangular garden has a base of 20 ft and height of 9 ft. Each grass roll covers 15 ft² and costs $18. Choose all true statements.', options:[['The garden area is 90 ft².','a'],['The garden needs 6 rolls.','b'],['The total cost is $108.','c'],['The garden area is 180 ft².','d'],['The garden needs 12 rolls.','e']], hints:['Find triangle area first. Do not forget the ½.','After area, divide by 15 rolls, then multiply by $18.'], explanation:'Correct: Area = ½×20×9 = 90 ft². 90÷15 = 6 rolls. 6×18 = $108.'},
+      {type:'mc', answer:'6', skill:'Missing triangle height', prompt:'A triangular sail has an area of 30 ft² and a base of 10 ft. What is the height?', visual:'tri', options:[['3 ft','3'],['5 ft','5'],['6 ft','6'],['10 ft','10']], hints:['Start with A = ½ × b × h. Substitute 30 for A and 10 for b.','The equation becomes 30 = 5h. Undo by dividing by 5.'], explanation:'Correct: 30 = ½×10×h = 5h, so h = 6 ft.'},
+      {type:'input', answer:11, unit:'m', skill:'Missing trapezoid height', prompt:'A trapezoid has area 132 m². The bases are 10 m and 14 m. What is the height?', hints:['Add the two bases first, then take half of that sum.','10 + 14 = 24, and half of 24 is 12. Now solve 132 = 12h.'], explanation:'Correct: A = ½(b₁+b₂)h. 132 = ½(24)h = 12h. h = 11 m.'},
+      {type:'input', answer:120, unit:'in²', skill:'Regular polygon area', prompt:'A regular octagon has side length 5 in. and apothem 6 in. What is the area?', hints:['First find the perimeter of the octagon: 8 equal sides.','Use A = ½ × perimeter × apothem.'], explanation:'Correct: Perimeter = 8×5 = 40 in. Area = ½×40×6 = 120 in².'},
+      {type:'mc', answer:'large', skill:'Volume comparison / better buy', prompt:'Small box: 3 in. by 4 in. by 6 in. for $6. Large box: 5 in. by 6 in. by 4 in. for $8. Which is the better buy?', options:[['Small box','small'],['Large box','large'],['They are equal','equal'],['Cannot tell','none']], hints:['Find each volume, then divide volume by price.','Better buy means more cubic inches for each dollar.'], explanation:'Correct: Small = 72 in³ or 12 in³ per dollar. Large = 120 in³ or 15 in³ per dollar. Large is better.'},
+      {type:'mc', answer:'189', skill:'Square pyramid surface area', prompt:'A square pyramid net has a square base with side 9 m. Each triangular face has slant height 6 m. What is the total surface area?', visual:'pyramid', options:[['108 m²','108'],['162 m²','162'],['189 m²','189'],['324 m²','324']], hints:['Find the square base, then find the four triangle faces.','Each triangle uses ½ × side length × slant height.'], explanation:'Correct: Base = 9×9 = 81. Each triangle = ½×9×6 = 27. Four triangles = 108. Total = 189 m².'},
+      {type:'mc', answer:'184', skill:'Rectangular prism surface area', prompt:'A rectangular prism measures 4 cm by 5 cm by 8 cm. How much paper is needed to cover all faces?', visual:'prism', options:[['160 cm³','160'],['184 cm²','184'],['96 cm²','96'],['68 cm²','68']], hints:['The question asks cover all faces, so this is surface area, not volume.','Find two of each face: 4×5, 4×8, and 5×8.'], explanation:'Correct: SA = 2(4×5)+2(4×8)+2(5×8)=40+64+80=184 cm².'},
+      {type:'input', answer:175, unit:'in²', skill:'Square pyramid net with base', prompt:'A square pyramid has base side 7 in. and slant height 9 in. Find the total area of all outside faces, including the base.', hints:['Total surface area includes the square base plus four triangles.','Each triangle is ½ × 7 × 9. Then add the 7 × 7 base.'], explanation:'Correct: Base = 7×7 = 49. Each triangle = 31.5. Four triangles = 126. Total = 175 in².'},
+      {type:'input', answer:14, unit:'cm', skill:'Missing rhombus base', prompt:'A rhombus has an area of 112 cm² and a height of 8 cm. What is the base?', hints:['Use the parallelogram/rhombus formula: A = b × h.','To find the base, divide area by height.'], explanation:'Correct: b = A ÷ h = 112 ÷ 8 = 14 cm.'},
+      {type:'mc', answer:'132', skill:'Rectangular prism surface area', prompt:'A rectangular prism measures 7 cm by 5 cm by 3 cm. What is the surface area?', visual:'prism2', options:[['105 cm³','105'],['132 cm²','132'],['71 cm²','71'],['210 cm²','210']], hints:['This asks for surface area, so do not multiply all three dimensions for volume.','Use 2(7×5)+2(7×3)+2(5×3).'], explanation:'Correct: 2(35)+2(21)+2(15)=70+42+30=132 cm².'}
+    ];
+
+    function visualHTML(type){
+      if(type==='par') return '<svg viewBox="0 0 250 130" style="max-width:260px"><polygon points="52,110 210,110 184,30 28,30" fill="#DDEFEA" stroke="#102A43" stroke-width="4"/><line x1="184" y1="30" x2="184" y2="110" stroke="#C96C4A" stroke-width="3" stroke-dasharray="5 4"/><text x="92" y="126" font-size="16" font-weight="900">14 ft</text><text x="76" y="75" font-size="16" font-weight="900">A=168 ft²</text><text x="194" y="76" font-size="15" fill="#C96C4A" font-weight="900">h=?</text></svg>';
+      if(type==='tri') return '<svg viewBox="0 0 250 130" style="max-width:260px"><polygon points="42,110 210,110 42,30" fill="#FFF3D4" stroke="#102A43" stroke-width="4"/><line x1="42" y1="30" x2="42" y2="110" stroke="#C96C4A" stroke-width="3" stroke-dasharray="5 4"/><text x="108" y="126" font-size="16" font-weight="900">10 ft</text><text x="72" y="76" font-size="16" font-weight="900">A=30 ft²</text><text x="4" y="76" font-size="15" fill="#C96C4A" font-weight="900">h=?</text></svg>';
+      if(type==='pyramid') return '<svg viewBox="0 0 280 180" style="max-width:300px"><rect x="105" y="65" width="70" height="70" fill="#FFF3D4" stroke="#102A43" stroke-width="3"/><polygon points="105,65 140,15 175,65" fill="#F5D6CF" stroke="#102A43" stroke-width="3"/><polygon points="105,135 140,170 175,135" fill="#F5D6CF" stroke="#102A43" stroke-width="3"/><polygon points="105,65 55,100 105,135" fill="#F5D6CF" stroke="#102A43" stroke-width="3"/><polygon points="175,65 225,100 175,135" fill="#F5D6CF" stroke="#102A43" stroke-width="3"/><line x1="140" y1="15" x2="140" y2="65" stroke="#2E7D7B" stroke-width="3" stroke-dasharray="5 4"/><text x="111" y="151" font-size="14" font-weight="900">side 9 m</text><text x="145" y="42" font-size="14" font-weight="900">slant h 6 m</text></svg>';
+      if(type==='prism') return '<svg viewBox="0 0 260 160" style="max-width:280px"><rect x="45" y="58" width="122" height="70" fill="#EAF3F1" stroke="#102A43" stroke-width="4"/><polygon points="167,58 215,36 215,106 167,128" fill="#D6E6FF" stroke="#102A43" stroke-width="4"/><polygon points="45,58 92,36 215,36 167,58" fill="#FFF3D4" stroke="#102A43" stroke-width="4"/><text x="88" y="148" font-size="15" font-weight="900">4 cm</text><text x="220" y="78" font-size="15" font-weight="900">8 cm</text><text x="130" y="28" font-size="15" font-weight="900">5 cm</text></svg>';
+      if(type==='prism2') return '<svg viewBox="0 0 260 160" style="max-width:280px"><rect x="45" y="58" width="130" height="72" fill="#EAF3F1" stroke="#102A43" stroke-width="4"/><polygon points="175,58 220,36 220,108 175,130" fill="#D6E6FF" stroke="#102A43" stroke-width="4"/><polygon points="45,58 90,36 220,36 175,58" fill="#FFF3D4" stroke="#102A43" stroke-width="4"/><text x="95" y="150" font-size="15" font-weight="900">7 cm</text><text x="225" y="82" font-size="15" font-weight="900">3 cm</text><text x="132" y="28" font-size="15" font-weight="900">5 cm</text></svg>';
+      return '';
+    }
+
+    let practiceState = [];
+    function getPracticeUserAnswer(q,i){
+      if(q.type==='mc'){
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        return selected ? selected.value : '';
+      }
+      if(q.type==='multi'){
+        return [...document.querySelectorAll(`input[name="q${i}"]:checked`)].map(x=>x.value).sort();
+      }
+      const input = document.querySelector(`input[name="q${i}"]`);
+      return input ? input.value : '';
+    }
+    function isPracticeCorrect(q,user){
+      if(q.type==='mc') return user === q.answer;
+      if(q.type==='multi'){
+        const correct = q.answer.slice().sort();
+        return Array.isArray(user) && user.length === correct.length && user.every((v,idx)=>v===correct[idx]);
+      }
+      const val = parseFloat(user);
+      return !Number.isNaN(val) && Math.abs(val-q.answer)<.05;
+    }
+    function renderPractice(){
+      const form = document.getElementById('practiceForm');
+      practiceState = practiceQuestions.map(()=>({attempts:0,correct:false}));
+      form.innerHTML = practiceQuestions.map((q,i)=>{
+        const visual = q.visual ? `<div class="visual" style="min-height:130px;margin:8px 0">${visualHTML(q.visual)}</div>` : '';
+        let body='';
+        if(q.type==='mc') body = q.options.map(([t,v])=>`<label class="option"><input type="radio" name="q${i}" value="${v}">${t}</label>`).join('');
+        if(q.type==='multi') body = q.options.map(([t,v])=>`<label class="option"><input type="checkbox" name="q${i}" value="${v}">${t}</label>`).join('');
+        if(q.type==='input') body = `<input type="number" step="0.1" name="q${i}" placeholder="Type your answer">`;
+        return `<div class="practice-question" id="practiceCard${i}"><h3><span class="qnum">${i+1}</span>${q.skill}</h3><p>${q.prompt}</p>${visual}${body}<div class="practice-actions"><button type="button" class="action-btn alt" data-check-practice="${i}">Check this question</button><span class="attempt-chip" id="attemptChip${i}">Not tried yet</span></div><div class="test-feedback" id="practiceFeedback${i}"></div></div>`;
+      }).join('');
+      document.querySelectorAll('[data-check-practice]').forEach(btn=>btn.addEventListener('click',()=>checkPracticeQuestion(+btn.dataset.checkPractice)));
+    }
+    function checkPracticeQuestion(i){
+      const q = practiceQuestions[i];
+      const state = practiceState[i];
+      const user = getPracticeUserAnswer(q,i);
+      const blank = Array.isArray(user) ? user.length===0 : String(user).trim()==='';
+      const fb = document.getElementById(`practiceFeedback${i}`);
+      const card = document.getElementById(`practiceCard${i}`);
+      if(blank){
+        fb.className='test-feedback show bad';
+        fb.textContent='Choose or type an answer first. Then check again.';
+        return;
+      }
+      state.attempts++;
+      const ok = isPracticeCorrect(q,user);
+      state.correct = ok;
+      document.getElementById(`attemptChip${i}`).textContent = ok ? `Correct after ${state.attempts} ${state.attempts===1?'try':'tries'}` : `Tried ${state.attempts} ${state.attempts===1?'time':'times'}`;
+      card.classList.toggle('correct-card', ok);
+      card.classList.toggle('retry-card', !ok);
+      if(ok){
+        fb.className='test-feedback show ok';
+        fb.textContent=q.explanation;
+        markComplete('practice-q-' + i);
+      } else {
+        const hint = q.hints[Math.min(state.attempts-1, q.hints.length-1)];
+        fb.className='test-feedback show bad';
+        fb.textContent=`Not yet. Hint: ${hint}`;
+      }
+    }
+    renderPractice();
+
+    document.getElementById('gradeTest').addEventListener('click',()=>{
+      const attempted = practiceState.filter(s=>s.attempts>0).length;
+      const result = document.getElementById('testResults');
+      if(attempted < practiceQuestions.length){
+        result.style.display='block';
+        result.innerHTML = `<p class="score-big">${attempted}/${practiceQuestions.length} tried</p><p><strong>Keep going:</strong> students need to try every question before the final score appears. Answers stay hidden until each question has been checked.</p>`;
+        result.scrollIntoView({behavior:'smooth', block:'start'});
+        return;
+      }
+      const score = practiceState.filter(s=>s.correct).length;
+      const pct = Math.round(score/practiceQuestions.length*100);
+      const explanations = practiceQuestions.map((q,i)=>{
+        const state = practiceState[i];
+        return `<div class="explain-item"><strong>Question ${i+1}: ${state.correct?'Correct':'Keep trying'}</strong><br>${state.correct ? q.explanation : 'No answer shown yet. Go back to this question, use the hint, and try again.'}</div>`;
+      }).join('');
+      result.style.display='block';
+      result.innerHTML = `<p class="score-big">${score}/${practiceQuestions.length} · ${pct}%</p><p><strong>${pct>=80?'Strong work. Fix any remaining retry questions and you are close to ready.':'Keep practicing. Redo the questions marked “Keep trying” using the hints on each card.'}</strong></p><div class="explain-list">${explanations}</div>`;
+      markComplete('practice-test');
+      result.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+    document.getElementById('resetTest').addEventListener('click',()=>{document.getElementById('testResults').style.display='none'; renderPractice();});
+    document.getElementById('toggleKey').addEventListener('click',()=>{const key=document.getElementById('teacherKey'); key.style.display = key.style.display==='block'?'none':'block';});
+  </script>
 </body>
 </html>

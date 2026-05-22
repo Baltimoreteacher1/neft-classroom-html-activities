@@ -1,37 +1,507 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.sp.a.1 Review 2 classroom activity.">
-  <title>6.sp.a.1 Review 2</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.SP.A.1 Statistical Questions Review</title>
+  <style>
+    :root{
+      --ink:#1f2937;
+      --navy:#263238;
+      --teal:#009688;
+      --coral:#ff7043;
+      --sky:#e8f6f4;
+      --paper:#ffffff;
+      --line:#d6dde2;
+      --good:#216e39;
+      --good-bg:#e9f7ee;
+      --bad:#b42318;
+      --bad-bg:#fef0f0;
+      --gold:#9a6700;
+      --shadow:0 10px 30px rgba(38,50,56,.12);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(180deg,#f7fbfb 0%,#eef4f6 100%);color:var(--ink)}
+    .wrap{max-width:1180px;margin:0 auto;padding:20px}
+    .hero{background:linear-gradient(135deg,var(--navy),#32505a 58%,var(--teal));color:#fff;border-radius:28px;padding:28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero:after{content:"";position:absolute;right:-60px;top:-50px;width:220px;height:220px;background:rgba(255,255,255,.08);border-radius:50%}
+    .eyebrow{display:inline-block;background:rgba(255,255,255,.14);padding:7px 12px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    h1{margin:12px 0 8px;font-size:clamp(30px,4.5vw,46px);line-height:1.04}
+    .sub{font-size:17px;max-width:760px;opacity:.96}
+    .hero-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start;margin-top:18px}
+    .mini-card{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:16px}
+    .mini-card h3{margin:0 0 8px;font-size:16px}
+    .mini-list{margin:0;padding-left:18px;line-height:1.6}
+    .topbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:18px 0}
+    .hud{display:flex;gap:12px;flex-wrap:wrap}
+    .pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 14px;font-weight:700;box-shadow:0 3px 10px rgba(0,0,0,.04)}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .tab-btn{border:none;background:#dbe7ea;color:var(--navy);padding:12px 16px;border-radius:999px;font-weight:800;cursor:pointer;transition:.18s transform,.18s background,.18s color}
+    .tab-btn:hover,.tab-btn:focus-visible{transform:translateY(-1px);outline:none}
+    .tab-btn.active{background:var(--coral);color:#fff}
+    .panel{display:none;background:var(--paper);border:1px solid #e6ecef;border-radius:24px;padding:22px;box-shadow:var(--shadow)}
+    .panel.active{display:block}
+    .grid-2{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}
+    .card h2,.card h3{margin:0 0 10px}
+    .ex{background:var(--sky);border-left:5px solid var(--teal);padding:14px;border-radius:12px;margin:10px 0}
+    .ex.bad{background:#fff5f2;border-left-color:var(--coral)}
+    .check-grid{display:grid;gap:16px}
+    .q-block{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fbfcfd}
+    .q{font-size:18px;font-weight:800;margin:0 0 12px}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+    .choice{border:none;padding:12px 16px;border-radius:14px;background:#eef3f5;color:var(--ink);font-weight:800;cursor:pointer;transition:.18s transform,.18s box-shadow}
+    .choice:hover,.choice:focus-visible{transform:translateY(-1px);box-shadow:0 8px 18px rgba(0,0,0,.08);outline:none}
+    .choice.correct{background:var(--good-bg);color:var(--good)}
+    .choice.incorrect{background:var(--bad-bg);color:var(--bad)}
+    .feedback{margin-top:10px;font-weight:700;min-height:22px}
+    .sort-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+    .bank,.dropzone{border:2px dashed #b9c8cf;border-radius:18px;padding:14px;min-height:220px;background:#fbfdfe}
+    .token{user-select:none;touch-action:none;padding:11px 12px;border-radius:12px;background:#eef3f5;border:1px solid #d7e0e5;margin:8px 0;font-weight:700;cursor:grab;box-shadow:0 3px 6px rgba(0,0,0,.04)}
+    .dropzone.gooddrop{background:#f0faf7}
+    .dropzone.baddrop{background:#fff7f5}
+    .dropzone.over{outline:3px solid #86d3c7}
+    .drop-title{font-size:15px;font-weight:900;margin-bottom:8px}
+    .scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .metric{font-size:28px;font-weight:900;color:var(--navy)}
+    textarea{width:100%;min-height:120px;border:1px solid #cfd9de;border-radius:14px;padding:14px;font:inherit;resize:vertical;background:#fff}
+    .small{font-size:13px;color:#536471}
+    .action-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+    .action{border:none;background:var(--teal);color:#fff;padding:12px 16px;border-radius:14px;font-weight:800;cursor:pointer}
+    .action.secondary{background:#607d8b}
+    .summary{background:#fff8e1;border:1px solid #f3dd92;border-radius:18px;padding:16px}
+    .summary ul{margin:8px 0 0;padding-left:18px;line-height:1.6}
+    .print-note{margin-top:20px;text-align:center;font-size:12px;color:#64748b}
+    @media (max-width: 900px){
+      .hero-grid,.grid-2,.sort-wrap,.scenario-grid{grid-template-columns:1fr}
+    }
+    @media print{
+      body{background:#fff}
+      .topbar,.tabs,.action-row,.print-note{display:none !important}
+      .panel{display:block !important;box-shadow:none;border:1px solid #000;margin-top:14px;break-inside:avoid}
+      .hero{box-shadow:none}
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>6.sp.a.1 Review 2</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.sp.a.1 Review 2</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
-
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.sp.a.1Review2</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/statistics-data/6-sp-a-1review2/</span></p>
+  <div class="wrap">
+    <section class="hero" aria-label="Title section">
+      <span class="eyebrow">CCSS 6.SP.A.1 · Premium Review</span>
+      <h1>Statistical Questions Studio</h1>
+      <p class="sub">Students learn, test, sort, explain, and create statistical questions. This flagship review includes misconception repair, accessible interaction, progress tracking, and printable teacher-friendly sections.</p>
+      <div class="hero-grid">
+        <div class="mini-card">
+          <h3>Success criteria</h3>
+          <ul class="mini-list">
+            <li>I can recognize a statistical question.</li>
+            <li>I can explain that statistical questions expect variability in data.</li>
+            <li>I can tell the difference between a question with one fixed answer and one that produces many answers.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h3>Built-in premium features</h3>
+          <ul class="mini-list">
+            <li>Accessible buttons and keyboard-friendly tabs</li>
+            <li>Touch + mouse sorting</li>
+            <li>Auto-save progress</li>
+            <li>Printable sections</li>
+          </ul>
+        </div>
       </div>
     </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/statistics-data/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+    <div class="topbar">
+      <div class="hud">
+        <div class="pill">Score: <span id="score">0</span></div>
+        <div class="pill">Completed: <span id="completed">0</span>/9</div>
+        <div class="pill">Mastery: <span id="mastery">Starting</span></div>
+      </div>
+      <div class="hud">
+        <button class="action secondary" id="resetAll">Reset Progress</button>
+        <button class="action" id="printBtn">Print / Save PDF</button>
+      </div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+
+    <nav class="tabs" aria-label="Review tabs">
+      <button class="tab-btn active" data-tab="0">1. Learn</button>
+      <button class="tab-btn" data-tab="1">2. Quick Check</button>
+      <button class="tab-btn" data-tab="2">3. Sort</button>
+      <button class="tab-btn" data-tab="3">4. Scenario</button>
+      <button class="tab-btn" data-tab="4">5. Misconception</button>
+      <button class="tab-btn" data-tab="5">6. Create</button>
+    </nav>
+
+    <section class="panel active">
+      <div class="grid-2">
+        <div class="card">
+          <h2>What is a statistical question?</h2>
+          <p>A <strong>statistical question</strong> is a question that expects <strong>different answers</strong> because the data will vary.</p>
+          <div class="ex">
+            <strong>Statistical:</strong> “How many minutes do students in our class read each night?”<br>
+            Different students will likely give different answers.
+          </div>
+          <div class="ex bad">
+            <strong>Not statistical:</strong> “How many days are in a week?”<br>
+            There is only one fixed answer.
+          </div>
+          <div class="summary">
+            <strong>Look for these clues:</strong>
+            <ul>
+              <li>It asks about a group, not just one fixed fact.</li>
+              <li>It expects variability.</li>
+              <li>The answers can be collected as data.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Sentence frame</h3>
+          <p>“This question <strong>is / is not</strong> statistical because the answers <strong>will / will not</strong> vary.”</p>
+          <h3>Teacher-facing coaching cue</h3>
+          <p>Push students to name the <strong>variability</strong>, not just whether the question has numbers in it.</p>
+          <h3>Examples to discuss</h3>
+          <ul>
+            <li>How many letters are in each student’s first name?</li>
+            <li>What is the temperature right now in our classroom?</li>
+            <li>How many siblings do students in our grade have?</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="check-grid" id="quickCheck"></div>
+    </section>
+
+    <section class="panel">
+      <div class="card">
+        <h2>Sort the questions</h2>
+        <p>Drag each card into the correct column. Touch and mouse both work.</p>
+        <div class="sort-wrap">
+          <div class="bank" id="bank">
+            <div class="drop-title">Question Bank</div>
+          </div>
+          <div class="dropzone gooddrop" data-kind="statistical">
+            <div class="drop-title">Statistical</div>
+          </div>
+          <div class="dropzone baddrop" data-kind="not-statistical">
+            <div class="drop-title">Not Statistical</div>
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="action" id="checkSort">Check Sort</button>
+          <button class="action secondary" id="resetSort">Reset Sort</button>
+        </div>
+        <div class="feedback" id="sortFeedback"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="scenario-grid">
+        <div class="card">
+          <h2>Classroom scenario</h2>
+          <p>A teacher asks, “How many minutes do students in our class spend on homework on a typical school night?”</p>
+          <p><strong>Why is this statistical?</strong></p>
+          <div class="btn-row" id="scenarioBtns"></div>
+          <div class="feedback" id="scenarioFeedback"></div>
+        </div>
+        <div class="card">
+          <h3>Why this matters</h3>
+          <p>Statistical questions help us collect data that we can organize, analyze, and describe. The data set only makes sense when answers can vary.</p>
+          <div class="metric" id="classThink">Ready to explain</div>
+          <p class="small">Once you can explain the variability, you are using the standard the right way.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="grid-2">
+        <div class="card">
+          <h2>Misconception repair</h2>
+          <p>A student says: <em>“If a question has numbers in it, then it is statistical.”</em></p>
+          <div class="btn-row" id="misconceptionBtns"></div>
+          <div class="feedback" id="misconceptionFeedback"></div>
+        </div>
+        <div class="card">
+          <h3>Fix the thinking</h3>
+          <p>Numbers alone do not make a question statistical. The key idea is <strong>variability in the data</strong>.</p>
+          <ul>
+            <li>“What is 8 × 7?” has a number, but only one answer.</li>
+            <li>“How many books did students read last month?” can have many answers.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="card">
+        <h2>Create your own statistical question</h2>
+        <p>Write one statistical question and explain why it is statistical.</p>
+        <label for="studentQuestion"><strong>My question</strong></label>
+        <textarea id="studentQuestion" placeholder="Example: How many minutes do students in our class spend playing outside each week?"></textarea>
+        <label for="studentExplain"><strong>Why it is statistical</strong></label>
+        <textarea id="studentExplain" placeholder="It is statistical because the answers will vary from student to student."></textarea>
+        <div class="action-row">
+          <button class="action" id="saveWriting">Save Response</button>
+          <button class="action secondary" id="markCreate">Mark Create Tab Complete</button>
+        </div>
+        <div class="feedback" id="writingFeedback"></div>
+      </div>
+    </section>
+
+    <div class="print-note">Seller-ready classroom file · responsive · printable · local progress memory included</div>
+  </div>
+
+  <script>
+    const storageKey = 'review_6spa1_flagship_v1';
+    const state = JSON.parse(localStorage.getItem(storageKey) || '{"score":0,"completed":[],"writing":{}}');
+    const quickQuestions = [
+      {id:'q1',text:'How tall are the students in our class?',correct:'Statistical',why:'Heights will vary from student to student.'},
+      {id:'q2',text:'How many days are in one week?',correct:'Not Statistical',why:'There is one fixed answer.'},
+      {id:'q3',text:'What is each student’s favorite school lunch?',correct:'Statistical',why:'Different students can prefer different lunches.'},
+      {id:'q4',text:'What is 24 ÷ 6?',correct:'Not Statistical',why:'There is only one correct answer.'},
+      {id:'q5',text:'How many siblings do students in grade 6 have?',correct:'Statistical',why:'The answers can vary across students.'}
+    ];
+    const sortItems = [
+      {text:'How many pets do students in our class have?',kind:'statistical'},
+      {text:'How many months are in a year?',kind:'not-statistical'},
+      {text:'What are the shoe sizes of students in our class?',kind:'statistical'},
+      {text:'What is the value of 3²?',kind:'not-statistical'},
+      {text:'How long do students spend getting ready for school?',kind:'statistical'},
+      {text:'How many sides does a triangle have?',kind:'not-statistical'}
+    ];
+
+    const panels = [...document.querySelectorAll('.panel')];
+    const tabs = [...document.querySelectorAll('.tab-btn')];
+    tabs.forEach((btn, idx) => btn.addEventListener('click', () => openTab(idx)));
+    function openTab(idx){
+      tabs.forEach(b=>b.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      tabs[idx].classList.add('active');
+      panels[idx].classList.add('active');
+    }
+
+    function save(){
+      localStorage.setItem(storageKey, JSON.stringify(state));
+      renderHUD();
+    }
+
+    function complete(id){
+      if(!state.completed.includes(id)) state.completed.push(id);
+      save();
+    }
+
+    function renderHUD(){
+      document.getElementById('score').textContent = state.score;
+      document.getElementById('completed').textContent = state.completed.length;
+      const m = state.score >= 8 ? 'Strong' : state.score >= 5 ? 'Developing' : 'Starting';
+      document.getElementById('mastery').textContent = m;
+    }
+
+    function buildQuickCheck(){
+      const wrap = document.getElementById('quickCheck');
+      quickQuestions.forEach((item, index) => {
+        const block = document.createElement('div');
+        block.className = 'q-block';
+        block.innerHTML = `
+          <p class="q">${index+1}. ${item.text}</p>
+          <div class="btn-row">
+            <button class="choice" data-q="${item.id}" data-choice="Statistical">Statistical</button>
+            <button class="choice" data-q="${item.id}" data-choice="Not Statistical">Not Statistical</button>
+          </div>
+          <div class="feedback" id="fb-${item.id}"></div>
+        `;
+        wrap.appendChild(block);
+      });
+      wrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('.choice');
+        if(!btn) return;
+        const qid = btn.dataset.q;
+        const choice = btn.dataset.choice;
+        const item = quickQuestions.find(q => q.id === qid);
+        const allBtns = [...wrap.querySelectorAll(`[data-q="${qid}"]`)];
+        allBtns.forEach(b=>b.disabled=true);
+        const fb = document.getElementById(`fb-${qid}`);
+        if(choice === item.correct){
+          btn.classList.add('correct');
+          fb.textContent = `Correct. ${item.why}`;
+          fb.style.color = 'var(--good)';
+          state.score += 1;
+        } else {
+          btn.classList.add('incorrect');
+          const right = allBtns.find(b => b.dataset.choice === item.correct);
+          if(right) right.classList.add('correct');
+          fb.textContent = `Not quite. ${item.why}`;
+          fb.style.color = 'var(--bad)';
+        }
+        complete(qid);
+      });
+    }
+
+    function buildSort(){
+      const bank = document.getElementById('bank');
+      sortItems.forEach((item, i) => {
+        const token = document.createElement('div');
+        token.className = 'token';
+        token.draggable = true;
+        token.textContent = item.text;
+        token.dataset.kind = item.kind;
+        token.dataset.id = `sort-${i}`;
+        bank.appendChild(token);
+      });
+
+      let dragEl = null;
+      document.addEventListener('dragstart', e => {
+        const token = e.target.closest('.token');
+        if(!token) return;
+        dragEl = token;
+      });
+      document.querySelectorAll('.dropzone, .bank').forEach(zone => {
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+        zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('over'); if(dragEl) zone.appendChild(dragEl); });
+      });
+
+      // touch / pointer support
+      let floating = null;
+      document.addEventListener('pointerdown', e => {
+        const token = e.target.closest('.token');
+        if(!token) return;
+        token.setPointerCapture?.(e.pointerId);
+        floating = token;
+        token.style.opacity = '.75';
+      });
+      document.addEventListener('pointerup', e => {
+        if(!floating) return;
+        floating.style.opacity = '1';
+        const elem = document.elementFromPoint(e.clientX, e.clientY);
+        const zone = elem && elem.closest('.dropzone, .bank');
+        if(zone) zone.appendChild(floating);
+        floating = null;
+      });
+
+      document.getElementById('checkSort').addEventListener('click', () => {
+        const zones = [...document.querySelectorAll('.dropzone')];
+        let correct = 0;
+        let total = 0;
+        zones.forEach(zone => {
+          const kind = zone.dataset.kind;
+          [...zone.querySelectorAll('.token')].forEach(token => {
+            total += 1;
+            if(token.dataset.kind === kind) correct += 1;
+          });
+        });
+        const missing = sortItems.length - total;
+        const fb = document.getElementById('sortFeedback');
+        if(missing > 0){
+          fb.textContent = `Move all cards before checking. ${missing} card(s) still in the bank.`;
+          fb.style.color = 'var(--gold)';
+          return;
+        }
+        if(correct === sortItems.length){
+          fb.textContent = 'Excellent. Every card is sorted correctly.';
+          fb.style.color = 'var(--good)';
+          state.score += 2;
+          complete('sort-full');
+        } else {
+          fb.textContent = `You have ${correct} of ${sortItems.length} correct. Fix the cards that are in the wrong category.`;
+          fb.style.color = 'var(--bad)';
+          complete('sort-attempt');
+        }
+        save();
+      });
+      document.getElementById('resetSort').addEventListener('click', () => {
+        const bank = document.getElementById('bank');
+        [...document.querySelectorAll('.token')].sort((a,b)=>a.dataset.id.localeCompare(b.dataset.id)).forEach(t=>bank.appendChild(t));
+        document.getElementById('sortFeedback').textContent='';
+      });
+    }
+
+    function buildScenario(){
+      const options = [
+        {text:'Because the answers will vary among students.', correct:true},
+        {text:'Because every student will give the same answer.', correct:false},
+        {text:'Because it has one exact answer.', correct:false}
+      ];
+      const box = document.getElementById('scenarioBtns');
+      options.forEach((opt, i) => {
+        const b = document.createElement('button');
+        b.className = 'choice';
+        b.textContent = opt.text;
+        b.addEventListener('click', () => {
+          [...box.children].forEach(x => x.disabled = true);
+          if(opt.correct){
+            b.classList.add('correct');
+            document.getElementById('scenarioFeedback').textContent = 'Correct. Statistical questions are useful because the data values can vary.';
+            document.getElementById('scenarioFeedback').style.color = 'var(--good)';
+            document.getElementById('classThink').textContent = 'You explained the variability';
+            state.score += 1;
+          } else {
+            b.classList.add('incorrect');
+            document.getElementById('scenarioFeedback').textContent = 'Not quite. A statistical question must expect variability in the answers.';
+            document.getElementById('scenarioFeedback').style.color = 'var(--bad)';
+          }
+          complete('scenario');
+        });
+        box.appendChild(b);
+      });
+    }
+
+    function buildMisconception(){
+      const opts = [
+        {text:'Correct — any question with numbers is statistical.', correct:false},
+        {text:'Incorrect — a question is statistical only if the answers are expected to vary.', correct:true}
+      ];
+      const box = document.getElementById('misconceptionBtns');
+      opts.forEach(opt => {
+        const b = document.createElement('button');
+        b.className = 'choice';
+        b.textContent = opt.text;
+        b.addEventListener('click', () => {
+          [...box.children].forEach(x => x.disabled = true);
+          if(opt.correct){
+            b.classList.add('correct');
+            document.getElementById('misconceptionFeedback').textContent = 'Correct. Variability, not just numbers, makes a question statistical.';
+            document.getElementById('misconceptionFeedback').style.color = 'var(--good)';
+            state.score += 1;
+          } else {
+            b.classList.add('incorrect');
+            document.getElementById('misconceptionFeedback').textContent = 'Not correct. A fixed-answer question can still include numbers.';
+            document.getElementById('misconceptionFeedback').style.color = 'var(--bad)';
+          }
+          complete('misconception');
+        });
+        box.appendChild(b);
+      });
+    }
+
+    document.getElementById('saveWriting').addEventListener('click', () => {
+      state.writing.question = document.getElementById('studentQuestion').value.trim();
+      state.writing.explain = document.getElementById('studentExplain').value.trim();
+      save();
+      document.getElementById('writingFeedback').textContent = 'Response saved on this device.';
+      document.getElementById('writingFeedback').style.color = 'var(--good)';
+    });
+    document.getElementById('markCreate').addEventListener('click', () => {
+      complete('create-tab');
+      document.getElementById('writingFeedback').textContent = 'Create tab marked complete.';
+      document.getElementById('writingFeedback').style.color = 'var(--good)';
+    });
+    document.getElementById('resetAll').addEventListener('click', () => {
+      localStorage.removeItem(storageKey);
+      location.reload();
+    });
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+    buildQuickCheck();
+    buildSort();
+    buildScenario();
+    buildMisconception();
+    renderHUD();
+    if(state.writing.question) document.getElementById('studentQuestion').value = state.writing.question;
+    if(state.writing.explain) document.getElementById('studentExplain').value = state.writing.explain;
+    save();
+  </script>
 </body>
 </html>

@@ -1,37 +1,1561 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Interactive Area Mission classroom activity.">
-  <title>Interactive Area Mission</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Area Mission Interactive Builder</title>
+<style>
+  :root{
+    --navy:#17324d;
+    --navy-2:#214766;
+    --teal:#2f8f9d;
+    --teal-2:#4bb6c1;
+    --cream:#fbf7ef;
+    --gold:#f2c14e;
+    --coral:#ef6f6c;
+    --sage:#dfeee8;
+    --ink:#1d2935;
+    --white:#ffffff;
+    --green:#2e8b57;
+    --red:#b23a48;
+    --shadow:0 14px 35px rgba(23,50,77,.13);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#eef6f8 0%, #fbf7ef 100%);color:var(--ink);font-family:Calibri,Arial,sans-serif}
+  body{min-height:100vh}
+  .shell{max-width:1400px;margin:0 auto;padding:20px 18px 72px}
+  .hero{
+    position:relative; overflow:hidden; border-radius:28px; padding:28px 28px 22px;
+    background:linear-gradient(130deg,var(--navy) 0%, #1f5676 60%, #2d7d89 100%);
+    color:#fff; box-shadow:var(--shadow); margin-bottom:18px;
+  }
+  .hero:before,.hero:after{content:"";position:absolute;border-radius:50%;opacity:.18}
+  .hero:before{width:320px;height:320px;background:#8fe3ee;top:-120px;right:-100px}
+  .hero:after{width:240px;height:240px;background:#ffd976;bottom:-120px;left:-90px}
+  .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:start}
+  h1,h2,h3,h4,p{margin:0}
+  h1{font-size:2.2rem;line-height:1.05;margin-bottom:10px}
+  .subtitle{font-size:1.03rem;max-width:860px;line-height:1.45;color:#edf8fb}
+  .microbadges{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .badge{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.2);font-weight:700;font-size:.93rem}
+  .hero-panel{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.15);padding:16px;border-radius:18px;backdrop-filter: blur(4px)}
+  .hero-panel h3{font-size:1.08rem;margin-bottom:10px}
+  .hero-panel ul{margin:0;padding-left:18px;line-height:1.45}
+
+  .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 18px}
+  .pill{
+    background:var(--white); border-radius:999px; padding:10px 14px; box-shadow:var(--shadow); border:1px solid #dce7eb; font-weight:700;
+  }
+  .pill small{display:block;font-weight:400;color:#4a6576}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
+  button, .btn{
+    appearance:none;border:none;border-radius:14px;padding:11px 16px;font-size:1rem;font-weight:700;cursor:pointer;
+    background:var(--navy);color:#fff;transition:.18s ease;box-shadow:0 8px 20px rgba(23,50,77,.18)
+  }
+  button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.03)}
+  .btn-secondary{background:var(--teal)}
+  .btn-soft{background:#edf7f8;color:var(--navy);box-shadow:none;border:1px solid #cfe5e8}
+  .btn-warning{background:var(--coral)}
+  .btn-gold{background:var(--gold);color:#523700}
+  .tabs{display:grid;grid-template-columns:repeat(7,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+  .tab-btn{background:#fff;color:var(--navy);border:1px solid #d9e7ec;box-shadow:none;padding:14px 10px}
+  .tab-btn.active{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:#fff;border-color:transparent}
+  .tab-panel{display:none;animation:fade .28s ease}
+  .tab-panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .grid-2{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .stack{display:grid;gap:16px}
+
+  .card{
+    background:#fff;border:1px solid #dde8ec;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)
+  }
+  .card h2{font-size:1.45rem;margin-bottom:8px;color:var(--navy)}
+  .card h3{font-size:1.15rem;margin-bottom:8px;color:var(--navy)}
+  .muted{color:#597285;line-height:1.45}
+  .small{font-size:.95rem}
+  .formula{
+    margin-top:10px;background:linear-gradient(180deg,#f4fbfc,#eef8f8);border:1px solid #d8ecef;border-radius:18px;padding:14px;font-size:1.25rem;font-weight:700;color:var(--navy)
+  }
+  .step-list{display:grid;gap:10px;margin-top:12px}
+  .step{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;background:#f9fcfd;border:1px solid #e1edf1}
+  .step-num{min-width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--teal);color:#fff;font-weight:700}
+  .tip{padding:12px 14px;border-radius:16px;background:#fff9e9;border:1px solid #f7dda0;color:#6b5513}
+  .support{padding:12px 14px;border-radius:16px;background:#f1f8f4;border:1px solid #cde8d7;color:#244a31}
+  .notice-box{background:linear-gradient(180deg,#fffdfa,#fef5e3);border:1px solid #f4dfaa}
+
+  .svg-wrap{background:linear-gradient(180deg,#f7fbff,#f0f7fa);border:1px solid #dbe8ee;border-radius:18px;padding:12px;display:flex;justify-content:center;align-items:center;min-height:250px}
+  .problem-visual{margin:12px 0 10px;background:linear-gradient(180deg,#f7fbff,#eef7fb);border:1px solid #dbe8ee;border-radius:18px;padding:10px}
+  .measure-strip{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
+  .measure-chip{padding:8px 10px;border-radius:999px;background:#eef7f8;border:1px solid #d6e8eb;font-weight:700;font-size:.9rem;color:var(--navy)}
+  .challenge-note{padding:10px 12px;border-radius:14px;background:#f7fbfd;border:1px solid #dce8ed;color:#426174;font-size:.94rem;margin-top:10px}
+  .level-chip{padding:6px 10px;border-radius:999px;background:#fff7e3;border:1px solid #f2dca1;color:#73570d;font-weight:800;font-size:.84rem}
+  .boss-hud{display:grid;gap:10px;margin-top:12px}
+  .battle-stat-row{display:flex;justify-content:space-between;gap:10px;align-items:center;color:#fff}
+  .mana-wrap{background:rgba(255,255,255,.16);height:14px;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+  .mana-bar{height:100%;width:0%;background:linear-gradient(90deg,#7cf1ff,#48b6ff)}
+  .player-bar{height:100%;width:100%;background:linear-gradient(90deg,#79d292,#d6f8ae)}
+  .power-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .power-buttons button[disabled]{opacity:.45;cursor:not-allowed;transform:none;filter:none}
+  .achievement-wrap{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .achieve-badge{padding:8px 10px;border-radius:999px;background:#eef7f8;border:1px solid #d6e8eb;font-weight:700;color:#28475b;font-size:.9rem}
+  .achieve-badge.on{background:#fff2cc;border-color:#f2d27a;color:#715400}
+  .boss-status{min-height:40px;padding:10px 12px;border-radius:14px;background:#f6fbff;border:1px solid #d4e5ec;color:#3f5f73;margin-top:10px}
+  .phase-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.14);font-weight:800}
+
+  svg{max-width:100%;height:auto}
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .legend span{padding:8px 10px;border-radius:999px;background:#eef7f8;border:1px solid #d6e8eb;font-weight:700;font-size:.92rem}
+
+  .problem{border:1px solid #dbe7ec;border-radius:22px;padding:16px;background:#fff}
+  .problem-header{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
+  .tag{padding:6px 10px;border-radius:999px;background:#edf7f8;border:1px solid #d3e7ea;font-size:.88rem;font-weight:700;color:var(--navy)}
+  .problem p{line-height:1.45}
+  .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:12px 0}
+  label{font-weight:700;font-size:.96rem;color:#29465d}
+  input[type="number"],input[type="text"]{
+    width:100%;margin-top:6px;border:1px solid #cbdde4;border-radius:12px;padding:11px 12px;font-size:1rem;background:#fcfeff
+  }
+  input.good{border-color:#63ba87;background:#eefaf2}
+  input.bad{border-color:#cf6273;background:#fff0f2}
+  .feedback{margin-top:10px;padding:11px 12px;border-radius:14px;font-weight:700;display:none}
+  .feedback.show{display:block}
+  .ok{background:#edf9f1;border:1px solid #b8e1c7;color:#216740}
+  .nope{background:#fff0f2;border:1px solid #f0c2ca;color:#8f2331}
+  .hint{display:none;margin-top:10px;padding:12px;border-radius:14px;background:#f6fbff;border:1px dashed #bddbe7;color:#46657b}
+  .hint.show{display:block}
+  .checks{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .progress-wrap{height:14px;border-radius:999px;background:#e8f0f3;overflow:hidden}
+  .progress-bar{height:100%;background:linear-gradient(90deg,var(--teal),#7dd2d8);width:0%}
+
+  .formula-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+  .formula-tile{padding:14px;border-radius:18px;background:#f8fbfd;border:1px solid #dfecef}
+  .formula-tile h4{font-size:1rem;color:var(--navy);margin-bottom:8px}
+  .formula-big{font-size:1.3rem;font-weight:700;color:var(--navy)}
+
+  .generated-area{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+  #triangles .grid-2, #parallelograms .grid-2, #trapezoids .grid-2, #rhombuses .grid-2, #slides .grid-2{grid-template-columns:1fr}
+  .tab-badge-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .tab-badge{padding:10px 12px;border-radius:14px;background:#f7fbfd;border:1px solid #dce8ed;color:#466579;font-weight:700}
+  .tab-badge.on{background:#fff3d1;border-color:#efcf79;color:#755500}
+  .fx-on{box-shadow:0 0 0 4px rgba(75,182,193,.18)}
+  .pulse-good{animation:pulseGood .45s ease}
+  @keyframes pulseGood{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+  .gen-card{padding:14px;border-radius:18px;background:#fbfeff;border:1px solid #dce9ee}
+
+  .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .stat{padding:14px;border-radius:20px;background:#fff;border:1px solid #dce8ed;box-shadow:var(--shadow)}
+  .stat .num{font-size:1.8rem;font-weight:800;color:var(--navy)}
+  .stat .label{color:#5f7687;font-weight:700}
+
+  .boss-stage{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+  .boss-card{
+    background:radial-gradient(circle at top,#1f5676 0%,#163148 58%, #0c1c29 100%);
+    color:#fff;border-radius:28px;padding:22px;position:relative;overflow:hidden;box-shadow:var(--shadow)
+  }
+  .boss-card:before{content:"";position:absolute;inset:auto -60px -80px auto;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08)}
+  .boss-portrait{font-size:4rem;line-height:1;margin:10px 0 12px}
+  .hp-wrap{background:rgba(255,255,255,.16);height:18px;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+  .hp-bar{height:100%;width:100%;background:linear-gradient(90deg,#ff857f,#ffd26a)}
+  .battle-log{min-height:96px;padding:12px;border-radius:16px;background:#f7fbfd;border:1px solid #dce8ed;color:#385366;line-height:1.45}
+  .attack-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .shake{animation:shake .35s linear}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(5px)}50%{transform:translateX(-5px)}75%{transform:translateX(4px)}}
+  .pulse{animation:pulse .4s ease}
+  @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+
+  .footer-note{margin-top:16px;color:#567184;font-size:.95rem}
+  .roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+  .road-step{padding:14px;border-radius:18px;background:#f8fbfd;border:1px solid #dce8ed}
+  .road-step strong{display:block;color:var(--navy);margin-bottom:6px}
+  .teacher-box{display:grid;gap:12px}
+  .tool-row{display:flex;gap:10px;flex-wrap:wrap}
+  .export-preview{white-space:pre-wrap;background:#f8fbfd;border:1px solid #dce8ed;border-radius:16px;padding:12px;min-height:110px;color:#466579}
+  .height-note{font-size:.92rem;color:#466579;margin-top:10px}
+
+  .kicker{font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;color:#d3eff3;font-weight:800;margin-bottom:8px}
+
+  @media (max-width:1150px){
+    .tabs{grid-template-columns:repeat(3,1fr)}
+    .grid-2,.boss-stage,.hero-grid{grid-template-columns:1fr}
+    .grid-3,.grid-4,.formula-strip,.mini-stats{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:760px){
+    .shell{padding:14px 12px 60px}
+    h1{font-size:1.75rem}
+    .tabs,.grid-3,.grid-4,.formula-strip,.mini-stats,.generated-area{grid-template-columns:1fr}
+    .toolbar{align-items:stretch}
+    .controls{margin-left:0}
+  }
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/unit-5/">Unit 5 Geometry and Measurement</a><span>/</span><span>Interactive Area Mission</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Interactive Area Mission</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
-
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> InteractiveAreaMission</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/unit-5/interactiveareamission/</span></p>
+<div class="shell">
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker">Interactive Area Mission</div>
+        <h1>Apply Area Concepts to Solve Problems</h1>
+        <p class="subtitle">Learn and practice the area of triangles, parallelograms, trapezoids, rhombuses, and composite figures. This build also uses the ideas from your lesson slides: decomposing a stop sign into triangles, finding the area of the Ohio Burgee flag, and solving a regular polygon tile-budget challenge.</p>
+        <div class="microbadges">
+          <span class="badge">Visual + multi-tab</span>
+          <span class="badge">Fill in the blanks</span>
+          <span class="badge">Check each step</span>
+          <span class="badge">Hints on demand</span>
+          <span class="badge">Autosave</span>
+        </div>
       </div>
-    </section>
-
-    <div class="button-row">
-      <a class="primary-button" href="/unit-5/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+      <div class="hero-panel">
+        <h3>Future iterations already planned in this first build</h3>
+        <ul>
+          <li>Randomized fresh practice sets on every tab</li>
+          <li>Local autosave for names, answers, progress, and boss score</li>
+          <li>Teacher reset button for whole-class use</li>
+          <li>Expansion-ready hooks for bilingual audio, teacher dashboard, and export</li>
+          <li>Boss battle structure that can easily grow into multiple worlds and power-ups</li>
+        </ul>
+      </div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+  </section>
+
+  <section class="toolbar">
+    <div class="pill">Student: <strong id="studentNameView">Not entered yet</strong></div>
+    <div class="pill">Progress <small id="progressText">0 of 0 checks complete</small></div>
+    <div class="pill">Boss Damage <small><strong id="damageTotal">0</strong> total damage</small></div>
+    <div class="controls">
+      <button class="btn-secondary" onclick="saveStudentInfo()">Save Name</button>
+      <button class="btn-soft" onclick="scrollToTopFast()">Back to Top</button>
+      <button class="btn-soft" id="fxToggleBtn" onclick="toggleFx()">FX: On</button>
+      <button class="btn-warning" onclick="resetAllProgress()">Reset Progress</button>
+    </div>
+  </section>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="fields">
+      <label>Student Name
+        <input type="text" id="studentName" placeholder="Type your name here" />
+      </label>
+      <label>Class / Period
+        <input type="text" id="studentClass" placeholder="Example: Period 2" />
+      </label>
+    </div>
+    <div class="support small">Language supports: <strong>base</strong> = bottom side used for area, <strong>height</strong> = straight up-and-down distance, <strong>diagonal</strong> = line from one corner to another, <strong>decompose</strong> = break a big shape into smaller shapes, <strong>compose</strong> = put shapes together.</div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="learn">1. Learn</button>
+    <button class="tab-btn" data-tab="triangles">2. Triangles</button>
+    <button class="tab-btn" data-tab="parallelograms">3. Parallelograms</button>
+    <button class="tab-btn" data-tab="trapezoids">4. Trapezoids</button>
+    <button class="tab-btn" data-tab="rhombuses">5. Rhombuses</button>
+    <button class="tab-btn" data-tab="slides">6. Slide Challenges</button>
+    <button class="tab-btn" data-tab="boss">7. Defeat Mr. Neft</button>
+  </nav>
+
+  <section id="learn" class="tab-panel active">
+    <div class="grid-2">
+      <div class="stack">
+        <div class="card">
+          <h2>Instructional Launch</h2>
+          <p class="muted">Use the simple area steps below. Keep your eyes on the <strong>base</strong>, the <strong>height</strong>, and the formula that matches the shape. For composite figures, break the shape apart or put it together.</p>
+          <div class="formula-strip">
+            <div class="formula-tile">
+              <h4>Triangle</h4>
+              <div class="formula-big">A = <span style="font-size:1.1em;">1</span>/<span style="font-size:1.1em;">2</span>bh</div>
+            </div>
+            <div class="formula-tile">
+              <h4>Parallelogram</h4>
+              <div class="formula-big">A = bh</div>
+            </div>
+            <div class="formula-tile">
+              <h4>Trapezoid</h4>
+              <div class="formula-big">A = ((b₁ + b₂) ÷ 2)h</div>
+            </div>
+            <div class="formula-tile">
+              <h4>Rhombus</h4>
+              <div class="formula-big">A = <span style="font-size:1.1em;">1</span>/<span style="font-size:1.1em;">2</span>d₁d₂</div>
+            </div>
+          </div>
+          <div class="step-list">
+            <div class="step"><div class="step-num">1</div><div><strong>Find the right measurements.</strong><br><span class="muted small">Look for the base and the matching height. For a rhombus, look for both diagonals.</span></div></div>
+            <div class="step"><div class="step-num">2</div><div><strong>Use the correct formula.</strong><br><span class="muted small">Do not use a slanted side as the height unless the problem says it is perpendicular.</span></div></div>
+            <div class="step"><div class="step-num">3</div><div><strong>Check your units.</strong><br><span class="muted small">Area answers use square units like in², ft², or m².</span></div></div>
+            <div class="step"><div class="step-num">4</div><div><strong>Composite shapes?</strong><br><span class="muted small">Break apart, find each area, then add or subtract.</span></div></div>
+          </div>
+        </div>
+
+        <div class="card notice-box">
+          <h3>Notice / Wonder from the lesson ideas</h3>
+          <p class="muted">Notice: a regular polygon can be broken into equal triangles. Wonder: when should I add areas, and when should I subtract them?</p>
+          <div class="tip" style="margin-top:12px;">Big idea from the slides: <strong>compose</strong> or <strong>decompose</strong> a hard shape into shapes you already know.</div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h2>Visual Area Guide</h2>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 520 300" aria-label="Area formula visuals">
+              <rect x="0" y="0" width="520" height="300" rx="20" fill="#f7fbff"/>
+              <polygon points="55,235 180,235 95,105" fill="#f6d365" stroke="#17324d" stroke-width="4"/>
+              <line x1="95" y1="235" x2="95" y2="105" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="8 8"/>
+              <polyline points="95,219 111,219 111,235" fill="none" stroke="#17324d" stroke-width="3"/><text x="110" y="170" font-size="18" fill="#17324d">height (h)</text>
+              <text x="105" y="255" font-size="18" fill="#17324d">base</text>
+              <text x="38" y="272" font-size="20" font-weight="700" fill="#17324d">Triangle</text>
+
+              <polygon points="245,210 365,210 415,110 295,110" fill="#97e3d5" stroke="#17324d" stroke-width="4"/>
+              <line x1="245" y1="210" x2="245" y2="110" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="8 8"/>
+              <polyline points="245,194 261,194 261,210" fill="none" stroke="#17324d" stroke-width="3"/><text x="252" y="165" font-size="18" fill="#17324d">height (h)</text>
+              <text x="290" y="230" font-size="18" fill="#17324d">base</text>
+              <text x="251" y="272" font-size="20" font-weight="700" fill="#17324d">Parallelogram</text>
+
+              <polygon points="415,220 500,220 470,100 390,100" fill="#f7c0d0" stroke="#17324d" stroke-width="4"/>
+              <line x1="445" y1="100" x2="445" y2="220" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="8 8"/>
+              <polyline points="445,204 461,204 461,220" fill="none" stroke="#17324d" stroke-width="3"/><text x="448" y="165" font-size="16" fill="#17324d">height (h)</text>
+              <text x="396" y="92" font-size="18" fill="#17324d">b₁</text>
+              <text x="447" y="242" font-size="18" fill="#17324d">b₂</text>
+              <text x="385" y="272" font-size="20" font-weight="700" fill="#17324d">Trapezoid</text>
+            </svg>
+          </div>
+          <div class="legend">
+            <span>Height is straight across to the base</span>
+            <span>Triangles: half of a rectangle</span>
+            <span>Trapezoids: average the bases first</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Quick interactive warm-up</h3>
+          <p class="muted">Check that you can match the shape and formula before you begin the practice tabs.</p>
+          <div class="problem" data-problem-id="learnmatch1">
+            <div class="problem-header"><strong>Match 1</strong><span class="tag">Formula choice</span></div>
+            <p>A shape has diagonals that cross inside the shape. Which formula matches best?</p>
+            <div class="fields">
+              <label>Type your answer
+                <input type="text" data-answer="rhombus" placeholder="triangle, trapezoid, rhombus, or parallelogram" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkSimple(this)">Check</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">Think: which formula uses two diagonals, d₁ and d₂?</div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="triangles" class="tab-panel">
+    <div class="grid-2">
+      <div class="stack">
+        <div class="card">
+          <h2>Triangle Lab</h2>
+          <p class="muted">Use <strong>A = 1/2 bh</strong>. Multiply the base and height, then take half.</p>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 460 250" aria-label="Triangle diagram">
+              <rect x="0" y="0" width="460" height="250" rx="20" fill="#f7fbff"/>
+              <polygon points="70,200 360,200 160,60" fill="#f6d365" stroke="#17324d" stroke-width="4"/>
+              <line x1="160" y1="200" x2="160" y2="60" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="8 8"/>
+              <polyline points="160,184 176,184 176,200" fill="none" stroke="#17324d" stroke-width="3"/><text x="175" y="130" font-size="18" fill="#17324d">height (h)</text>
+              <text x="180" y="222" font-size="18" fill="#17324d">base</text>
+            </svg>
+          </div>
+          <div class="problem guided" data-problem-id="tri1">
+            <div class="problem-header"><strong>Guided Problem 1</strong><span class="tag">Fill in the steps</span></div>
+            <p>A triangle has base <strong>12 cm</strong> and height <strong>9 cm</strong>. Fill in each step.</p>
+            <div class="fields">
+              <label>Step 1: base × height
+                <input type="number" data-answer="108" />
+              </label>
+              <label>Step 2: half of that number
+                <input type="number" data-answer="54" />
+              </label>
+              <label>Area
+                <input type="number" data-answer="54" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check Steps</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">12 × 9 = 108. Then divide by 2.</div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="problem guided" data-problem-id="tri2">
+            <div class="problem-header"><strong>Guided Problem 2</strong><span class="tag">Missing-number practice</span></div>
+            <p>A triangle has area <strong>36 in²</strong> and base <strong>9 in</strong>. What is the height?</p>
+            <div class="fields">
+              <label>Twice the area
+                <input type="number" data-answer="72" />
+              </label>
+              <label>Height
+                <input type="number" data-answer="8" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check Steps</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">Start with 36 = 1/2 × 9 × h. Double 36 first.</div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h3>Triangle practice generator</h3>
+          <p class="muted">Click to create more triangle problems. You can check each answer and generate a fresh set anytime.</p>
+          <div class="checks"><button class="btn-secondary" onclick="generateSet('triangle')">Generate New Triangle Set</button></div>
+          <div id="triangleGenerated" class="generated-area"></div>
+        </div>
+        <div class="card support">
+          <strong>Helpful reminder:</strong> The height must meet the base at a right angle. A slanted side is not automatically the height.
+          <div class="height-note">In the visuals, the dashed red segment and little right-angle corner mark show the true height.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="parallelograms" class="tab-panel">
+    <div class="grid-2">
+      <div class="stack">
+        <div class="card">
+          <h2>Parallelogram Lab</h2>
+          <p class="muted">Use <strong>A = bh</strong>. Do not use the slanted side unless it is shown as the height.</p>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 460 250" aria-label="Parallelogram diagram">
+              <rect x="0" y="0" width="460" height="250" rx="20" fill="#f7fbff"/>
+              <polygon points="90,190 340,190 395,90 145,90" fill="#97e3d5" stroke="#17324d" stroke-width="4"/>
+              <line x1="90" y1="190" x2="90" y2="90" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="8 8"/>
+              <polyline points="90,174 106,174 106,190" fill="none" stroke="#17324d" stroke-width="3"/><text x="102" y="143" font-size="18" fill="#17324d">height (h)</text>
+              <text x="205" y="214" font-size="18" fill="#17324d">base</text>
+            </svg>
+          </div>
+          <div class="problem guided" data-problem-id="para1">
+            <div class="problem-header"><strong>Guided Problem 1</strong><span class="tag">Step check</span></div>
+            <p>A parallelogram has base <strong>14 m</strong> and height <strong>7 m</strong>.</p>
+            <div class="fields">
+              <label>Multiply b × h
+                <input type="number" data-answer="98" />
+              </label>
+              <label>Area
+                <input type="number" data-answer="98" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check Steps</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">Parallelograms do not need the 1/2. Just multiply base and height.</div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="problem guided" data-problem-id="para2">
+            <div class="problem-header"><strong>Guided Problem 2</strong><span class="tag">Choose the right measurement</span></div>
+            <p>A parallelogram has base <strong>11 ft</strong>, height <strong>6 ft</strong>, and slanted side <strong>8 ft</strong>. Use the right measurements.</p>
+            <div class="fields">
+              <label>Which number is the height?
+                <input type="number" data-answer="6" />
+              </label>
+              <label>Area
+                <input type="number" data-answer="66" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check Steps</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">Ignore the slanted side for the area unless it is perpendicular to the base.</div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h3>Parallelogram practice generator</h3>
+          <div class="checks"><button class="btn-secondary" onclick="generateSet('parallelogram')">Generate New Parallelogram Set</button></div>
+          <div id="parallelogramGenerated" class="generated-area"></div>
+        </div>
+        <div class="card tip">
+          <strong>Quick check:</strong> If you can slide one triangle from a parallelogram to the other side, it turns into a rectangle with the same base and height. That is why the formula is A = bh.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="trapezoids" class="tab-panel">
+    <div class="grid-2">
+      <div class="stack">
+        <div class="card">
+          <h2>Trapezoid Lab</h2>
+          <p class="muted">Use <strong>A = ((b₁ + b₂) ÷ 2)h</strong>. Follow the order: <strong>add the bases → divide by 2 → multiply by the height</strong>.</p>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 460 250" aria-label="Trapezoid diagram">
+              <rect x="0" y="0" width="460" height="250" rx="20" fill="#f7fbff"/>
+              <polygon points="100,190 370,190 320,90 150,90" fill="#f7c0d0" stroke="#17324d" stroke-width="4"/>
+              <line x1="235" y1="90" x2="235" y2="190" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="8 8"/>
+              <polyline points="235,174 251,174 251,190" fill="none" stroke="#17324d" stroke-width="3"/><text x="243" y="145" font-size="18" fill="#17324d">height (h)</text>
+              <text x="205" y="82" font-size="18" fill="#17324d">b₁</text>
+              <text x="220" y="214" font-size="18" fill="#17324d">b₂</text>
+            </svg>
+          </div>
+          <div class="problem guided" data-problem-id="trap1">
+            <div class="problem-header"><strong>Guided Problem 1</strong><span class="tag">Do the steps in order</span></div>
+            <p>A trapezoid has bases <strong>10 yd</strong> and <strong>14 yd</strong> and height <strong>6 yd</strong>.</p>
+            <div class="fields">
+              <label>Add the bases
+                <input type="number" data-answer="24" />
+              </label>
+              <label>Divide by 2
+                <input type="number" data-answer="12" />
+              </label>
+              <label>Multiply by the height
+                <input type="number" data-answer="72" />
+              </label>
+              <label>Area
+                <input type="number" data-answer="72" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check Steps</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">(10 + 14) ÷ 2 = 12, and 12 × 6 = 72.</div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="problem guided" data-problem-id="trap2">
+            <div class="problem-header"><strong>Guided Problem 2</strong><span class="tag">Missing base</span></div>
+            <p>A trapezoid has area <strong>54 cm²</strong>, one base <strong>8 cm</strong>, the other base <strong>10 cm</strong>, and unknown height.</p>
+            <div class="fields">
+              <label>Add the bases
+                <input type="number" data-answer="18" />
+              </label>
+              <label>Average of the bases
+                <input type="number" data-answer="9" />
+              </label>
+              <label>Height
+                <input type="number" data-answer="6" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check Steps</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">54 = 9 × h, so h = 6.</div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h3>Trapezoid practice generator</h3>
+          <div class="checks"><button class="btn-secondary" onclick="generateSet('trapezoid')">Generate New Trapezoid Set</button></div>
+          <div id="trapezoidGenerated" class="generated-area"></div>
+        </div>
+        <div class="card support">
+          <strong>Sentence frame:</strong> “I added the two bases first because the trapezoid formula uses the average of the bases.”
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="rhombuses" class="tab-panel">
+    <div class="grid-2">
+      <div class="stack">
+        <div class="card">
+          <h2>Rhombus Lab</h2>
+          <p class="muted">Use <strong>A = 1/2 d₁d₂</strong>. Multiply the diagonals, then take half.</p>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 460 250" aria-label="Rhombus diagram">
+              <rect x="0" y="0" width="460" height="250" rx="20" fill="#f7fbff"/>
+              <polygon points="230,40 365,125 230,210 95,125" fill="#c8d4ff" stroke="#17324d" stroke-width="4"/>
+              <line x1="230" y1="40" x2="230" y2="210" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="8 8"/>
+              <line x1="95" y1="125" x2="365" y2="125" stroke="#2f8f9d" stroke-width="4" stroke-dasharray="8 8"/>
+              <text x="239" y="128" font-size="18" fill="#17324d">d₁</text>
+              <text x="206" y="116" font-size="18" fill="#17324d">d₂</text>
+            </svg>
+          </div>
+          <div class="problem guided" data-problem-id="rho1">
+            <div class="problem-header"><strong>Guided Problem 1</strong><span class="tag">Diagonal practice</span></div>
+            <p>A rhombus has diagonals <strong>10 in</strong> and <strong>14 in</strong>.</p>
+            <div class="fields">
+              <label>Multiply the diagonals
+                <input type="number" data-answer="140" />
+              </label>
+              <label>Take half
+                <input type="number" data-answer="70" />
+              </label>
+              <label>Area
+                <input type="number" data-answer="70" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check Steps</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">10 × 14 = 140, then divide by 2.</div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="problem guided" data-problem-id="rho2">
+            <div class="problem-header"><strong>Guided Problem 2</strong><span class="tag">Missing diagonal</span></div>
+            <p>A rhombus has area <strong>48 cm²</strong> and one diagonal <strong>8 cm</strong>. Find the other diagonal.</p>
+            <div class="fields">
+              <label>Double the area
+                <input type="number" data-answer="96" />
+              </label>
+              <label>Other diagonal
+                <input type="number" data-answer="12" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check Steps</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">48 = 1/2 × 8 × d, so 96 = 8d.</div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h3>Rhombus practice generator</h3>
+          <div class="checks"><button class="btn-secondary" onclick="generateSet('rhombus')">Generate New Rhombus Set</button></div>
+          <div id="rhombusGenerated" class="generated-area"></div>
+        </div>
+        <div class="card tip">
+          <strong>Why this works:</strong> The diagonals of a rhombus split it into 4 triangles. The formula gives the total area quickly.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="slides" class="tab-panel">
+    <div class="stack">
+      <div class="card">
+        <h2>Slide Challenge Lab</h2>
+        <p class="muted">These are based on the lesson-slide ideas: a regular octagon stop sign, the Ohio Burgee flag, and a regular decagon gazebo floor.</p>
+        <div class="grid-3">
+          <div class="problem guided" data-problem-id="slide1">
+            <div class="problem-header"><strong>Stop Sign</strong><span class="tag">Regular polygon</span></div>
+            <p>A regular octagon is decomposed into <strong>8 congruent triangles</strong>. Each triangle has base <strong>14.9 in</strong> and height <strong>18 in</strong>.</p>
+            <div class="fields">
+              <label>Area of 1 triangle
+                <input type="number" step="0.1" data-answer="134.1" />
+              </label>
+              <label>Area of the octagon
+                <input type="number" step="0.1" data-answer="1072.8" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">Use A = 1/2bh for one triangle, then multiply by 8.</div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="problem guided" data-problem-id="slide2">
+            <div class="problem-header"><strong>Ohio Burgee Flag</strong><span class="tag">Composite figure</span></div>
+            <p>Compose the flag into a trapezoid with a triangular cut-out. Use bases <strong>8 ft</strong> and <strong>5 ft</strong>, height <strong>13 ft</strong>, and cut-out triangle dimensions <strong>5 ft</strong> by <strong>3 ft</strong>.</p>
+            <div class="fields">
+              <label>Trapezoid area
+                <input type="number" step="0.1" data-answer="84.5" />
+              </label>
+              <label>Triangle cut-out area
+                <input type="number" step="0.1" data-answer="7.5" />
+              </label>
+              <label>Flag area
+                <input type="number" step="0.1" data-answer="77" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">Find the trapezoid area first. Then subtract the triangle cut-out.</div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="problem guided" data-problem-id="slide3">
+            <div class="problem-header"><strong>Gazebo Floor</strong><span class="tag">Budget challenge</span></div>
+            <p>A decagon with equal sides can be decomposed into <strong>10 congruent triangles</strong>. Each triangle has base <strong>3.75 ft</strong> and height <strong>5.75 ft</strong>. Tiles cost <strong>$2.89</strong> per square foot.</p>
+            <div class="fields">
+              <label>Area of 1 triangle
+                <input type="number" step="0.01" data-answer="10.78" />
+              </label>
+              <label>Area of decagon
+                <input type="number" step="0.01" data-answer="107.81" />
+              </label>
+              <label>Budget recommendation
+                <input type="number" step="0.01" data-answer="311.58" />
+              </label>
+            </div>
+            <div class="checks">
+              <button onclick="checkGuided(this)">Check</button>
+              <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+            </div>
+            <div class="hint">Find the decagon area, then multiply by 2.89.</div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Mixed composite challenge generator</h3>
+          <p class="muted">These mix decomposition and composition strategies. The first few generated problems may include measurement reminders, but later ones require students to read all measurements directly from the visual.</p>
+          <div class="checks"><button class="btn-secondary" onclick="generateSet('mixed')">Generate Mixed Challenge Set</button></div>
+          <div id="mixedGenerated" class="generated-area"></div>
+          <div class="challenge-note">Difficulty ramp: early items may show measurement chips. Later items remove the chips, so students must identify the needed values from the shape labels only.</div>
+        </div>
+        <div class="card notice-box">
+          <h3>Summary from the slides</h3>
+          <p class="muted">The area of polygons can be found by decomposing them into triangles or quadrilaterals, or by composing them into rectangles or trapezoids. In this mission, the challenge increases as measurement lists gradually disappear and students must rely on the diagrams.</p>
+          <div class="support" style="margin-top:12px;">Ask yourself: <strong>Can I break it apart?</strong> <strong>Can I combine it?</strong> <strong>Should I add areas or subtract one piece?</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="boss" class="tab-panel">
+    <div class="boss-stage">
+      <div class="boss-card" id="bossCard">
+        <div class="kicker">Final Tab · Ultimate Boss</div>
+        <h2 style="color:#fff;margin-bottom:8px;">Defeat Mr. Neft</h2>
+        <p style="color:#dbf0f6;line-height:1.45;">Battle through 3 phases. Correct answers damage the boss, wrong answers hurt you, and power-ups help you survive the hardest round.</p>
+        <div class="boss-portrait">🦹‍♂️⚔️📐</div>
+        <div class="phase-pill">Current Phase: <span id="bossPhaseLabel">Phase 1 / 3</span></div>
+        <div class="boss-hud">
+          <div class="battle-stat-row"><strong>Boss HP</strong><span id="bossHpLabel">240 / 240</span></div>
+          <div class="hp-wrap"><div class="hp-bar" id="bossHpBar"></div></div>
+          <div class="battle-stat-row"><strong>Your HP</strong><span id="playerHpLabel">100 / 100</span></div>
+          <div class="hp-wrap"><div class="player-bar" id="playerHpBar"></div></div>
+          <div class="battle-stat-row"><strong>Power Meter</strong><span id="powerLabel">0 / 100</span></div>
+          <div class="mana-wrap"><div class="mana-bar" id="powerBar"></div></div>
+        </div>
+        <div class="legend" style="margin-top:14px;">
+          <span style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.15);color:#fff;">3 phases</span>
+          <span style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.15);color:#fff;">Combo = more damage</span>
+          <span style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.15);color:#fff;">Power-ups unlock during battle</span>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h3>Battle Question</h3>
+          <div id="bossQuestion" class="battle-log">Press <strong>Start Battle</strong> to begin.</div>
+          <div class="fields" style="margin-top:14px;">
+            <label>Your answer
+              <input type="number" id="bossAnswer" step="0.01" placeholder="Type your answer" />
+            </label>
+          </div>
+          <div class="attack-buttons">
+            <button class="btn-gold" onclick="startBossBattle()">Start Battle</button>
+            <button onclick="submitBossAnswer()">Attack!</button>
+            <button class="btn-soft" onclick="showBossHint()">Hint</button>
+            <button class="btn-warning" onclick="restartBossBattle()">Restart Boss</button>
+          </div>
+          <div class="power-buttons">
+            <button class="btn-secondary" id="scanBtn" onclick="usePower('scan')" disabled>Formula Scan</button>
+            <button class="btn-secondary" id="shieldBtn" onclick="usePower('shield')" disabled>Focus Shield</button>
+            <button class="btn-secondary" id="megaBtn" onclick="usePower('mega')" disabled>Mega Strike</button>
+          </div>
+          <div id="bossPowerStatus" class="boss-status">Power-ups unlock as you build combo, save power, and reach later phases.</div>
+          <div id="bossHint" class="hint"></div>
+        </div>
+        <div class="card">
+          <h3>Battle Log</h3>
+          <div id="bossLog" class="battle-log">No battle actions yet.</div>
+          <h3 style="margin-top:12px;">Achievements</h3>
+          <div id="bossAchievements" class="achievement-wrap"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px;">
+    <div class="mini-stats">
+      <div class="stat"><div class="num" id="statChecks">0</div><div class="label">Checks completed</div></div>
+      <div class="stat"><div class="num" id="statCorrect">0</div><div class="label">Correct items</div></div>
+      <div class="stat"><div class="num" id="statTabs">7</div><div class="label">Tabs in the mission</div></div>
+      <div class="stat"><div class="num" id="statSets">0</div><div class="label">Generated sets used</div></div>
+    </div>
+    <div class="footer-note">This HTML is self-contained and stores student progress in the browser. It is ready for future upgrades like teacher answer export, section locking, audio read-aloud, and more boss levels.</div>
+  </section>
+
+  <section class="grid-2" style="margin-top:18px;">
+    <div class="card">
+      <h3>Mission Map</h3>
+      <p class="muted">Students move from guided practice to visual-only challenge problems, then into the boss battle.</p>
+      <div class="roadmap">
+        <div class="road-step"><strong>World 1</strong><span>Learn the formulas and identify height.</span></div>
+        <div class="road-step"><strong>World 2</strong><span>Solve guided problems with step checks.</span></div>
+        <div class="road-step"><strong>World 3</strong><span>Read measurements from visuals only.</span></div>
+        <div class="road-step"><strong>World 4</strong><span>Defeat Mr. Neft in the final battle.</span></div>
+      </div>
+    </div>
+    <div class="card teacher-box">
+      <div>
+        <h3>Teacher Tools</h3>
+        <p class="muted">Use these tools to quickly capture student progress from the browser.</p>
+      </div>
+      <div class="tool-row">
+        <button class="btn-secondary" onclick="copyProgressSummary()">Copy Progress Summary</button>
+        <button class="btn-soft" onclick="downloadProgressReport()">Download Progress Report</button>
+        <button class="btn-soft" onclick="previewProgressReport()">Preview Report</button>
+      </div>
+      <div id="exportPreview" class="export-preview">Student progress summary will appear here when you click Preview Report.</div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px;">
+    <h3>Trophy Case</h3>
+    <p class="muted">Earn badges as you complete each world and clear the final battle.</p>
+    <div id="trophyCase" class="tab-badge-row"></div>
+  </section>
+</div>
+
+<script>
+  const STORAGE_KEY = 'areaMissionInteractive_v5';
+  const appState = {
+    studentName: '',
+    studentClass: '',
+    completed: {},
+    inputValues: {},
+    correctCount: 0,
+    checksCount: 0,
+    damageTotal: 0,
+    generatedSets: 0,
+    fxEnabled: true,
+    boss: {
+      started: false,
+      hp: 200,
+      maxHp: 200,
+      streak: 0,
+      index: 0,
+      current: null
+    }
+  };
+
+  const bossBank = [
+    {q:'Triangle: base 12, height 5. Area?', a:30, hint:'Use 1/2 × 12 × 5.'},
+    {q:'Parallelogram: base 9, height 8. Area?', a:72, hint:'Just multiply b × h.'},
+    {q:'Trapezoid: bases 6 and 10, height 4. Area?', a:32, hint:'Add the bases, divide by 2, then multiply by 4.'},
+    {q:'Rhombus: diagonals 8 and 15. Area?', a:60, hint:'Multiply, then take half.'},
+    {q:'Triangle: area 24, base 6. Height?', a:8, hint:'24 = 1/2 × 6 × h.'},
+    {q:'Parallelogram: base 13, height 7. Area?', a:91, hint:'13 × 7.'},
+    {q:'Trapezoid: bases 9 and 15, height 3. Area?', a:36, hint:'(9 + 15) ÷ 2 = 12, then 12 × 3.'},
+    {q:'Rhombus: area 54, one diagonal 9. Other diagonal?', a:12, hint:'54 = 1/2 × 9 × d.'},
+    {q:'Stop-sign style question: one triangle area 20, 8 congruent triangles. Total area?', a:160, hint:'Multiply 20 by 8.'},
+    {q:'Composite figure: trapezoid area 90 and triangle cut-out area 12. Total area?', a:78, hint:'Subtract the cut-out.'},
+    {q:'Triangle: base 14, height 10. Area?', a:70, hint:'Half of 140.'},
+    {q:'Gazebo style: one triangle is 12 ft² and there are 10 triangles. Total area?', a:120, hint:'10 equal triangles means multiply by 10.'}
+  ];
+
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  tabs.forEach(btn => btn.addEventListener('click', () => activateTab(btn.dataset.tab, btn)));
+
+  function activateTab(id, btn){
+    tabs.forEach(b => b.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function scrollToTopFast(){ window.scrollTo({top:0, behavior:'smooth'}); }
+
+  function getInputKey(input){
+    if(input.id) return 'id:' + input.id;
+    const problem = input.closest('[data-problem-id]');
+    const scope = problem ? problem.dataset.problemId : 'global';
+    const inputs = [...(problem ? problem.querySelectorAll('input') : document.querySelectorAll('input'))];
+    const idx = inputs.indexOf(input);
+    return `${scope}:${idx}`;
+  }
+
+  function saveState(){
+    const payload = JSON.stringify(appState);
+    localStorage.setItem(STORAGE_KEY, payload);
+    updateScoreboard();
+  }
+
+  function loadState(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      try{
+        const parsed = JSON.parse(raw);
+        Object.assign(appState, parsed);
+      }catch(e){ console.warn('State load error', e); }
+    }
+    syncBossState();
+    document.getElementById('studentName').value = appState.studentName || '';
+    document.getElementById('studentClass').value = appState.studentClass || '';
+    document.getElementById('studentNameView').textContent = appState.studentName || 'Not entered yet';
+    const fxBtn = document.getElementById('fxToggleBtn');
+    if(fxBtn) fxBtn.textContent = `FX: ${appState.fxEnabled === false ? 'Off' : 'On'}`;
+    restoreInputs();
+    updateScoreboard();
+    renderBossState();
+  }
+
+  function playFx(kind='good'){
+    if(appState.fxEnabled === false) return;
+    try{
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if(!Ctx) return;
+      if(!window.__areaMissionAudio) window.__areaMissionAudio = new Ctx();
+      const ctx = window.__areaMissionAudio;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      const map = {good:[660,0.05], win:[880,0.08], bad:[220,0.06], power:[520,0.07]};
+      const [freq,dur] = map[kind] || map.good;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+      osc.start();
+      osc.stop(ctx.currentTime + dur + 0.01);
+    }catch(e){}
+  }
+
+  function toggleFx(){
+    appState.fxEnabled = appState.fxEnabled === false ? true : false;
+    const fxBtn = document.getElementById('fxToggleBtn');
+    if(fxBtn){
+      fxBtn.textContent = `FX: ${appState.fxEnabled ? 'On' : 'Off'}`;
+      fxBtn.classList.toggle('fx-on', !!appState.fxEnabled);
+    }
+    saveState();
+  }
+
+  function renderTrophies(){
+    const el = document.getElementById('trophyCase');
+    if(!el) return;
+    const items = [
+      ['learnmatch1','Warm-Up'],
+      ['tri1','Triangles'],
+      ['para1','Parallelograms'],
+      ['trap1','Trapezoids'],
+      ['rho1','Rhombuses'],
+      ['slide1','Mixed Challenges'],
+      [appState.boss && appState.boss.defeated ? 'boss-win' : '', 'Boss Battle']
+    ];
+    el.innerHTML = items.map(([key,label]) => {
+      const on = key === 'boss-win' || (!!key && !!appState.completed[key]);
+      return `<span class="tab-badge ${on ? 'on' : ''}">${on ? '🏆' : '⭐'} ${label}</span>`;
+    }).join('');
+  }
+
+  function saveStudentInfo(){
+    appState.studentName = document.getElementById('studentName').value.trim();
+    appState.studentClass = document.getElementById('studentClass').value.trim();
+    document.getElementById('studentNameView').textContent = appState.studentName || 'Not entered yet';
+    saveState();
+    alert('Student info saved on this device.');
+  }
+
+  function resetAllProgress(){
+    if(!confirm('Reset all saved answers, generated sets, and boss progress on this device?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+
+  function approxEqual(given, expected){
+    return Math.abs(Number(given) - Number(expected)) < 0.21;
+  }
+
+  function markField(input, ok){
+    input.classList.remove('good','bad');
+    input.classList.add(ok ? 'good' : 'bad');
+  }
+
+  function registerCompletion(problemId){
+    if(!appState.completed[problemId]){
+      appState.completed[problemId] = true;
+      appState.checksCount += 1;
+    }
+  }
+
+  function checkSimple(btn){
+    const box = btn.closest('.problem');
+    const input = box.querySelector('input');
+    const answer = (input.dataset.answer || '').toString().trim().toLowerCase();
+    const value = input.value.toString().trim().toLowerCase();
+    const ok = value === answer;
+    markField(input, ok);
+    showFeedback(box, ok, ok ? 'Nice job. That matches the correct shape or formula.' : 'Not yet. Use the hint and try again.');
+    if(ok){
+      playFx('good');
+      box.classList.remove('pulse-good'); void box.offsetWidth; box.classList.add('pulse-good');
+      appState.correctCount += 1;
+      registerCompletion(box.dataset.problemId || Math.random().toString());
+      saveFieldValue(input);
+      saveState();
+    }
+  }
+
+  function checkGuided(btn){
+    const box = btn.closest('.problem');
+    const inputs = [...box.querySelectorAll('input[data-answer]')];
+    let allGood = true;
+    inputs.forEach(input => {
+      const expected = input.dataset.answer;
+      const value = input.value;
+      const ok = approxEqual(value, expected);
+      markField(input, ok);
+      if(!ok) allGood = false;
+      saveFieldValue(input);
+    });
+    showFeedback(box, allGood, allGood ? 'Excellent. You completed every step correctly.' : 'A few steps need another look. Use the hint and check the formula order.');
+    if(allGood){
+      playFx('good');
+      box.classList.remove('pulse-good'); void box.offsetWidth; box.classList.add('pulse-good');
+      appState.correctCount += inputs.length;
+      registerCompletion(box.dataset.problemId || Math.random().toString());
+      saveState();
+    }
+  }
+
+  function showFeedback(box, ok, text){
+    const fb = box.querySelector('.feedback');
+    fb.className = 'feedback show ' + (ok ? 'ok' : 'nope');
+    fb.textContent = text;
+  }
+
+  function toggleHint(btn){
+    const hint = btn.closest('.problem').querySelector('.hint');
+    hint.classList.toggle('show');
+  }
+
+  function saveFieldValue(input){
+    const key = getInputKey(input);
+    appState.inputValues[key] = input.value;
+  }
+
+  function restoreInputs(){
+    document.querySelectorAll('input[type="text"], input[type="number"]').forEach(inp => {
+      const key = getInputKey(inp);
+      if(Object.prototype.hasOwnProperty.call(appState.inputValues, key)){
+        inp.value = appState.inputValues[key];
+      }
+    });
+  }
+
+  function updateScoreboard(){
+    document.getElementById('progressText').textContent = `${appState.checksCount} checks completed`;
+    document.getElementById('damageTotal').textContent = appState.damageTotal;
+    document.getElementById('statChecks').textContent = appState.checksCount;
+    document.getElementById('statCorrect').textContent = appState.correctCount;
+    document.getElementById('statSets').textContent = appState.generatedSets;
+    renderTrophies();
+  }
+
+
+  function measurementChips(items, visible=true){
+    if(!visible) return '';
+    return `<div class="measure-strip">${items.map(item => `<span class="measure-chip">${item}</span>`).join('')}</div>`;
+  }
+
+  function triangleVisual(b,h){
+    return `<div class="problem-visual"><svg viewBox="0 0 320 170" aria-label="Triangle"><rect x="0" y="0" width="320" height="170" rx="18" fill="#f7fbff"/><polygon points="35,135 255,135 120,35" fill="#f6d365" stroke="#17324d" stroke-width="4"/><line x1="120" y1="135" x2="120" y2="35" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="7 7"/><polyline points="120,121 134,121 134,135" fill="none" stroke="#17324d" stroke-width="3"/><text x="133" y="90" font-size="18" fill="#17324d">h = ${h}</text><text x="130" y="156" font-size="18" fill="#17324d">${b}</text></svg></div>`;
+  }
+
+  function parallelogramVisual(b,h,side=''){
+    return `<div class="problem-visual"><svg viewBox="0 0 320 170" aria-label="Parallelogram"><rect x="0" y="0" width="320" height="170" rx="18" fill="#f7fbff"/><polygon points="55,130 225,130 270,50 100,50" fill="#97e3d5" stroke="#17324d" stroke-width="4"/><line x1="55" y1="130" x2="55" y2="50" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="7 7"/><polyline points="55,116 69,116 69,130" fill="none" stroke="#17324d" stroke-width="3"/><text x="67" y="93" font-size="18" fill="#17324d">h = ${h}</text><text x="128" y="152" font-size="18" fill="#17324d">${b}</text>${side ? `<text x="232" y="94" font-size="18" fill="#17324d">${side}</text>` : ''}</svg></div>`;
+  }
+
+  function trapezoidVisual(b1,b2,h){
+    return `<div class="problem-visual"><svg viewBox="0 0 320 180" aria-label="Trapezoid"><rect x="0" y="0" width="320" height="180" rx="18" fill="#f7fbff"/><polygon points="55,140 255,140 220,55 95,55" fill="#f7c0d0" stroke="#17324d" stroke-width="4"/><line x1="155" y1="55" x2="155" y2="140" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="7 7"/><polyline points="155,126 169,126 169,140" fill="none" stroke="#17324d" stroke-width="3"/><text x="165" y="100" font-size="18" fill="#17324d">h = ${h}</text><text x="125" y="45" font-size="18" fill="#17324d">${b1}</text><text x="125" y="162" font-size="18" fill="#17324d">${b2}</text></svg></div>`;
+  }
+
+  function rhombusVisual(d1,d2){
+    return `<div class="problem-visual"><svg viewBox="0 0 320 180" aria-label="Rhombus"><rect x="0" y="0" width="320" height="180" rx="18" fill="#f7fbff"/><polygon points="160,28 260,90 160,152 60,90" fill="#c8d4ff" stroke="#17324d" stroke-width="4"/><line x1="160" y1="28" x2="160" y2="152" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="7 7"/><line x1="60" y1="90" x2="260" y2="90" stroke="#2f8f9d" stroke-width="4" stroke-dasharray="7 7"/><text x="172" y="97" font-size="18" fill="#17324d">${d1}</text><text x="125" y="82" font-size="18" fill="#17324d">${d2}</text></svg></div>`;
+  }
+
+  function octagonVisual(side,h){
+    return `<div class="problem-visual"><svg viewBox="0 0 320 220" aria-label="Regular octagon"><rect x="0" y="0" width="320" height="220" rx="18" fill="#f7fbff"/><polygon points="112,20 208,20 270,82 270,138 208,200 112,200 50,138 50,82" fill="#ffb17a" stroke="#17324d" stroke-width="4"/><line x1="160" y1="110" x2="112" y2="20" stroke="#17324d" stroke-width="2"/><line x1="160" y1="110" x2="208" y2="20" stroke="#17324d" stroke-width="2"/><line x1="160" y1="110" x2="270" y2="82" stroke="#17324d" stroke-width="2"/><line x1="160" y1="110" x2="270" y2="138" stroke="#17324d" stroke-width="2"/><line x1="160" y1="110" x2="208" y2="200" stroke="#17324d" stroke-width="2"/><line x1="160" y1="110" x2="112" y2="200" stroke="#17324d" stroke-width="2"/><line x1="160" y1="110" x2="50" y2="138" stroke="#17324d" stroke-width="2"/><line x1="160" y1="110" x2="50" y2="82" stroke="#17324d" stroke-width="2"/><line x1="160" y1="110" x2="160" y2="20" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="7 7"/><polyline points="160,34 174,34 174,20" fill="none" stroke="#17324d" stroke-width="3"/><text x="170" y="67" font-size="18" fill="#17324d">h = ${h}</text><text x="108" y="15" font-size="18" fill="#17324d">${side}</text></svg></div>`;
+  }
+
+  function compositeVisual(rectW, rectH, triB, triH){
+    return `<div class="problem-visual"><svg viewBox="0 0 320 220" aria-label="Composite figure"><rect x="0" y="0" width="320" height="220" rx="18" fill="#f7fbff"/><rect x="40" y="80" width="135" height="92" fill="#ffe4a8" stroke="#17324d" stroke-width="4"/><polygon points="175,80 255,126 175,172" fill="#9dd6f4" stroke="#17324d" stroke-width="4"/><text x="90" y="194" font-size="18" fill="#17324d">${rectW}</text><text x="8" y="132" font-size="18" fill="#17324d">${rectH}</text><text x="194" y="74" font-size="18" fill="#17324d">${triB}</text><polyline points="175,158 189,158 189,172" fill="none" stroke="#17324d" stroke-width="3"/><text x="205" y="184" font-size="18" fill="#17324d">h = ${triH}</text></svg></div>`;
+  }
+
+  function flagVisual(b1,b2,h,cutB,cutH){
+    return `<div class="problem-visual"><svg viewBox="0 0 320 220" aria-label="Composite flag"><rect x="0" y="0" width="320" height="220" rx="18" fill="#f7fbff"/><polygon points="35,50 205,50 282,110 205,170 35,170" fill="#d8e8ff" stroke="#17324d" stroke-width="4"/><polygon points="205,82 245,110 205,138" fill="#fff" stroke="#17324d" stroke-width="3" stroke-dasharray="5 4"/><line x1="35" y1="50" x2="35" y2="170" stroke="#ef6f6c" stroke-width="4" stroke-dasharray="7 7"/><polyline points="35,156 49,156 49,170" fill="none" stroke="#17324d" stroke-width="3"/><text x="8" y="112" font-size="18" fill="#17324d">h = ${h}</text><text x="92" y="40" font-size="18" fill="#17324d">${b1}</text><text x="90" y="192" font-size="18" fill="#17324d">${b2}</text><text x="213" y="76" font-size="16" fill="#17324d">${cutB}</text><text x="218" y="128" font-size="16" fill="#17324d">${cutH}</text></svg></div>`;
+  }
+
+  function makeGeneratedCard(idBase, prompt, answer, hint, visualHtml='', chipHtml='', level='Guided'){
+    const wrapper = document.createElement('div');
+    wrapper.className = 'gen-card problem';
+    wrapper.dataset.problemId = idBase;
+    wrapper.innerHTML = `
+      <div class="problem-header"><strong>Fresh Practice</strong><span class="level-chip">${level}</span></div>
+      <p>${prompt}</p>
+      ${visualHtml}
+      ${chipHtml}
+      <div class="fields">
+        <label>Your answer
+          <input type="number" step="0.01" data-answer="${answer}" />
+        </label>
+      </div>
+      <div class="checks">
+        <button onclick="checkGuided(this)">Check</button>
+        <button class="btn-soft" onclick="toggleHint(this)">Hint</button>
+      </div>
+      <div class="hint">${hint}</div>
+      <div class="feedback"></div>
+    `;
+    return wrapper;
+  }
+
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function round1(n){ return Math.round(n*10)/10; }
+  function round2(n){ return Math.round(n*100)/100; }
+
+  function generateSet(type){
+    const target = document.getElementById(type + 'Generated');
+    if(!target) return;
+    target.innerHTML = '';
+    let cards = [];
+    const setSeed = `${type}-${appState.generatedSets}`;
+
+    if(type === 'triangle'){
+      for(let i=0;i<16;i++){
+        const guided = i < 2;
+        const b = rand(6,16), h = rand(4,14), a = round1((b*h)/2);
+        const visual = triangleVisual(`${b} u`, `${h} u`);
+        const chips = measurementChips([`base = ${b}`, `height = ${h}`], guided);
+        const level = guided ? 'Guided' : 'Challenge';
+        const prompt = guided ? 'Find the area of the triangle. Use the diagram and the listed measurements.' : 'Find the area of the triangle. Read all needed information directly from the diagram.';
+        cards.push(makeGeneratedCard(`${setSeed}-${i}`, prompt, a, `Use A = 1/2bh. Multiply ${b} × ${h}, then divide by 2.`, visual, chips, level));
+      }
+    }
+    if(type === 'parallelogram'){
+      for(let i=0;i<16;i++){
+        const guided = i < 2;
+        const b = rand(7,18), h = rand(4,12), side = rand(h+1, h+7), a = b*h;
+        const visual = parallelogramVisual(`${b} u`, `${h} u`, `${side} u`);
+        const chips = measurementChips([`base = ${b}`, `height = ${h}`, `slanted side = ${side}`], guided);
+        const level = guided ? 'Guided' : 'Challenge';
+        const prompt = guided ? 'Find the area of the parallelogram. Decide which measurements matter.' : 'Find the area of the parallelogram. Read the diagram and choose the correct measurements.';
+        cards.push(makeGeneratedCard(`${setSeed}-${i}`, prompt, a, 'Use base × perpendicular height. Do not use the slanted side.', visual, chips, level));
+      }
+    }
+    if(type === 'trapezoid'){
+      for(let i=0;i<16;i++){
+        const guided = i < 2;
+        const b1 = rand(6,16), b2 = rand(7,18), h = rand(3,10), a = round1(((b1+b2)/2)*h);
+        const visual = trapezoidVisual(`${b1} u`, `${b2} u`, `${h} u`);
+        const chips = measurementChips([`b₁ = ${b1}`, `b₂ = ${b2}`, `height = ${h}`], guided);
+        const level = guided ? 'Guided' : 'Challenge';
+        const prompt = guided ? 'Find the area of the trapezoid. Follow the order of the formula.' : 'Find the area of the trapezoid. Use only the labeled diagram.';
+        cards.push(makeGeneratedCard(`${setSeed}-${i}`, prompt, a, `Add ${b1} and ${b2}, divide by 2, then multiply by ${h}.`, visual, chips, level));
+      }
+    }
+    if(type === 'rhombus'){
+      for(let i=0;i<16;i++){
+        const guided = i < 2;
+        const d1 = rand(6,18), d2 = rand(6,18), a = round1((d1*d2)/2);
+        const visual = rhombusVisual(`${d1} u`, `${d2} u`);
+        const chips = measurementChips([`d₁ = ${d1}`, `d₂ = ${d2}`], guided);
+        const level = guided ? 'Guided' : 'Challenge';
+        const prompt = guided ? 'Find the area of the rhombus.' : 'Find the area of the rhombus from the labeled diagonals.';
+        cards.push(makeGeneratedCard(`${setSeed}-${i}`, prompt, a, `Use A = 1/2 d₁d₂. Multiply ${d1} × ${d2}, then divide by 2.`, visual, chips, level));
+      }
+    }
+    if(type === 'mixed'){
+      const prompts = [
+        () => {
+          const guided = Math.random() < 0.5;
+          const side = Number((Math.random()*4 + 10).toFixed(1));
+          const h = rand(12,18);
+          const one = round1((side*h)/2);
+          const total = round1(one*8);
+          const visual = octagonVisual(`${side} in`, `${h} in`);
+          const chips = measurementChips([`8 congruent triangles`, `triangle base = ${side} in`, `triangle height = ${h} in`], guided);
+          return ['A regular octagon can be broken into 8 congruent triangles. Find the total area.', total, `Find one triangle first: 1/2 × ${side} × ${h} = ${one}. Then multiply by 8.`, visual, chips, guided ? 'Guided' : 'Challenge'];
+        },
+        () => {
+          const guided = Math.random() < 0.5;
+          const b1 = rand(7,10), b2 = rand(4,8), h = rand(10,14), cutB = rand(4,6), cutH = rand(2,4);
+          const trap = round1(((b1+b2)/2)*h);
+          const cut = round1((cutB*cutH)/2);
+          const total = round1(trap-cut);
+          const visual = flagVisual(`${b1} ft`, `${b2} ft`, `${h} ft`, `${cutB} ft`, `${cutH} ft`);
+          const chips = measurementChips([`trapezoid bases = ${b1} and ${b2}`, `trapezoid height = ${h}`, `triangle cut-out = ${cutB} by ${cutH}`], guided);
+          return ['Find the area of the flag by finding the larger shape and subtracting the cut-out triangle.', total, `Trapezoid area = ${trap}. Triangle cut-out area = ${cut}. Subtract.`, visual, chips, guided ? 'Guided' : 'Challenge'];
+        },
+        () => {
+          const guided = Math.random() < 0.5;
+          const rw = rand(8,14), rh = rand(5,9), tb = rh, th = rand(3,6);
+          const rect = rw*rh;
+          const tri = round1((tb*th)/2);
+          const total = round1(rect+tri);
+          const visual = compositeVisual(`${rw} ft`, `${rh} ft`, `${tb} ft`, `${th} ft`);
+          const chips = measurementChips([`rectangle = ${rw} × ${rh}`, `triangle base = ${tb}`, `triangle height = ${th}`], guided);
+          return ['Break this composite figure into a rectangle and a triangle. Then find the total area.', total, `Rectangle area = ${rect}. Triangle area = ${tri}. Add them.`, visual, chips, guided ? 'Guided' : 'Challenge'];
+        }
+      ];
+      for(let i=0;i<16;i++){
+        const [prompt, answer, hint, visual, chips, level] = pick(prompts)();
+        const noChips = i >= 8 ? '' : chips;
+        const finalLevel = i >= 8 ? 'Challenge' : level;
+        cards.push(makeGeneratedCard(`${setSeed}-${i}`, prompt, answer, hint, visual, noChips, finalLevel));
+      }
+    }
+
+    cards.forEach(card => target.appendChild(card));
+    appState.generatedSets += 1;
+    saveState();
+  }
+
+  function getBossDefaults(){
+    return {
+      started:false,
+      hp:240,
+      maxHp:240,
+      playerHp:100,
+      maxPlayerHp:100,
+      power:0,
+      maxPower:100,
+      streak:0,
+      index:0,
+      current:null,
+      phase:1,
+      shield:0,
+      megaReady:false,
+      scanReady:false,
+      shieldReady:false,
+      defeated:false,
+      achievements:{firstHit:false,combo:false,survivor:false,champion:false}
+    };
+  }
+
+  function syncBossState(){
+    const d = getBossDefaults();
+    appState.boss = Object.assign({}, d, appState.boss || {});
+    appState.boss.achievements = Object.assign({}, d.achievements, (appState.boss && appState.boss.achievements) || {});
+  }
+
+  const bossPhases = {
+    1:[
+      {q:'Triangle: base 12, height 5. Area?', a:30, hint:'Use A = 1/2bh.'},
+      {q:'Parallelogram: base 9, height 8. Area?', a:72, hint:'Use A = bh.'},
+      {q:'Rhombus: diagonals 8 and 15. Area?', a:60, hint:'Use A = 1/2 d₁d₂.'},
+      {q:'Trapezoid: bases 6 and 10, height 4. Area?', a:32, hint:'Add the bases, divide by 2, then multiply by 4.'}
+    ],
+    2:[
+      {q:'Triangle: area 24, base 6. What is the height?', a:8, hint:'Solve 24 = 1/2 × 6 × h.'},
+      {q:'Rhombus: area 54, one diagonal 9. What is the other diagonal?', a:12, hint:'Solve 54 = 1/2 × 9 × d.'},
+      {q:'A composite figure has parallelogram area 56 and triangle area 18. Total area?', a:74, hint:'Add the two areas.'},
+      {q:'Composite figure: trapezoid area 90 and triangle cut-out area 12. Total area?', a:78, hint:'Subtract the cut-out.'}
+    ],
+    3:[
+      {q:'Stop-sign challenge: one triangle has area 20 and there are 8 congruent triangles. Total area?', a:160, hint:'Multiply one triangle by 8.'},
+      {q:'Gazebo challenge: one triangle is 12 ft² and there are 10 congruent triangles. Total area?', a:120, hint:'Multiply by 10.'},
+      {q:'A rectangle has area 84 and an attached triangle has area 14. Total composite area?', a:98, hint:'Add the two parts.'},
+      {q:'A flag shape has trapezoid area 84.5 and a triangle cut-out of 7.5. Area of the flag?', a:77, hint:'Subtract the cut-out from the larger shape.'}
+    ]
+  };
+
+  function bossDamageForPhase(){
+    return appState.boss.phase === 1 ? 12 : appState.boss.phase === 2 ? 16 : 20;
+  }
+
+  function bossAttackPlayer(){
+    let damage = bossDamageForPhase();
+    let status = `Mr. Neft attacks for ${damage} damage.`;
+    if(appState.boss.shield > 0){
+      damage = Math.max(0, damage - 12);
+      appState.boss.shield = 0;
+      status = `Your Focus Shield softened the attack. You only took ${damage} damage.`;
+    }
+    appState.boss.playerHp = Math.max(0, appState.boss.playerHp - damage);
+    return status;
+  }
+
+  function updatePhase(){
+    const hpPct = appState.boss.hp / appState.boss.maxHp;
+    const oldPhase = appState.boss.phase;
+    if(hpPct <= 0.33) appState.boss.phase = 3;
+    else if(hpPct <= 0.66) appState.boss.phase = 2;
+    else appState.boss.phase = 1;
+    if(appState.boss.phase > oldPhase){
+      document.getElementById('bossLog').innerHTML = `Phase up! Mr. Neft powered into <strong>Phase ${appState.boss.phase}</strong>. The battle is getting harder.`;
+    }
+  }
+
+  function nextBossQuestion(){
+    const bank = bossPhases[appState.boss.phase];
+    const item = bank[appState.boss.index % bank.length];
+    appState.boss.current = item;
+    appState.boss.index += 1;
+    document.getElementById('bossQuestion').innerHTML = item.q;
+    document.getElementById('bossHint').classList.remove('show');
+    document.getElementById('bossHint').textContent = item.hint;
+    document.getElementById('bossAnswer').value = '';
+  }
+
+  function unlockBossTools(){
+    appState.boss.scanReady = appState.boss.phase >= 1;
+    appState.boss.shieldReady = appState.boss.power >= 50 || appState.boss.phase >= 2;
+    appState.boss.megaReady = appState.boss.power >= 100;
+  }
+
+  function startBossBattle(){
+    syncBossState();
+    appState.boss.started = true;
+    if(!appState.boss.current) nextBossQuestion();
+    document.getElementById('bossLog').innerHTML = 'Battle started. Land correct attacks, build your combo, and save power for the hardest phase.';
+    unlockBossTools();
+    renderBossState();
+    saveState();
+  }
+
+  function restartBossBattle(){
+    appState.boss = getBossDefaults();
+    appState.boss.started = true;
+    document.getElementById('bossLog').textContent = 'Boss battle restarted. Mr. Neft is back at full power.';
+    document.getElementById('bossPowerStatus').textContent = 'Power-ups unlock as you build combo, save power, and reach later phases.';
+    document.getElementById('bossAnswer').value = '';
+    nextBossQuestion();
+    unlockBossTools();
+    renderBossState();
+    saveState();
+  }
+
+  function showBossHint(){
+    if(!appState.boss.current) return;
+    const hint = document.getElementById('bossHint');
+    hint.classList.add('show');
+  }
+
+  function usePower(type){
+    if(!appState.boss.started || appState.boss.defeated) return;
+    const status = document.getElementById('bossPowerStatus');
+    if(type === 'scan'){
+      showBossHint();
+      status.textContent = 'Formula Scan activated: use the hint and the formula to line up your next attack.';
+      playFx('power');
+    }
+    if(type === 'shield'){
+      if(appState.boss.power < 50) return;
+      appState.boss.power -= 50;
+      appState.boss.shield = 1;
+      status.textContent = 'Focus Shield is active. Your next wrong answer will deal much less damage.';
+      playFx('power');
+    }
+    if(type === 'mega'){
+      if(appState.boss.power < 100) return;
+      appState.boss.power -= 100;
+      appState.boss.megaReady = false;
+      appState.boss.pendingMega = true;
+      status.textContent = 'Mega Strike is charged. Your next correct answer will deal a huge hit.';
+      playFx('power');
+    }
+    unlockBossTools();
+    renderBossState();
+    saveState();
+  }
+
+  function markAchievement(name){
+    appState.boss.achievements[name] = true;
+  }
+
+  function submitBossAnswer(){
+    if(!appState.boss.started){ startBossBattle(); return; }
+    const current = appState.boss.current;
+    if(!current || appState.boss.defeated) return;
+    const given = Number(document.getElementById('bossAnswer').value);
+    const log = document.getElementById('bossLog');
+    const bossCard = document.getElementById('bossCard');
+
+    if(approxEqual(given, current.a)){
+      appState.boss.streak += 1;
+      appState.boss.power = Math.min(appState.boss.maxPower, appState.boss.power + 25);
+      let damage = 20 + (appState.boss.phase-1)*4;
+      if(appState.boss.streak >= 3){
+        damage += 10;
+        markAchievement('combo');
+      }
+      if(appState.boss.pendingMega){
+        damage += 28;
+        appState.boss.pendingMega = false;
+      }
+      appState.boss.hp = Math.max(0, appState.boss.hp - damage);
+      appState.damageTotal += damage;
+      appState.correctCount += 1;
+      appState.checksCount += 1;
+      bossCard.classList.remove('pulse'); void bossCard.offsetWidth; bossCard.classList.add('pulse');
+      markAchievement('firstHit');
+      if(appState.boss.playerHp >= 70) markAchievement('survivor');
+      playFx(appState.boss.hp - damage <= 0 ? 'win' : 'good');
+      log.innerHTML = `Direct hit! You dealt <strong>${damage}</strong> damage. Combo streak: <strong>${appState.boss.streak}</strong>.`;
+      updatePhase();
+      if(appState.boss.hp === 0){
+        appState.boss.defeated = true;
+        appState.completed['boss-win'] = true;
+        markAchievement('champion');
+        document.getElementById('bossQuestion').innerHTML = '🏆 You defeated Mr. Neft! Area mastery unlocked.';
+        document.getElementById('bossPowerStatus').textContent = 'Victory! You cleared all 3 phases.';
+        renderBossState();
+        saveState();
+        return;
+      }
+      unlockBossTools();
+      nextBossQuestion();
+    } else {
+      appState.boss.streak = 0;
+      const attackText = bossAttackPlayer();
+      bossCard.classList.remove('shake'); void bossCard.offsetWidth; bossCard.classList.add('shake');
+      const taunts = [
+        'Mr. Neft says: Check the formula carefully!',
+        'Mr. Neft says: Did you use the height or the slanted side?',
+        'Mr. Neft says: Composite figures sometimes need subtraction.',
+        'Mr. Neft says: Break the shape into easier parts.'
+      ];
+      playFx('bad');
+      log.innerHTML = `${pick(taunts)} The correct answer was <strong>${current.a}</strong>. ${attackText}`;
+      if(appState.boss.playerHp === 0){
+        document.getElementById('bossQuestion').innerHTML = '💥 Mr. Neft won this round. Press Restart Boss to try again.';
+        document.getElementById('bossPowerStatus').textContent = 'You were defeated this time. Reset and try another strategy.';
+        renderBossState();
+        saveState();
+        return;
+      }
+      unlockBossTools();
+      nextBossQuestion();
+    }
+    renderBossState();
+    saveState();
+  }
+
+  function renderBossAchievements(){
+    const el = document.getElementById('bossAchievements');
+    if(!el) return;
+    const items = [
+      ['firstHit','First Strike'],
+      ['combo','Combo Master'],
+      ['survivor','Strong Defense'],
+      ['champion','Boss Crusher']
+    ];
+    el.innerHTML = items.map(([key,label]) => `<span class="achieve-badge ${appState.boss.achievements[key] ? 'on' : ''}">${label}</span>`).join('');
+  }
+
+  function renderBossState(){
+    syncBossState();
+    const bossPct = Math.max(0,(appState.boss.hp / appState.boss.maxHp) * 100);
+    const playerPct = Math.max(0,(appState.boss.playerHp / appState.boss.maxPlayerHp) * 100);
+    const powerPct = Math.max(0,(appState.boss.power / appState.boss.maxPower) * 100);
+    document.getElementById('bossHpBar').style.width = bossPct + '%';
+    document.getElementById('bossHpLabel').textContent = `${appState.boss.hp} / ${appState.boss.maxHp}`;
+    document.getElementById('playerHpBar').style.width = playerPct + '%';
+    document.getElementById('playerHpLabel').textContent = `${appState.boss.playerHp} / ${appState.boss.maxPlayerHp}`;
+    document.getElementById('powerBar').style.width = powerPct + '%';
+    document.getElementById('powerLabel').textContent = `${appState.boss.power} / ${appState.boss.maxPower}`;
+    document.getElementById('bossPhaseLabel').textContent = `Phase ${appState.boss.phase} / 3`;
+    document.getElementById('scanBtn').disabled = !appState.boss.scanReady;
+    document.getElementById('shieldBtn').disabled = !(appState.boss.shieldReady || appState.boss.power >= 50);
+    document.getElementById('megaBtn').disabled = !appState.boss.megaReady;
+    renderBossAchievements();
+  }
+
+  document.addEventListener('input', (e) => {
+    if(e.target.matches('input[type="text"], input[type="number"]')){
+      if(e.target.id === 'studentName' || e.target.id === 'studentClass') return;
+      saveFieldValue(e.target);
+      saveState();
+    }
+  });
+
+  // Initialize practice sets for a richer first load
+  loadState();
+  if(!document.getElementById('triangleGenerated').children.length){ generateSet('triangle'); }
+  if(!document.getElementById('parallelogramGenerated').children.length){ generateSet('parallelogram'); }
+  if(!document.getElementById('trapezoidGenerated').children.length){ generateSet('trapezoid'); }
+  if(!document.getElementById('rhombusGenerated').children.length){ generateSet('rhombus'); }
+  if(!document.getElementById('mixedGenerated').children.length){ generateSet('mixed'); }
+  if(!appState.boss.current){ renderBossState(); }
+
+  function getProgressSummaryText(){
+    const student = appState.studentName || 'Unknown student';
+    const cls = appState.studentClass || 'No class entered';
+    const bossStatus = appState.boss && appState.boss.defeated ? 'Defeated Mr. Neft' : `Boss phase ${appState.boss.phase || 1}`;
+    return [
+      `Student: ${student}`,
+      `Class/Period: ${cls}`,
+      `Checks completed: ${appState.checksCount}`,
+      `Correct items: ${appState.correctCount}`,
+      `Generated sets used: ${appState.generatedSets}`,
+      `Boss damage total: ${appState.damageTotal}`,
+      `Boss status: ${bossStatus}`,
+      `Achievements: ${Object.entries((appState.boss && appState.boss.achievements) || {}).filter(([,v])=>v).map(([k])=>k).join(', ') || 'None yet'}`,
+      `Timestamp: ${new Date().toLocaleString()}`
+    ].join('\n');
+  }
+
+  function previewProgressReport(){
+    const el = document.getElementById('exportPreview');
+    if(el) el.textContent = getProgressSummaryText();
+  }
+
+  async function copyProgressSummary(){
+    const text = getProgressSummaryText();
+    try{
+      await navigator.clipboard.writeText(text);
+      const el = document.getElementById('exportPreview');
+      if(el) el.textContent = text + '\n\nCopied to clipboard.';
+    }catch(e){
+      const el = document.getElementById('exportPreview');
+      if(el) el.textContent = text + '\n\nClipboard copy was blocked, but the summary is shown here.';
+    }
+  }
+
+  function downloadProgressReport(){
+    const data = JSON.stringify(window.areaMissionExport(), null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `area-mission-progress-${(appState.studentName || 'student').replace(/\s+/g,'-').toLowerCase()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    previewProgressReport();
+  }
+
+  // Backend-ready placeholder hook for future enhancement
+  window.areaMissionExport = function(){
+    return {
+      studentName: appState.studentName,
+      studentClass: appState.studentClass,
+      checksCount: appState.checksCount,
+      correctCount: appState.correctCount,
+      damageTotal: appState.damageTotal,
+      generatedSets: appState.generatedSets,
+      boss: appState.boss,
+      completed: appState.completed,
+      timestamp: new Date().toISOString()
+    };
+  };
+</script>
 </body>
 </html>

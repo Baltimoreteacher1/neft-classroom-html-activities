@@ -1,37 +1,1115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Histogramhero classroom activity.">
-  <title>Histogramhero</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Histogram Heroes: The Case of the Crowded Data</title>
+  <style>
+    :root {
+      --navy: #12324a;
+      --teal: #1f7a7a;
+      --teal-dark: #155f60;
+      --cream: #fff8ea;
+      --sand: #f4e8d0;
+      --sage: #dfe9df;
+      --mustard: #e1ad35;
+      --terracotta: #c86b4a;
+      --ink: #111827;
+      --muted: #51606d;
+      --white: #ffffff;
+      --line: #111111;
+      --shadow: 0 12px 30px rgba(18, 50, 74, 0.14);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Calibri, Arial, sans-serif;
+      line-height: 1.15;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(225, 173, 53, .18), transparent 25%),
+        radial-gradient(circle at 90% 0%, rgba(31, 122, 122, .16), transparent 28%),
+        linear-gradient(180deg, #fbf6ea 0%, #eef5f4 100%);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 248, 234, 0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid var(--line);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: .2px;
+    }
+
+    .badge {
+      display: inline-grid;
+      place-items: center;
+      min-width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: white;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--mustard);
+      font-weight: 900;
+    }
+
+    .navlinks {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .navlinks a,
+    button {
+      font-family: Calibri, Arial, sans-serif;
+      border: 2px solid var(--line);
+      color: var(--ink);
+      background: var(--white);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 2px 2px 0 var(--line);
+      cursor: pointer;
+    }
+
+    .navlinks a:hover,
+    button:hover {
+      transform: translateY(-1px);
+      background: #fff2c9;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 16px 72px;
+    }
+
+    .hero {
+      border: 2px solid var(--line);
+      border-radius: 28px;
+      background: linear-gradient(135deg, var(--navy), #1f5965);
+      color: white;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 26px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -70px -80px auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(225, 173, 53, .28);
+      border: 2px solid rgba(255,255,255,.3);
+    }
+
+    .kicker {
+      display: inline-block;
+      padding: 6px 12px;
+      background: var(--mustard);
+      color: #241a05;
+      border: 2px solid #111;
+      border-radius: 999px;
+      font-weight: 900;
+      box-shadow: 3px 3px 0 #111;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      line-height: .92;
+      letter-spacing: -1.5px;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      color: var(--navy);
+      font-size: clamp(1.45rem, 2.8vw, 2.2rem);
+      letter-spacing: -.3px;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 1.25rem;
+    }
+
+    p { margin: 0 0 10px; }
+
+    .hero p {
+      max-width: 720px;
+      font-size: 1.12rem;
+      color: #edf7f6;
+    }
+
+    .target-card {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .target-card div {
+      background: rgba(255,255,255,.11);
+      border: 2px solid rgba(255,255,255,.65);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .target-card b {
+      display: block;
+      color: #fff5cc;
+      margin-bottom: 4px;
+    }
+
+    .chapter-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 30px 0 14px;
+      color: var(--navy);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .chapter-label::before,
+    .chapter-label::after {
+      content: "";
+      height: 2px;
+      background: var(--line);
+      flex: 1;
+    }
+
+    .comic-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      grid-column: span 6;
+      min-height: 260px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--cream);
+      box-shadow: 6px 6px 0 rgba(17,17,17,.95);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel.large { grid-column: span 12; }
+    .panel.tall { min-height: 370px; }
+    .panel.sage { background: var(--sage); }
+    .panel.white { background: var(--white); }
+    .panel.sand { background: var(--sand); }
+    .panel.dark {
+      background: linear-gradient(135deg, var(--navy), var(--teal-dark));
+      color: white;
+    }
+    .panel.dark h2, .panel.dark h3 { color: white; }
+
+    .caption {
+      display: inline-block;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: var(--mustard);
+      color: #211602;
+      font-weight: 900;
+      padding: 5px 10px;
+      margin-bottom: 10px;
+      box-shadow: 2px 2px 0 var(--line);
+    }
+
+    .scene {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .character {
+      width: 105px;
+      min-height: 142px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .face {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      background: #ffd9a8;
+      position: relative;
+      box-shadow: 4px 4px 0 rgba(17,17,17,.25);
+    }
+
+    .face::before,
+    .face::after {
+      content: "";
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--line);
+      top: 37px;
+    }
+
+    .face::before { left: 26px; }
+    .face::after { right: 26px; }
+
+    .smile {
+      position: absolute;
+      width: 34px;
+      height: 18px;
+      border-bottom: 3px solid var(--line);
+      border-radius: 0 0 36px 36px;
+      left: 27px;
+      top: 50px;
+    }
+
+    .hair {
+      position: absolute;
+      width: 95px;
+      height: 36px;
+      border-radius: 48px 48px 12px 12px;
+      background: var(--navy);
+      top: -8px;
+      left: -5px;
+      border: 2px solid var(--line);
+    }
+
+    .body {
+      position: absolute;
+      top: 82px;
+      width: 82px;
+      height: 56px;
+      background: var(--teal);
+      border: 2px solid var(--line);
+      border-radius: 18px 18px 10px 10px;
+      z-index: -1;
+    }
+
+    .character.coach .body { background: var(--terracotta); }
+    .character.plant .face { background: #cbe7b8; }
+    .character.plant .hair { background: #4d8b47; border-radius: 8px 8px 40px 40px; }
+    .character.plant .body { background: #8ab86a; }
+
+    .speech {
+      position: relative;
+      background: #fff;
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      padding: 13px 14px;
+      box-shadow: 3px 3px 0 rgba(17,17,17,.18);
+      font-size: 1.02rem;
+    }
+
+    .speech::before {
+      content: "";
+      position: absolute;
+      left: -12px;
+      top: 42px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-left: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+      transform: rotate(45deg);
+    }
+
+    .panel.dark .speech {
+      color: var(--ink);
+    }
+
+    .thought {
+      background: #f7fcff;
+      border-style: dashed;
+    }
+
+    .math-card,
+    .vocab-card,
+    .check-card {
+      background: rgba(255,255,255,.82);
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .vocab-card b {
+      display: block;
+      color: var(--teal-dark);
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .data-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 148px;
+      overflow: auto;
+      padding: 8px;
+      background: #fff;
+      border: 2px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .data-chip {
+      min-width: 42px;
+      text-align: center;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 7px;
+      background: #eef7f7;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin: 10px 0;
+      font-size: 1rem;
+    }
+
+    th, td {
+      border: 2px solid #000000;
+      padding: 8px 10px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #dbeeed;
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .histogram-wrap {
+      background: #fff;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 14px 10px;
+      margin-top: 12px;
+      overflow-x: auto;
+    }
+
+    .histogram {
+      min-width: 480px;
+      display: grid;
+      grid-template-columns: 48px repeat(4, 1fr);
+      grid-template-rows: 220px auto;
+      column-gap: 8px;
+      align-items: end;
+    }
+
+    .y-axis {
+      grid-row: 1;
+      grid-column: 1;
+      height: 220px;
+      border-right: 2px solid var(--line);
+      position: relative;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    .y-axis span {
+      position: absolute;
+      right: 6px;
+      transform: translateY(50%);
+      font-weight: 700;
+    }
+
+    .bar-group {
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: stretch;
+      min-width: 82px;
+    }
+
+    .bar {
+      border: 2px solid var(--line);
+      border-bottom: 0;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.24), transparent),
+        var(--teal);
+      display: grid;
+      place-items: start center;
+      color: white;
+      font-weight: 900;
+      padding-top: 8px;
+      box-shadow: inset -4px -4px 0 rgba(0,0,0,.13);
+    }
+
+    .bar.high { background: linear-gradient(135deg, rgba(255,255,255,.25), transparent), var(--terracotta); }
+    .bar.mid { background: linear-gradient(135deg, rgba(255,255,255,.25), transparent), var(--mustard); color: #241a05; }
+
+    .x-label {
+      grid-row: 2;
+      text-align: center;
+      border-top: 2px solid var(--line);
+      padding-top: 8px;
+      font-weight: 800;
+      min-width: 82px;
+      font-size: .92rem;
+    }
+
+    .axis-title {
+      font-weight: 900;
+      text-align: center;
+      color: var(--navy);
+      margin-top: 8px;
+    }
+
+    .reveal-box {
+      display: none;
+      margin-top: 10px;
+      background: #ecf9f5;
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      padding: 11px;
+      font-weight: 700;
+    }
+
+    .reveal-box.show {
+      display: block;
+      animation: pop .18s ease-out;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.98); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .question-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .choice {
+      text-align: left;
+      border-radius: 14px;
+      background: white;
+      box-shadow: 2px 2px 0 var(--line);
+    }
+
+    .choice.correct {
+      background: #d9f5e5;
+    }
+
+    .choice.incorrect {
+      background: #ffe5dd;
+    }
+
+    .feedback {
+      min-height: 28px;
+      margin-top: 8px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .mini-comic {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .mini-panel {
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      padding: 10px;
+      min-height: 110px;
+    }
+
+    .mini-panel .emoji {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 92px;
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 1rem;
+      resize: vertical;
+      background: #fff;
+    }
+
+    .sentence-starters {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .starter {
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      background: #fff7dc;
+      padding: 9px;
+      font-weight: 700;
+    }
+
+    .progress {
+      height: 12px;
+      background: white;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      min-width: 160px;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--mustard));
+      transition: width .2s ease;
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-top: 10px;
+    }
+
+    .footer {
+      border: 2px solid var(--line);
+      border-radius: 20px;
+      background: var(--navy);
+      color: white;
+      padding: 16px;
+      margin-top: 32px;
+      box-shadow: 5px 5px 0 var(--line);
+    }
+
+    .footer strong { color: #fff1b8; }
+
+    @media (max-width: 860px) {
+      .panel { grid-column: span 12; }
+      .target-card,
+      .vocab-grid,
+      .sentence-starters,
+      .mini-comic {
+        grid-template-columns: 1fr;
+      }
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .navlinks {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .scene {
+        grid-template-columns: 1fr;
+      }
+      .speech::before {
+        left: 46px;
+        top: -11px;
+        border: 0;
+        border-left: 2px solid var(--line);
+        border-top: 2px solid var(--line);
+      }
+      .hero {
+        padding: 20px;
+      }
+      .container {
+        padding: 18px 12px 54px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>Histogramhero</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Histogramhero</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <header class="topbar">
+    <div class="brand">
+      <span class="badge">H</span>
+      <span>Histogram Heroes</span>
+    </div>
+    <nav class="navlinks" aria-label="Chapter navigation">
+      <a href="#case1">Case 1</a>
+      <a href="#histogram">Histogram</a>
+      <a href="#case2">Case 2</a>
+      <a href="#mission">Mission</a>
+    </nav>
+    <div class="toolbar-right">
+      <div class="progress" aria-label="Reading progress"><div class="progress-fill" id="progressFill"></div></div>
+      <button onclick="resetPage()">Reset</button>
+    </div>
+  </header>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Histogramhero</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/statistics-data/histogramhero/</span></p>
+  <main class="container">
+    <section class="hero">
+      <span class="kicker">Digital Graphic Novel Lesson</span>
+      <h1>The Case of the Crowded Data</h1>
+      <p>
+        Join the Histogram Heroes as they turn messy number tables into clear stories. Their mission:
+        organize data into intervals, build frequency tables, read histograms, and describe what the data means.
+      </p>
+      <div class="target-card">
+        <div>
+          <b>Learning Target 1</b>
+          I can display numerical data in a histogram and explain how this display is different from a dot plot.
+        </div>
+        <div>
+          <b>Learning Target 2</b>
+          I can describe data by looking at the shape and the most common interval.
+        </div>
       </div>
     </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/statistics-data/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
-    </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
+    <div class="chapter-label" id="case1">Chapter 1: The 5K Mystery</div>
+
+    <section class="comic-grid">
+      <article class="panel">
+        <span class="caption">Panel 1</span>
+        <h2>A table full of runners</h2>
+        <div class="scene">
+          <div class="character coach" aria-hidden="true">
+            <div class="face"><div class="hair"></div><div class="smile"></div></div><div class="body"></div>
+          </div>
+          <div class="speech">
+            “Fifty middle school students ran a 5-kilometer race. We recorded each student’s pace:
+            the time it took to run one kilometer. But this table is packed!”
+          </div>
+        </div>
+        <div class="math-card">
+          <b>Data question:</b> What range of paces was most common?
+        </div>
+      </article>
+
+      <article class="panel sage">
+        <span class="caption">Panel 2</span>
+        <h2>The numbers are crowded</h2>
+        <p>Look at the paces. It is hard to understand the story when every value is separate.</p>
+        <div class="data-strip" aria-label="Running pace data values">
+          <span class="data-chip">4.8</span><span class="data-chip">5.2</span><span class="data-chip">5.6</span><span class="data-chip">5.3</span><span class="data-chip">5.0</span><span class="data-chip">4.7</span><span class="data-chip">6.2</span><span class="data-chip">4.7</span><span class="data-chip">5.1</span><span class="data-chip">5.8</span>
+          <span class="data-chip">4.8</span><span class="data-chip">5.5</span><span class="data-chip">5.4</span><span class="data-chip">5.1</span><span class="data-chip">4.9</span><span class="data-chip">5.0</span><span class="data-chip">5.2</span><span class="data-chip">5.5</span><span class="data-chip">5.8</span><span class="data-chip">6.0</span>
+          <span class="data-chip">5.8</span><span class="data-chip">5.9</span><span class="data-chip">6.1</span><span class="data-chip">4.8</span><span class="data-chip">5.3</span><span class="data-chip">5.4</span><span class="data-chip">5.6</span><span class="data-chip">4.5</span><span class="data-chip">5.4</span><span class="data-chip">5.0</span>
+          <span class="data-chip">4.5</span><span class="data-chip">5.7</span><span class="data-chip">5.0</span><span class="data-chip">4.6</span><span class="data-chip">5.9</span><span class="data-chip">5.1</span><span class="data-chip">6.0</span><span class="data-chip">5.0</span><span class="data-chip">4.8</span><span class="data-chip">5.3</span>
+          <span class="data-chip">5.3</span><span class="data-chip">5.2</span><span class="data-chip">4.9</span><span class="data-chip">5.5</span><span class="data-chip">5.4</span><span class="data-chip">5.0</span><span class="data-chip">4.7</span><span class="data-chip">6.1</span><span class="data-chip">5.7</span><span class="data-chip">4.9</span>
+        </div>
+        <p class="note">Scroll inside the box to see all 50 values.</p>
+      </article>
+
+      <article class="panel sand">
+        <span class="caption">Panel 3</span>
+        <h2>Detective Data has a plan</h2>
+        <div class="scene">
+          <div class="character" aria-hidden="true">
+            <div class="face"><div class="hair"></div><div class="smile"></div></div><div class="body"></div>
+          </div>
+          <div class="speech">
+            “When a data set is large, we can group values into <b>intervals</b>. Each interval must be the same size and must not overlap.”
+          </div>
+        </div>
+        <div class="vocab-grid">
+          <div class="vocab-card"><b>Data</b> collected information or values</div>
+          <div class="vocab-card"><b>Interval</b> a range used to group values</div>
+          <div class="vocab-card"><b>Frequency</b> how many values are in a group</div>
+          <div class="vocab-card"><b>Histogram</b> a graph that shows frequency by interval</div>
+        </div>
+      </article>
+
+      <article class="panel white">
+        <span class="caption">Panel 4</span>
+        <h2>Check the rule</h2>
+        <p><b>Question:</b> Which interval set is best for organizing these times?</p>
+        <div class="choice-grid" role="group" aria-label="interval choice question">
+          <button class="choice" onclick="checkChoice(this, false, 'choiceFeedback1')">4.5–5.2, 5.1–5.8, 5.7–6.4</button>
+          <button class="choice" onclick="checkChoice(this, true, 'choiceFeedback1')">4.5–4.9, 5.0–5.4, 5.5–5.9, 6.0–6.4</button>
+          <button class="choice" onclick="checkChoice(this, false, 'choiceFeedback1')">4.5–4.7, 4.8–5.5, 5.6–6.4</button>
+        </div>
+        <div class="feedback" id="choiceFeedback1"></div>
+      </article>
+    </section>
+
+    <div class="chapter-label" id="histogram">Chapter 2: From Table to Histogram</div>
+
+    <section class="comic-grid">
+      <article class="panel large">
+        <span class="caption">Panel 5</span>
+        <h2>The frequency table reveals the pattern</h2>
+        <p>The heroes count how many runner paces fall into each equal interval.</p>
+        <table aria-label="Frequency table for runner paces">
+          <thead>
+            <tr>
+              <th>Minutes to Run One Kilometer</th>
+              <th>Frequency</th>
+              <th>Plain-English Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>4.5–4.9</td>
+              <td>13</td>
+              <td>13 students ran one kilometer in this pace range.</td>
+            </tr>
+            <tr>
+              <td>5.0–5.4</td>
+              <td>20</td>
+              <td>20 students ran one kilometer in this pace range.</td>
+            </tr>
+            <tr>
+              <td>5.5–5.9</td>
+              <td>12</td>
+              <td>12 students ran one kilometer in this pace range.</td>
+            </tr>
+            <tr>
+              <td>6.0–6.4</td>
+              <td>5</td>
+              <td>5 students ran one kilometer in this pace range.</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="panel tall white">
+        <span class="caption">Panel 6</span>
+        <h2>Build the histogram</h2>
+        <p>A histogram uses bars to show how many data values are in each interval.</p>
+        <div class="histogram-wrap">
+          <div class="histogram" aria-label="Histogram of runner pace intervals">
+            <div class="y-axis">
+              <span style="bottom: 0%">0</span>
+              <span style="bottom: 25%">5</span>
+              <span style="bottom: 50%">10</span>
+              <span style="bottom: 75%">15</span>
+              <span style="bottom: 100%">20</span>
+            </div>
+
+            <div class="bar-group" style="grid-column: 2"><div class="bar mid" style="height: 143px;">13</div></div>
+            <div class="bar-group" style="grid-column: 3"><div class="bar high" style="height: 220px;">20</div></div>
+            <div class="bar-group" style="grid-column: 4"><div class="bar mid" style="height: 132px;">12</div></div>
+            <div class="bar-group" style="grid-column: 5"><div class="bar" style="height: 55px;">5</div></div>
+
+            <div class="x-label" style="grid-column: 2">4.5–4.9</div>
+            <div class="x-label" style="grid-column: 3">5.0–5.4</div>
+            <div class="x-label" style="grid-column: 4">5.5–5.9</div>
+            <div class="x-label" style="grid-column: 5">6.0–6.4</div>
+          </div>
+          <div class="axis-title">x-axis: pace intervals &nbsp; | &nbsp; y-axis: frequency</div>
+        </div>
+      </article>
+
+      <article class="panel tall dark">
+        <span class="caption">Panel 7</span>
+        <h2>Why do the bars touch?</h2>
+        <div class="scene">
+          <div class="character coach" aria-hidden="true">
+            <div class="face"><div class="hair"></div><div class="smile"></div></div><div class="body"></div>
+          </div>
+          <div class="speech">
+            “In a histogram, bars touch because the intervals are continuous. One interval ends and the next interval begins right after it.”
+          </div>
+        </div>
+        <div class="math-card">
+          <b>Dot plot vs. histogram:</b>
+          <p>A dot plot shows individual values. A histogram groups many numerical values into intervals, which is useful for large data sets.</p>
+        </div>
+        <button onclick="toggleReveal('barsTouch')">Reveal key idea</button>
+        <div class="reveal-box" id="barsTouch">
+          Bars touch because the data is grouped into connected intervals, not separate categories.
+        </div>
+      </article>
+
+      <article class="panel large sage">
+        <span class="caption">Panel 8</span>
+        <h2>The tallest bar solves the mystery</h2>
+        <div class="scene">
+          <div class="character" aria-hidden="true">
+            <div class="face"><div class="hair"></div><div class="smile"></div></div><div class="body"></div>
+          </div>
+          <div class="speech">
+            “To find the most common range, look for the tallest bar. The tallest bar is 5.0–5.4 minutes, with 20 students.”
+          </div>
+        </div>
+        <div class="question-row">
+          <p><b>What does this mean in context?</b></p>
+          <button onclick="toggleReveal('contextReveal')">Reveal</button>
+        </div>
+        <div class="reveal-box" id="contextReveal">
+          The greatest number of students took between <b>5.0 and 5.4 minutes</b> to run one kilometer.
+        </div>
+      </article>
+    </section>
+
+    <div class="chapter-label" id="case2">Chapter 3: The Beanstalk Case</div>
+
+    <section class="comic-grid">
+      <article class="panel sand">
+        <span class="caption">Panel 9</span>
+        <h2>A science experiment appears</h2>
+        <div class="scene">
+          <div class="character plant" aria-hidden="true">
+            <div class="face"><div class="hair"></div><div class="smile"></div></div><div class="body"></div>
+          </div>
+          <div class="speech">
+            “Students planted beans and measured their plants after two weeks. Now we need to describe the plant-height data.”
+          </div>
+        </div>
+        <div class="math-card">
+          <b>Data range:</b> Some plants are as short as 9 cm, and some are as tall as 18 cm.
+        </div>
+      </article>
+
+      <article class="panel white">
+        <span class="caption">Panel 10</span>
+        <h2>Plant-height frequency table</h2>
+        <table aria-label="Frequency table for plant heights">
+          <thead>
+            <tr>
+              <th>Plant Heights (cm)</th>
+              <th>Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>9–10.9</td><td>3</td></tr>
+            <tr><td>11–12.9</td><td>4</td></tr>
+            <tr><td>13–14.9</td><td>10</td></tr>
+            <tr><td>15–16.9</td><td>5</td></tr>
+            <tr><td>17–18.9</td><td>3</td></tr>
+          </tbody>
+        </table>
+        <button onclick="toggleReveal('plantCommon')">Reveal most common interval</button>
+        <div class="reveal-box" id="plantCommon">
+          The most common plant height is <b>13–14.9 cm</b>, because that interval has the greatest frequency: 10.
+        </div>
+      </article>
+
+      <article class="panel large white">
+        <span class="caption">Panel 11</span>
+        <h2>The shape tells a story</h2>
+        <p>The heroes sketch the histogram shape and notice the tallest bar is in the middle.</p>
+        <div class="histogram-wrap">
+          <div class="histogram" style="grid-template-columns: 48px repeat(5, 1fr);" aria-label="Histogram of plant heights">
+            <div class="y-axis">
+              <span style="bottom: 0%">0</span>
+              <span style="bottom: 25%">2.5</span>
+              <span style="bottom: 50%">5</span>
+              <span style="bottom: 75%">7.5</span>
+              <span style="bottom: 100%">10</span>
+            </div>
+
+            <div class="bar-group" style="grid-column: 2"><div class="bar" style="height: 66px;">3</div></div>
+            <div class="bar-group" style="grid-column: 3"><div class="bar mid" style="height: 88px;">4</div></div>
+            <div class="bar-group" style="grid-column: 4"><div class="bar high" style="height: 220px;">10</div></div>
+            <div class="bar-group" style="grid-column: 5"><div class="bar mid" style="height: 110px;">5</div></div>
+            <div class="bar-group" style="grid-column: 6"><div class="bar" style="height: 66px;">3</div></div>
+
+            <div class="x-label" style="grid-column: 2">9–10.9</div>
+            <div class="x-label" style="grid-column: 3">11–12.9</div>
+            <div class="x-label" style="grid-column: 4">13–14.9</div>
+            <div class="x-label" style="grid-column: 5">15–16.9</div>
+            <div class="x-label" style="grid-column: 6">17–18.9</div>
+          </div>
+          <div class="axis-title">Plant heights in centimeters</div>
+        </div>
+      </article>
+
+      <article class="panel large sage">
+        <span class="caption">Panel 12</span>
+        <h2>Symmetry clue</h2>
+        <div class="mini-comic">
+          <div class="mini-panel">
+            <span class="emoji">⬅️</span>
+            Left side: bars are shorter as you move away from the middle.
+          </div>
+          <div class="mini-panel">
+            <span class="emoji">📊</span>
+            Middle: the tallest bar is 13–14.9 cm.
+          </div>
+          <div class="mini-panel">
+            <span class="emoji">➡️</span>
+            Right side: bars are also shorter as you move away from the middle.
+          </div>
+        </div>
+        <div class="question-row">
+          <p><b>How can we describe the shape?</b></p>
+          <button onclick="toggleReveal('symmetryReveal')">Reveal</button>
+        </div>
+        <div class="reveal-box" id="symmetryReveal">
+          The display is <b>symmetric</b> because the number of data values on each side of the middle bar is about the same.
+        </div>
+      </article>
+    </section>
+
+    <div class="chapter-label" id="mission">Chapter 4: Your Mission</div>
+
+    <section class="comic-grid">
+      <article class="panel large sand">
+        <span class="caption">Panel 13</span>
+        <h2>Movie makers need advice</h2>
+        <div class="scene">
+          <div class="character coach" aria-hidden="true">
+            <div class="face"><div class="hair"></div><div class="smile"></div></div><div class="body"></div>
+          </div>
+          <div class="speech">
+            “A group of friends wants to make a movie. They researched movie running times and made a histogram.
+            What should you recommend? Use the data, not a guess.”
+          </div>
+        </div>
+        <div class="sentence-starters">
+          <div class="starter">I recommend a movie length between ___ and ___ because...</div>
+          <div class="starter">The histogram shows that the most common interval is...</div>
+          <div class="starter">This is a good recommendation because...</div>
+          <div class="starter">One detail from the graph that supports my thinking is...</div>
+        </div>
+        <label for="movieAdvice"><b>Write your advice:</b></label>
+        <textarea id="movieAdvice" placeholder="Type your recommendation here. Your writing saves in this browser."></textarea>
+      </article>
+
+      <article class="panel white">
+        <span class="caption">Panel 14</span>
+        <h2>Exit Ticket</h2>
+        <p><b>Answer both questions.</b></p>
+        <label for="exit1">1. Why might a histogram be better than a dot plot for a large data set?</label>
+        <textarea id="exit1" placeholder="A histogram may be better because..."></textarea>
+        <br><br>
+        <label for="exit2">2. What does the tallest bar in a histogram tell you?</label>
+        <textarea id="exit2" placeholder="The tallest bar tells me..."></textarea>
+      </article>
+
+      <article class="panel dark">
+        <span class="caption">Final Panel</span>
+        <h2>Hero Summary</h2>
+        <div class="vocab-card">
+          <b>Remember:</b>
+          <p>1. Group numerical data into equal, non-overlapping intervals.</p>
+          <p>2. Count each interval to make a frequency table.</p>
+          <p>3. Use a histogram to show the frequency distribution.</p>
+          <p>4. Look for the tallest bar to find the most common interval.</p>
+          <p>5. Describe the data in context.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="footer">
+      <strong>Teacher note:</strong> This digital graphic novel is designed for screen use. Students can read, click reveals, and type responses directly in the browser. Typed responses save locally on the same device/browser.
+    </section>
   </main>
-  <script src="/assets/app.js" defer></script>
+
+  <script>
+    const textAreas = ["movieAdvice", "exit1", "exit2"];
+
+    function toggleReveal(id) {
+      const box = document.getElementById(id);
+      box.classList.toggle("show");
+    }
+
+    function checkChoice(button, isCorrect, feedbackId) {
+      const parent = button.parentElement;
+      parent.querySelectorAll(".choice").forEach(btn => {
+        btn.classList.remove("correct", "incorrect");
+      });
+      button.classList.add(isCorrect ? "correct" : "incorrect");
+      const feedback = document.getElementById(feedbackId);
+      feedback.textContent = isCorrect
+        ? "Correct. These intervals are the same size and do not overlap."
+        : "Try again. Look for intervals that are equal in size and do not overlap.";
+    }
+
+    function saveTextArea(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const key = "histogram_graphic_novel_" + id;
+      el.value = localStorage.getItem(key) || "";
+      el.addEventListener("input", () => localStorage.setItem(key, el.value));
+    }
+
+    function resetPage() {
+      document.querySelectorAll(".reveal-box").forEach(el => el.classList.remove("show"));
+      document.querySelectorAll(".choice").forEach(el => el.classList.remove("correct", "incorrect"));
+      document.querySelectorAll(".feedback").forEach(el => el.textContent = "");
+      textAreas.forEach(id => {
+        localStorage.removeItem("histogram_graphic_novel_" + id);
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function updateProgress() {
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - window.innerHeight;
+      const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      document.getElementById("progressFill").style.width = Math.min(100, Math.max(0, progress)) + "%";
+    }
+
+    textAreas.forEach(saveTextArea);
+    updateProgress();
+    window.addEventListener("scroll", updateProgress);
+  </script>
 </body>
 </html>

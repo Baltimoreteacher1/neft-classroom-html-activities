@@ -1,37 +1,1982 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Refugee Book Review classroom activity.">
-  <title>Refugee Book Review</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refugee: The Review Mission</title>
+<style>
+:root{
+  --bg:#0a0d12;
+  --surface:#111520;
+  --card:#181e2e;
+  --border:rgba(255,255,255,0.08);
+  --gold:#FFD166;
+  --blue:#5EC4FF;
+  --orange:#FF8C42;
+  --green:#06D6A0;
+  --red:#EF476F;
+  --purple:#C77DFF;
+  --text:#EEF2FF;
+  --muted:#6B7A99;
+  --dim:rgba(238,242,255,0.6);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+
+/* ══════════════════════════════════
+   PARTICLE BG
+══════════════════════════════════ */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;border-radius:50%;animation:float linear infinite;opacity:0}
+@keyframes float{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:0.3}100%{transform:translateY(-100px) scale(1);opacity:0}}
+
+/* ══════════════════════════════════
+   LAYOUT SHELL
+══════════════════════════════════ */
+#shell{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column}
+
+/* ══════════════════════════════════
+   TOP HUD
+══════════════════════════════════ */
+#hud{
+  display:flex;align-items:center;gap:16px;
+  padding:12px 24px;
+  background:rgba(10,13,18,0.9);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  flex-shrink:0;
+}
+
+.hud-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:0.05em;
+  color:var(--gold);
+  flex-shrink:0;
+}
+
+.hud-divider{width:1px;height:24px;background:var(--border);flex-shrink:0}
+
+.hud-chapter{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:0.2em;
+  color:var(--muted);text-transform:uppercase;
+  flex-shrink:0;
+}
+
+.hud-spacer{flex:1}
+
+.hud-streak{
+  display:flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;color:var(--orange);
+  font-weight:600;
+}
+
+.streak-flame{font-size:16px;animation:flicker 1.5s ease-in-out infinite alternate}
+@keyframes flicker{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.15) rotate(3deg)}}
+
+.hud-xp{
+  display:flex;align-items:center;gap:10px;
+  min-width:180px;
+}
+
+.xp-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--gold);letter-spacing:0.15em;
+  white-space:nowrap;
+}
+
+.xp-bar-wrap{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
+.xp-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),#FFEF99);transition:width 0.5s cubic-bezier(.4,0,.2,1)}
+
+.hud-lives{display:flex;gap:4px;font-size:18px}
+
+/* ══════════════════════════════════
+   CHAPTER MAP (left panel)
+══════════════════════════════════ */
+#map-panel{
+  width:220px;flex-shrink:0;
+  background:rgba(10,13,18,0.7);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  padding:16px 0;
+}
+
+.map-chapter{
+  padding:12px 16px;
+  margin:0 10px 6px;
+  border-radius:12px;
+  border:1px solid transparent;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+
+.map-chapter.locked{opacity:0.35;cursor:not-allowed}
+.map-chapter.unlocked{border-color:var(--border)}
+.map-chapter.active{background:rgba(255,209,102,0.08);border-color:rgba(255,209,102,0.3)}
+.map-chapter.complete{background:rgba(6,214,160,0.05);border-color:rgba(6,214,160,0.25)}
+
+.map-ch-row{display:flex;align-items:center;gap:10px}
+.map-ch-icon{font-size:20px;flex-shrink:0}
+.map-ch-info{flex:1;min-width:0}
+.map-ch-name{font-size:13px;font-weight:800;line-height:1.2}
+.map-ch-sub{font-size:10px;color:var(--muted);margin-top:2px}
+
+.map-ch-status{
+  font-size:14px;flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.map-ch-progress{
+  margin-top:8px;height:3px;
+  background:rgba(255,255,255,0.06);
+  border-radius:2px;overflow:hidden;
+}
+
+.map-ch-prog-fill{
+  height:100%;border-radius:2px;
+  background:var(--gold);
+  transition:width 0.4s ease;
+}
+
+.map-legend{
+  padding:12px 16px;margin-top:8px;
+  border-top:1px solid var(--border);
+}
+
+.map-legend-item{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;color:var(--muted);
+  margin-bottom:6px;
+}
+
+/* ══════════════════════════════════
+   MAIN STAGE
+══════════════════════════════════ */
+#stage-wrap{display:flex;flex:1;overflow:hidden}
+
+#stage{
+  flex:1;overflow-y:auto;
+  padding:32px;
+  position:relative;
+}
+
+/* ══════════════════════════════════
+   SCREENS
+══════════════════════════════════ */
+.view{display:none;animation:viewIn 0.35s ease forwards}
+.view.active{display:block}
+@keyframes viewIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════
+   INTRO / MISSION SCREEN
+══════════════════════════════════ */
+#intro-view{
+  min-height:70vh;text-align:center;
+}
+
+.intro-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:0.35em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px;
+}
+
+.intro-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(56px,8vw,96px);
+  letter-spacing:0.03em;line-height:0.95;
+  margin-bottom:12px;
+}
+
+.intro-title .word-r{color:var(--gold)}
+.intro-title .word-efugee{color:var(--text)}
+
+.intro-sub{
+  font-size:17px;color:var(--dim);
+  max-width:520px;line-height:1.65;
+  margin-bottom:40px;
+}
+
+.char-trio{display:flex;gap:12px;justify-content:center;margin-bottom:40px;flex-wrap:wrap}
+
+.char-badge{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 20px;border-radius:100px;
+  border:1px solid;font-size:13px;font-weight:800;
+}
+
+.cb-j{border-color:rgba(255,209,102,0.5);color:var(--gold);background:rgba(255,209,102,0.06)}
+.cb-i{border-color:rgba(94,196,255,0.5);color:var(--blue);background:rgba(94,196,255,0.06)}
+.cb-m{border-color:rgba(255,140,66,0.5);color:var(--orange);background:rgba(255,140,66,0.06)}
+
+.chapter-preview-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:12px;max-width:700px;width:100%;
+  margin-bottom:40px;
+}
+
+.cp-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:16px 12px;text-align:center;
+  transition:all 0.2s;
+}
+
+.cp-icon{font-size:28px;margin-bottom:8px;display:block}
+.cp-name{font-size:11px;font-weight:800;color:var(--dim);line-height:1.3}
+
+.start-btn{
+  padding:16px 48px;border-radius:100px;
+  background:var(--gold);color:#0a0d12;
+  border:none;font-family:'Nunito',sans-serif;
+  font-size:18px;font-weight:900;
+  cursor:pointer;letter-spacing:0.02em;
+  transition:all 0.2s;
+  box-shadow:0 0 40px rgba(255,209,102,0.25);
+}
+
+.start-btn:hover{transform:scale(1.05);box-shadow:0 0 60px rgba(255,209,102,0.4)}
+
+/* ══════════════════════════════════
+   CHAPTER INTRO CARD
+══════════════════════════════════ */
+.chapter-intro-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:40px;
+  max-width:680px;margin:0 auto 28px;
+  position:relative;overflow:hidden;
+}
+
+.chapter-intro-card::before{
+  content:'';position:absolute;inset:0;
+  opacity:0.04;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 30% 30%,white,transparent 70%);
+}
+
+.ch-intro-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:12px;
+}
+
+.ch-intro-icon{font-size:56px;margin-bottom:16px;display:block}
+
+.ch-intro-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:42px;letter-spacing:0.03em;
+  margin-bottom:12px;
+}
+
+.ch-intro-desc{
+  font-size:15px;line-height:1.75;color:var(--dim);
+  margin-bottom:24px;
+}
+
+.ch-intro-tasks{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-bottom:28px;
+}
+
+.task-pill{
+  padding:6px 14px;border-radius:100px;
+  font-size:12px;font-weight:700;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  color:var(--dim);
+}
+
+.ch-start-btn{
+  padding:13px 36px;border-radius:100px;
+  border:none;font-family:'Nunito',sans-serif;
+  font-size:15px;font-weight:800;
+  cursor:pointer;transition:all 0.2s;
+}
+
+.ch-start-btn:hover{transform:translateY(-2px)}
+
+/* ══════════════════════════════════
+   TEACH MOMENT (slide-style brief)
+══════════════════════════════════ */
+.teach-wrap{max-width:720px;margin:0 auto}
+
+.teach-slide{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:36px;
+  margin-bottom:20px;
+  animation:viewIn 0.3s ease;
+}
+
+.teach-step-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;
+}
+
+.teach-step-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.teach-big{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(32px,5vw,56px);
+  letter-spacing:0.02em;line-height:1;
+  margin-bottom:12px;
+}
+
+.teach-body{
+  font-size:15px;line-height:1.75;color:var(--dim);
+  margin-bottom:16px;
+}
+
+.teach-fact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+
+.fact-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:12px;padding:18px;
+}
+
+.fact-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:6px;
+}
+
+.fact-val{font-size:14px;line-height:1.5;font-weight:700}
+
+.teach-quote{
+  font-family:'Nunito',sans-serif;font-style:italic;
+  font-size:16px;line-height:1.65;
+  border-left:3px solid var(--gold);
+  padding-left:20px;color:var(--dim);
+  margin:20px 0;
+}
+
+.teach-nav{
+  display:flex;justify-content:space-between;align-items:center;
+  max-width:720px;margin:0 auto;
+}
+
+.teach-dots{display:flex;gap:6px}
+.teach-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.12);transition:all 0.2s}
+.teach-dot.active{background:var(--gold);width:24px;border-radius:4px}
+
+/* ══════════════════════════════════
+   ACTIVITY WRAPPER
+══════════════════════════════════ */
+.activity-wrap{max-width:680px;margin:0 auto}
+
+.activity-header{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:20px 24px;
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:16px;
+}
+
+.act-icon{font-size:28px}
+
+.act-title-block{flex:1}
+.act-type{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:4px;
+}
+.act-title{font-size:16px;font-weight:800}
+
+.act-xp{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;color:var(--gold);
+  background:rgba(255,209,102,0.08);
+  padding:6px 12px;border-radius:100px;
+  border:1px solid rgba(255,209,102,0.2);
+}
+
+/* ══════════════════════════════════
+   MULTIPLE CHOICE
+══════════════════════════════════ */
+.mc-question{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:28px;margin-bottom:16px;
+}
+
+.mc-q-label{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:16px;
+}
+
+.mc-q-who{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:0.2em;text-transform:uppercase;
+  padding:4px 12px;border-radius:100px;
+}
+
+.who-j{color:var(--gold);background:rgba(255,209,102,0.1)}
+.who-i{color:var(--blue);background:rgba(94,196,255,0.1)}
+.who-m{color:var(--orange);background:rgba(255,140,66,0.1)}
+.who-all{color:var(--purple);background:rgba(199,125,255,0.1)}
+
+.mc-q-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--muted);margin-left:auto;
+}
+
+.mc-q-text{
+  font-size:18px;font-weight:800;line-height:1.4;
+  margin-bottom:24px;
+}
+
+.mc-opts{display:flex;flex-direction:column;gap:10px}
+
+.mc-opt{
+  padding:14px 18px;border-radius:12px;
+  border:2px solid var(--border);
+  background:rgba(255,255,255,0.02);
+  font-size:14px;font-weight:700;line-height:1.4;
+  cursor:pointer;transition:all 0.18s;
+  display:flex;align-items:flex-start;gap:14px;
+  text-align:left;color:var(--text);
+}
+
+.mc-opt:hover:not(:disabled){
+  border-color:rgba(255,209,102,0.4);
+  background:rgba(255,209,102,0.04);
+  transform:translateX(4px);
+}
+
+.mc-opt.correct{border-color:var(--green);background:rgba(6,214,160,0.08);color:var(--green)}
+.mc-opt.wrong{border-color:var(--red);background:rgba(239,71,111,0.08);color:var(--red)}
+.mc-opt:disabled{cursor:default}
+
+.opt-key{
+  min-width:30px;height:30px;border-radius:8px;
+  background:rgba(255,255,255,0.06);
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+
+.mc-feedback{
+  border-radius:12px;padding:16px 20px;
+  margin-bottom:16px;font-size:14px;line-height:1.6;
+  display:none;
+}
+
+.mc-feedback.show{display:block}
+.mc-feedback.correct{background:rgba(6,214,160,0.06);border:1px solid rgba(6,214,160,0.25);color:#80EFCA}
+.mc-feedback.wrong{background:rgba(239,71,111,0.06);border:1px solid rgba(239,71,111,0.2);color:#F5A3B5}
+
+/* ══════════════════════════════════
+   TRUE / FALSE
+══════════════════════════════════ */
+.tf-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+
+.tf-opt{
+  padding:20px;border-radius:14px;
+  border:2px solid var(--border);
+  background:rgba(255,255,255,0.02);
+  font-size:22px;font-weight:900;
+  cursor:pointer;transition:all 0.18s;
+  text-align:center;letter-spacing:0.04em;
+}
+
+.tf-opt:hover:not(:disabled){transform:scale(1.03)}
+.tf-opt.correct{border-color:var(--green);background:rgba(6,214,160,0.08);color:var(--green)}
+.tf-opt.wrong{border-color:var(--red);background:rgba(239,71,111,0.08);color:var(--red)}
+
+/* ══════════════════════════════════
+   MATCHING
+══════════════════════════════════ */
+.match-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;margin-bottom:16px;
+}
+
+.match-col-head{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--muted);padding:0 4px;margin-bottom:8px;
+}
+
+.match-item{
+  padding:13px 16px;border-radius:10px;
+  border:2px solid var(--border);
+  background:rgba(255,255,255,0.02);
+  font-size:13px;font-weight:700;line-height:1.4;
+  cursor:pointer;transition:all 0.18s;
+  min-height:52px;display:flex;align-items:center;
+  margin-bottom:8px;
+}
+
+.match-item:hover:not(.matched):not(.wrong-flash){
+  border-color:rgba(255,209,102,0.4);
+  background:rgba(255,209,102,0.04);
+}
+
+.match-item.selected{
+  border-color:var(--gold);
+  background:rgba(255,209,102,0.08);color:var(--gold);
+}
+
+.match-item.matched{
+  border-color:rgba(6,214,160,0.4);
+  background:rgba(6,214,160,0.06);color:var(--green);
+  cursor:default;
+}
+
+.match-item.wrong-flash{
+  border-color:var(--red);
+  background:rgba(239,71,111,0.08);
+  animation:shake 0.35s ease;
+}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* ══════════════════════════════════
+   FILL IN BLANK
+══════════════════════════════════ */
+.fitb-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:28px;margin-bottom:16px;
+}
+
+.fitb-sentence{
+  font-size:20px;font-weight:800;line-height:1.6;
+  margin-bottom:24px;
+}
+
+.blank{
+  display:inline-block;
+  min-width:120px;border-bottom:3px solid var(--gold);
+  padding:0 8px;vertical-align:bottom;
+  color:var(--gold);letter-spacing:0.05em;
+}
+
+.fitb-input-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+.fitb-inp{
+  flex:1;min-width:180px;
+  padding:12px 18px;border-radius:10px;
+  border:2px solid var(--border);
+  background:rgba(255,255,255,0.04);
+  color:var(--text);
+  font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;
+  outline:none;transition:border-color 0.2s;
+}
+
+.fitb-inp:focus{border-color:rgba(255,209,102,0.5)}
+.fitb-inp.correct{border-color:var(--green);background:rgba(6,214,160,0.07)}
+.fitb-inp.wrong{border-color:var(--red);background:rgba(239,71,111,0.07)}
+
+/* ══════════════════════════════════
+   SEQUENCE SORT (drag-style click)
+══════════════════════════════════ */
+.sort-instruction{
+  font-size:13px;color:var(--muted);
+  margin-bottom:16px;font-style:italic;
+}
+
+.sort-items{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+
+.sort-item{
+  padding:14px 18px;border-radius:10px;
+  border:2px solid var(--border);
+  background:rgba(255,255,255,0.02);
+  font-size:14px;font-weight:700;line-height:1.4;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;gap:14px;
+  user-select:none;
+}
+
+.sort-item:hover:not(.placed):not(.locked-sort){
+  border-color:rgba(255,209,102,0.3);
+  background:rgba(255,209,102,0.03);
+}
+
+.sort-item.selected-sort{
+  border-color:var(--gold);background:rgba(255,209,102,0.08);
+  transform:scale(1.01);
+}
+
+.sort-item.placed{
+  border-color:rgba(6,214,160,0.35);
+  background:rgba(6,214,160,0.05);color:var(--green);
+  cursor:default;
+}
+
+.sort-item.wrong-place{
+  border-color:var(--red);animation:shake 0.3s ease;
+}
+
+.sort-num{
+  min-width:28px;height:28px;border-radius:6px;
+  background:rgba(255,255,255,0.06);
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+.sort-num.set{background:var(--green);color:#0a0d12}
+
+/* ══════════════════════════════════
+   ACTIVITY PROGRESS BAR
+══════════════════════════════════ */
+.act-progress-bar{
+  height:4px;border-radius:2px;
+  background:rgba(255,255,255,0.06);
+  overflow:hidden;margin-bottom:20px;
+}
+
+.act-prog-fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--gold),#FFEF80);
+  transition:width 0.4s ease;
+}
+
+/* ══════════════════════════════════
+   CONTINUE / NEXT BUTTONS
+══════════════════════════════════ */
+.next-btn{
+  padding:13px 32px;border-radius:100px;
+  background:var(--gold);color:#0a0d12;
+  border:none;font-family:'Nunito',sans-serif;
+  font-size:15px;font-weight:900;
+  cursor:pointer;transition:all 0.2s;
+  display:none;
+}
+
+.next-btn:hover{transform:translateY(-2px);background:#FFE050}
+.next-btn.show{display:inline-flex;align-items:center;gap:8px}
+
+.hint-btn{
+  padding:8px 18px;border-radius:100px;
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);font-family:'Nunito',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;
+  transition:all 0.2s;
+}
+
+.hint-btn:hover{border-color:rgba(255,209,102,0.3);color:var(--gold)}
+
+/* ══════════════════════════════════
+   CHAPTER COMPLETE SCREEN
+══════════════════════════════════ */
+.chapter-complete{
+  text-align:center;padding:60px 40px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;max-width:520px;margin:0 auto;
+}
+
+.cc-trophy{font-size:72px;margin-bottom:16px;animation:trophyPop 0.5s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes trophyPop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+
+.cc-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:48px;letter-spacing:0.03em;
+  color:var(--gold);margin-bottom:8px;
+}
+
+.cc-score{font-size:16px;color:var(--dim);margin-bottom:28px}
+
+.cc-xp-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,209,102,0.08);
+  border:1px solid rgba(255,209,102,0.25);
+  padding:10px 24px;border-radius:100px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px;color:var(--gold);font-weight:600;
+  margin-bottom:32px;
+}
+
+.cc-unlock{
+  background:rgba(6,214,160,0.06);
+  border:1px solid rgba(6,214,160,0.2);
+  border-radius:12px;padding:16px;
+  font-size:13px;color:var(--green);
+  margin-bottom:28px;
+  font-weight:700;
+}
+
+/* ══════════════════════════════════
+   FINAL BOSS SCREEN
+══════════════════════════════════ */
+.boss-header{
+  background:linear-gradient(135deg,rgba(199,125,255,0.08),rgba(94,196,255,0.06));
+  border:1px solid rgba(199,125,255,0.2);
+  border-radius:20px;padding:28px;
+  margin-bottom:24px;text-align:center;
+}
+
+.boss-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:0.35em;text-transform:uppercase;
+  color:var(--purple);margin-bottom:12px;
+}
+
+.boss-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:52px;letter-spacing:0.03em;
+  color:var(--purple);margin-bottom:8px;
+}
+
+.boss-desc{font-size:14px;color:var(--dim)}
+
+.boss-health{
+  height:12px;border-radius:6px;
+  background:rgba(199,125,255,0.1);
+  border:1px solid rgba(199,125,255,0.2);
+  overflow:hidden;margin:16px 0 4px;
+}
+
+.boss-hp-fill{
+  height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--purple),#DDA0FF);
+  transition:width 0.6s ease;
+}
+
+.boss-hp-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--purple);text-align:right;
+}
+
+/* ══════════════════════════════════
+   FINAL RESULT
+══════════════════════════════════ */
+.final-result{
+  max-width:560px;margin:0 auto;
+  text-align:center;padding:20px;
+}
+
+.final-big{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:96px;letter-spacing:0.02em;
+  line-height:1;margin-bottom:8px;
+}
+
+.final-grade{font-size:20px;color:var(--dim);margin-bottom:16px}
+.final-msg{
+  font-style:italic;font-size:16px;line-height:1.7;
+  color:var(--muted);max-width:440px;margin:0 auto 32px;
+}
+
+.stars-row{font-size:36px;letter-spacing:8px;margin-bottom:28px}
+
+.stat-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+  margin-bottom:32px;
+}
+
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:16px;
+}
+
+.stat-n{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:36px;color:var(--gold);
+}
+
+.stat-l{font-size:12px;color:var(--muted);font-weight:700}
+
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+#toast{
+  position:fixed;top:80px;right:24px;z-index:999;
+  display:flex;flex-direction:column;gap:8px;
+  pointer-events:none;
+}
+
+.toast-item{
+  background:#1a2035;
+  border:1px solid var(--border);
+  border-radius:12px;padding:12px 18px;
+  font-size:13px;font-weight:700;
+  animation:toastIn 0.35s ease forwards;
+  max-width:260px;
+}
+
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+
+.toast-item.gold{border-color:rgba(255,209,102,0.4);color:var(--gold)}
+.toast-item.green{border-color:rgba(6,214,160,0.4);color:var(--green)}
+.toast-item.red{border-color:rgba(239,71,111,0.35);color:var(--red)}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.15);border-radius:3px}
+
+/* util */
+.btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+.spacer{flex:1}
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/esol-reading-writing/">ESOL, Reading, and Writing</a><span>/</span><span>Refugee Book Review</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Refugee Book Review</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> RefugeeBookReview</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/esol-reading-writing/refugeebookreview/</span></p>
-      </div>
-    </section>
+<!-- particles -->
+<div id="particles"></div>
 
-    <div class="button-row">
-      <a class="primary-button" href="/esol-reading-writing/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+<div id="shell">
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-title">REFUGEE</div>
+  <div class="hud-divider"></div>
+  <div class="hud-chapter" id="hud-chapter">Mission Select</div>
+  <div class="hud-spacer"></div>
+  <div class="hud-streak"><span class="streak-flame">🔥</span><span id="streak-count">0</span> streak</div>
+  <div class="hud-divider"></div>
+  <div class="hud-xp">
+    <span class="xp-label">XP <span id="xp-num">0</span></span>
+    <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xp-fill" style="width:0%"></div></div>
+  </div>
+  <div class="hud-divider"></div>
+  <div class="hud-lives" id="lives-display">❤️❤️❤️</div>
+</div>
+
+<div id="stage-wrap">
+
+<!-- CHAPTER MAP -->
+<div id="map-panel">
+  <div id="chapter-map"></div>
+  <div class="map-legend">
+    <div class="map-legend-item">🔒 Locked</div>
+    <div class="map-legend-item">▶ Available</div>
+    <div class="map-legend-item" style="color:var(--green)">✓ Complete</div>
+  </div>
+</div>
+
+<!-- STAGE -->
+<div id="stage">
+
+  <!-- INTRO -->
+  <div class="view active" id="intro-view">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center">
+    <div class="intro-eyebrow">📚 Book Review Mission</div>
+    <div class="intro-title"><span class="word-r">R</span><span class="word-efugee">EFUGEE</span></div>
+    <div class="intro-sub">By Alan Gratz · Complete all 5 missions to master the book. Each mission teaches, then challenges you. Earn XP, keep your streak, and conquer the Final Boss.</div>
+    <div class="char-trio">
+      <div class="char-badge cb-j">⭐ Josef · Germany 1939</div>
+      <div class="char-badge cb-i">🌊 Isabel · Cuba 1994</div>
+      <div class="char-badge cb-m">🕊️ Mahmoud · Syria 2015</div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+    <div class="chapter-preview-grid">
+      <div class="cp-card"><span class="cp-icon">👤</span><div class="cp-name">Mission 1<br>The Characters</div></div>
+      <div class="cp-card"><span class="cp-icon">⚡</span><div class="cp-name">Mission 2<br>The Plot</div></div>
+      <div class="cp-card"><span class="cp-icon">💡</span><div class="cp-name">Mission 3<br>Big Themes</div></div>
+      <div class="cp-card"><span class="cp-icon">🔗</span><div class="cp-name">Mission 4<br>Connections</div></div>
+      <div class="cp-card"><span class="cp-icon">👾</span><div class="cp-name">Final Boss<br>Full Review</div></div>
+    </div>
+    <button class="start-btn" onclick="startMission(0)">▶ START MISSION 1</button>
+    </div>
+  </div>
+
+  <!-- CHAPTER VIEW -->
+  <div class="view" id="chapter-view"></div>
+
+  <!-- ACTIVITY VIEW -->
+  <div class="view" id="activity-view"></div>
+
+  <!-- CHAPTER COMPLETE VIEW -->
+  <div class="view" id="complete-view"></div>
+
+  <!-- FINAL BOSS VIEW -->
+  <div class="view" id="boss-view"></div>
+
+  <!-- FINAL RESULT VIEW -->
+  <div class="view" id="result-view"></div>
+
+</div><!-- /stage -->
+</div><!-- /stage-wrap -->
+</div><!-- /shell -->
+
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════ */
+let xp = 0, streak = 0, lives = 3;
+const MAX_XP = 800;
+let currentMission = 0, currentActivity = 0;
+let missionScores = [0,0,0,0,0];
+let bossQ = 0, bossScore = 0;
+
+/* ════════════════════════════════════════════════
+   PARTICLES
+════════════════════════════════════════════════ */
+(function initParticles(){
+  const p = document.getElementById('particles');
+  const colors = ['rgba(255,209,102,0.4)','rgba(94,196,255,0.3)','rgba(255,140,66,0.3)','rgba(6,214,160,0.2)'];
+  for(let i=0;i<20;i++){
+    const el = document.createElement('div');
+    el.className = 'particle';
+    const size = Math.random()*3+1;
+    el.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[i%colors.length]};
+      animation-duration:${Math.random()*20+15}s;
+      animation-delay:${Math.random()*15}s;
+    `;
+    p.appendChild(el);
+  }
+})();
+
+/* ════════════════════════════════════════════════
+   MISSIONS DATA
+════════════════════════════════════════════════ */
+const missions = [
+
+/* ─── MISSION 0: The Characters ─── */
+{
+  id:0, icon:'👤', title:'The Three Refugees',
+  color:'var(--gold)',
+  desc:'Before you can understand the story, you need to know WHO it\'s about. Three kids. Three decades. One unforgettable experience.',
+  tasks:['Quick Facts Flash','True or False','Character Match','Fill the Blank'],
+
+  teach:[
+    {
+      title:'MEET THE REFUGEES',
+      body:'Refugee follows three characters across three different time periods — but their stories are deeply connected.',
+      facts:[
+        {l:'Josef Landau',v:'Age 12 · Germany · 1939\nBoarding the MS St. Louis to flee Nazi persecution'},
+        {l:'Isabel Fernandez',v:'Age 11 · Cuba · 1994\nOn a makeshift raft crossing to Florida'},
+        {l:'Mahmoud Bishara',v:'Age 12 · Syria · 2015\nFleeing civil war, crossing Europe to Germany'},
+        {l:'The Connection',v:'All three are refugees — people forced to flee their home countries for safety'},
+      ],
+      quote:'"Refugee" — not a word any of them chose. It was chosen for them.'
+    },
+    {
+      title:'JOSEF\'S STORY',
+      body:'Josef\'s father was imprisoned in the Dachau concentration camp by the Nazis. When Papa is released — broken and traumatized — the family has no choice but to flee Germany immediately. Josef boards the MS St. Louis with 937 other Jewish refugees, hoping Cuba or the US will let them in.',
+      facts:[
+        {l:'The Threat',v:'Nazi Germany — Jews were losing rights, businesses, safety, and their lives'},
+        {l:'The Ship',v:'MS St. Louis — a real ocean liner carrying 938 Jewish refugees in May 1939'},
+        {l:'Papa\'s Condition',v:'Mentally broken from Dachau — Josef must become "the man of the family"'},
+        {l:'Josef\'s Trait',v:'Courage. He forces himself to take responsibility even when he\'s terrified'},
+      ]
+    },
+    {
+      title:'ISABEL\'S STORY',
+      body:'In 1994, Cuba\'s economy has collapsed. There\'s barely any food, and riots are breaking out. When Isabel\'s father is seen throwing a rock at a riot, the family is in danger. They launch a homemade raft into shark-infested waters — 90 miles between Cuba and Florida.',
+      facts:[
+        {l:'The Threat',v:'Cuba\'s "Special Period" — economic collapse, food shortages, political danger'},
+        {l:'The Journey',v:'90 miles on a makeshift raft across the Florida Straits — with sharks'},
+        {l:'Big News',v:'Mami is pregnant during the entire journey — and gives birth on the raft'},
+        {l:'Isabel\'s Trait',v:'Hope and music — her trumpet is her identity and her joy'},
+      ]
+    },
+    {
+      title:'MAHMOUD\'S STORY',
+      body:'In 2015, Mahmoud\'s city of Aleppo, Syria has been torn apart by barrel bombs and civil war. His family\'s apartment building is destroyed. They begin a dangerous journey across multiple countries — rubber dinghy, trains, foot — trying to reach safety in Germany.',
+      facts:[
+        {l:'The Threat',v:'Syrian Civil War — barrel bombs from the government, ISIS, total destruction'},
+        {l:'The Journey',v:'Syria → Turkey → Aegean Sea → Greece → Balkans → Germany'},
+        {l:'His Strategy',v:'Being "invisible" — staying small, unseen, out of trouble'},
+        {l:'His Arc',v:'From invisible to visible — he learns to stand up and demand to be seen'},
+      ]
+    }
+  ],
+
+  activities:[
+    {
+      type:'mc', icon:'🎯', title:'Character Quick Fire', xp:15,
+      questions:[
+        {who:'Josef',wc:'who-j',q:'How old is Josef when the story begins?',opts:['10','12','14','16'],correct:1,expl:'Josef is 12 years old — forced to act like an adult because his father is mentally broken from the concentration camp.'},
+        {who:'Isabel',wc:'who-i',q:'What instrument does Isabel play that becomes a key symbol in the story?',opts:['Piano','Violin','Trumpet','Guitar'],correct:2,expl:'Isabel\'s trumpet represents her identity, her joy, and Cuba itself. What she has to sacrifice it says everything.'},
+        {who:'Mahmoud',wc:'who-m',q:'What is Mahmoud\'s strategy for staying safe in war-torn Syria?',opts:['Fighting back','Running fast','Being invisible — small and unseen','Hiding in a bunker'],correct:2,expl:'Mahmoud learned that being noticed gets you hurt. His whole arc is learning this strategy isn\'t enough.'},
+        {who:'All',wc:'who-all',q:'What year does Josef\'s story take place?',opts:['1933','1939','1945','1994'],correct:1,expl:'1939 — just as World War II is beginning and Nazi persecution of Jews is at its peak.'},
+      ]
+    },
+    {
+      type:'tf', icon:'⚡', title:'True or False Blitz', xp:10,
+      questions:[
+        {who:'Josef',wc:'who-j',q:'Josef\'s father was imprisoned in the Dachau concentration camp before the family fled.',correct:true,expl:'Yes! Papa\'s time in Dachau left him mentally shattered — this is why Josef has to step up.'},
+        {who:'Isabel',wc:'who-i',q:'Isabel\'s family is flying to the United States in an airplane.',correct:false,expl:'False! They\'re on a homemade raft — 90 miles across the shark-filled Florida Straits.'},
+        {who:'Mahmoud',wc:'who-m',q:'Mahmoud is from the city of Aleppo in Syria.',correct:true,expl:'Yes — Aleppo was one of the most devastated cities in the Syrian Civil War.'},
+        {who:'Isabel',wc:'who-i',q:'Isabel\'s mother is pregnant during the entire ocean journey.',correct:true,expl:'Yes! Mami gives birth to baby Mariano on the raft — a new life born between two countries.'},
+      ]
+    },
+    {
+      type:'match', icon:'🧩', title:'Character Match-Up', xp:20,
+      instruction:'Click a character on the left, then click their matching description on the right.',
+      pairs:[
+        ['⭐ Josef','Fleeing Nazi Germany on the MS St. Louis · 1939'],
+        ['🌊 Isabel','On a raft crossing the Florida Straits · 1994'],
+        ['🕊️ Mahmoud','Walking across Europe to escape Syria · 2015'],
+        ['📖 Alan Gratz','The author who researched and wrote Refugee'],
+      ]
+    },
+    {
+      type:'fitb', icon:'✏️', title:'Fill in the Blank', xp:15,
+      questions:[
+        {who:'Josef',sentence:'Josef\'s family boarded the MS ___ ___ to flee Nazi Germany.',answer:'st. louis',alts:['st louis','the st. louis'],hint:'Initials: S.L.',expl:'The MS St. Louis was a real ship — its story is one of history\'s most painful examples of refugees being turned away.'},
+        {who:'Mahmoud',sentence:'Mahmoud\'s strategy for survival was to be ___.',answer:'invisible',alts:['invisibility'],hint:'The opposite of being seen',expl:'Mahmoud made himself small and unnoticed — until he learned that invisibility means erasure.'},
+        {who:'Isabel',sentence:'Isabel had to travel ___ miles on a raft to reach Florida.',answer:'90',alts:['ninety'],hint:'Degrees in a right angle',expl:'90 miles of open ocean — one of the most dangerous refugee routes in the world.'},
+      ]
+    }
+  ]
+},
+
+/* ─── MISSION 1: The Plot ─── */
+{
+  id:1, icon:'⚡', title:'Key Story Events',
+  color:'var(--blue)',
+  desc:'The plot is packed with life-or-death moments. Learn the sequence of events and the impossible choices each character faces.',
+  tasks:['Story Sequence','Plot Multiple Choice','Key Moments Match','True/False Blitz'],
+
+  teach:[
+    {
+      title:'THE TURNING POINTS',
+      body:'Each character\'s story has one defining moment — a sacrifice, a loss, or a choice that changes everything. These moments are the heart of the book.',
+      facts:[
+        {l:'Josef\'s Turning Point',v:'When a guard comes for one child, Josef volunteers himself — so his sister Ruthie can go free'},
+        {l:'Isabel\'s Turning Point',v:'Isabel throws her beloved trumpet into the sea to save her family from the Coast Guard'},
+        {l:'Mahmoud\'s Turning Point',v:'Baby sister Hana is handed to strangers when the boat sinks — she disappears'},
+        {l:'The Connection',v:'All three make an impossible sacrifice — choosing others over themselves'},
+      ],
+      quote:'"You do what you have to do to protect the people you love."'
+    },
+    {
+      title:'WHAT HAPPENS TO JOSEF',
+      body:'Cuba refuses the MS St. Louis entry — passengers can literally see Havana\'s lights but aren\'t allowed to land. The US also turns them away. The ship returns to Europe. Josef\'s family ends up in France. When France falls to the Nazis, Josef makes his final, heroic choice.',
+      facts:[
+        {l:'Cuba Refuses',v:'Cuba, pressured by Nazi Germany, denies entry to 938 Jewish refugees'},
+        {l:'US Refuses',v:'President Roosevelt refuses to let the ship land in America either'},
+        {l:'Return to Europe',v:'Four countries take refugees — but France and Belgium fall to Hitler'},
+        {l:'Josef\'s Choice',v:'When a guard takes one child, Josef gives himself up so Ruthie can survive'},
+      ]
+    },
+    {
+      title:'WHAT HAPPENS TO ISABEL',
+      body:'The journey is brutal. Sharks, storms, a Coast Guard cutter closing in. Mami goes into labor on the raft. Baby Mariano is born between two countries. Isabel sacrifices her trumpet. Finally — they reach Miami. They made it.',
+      facts:[
+        {l:'The Coast Guard',v:'US cutters patrol to send Cubans back — they\'re only safe if they reach US soil'},
+        {l:'The Trumpet',v:'Isabel throws it to create noise and distract — her greatest sacrifice'},
+        {l:'Baby Mariano',v:'Born on the raft, between Cuba and America — hope amid chaos'},
+        {l:'Arrival',v:'They reach Florida — Isabel\'s family gets asylum'},
+      ]
+    },
+    {
+      title:'WHAT HAPPENS TO MAHMOUD',
+      body:'The rubber dinghy capsizes in the Aegean Sea. In desperation, Mahmoud\'s parents hand baby Hana to strangers — she disappears. The family crosses multiple hostile borders. Hungary seals its border with razor wire. Finally they reach Germany — where an elderly woman opens her door.',
+      facts:[
+        {l:'The Sinking',v:'Dinghy capsizes in the Aegean — Hana handed to strangers, disappears'},
+        {l:'Hungary',v:'Razor wire + tear gas on refugees — a real 2015 event depicted in the book'},
+        {l:'The Photo',v:'Mahmoud lying on train tracks — goes viral, his first act of being "seen"'},
+        {l:'Ruthie\'s Door',v:'An elderly Jewish woman in Germany — Josef\'s sister — takes them in'},
+      ]
+    }
+  ],
+
+  activities:[
+    {
+      type:'sort', icon:'🔢', title:'Put It In Order', xp:20,
+      instruction:'Click the events in the order they happen in Josef\'s story (1=first, 4=last).',
+      items:[
+        {text:'Josef boards the MS St. Louis in Hamburg',order:0},
+        {text:'Cuba refuses to let the ship land',order:1},
+        {text:'Papa tries to jump overboard — Josef stops him',order:2},
+        {text:'Josef volunteers himself so Ruthie can go free',order:3},
+      ]
+    },
+    {
+      type:'mc', icon:'🎯', title:'Plot Challenge', xp:15,
+      questions:[
+        {who:'Josef',wc:'who-j',q:'What do BOTH Cuba and the United States do when the MS St. Louis arrives?',opts:['Welcome the refugees warmly','Ignore the ship completely','Refuse to allow the refugees to land','Send food but not allow entry'],correct:2,expl:'Both countries refused entry to 938 Jewish refugees — most of whom were later killed in the Holocaust after being forced back to Europe.'},
+        {who:'Isabel',wc:'who-i',q:'Why does Isabel throw her trumpet into the ocean?',opts:['It fell overboard by accident','To create noise and distract sharks and the Coast Guard','To make room on the raft','She gives it to another family'],correct:1,expl:'This is Isabel\'s defining sacrifice — she destroys what she loves most to protect her family.'},
+        {who:'Mahmoud',wc:'who-m',q:'What country seals its border with razor wire and deploys tear gas on refugees?',opts:['Germany','Greece','Turkey','Hungary'],correct:3,expl:'Hungary\'s brutal response to the 2015 refugee crisis is depicted directly — a contrast to Germany\'s eventual welcome.'},
+        {who:'All',wc:'who-all',q:'What happens to baby Hana during Mahmoud\'s Aegean Sea crossing?',opts:['She is left behind in Turkey','She is handed to strangers on another boat and disappears','She drowns but is rescued','She is taken by coast guard officers'],correct:1,expl:'The most heartbreaking moment in Mahmoud\'s story — Hana disappears and the family doesn\'t know if she\'s alive.'},
+      ]
+    },
+    {
+      type:'match', icon:'🧩', title:'Match the Sacrifice', xp:20,
+      instruction:'Match each character to what they sacrifice.',
+      pairs:[
+        ['Josef','Volunteers himself so sister Ruthie can be free'],
+        ['Isabel','Throws her beloved trumpet into the sea'],
+        ['Mahmoud\'s parents','Hand baby Hana to strangers to save her from the sinking dinghy'],
+        ['Ruthie (75 years later)','Opens her home to Mahmoud\'s refugee family — repaying a 75-year debt'],
+      ]
+    },
+    {
+      type:'tf', icon:'⚡', title:'Plot True or False', xp:10,
+      questions:[
+        {who:'Josef',wc:'who-j',q:'The MS St. Louis successfully lands in Cuba and all the refugees are saved.',correct:false,expl:'False! Cuba refuses entry. The ship is turned away — one of history\'s most tragic examples of abandoned refugees.'},
+        {who:'Isabel',wc:'who-i',q:'Isabel\'s mother gives birth to a baby boy on the raft during the journey.',correct:true,expl:'Yes! Baby Mariano is born on the raft — a symbol of hope even in the darkest moment.'},
+        {who:'Mahmoud',wc:'who-m',q:'Mahmoud\'s photograph lying on the train tracks goes viral online.',correct:true,expl:'Yes — this is the first time Mahmoud stops being invisible. He makes the world see him.'},
+        {who:'All',wc:'who-all',q:'All three refugees successfully reach safety by the end of their stories.',correct:false,expl:'False! Josef does not survive — he gives his life so his sister can escape. His sacrifice is the heart of the book.'},
+      ]
+    }
+  ]
+},
+
+/* ─── MISSION 2: Themes ─── */
+{
+  id:2, icon:'💡', title:'Big Themes',
+  color:'var(--orange)',
+  desc:'Great books say something important about the world. Learn the six major themes of Refugee — you\'ll need them for essays.',
+  tasks:['Theme Overview','Theme Questions','Symbol Match','Quote Attribution'],
+
+  teach:[
+    {
+      title:'SIX BIG IDEAS',
+      body:'Refugee isn\'t just a story about three kids. It\'s about ideas that matter — about history, humanity, and what we owe each other.',
+      facts:[
+        {l:'Identity & Belonging',v:'Who are you when everything is taken away?'},
+        {l:'Hope vs. Despair',v:'Hope is not naive — it\'s what keeps people alive'},
+        {l:'Family & Sacrifice',v:'Every family makes impossible choices to protect each other'},
+        {l:'History Repeating',v:'The same crisis happens in 1939, 1994, AND 2015 — why?'},
+      ],
+      quote:'"What does it mean to be a refugee? It means you never chose to leave — you were forced."'
+    },
+    {
+      title:'IDENTITY & SYMBOLS',
+      body:'Every character has a symbol that represents who they are — and what they have to lose. Understanding these symbols is key to understanding the book.',
+      facts:[
+        {l:'Josef → Star of David',v:'Mark of Jewish identity — used as a target under Nazis, reclaimed through survival'},
+        {l:'Isabel → The Trumpet',v:'Music = Cuba = her soul. Losing it = the price of survival'},
+        {l:'Mahmoud → Invisibility',v:'His superpower becomes a trap — being unseen means not being helped'},
+        {l:'The Ocean',v:'For both Isabel and Mahmoud — a deadly barrier that is also the only road to freedom'},
+      ]
+    },
+    {
+      title:'HISTORY REPEATING',
+      body:'The most powerful thing Gratz does is set the same crisis in three different decades. A Jewish family in 1939. A Cuban family in 1994. A Syrian family in 2015. Three different eras — same pattern. The world turns away people who need help.',
+      facts:[
+        {l:'1939',v:'USA and Cuba turn away Jewish refugees → most die in the Holocaust'},
+        {l:'1994',v:'US Coast Guard pushes Cubans back to sea → many die trying to flee'},
+        {l:'2015',v:'Hungary seals border with razor wire → Syrian families trapped in limbo'},
+        {l:'Gratz\'s Question',v:'"Have we learned ANYTHING?"'},
+      ],
+      quote:'"History doesn\'t repeat itself. But it rhymes." — And Refugee is the proof.'
+    }
+  ],
+
+  activities:[
+    {
+      type:'mc', icon:'🎯', title:'Theme Master', xp:15,
+      questions:[
+        {who:'Theme',wc:'who-all',q:'By setting stories in 1939, 1994, AND 2015, what is Gratz\'s main message?',opts:['Each decade has different refugees','Refugee crises only happened in the 20th century','The refugee crisis is a recurring pattern — and we haven\'t fixed it','Technology makes modern refugees safer'],correct:2,expl:'This is the structural genius of the book. The same pattern repeats. Gratz is asking: are we paying attention?'},
+        {who:'Symbol',wc:'who-i',q:'What does Isabel\'s trumpet primarily symbolize?',opts:['Wealth and the promise of America','Her Cuban identity and what refugees must leave behind','Her grandfather\'s legacy','Communication across language barriers'],correct:1,expl:'The trumpet = Cuba + joy + identity. Sacrificing it = the price every refugee pays for survival.'},
+        {who:'Theme',wc:'who-m',q:'Mahmoud starts the book trying to be "invisible." What does his arc teach us?',opts:['Invisibility is the safest strategy','Being quiet always keeps you out of trouble','Being unseen means not being helped — you have to demand to be recognized as human','You should never draw attention to yourself'],correct:2,expl:'His journey from invisible to visible is the emotional core of his story. Dignity requires being seen.'},
+        {who:'Theme',wc:'who-j',q:'What does Josef\'s sacrifice for Ruthie represent?',opts:['That children should always obey adults','The power of love and selflessness — one choice that echoes for 75 years','That the Nazis always win','That hope is useless in the face of evil'],correct:1,expl:'Josef\'s act of courage lives on through Ruthie, who eventually shelters Mahmoud\'s family — completing the circle.'},
+      ]
+    },
+    {
+      type:'match', icon:'🧩', title:'Symbol Match', xp:20,
+      instruction:'Match each symbol to its meaning in the novel.',
+      pairs:[
+        ['🎺 Isabel\'s Trumpet','Identity, Cuba, and what refugees are forced to leave behind'],
+        ['👻 Mahmoud\'s Invisibility','A survival strategy that becomes a trap — being unseen means being erased'],
+        ['🚢 The MS St. Louis','938 Jewish refugees turned away — a symbol of the world\'s failure to help'],
+        ['🌊 The Ocean','A deadly barrier that is also the only road to freedom'],
+      ]
+    },
+    {
+      type:'tf', icon:'⚡', title:'Theme True or False', xp:10,
+      questions:[
+        {who:'Theme',wc:'who-all',q:'Gratz shows that refugee crises only happened during World War II.',correct:false,expl:'False! By choosing 1939, 1994, AND 2015, Gratz shows the crisis is ongoing. It\'s not history — it\'s now.'},
+        {who:'Symbol',wc:'who-j',q:'Josef\'s Star of David starts as a mark of persecution and ends as a symbol of survival.',correct:true,expl:'Yes! Jewish identity is first weaponized by Nazis, then reclaimed through courage and survival.'},
+        {who:'Theme',wc:'who-all',q:'All three characters ultimately achieve everything they wanted without losing anything.',correct:false,expl:'False! Every character loses something precious. Josef loses his life. Isabel loses her trumpet. Mahmoud loses Hana (temporarily). Sacrifice is central to the book.'},
+        {who:'Theme',wc:'who-m',q:'The "invisibility" strategy eventually works perfectly for Mahmoud.',correct:false,expl:'False! Invisibility is what Mahmoud uses to cope — but it\'s his biggest challenge. By the end, he learns to be seen.'},
+      ]
+    },
+    {
+      type:'fitb', icon:'✏️', title:'Theme Fill in the Blank', xp:15,
+      questions:[
+        {who:'Theme',sentence:'Gratz shows the refugee crisis is a ___ pattern by setting stories in three different decades.',answer:'recurring',alts:['repeating','repeated','ongoing'],hint:'Think: what does history do?',expl:'1939, 1994, 2015 — the same crisis in three eras. Gratz\'s most powerful structural choice.'},
+        {who:'Symbol',sentence:'The symbol that most represents Mahmoud\'s character is ___.',answer:'invisibility',alts:['being invisible','invisible'],hint:'Being impossible to see',expl:'Mahmoud\'s strategy of staying unseen is both his shield and his cage throughout the story.'},
+        {who:'Josef',sentence:'Josef\'s final act of courage is ___ himself so his sister Ruthie can go free.',answer:'sacrificing',alts:['giving up','volunteering','sacrifices'],hint:'He gives something up for others',expl:'This selfless act is Josef\'s defining moment — and it echoes through 75 years of history.'},
+      ]
+    }
+  ]
+},
+
+/* ─── MISSION 3: Connections ─── */
+{
+  id:3, icon:'🔗', title:'How It All Connects',
+  color:'var(--green)',
+  desc:'The book\'s genius is how the three stories link together across 75 years. Master the connections and you\'ll understand Refugee at the deepest level.',
+  tasks:['Timeline Sort','Connection Quiz','Who Said It?','Final Match'],
+
+  teach:[
+    {
+      title:'THE CIRCLE CLOSES',
+      body:'Gratz hid the connection between all three stories until the very end. When it\'s revealed, it\'s one of literature\'s most powerful moments.',
+      facts:[
+        {l:'Josef\'s Act',v:'Josef sacrifices himself → Ruthie survives, reaches America'},
+        {l:'Ruthie\'s Life',v:'Ruthie carries Josef\'s memory for 75 years, vowing to repay the gift of survival'},
+        {l:'The Reveal',v:'The elderly Jewish woman in Germany who takes in Mahmoud\'s family IS Ruthie'},
+        {l:'The Message',v:'One act of love in 1940 creates a ripple that saves a Syrian family in 2015'},
+      ],
+      quote:'"We took in your grandfather when he had nothing. Now I take you in. A debt owed for seventy-five years."'
+    },
+    {
+      title:'PARALLEL LIVES',
+      body:'Look closely and you\'ll see the stories mirror each other perfectly. Each character faces the same types of challenges — just in different eras. This is not an accident.',
+      facts:[
+        {l:'All three flee',v:'Violence, persecution, and danger that makes staying impossible'},
+        {l:'All three are turned away',v:'Cuba/US (Josef), US Coast Guard (Isabel), Hungary (Mahmoud)'},
+        {l:'All three sacrifice',v:'Josef: his life · Isabel: her trumpet · Mahmoud: his invisibility'},
+        {l:'All three find help',v:'From strangers who choose compassion over fear'},
+      ]
+    }
+  ],
+
+  activities:[
+    {
+      type:'sort', icon:'🔢', title:'Timeline of Connections', xp:20,
+      instruction:'Click these events in the order they happen across the whole book (1=first).',
+      items:[
+        {text:'Josef sacrifices himself so Ruthie can go free (1940)',order:0},
+        {text:'Ruthie reaches America and builds a life, never forgetting Josef (1940s+)',order:1},
+        {text:'Isabel\'s family is taken in by strangers after reaching Florida (1994)',order:2},
+        {text:'Elderly Ruthie opens her door to Mahmoud\'s refugee family in Germany (2015)',order:3},
+      ]
+    },
+    {
+      type:'mc', icon:'🎯', title:'Connection Quiz', xp:15,
+      questions:[
+        {who:'All',wc:'who-all',q:'Who is Ruthie Landau, and why does she matter to ALL three storylines?',opts:['A German officer who helped Jews escape','Josef\'s sister — she survived because of his sacrifice, and later shelters Mahmoud\'s family','Isabel\'s grandmother who moved to Germany','A journalist who wrote about all three stories'],correct:1,expl:'Ruthie is the living bridge between all three stories. Josef\'s courage → Ruthie survives → Ruthie\'s kindness saves Mahmoud\'s family 75 years later.'},
+        {who:'All',wc:'who-all',q:'What does Ruthie mean when she says it is "a debt owed for seventy-five years"?',opts:['She owes Germany money from WWII','Her brother Josef died so she could live — and she has waited 75 years to repay that gift by helping another refugee','She has been planning to help refugees since 1939','The German government owes her reparations'],correct:1,expl:'This is the emotional core of the ending. One selfless act in 1940 creates a ripple of kindness 75 years later.'},
+        {who:'All',wc:'who-all',q:'What pattern repeats in all three stories that Gratz wants us to notice?',opts:['All three families are wealthy before fleeing','Refugees flee violence — and are turned away by the countries they hoped would help','All three characters meet happy endings','All three countries eventually change their policies'],correct:1,expl:'1939: Cuba and US turn away Jews. 1994: US turns away Cubans. 2015: Hungary turns away Syrians. The world keeps making the same choice.'},
+        {who:'All',wc:'who-all',q:'In the epilogue, we learn that Isabel\'s family connection helped Josef\'s family. Which character links Isabel\'s and Josef\'s stories?',opts:['Mahmoud\'s father','Ruthie\'s American family','A history teacher who knew both families','A relief organization'],correct:1,expl:'Ruthie\'s descendants in America crossed paths with Isabel\'s family — all three timelines are connected through acts of human kindness across generations.'},
+      ]
+    },
+    {
+      type:'fitb', icon:'✏️', title:'Connection Fill in the Blank', xp:15,
+      questions:[
+        {who:'Connection',sentence:'The elderly woman who takes in Mahmoud\'s family in Germany is ___, Josef\'s sister.',answer:'ruthie',alts:['ruth','ruthie landau'],hint:'Her name rhymes with "toothy"',expl:'Ruthie is the key that unlocks how all three stories connect. She survived because of Josef\'s sacrifice.'},
+        {who:'Josef',sentence:'Josef volunteers himself so his sister ___ can go free.',answer:'ruthie',alts:['ruth'],hint:'Same answer as above!',expl:'In this moment, Josef saves Ruthie — and unknowingly saves Mahmoud\'s family 75 years in the future.'},
+        {who:'Theme',sentence:'Gratz uses three storylines from different time periods to show that ___ repeats.',answer:'history',alts:['the refugee crisis','it'],hint:'What is doomed to repeat if we don\'t learn from it?',expl:'1939 → 1994 → 2015. Same crisis, different decade. Gratz\'s message is urgent: are we learning?'},
+      ]
+    },
+    {
+      type:'match', icon:'🧩', title:'Final Connections Match', xp:20,
+      instruction:'Match each act to its consequence — showing how the stories connect.',
+      pairs:[
+        ['Josef sacrifices himself (1940)','Ruthie survives and vows to repay the gift'],
+        ['Ruthie keeps her promise (2015)','Mahmoud\'s family finds safety in Germany'],
+        ['Isabel throws her trumpet','Her family escapes the Coast Guard and reaches Miami'],
+        ['Mahmoud becomes "visible"','The world sees refugees as human beings, not just a crisis'],
+      ]
+    }
+  ]
+}
+
+]; // end missions
+
+/* ════════════════════════════════════════════════
+   BOSS QUESTIONS
+════════════════════════════════════════════════ */
+const bossQuestions = [
+  {who:'Josef',wc:'who-j',q:'What is the name of the ship Josef boards to flee Nazi Germany?',opts:['RMS Carpathia','MS St. Louis','SS Exodus','HMS Victory'],correct:1,expl:'The MS St. Louis carried 938 Jewish refugees in 1939 — turned away by Cuba AND the United States.'},
+  {who:'Isabel',wc:'who-i',q:'Isabel sacrifices her trumpet. What does she use it for?',opts:['Trades it for food','Creates noise to distract sharks and the Coast Guard','Gives it to a refugee child','Throws it overboard in despair'],correct:1,expl:'The trumpet creates noise, attracts sharks, and gives the raft time to escape the Coast Guard cutter.'},
+  {who:'Mahmoud',wc:'who-m',q:'What happens to baby Hana during the Aegean Sea crossing?',opts:['She gets sick but recovers','She is handed to strangers on another boat — and disappears','She is left behind in Turkey','She is taken by the coast guard'],correct:1,expl:'This devastating moment drives Mahmoud\'s transformation. Losing Hana breaks his invisibility strategy.'},
+  {who:'All',wc:'who-all',q:'Who is Ruthie Landau?',opts:['A German officer who helped Jews','Josef\'s sister who survived because of his sacrifice and later shelters Mahmoud\'s family','Isabel\'s grandmother in Germany','A journalist covering the refugee crisis'],correct:1,expl:'Ruthie is the living connection between all three stories — Josef\'s sacrifice → Ruthie\'s survival → Ruthie\'s kindness to Mahmoud\'s family.'},
+  {who:'Theme',wc:'who-all',q:'Why does Gratz set stories in 1939, 1994, AND 2015?',opts:['To practice different writing styles','To show the refugee crisis repeats through history and we haven\'t solved it','Because he knew real refugees from each era','To make the book longer'],correct:1,expl:'This is the structural heart of Refugee. Same crisis, three decades. Gratz\'s urgent message: are we paying attention?'},
+  {who:'Josef',wc:'who-j',q:'What was Papa\'s condition when he boarded the MS St. Louis?',opts:['Healthy and optimistic','Mentally broken from imprisonment in Dachau','Angry at the German government','Excited about the adventure'],correct:1,expl:'Papa\'s trauma from Dachau makes him unable to parent — forcing 12-year-old Josef to become the adult.'},
+  {who:'Mahmoud',wc:'who-m',q:'Which country uses razor wire and tear gas on refugees in Mahmoud\'s story?',opts:['Germany','Greece','Turkey','Hungary'],correct:3,expl:'Hungary sealed its border in 2015 — contrasted with Germany\'s eventual welcome. Both are real historical events.'},
+  {who:'Isabel',wc:'who-i',q:'What major life event happens to Mami during the raft journey?',opts:['She is bitten by a shark','She gives birth to baby Mariano','She falls ill from dehydration','She is rescued by the Coast Guard'],correct:1,expl:'Baby Mariano is born on the raft — a symbol of new life and hope amid the most desperate circumstances.'},
+  {who:'Symbol',wc:'who-all',q:'What does Isabel\'s trumpet symbolize in the novel?',opts:['Wealth and escape','Her Cuban identity and what refugees must leave behind','Musical talent','Her grandfather\'s legacy'],correct:1,expl:'The trumpet = Cuba + joy + identity. Losing it is the price of survival — every refugee pays this price.'},
+  {who:'All',wc:'who-all',q:'What is Mahmoud\'s character arc in one sentence?',opts:['He stays invisible the whole book and survives','He goes from invisible to visible — learning to demand to be recognized as human','He fights his way through every obstacle','He gives up his identity to survive'],correct:1,expl:'His entire journey is learning that invisibility = erasure. By the end, he stands up and makes the world see him.'},
+  {who:'Josef',wc:'who-j',q:'Josef\'s ultimate act of heroism is:',opts:['Fighting a Nazi soldier','Smuggling refugees off the ship','Volunteering himself so sister Ruthie can escape','Swimming to Cuba alone'],correct:2,expl:'Josef steps forward when the guard comes for one child — giving Ruthie her life, and dying so she can live.'},
+  {who:'Theme',wc:'who-all',q:'What does Ruthie mean by "a debt owed for seventy-five years"?',opts:['Germany owes her money','She owes taxes from WWII','Josef died for her — she has waited 75 years to repay that gift by helping another refugee','Her family borrowed money from refugees'],correct:2,expl:'This is the emotional heart of the ending. Josef\'s sacrifice in 1940 creates a ripple of kindness that saves Mahmoud\'s family in 2015.'},
+];
+
+/* ════════════════════════════════════════════════
+   CHAPTER MAP
+════════════════════════════════════════════════ */
+function buildMap() {
+  const container = document.getElementById('chapter-map');
+  container.innerHTML = '';
+  missions.forEach((m, i) => {
+    const div = document.createElement('div');
+    div.className = 'map-chapter ' + (i === 0 ? 'unlocked' : missionScores[i] > 0 ? 'complete' : i <= currentMission ? 'unlocked' : 'locked');
+    if(i === currentMission && document.getElementById('chapter-view').classList.contains('active')) div.classList.add('active');
+    const prog = missionScores[i] ? 100 : 0;
+    div.innerHTML = `
+      <div class="map-ch-row">
+        <span class="map-ch-icon">${m.icon}</span>
+        <div class="map-ch-info">
+          <div class="map-ch-name" style="color:${m.color}">${m.title}</div>
+          <div class="map-ch-sub">Mission ${i+1}</div>
+        </div>
+        <span class="map-ch-status">${missionScores[i] > 0 ? '✓' : i <= currentMission ? '▶' : '🔒'}</span>
+      </div>
+      <div class="map-ch-progress"><div class="map-ch-prog-fill" style="width:${prog}%"></div></div>`;
+    if(i <= currentMission || missionScores[i] > 0) div.onclick = () => startMission(i);
+    container.appendChild(div);
+  });
+
+  // Boss
+  const boss = document.createElement('div');
+  boss.className = 'map-chapter ' + (currentMission >= missions.length ? 'unlocked' : 'locked');
+  boss.innerHTML = `
+    <div class="map-ch-row">
+      <span class="map-ch-icon">👾</span>
+      <div class="map-ch-info">
+        <div class="map-ch-name" style="color:var(--purple)">Final Boss</div>
+        <div class="map-ch-sub">All Missions</div>
+      </div>
+      <span class="map-ch-status">${currentMission >= missions.length ? '▶' : '🔒'}</span>
+    </div>`;
+  if(currentMission >= missions.length) boss.onclick = startBoss;
+  container.appendChild(boss);
+}
+
+/* ════════════════════════════════════════════════
+   VIEWS
+════════════════════════════════════════════════ */
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('stage').scrollTop = 0;
+}
+
+/* ════════════════════════════════════════════════
+   MISSION START
+════════════════════════════════════════════════ */
+let teachSlide = 0;
+
+function startMission(idx) {
+  currentMission = idx;
+  currentActivity = 0;
+  teachSlide = 0;
+  buildMap();
+  renderChapterIntro(idx);
+  showView('chapter-view');
+  document.getElementById('hud-chapter').textContent = `Mission ${idx+1}: ${missions[idx].title}`;
+}
+
+function renderChapterIntro(idx) {
+  const m = missions[idx];
+  const v = document.getElementById('chapter-view');
+  v.innerHTML = `
+    <div class="chapter-intro-card">
+      <div class="ch-intro-label">MISSION ${idx+1} OF ${missions.length}</div>
+      <span class="ch-intro-icon">${m.icon}</span>
+      <div class="ch-intro-title" style="color:${m.color}">${m.title}</div>
+      <div class="ch-intro-desc">${m.desc}</div>
+      <div class="ch-intro-tasks">
+        ${m.tasks.map(t=>`<span class="task-pill">📌 ${t}</span>`).join('')}
+      </div>
+      <button class="ch-start-btn" style="background:${m.color};color:#0a0d12" onclick="startTeach(${idx})">
+        📖 Learn First, Then Practice →
+      </button>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════
+   TEACH SLIDES
+════════════════════════════════════════════════ */
+function startTeach(idx) {
+  teachSlide = 0;
+  renderTeachSlide(idx);
+}
+
+function renderTeachSlide(mIdx) {
+  const slides = missions[mIdx].teach;
+  const s = slides[teachSlide];
+  const v = document.getElementById('chapter-view');
+
+  let factsHTML = '';
+  if(s.facts) {
+    factsHTML = `<div class="teach-fact-grid">${s.facts.map(f=>`
+      <div class="fact-card">
+        <div class="fact-label">${f.l}</div>
+        <div class="fact-val">${f.v}</div>
+      </div>`).join('')}</div>`;
+  }
+
+  let quoteHTML = s.quote ? `<div class="teach-quote">${s.quote}</div>` : '';
+
+  const dotsHTML = slides.map((_,i)=>`<div class="teach-dot ${i===teachSlide?'active':''}"></div>`).join('');
+
+  const isLast = teachSlide === slides.length - 1;
+
+  v.innerHTML = `
+    <div class="teach-wrap">
+      <div class="teach-slide">
+        <div class="teach-step-label">STUDY GUIDE · ${teachSlide+1} of ${slides.length}</div>
+        <div class="teach-big" style="color:${missions[mIdx].color}">${s.title}</div>
+        <div class="teach-body">${s.body}</div>
+        ${factsHTML}
+        ${quoteHTML}
+      </div>
+      <div class="teach-nav">
+        <div class="teach-dots">${dotsHTML}</div>
+        <div style="display:flex;gap:10px">
+          ${teachSlide > 0 ? `<button class="hint-btn" onclick="prevTeach(${mIdx})">← Back</button>` : ''}
+          <button class="ch-start-btn" style="background:${isLast ? missions[mIdx].color : 'rgba(255,255,255,0.08)'};color:${isLast ? '#0a0d12' : 'var(--text)'};padding:11px 28px;font-size:14px"
+            onclick="${isLast ? 'startActivities('+mIdx+')' : 'nextTeach('+mIdx+')'}">
+            ${isLast ? '🎯 Start Practice →' : 'Next →'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function nextTeach(mIdx) { teachSlide++; renderTeachSlide(mIdx); }
+function prevTeach(mIdx) { teachSlide--; renderTeachSlide(mIdx); }
+
+/* ════════════════════════════════════════════════
+   ACTIVITIES
+════════════════════════════════════════════════ */
+function startActivities(mIdx) {
+  currentActivity = 0;
+  renderActivity(mIdx, 0);
+  showView('activity-view');
+}
+
+function renderActivity(mIdx, aIdx) {
+  const acts = missions[mIdx].activities;
+  if(aIdx >= acts.length) { showChapterComplete(mIdx); return; }
+  const act = acts[aIdx];
+  const pct = (aIdx / acts.length) * 100;
+
+  const v = document.getElementById('activity-view');
+  v.innerHTML = `
+    <div class="activity-wrap">
+      <div class="act-progress-bar"><div class="act-prog-fill" style="width:${pct}%"></div></div>
+      <div class="activity-header">
+        <span class="act-icon">${act.icon}</span>
+        <div class="act-title-block">
+          <div class="act-type">${act.type.toUpperCase()} CHALLENGE · ${aIdx+1} of ${acts.length}</div>
+          <div class="act-title">${act.title}</div>
+        </div>
+        <div class="act-xp">+${act.xp} XP</div>
+      </div>
+      <div id="activity-body"></div>
+    </div>`;
+
+  if(act.type === 'mc') renderMC(act, mIdx, aIdx);
+  else if(act.type === 'tf') renderTF(act, mIdx, aIdx);
+  else if(act.type === 'match') renderMatch(act, mIdx, aIdx);
+  else if(act.type === 'fitb') renderFITB(act, mIdx, aIdx);
+  else if(act.type === 'sort') renderSort(act, mIdx, aIdx);
+}
+
+/* ─── MULTIPLE CHOICE ─── */
+function renderMC(act, mIdx, aIdx) {
+  let qIdx = 0, score = 0, answered = false;
+
+  function showQ() {
+    if(qIdx >= act.questions.length) {
+      addXP(score > 0 ? act.xp : Math.floor(act.xp/2));
+      setTimeout(() => renderActivity(mIdx, aIdx+1), 300);
+      return;
+    }
+    answered = false;
+    const q = act.questions[qIdx];
+    const keys = ['A','B','C','D'];
+    const body = document.getElementById('activity-body');
+    body.innerHTML = `
+      <div class="mc-question">
+        <div class="mc-q-label">
+          <span class="mc-q-who ${q.wc}">${q.who}</span>
+          <span class="mc-q-num">${qIdx+1}/${act.questions.length}</span>
+        </div>
+        <div class="mc-q-text">${q.q}</div>
+        <div class="mc-opts" id="mc-opts-wrap"></div>
+      </div>
+      <div class="mc-feedback" id="mc-fb"></div>
+      <div class="btn-row"><div class="spacer"></div><button class="next-btn" id="mc-next">Next →</button></div>`;
+
+    const wrap = document.getElementById('mc-opts-wrap');
+    q.opts.forEach((o, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'mc-opt';
+      btn.innerHTML = `<span class="opt-key">${keys[i]}</span>${o}`;
+      btn.addEventListener('click', () => {
+        if(answered) return;
+        answered = true;
+        wrap.querySelectorAll('.mc-opt').forEach(b => b.disabled = true);
+        const fb = document.getElementById('mc-fb');
+        if(i === q.correct) {
+          btn.classList.add('correct');
+          fb.className = 'mc-feedback correct show';
+          fb.textContent = '✅ ' + q.expl;
+          score++; streak++; addXP(10);
+        } else {
+          btn.classList.add('wrong');
+          wrap.querySelectorAll('.mc-opt')[q.correct].classList.add('correct');
+          fb.className = 'mc-feedback wrong show';
+          fb.textContent = '❌ ' + q.expl;
+          loseLife();
+        }
+        updateStreak();
+        document.getElementById('mc-next').classList.add('show');
+      });
+      wrap.appendChild(btn);
+    });
+
+    document.getElementById('mc-next').addEventListener('click', () => { qIdx++; showQ(); });
+  }
+
+  showQ();
+}
+
+/* ─── TRUE / FALSE ─── */
+function renderTF(act, mIdx, aIdx) {
+  let qIdx = 0, score = 0, answered = false;
+
+  function showQ() {
+    if(qIdx >= act.questions.length) {
+      addXP(score >= act.questions.length ? act.xp : Math.floor(act.xp * score / act.questions.length));
+      setTimeout(() => renderActivity(mIdx, aIdx+1), 300);
+      return;
+    }
+    answered = false;
+    const q = act.questions[qIdx];
+    const body = document.getElementById('activity-body');
+    body.innerHTML = `
+      <div class="mc-question">
+        <div class="mc-q-label">
+          <span class="mc-q-who ${q.wc}">${q.who}</span>
+          <span class="mc-q-num">${qIdx+1}/${act.questions.length}</span>
+        </div>
+        <div class="mc-q-text">${q.q}</div>
+        <div class="tf-opts">
+          <button class="tf-opt" id="tf-true" style="color:var(--green)">TRUE</button>
+          <button class="tf-opt" id="tf-false" style="color:var(--red)">FALSE</button>
+        </div>
+      </div>
+      <div class="mc-feedback" id="tf-fb"></div>
+      <div class="btn-row"><div class="spacer"></div><button class="next-btn" id="tf-next">Next →</button></div>`;
+
+    function pick(chosen) {
+      if(answered) return;
+      answered = true;
+      document.getElementById('tf-true').disabled = true;
+      document.getElementById('tf-false').disabled = true;
+      const fb = document.getElementById('tf-fb');
+      const trueBtn = document.getElementById('tf-true');
+      const falseBtn = document.getElementById('tf-false');
+      const isCorrect = (chosen === q.correct);
+      const chosenBtn = chosen ? trueBtn : falseBtn;
+      const correctBtn = q.correct ? trueBtn : falseBtn;
+      if(isCorrect) {
+        chosenBtn.classList.add('correct');
+        fb.className = 'mc-feedback correct show';
+        fb.textContent = '✅ ' + q.expl;
+        score++; streak++; addXP(8);
+      } else {
+        chosenBtn.classList.add('wrong');
+        correctBtn.classList.add('correct');
+        fb.className = 'mc-feedback wrong show';
+        fb.textContent = '❌ ' + q.expl;
+        loseLife();
+      }
+      updateStreak();
+      document.getElementById('tf-next').classList.add('show');
+    }
+
+    document.getElementById('tf-true').addEventListener('click', () => pick(true));
+    document.getElementById('tf-false').addEventListener('click', () => pick(false));
+    document.getElementById('tf-next').addEventListener('click', () => { qIdx++; showQ(); });
+  }
+
+  showQ();
+}
+
+/* ─── MATCHING ─── */
+function renderMatch(act, mIdx, aIdx) {
+  let selected = null, matched = 0;
+  const n = act.pairs.length;
+
+  // Build separately-shuffled left and right arrays
+  const leftItems  = act.pairs.map((p,i) => ({text:p[0], idx:i}));
+  const rightItems = act.pairs.map((p,i) => ({text:p[1], idx:i}));
+  shuffleArr(leftItems);
+  shuffleArr(rightItems);
+
+  const body = document.getElementById('activity-body');
+  body.innerHTML = `
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px;font-style:italic">${act.instruction}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="match-col-head">COLUMN A — click to select</div>
+      <div class="match-col-head">COLUMN B — then click to match</div>
+      <div id="left-col"></div>
+      <div id="right-col"></div>
+    </div>
+    <div class="mc-feedback" id="match-fb"></div>
+    <div class="btn-row"><div class="spacer"></div><button class="next-btn" id="match-next">Continue →</button></div>`;
+
+  const leftCol  = document.getElementById('left-col');
+  const rightCol = document.getElementById('right-col');
+
+  leftItems.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = item.text;
+    el.dataset.idx = item.idx;
+    el.style.marginBottom = '8px';
+    el.addEventListener('click', () => {
+      if(el.classList.contains('matched')) return;
+      leftCol.querySelectorAll('.match-item').forEach(e => e.classList.remove('selected'));
+      selected = el;
+      el.classList.add('selected');
+    });
+    leftCol.appendChild(el);
+  });
+
+  rightItems.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = item.text;
+    el.dataset.idx = item.idx;
+    el.style.marginBottom = '8px';
+    el.addEventListener('click', () => {
+      if(el.classList.contains('matched')) return;
+      if(!selected) { showToast('Pick a left item first!', ''); return; }
+      if(selected.dataset.idx === el.dataset.idx) {
+        // Correct match
+        selected.classList.remove('selected');
+        selected.classList.add('matched');
+        el.classList.add('matched');
+        matched++;
+        streak++; addXP(8); updateStreak();
+        selected = null;
+        if(matched === n) {
+          addXP(Math.max(0, act.xp - n*8));
+          document.getElementById('match-next').classList.add('show');
+          const fb = document.getElementById('match-fb');
+          fb.className = 'mc-feedback correct show';
+          fb.textContent = '🎉 All matched! Great work.';
+        }
+      } else {
+        // Wrong match
+        el.classList.add('wrong-flash');
+        selected.classList.add('wrong-flash');
+        setTimeout(() => {
+          el.classList.remove('wrong-flash');
+          if(selected) { selected.classList.remove('wrong-flash', 'selected'); selected = null; }
+        }, 500);
+        loseLife();
+      }
+    });
+    rightCol.appendChild(el);
+  });
+
+  document.getElementById('match-next').addEventListener('click', () => renderActivity(mIdx, aIdx+1));
+}
+
+/* ─── FILL IN BLANK ─── */
+function renderFITB(act, mIdx, aIdx) {
+  let qIdx = 0, score = 0, answered = false;
+
+  function showQ() {
+    if(qIdx >= act.questions.length) {
+      addXP(Math.round(act.xp * score / act.questions.length));
+      setTimeout(() => renderActivity(mIdx, aIdx+1), 300);
+      return;
+    }
+    answered = false;
+    const q = act.questions[qIdx];
+    const body = document.getElementById('activity-body');
+    body.innerHTML = `
+      <div class="fitb-wrap">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);margin-bottom:16px">${q.who}</div>
+        <div class="fitb-sentence">${q.sentence.replace('___', '<span class="blank" id="blank-val">________</span>')}</div>
+        <div class="fitb-input-row">
+          <input class="fitb-inp" id="fitb-field" placeholder="Type your answer…">
+          <button class="hint-btn" id="hint-btn">💡 Hint</button>
+          <button class="ch-start-btn" id="fitb-check" style="padding:10px 22px;font-size:13px;background:var(--gold);color:#0a0d12">Check</button>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;font-style:italic;display:none" id="hint-text"></div>
+        <div class="mc-feedback" id="fitb-fb"></div>
+      </div>
+      <div class="btn-row"><div class="spacer"></div><button class="next-btn" id="fitb-next">Next →</button></div>`;
+
+    document.getElementById('hint-btn').addEventListener('click', () => {
+      const h = document.getElementById('hint-text');
+      h.style.display = 'block';
+      h.textContent = '💡 ' + q.hint;
+    });
+
+    function check() {
+      if(answered) return;
+      const val = document.getElementById('fitb-field').value.trim().toLowerCase();
+      if(!val) return;
+      answered = true;
+      const inp = document.getElementById('fitb-field');
+      const fb  = document.getElementById('fitb-fb');
+      const blank = document.getElementById('blank-val');
+      inp.disabled = true;
+      const accepted = [q.answer.toLowerCase(), ...(q.alts||[]).map(a => a.toLowerCase())];
+      const isCorrect = accepted.some(a => val === a || val.includes(a.split(' ')[0]) || a.includes(val));
+      if(isCorrect) {
+        inp.className = 'fitb-inp correct';
+        blank.textContent = q.answer;
+        blank.style.color = 'var(--green)';
+        fb.className = 'mc-feedback correct show';
+        fb.textContent = '✅ ' + q.expl;
+        score++; streak++; addXP(10);
+      } else {
+        inp.className = 'fitb-inp wrong';
+        fb.className = 'mc-feedback wrong show';
+        fb.textContent = '❌ The answer was "' + q.answer + '". ' + q.expl;
+        loseLife();
+      }
+      updateStreak();
+      document.getElementById('fitb-next').classList.add('show');
+    }
+
+    document.getElementById('fitb-check').addEventListener('click', check);
+    document.getElementById('fitb-field').addEventListener('keydown', e => { if(e.key === 'Enter') check(); });
+    document.getElementById('fitb-next').addEventListener('click', () => { qIdx++; showQ(); });
+    setTimeout(() => document.getElementById('fitb-field').focus(), 50);
+  }
+
+  showQ();
+}
+
+/* ─── SEQUENCE SORT ─── */
+function renderSort(act, mIdx, aIdx) {
+  const items = act.items.map((item, i) => ({...item, domId: 'si-'+i}));
+  shuffleArr(items);
+  let nextExpected = 0;
+
+  const body = document.getElementById('activity-body');
+  body.innerHTML = `
+    <div class="sort-instruction">${act.instruction}</div>
+    <div class="sort-items" id="sort-list"></div>
+    <div class="mc-feedback" id="sort-fb"></div>
+    <div class="btn-row"><div class="spacer"></div><button class="next-btn" id="sort-next">Continue →</button></div>`;
+
+  const list = document.getElementById('sort-list');
+  items.forEach((item) => {
+    const el = document.createElement('div');
+    el.className = 'sort-item';
+    el.id = item.domId;
+    el.innerHTML = `<span class="sort-num">?</span> ${item.text}`;
+    el.addEventListener('click', () => {
+      if(el.classList.contains('placed')) return;
+      const fb = document.getElementById('sort-fb');
+      if(item.order === nextExpected) {
+        el.classList.add('placed');
+        el.querySelector('.sort-num').classList.add('set');
+        el.querySelector('.sort-num').textContent = nextExpected + 1;
+        nextExpected++;
+        streak++; addXP(8); updateStreak();
+        fb.className = 'mc-feedback correct show';
+        fb.textContent = '✅ Correct! That\'s #' + nextExpected + ' in the sequence.';
+        if(nextExpected === act.items.length) {
+          addXP(act.xp);
+          document.getElementById('sort-next').classList.add('show');
+          fb.textContent = '🎉 Perfect sequence! You know the story.';
+        }
+      } else {
+        el.classList.add('wrong-place');
+        setTimeout(() => el.classList.remove('wrong-place'), 400);
+        loseLife();
+        fb.className = 'mc-feedback wrong show';
+        fb.textContent = '❌ Not #' + (nextExpected+1) + '. Think about what happens first in the story.';
+      }
+    });
+    list.appendChild(el);
+  });
+
+  document.getElementById('sort-next').addEventListener('click', () => renderActivity(mIdx, aIdx+1));
+}
+
+/* ─── shared shuffle util for activity renderers ─── */
+function shuffleArr(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}}
+
+/* ════════════════════════════════════════════════
+   CHAPTER COMPLETE
+════════════════════════════════════════════════ */
+function showChapterComplete(mIdx) {
+  missionScores[mIdx] = 1;
+  currentMission = Math.max(currentMission, mIdx + 1);
+  buildMap();
+  const isLast = mIdx === missions.length - 1;
+  const v = document.getElementById('complete-view');
+  v.innerHTML = `
+    <div class="chapter-complete">
+      <div class="cc-trophy">${mIdx % 2 === 0 ? '⭐' : '🏆'}</div>
+      <div class="cc-title">MISSION ${mIdx+1} COMPLETE!</div>
+      <div class="cc-score">${missions[mIdx].title}</div>
+      <div class="cc-xp-pill">⭐ +${missions[mIdx].activities.reduce((s,a)=>s+a.xp,0)} XP earned</div>
+      ${isLast ?
+        `<div class="cc-unlock" style="background:rgba(199,125,255,0.06);border-color:rgba(199,125,255,0.25);color:var(--purple)">👾 FINAL BOSS UNLOCKED — You've mastered all missions!</div>
+         <button class="ch-start-btn" style="background:var(--purple);color:#0a0d12" onclick="startBoss()">⚔️ Take on the Final Boss</button>` :
+        `<div class="cc-unlock">🔓 Mission ${mIdx+2} unlocked: "${missions[mIdx+1]?.title}"</div>
+         <button class="ch-start-btn" style="background:${missions[mIdx+1].color};color:#0a0d12" onclick="startMission(${mIdx+1})">▶ Next Mission →</button>`
+      }
+    </div>`;
+  showView('complete-view');
+}
+
+/* ════════════════════════════════════════════════
+   FINAL BOSS
+════════════════════════════════════════════════ */
+function startBoss() {
+  bossQ = 0; bossScore = 0;
+  document.getElementById('hud-chapter').textContent = '👾 FINAL BOSS: Full Review';
+  showView('boss-view');
+  renderBossQ();
+}
+
+function renderBossQ() {
+  if(bossQ >= bossQuestions.length) { showFinalResult(); return; }
+  const q = bossQuestions[bossQ];
+  const hp = Math.round((1 - bossQ/bossQuestions.length)*100);
+  const keys = ['A','B','C','D'];
+
+  const bossView = document.getElementById('boss-view');
+  bossView.innerHTML = `
+    <div class="activity-wrap">
+      <div class="boss-header">
+        <div class="boss-label">👾 FINAL BOSS · Question ${bossQ+1} of ${bossQuestions.length}</div>
+        <div class="boss-title">FULL REVIEW</div>
+        <div class="boss-desc">Answer all 12 questions to complete your Refugee mastery</div>
+        <div class="boss-health"><div class="boss-hp-fill" id="boss-hp" style="width:${hp}%"></div></div>
+        <div class="boss-hp-label">Boss HP: ${hp}%</div>
+      </div>
+
+      <div class="mc-question">
+        <div class="mc-q-label">
+          <span class="mc-q-who ${q.wc}">${q.who}</span>
+          <span class="mc-q-num">${bossQ+1}/${bossQuestions.length}</span>
+        </div>
+        <div class="mc-q-text">${q.q}</div>
+        <div class="mc-opts" id="boss-opts"></div>
+      </div>
+      <div class="mc-feedback" id="boss-fb"></div>
+      <div class="btn-row"><div class="spacer"></div><button class="next-btn" id="boss-next">Next →</button></div>
+    </div>`;
+
+  let bossAnswered = false;
+  const optsWrap = document.getElementById('boss-opts');
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'mc-opt';
+    btn.innerHTML = `<span class="opt-key">${keys[i]}</span>${o}`;
+    btn.addEventListener('click', () => {
+      if(bossAnswered) return;
+      bossAnswered = true;
+      optsWrap.querySelectorAll('.mc-opt').forEach(b => b.disabled = true);
+      const fb = document.getElementById('boss-fb');
+      if(i === q.correct) {
+        btn.classList.add('correct');
+        fb.className = 'mc-feedback correct show'; fb.textContent = '✅ ' + q.expl;
+        bossScore++; streak++; addXP(15);
+      } else {
+        btn.classList.add('wrong');
+        optsWrap.querySelectorAll('.mc-opt')[q.correct].classList.add('correct');
+        fb.className = 'mc-feedback wrong show'; fb.textContent = '❌ ' + q.expl;
+        loseLife();
+      }
+      updateStreak();
+      document.getElementById('boss-next').classList.add('show');
+    });
+    optsWrap.appendChild(btn);
+  });
+
+  document.getElementById('boss-next').addEventListener('click', () => { bossQ++; renderBossQ(); });
+}
+
+/* ════════════════════════════════════════════════
+   FINAL RESULT
+════════════════════════════════════════════════ */
+function showFinalResult() {
+  const pct = Math.round(bossScore / bossQuestions.length * 100);
+  const stars = pct >= 90 ? '★★★' : pct >= 70 ? '★★☆' : '★☆☆';
+  let color = pct >= 90 ? 'var(--gold)' : pct >= 70 ? 'var(--blue)' : 'var(--orange)';
+  let msg = pct >= 90 ? '"And now I take you in." — You know this book inside and out. Josef would be proud.'
+    : pct >= 70 ? 'Solid work! You understand the heart of Refugee. Review any missed areas and try again.'
+    : 'Keep at it! Go back through the missions and try the Final Boss again.';
+
+  const v = document.getElementById('result-view');
+  v.innerHTML = `
+    <div class="final-result">
+      <div class="final-big" style="color:${color}">${bossScore}<span style="font-size:48px;color:var(--muted)">/${bossQuestions.length}</span></div>
+      <div class="final-grade">${pct}% — ${pct>=90?'REFUGEE MASTER':pct>=70?'GREAT WORK':'KEEP STUDYING'}</div>
+      <div class="stars-row">${stars}</div>
+      <div class="final-msg">${msg}</div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-n" style="color:var(--gold)">${xp}</div><div class="stat-l">Total XP</div></div>
+        <div class="stat-card"><div class="stat-n" style="color:var(--orange)">${streak}</div><div class="stat-l">Best Streak</div></div>
+        <div class="stat-card"><div class="stat-n" style="color:var(--green)">${bossScore}</div><div class="stat-l">Boss Hits</div></div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="ch-start-btn" style="background:var(--purple);color:#0a0d12" onclick="startBoss()">🔄 Try Boss Again</button>
+        <button class="ch-start-btn" style="background:rgba(255,255,255,0.06);border:1px solid var(--border)" onclick="goHome()">🏠 Back to Missions</button>
+      </div>
+    </div>`;
+  showView('result-view');
+}
+
+function goHome() {
+  showView('intro-view');
+  document.getElementById('hud-chapter').textContent = 'Mission Select';
+}
+
+/* ════════════════════════════════════════════════
+   XP / STREAK / LIVES
+════════════════════════════════════════════════ */
+function addXP(amount) {
+  xp = Math.min(xp + amount, MAX_XP);
+  document.getElementById('xp-num').textContent = xp;
+  document.getElementById('xp-fill').style.width = (xp/MAX_XP*100)+'%';
+}
+
+function updateStreak() {
+  document.getElementById('streak-count').textContent = streak;
+  if(streak > 0 && streak % 5 === 0) showToast(`🔥 ${streak} streak! On fire!`, 'gold');
+}
+
+function loseLife() {
+  streak = 0;
+  updateStreak();
+  if(lives > 0) lives--;
+  const h = document.getElementById('lives-display');
+  h.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3-lives);
+  if(lives === 0) {
+    showToast('💔 Out of lives — but keep going!', 'red');
+    lives = 3;
+    setTimeout(() => { document.getElementById('lives-display').textContent = '❤️❤️❤️'; }, 2000);
+  }
+}
+
+/* ════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════ */
+function showToast(msg, type) {
+  const container = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = 'toast-item ' + type;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.animation = 'toastOut 0.3s ease forwards';
+    setTimeout(() => el.remove(), 300);
+  }, 2500);
+}
+
+/* ════════════════════════════════════════════════
+   EXPOSE NAV FUNCTIONS FOR INLINE ONCLICK
+════════════════════════════════════════════════ */
+window.startMission    = startMission;
+window.startTeach      = startTeach;
+window.nextTeach       = nextTeach;
+window.prevTeach       = prevTeach;
+window.startActivities = startActivities;
+window.startBoss       = startBoss;
+window.goHome          = goHome;
+
+/* ════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════ */
+buildMap();
+</script>
 </body>
 </html>

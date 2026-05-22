@@ -1,37 +1,2061 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Unit 5 Worldarchitecture Projet classroom activity.">
-  <title>Unit 5 Worldarchitecture Projet</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>World Architect — Interactive Math Expedition</title>
+<style>
+:root {
+  --navy:#1C2E42;
+  --navy2:#27435F;
+  --teal:#387F84;
+  --teal2:#2B696E;
+  --amber:#F2A93B;
+  --cream:#FAF6EE;
+  --cream2:#F4EBDD;
+  --rust:#C85A3A;
+  --sage:#4A7C6F;
+  --mint:#EAF5EE;
+  --sky:#EEF6F6;
+  --ink:#2A3240;
+  --muted:#758394;
+  --card:#FFFFFF;
+  --line:#E2DDD4;
+  --line2:#D1C8B8;
+  --success:#3A7D5C;
+  --danger:#B94040;
+  --dangerBg:#FAEAEA;
+  --shadow:0 12px 36px rgba(28,46,66,.13);
+  --shadow2:0 5px 18px rgba(28,46,66,.10);
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'DM Sans',sans-serif;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(242,169,59,.18), transparent 28%),
+    radial-gradient(circle at 88% 16%, rgba(56,127,132,.13), transparent 30%),
+    var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+}
+button,input,select,textarea { font-family:'DM Sans',sans-serif; }
+button { cursor:pointer; }
+a { color:inherit; }
+
+.site-header {
+  position:sticky; top:0; z-index:50;
+  background:linear-gradient(135deg,var(--navy),var(--navy2));
+  box-shadow:0 2px 18px rgba(0,0,0,.22);
+}
+.header-inner {
+  max-width:1180px; margin:0 auto;
+  display:flex; align-items:center; gap:18px; justify-content:space-between;
+  padding:12px 20px;
+}
+.logo-group { display:flex; align-items:center; gap:12px; min-width:230px; }
+.logo-icon { font-size:28px; }
+.logo-text { color:#fff; font-family:'Playfair Display',serif; font-size:22px; font-weight:900; line-height:1; }
+.logo-sub { color:var(--amber); font-size:11px; letter-spacing:.08em; text-transform:uppercase; margin-top:3px; font-weight:700; }
+.header-progress { flex:1; max-width:470px; display:none; }
+.progress-top { display:flex; justify-content:space-between; align-items:center; color:rgba(255,255,255,.7); font-size:12px; margin-bottom:5px; }
+.progress-bar { height:9px; background:rgba(255,255,255,.17); border-radius:999px; overflow:hidden; }
+.progress-fill { height:100%; width:0; background:linear-gradient(90deg,var(--teal),var(--amber)); border-radius:999px; transition:.35s; }
+.header-actions { display:flex; align-items:center; gap:8px; }
+.status-pill {
+  color:#fff; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
+  padding:7px 10px; border-radius:999px; font-size:12px; white-space:nowrap;
+}
+.header-btn {
+  background:rgba(255,255,255,.11); color:#fff; border:1px solid rgba(255,255,255,.20);
+  border-radius:10px; padding:8px 10px; font-weight:700; font-size:12px;
+}
+.header-btn:hover { background:rgba(255,255,255,.2); }
+
+.screen { max-width:1180px; margin:0 auto; padding:28px 20px 46px; }
+.hero-card {
+  background:var(--card); border-radius:24px; overflow:hidden; box-shadow:var(--shadow);
+  border:1px solid rgba(226,221,212,.7);
+}
+.hero-banner {
+  position:relative; overflow:hidden;
+  background:linear-gradient(135deg,var(--navy) 0%,#244563 52%,var(--teal) 100%);
+  padding:44px 42px 36px;
+  color:#fff;
+}
+.hero-banner:before {
+  content:""; position:absolute; inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.08) 1px,transparent 1px);
+  background-size:30px 30px;
+}
+.hero-content { position:relative; display:grid; grid-template-columns:1.25fr .75fr; gap:28px; align-items:center; }
+.hero-kicker { color:var(--amber); text-transform:uppercase; letter-spacing:.11em; font-size:12px; font-weight:800; margin-bottom:8px; }
+.hero-title { font-family:'Playfair Display',serif; font-size:46px; line-height:1.05; font-weight:900; }
+.hero-title span { color:var(--amber); }
+.hero-tagline { color:rgba(255,255,255,.78); font-size:16px; line-height:1.55; margin-top:12px; max-width:650px; }
+.hero-mission {
+  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18); border-radius:18px;
+  padding:18px; backdrop-filter:blur(3px);
+}
+.hero-mission h3 { font-size:15px; letter-spacing:.06em; text-transform:uppercase; color:var(--amber); margin-bottom:10px; }
+.hero-mission ul { padding-left:20px; display:grid; gap:8px; color:rgba(255,255,255,.86); font-size:14px; line-height:1.45; }
+
+.intro-body { padding:30px 34px 34px; }
+.form-panel {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px;
+}
+.field label,.submit-field label { display:block; font-size:12px; color:var(--navy); font-weight:800; margin-bottom:6px; }
+.field input,.field select,.submit-field input,.submit-field select {
+  width:100%; border:1.5px solid var(--line); background:#fff; border-radius:10px;
+  padding:11px 12px; color:var(--ink); font-size:14px; outline:none;
+}
+.field input:focus,.field select:focus,.submit-field input:focus,.submit-field select:focus,
+textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(56,127,132,.12); }
+
+.resume-banner {
+  display:none; margin-bottom:18px; background:#EEF6F6; border:1.5px solid #BFD8D8;
+  border-radius:14px; padding:14px 16px; align-items:center; justify-content:space-between; gap:14px;
+}
+.resume-banner strong { color:var(--navy); }
+.resume-banner p { color:var(--muted); font-size:13px; margin-top:2px; }
+.resume-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+.section-title-row {
+  display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+  margin:18px 0 14px;
+}
+.section-title h2 { font-family:'Playfair Display',serif; color:var(--navy); font-size:28px; line-height:1.1; }
+.section-title p { color:var(--muted); font-size:14px; margin-top:5px; line-height:1.45; }
+.route-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.route-controls select {
+  border:1.5px solid var(--line); background:#fff; border-radius:10px; padding:10px 12px;
+  color:var(--navy); font-weight:700; min-width:210px;
+}
+
+.route-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:13px;
+}
+.route-card {
+  background:#fff; border:2px solid var(--line); border-radius:17px; padding:14px;
+  box-shadow:var(--shadow2); position:relative; min-height:172px; transition:.18s;
+}
+.route-card:hover { transform:translateY(-2px); border-color:#BCD4D4; }
+.route-card.selected { border-color:var(--teal); background:linear-gradient(180deg,#fff,#F1FAFA); }
+.route-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.route-flag { font-size:31px; }
+.route-check {
+  width:28px; height:28px; border-radius:50%; border:2px solid var(--line); display:flex;
+  align-items:center; justify-content:center; color:#fff; font-weight:900; background:#fff;
+}
+.route-card.selected .route-check { background:var(--teal); border-color:var(--teal); }
+.route-country { color:var(--amber); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; margin-top:8px; }
+.route-name { color:var(--navy); font-weight:900; font-size:15px; line-height:1.2; margin-top:4px; }
+.route-focus { color:var(--muted); font-size:12px; line-height:1.35; margin-top:8px; }
+.route-formula {
+  margin-top:9px; display:inline-block; background:var(--cream); border:1px solid var(--line);
+  padding:5px 8px; border-radius:8px; font-size:12px; color:var(--navy); font-weight:800;
+}
+
+.action-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:18px; }
+.primary-btn,.secondary-btn,.ghost-btn,.danger-btn {
+  border:none; border-radius:12px; padding:12px 18px; font-weight:900; font-size:14px;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:.15s; text-decoration:none;
+}
+.primary-btn { background:var(--navy); color:#fff; }
+.primary-btn:hover { background:var(--teal); transform:translateY(-1px); }
+.secondary-btn { background:var(--teal); color:#fff; }
+.secondary-btn:hover { background:var(--navy); }
+.ghost-btn { background:#fff; color:var(--navy); border:2px solid var(--line); }
+.ghost-btn:hover { border-color:var(--teal); background:#F0F8F8; }
+.danger-btn { background:var(--dangerBg); color:var(--danger); border:1.5px solid #E8AAAA; }
+
+#app-screen,#results-screen { display:none; }
+.mission-shell { display:grid; grid-template-columns:310px 1fr; gap:18px; align-items:start; }
+.sidebar {
+  position:sticky; top:82px; background:#fff; border:1px solid var(--line); border-radius:20px;
+  box-shadow:var(--shadow2); overflow:hidden;
+}
+.sidebar-head { background:linear-gradient(135deg,var(--navy),var(--teal)); color:#fff; padding:18px; }
+.sidebar-head h2 { font-family:'Playfair Display',serif; font-size:25px; line-height:1.05; }
+.sidebar-head p { color:rgba(255,255,255,.76); font-size:13px; margin-top:6px; line-height:1.4; }
+.jump-wrap { padding:14px 16px; border-bottom:1px solid var(--line); }
+.jump-wrap label { display:block; color:var(--navy); font-size:12px; font-weight:900; margin-bottom:6px; }
+.jump-wrap select { width:100%; border:1.5px solid var(--line); border-radius:10px; padding:10px 10px; color:var(--ink); }
+.mission-list { padding:10px; display:grid; gap:8px; }
+.mission-mini {
+  border:1.5px solid var(--line); background:#fff; border-radius:12px; padding:10px; display:flex;
+  gap:10px; align-items:center; transition:.15s;
+}
+.mission-mini.current { border-color:var(--teal); background:#F0F8F8; }
+.mission-mini.done { border-color:#B7DCC5; }
+.mini-flag { font-size:24px; }
+.mini-text { flex:1; min-width:0; }
+.mini-name { font-size:12px; font-weight:900; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mini-status { font-size:11px; color:var(--muted); margin-top:2px; }
+.mini-check { font-size:16px; }
+
+.mission-card {
+  background:#fff; border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow); overflow:hidden;
+}
+.dest-hero {
+  background:
+    linear-gradient(135deg,rgba(28,46,66,.96),rgba(56,127,132,.90)),
+    radial-gradient(circle at 70% 20%,rgba(242,169,59,.38),transparent 28%);
+  color:#fff; padding:24px 26px;
+}
+.dest-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.dest-title-wrap { display:flex; gap:16px; align-items:flex-start; }
+.dest-flag-big { font-size:48px; line-height:1; }
+.dest-kicker { color:var(--amber); font-size:11px; font-weight:900; letter-spacing:.10em; text-transform:uppercase; }
+.dest-title { font-family:'Playfair Display',serif; font-size:32px; line-height:1.08; margin-top:3px; }
+.dest-sub { color:rgba(255,255,255,.76); font-size:14px; margin-top:6px; }
+.stamp {
+  border:2px dashed rgba(255,255,255,.35); border-radius:14px; padding:10px 13px; min-width:92px;
+  text-align:center; color:rgba(255,255,255,.74); font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+}
+.stamp strong { display:block; color:var(--amber); font-family:'Playfair Display',serif; font-size:25px; margin-top:1px; }
+
+.mission-body { padding:22px 26px 26px; }
+.panel-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.panel {
+  background:#fff; border:1.5px solid var(--line); border-radius:16px; padding:16px; overflow:hidden;
+}
+.panel.soft { background:var(--sky); border-color:#C7DEDE; }
+.panel.warm { background:#FFF7E7; border-color:#EDD3A8; }
+.panel h3 {
+  color:var(--navy); font-size:14px; font-weight:900; text-transform:uppercase; letter-spacing:.07em;
+  margin-bottom:10px; display:flex; align-items:center; gap:7px;
+}
+.panel p,.panel li { color:var(--ink); font-size:14px; line-height:1.55; }
+.explore-links { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+.explore-link {
+  background:#fff; border:1.5px solid #BFD8D8; color:var(--navy); text-decoration:none; border-radius:10px;
+  padding:9px 10px; font-size:12px; font-weight:900; display:inline-flex; gap:6px; align-items:center;
+}
+.explore-link:hover { border-color:var(--teal); background:#F9FFFF; }
+.check-grid { display:grid; gap:8px; margin:12px 0; }
+.check-row {
+  display:flex; align-items:flex-start; gap:9px; background:rgba(255,255,255,.72); border:1px solid rgba(191,216,216,.65);
+  border-radius:10px; padding:9px 10px; color:var(--ink); font-size:13px; line-height:1.35;
+}
+.check-row input { margin-top:2px; transform:scale(1.15); accent-color:var(--teal); }
+
+.visual-zone {
+  min-height:230px; display:flex; align-items:center; justify-content:center; background:var(--cream);
+  border:1.5px solid var(--line); border-radius:16px; padding:14px;
+}
+.visual-zone svg { max-width:100%; height:auto; }
+
+.shape-evidence-card {
+  margin-bottom:12px; background:#fff; border:1.5px solid var(--line); border-radius:14px;
+  padding:12px; display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center;
+}
+.shape-evidence-visual {
+  background:linear-gradient(180deg,#F8FBFB,#F4EBDD); border:1px solid var(--line); border-radius:12px;
+  min-height:110px; display:flex; align-items:center; justify-content:center; overflow:hidden;
+}
+.shape-evidence-visual svg { width:100%; max-width:150px; height:auto; display:block; }
+.shape-evidence-text strong { color:var(--navy); font-size:12px; letter-spacing:.07em; text-transform:uppercase; display:block; margin-bottom:5px; }
+.shape-evidence-text p { color:var(--ink); font-size:13px; line-height:1.45; }
+.shape-evidence-text .shape-tag { display:inline-flex; margin-top:8px; padding:4px 8px; border-radius:999px; background:var(--cream); border:1px solid var(--line); color:var(--navy); font-weight:900; font-size:11px; }
+.starter-note { color:var(--muted); font-size:12px; line-height:1.4; margin:2px 0 8px; }
+.starter-tray { display:flex; flex-wrap:wrap; gap:7px; margin:0 0 8px; }
+.starter-chip {
+  border:1.5px dashed #BFD8D8; background:#fff; color:var(--navy); border-radius:999px;
+  padding:7px 10px; font-size:12px; font-weight:800; cursor:grab; user-select:none;
+}
+.starter-chip:hover { background:#F9FFFF; border-color:var(--teal); }
+.starter-chip:active { cursor:grabbing; }
+@media (max-width:620px) {
+  .shape-evidence-card { grid-template-columns:1fr; }
+  .shape-evidence-visual svg { max-width:220px; }
+}
+
+.data-table {
+  width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:12px; border:1.5px solid var(--line);
+  font-size:13px; margin-top:10px;
+}
+.data-table th { background:var(--navy); color:#fff; text-align:left; padding:9px 11px; font-size:12px; letter-spacing:.04em; text-transform:uppercase; }
+.data-table td { padding:9px 11px; border-top:1px solid var(--line); }
+.data-table td:last-child { font-weight:900; color:var(--navy); text-align:right; }
+.formula-lab { background:#fff; border:1.5px solid var(--line); border-radius:18px; padding:18px; }
+.lab-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.lab-field label { display:block; color:var(--navy); font-size:12px; font-weight:900; margin-bottom:6px; }
+.lab-field input,.lab-field select,.lab-field textarea,textarea {
+  width:100%; border:1.5px solid var(--line); border-radius:10px; background:#fff;
+  padding:10px 12px; color:var(--ink); font-size:14px; outline:none;
+}
+.lab-field textarea,textarea { resize:vertical; min-height:76px; line-height:1.45; }
+.lab-field.full { grid-column:1 / -1; }
+.answer-row { display:flex; gap:8px; }
+.answer-row input { flex:1; }
+.unit-pill {
+  min-width:70px; border:1.5px solid var(--line); border-radius:10px; display:flex; align-items:center; justify-content:center;
+  color:var(--navy); background:var(--cream); font-weight:900;
+}
+.feedback {
+  margin-top:14px; display:none; border-radius:13px; padding:13px 14px; font-size:14px; line-height:1.55;
+}
+.feedback.show { display:block; }
+.feedback.ok { background:var(--mint); border:1.5px solid #A8DABC; color:#2A5C42; }
+.feedback.no { background:var(--dangerBg); border:1.5px solid #E8AAAA; color:#7A2828; }
+.feedback strong { display:block; margin-bottom:3px; }
+.hint-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.hint-box { display:none; margin-top:10px; background:#F7F2E8; border:1.5px solid #E5D3B4; border-radius:12px; padding:12px; color:var(--navy); font-size:13px; line-height:1.45; }
+.budget-row { display:grid; grid-template-columns:1.2fr .8fr .8fr; gap:10px; align-items:end; }
+.budget-output {
+  background:#F7F2E8; border:1.5px solid #E5D3B4; border-radius:12px; padding:12px; color:var(--navy);
+  font-size:14px; font-weight:900; min-height:44px; display:flex; align-items:center;
+}
+.nav-row { display:flex; justify-content:space-between; gap:12px; margin-top:18px; border-top:1px solid var(--line); padding-top:18px; }
+
+.results-card {
+  background:#fff; border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:var(--shadow);
+}
+.results-banner {
+  background:linear-gradient(135deg,var(--navy),var(--teal)); color:#fff; padding:34px; text-align:center; position:relative; overflow:hidden;
+}
+.results-banner:before {
+  content:""; position:absolute; inset:0; background-image:radial-gradient(circle,rgba(255,255,255,.08) 1px,transparent 1px); background-size:28px 28px;
+}
+.results-banner > * { position:relative; }
+.results-title { font-family:'Playfair Display',serif; font-size:38px; }
+.results-sub { color:rgba(255,255,255,.78); margin-top:7px; }
+.stamps { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.passport-stamp {
+  background:rgba(255,255,255,.14); border:1.5px dashed rgba(255,255,255,.35); border-radius:10px;
+  padding:7px 10px; font-size:18px;
+}
+.results-body { padding:28px 32px 34px; }
+.score-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:13px; margin-bottom:20px; }
+.score-box {
+  background:var(--cream); border:1.5px solid var(--line); border-radius:16px; padding:16px 10px; text-align:center;
+}
+.score-num { font-family:'Playfair Display',serif; color:var(--navy); font-size:36px; font-weight:900; }
+.score-label { color:var(--muted); font-size:12px; font-weight:800; margin-top:4px; }
+.review-table {
+  width:100%; border-collapse:separate; border-spacing:0 8px; font-size:13px;
+}
+.review-table th { text-align:left; color:var(--navy); font-size:11px; letter-spacing:.08em; text-transform:uppercase; padding:0 10px 3px; }
+.review-table td { background:#fff; border-top:1.5px solid var(--line); border-bottom:1.5px solid var(--line); padding:11px 10px; vertical-align:top; }
+.review-table td:first-child { border-left:1.5px solid var(--line); border-radius:12px 0 0 12px; }
+.review-table td:last-child { border-right:1.5px solid var(--line); border-radius:0 12px 12px 0; }
+.review-table tr.good td { background:#F2FAF5; border-color:#B7DCC5; }
+.review-table tr.needs td { background:#FFF8EF; border-color:#EED2A8; }
+.submission-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:22px; }
+.submit-card { border:1.5px solid var(--line); border-radius:18px; padding:18px; background:#fff; }
+.submit-card h3 { color:var(--navy); font-size:16px; font-weight:900; margin-bottom:8px; }
+.submit-card p { color:var(--muted); font-size:13px; line-height:1.5; margin-bottom:12px; }
+.submit-actions { display:flex; flex-wrap:wrap; gap:9px; }
+.confirm { display:none; margin-top:12px; padding:11px 13px; border-radius:10px; font-size:13px; background:var(--mint); color:#2A5C42; border:1.5px solid #A8DABC; }
+
+.fade-in { animation:fadeIn .28s ease both; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+@media (max-width:980px) {
+  .hero-content,.mission-shell,.panel-grid,.submission-grid { grid-template-columns:1fr; }
+  .sidebar { position:static; }
+  .route-grid { grid-template-columns:repeat(2,1fr); }
+  .form-panel,.score-grid { grid-template-columns:repeat(2,1fr); }
+  .header-progress { display:none !important; }
+}
+@media (max-width:620px) {
+  .header-inner { flex-wrap:wrap; }
+  .logo-group { min-width:0; }
+  .hero-title { font-size:34px; }
+  .route-grid,.form-panel,.lab-grid,.budget-row,.score-grid { grid-template-columns:1fr; }
+  .dest-top { flex-direction:column; }
+  .nav-row,.action-row { flex-direction:column; align-items:stretch; }
+  .primary-btn,.secondary-btn,.ghost-btn,.danger-btn { width:100%; }
+}
+
+@media print {
+  .site-header,.sidebar,.nav-row,.submit-actions,.resume-banner,.route-controls,.action-row { display:none !important; }
+  body { background:#fff; }
+  .screen { padding:0; max-width:100%; }
+  .results-card,.mission-card,.hero-card { box-shadow:none; border:none; }
+}
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/unit-5/">Unit 5 Geometry and Measurement</a><span>/</span><span>Unit 5 Worldarchitecture Projet</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Unit 5 Worldarchitecture Projet</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
-
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Unit5WorldarchitectureProjet</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/unit-5/unit5worldarchitectureprojet/</span></p>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-group">
+      <div class="logo-icon">🌍</div>
+      <div>
+        <div class="logo-text">World Architect</div>
+        <div class="logo-sub">Explore · Calculate · Submit</div>
       </div>
-    </section>
-
-    <div class="button-row">
-      <a class="primary-button" href="/unit-5/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+    <div class="header-progress" id="header-progress">
+      <div class="progress-top">
+        <span id="progress-label">Mission 1 of 6</span>
+        <span id="score-label">0 checked</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="header-actions">
+      <div class="status-pill" id="save-status">Not started</div>
+      <button class="header-btn" onclick="manualSave()">Save</button>
+    </div>
+  </div>
+</header>
+
+<section class="screen" id="intro-screen">
+  <div class="hero-card fade-in">
+    <div class="hero-banner">
+      <div class="hero-content">
+        <div>
+          <div class="hero-kicker">Grade 6 Geometry Expedition</div>
+          <h1 class="hero-title">World <span>Architect</span><br>Math Project</h1>
+          <p class="hero-tagline">Students choose real-world landmarks, open exploration links, collect observations, plug information into formulas, and create a Google Classroom–ready submission report.</p>
+        </div>
+        <div class="hero-mission">
+          <h3>Your Mission</h3>
+          <ul>
+            <li>Choose your travel route from famous countries and landmarks.</li>
+            <li>Explore each place and record something interesting you notice.</li>
+            <li>Use the correct geometry formula to calculate area, surface area, or volume.</li>
+            <li>Download or copy a final report to submit in Google Classroom.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="intro-body">
+      <div class="resume-banner" id="resume-banner">
+        <div>
+          <strong>Saved work found.</strong>
+          <p id="resume-details">You can continue where you left off or start a fresh expedition.</p>
+        </div>
+        <div class="resume-actions">
+          <button class="secondary-btn" onclick="resumeSaved()">Resume Saved Work</button>
+          <button class="ghost-btn" onclick="clearSavedWork()">Start Fresh</button>
+        </div>
+      </div>
+
+      <div class="form-panel">
+        <div class="field">
+          <label for="student-name">Student First Name</label>
+          <input id="student-name" type="text" placeholder="e.g. Maria">
+        </div>
+        <div class="field">
+          <label for="student-last">Last Initial</label>
+          <input id="student-last" type="text" maxlength="2" placeholder="e.g. R">
+        </div>
+        <div class="field">
+          <label for="student-period">Class Period</label>
+          <input id="student-period" type="text" placeholder="e.g. 3">
+        </div>
+        <div class="field">
+          <label for="student-date">Date</label>
+          <input id="student-date" type="date">
+        </div>
+      </div>
+
+      <div class="section-title-row">
+        <div class="section-title">
+          <h2>Build Your Route</h2>
+          <p>Select at least 5 destinations. Choose more if your teacher assigns a longer expedition.</p>
+        </div>
+        <div class="route-controls">
+          <select id="preset-select" onchange="applyPreset(this.value)">
+            <option value="balanced">Balanced Route — 6 stops</option>
+            <option value="ancient">Ancient Wonders — 5 stops</option>
+            <option value="modern">Modern Skylines — 5 stops</option>
+            <option value="global">Full World Tour — 12 stops</option>
+          </select>
+          <button class="ghost-btn" onclick="selectAllDestinations()">Select All</button>
+          <button class="ghost-btn" onclick="clearRouteSelection()">Clear</button>
+        </div>
+      </div>
+
+      <div class="route-grid" id="route-grid"></div>
+
+      <div class="action-row">
+        <div id="route-note" style="color:var(--muted);font-size:13px;line-height:1.4;">Selected: 6 destinations</div>
+        <button class="primary-btn" onclick="startExpedition()">✈️ Begin Expedition</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="app-screen">
+  <div class="mission-shell">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <h2>Passport</h2>
+        <p>Complete the exploration log and formula lab for each selected landmark.</p>
+      </div>
+      <div class="jump-wrap">
+        <label for="jump-select">Jump to destination</label>
+        <select id="jump-select" onchange="jumpToMission(Number(this.value))"></select>
+      </div>
+      <div class="mission-list" id="mission-list"></div>
+    </aside>
+    <main>
+      <div class="mission-card fade-in" id="mission-card"></div>
+    </main>
+  </div>
+</section>
+
+<section class="screen" id="results-screen">
+  <div class="results-card fade-in">
+    <div class="results-banner">
+      <div style="font-size:52px;margin-bottom:4px;">🌏</div>
+      <div class="results-title">Expedition Complete</div>
+      <div class="results-sub" id="results-subtitle">Your architect report is ready.</div>
+      <div class="stamps" id="result-stamps"></div>
+    </div>
+    <div class="results-body">
+      <div class="score-grid">
+        <div class="score-box"><div class="score-num" id="math-score">0/0</div><div class="score-label">Math Correct</div></div>
+        <div class="score-box"><div class="score-num" id="explore-score">0/0</div><div class="score-label">Exploration Logs</div></div>
+        <div class="score-box"><div class="score-num" id="overall-score">0%</div><div class="score-label">Overall Readiness</div></div>
+        <div class="score-box"><div class="score-num" id="time-score">0m</div><div class="score-label">Time Used</div></div>
+      </div>
+
+      <h2 style="font-family:'Playfair Display',serif;color:var(--navy);font-size:28px;margin:8px 0 10px;">Teacher Review Summary</h2>
+      <table class="review-table">
+        <thead><tr><th>Stop</th><th>Math</th><th>Student Observation</th><th>Formula Work</th></tr></thead>
+        <tbody id="review-body"></tbody>
+      </table>
+
+      <div class="submission-grid">
+        <div class="submit-card">
+          <h3>Google Classroom Submission</h3>
+          <p>A standalone HTML report will download to the student device. Students can upload that file to the Google Classroom assignment for grading.</p>
+          <div class="submit-actions">
+            <button class="primary-btn" onclick="downloadReport('html')">⬇️ Download Classroom Report</button>
+            <button class="ghost-btn" onclick="downloadReport('txt')">Download Text Copy</button>
+            <button class="ghost-btn" onclick="copyReport()">Copy Report</button>
+            <button class="secondary-btn" onclick="openClassroom()">Open Google Classroom</button>
+          </div>
+          <div class="confirm" id="copy-confirm">Copied or downloaded. Submit the file/text in Google Classroom.</div>
+        </div>
+        <div class="submit-card">
+          <h3>Email / Print Backup</h3>
+          <p>Use this if Google Classroom upload is not available. Printing also lets students save as PDF.</p>
+          <div class="form-panel" style="grid-template-columns:1fr 1fr;margin:0 0 12px;">
+            <div class="submit-field">
+              <label for="teacher-email">Teacher Email</label>
+              <input id="teacher-email" type="email" placeholder="teacher@school.org">
+            </div>
+            <div class="submit-field">
+              <label for="submit-period">Period</label>
+              <input id="submit-period" type="text" placeholder="Period">
+            </div>
+          </div>
+          <div class="submit-actions">
+            <button class="secondary-btn" onclick="submitViaEmail()">📧 Open Email</button>
+            <button class="ghost-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+            <button class="danger-btn" onclick="restartProject()">Start Over</button>
+          </div>
+          <div class="confirm" id="email-confirm">Email window opened. Review it, then send.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const DESTINATIONS = [
+  {
+    "id": "india_taj_kite",
+    "flag": "🇮🇳",
+    "country": "India",
+    "city": "Agra",
+    "landmark": "Taj Mahal Geometry Garden",
+    "badge": "Reflection Pool Pavilion",
+    "focus": "Parallelogram Area",
+    "formulaType": "parallelogram_area",
+    "formula": "A = b × h",
+    "unit": "m²",
+    "answer": 198,
+    "tolerance": 0.01,
+    "query": "Taj Mahal Agra India architecture reflecting pool",
+    "explorePrompt": "Find one design detail you notice in the gardens, arches, or reflection pool.",
+    "geometryPrompt": "Where do you see symmetry, rectangles, parallelograms, or repeated patterns?",
+    "story": "A design team is planning a temporary shade sail near a reflection pool. The sail is shaped like a parallelogram.",
+    "data": [
+      [
+        "base",
+        18,
+        "m"
+      ],
+      [
+        "height",
+        11,
+        "m"
+      ]
+    ],
+    "substitution": "A = 18 × 11",
+    "hint1": "Use the parallelogram area formula: base × height.",
+    "hint2": "Multiply 18 × 11. Keep the unit squared because it is area.",
+    "visual": "parallelogram",
+    "rates": [
+      [
+        "fabric shade material",
+        7.5
+      ],
+      [
+        "waterproof canvas",
+        9.25
+      ],
+      [
+        "decorative silk-look fabric",
+        12.0
+      ]
+    ]
+  },
+  {
+    "id": "brazil_redeemer",
+    "flag": "🇧🇷",
+    "country": "Brazil",
+    "city": "Rio de Janeiro",
+    "landmark": "Christ the Redeemer",
+    "badge": "Pedestal Restoration",
+    "focus": "Rectangular Prism Surface Area",
+    "formulaType": "rect_prism_sa",
+    "formula": "SA = 2(lw + lh + wh)",
+    "unit": "m²",
+    "answer": 432,
+    "tolerance": 0.01,
+    "query": "Christ the Redeemer Rio de Janeiro pedestal",
+    "explorePrompt": "Find one thing about the statue’s location, shape, or view from the mountain.",
+    "geometryPrompt": "What parts look like prisms, rectangles, or symmetric shapes?",
+    "story": "A restoration crew needs to cover a rectangular-prism pedestal for protection during repairs.",
+    "data": [
+      [
+        "length",
+        12,
+        "m"
+      ],
+      [
+        "width",
+        8,
+        "m"
+      ],
+      [
+        "height",
+        6,
+        "m"
+      ]
+    ],
+    "substitution": "SA = 2(12×8 + 12×6 + 8×6)",
+    "hint1": "Find lw, lh, and wh first. Then add them and multiply by 2.",
+    "hint2": "12×8=96, 12×6=72, 8×6=48. 2(96+72+48)=432.",
+    "visual": "rect_prism",
+    "rates": [
+      [
+        "protective wrap",
+        3.5
+      ],
+      [
+        "weather tarp",
+        4.25
+      ],
+      [
+        "reinforced restoration cover",
+        6.0
+      ]
+    ]
+  },
+  {
+    "id": "egypt_pyramid",
+    "flag": "🇪🇬",
+    "country": "Egypt",
+    "city": "Giza",
+    "landmark": "Great Pyramid of Giza",
+    "badge": "Museum Model Cover",
+    "focus": "Square Pyramid Lateral Area",
+    "formulaType": "square_pyramid_lateral",
+    "formula": "LA = 4(½bh)",
+    "unit": "m²",
+    "answer": 336,
+    "tolerance": 0.01,
+    "query": "Great Pyramid of Giza square pyramid faces",
+    "explorePrompt": "Find one detail about the pyramid’s faces, base, or how it was built.",
+    "geometryPrompt": "What makes this a square pyramid instead of a rectangular prism?",
+    "story": "A museum is building a scale model cover. Only the four triangular side faces need material.",
+    "data": [
+      [
+        "base side",
+        14,
+        "m"
+      ],
+      [
+        "slant height",
+        12,
+        "m"
+      ],
+      [
+        "triangular faces",
+        4,
+        "faces"
+      ]
+    ],
+    "substitution": "LA = 4(½ × 14 × 12)",
+    "hint1": "Find the area of one triangular face, then multiply by 4.",
+    "hint2": "½ × 14 × 12 = 84. Four faces: 4 × 84 = 336.",
+    "visual": "pyramid",
+    "rates": [
+      [
+        "sand-colored paneling",
+        5.0
+      ],
+      [
+        "museum foam board",
+        4.2
+      ],
+      [
+        "premium display panel",
+        8.75
+      ]
+    ]
+  },
+  {
+    "id": "france_louvre",
+    "flag": "🇫🇷",
+    "country": "France",
+    "city": "Paris",
+    "landmark": "Louvre Pyramid",
+    "badge": "Glass Panel Estimate",
+    "focus": "Triangle Area / Lateral Area",
+    "formulaType": "square_pyramid_lateral",
+    "formula": "LA = 4(½bh)",
+    "unit": "m²",
+    "answer": 1960,
+    "tolerance": 0.01,
+    "query": "Louvre Pyramid Paris glass architecture",
+    "explorePrompt": "Find one visual detail about the glass pyramid or the museum entrance.",
+    "geometryPrompt": "How do triangular faces help create the 3D pyramid?",
+    "story": "Architects are estimating glass coverage for four triangular faces of a pyramid-shaped entrance.",
+    "data": [
+      [
+        "base of each triangular face",
+        35,
+        "m"
+      ],
+      [
+        "slant height",
+        28,
+        "m"
+      ],
+      [
+        "triangular faces",
+        4,
+        "faces"
+      ]
+    ],
+    "substitution": "LA = 4(½ × 35 × 28)",
+    "hint1": "Each face is a triangle. Find one triangle’s area first.",
+    "hint2": "½ × 35 × 28 = 490. Four faces: 4 × 490 = 1,960.",
+    "visual": "pyramid_glass",
+    "rates": [
+      [
+        "standard glass",
+        14.5
+      ],
+      [
+        "reinforced glass",
+        18.75
+      ],
+      [
+        "low-glare museum glass",
+        24.0
+      ]
+    ]
+  },
+  {
+    "id": "japan_himeji",
+    "flag": "🇯🇵",
+    "country": "Japan",
+    "city": "Himeji",
+    "landmark": "Himeji Castle",
+    "badge": "Souvenir Box Design",
+    "focus": "Rectangular Prism Surface Area",
+    "formulaType": "rect_prism_sa",
+    "formula": "SA = 2(lw + lh + wh)",
+    "unit": "cm²",
+    "answer": 248,
+    "tolerance": 0.01,
+    "query": "Himeji Castle Japan white castle architecture",
+    "explorePrompt": "Find one feature of the castle roof, walls, or layout.",
+    "geometryPrompt": "Where do you see rectangles, prisms, or repeated shapes?",
+    "story": "A gift shop is designing a rectangular-prism souvenir box inspired by the castle.",
+    "data": [
+      [
+        "length",
+        10,
+        "cm"
+      ],
+      [
+        "width",
+        6,
+        "cm"
+      ],
+      [
+        "height",
+        4,
+        "cm"
+      ]
+    ],
+    "substitution": "SA = 2(10×6 + 10×4 + 6×4)",
+    "hint1": "Surface area means all outside faces.",
+    "hint2": "2(60+40+24)=2(124)=248.",
+    "visual": "rect_prism_box",
+    "rates": [
+      [
+        "cardboard",
+        0.08
+      ],
+      [
+        "laminated cardstock",
+        0.12
+      ],
+      [
+        "premium printed board",
+        0.18
+      ]
+    ]
+  },
+  {
+    "id": "australia_opera",
+    "flag": "🇦🇺",
+    "country": "Australia",
+    "city": "Sydney",
+    "landmark": "Sydney Opera House",
+    "badge": "Sail Panel Repair",
+    "focus": "Triangle Area",
+    "formulaType": "triangle_area",
+    "formula": "A = ½bh",
+    "unit": "m²",
+    "answer": 216,
+    "tolerance": 0.01,
+    "query": "Sydney Opera House sail roof panels",
+    "explorePrompt": "Find one thing you notice about the roof shapes or the waterfront location.",
+    "geometryPrompt": "How do curved and triangular-looking shapes work together in the design?",
+    "story": "A repair team is estimating one triangular sail-like panel using a simplified model.",
+    "data": [
+      [
+        "base",
+        24,
+        "m"
+      ],
+      [
+        "height",
+        18,
+        "m"
+      ]
+    ],
+    "substitution": "A = ½ × 24 × 18",
+    "hint1": "Use half of base times height.",
+    "hint2": "24 × 18 = 432, and half of 432 is 216.",
+    "visual": "triangle_sail",
+    "rates": [
+      [
+        "ceramic tile finish",
+        11.0
+      ],
+      [
+        "weatherproof panel",
+        13.5
+      ],
+      [
+        "premium white shell tile",
+        17.25
+      ]
+    ]
+  },
+  {
+    "id": "mexico_chichen",
+    "flag": "🇲🇽",
+    "country": "Mexico",
+    "city": "Yucatán",
+    "landmark": "Chichén Itzá",
+    "badge": "Trapezoid Terrace Plan",
+    "focus": "Trapezoid Area",
+    "formulaType": "trapezoid_area",
+    "formula": "A = ½(b₁ + b₂)h",
+    "unit": "m²",
+    "answer": 242,
+    "tolerance": 0.01,
+    "query": "Chichen Itza El Castillo pyramid steps",
+    "explorePrompt": "Find one detail about the steps, terraces, or pyramid shape.",
+    "geometryPrompt": "Where could trapezoids or triangles appear in the stepped design?",
+    "story": "A preservation team maps a trapezoid-shaped terrace section near the pyramid.",
+    "data": [
+      [
+        "base 1",
+        28,
+        "m"
+      ],
+      [
+        "base 2",
+        16,
+        "m"
+      ],
+      [
+        "height",
+        11,
+        "m"
+      ]
+    ],
+    "substitution": "A = ½(28 + 16) × 11",
+    "hint1": "Add the two bases first, then multiply by height and by ½.",
+    "hint2": "28 + 16 = 44. ½ × 44 × 11 = 242.",
+    "visual": "trapezoid",
+    "rates": [
+      [
+        "stone cleaning",
+        6.5
+      ],
+      [
+        "protective surface care",
+        8.0
+      ],
+      [
+        "special preservation coating",
+        12.25
+      ]
+    ]
+  },
+  {
+    "id": "uae_burj",
+    "flag": "🇦🇪",
+    "country": "United Arab Emirates",
+    "city": "Dubai",
+    "landmark": "Burj Khalifa",
+    "badge": "Window Panel Count",
+    "focus": "Rectangle Area + Repeated Panels",
+    "formulaType": "rectangle_area_repeated",
+    "formula": "A = l × w × number of panels",
+    "unit": "m²",
+    "answer": 336,
+    "tolerance": 0.01,
+    "query": "Burj Khalifa Dubai windows architecture",
+    "explorePrompt": "Find one detail about the building’s height, windows, or shape.",
+    "geometryPrompt": "Why do repeated rectangles matter in skyscraper design?",
+    "story": "A window team is estimating the area for a group of matching rectangular glass panels.",
+    "data": [
+      [
+        "panel length",
+        4,
+        "m"
+      ],
+      [
+        "panel width",
+        3,
+        "m"
+      ],
+      [
+        "number of panels",
+        28,
+        "panels"
+      ]
+    ],
+    "substitution": "A = 4 × 3 × 28",
+    "hint1": "Find the area of one rectangular panel first.",
+    "hint2": "One panel: 4×3=12. For 28 panels: 12×28=336.",
+    "visual": "window_grid",
+    "rates": [
+      [
+        "window cleaning",
+        2.4
+      ],
+      [
+        "glass polish",
+        3.1
+      ],
+      [
+        "special high-rise service",
+        4.75
+      ]
+    ]
+  },
+  {
+    "id": "peru_machu",
+    "flag": "🇵🇪",
+    "country": "Peru",
+    "city": "Cusco Region",
+    "landmark": "Machu Picchu",
+    "badge": "Terrace Planting Zone",
+    "focus": "Parallelogram Area",
+    "formulaType": "parallelogram_area",
+    "formula": "A = b × h",
+    "unit": "m²",
+    "answer": 126,
+    "tolerance": 0.01,
+    "query": "Machu Picchu terraces Peru",
+    "explorePrompt": "Find one detail about the terraces, stones, or mountain setting.",
+    "geometryPrompt": "How might area help people plan planting or preservation zones?",
+    "story": "A conservation team marks a parallelogram-shaped planting zone on a terrace.",
+    "data": [
+      [
+        "base",
+        18,
+        "m"
+      ],
+      [
+        "height",
+        7,
+        "m"
+      ]
+    ],
+    "substitution": "A = 18 × 7",
+    "hint1": "Use base times height. Do not use the slanted side.",
+    "hint2": "18 × 7 = 126.",
+    "visual": "parallelogram_terrace",
+    "rates": [
+      [
+        "soil care",
+        4.0
+      ],
+      [
+        "erosion-control mat",
+        5.75
+      ],
+      [
+        "native plant cover",
+        7.2
+      ]
+    ]
+  },
+  {
+    "id": "italy_colosseum",
+    "flag": "🇮🇹",
+    "country": "Italy",
+    "city": "Rome",
+    "landmark": "Colosseum",
+    "badge": "Exhibit Storage Crate",
+    "focus": "Rectangular Prism Volume",
+    "formulaType": "rect_prism_volume",
+    "formula": "V = l × w × h",
+    "unit": "m³",
+    "answer": 108,
+    "tolerance": 0.01,
+    "query": "Colosseum Rome architecture arches",
+    "explorePrompt": "Find one detail about the arches, seating, or arena shape.",
+    "geometryPrompt": "Where do you see repeated rectangles, arches, or prism-like spaces?",
+    "story": "Museum staff need to know the volume of a rectangular-prism storage crate for exhibit materials.",
+    "data": [
+      [
+        "length",
+        9,
+        "m"
+      ],
+      [
+        "width",
+        4,
+        "m"
+      ],
+      [
+        "height",
+        3,
+        "m"
+      ]
+    ],
+    "substitution": "V = 9 × 4 × 3",
+    "hint1": "Volume measures the space inside a 3D object.",
+    "hint2": "9 × 4 × 3 = 108.",
+    "visual": "crate",
+    "rates": [
+      [
+        "storage volume fee",
+        1.25
+      ],
+      [
+        "climate-controlled fee",
+        2.1
+      ],
+      [
+        "premium archive fee",
+        3.0
+      ]
+    ]
+  },
+  {
+    "id": "canada_cn",
+    "flag": "🇨🇦",
+    "country": "Canada",
+    "city": "Toronto",
+    "landmark": "CN Tower",
+    "badge": "Observation Deck Display Case",
+    "focus": "Rectangular Prism Volume",
+    "formulaType": "rect_prism_volume",
+    "formula": "V = l × w × h",
+    "unit": "cm³",
+    "answer": 240,
+    "tolerance": 0.01,
+    "query": "CN Tower Toronto observation deck",
+    "explorePrompt": "Find one detail about the tower shape, deck, or view.",
+    "geometryPrompt": "How can volume help design a display case or container?",
+    "story": "A gift shop display case is a rectangular prism. The team needs its volume.",
+    "data": [
+      [
+        "length",
+        5,
+        "cm"
+      ],
+      [
+        "width",
+        4,
+        "cm"
+      ],
+      [
+        "height",
+        12,
+        "cm"
+      ]
+    ],
+    "substitution": "V = 5 × 4 × 12",
+    "hint1": "For a rectangular prism, multiply length, width, and height.",
+    "hint2": "5 × 4 = 20, and 20 × 12 = 240.",
+    "visual": "tower_case",
+    "rates": [
+      [
+        "basic display space",
+        0.05
+      ],
+      [
+        "lit display space",
+        0.08
+      ],
+      [
+        "premium acrylic case",
+        0.13
+      ]
+    ]
+  },
+  {
+    "id": "southafrica_table",
+    "flag": "🇿🇦",
+    "country": "South Africa",
+    "city": "Cape Town",
+    "landmark": "Table Mountain",
+    "badge": "Cable Car Floor Mat",
+    "focus": "Trapezoid Area",
+    "formulaType": "trapezoid_area",
+    "formula": "A = ½(b₁ + b₂)h",
+    "unit": "m²",
+    "answer": 9,
+    "tolerance": 0.01,
+    "query": "Table Mountain Cape Town cable car",
+    "explorePrompt": "Find one detail about the mountain, cable car, or city view.",
+    "geometryPrompt": "Why might a trapezoid be useful for modeling a floor mat or platform?",
+    "story": "A floor mat for a cable car is modeled as a trapezoid.",
+    "data": [
+      [
+        "base 1",
+        5.2,
+        "m"
+      ],
+      [
+        "base 2",
+        3.8,
+        "m"
+      ],
+      [
+        "height",
+        2,
+        "m"
+      ]
+    ],
+    "substitution": "A = ½(5.2 + 3.8) × 2",
+    "hint1": "Add the two bases first.",
+    "hint2": "5.2 + 3.8 = 9. ½ × 9 × 2 = 9.",
+    "visual": "trapezoid_cable",
+    "rates": [
+      [
+        "rubber mat",
+        16.0
+      ],
+      [
+        "weather mat",
+        21.5
+      ],
+      [
+        "reinforced safety mat",
+        28.0
+      ]
+    ]
+  }
+];
+
+const FORMULAS = {
+  parallelogram_area: "Parallelogram area: A = b × h",
+  triangle_area: "Triangle area: A = ½bh",
+  trapezoid_area: "Trapezoid area: A = ½(b₁ + b₂)h",
+  rectangle_area_repeated: "Repeated rectangle area: A = l × w × number",
+  rect_prism_sa: "Rectangular prism surface area: SA = 2(lw + lh + wh)",
+  rect_prism_volume: "Rectangular prism volume: V = l × w × h",
+  square_pyramid_lateral: "Square pyramid lateral area: LA = 4(½bh)",
+  square_pyramid_total: "Square pyramid surface area: SA = s² + 4(½bh)"
+};
+
+
+const SHAPE_NOTES = {
+  india_taj_kite: "The parallelogram is used for the shade-sail model because opposite sides stay parallel, and the useful measurement is the straight height from base to base.",
+  brazil_redeemer: "The pedestal is modeled as a rectangular prism because it has box-like rectangular faces; surface area measures the outside cover needed.",
+  egypt_pyramid: "A square pyramid fits because the model has one square base and four triangular side faces, so lateral area focuses on those four triangles.",
+  france_louvre: "The glass entrance is modeled as a square pyramid because the visible sides are triangular glass faces meeting at a point.",
+  japan_himeji: "The souvenir box is modeled as a rectangular prism because packaging has six rectangular outside faces that need material.",
+  australia_opera: "One sail panel is simplified as a triangle so students can estimate one panel with base and height.",
+  mexico_chichen: "A trapezoid is used for the terrace section because the top and bottom edges can be parallel but different lengths.",
+  uae_burj: "The repeated rectangles come from matching window panels; one panel area is multiplied by the number of panels.",
+  peru_machu: "The planting zone is modeled as a parallelogram because terrace sections can lean while still using base and straight height.",
+  italy_colosseum: "The crate is modeled as a rectangular prism because volume measures the inside space needed for exhibit materials.",
+  canada_cn: "The display case is modeled as a rectangular prism because length, width, and height determine the space inside.",
+  southafrica_table: "The cable-car floor mat is modeled as a trapezoid because the two parallel sides can be different lengths."
+};
+
+const SENTENCE_STARTERS = [
+  "I noticed that ",
+  "One real detail I found is ",
+  "This landmark is interesting because ",
+  "The design makes me think about "
+];
+
+const PRESETS = {
+  balanced: ["india_taj_kite","brazil_redeemer","egypt_pyramid","australia_opera","mexico_chichen","japan_himeji"],
+  ancient: ["egypt_pyramid","mexico_chichen","peru_machu","italy_colosseum","india_taj_kite"],
+  modern: ["france_louvre","uae_burj","brazil_redeemer","canada_cn","australia_opera"],
+  global: DESTINATIONS.map(d => d.id)
+};
+
+const STORAGE_KEY = "worldArchitectInteractive_v2";
+let selectedIds = [...PRESETS.balanced];
+let state = {
+  started:false,
+  student:{first:"", lastInitial:"", period:"", date:""},
+  selectedIds:[...selectedIds],
+  currentIndex:0,
+  responses:{},
+  startTime:null,
+  endTime:null
+};
+
+function $(id) { return document.getElementById(id); }
+function destinationById(id) { return DESTINATIONS.find(d => d.id === id); }
+function responseFor(id) {
+  if (!state.responses[id]) {
+    state.responses[id] = {
+      checks:{opened:false, found:false, geometry:false},
+      observation:"",
+      geometryNote:"",
+      formulaType:"",
+      substitution:"",
+      numericAnswer:"",
+      checked:false,
+      correct:false,
+      budgetMaterial:"",
+      budgetEstimate:"",
+      budgetComputed:"",
+      hintsShown:0
+    };
+  }
+  return state.responses[id];
+}
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]));
+}
+function money(n) {
+  const num = Number(n);
+  if (!isFinite(num)) return "—";
+  return "$" + num.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function cleanNumber(value) {
+  if (value == null) return NaN;
+  const cleaned = String(value).replace(/,/g,"").replace(/\$/g,"").trim();
+  return Number(cleaned);
+}
+function todayISO() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function init() {
+  $("student-date").value = todayISO();
+  applyPreset("balanced", true);
+  renderRouteCards();
+  checkSavedWork();
+  window.addEventListener("beforeunload", () => {
+    if (state.started) saveState(false);
+  });
+}
+function checkSavedWork() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.started || !saved.selectedIds) return;
+    $("resume-banner").style.display = "flex";
+    const name = [saved.student?.first, saved.student?.lastInitial].filter(Boolean).join(" ");
+    $("resume-details").textContent = `${name || "A student"} has saved work with ${saved.selectedIds.length} destinations.`;
+  } catch(e) {}
+}
+function resumeSaved() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  state = JSON.parse(raw);
+  selectedIds = [...state.selectedIds];
+  $("intro-screen").style.display = "none";
+  $("app-screen").style.display = "block";
+  $("results-screen").style.display = "none";
+  $("header-progress").style.display = "block";
+  $("save-status").textContent = "Saved work resumed";
+  renderSidebar();
+  renderMission();
+}
+function clearSavedWork() {
+  localStorage.removeItem(STORAGE_KEY);
+  $("resume-banner").style.display = "none";
+  $("save-status").textContent = "Fresh start";
+}
+function manualSave() {
+  if (!state.started) {
+    $("save-status").textContent = "Start first";
+    return;
+  }
+  saveState(true);
+}
+function saveState(show) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  if (show) $("save-status").textContent = "Saved " + new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+}
+
+function renderRouteCards() {
+  const grid = $("route-grid");
+  grid.innerHTML = "";
+  DESTINATIONS.forEach(d => {
+    const selected = selectedIds.includes(d.id);
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "route-card" + (selected ? " selected" : "");
+    card.onclick = () => toggleDestination(d.id);
+    card.innerHTML = `
+      <div class="route-card-top">
+        <span class="route-flag">${d.flag}</span>
+        <span class="route-check">${selected ? "✓" : ""}</span>
+      </div>
+      <div class="route-country">${escapeHtml(d.country)} • ${escapeHtml(d.city)}</div>
+      <div class="route-name">${escapeHtml(d.landmark)}</div>
+      <div class="route-focus">${escapeHtml(d.focus)}</div>
+      <div class="route-formula">${escapeHtml(d.formula)}</div>
+    `;
+    grid.appendChild(card);
+  });
+  $("route-note").textContent = `Selected: ${selectedIds.length} destination${selectedIds.length === 1 ? "" : "s"}`;
+}
+function applyPreset(preset, silent=false) {
+  selectedIds = [...(PRESETS[preset] || PRESETS.balanced)];
+  if (!silent) renderRouteCards();
+}
+function toggleDestination(id) {
+  if (selectedIds.includes(id)) selectedIds = selectedIds.filter(x => x !== id);
+  else selectedIds.push(id);
+  renderRouteCards();
+}
+function selectAllDestinations() {
+  selectedIds = DESTINATIONS.map(d => d.id);
+  renderRouteCards();
+}
+function clearRouteSelection() {
+  selectedIds = [];
+  renderRouteCards();
+}
+
+function startExpedition() {
+  const first = $("student-name").value.trim();
+  if (!first) {
+    $("student-name").focus();
+    $("save-status").textContent = "Enter name";
+    return;
+  }
+  if (selectedIds.length < 5) {
+    $("route-note").textContent = "Choose at least 5 destinations before beginning.";
+    $("route-note").style.color = "var(--danger)";
+    return;
+  }
+  state = {
+    started:true,
+    student:{
+      first:first,
+      lastInitial:$("student-last").value.trim(),
+      period:$("student-period").value.trim(),
+      date:$("student-date").value || todayISO()
+    },
+    selectedIds:[...selectedIds],
+    currentIndex:0,
+    responses:{},
+    startTime:Date.now(),
+    endTime:null
+  };
+  state.selectedIds.forEach(id => responseFor(id));
+  $("intro-screen").style.display = "none";
+  $("app-screen").style.display = "block";
+  $("results-screen").style.display = "none";
+  $("header-progress").style.display = "block";
+  renderSidebar();
+  renderMission();
+  saveState(true);
+}
+
+function renderSidebar() {
+  const jump = $("jump-select");
+  jump.innerHTML = "";
+  state.selectedIds.forEach((id, i) => {
+    const d = destinationById(id);
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `${i+1}. ${d.flag} ${d.landmark}`;
+    jump.appendChild(opt);
+  });
+
+  const list = $("mission-list");
+  list.innerHTML = "";
+  state.selectedIds.forEach((id, i) => {
+    const d = destinationById(id);
+    const r = responseFor(id);
+    const done = r.checked && r.correct;
+    const explored = explorationComplete(r);
+    const mini = document.createElement("button");
+    mini.type = "button";
+    mini.className = "mission-mini" + (i === state.currentIndex ? " current" : "") + (done ? " done" : "");
+    mini.onclick = () => jumpToMission(i);
+    mini.innerHTML = `
+      <span class="mini-flag">${d.flag}</span>
+      <span class="mini-text">
+        <span class="mini-name">${escapeHtml(d.landmark)}</span>
+        <span class="mini-status">${done ? "Math correct" : r.checked ? "Check feedback" : "Not checked"} · ${explored ? "Log complete" : "Log open"}</span>
+      </span>
+      <span class="mini-check">${done ? "✅" : explored ? "📝" : "○"}</span>
+    `;
+    list.appendChild(mini);
+  });
+  updateHeaderProgress();
+}
+function updateHeaderProgress() {
+  const total = state.selectedIds.length || 1;
+  const idx = state.currentIndex + 1;
+  const checked = state.selectedIds.filter(id => responseFor(id).checked).length;
+  const correct = state.selectedIds.filter(id => responseFor(id).correct).length;
+  $("progress-label").textContent = `Mission ${idx} of ${total}`;
+  $("score-label").textContent = `${correct} correct · ${checked} checked`;
+  $("progress-fill").style.width = `${Math.round(idx / total * 100)}%`;
+  $("jump-select").value = state.currentIndex;
+}
+function jumpToMission(index) {
+  persistMissionInputs();
+  state.currentIndex = Math.max(0, Math.min(index, state.selectedIds.length-1));
+  renderSidebar();
+  renderMission();
+  saveState(false);
+}
+
+
+function sentenceStarterButtons(targetId) {
+  return SENTENCE_STARTERS.map(starter => `<button type="button" class="starter-chip" draggable="true" ondragstart="dragStarter(event, ${JSON.stringify(starter)})" onclick="insertStarter('${targetId}', ${JSON.stringify(starter)})">${escapeHtml(starter.trim())}...</button>`).join("");
+}
+function dragStarter(event, starter) {
+  event.dataTransfer.setData("text/plain", starter);
+  event.dataTransfer.effectAllowed = "copy";
+}
+function allowStarterDrop(event) {
+  event.preventDefault();
+}
+function dropStarter(event, targetId) {
+  event.preventDefault();
+  const starter = event.dataTransfer.getData("text/plain");
+  if (starter) insertStarter(targetId, starter);
+}
+function insertStarter(targetId, starter) {
+  const box = $(targetId);
+  if (!box) return;
+  const start = box.selectionStart ?? box.value.length;
+  const end = box.selectionEnd ?? box.value.length;
+  const before = box.value.slice(0, start);
+  const after = box.value.slice(end);
+  const needsSpace = before && !/\s$/.test(before) ? " " : "";
+  box.value = before + needsSpace + starter + after;
+  box.focus();
+  const caret = (before + needsSpace + starter).length;
+  box.setSelectionRange(caret, caret);
+  if (targetId === "observation") updateText("observation", box.value);
+  if (targetId === "geometry-note") updateText("geometryNote", box.value);
+  saveState(false);
+}
+function shapeEvidenceCard(d) {
+  const note = SHAPE_NOTES[d.id] || "This shape was chosen because it gives a simple geometry model for one important part of the landmark or design problem.";
+  return `<div class="shape-evidence-card">
+    <div class="shape-evidence-visual">${landmarkEvidenceSvg(d.id)}</div>
+    <div class="shape-evidence-text">
+      <strong>Why this shape?</strong>
+      <p>${escapeHtml(note)}</p>
+      <span class="shape-tag">Marked shape: ${escapeHtml(d.focus)}</span>
+    </div>
+  </div>`;
+}
+function landmarkEvidenceSvg(id) {
+  const mark = `fill="none" stroke="#C85A3A" stroke-width="4" stroke-dasharray="8,5" opacity=".95"`;
+  const label = `font-family="DM Sans, Arial, sans-serif" fill="#1C2E42" font-size="10" font-weight="800"`;
+  const soft = `fill="#EEF6F6" stroke="#387F84" stroke-width="2"`;
+  const warm = `fill="#FFF7E7" stroke="#C85A3A" stroke-width="2"`;
+  const map = {
+    india_taj_kite: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Taj Mahal inspired garden with marked parallelogram">
+      <rect x="10" y="64" width="130" height="34" rx="9" fill="#EAF5EE"/>
+      <rect x="63" y="30" width="24" height="26" fill="#fff" stroke="#BFD8D8" stroke-width="2"/><circle cx="75" cy="28" r="15" fill="#fff" stroke="#BFD8D8" stroke-width="2"/>
+      <path d="M33 85 L99 85 L87 67 L21 67 Z" fill="rgba(242,169,59,.22)" stroke="#F2A93B" stroke-width="2"/>
+      <path d="M33 85 L99 85 L87 67 L21 67 Z" ${mark}/><text x="45" y="104" ${label}>marked shade sail</text>
+    </svg>`,
+    brazil_redeemer: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Christ the Redeemer inspired pedestal with marked prism">
+      <circle cx="75" cy="17" r="8" fill="#1C2E42"/><path d="M75 25 L75 61 M38 39 H112" stroke="#1C2E42" stroke-width="6" stroke-linecap="round"/>
+      <rect x="43" y="66" width="64" height="27" ${warm}/><path d="M43 66 L55 55 H119 L107 66" fill="#F2D7BB" stroke="#C85A3A" stroke-width="2"/>
+      <rect x="39" y="52" width="84" height="45" rx="8" ${mark}/><text x="48" y="105" ${label}>marked pedestal</text>
+    </svg>`,
+    egypt_pyramid: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Great Pyramid with marked triangular face">
+      <polygon points="75,12 132,92 18,92" fill="#FFF7E7" stroke="#C85A3A" stroke-width="2"/>
+      <line x1="75" y1="12" x2="75" y2="92" stroke="#DDBB84" stroke-width="2"/>
+      <polygon points="75,12 132,92 18,92" ${mark}/><text x="40" y="105" ${label}>marked pyramid face</text>
+    </svg>`,
+    france_louvre: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Louvre Pyramid inspired glass pyramid with marked triangular faces">
+      <rect x="10" y="85" width="130" height="8" fill="#D1C8B8"/>
+      <polygon points="75,14 133,86 17,86" fill="rgba(56,127,132,.13)" stroke="#387F84" stroke-width="2"/>
+      <line x1="75" y1="14" x2="75" y2="86" stroke="#BFD8D8" stroke-width="2"/><path d="M47 50 H103 M35 66 H115" stroke="#BFD8D8" stroke-width="2"/>
+      <polygon points="75,14 133,86 17,86" ${mark}/><text x="39" y="105" ${label}>marked glass faces</text>
+    </svg>`,
+    japan_himeji: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Himeji Castle inspired box with marked rectangular prism">
+      <rect x="36" y="54" width="78" height="34" fill="#fff" stroke="#BFD8D8" stroke-width="2"/><path d="M24 54 L75 25 L126 54 Z" fill="#1C2E42"/>
+      <polygon points="38,80 92,75 111,89 57,96" fill="#EEF6F6" stroke="#387F84" stroke-width="2"/><polygon points="57,96 111,89 111,103 57,108" fill="#CFE7E6" stroke="#387F84" stroke-width="2"/>
+      <rect x="33" y="72" width="84" height="35" rx="7" ${mark}/><text x="42" y="106" ${label}>marked souvenir box</text>
+    </svg>`,
+    australia_opera: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Sydney Opera House inspired sail with marked triangle">
+      <path d="M26 86 C53 45 75 24 116 15 L116 86 Z" fill="#EEF6F6" stroke="#387F84" stroke-width="2"/>
+      <path d="M52 86 C76 55 90 37 128 28 L128 86 Z" fill="#fff" stroke="#BFD8D8" stroke-width="2"/>
+      <polygon points="26,86 116,15 116,86" ${mark}/><text x="47" y="104" ${label}>marked sail panel</text>
+    </svg>`,
+    mexico_chichen: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Chichen Itza inspired terrace with marked trapezoid">
+      <path d="M72 20 L130 92 H20 Z" fill="#FFF7E7" stroke="#C85A3A" stroke-width="2"/>
+      <path d="M51 58 H99 L111 75 H39 Z" fill="#F4EBDD" stroke="#D1C8B8" stroke-width="2"/>
+      <polygon points="51,58 99,58 111,75 39,75" ${mark}/><text x="42" y="104" ${label}>marked terrace</text>
+    </svg>`,
+    uae_burj: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Burj Khalifa inspired window panels with marked rectangle">
+      <path d="M76 8 L106 98 H44 Z" fill="#1C2E42" stroke="#387F84" stroke-width="2"/>
+      ${Array.from({length:5},(_,r)=>Array.from({length:3},(_,c)=>`<rect x="${61+c*11}" y="${31+r*12}" width="8" height="8" fill="#EEF6F6"/>`).join("")).join("")}
+      <rect x="70" y="55" width="18" height="20" ${mark}/><text x="40" y="106" ${label}>marked window panel</text>
+    </svg>`,
+    peru_machu: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Machu Picchu inspired terraces with marked parallelogram">
+      <path d="M16 86 C45 56 80 42 134 32" stroke="#4A7C6F" stroke-width="8" fill="none" opacity=".35"/><path d="M18 68 H122 M27 79 H132 M39 91 H137" stroke="#A8B9A5" stroke-width="3"/>
+      <path d="M42 88 L111 88 L97 65 L28 65 Z" fill="#EAF5EE" stroke="#4A7C6F" stroke-width="2"/>
+      <path d="M42 88 L111 88 L97 65 L28 65 Z" ${mark}/><text x="38" y="105" ${label}>marked planting zone</text>
+    </svg>`,
+    italy_colosseum: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Colosseum inspired exhibit crate with marked rectangular prism">
+      <ellipse cx="75" cy="55" rx="58" ry="30" fill="#FFF7E7" stroke="#C85A3A" stroke-width="2"/><path d="M31 55 H119" stroke="#DDBB84" stroke-width="2"/><path d="M48 37 v37 M75 30 v50 M102 37 v37" stroke="#DDBB84" stroke-width="2"/>
+      <polygon points="47,78 92,78 108,91 63,91" fill="#EED2A8" stroke="#8B5A2B" stroke-width="2"/><rect x="63" y="91" width="45" height="14" fill="#D8AE78" stroke="#8B5A2B" stroke-width="2"/>
+      <rect x="43" y="74" width="70" height="34" rx="6" ${mark}/><text x="43" y="106" ${label}>marked storage crate</text>
+    </svg>`,
+    canada_cn: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="CN Tower inspired display case with marked rectangular prism">
+      <path d="M75 8 L82 84 H68 Z" fill="#1C2E42"/><ellipse cx="75" cy="43" rx="28" ry="8" fill="#387F84"/>
+      <rect x="47" y="60" width="56" height="38" fill="#EEF6F6" stroke="#387F84" stroke-width="2"/><rect x="59" y="68" width="32" height="20" fill="#fff" stroke="#BFD8D8" stroke-width="2"/>
+      <rect x="43" y="56" width="64" height="46" rx="7" ${mark}/><text x="41" y="106" ${label}>marked display case</text>
+    </svg>`,
+    southafrica_table: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Table Mountain cable car inspired mat with marked trapezoid">
+      <path d="M18 49 H132 L116 72 H34 Z" fill="#4A7C6F" opacity=".35"/><rect x="38" y="31" width="74" height="45" rx="9" fill="#EEF6F6" stroke="#387F84" stroke-width="2"/>
+      <polygon points="56,50 94,50 103,69 47,69" fill="#FFF7E7" stroke="#F2A93B" stroke-width="2"/>
+      <polygon points="56,50 94,50 103,69 47,69" ${mark}/><text x="44" y="104" ${label}>marked floor mat</text>
+    </svg>`
+  };
+  return map[id] || map.india_taj_kite;
+}
+
+function formulaOptions(selected) {
+  return Object.entries(FORMULAS).map(([key,label]) => `<option value="${key}" ${selected===key ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");
+}
+function mapLinks(d) {
+  return `
+    <span class="explore-link" role="note">Map/photo research: use teacher-approved sources</span>
+    <span class="explore-link" role="note">Search term: ${escapeHtml(d.query)}</span>
+    <span class="explore-link" role="note">Add one classroom-safe fact from your assignment materials</span>
+  `;
+}
+function dataTable(d) {
+  return `<table class="data-table"><thead><tr><th>Measurement</th><th>Value</th></tr></thead><tbody>` +
+    d.data.map(row => `<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])} ${escapeHtml(row[2])}</td></tr>`).join("") +
+    `</tbody></table>`;
+}
+function materialOptions(d, selected) {
+  return d.rates.map((r, i) => {
+    const label = `${r[0]} — ${money(r[1])} per ${d.unit}`;
+    const value = `${i}`;
+    return `<option value="${value}" ${String(selected)===value ? "selected" : ""}>${escapeHtml(label)}</option>`;
+  }).join("");
+}
+function renderMission() {
+  const id = state.selectedIds[state.currentIndex];
+  const d = destinationById(id);
+  const r = responseFor(id);
+  const card = $("mission-card");
+
+  card.innerHTML = `
+    <div class="dest-hero">
+      <div class="dest-top">
+        <div class="dest-title-wrap">
+          <div class="dest-flag-big">${d.flag}</div>
+          <div>
+            <div class="dest-kicker">${escapeHtml(d.country)} • ${escapeHtml(d.city)} • ${escapeHtml(d.badge)}</div>
+            <div class="dest-title">${escapeHtml(d.landmark)}</div>
+            <div class="dest-sub">${escapeHtml(d.focus)} · ${escapeHtml(d.formula)}</div>
+          </div>
+        </div>
+        <div class="stamp">Stop<strong>${state.currentIndex + 1}/${state.selectedIds.length}</strong></div>
+      </div>
+    </div>
+
+    <div class="mission-body">
+      <div class="panel-grid">
+        <div class="panel soft">
+          <h3>🧭 Explore the Place</h3>
+          <p>${escapeHtml(d.explorePrompt)}</p>
+          <div class="explore-links">${mapLinks(d)}</div>
+          <div class="check-grid">
+            <label class="check-row"><input type="checkbox" id="check-opened" ${r.checks.opened ? "checked" : ""} onchange="updateCheck('opened',this.checked)"> I opened a map, image search, or fact page.</label>
+            <label class="check-row"><input type="checkbox" id="check-found" ${r.checks.found ? "checked" : ""} onchange="updateCheck('found',this.checked)"> I found one real detail about the landmark.</label>
+            <label class="check-row"><input type="checkbox" id="check-geometry" ${r.checks.geometry ? "checked" : ""} onchange="updateCheck('geometry',this.checked)"> I connected the place to a geometry idea.</label>
+          </div>
+          <div class="lab-field">
+            <label for="observation">Travel Log: One interesting detail I found</label>
+            <div class="starter-note">Optional: drag or click a sentence starter, then finish it with your own real detail.</div>
+            <div class="starter-tray">${sentenceStarterButtons('observation')}</div>
+            <textarea id="observation" oninput="updateText('observation',this.value)" ondragover="allowStarterDrop(event)" ondrop="dropStarter(event,'observation')" placeholder="Write your own observation here after exploring the place.">${escapeHtml(r.observation)}</textarea>
+          </div>
+          <div class="lab-field" style="margin-top:10px;">
+            <label for="geometry-note">Geometry Connection</label>
+            <textarea id="geometry-note" oninput="updateText('geometryNote',this.value)" placeholder="${escapeHtml(d.geometryPrompt)}">${escapeHtml(r.geometryNote)}</textarea>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>🏛️ Visual + Given Data</h3>
+          ${shapeEvidenceCard(d)}
+          <div class="visual-zone">${visualSvg(d.visual)}</div>
+          ${dataTable(d)}
+        </div>
+      </div>
+
+      <div class="formula-lab">
+        <h3 style="color:var(--navy);font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">🧮 Formula Lab</h3>
+        <p style="margin-bottom:14px;color:var(--ink);font-size:14px;line-height:1.55;">${escapeHtml(d.story)} Use the data above, choose the correct formula, and show your substitution.</p>
+        <div class="lab-grid">
+          <div class="lab-field">
+            <label for="formula-select">Formula I should use</label>
+            <select id="formula-select" onchange="updateText('formulaType',this.value)">${formulaOptions(r.formulaType)}</select>
+          </div>
+          <div class="lab-field">
+            <label for="numeric-answer">My calculated answer</label>
+            <div class="answer-row">
+              <input id="numeric-answer" type="text" value="${escapeHtml(r.numericAnswer)}" oninput="updateText('numericAnswer',this.value)" placeholder="Type number only">
+              <span class="unit-pill">${escapeHtml(d.unit)}</span>
+            </div>
+          </div>
+          <div class="lab-field full">
+            <label for="substitution">Show the substitution you used</label>
+            <textarea id="substitution" oninput="updateText('substitution',this.value)" placeholder="${escapeHtml(d.substitution)}">${escapeHtml(r.substitution)}</textarea>
+          </div>
+        </div>
+
+        <div class="hint-row">
+          <button class="secondary-btn" onclick="checkCalculation()">Check Calculation</button>
+          <button class="ghost-btn" onclick="showHint(1)">Hint 1</button>
+          <button class="ghost-btn" onclick="showHint(2)">Hint 2</button>
+        </div>
+        <div class="feedback ${r.checked ? (r.correct ? "show ok" : "show no") : ""}" id="feedback-box">
+          ${r.checked ? feedbackText(d, r.correct) : ""}
+        </div>
+        <div class="hint-box" id="hint-box"></div>
+      </div>
+
+      <div class="panel warm" style="margin-top:16px;">
+        <h3>💰 Architect Budget Bonus</h3>
+        <p>Select a material or service and estimate the cost using your answer. This gives your math a real project purpose.</p>
+        <div class="budget-row" style="margin-top:12px;">
+          <div class="lab-field">
+            <label for="budget-material">Material / service</label>
+            <select id="budget-material" onchange="updateBudgetMaterial(this.value)">${materialOptions(d, r.budgetMaterial)}</select>
+          </div>
+          <div class="lab-field">
+            <label for="budget-estimate">My cost estimate</label>
+            <input id="budget-estimate" type="text" value="${escapeHtml(r.budgetEstimate)}" oninput="updateText('budgetEstimate',this.value)" placeholder="$">
+          </div>
+          <div class="budget-output" id="budget-output">${r.budgetComputed ? escapeHtml(r.budgetComputed) : "Use answer × rate"}</div>
+        </div>
+        <div class="hint-row">
+          <button class="ghost-btn" onclick="computeBudget()">Calculate Budget From My Answer</button>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="ghost-btn" onclick="previousMission()" ${state.currentIndex === 0 ? "disabled" : ""}>← Previous Stop</button>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;">
+          <button class="ghost-btn" onclick="downloadProgressCheckpoint()">Save Checkpoint File</button>
+          <button class="primary-btn" onclick="nextMission()">${state.currentIndex === state.selectedIds.length-1 ? "Finish Expedition 🏁" : "Next Stop →"}</button>
+        </div>
+      </div>
+    </div>
+  `;
+  card.classList.remove("fade-in");
+  void card.offsetWidth;
+  card.classList.add("fade-in");
+  if (!r.formulaType) {
+    r.formulaType = "";
+    $("formula-select").value = "";
+  }
+  updateHeaderProgress();
+}
+
+function feedbackText(d, ok) {
+  if (ok) {
+    return `<strong>✅ Correct calculation.</strong> ${escapeHtml(d.substitution)} = <strong>${escapeHtml(d.answer)} ${escapeHtml(d.unit)}</strong>.`;
+  }
+  return `<strong>Not quite yet.</strong> Check the formula and the arithmetic. Expected setup: <em>${escapeHtml(d.substitution)}</em>.`;
+}
+function explorationComplete(r) {
+  return !!(r.checks.opened && r.checks.found && r.checks.geometry && r.observation.trim().length >= 12 && r.geometryNote.trim().length >= 8);
+}
+function updateCheck(key, val) {
+  const r = responseFor(state.selectedIds[state.currentIndex]);
+  r.checks[key] = val;
+  saveState(false);
+  renderSidebar();
+}
+function updateText(field, value) {
+  const r = responseFor(state.selectedIds[state.currentIndex]);
+  r[field] = value;
+  saveState(false);
+}
+function persistMissionInputs() {
+  const id = state.selectedIds[state.currentIndex];
+  if (!id) return;
+  const r = responseFor(id);
+  if ($("observation")) r.observation = $("observation").value;
+  if ($("geometry-note")) r.geometryNote = $("geometry-note").value;
+  if ($("formula-select")) r.formulaType = $("formula-select").value;
+  if ($("substitution")) r.substitution = $("substitution").value;
+  if ($("numeric-answer")) r.numericAnswer = $("numeric-answer").value;
+  if ($("budget-material")) r.budgetMaterial = $("budget-material").value;
+  if ($("budget-estimate")) r.budgetEstimate = $("budget-estimate").value;
+}
+function checkCalculation() {
+  persistMissionInputs();
+  const d = destinationById(state.selectedIds[state.currentIndex]);
+  const r = responseFor(d.id);
+  const value = cleanNumber(r.numericAnswer);
+  const formulaOK = r.formulaType === d.formulaType;
+  const numericOK = isFinite(value) && Math.abs(value - d.answer) <= (d.tolerance ?? 0.01);
+  r.checked = true;
+  r.correct = formulaOK && numericOK;
+  const fb = $("feedback-box");
+  fb.className = "feedback show " + (r.correct ? "ok" : "no");
+  if (r.correct) {
+    fb.innerHTML = feedbackText(d, true);
+  } else {
+    const formulaMsg = formulaOK ? "Your formula choice is correct." : `Formula check: choose <strong>${escapeHtml(FORMULAS[d.formulaType])}</strong>.`;
+    const answerMsg = numericOK ? "Your number is correct." : `Calculation check: the target answer is <strong>${escapeHtml(d.answer)} ${escapeHtml(d.unit)}</strong>.`;
+    fb.innerHTML = `<strong>Revise and try again.</strong> ${formulaMsg} ${answerMsg}<br><em>Expected setup: ${escapeHtml(d.substitution)}</em>`;
+  }
+  saveState(true);
+  renderSidebar();
+}
+function showHint(level) {
+  const d = destinationById(state.selectedIds[state.currentIndex]);
+  const r = responseFor(d.id);
+  r.hintsShown = Math.max(r.hintsShown || 0, level);
+  const box = $("hint-box");
+  box.style.display = "block";
+  box.innerHTML = level === 1 ? `<strong>Hint 1:</strong> ${escapeHtml(d.hint1)}` : `<strong>Hint 2:</strong> ${escapeHtml(d.hint2)}`;
+  saveState(false);
+}
+function updateBudgetMaterial(value) {
+  const r = responseFor(state.selectedIds[state.currentIndex]);
+  r.budgetMaterial = value;
+  saveState(false);
+}
+function computeBudget() {
+  persistMissionInputs();
+  const d = destinationById(state.selectedIds[state.currentIndex]);
+  const r = responseFor(d.id);
+  const value = cleanNumber(r.numericAnswer);
+  const idx = Number(r.budgetMaterial || 0);
+  const rate = d.rates[idx]?.[1] ?? d.rates[0][1];
+  if (!isFinite(value)) {
+    $("budget-output").textContent = "Enter a numeric answer first.";
+    return;
+  }
+  const total = value * rate;
+  r.budgetComputed = `${money(total)} = ${value.toLocaleString()} ${d.unit} × ${money(rate)}`;
+  $("budget-output").textContent = r.budgetComputed;
+  saveState(false);
+}
+function previousMission() {
+  persistMissionInputs();
+  if (state.currentIndex > 0) {
+    state.currentIndex--;
+    renderSidebar();
+    renderMission();
+    saveState(false);
+  }
+}
+function nextMission() {
+  persistMissionInputs();
+  if (state.currentIndex >= state.selectedIds.length - 1) {
+    showResults();
+  } else {
+    state.currentIndex++;
+    renderSidebar();
+    renderMission();
+    saveState(false);
+  }
+}
+
+function showResults() {
+  persistMissionInputs();
+  state.endTime = Date.now();
+  saveState(true);
+  $("intro-screen").style.display = "none";
+  $("app-screen").style.display = "none";
+  $("results-screen").style.display = "block";
+  $("header-progress").style.display = "none";
+
+  const total = state.selectedIds.length;
+  const mathCorrect = state.selectedIds.filter(id => responseFor(id).correct).length;
+  const exploreComplete = state.selectedIds.filter(id => explorationComplete(responseFor(id))).length;
+  const checked = state.selectedIds.filter(id => responseFor(id).checked).length;
+  const readiness = Math.round(((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100);
+  const elapsedMs = (state.endTime || Date.now()) - (state.startTime || Date.now());
+  const mins = Math.max(0, Math.round(elapsedMs / 60000));
+
+  $("results-subtitle").textContent = `${studentDisplayName()} · Period ${state.student.period || "—"} · ${state.student.date || ""}`;
+  $("math-score").textContent = `${mathCorrect}/${total}`;
+  $("explore-score").textContent = `${exploreComplete}/${total}`;
+  $("overall-score").textContent = `${readiness}%`;
+  $("time-score").textContent = `${mins}m`;
+
+  $("result-stamps").innerHTML = state.selectedIds.map(id => {
+    const d = destinationById(id);
+    const r = responseFor(id);
+    return `<span class="passport-stamp" title="${escapeHtml(d.landmark)}">${d.flag}${r.correct ? "✓" : ""}</span>`;
+  }).join("");
+
+  $("review-body").innerHTML = state.selectedIds.map((id, i) => {
+    const d = destinationById(id);
+    const r = responseFor(id);
+    const rowClass = r.correct && explorationComplete(r) ? "good" : "needs";
+    return `<tr class="${rowClass}">
+      <td><strong>${i+1}. ${d.flag} ${escapeHtml(d.landmark)}</strong><br><span style="color:var(--muted);font-size:12px;">${escapeHtml(d.country)} · ${escapeHtml(d.focus)}</span></td>
+      <td>${r.correct ? "✅ Correct" : r.checked ? "🔁 Revise" : "○ Not checked"}<br><span style="color:var(--muted);font-size:12px;">Answer: ${escapeHtml(r.numericAnswer || "—")} ${escapeHtml(d.unit)}</span></td>
+      <td>${escapeHtml(r.observation || "No observation yet")}<br><span style="color:var(--muted);font-size:12px;">Geometry: ${escapeHtml(r.geometryNote || "—")}</span></td>
+      <td>${escapeHtml(r.substitution || "—")}<br><span style="color:var(--muted);font-size:12px;">Expected: ${escapeHtml(d.substitution)} = ${escapeHtml(d.answer)} ${escapeHtml(d.unit)}</span></td>
+    </tr>`;
+  }).join("");
+
+  $("submit-period").value = state.student.period ? "Period " + state.student.period : "";
+}
+function studentDisplayName() {
+  return [state.student.first, state.student.lastInitial ? state.student.lastInitial + "." : ""].filter(Boolean).join(" ") || "Student";
+}
+
+function buildPlainReport() {
+  const total = state.selectedIds.length;
+  const mathCorrect = state.selectedIds.filter(id => responseFor(id).correct).length;
+  const exploreComplete = state.selectedIds.filter(id => explorationComplete(responseFor(id))).length;
+  const readiness = Math.round(((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100);
+  let lines = [];
+  lines.push("WORLD ARCHITECT — MATH EXPEDITION SUBMISSION");
+  lines.push("Student: " + studentDisplayName());
+  lines.push("Period: " + (state.student.period || "—"));
+  lines.push("Date: " + (state.student.date || ""));
+  lines.push("Math Correct: " + mathCorrect + "/" + total);
+  lines.push("Exploration Logs Complete: " + exploreComplete + "/" + total);
+  lines.push("Overall Readiness: " + readiness + "%");
+  lines.push("");
+  lines.push("DESTINATION REPORTS");
+  state.selectedIds.forEach((id, i) => {
+    const d = destinationById(id);
+    const r = responseFor(id);
+    const material = d.rates[Number(r.budgetMaterial || 0)]?.[0] || "";
+    lines.push("────────────────────────────");
+    lines.push(`${i+1}. ${d.landmark} — ${d.country}`);
+    lines.push("Focus: " + d.focus);
+    lines.push("Exploration checked: " + (explorationComplete(r) ? "Complete" : "Incomplete"));
+    lines.push("Observation: " + (r.observation || "—"));
+    lines.push("Geometry connection: " + (r.geometryNote || "—"));
+    lines.push("Formula selected: " + (FORMULAS[r.formulaType] || "—"));
+    lines.push("Student substitution: " + (r.substitution || "—"));
+    lines.push("Student answer: " + (r.numericAnswer || "—") + " " + d.unit);
+    lines.push("Expected setup: " + d.substitution);
+    lines.push("Expected answer: " + d.answer + " " + d.unit);
+    lines.push("Math status: " + (r.correct ? "Correct" : r.checked ? "Needs revision" : "Not checked"));
+    lines.push("Budget material: " + material);
+    lines.push("Budget estimate: " + (r.budgetEstimate || "—"));
+    lines.push("Computed budget: " + (r.budgetComputed || "—"));
+  });
+  return lines.join("\n");
+}
+function buildHtmlReport() {
+  const text = buildPlainReport();
+  const escaped = escapeHtml(text).replace(/\n/g,"<br>");
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>World Architect Report — ${escapeHtml(studentDisplayName())}</title>
+  <style>body{font-family:Arial,sans-serif;line-height:1.45;margin:32px;color:#222} h1{color:#1C2E42} .box{border:2px solid #1C2E42;border-radius:12px;padding:18px}</style></head>
+  <body><h1>World Architect — Math Expedition Submission</h1><div class="box">${escaped}</div></body></html>`;
+}
+function safeFilename() {
+  const base = `World_Architect_${studentDisplayName()}_${state.student.period || "Period"}_${state.student.date || todayISO()}`;
+  return base.replace(/[^a-z0-9_\-]+/gi,"_");
+}
+function downloadReport(kind) {
+  const isHtml = kind === "html";
+  const content = isHtml ? buildHtmlReport() : buildPlainReport();
+  const blob = new Blob([content], {type:isHtml ? "text/html" : "text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = safeFilename() + (isHtml ? ".html" : ".txt");
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  $("copy-confirm").style.display = "block";
+}
+function downloadProgressCheckpoint() {
+  persistMissionInputs();
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = safeFilename() + "_checkpoint.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  $("save-status").textContent = "Checkpoint downloaded";
+}
+async function copyReport() {
+  try {
+    await navigator.clipboard.writeText(buildPlainReport());
+    $("copy-confirm").style.display = "block";
+  } catch(e) {
+    const w = window.open("", "_blank");
+    w.document.write("<pre>" + escapeHtml(buildPlainReport()) + "</pre>");
+    w.document.close();
+  }
+}
+function openClassroom() {
+  alert("Open the assignment your teacher posted in Google Classroom, then attach or paste your report there.");
+}
+function submitViaEmail() {
+  const teacherEmail = $("teacher-email").value.trim();
+  if (!teacherEmail) {
+    $("teacher-email").focus();
+    return;
+  }
+  const subject = encodeURIComponent(`World Architect — ${studentDisplayName()} — ${state.student.period || "Period"}`);
+  const body = encodeURIComponent(buildPlainReport().slice(0, 12000));
+  window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+  $("email-confirm").style.display = "block";
+}
+function restartProject() {
+  if (!confirm("Start over and clear saved work?")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+function visualSvg(type) {
+  const commonText = `font-family="DM Sans, Arial, sans-serif" fill="#1C2E42" font-size="12" font-weight="700"`;
+  const map = {
+    parallelogram: `<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="Parallelogram diagram">
+      <polygon points="65,145 235,145 195,45 25,45" fill="#EEF6F6" stroke="#387F84" stroke-width="3"/>
+      <line x1="65" y1="145" x2="65" y2="45" stroke="#F2A93B" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="122" y="164" ${commonText}>base</text><text x="72" y="98" ${commonText}>height</text>
+    </svg>`,
+    parallelogram_terrace: `<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="Terrace parallelogram">
+      <rect x="20" y="25" width="260" height="140" rx="12" fill="#F4EBDD"/>
+      <path d="M55 145 L235 145 L205 55 L25 55 Z" fill="#EAF5EE" stroke="#4A7C6F" stroke-width="3"/>
+      <path d="M25 78 L215 78 M40 102 L225 102 M52 126 L232 126" stroke="#A8B9A5" stroke-width="2"/>
+      <line x1="55" y1="145" x2="55" y2="55" stroke="#F2A93B" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="119" y="164" ${commonText}>base</text><text x="62" y="102" ${commonText}>height</text>
+    </svg>`,
+    rect_prism: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Rectangular prism">
+      <polygon points="75,70 205,70 245,105 115,105" fill="#FFF7E7" stroke="#C85A3A" stroke-width="2.5"/>
+      <polygon points="115,105 245,105 245,170 115,170" fill="#F2D7BB" stroke="#C85A3A" stroke-width="2.5"/>
+      <polygon points="75,70 115,105 115,170 75,135" fill="#E8C49F" stroke="#C85A3A" stroke-width="2.5"/>
+      <line x1="115" y1="180" x2="245" y2="180" stroke="#1C2E42" stroke-width="2"/><text x="165" y="198" ${commonText}>length</text>
+      <text x="41" y="119" ${commonText}>height</text><text x="225" y="82" ${commonText}>width</text>
+    </svg>`,
+    rect_prism_box: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Gift box rectangular prism">
+      <polygon points="70,70 205,55 240,90 105,105" fill="#EEF6F6" stroke="#387F84" stroke-width="2.5"/>
+      <polygon points="105,105 240,90 240,165 105,180" fill="#CFE7E6" stroke="#387F84" stroke-width="2.5"/>
+      <polygon points="70,70 105,105 105,180 70,145" fill="#A9D3D1" stroke="#387F84" stroke-width="2.5"/>
+      <path d="M105 105 L240 165 M240 90 L105 180" stroke="#F2A93B" stroke-width="2" opacity=".7"/>
+      <text x="139" y="199" ${commonText}>surface area = all outside faces</text>
+    </svg>`,
+    pyramid: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Square pyramid">
+      <polygon points="150,25 245,170 55,170" fill="#FFF7E7" stroke="#C85A3A" stroke-width="3"/>
+      <polygon points="55,170 245,170 205,195 95,195" fill="#E4C49F" stroke="#C85A3A" stroke-width="3"/>
+      <line x1="150" y1="25" x2="150" y2="170" stroke="#387F84" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="160" y="105" ${commonText}>slant height</text><text x="127" y="190" ${commonText}>base</text>
+    </svg>`,
+    pyramid_glass: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Glass pyramid">
+      <polygon points="150,25 250,170 50,170" fill="rgba(56,127,132,.14)" stroke="#387F84" stroke-width="3"/>
+      <line x1="150" y1="25" x2="150" y2="170" stroke="#387F84" stroke-width="2"/>
+      <line x1="150" y1="25" x2="100" y2="170" stroke="#BFD8D8" stroke-width="2"/>
+      <line x1="150" y1="25" x2="200" y2="170" stroke="#BFD8D8" stroke-width="2"/>
+      <path d="M75 132 H225 M95 96 H205 M118 62 H182" stroke="#BFD8D8" stroke-width="2"/>
+      <text x="95" y="193" ${commonText}>4 triangular faces</text>
+    </svg>`,
+    triangle_sail: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Triangle sail">
+      <path d="M70 175 C120 110 150 55 220 28 L220 175 Z" fill="#EEF6F6" stroke="#387F84" stroke-width="3"/>
+      <polygon points="70,175 220,28 220,175" fill="rgba(242,169,59,.20)" stroke="#F2A93B" stroke-width="2"/>
+      <line x1="220" y1="28" x2="220" y2="175" stroke="#1C2E42" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="130" y="194" ${commonText}>base</text><text x="228" y="108" ${commonText}>height</text>
+    </svg>`,
+    trapezoid: `<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="Trapezoid">
+      <polygon points="85,45 215,45 255,145 45,145" fill="#FFF7E7" stroke="#F2A93B" stroke-width="3"/>
+      <line x1="150" y1="45" x2="150" y2="145" stroke="#387F84" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="128" y="35" ${commonText}>base 2</text><text x="126" y="166" ${commonText}>base 1</text><text x="158" y="102" ${commonText}>height</text>
+    </svg>`,
+    trapezoid_cable: `<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="Cable car trapezoid mat">
+      <rect x="50" y="25" width="200" height="130" rx="22" fill="#EEF6F6" stroke="#387F84" stroke-width="3"/>
+      <polygon points="90,60 210,60 235,130 65,130" fill="#FAF6EE" stroke="#F2A93B" stroke-width="3"/>
+      <line x1="150" y1="60" x2="150" y2="130" stroke="#387F84" stroke-width="2" stroke-dasharray="6,5"/>
+      <circle cx="80" cy="45" r="5" fill="#1C2E42"/><circle cx="220" cy="45" r="5" fill="#1C2E42"/>
+      <text x="116" y="151" ${commonText}>floor mat area</text>
+    </svg>`,
+    window_grid: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Window grid">
+      <rect x="82" y="24" width="136" height="172" rx="8" fill="#1C2E42" stroke="#387F84" stroke-width="3"/>
+      ${Array.from({length:7},(_,r)=>Array.from({length:4},(_,c)=>`<rect x="${96+c*27}" y="${40+r*21}" width="20" height="15" fill="#EEF6F6" stroke="#BFD8D8" stroke-width="1"/>`).join("")).join("")}
+      <text x="88" y="214" ${commonText}>28 repeated panels</text>
+    </svg>`,
+    crate: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Storage crate volume">
+      <polygon points="65,75 205,75 240,105 100,105" fill="#EED2A8" stroke="#8B5A2B" stroke-width="2.5"/>
+      <polygon points="100,105 240,105 240,170 100,170" fill="#D8AE78" stroke="#8B5A2B" stroke-width="2.5"/>
+      <polygon points="65,75 100,105 100,170 65,140" fill="#C89555" stroke="#8B5A2B" stroke-width="2.5"/>
+      <path d="M118 120 H222 M118 145 H222 M80 92 L80 150" stroke="#8B5A2B" stroke-width="2" opacity=".6"/>
+      <text x="96" y="196" ${commonText}>volume = space inside</text>
+    </svg>`,
+    tower_case: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Tall display case">
+      <rect x="108" y="30" width="84" height="160" rx="5" fill="#EEF6F6" stroke="#387F84" stroke-width="3"/>
+      <rect x="124" y="50" width="52" height="120" fill="#FFFFFF" stroke="#BFD8D8" stroke-width="2"/>
+      <line x1="108" y1="80" x2="192" y2="80" stroke="#BFD8D8" stroke-width="2"/>
+      <line x1="108" y1="125" x2="192" y2="125" stroke="#BFD8D8" stroke-width="2"/>
+      <text x="99" y="210" ${commonText}>l × w × h</text>
+    </svg>`
+  };
+  return map[type] || map.parallelogram;
+}
+
+init();
+</script>
 </body>
 </html>

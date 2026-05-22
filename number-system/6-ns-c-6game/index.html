@@ -1,37 +1,652 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.NS.C.6 Game classroom activity.">
-  <title>6.NS.C.6 Game</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quadrant Quest · 6.NS.C.6</title>
+<style>
+  :root{
+    --bg:#060e1c;
+    --surface:#0c1829;
+    --card:#101e33;
+    --card2:#132040;
+    --border:rgba(255,255,255,.09);
+    --border2:rgba(255,255,255,.14);
+    --text:#eef6ff;
+    --muted:#8faec8;
+    --cyan:#22d3ee;
+    --violet:#a78bfa;
+    --green:#34d399;
+    --yellow:#fbbf24;
+    --red:#f87171;
+    --grad:linear-gradient(135deg,var(--cyan),var(--violet));
+    --shadow:0 20px 50px rgba(0,0,0,.45);
+    --r:20px;
+    --r2:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Segoe UI',system-ui,Arial,sans-serif;
+    color:var(--text);background:var(--bg);min-height:100vh;overflow-x:hidden;
+    background-image:
+      radial-gradient(ellipse at 10% 0%,rgba(34,211,238,.12) 0%,transparent 45%),
+      radial-gradient(ellipse at 90% 5%,rgba(167,139,250,.14) 0%,transparent 40%),
+      radial-gradient(ellipse at 50% 100%,rgba(52,211,153,.07) 0%,transparent 50%);
+  }
+
+  .app{max-width:1300px;margin:0 auto;padding:20px 16px}
+
+  .header{
+    display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;
+    background:linear-gradient(135deg,var(--card),var(--card2));
+    border:1px solid var(--border2);border-radius:var(--r);
+    box-shadow:var(--shadow);padding:26px 28px;margin-bottom:16px;
+  }
+  .header-left h1{
+    font-size:clamp(1.9rem,3.5vw,2.9rem);font-weight:800;letter-spacing:-.02em;
+    background:var(--grad);-webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;background-clip:text;
+    margin-bottom:6px;
+  }
+  .header-left .sub{color:var(--muted);font-size:1rem;line-height:1.55;max-width:60ch}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip{
+    padding:6px 13px;border-radius:999px;font-size:.82rem;font-weight:700;letter-spacing:.02em;
+    background:rgba(255,255,255,.07);border:1px solid var(--border2);color:var(--muted);
+  }
+  .chip.cyan{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.35);color:var(--cyan)}
+  .chip.violet{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.35);color:var(--violet)}
+  .chip.green{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.35);color:var(--green)}
+
+  .stats-bar{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;
+  }
+  .stat-card{
+    background:linear-gradient(160deg,var(--card),var(--card2));
+    border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;
+    box-shadow:0 8px 24px rgba(0,0,0,.3);
+  }
+  .stat-card .lbl{font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .stat-card .val{font-size:1.8rem;font-weight:800;margin-top:4px;color:var(--text)}
+  .stat-card.cyan .val{color:var(--cyan)}
+  .stat-card.violet .val{color:var(--violet)}
+  .stat-card.green .val{color:var(--green)}
+  .stat-card.yellow .val{color:var(--yellow)}
+
+  .progress-wrap{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+    padding:14px 18px;margin-bottom:16px;
+  }
+  .progress-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .progress-meta span{font-size:.82rem;color:var(--muted);font-weight:600}
+  .progress-track{height:12px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
+  .progress-fill{height:100%;width:0%;border-radius:999px;background:var(--grad);transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+  .main{display:grid;grid-template-columns:1fr 340px;gap:16px}
+
+  .panel{
+    background:linear-gradient(160deg,var(--card),var(--card2));
+    border:1px solid var(--border);border-radius:var(--r);
+    box-shadow:var(--shadow);padding:18px;
+  }
+
+  #gameCanvas{
+    width:100%;max-width:680px;display:block;
+    border-radius:16px;border:2px solid rgba(255,255,255,.1);
+    touch-action:none;cursor:crosshair;
+    box-shadow:0 0 0 1px rgba(34,211,238,.1),0 16px 40px rgba(0,0,0,.4);
+  }
+
+  .prompt-area{margin-top:14px}
+  .mission-label{
+    font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--cyan);margin-bottom:4px;
+  }
+  .mission-title{font-size:1.15rem;font-weight:700;margin-bottom:6px}
+  .mission-desc{color:var(--muted);font-size:.93rem;line-height:1.5}
+
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{
+    border:none;border-radius:var(--r2);padding:11px 18px;
+    font:700 .9rem 'Segoe UI',system-ui,Arial,sans-serif;
+    cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .15s;
+    letter-spacing:.01em;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  .btn:active{transform:translateY(0)}
+  .btn-primary{background:var(--grad);color:#fff}
+  .btn-secondary{background:rgba(255,255,255,.1);color:var(--text);border:1px solid var(--border2)}
+  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+
+  .feedback{
+    margin-top:12px;padding:13px 16px;border-radius:var(--r2);
+    font-size:.93rem;line-height:1.5;display:none;
+  }
+  .feedback.good{
+    display:block;
+    background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.35);color:#a7f3d0;
+  }
+  .feedback.bad{
+    display:block;
+    background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#fecaca;
+  }
+
+  .side-title{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .mission-list{display:grid;gap:8px}
+  .mission-item{
+    border-radius:var(--r2);padding:12px 14px;
+    background:rgba(255,255,255,.04);border:1px solid var(--border);
+    transition:background .2s,border-color .2s;
+  }
+  .mission-item.active{
+    background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.4);
+  }
+  .mission-item.done{
+    background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.3);
+  }
+  .mission-item-title{font-size:.88rem;font-weight:700;margin-bottom:3px}
+  .mission-item-sub{font-size:.78rem;color:var(--muted)}
+  .mission-item.done .mission-item-title::after{content:' ✓';color:var(--green)}
+
+  .info-box{
+    margin-top:12px;border-radius:var(--r2);padding:13px 15px;
+    background:rgba(255,255,255,.04);border:1px solid var(--border);
+  }
+  .info-box-title{font-size:.82rem;font-weight:700;color:var(--cyan);margin-bottom:6px}
+  .info-box-body{font-size:.82rem;color:var(--muted);line-height:1.55}
+
+  .target-box{
+    margin-top:10px;border-radius:var(--r2);padding:13px 15px;
+    background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);
+  }
+  .target-box-label{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+  .target-box-val{font-size:1.05rem;font-weight:700;color:var(--text)}
+
+  .overlay{
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(4,9,20,.8);backdrop-filter:blur(8px);padding:20px;z-index:30;
+  }
+  .overlay-card{
+    max-width:640px;width:100%;
+    background:linear-gradient(160deg,#14203a,#0e1a2e);
+    border:1px solid rgba(255,255,255,.15);border-radius:24px;
+    box-shadow:0 40px 80px rgba(0,0,0,.6);padding:28px;
+  }
+  .overlay-eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);margin-bottom:6px}
+  .overlay-question{font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:18px}
+  .choices{display:grid;gap:10px}
+  .choice-btn{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    border-radius:var(--r2);padding:13px 16px;
+    font:600 .95rem 'Segoe UI',system-ui,Arial,sans-serif;
+    color:var(--text);cursor:pointer;text-align:left;
+    transition:background .15s,border-color .15s,transform .12s;
+  }
+  .choice-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);transform:translateX(3px)}
+  .choice-btn.correct{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.5);color:#a7f3d0;pointer-events:none}
+  .choice-btn.wrong{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.4);color:#fecaca;pointer-events:none}
+
+  .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+  .piece{position:absolute;width:9px;height:14px;border-radius:3px;animation:fall 1.3s ease-in forwards}
+  @keyframes fall{
+    0%{transform:translateY(-30px) rotate(0deg);opacity:1}
+    100%{transform:translateY(105vh) rotate(540deg);opacity:0}
+  }
+
+  .lives-dots{display:flex;gap:5px;margin-top:4px}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--red);transition:opacity .3s}
+  .dot.off{opacity:.18}
+
+  @media(max-width:1000px){.main{grid-template-columns:1fr}}
+  @media(max-width:600px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+  @media print{
+    .overlay,.confetti,.btn-row{display:none!important}
+    body{background:#fff;color:#000}
+    .panel{background:#fff;border:1px solid #ddd;box-shadow:none}
+  }
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/number-system/">Number System</a><span>/</span><span>6.NS.C.6 Game</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.NS.C.6 Game</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+<div class="app">
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.NS.C.6Game</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/number-system/6-ns-c-6game/</span></p>
+  <header class="header">
+    <div class="header-left">
+      <h1>Quadrant Quest</h1>
+      <p class="sub">Plot points, identify opposites, classify quadrants, and defeat the boss in this four-mission coordinate-plane challenge. Covers 6.NS.C.6 — rational numbers on the coordinate plane.</p>
+      <div class="chips">
+        <span class="chip cyan">4 Missions</span>
+        <span class="chip violet">Adaptive Boss Round</span>
+        <span class="chip green">Touch &amp; Mouse</span>
+        <span class="chip">Instant Feedback</span>
       </div>
-    </section>
-
-    <div class="button-row">
-      <a class="primary-button" href="/number-system/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-card cyan">
+      <div class="lbl">Level</div>
+      <div class="val" id="levelOut">1</div>
+    </div>
+    <div class="stat-card violet">
+      <div class="lbl">XP</div>
+      <div class="val" id="xpOut">0</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="lbl">Streak</div>
+      <div class="val" id="streakOut">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="lbl">Lives</div>
+      <div class="val" id="livesOut">3</div>
+      <div class="lives-dots" id="livesDots">
+        <div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div>
+        <div class="dot" id="d3"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="progressLabel">Mission Progress</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="panel">
+      <canvas id="gameCanvas" width="680" height="680" aria-label="Interactive coordinate plane — click or tap to plot a point"></canvas>
+      <div class="prompt-area">
+        <div class="mission-label" id="missionLabel">Mission 1 of 4</div>
+        <div class="mission-title" id="missionTitle">Mission 1: Plot Patrol</div>
+        <div class="mission-desc" id="missionDesc">Plot the target point shown in the panel on the right. Click or tap the grid.</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="startBtn">▶ Start Mission</button>
+          <button class="btn btn-secondary" id="hintBtn">💡 Hint</button>
+          <button class="btn btn-ghost" id="resetBtn">↺ Reset</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="side-title">Missions</div>
+      <div class="mission-list" id="missionList"></div>
+
+      <div class="target-box" id="targetBox">
+        <div class="target-box-label">Current Target</div>
+        <div class="target-box-val" id="targetVal">Press Start Mission to begin.</div>
+      </div>
+
+      <div class="info-box">
+        <div class="info-box-title">How to Play</div>
+        <div class="info-box-body">
+          Use the <strong style="color:var(--text)">sign of x</strong> to move left (−) or right (+) first.<br>
+          Then use the <strong style="color:var(--text)">sign of y</strong> to move down (−) or up (+).<br>
+          Opposites are equal distance from 0 on opposite sides.
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:10px">
+        <div class="info-box-title">Quadrant Signs</div>
+        <div class="info-box-body">
+          <strong style="color:var(--cyan)">I</strong> (+, +) &nbsp;
+          <strong style="color:var(--violet)">II</strong> (−, +) &nbsp;
+          <strong style="color:var(--yellow)">III</strong> (−, −) &nbsp;
+          <strong style="color:var(--green)">IV</strong> (+, −)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="choiceOverlay" role="dialog" aria-modal="true" aria-labelledby="overlayEyebrow">
+  <div class="overlay-card">
+    <div class="overlay-eyebrow" id="overlayEyebrow">Challenge</div>
+    <div class="overlay-question" id="overlayQuestion"></div>
+    <div class="choices" id="overlayChoices"></div>
+    <div class="feedback" id="overlayFeedback" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+const PLOT_TARGETS=[
+  {x:-4,y:3},{x:5,y:-2},{x:-2,y:-5},{x:4,y:4},
+  {x:-3,y:1},{x:2,y:-6},{x:-5,y:-3},{x:3,y:5}
+];
+const OPPOSITE_ITEMS=[
+  {q:'What is the opposite of −6?',c:['6','−12','0','−6'],a:'6',e:'Opposites are the same distance from 0 on opposite sides. The opposite of −6 is 6.'},
+  {q:'Which ordered pair is the reflection of (3, −2) across both axes?',c:['(−3, 2)','(3, 2)','(−3, −2)','(2, −3)'],a:'(−3, 2)',e:'Reflecting across both axes flips both signs: (3,−2) → (−3, 2).'},
+  {q:'What is the opposite of 4?',c:['−4','4','0','−8'],a:'−4',e:'The opposite of a positive number is the same magnitude with a negative sign.'},
+  {q:'Which point is the opposite of (−5, 0) reflected over the y-axis?',c:['(5, 0)','(0, 5)','(−5, 0)','(5, −5)'],a:'(5, 0)',e:'Reflecting over the y-axis flips only the x-sign: (−5, 0) → (5, 0).'}
+];
+const QUADRANT_ITEMS=[
+  {q:'Which quadrant contains (−5, 2)?',c:['I','II','III','IV'],a:'II',e:'Negative x and positive y → Quadrant II.'},
+  {q:'Which quadrant contains (3, −4)?',c:['I','II','III','IV'],a:'IV',e:'Positive x and negative y → Quadrant IV.'},
+  {q:'Which quadrant contains (−1, −6)?',c:['I','II','III','IV'],a:'III',e:'Both coordinates negative → Quadrant III.'},
+  {q:'A point has positive x and positive y. Which quadrant?',c:['I','II','III','IV'],a:'I',e:'Both signs positive → Quadrant I.'}
+];
+const BOSS_ITEMS=[
+  {q:'A point is 2 units left and 5 units up from the origin. Which point?',c:['(−2, 5)','(2, 5)','(−5, 2)','(2, −5)'],a:'(−2, 5)',e:'Left = negative x; up = positive y → (−2, 5).'},
+  {q:'Which statement about (−4, −2) is true?',c:['In Quadrant III','In Quadrant II','In Quadrant IV','On an axis'],a:'In Quadrant III',e:'Both coordinates are negative → Quadrant III.'},
+  {q:'What is the opposite ordered pair of (−3, 4)?',c:['(3, −4)','(3, 4)','(−3, −4)','(4, −3)'],a:'(3, −4)',e:'Flip both signs to get the opposite point.'},
+  {q:'Which point is in Quadrant I?',c:['(2, 6)','(−2, 6)','(−2, −6)','(2, −6)'],a:'(2, 6)',e:'Quadrant I requires both coordinates positive.'},
+  {q:'Which point lies on the x-axis?',c:['(5, 0)','(0, 5)','(−3, 2)','(−1, −1)'],a:'(5, 0)',e:'Points on the x-axis have y = 0.'},
+  {q:'Which point lies on the y-axis?',c:['(0, −4)','(−4, 0)','(4, 4)','(−4, 4)'],a:'(0, −4)',e:'Points on the y-axis have x = 0.'}
+];
+
+const state={
+  level:1,xp:0,lives:3,streak:0,
+  missionIndex:0,started:false,
+  activeTarget:null,plotted:null,overlayLocked:false,
+  usedPlotTargets:[],
+  missions:[
+    {title:'Plot Patrol',type:'plot',goal:3,done:0,desc:'Plot each target point on the coordinate plane.'},
+    {title:'Opposite Ops',type:'opposite',goal:3,done:0,desc:'Identify the opposite of each number or ordered pair.'},
+    {title:'Quadrant Shield',type:'quadrant',goal:3,done:0,desc:'Name the correct quadrant for each point.'},
+    {title:'Boss Battle',type:'boss',goal:4,done:0,desc:'Mixed challenge: signs, opposites, quadrants, and axes.'}
+  ]
+};
+
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+const C={size:680,center:340,step:48,min:-6,max:6};
+
+const QTINTS=[
+  {x:C.center,y:0,w:C.center,h:C.center,col:'rgba(52,211,153,.06)'},
+  {x:0,y:0,w:C.center,h:C.center,col:'rgba(34,211,238,.06)'},
+  {x:0,y:C.center,w:C.center,h:C.center,col:'rgba(251,191,36,.06)'},
+  {x:C.center,y:C.center,w:C.center,h:C.center,col:'rgba(167,139,250,.06)'}
+];
+
+function drawPlane(opts={}){
+  ctx.clearRect(0,0,C.size,C.size);
+  ctx.fillStyle='#f8faff';ctx.fillRect(0,0,C.size,C.size);
+  QTINTS.forEach(t=>{ctx.fillStyle=t.col;ctx.fillRect(t.x,t.y,t.w,t.h);});
+  for(let i=0;i<=C.size;i+=C.step){
+    ctx.strokeStyle='rgba(15,23,42,.07)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,C.size);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(C.size,i);ctx.stroke();
+  }
+  ctx.strokeStyle='#0f172a';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(C.center,6);ctx.lineTo(C.center,C.size-6);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(6,C.center);ctx.lineTo(C.size-6,C.center);ctx.stroke();
+  function arrow(x1,y1,x2,y2){
+    const a=Math.atan2(y2-y1,x2-x1);
+    ctx.fillStyle='#0f172a';ctx.beginPath();
+    ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-8*Math.cos(a-0.4),y2-8*Math.sin(a-0.4));
+    ctx.lineTo(x2-8*Math.cos(a+0.4),y2-8*Math.sin(a+0.4));
+    ctx.closePath();ctx.fill();
+  }
+  arrow(C.center,C.size-6,C.center,6);
+  arrow(6,C.center,C.size-6,C.center);
+
+  ctx.fillStyle='#334155';ctx.font='600 13px "Segoe UI",system-ui,Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+  for(let v=C.min;v<=C.max;v++){
+    if(v===0) continue;
+    const px=C.center+v*C.step; const py=C.center-v*C.step;
+    ctx.fillText(v,px,C.center+17);
+    ctx.fillText(v,C.center-17,py);
+  }
+  ctx.fillStyle='#0f172a';ctx.font='bold 15px "Segoe UI",system-ui,Arial';
+  ctx.fillText('x',C.size-12,C.center-14);
+  ctx.fillText('y',C.center+14,12);
+
+  if(opts.showQ){
+    ctx.font='bold 20px "Segoe UI",system-ui,Arial';ctx.textAlign='center';
+    ctx.fillStyle='rgba(52,211,153,.55)'; ctx.fillText('I',C.center+C.size*.18,C.center-C.size*.18);
+    ctx.fillStyle='rgba(34,211,238,.55)'; ctx.fillText('II',C.center-C.size*.18,C.center-C.size*.18);
+    ctx.fillStyle='rgba(251,191,36,.55)'; ctx.fillText('III',C.center-C.size*.18,C.center+C.size*.18);
+    ctx.fillStyle='rgba(167,139,250,.55)';ctx.fillText('IV',C.center+C.size*.18,C.center+C.size*.18);
+  }
+
+  if(state.activeTarget && state.missions[state.missionIndex].type==='plot'){
+    const t=state.activeTarget;
+    const tx=C.center+t.x*C.step, ty=C.center-t.y*C.step;
+    ctx.strokeStyle='rgba(34,211,238,.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.moveTo(tx,0);ctx.lineTo(tx,C.size);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,ty);ctx.lineTo(C.size,ty);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle='rgba(34,211,238,.8)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(tx,ty,14,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='rgba(34,211,238,.4)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(tx,ty,22,0,Math.PI*2);ctx.stroke();
+  }
+
+  if(state.plotted){
+    const px=C.center+state.plotted.x*C.step, py=C.center-state.plotted.y*C.step;
+    const grad=ctx.createRadialGradient(px,py,0,px,py,13);
+    grad.addColorStop(0,'#a78bfa');grad.addColorStop(1,'#7c3aed');
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.arc(px,py,12,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=2;ctx.stroke();
+  }
+}
+
+function updateHUD(){
+  document.getElementById('levelOut').textContent=state.level;
+  document.getElementById('xpOut').textContent=state.xp;
+  document.getElementById('streakOut').textContent=state.streak;
+  document.getElementById('livesOut').textContent=state.lives;
+  for(let i=1;i<=3;i++){
+    const d=document.getElementById('d'+i);
+    if(d) d.classList.toggle('off',i>state.lives);
+  }
+  const total=state.missions.reduce((a,m)=>a+m.goal,0);
+  const done=state.missions.reduce((a,m)=>a+m.done,0);
+  const pct=Math.round((done/total)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  renderMissionList();
+}
+
+function renderMissionList(){
+  const wrap=document.getElementById('missionList'); wrap.innerHTML='';
+  state.missions.forEach((m,i)=>{
+    const d=document.createElement('div');
+    d.className='mission-item'+(i===state.missionIndex?' active':'')+(m.done>=m.goal?' done':'');
+    d.innerHTML=`<div class="mission-item-title">Mission ${i+1}: ${m.title}</div><div class="mission-item-sub">${m.done}/${m.goal} complete — ${m.desc}</div>`;
+    wrap.appendChild(d);
+  });
+}
+
+function showFB(good,html){
+  const b=document.getElementById('feedback');
+  b.className='feedback '+(good?'good':'bad');b.innerHTML=html;
+}
+function clearFB(){ const b=document.getElementById('feedback');b.className='feedback';b.textContent=''; }
+
+function gainXP(n){
+  state.xp+=n;
+  const threshold=state.level*50;
+  if(state.xp>=threshold){state.level++;state.xp-=threshold;celebrate();}
+}
+
+function celebrate(){
+  const wrap=document.getElementById('confetti'); wrap.innerHTML='';
+  const cols=['#22d3ee','#a78bfa','#34d399','#fbbf24','#f87171','#fff'];
+  for(let i=0;i<40;i++){
+    const p=document.createElement('div');p.className='piece';
+    p.style.left=Math.random()*100+'vw';
+    p.style.background=cols[i%cols.length];
+    p.style.width=(7+Math.random()*7)+'px';
+    p.style.height=(10+Math.random()*10)+'px';
+    p.style.animationDelay=Math.random()*300+'ms';
+    p.style.animationDuration=(900+Math.random()*600)+'ms';
+    wrap.appendChild(p);
+  }
+  setTimeout(()=>wrap.innerHTML='',1600);
+}
+
+function currentM(){ return state.missions[state.missionIndex]; }
+function syncMissionUI(){
+  const m=currentM();
+  document.getElementById('missionLabel').textContent=`Mission ${state.missionIndex+1} of ${state.missions.length}`;
+  document.getElementById('missionTitle').textContent=`Mission ${state.missionIndex+1}: ${m.title}`;
+  document.getElementById('missionDesc').textContent=m.desc;
+}
+
+function advanceMission(){
+  const m=currentM();
+  if(m.done>=m.goal){
+    if(state.missionIndex<state.missions.length-1){
+      state.missionIndex++;state.started=false;state.activeTarget=null;state.plotted=null;
+      drawPlane({showQ:true});
+      showFB(true,`<strong>Mission complete!</strong> Mission ${state.missionIndex+1}: ${currentM().title} is now unlocked.`);
+      celebrate();
+    } else {
+      showFB(true,'<strong>🎉 Quest Complete!</strong> You can plot, classify, and interpret rational-number points on the coordinate plane. Excellent work!');
+      celebrate();
+    }
+  }
+  syncMissionUI(); updateHUD();
+}
+
+function getNextPlotTarget(){
+  const unused=PLOT_TARGETS.filter((_,i)=>!state.usedPlotTargets.includes(i));
+  if(unused.length===0){
+    state.usedPlotTargets=[];
+    return PLOT_TARGETS[Math.floor(Math.random()*PLOT_TARGETS.length)];
+  }
+  const idx=Math.floor(Math.random()*unused.length);
+  const realIdx=PLOT_TARGETS.indexOf(unused[idx]);
+  state.usedPlotTargets.push(realIdx);
+  return unused[idx];
+}
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
+
+function startMission(){
+  clearFB(); state.started=true;
+  const m=currentM();
+  if(m.type==='plot'){
+    state.activeTarget=getNextPlotTarget(); state.plotted=null;
+    document.getElementById('targetVal').innerHTML=`Plot <strong style="font-size:1.15rem">(${state.activeTarget.x}, ${state.activeTarget.y})</strong>`;
+    drawPlane({showQ:true});
+  } else {
+    document.getElementById('targetVal').textContent='Answer the challenge below.';
+    const bank={opposite:OPPOSITE_ITEMS,quadrant:QUADRANT_ITEMS,boss:BOSS_ITEMS};
+    askChoice(shuffle(bank[m.type])[0]);
+    if(m.type==='quadrant'||m.type==='boss') drawPlane({showQ:true});
+  }
+}
+
+function askChoice(item){
+  if(state.overlayLocked) return;
+  state.overlayLocked=true;
+  document.getElementById('overlayEyebrow').textContent=`Mission ${state.missionIndex+1}: ${currentM().title}`;
+  document.getElementById('overlayQuestion').textContent=item.q;
+  const wrap=document.getElementById('overlayChoices'); wrap.innerHTML='';
+  const fb=document.getElementById('overlayFeedback'); fb.className='feedback'; fb.textContent='';
+  shuffle(item.c).forEach(ch=>{
+    const b=document.createElement('button'); b.className='choice-btn'; b.textContent=ch;
+    b.addEventListener('click',()=>{
+      const good=ch===item.a;
+      wrap.querySelectorAll('.choice-btn').forEach(btn=>{
+        if(btn.textContent===item.a) btn.classList.add('correct');
+        else if(btn===b && !good) btn.classList.add('wrong');
+        btn.style.pointerEvents='none';
+      });
+      fb.className='feedback '+(good?'good':'bad');
+      fb.innerHTML=(good?'<strong>Correct!</strong> ':'<strong>Not yet.</strong> ')+item.e;
+      if(good){ state.streak++; gainXP(currentM().type==='boss'?20:12); currentM().done++; }
+      else { state.streak=0; state.lives--; }
+      updateHUD();
+      setTimeout(()=>{
+        document.getElementById('choiceOverlay').style.display='none';
+        state.overlayLocked=false;
+        if(state.lives<=0){ gameOver(); return; }
+        advanceMission();
+        if(state.started && currentM().type!=='plot'){
+          const bank={opposite:OPPOSITE_ITEMS,quadrant:QUADRANT_ITEMS,boss:BOSS_ITEMS};
+          if(currentM().done<currentM().goal) setTimeout(()=>askChoice(shuffle(bank[currentM().type])[0]),250);
+        }
+      },1400);
+    });
+    wrap.appendChild(b);
+  });
+  document.getElementById('choiceOverlay').style.display='flex';
+}
+
+function gameOver(){
+  document.getElementById('overlayEyebrow').textContent='Game Over';
+  document.getElementById('overlayQuestion').textContent='You ran out of lives. Reset and try again — remember: x first, then y. Use sign to choose direction.';
+  const wrap=document.getElementById('overlayChoices'); wrap.innerHTML='';
+  const b=document.createElement('button'); b.className='choice-btn'; b.textContent='↺ Play Again';
+  b.addEventListener('click',resetGame); wrap.appendChild(b);
+  document.getElementById('choiceOverlay').style.display='flex';
+}
+
+function resetGame(){
+  Object.assign(state,{level:1,xp:0,lives:3,streak:0,missionIndex:0,started:false,activeTarget:null,plotted:null,overlayLocked:false,usedPlotTargets:[]});
+  state.missions.forEach(m=>m.done=0);
+  document.getElementById('choiceOverlay').style.display='none';
+  document.getElementById('targetVal').textContent='Press Start Mission to begin.';
+  clearFB(); drawPlane({showQ:true}); syncMissionUI(); updateHUD();
+}
+
+function snapPoint(evt){
+  const rect=canvas.getBoundingClientRect();
+  const cx=evt.touches?evt.touches[0].clientX:evt.clientX;
+  const cy=evt.touches?evt.touches[0].clientY:evt.clientY;
+  const rx=Math.round((cx-rect.left)*(canvas.width/rect.width));
+  const ry=Math.round((cy-rect.top)*(canvas.height/rect.height));
+  return {
+    x:Math.max(C.min,Math.min(C.max,Math.round((rx-C.center)/C.step))),
+    y:Math.max(C.min,Math.min(C.max,Math.round((C.center-ry)/C.step)))
+  };
+}
+
+function handlePlot(evt){
+  if(currentM().type!=='plot'||!state.started||!state.activeTarget) return;
+  evt.preventDefault();
+  state.plotted=snapPoint(evt); drawPlane({showQ:true});
+  const good=state.plotted.x===state.activeTarget.x&&state.plotted.y===state.activeTarget.y;
+  if(good){
+    currentM().done++; state.streak++; gainXP(16);
+    showFB(true,`<strong>Correct!</strong> You plotted <strong>(${state.plotted.x}, ${state.plotted.y})</strong> by moving along x first, then y.`);
+    if(currentM().done<currentM().goal){
+      setTimeout(()=>{
+        state.activeTarget=getNextPlotTarget(); state.plotted=null;
+        document.getElementById('targetVal').innerHTML=`Plot <strong style="font-size:1.15rem">(${state.activeTarget.x}, ${state.activeTarget.y})</strong>`;
+        drawPlane({showQ:true}); clearFB();
+      },900);
+    }
+  } else {
+    state.streak=0; state.lives--;
+    showFB(false,`You plotted <strong>(${state.plotted.x}, ${state.plotted.y})</strong>. Check the sign — is x positive (right) or negative (left)? Is y positive (up) or negative (down)?`);
+  }
+  updateHUD();
+  if(state.lives<=0){ gameOver(); return; }
+  advanceMission();
+}
+
+['click','touchstart'].forEach(t=>canvas.addEventListener(t,handlePlot,{passive:false}));
+
+document.getElementById('startBtn').addEventListener('click',startMission);
+document.getElementById('hintBtn').addEventListener('click',()=>{
+  const m=currentM();
+  let msg='Use the sign of x first, then the sign of y.';
+  if(m.type==='plot'&&state.activeTarget){
+    const t=state.activeTarget;
+    msg=`Hint: move <strong>${t.x<0?'left':'right'} ${Math.abs(t.x)}</strong> along the x-axis, then <strong>${t.y<0?'down':'up'} ${Math.abs(t.y)}</strong> along the y-axis.`;
+  } else if(m.type==='opposite') msg='Opposites are the same distance from 0 — just flip the sign(s).';
+  else if(m.type==='quadrant') msg='Quadrants: I (+,+), II (−,+), III (−,−), IV (+,−). Check each sign.';
+  else if(m.type==='boss') msg='Boss hint: identify sign patterns, axes points (x=0 or y=0), and opposites.';
+  showFB(true,msg);
+});
+document.getElementById('resetBtn').addEventListener('click',resetGame);
+
+drawPlane({showQ:true}); syncMissionUI(); updateHUD();
+window.resetGame=resetGame;
+</script>
 </body>
 </html>

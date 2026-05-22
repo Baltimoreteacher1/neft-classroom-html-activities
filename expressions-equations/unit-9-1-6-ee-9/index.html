@@ -1,37 +1,980 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Unit 9.1 6.EE.9 classroom activity.">
-  <title>Unit 9.1 6.EE.9</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equation Quest RPG — 6.EE.C.9</title>
+<script src="/assets/vendor/Tone-14.8.49.js"></script>
+<script src="/assets/vendor/gsap-3.12.2.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #00d4ff;
+  --secondary: #ff006e;
+  --accent: #ffbe0b;
+  --dark: #2a3a5a;
+  --darker: #3d4f7a;
+  --success: #00ff88;
+  --danger: #ff4757;
+  --warning: #ffa502;
+  --neutral: #9fb3d5;
+}
+body {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  background: linear-gradient(135deg, #4a5f8f 0%, #3a4f7f 50%, #2a3f6f 100%);
+  color: var(--primary);
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+/* PARALLAX BACKGROUND LAYERS */
+.background-container {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
+}
+.stars-layer {
+  position: absolute; width: 100%; height: 100%;
+  background: radial-gradient(2px 2px at 20px 30px, white, rgba(255,255,255,0.2)),
+              radial-gradient(2px 2px at 60px 70px, white, rgba(255,255,255,0.1)),
+              radial-gradient(1px 1px at 50px 50px, white, rgba(255,255,255,0.15)),
+              radial-gradient(1px 1px at 130px 80px, white, rgba(255,255,255,0.2));
+  background-repeat: repeat; background-size: 200px 200px; animation: twinkle 3s infinite;
+}
+@keyframes twinkle { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+.nebula-layer {
+  position: absolute; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 20% 50%, rgba(255, 0, 110, 0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 20%, rgba(255, 190, 11, 0.05) 0%, transparent 50%);
+  animation: nebulaPulse 8s ease-in-out infinite;
+}
+@keyframes nebulaPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+.grid-layer {
+  position: absolute; width: 100%; height: 100%;
+  background-image: linear-gradient(0deg, transparent 24%, rgba(0, 212, 255, 0.03) 25%, rgba(0, 212, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 212, 255, 0.03) 75%, rgba(0, 212, 255, 0.03) 76%, transparent 77%, transparent),
+                    linear-gradient(90deg, transparent 24%, rgba(0, 212, 255, 0.03) 25%, rgba(0, 212, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 212, 255, 0.03) 75%, rgba(0, 212, 255, 0.03) 76%, transparent 77%, transparent);
+  background-size: 80px 80px; animation: gridScroll 60s linear infinite;
+}
+@keyframes gridScroll { 0% { transform: translateY(0); } 100% { transform: translateY(80px); } }
+.container {
+  position: relative; z-index: 1; width: 100%; height: 100vh; display: flex; gap: 20px; padding: 20px; overflow: hidden;
+}
+.character-panel {
+  width: 280px; background: rgba(42, 58, 90, 0.92); border: 2px solid var(--primary);
+  border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px;
+  overflow-y: auto; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+}
+.char-header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; }
+.char-avatar-container {
+  font-size: 3.5rem; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.4));
+  animation: characterBob 3s ease-in-out infinite;
+}
+@keyframes characterBob {
+  0%, 100% { transform: translateY(0) rotateZ(0deg); }
+  25% { transform: translateY(-8px) rotateZ(-1deg); }
+  75% { transform: translateY(-8px) rotateZ(1deg); }
+}
+.char-name { font-size: 1.3rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+.char-title { font-size: 0.75rem; color: var(--neutral); text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
+.stat-row {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px;
+  background: rgba(0, 212, 255, 0.1); border: 1.5px solid rgba(0, 212, 255, 0.3);
+  border-radius: 6px; font-size: 0.9rem; backdrop-filter: blur(5px);
+}
+.stat-label { color: var(--accent); text-transform: uppercase; font-size: 0.65rem; font-weight: bold; letter-spacing: 1px; }
+.stat-value { color: var(--primary); font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 10px rgba(0, 212, 255, 0.3); }
+.hp-bar, .xp-bar, .mana-bar {
+  width: 100%; height: 20px; background: rgba(0, 0, 0, 0.4); border: 1.5px solid var(--primary);
+  border-radius: 10px; overflow: hidden; margin-top: 6px; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.hp-bar-fill {
+  height: 100%; background: linear-gradient(90deg, #ff4757, #ff7675); width: 100%;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 8px rgba(255, 71, 87, 0.6);
+}
+.xp-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
+}
+.mana-bar-fill {
+  height: 100%; background: linear-gradient(90deg, #6c5ce7, #0984e3); width: 100%;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 8px rgba(108, 92, 231, 0.6);
+}
+.inventory { border: 1.5px solid var(--secondary); padding: 12px; border-radius: 8px; background: rgba(255, 0, 110, 0.08); }
+.inventory-title { font-size: 0.7rem; color: var(--secondary); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; font-weight: bold; }
+.equipment-slot {
+  display: flex; justify-content: space-between; align-items: center; padding: 8px; margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 0, 110, 0.4); border-radius: 4px;
+  font-size: 0.8rem; transition: all 0.3s;
+}
+.equipment-slot:hover { background: rgba(255, 0, 110, 0.15); border-color: var(--secondary); }
+.slot-icon { font-size: 1.3rem; filter: drop-shadow(0 0 4px rgba(255, 0, 110, 0.4)); }
+.slot-name { color: var(--primary); flex: 1; margin: 0 8px; font-size: 0.75rem; }
+.slot-bonus { color: var(--success); font-size: 0.65rem; font-weight: bold; }
+.game-area { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+.battle-panel {
+  flex: 1; background: rgba(42, 58, 90, 0.92); border: 2px solid var(--secondary);
+  border-radius: 12px; padding: 30px; display: flex; flex-direction: column; justify-content: center;
+  align-items: center; gap: 25px; position: relative; overflow: hidden; backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(255, 0, 110, 0.15);
+}
+.battle-panel::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, rgba(255, 0, 110, 0.08) 0%, transparent 70%);
+  pointer-events: none; animation: radialPulse 4s ease-in-out infinite;
+}
+@keyframes radialPulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.08); opacity: 0.6; }
+}
+.quest-info { text-align: center; margin-bottom: 10px; border-bottom: 2px solid var(--secondary); padding-bottom: 15px; position: relative; z-index: 2; }
+.quest-name { font-size: 1.2rem; color: var(--secondary); font-weight: bold; margin-bottom: 8px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); letter-spacing: 1px; }
+.quest-desc { font-size: 0.9rem; color: var(--neutral); line-height: 1.4; }
+.battle-scene { display: flex; justify-content: space-around; align-items: center; width: 100%; gap: 50px; position: relative; z-index: 2; margin: 20px 0; }
+.combatant { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.combatant-avatar { font-size: 5.5rem; animation: combatantFloat 2.5s ease-in-out infinite; filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.4)); }
+@keyframes combatantFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-15px) scale(1.05); }
+}
+.combatant-name { font-size: 1.05rem; color: var(--primary); font-weight: bold; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+.health-info { font-size: 0.85rem; color: var(--accent); margin-bottom: 6px; font-weight: bold; }
+.combatant-hp {
+  width: 220px; height: 24px; background: rgba(0, 0, 0, 0.5); border: 1.5px solid #ff4757;
+  border-radius: 12px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.combatant-hp-fill {
+  height: 100%; background: linear-gradient(90deg, #ff4757, #ff7675); width: 100%;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 12px rgba(255, 71, 87, 0.8);
+}
+.vs-text {
+  font-size: 2.5rem; color: var(--danger); font-weight: bold; animation: vsPulse 1s ease-in-out infinite;
+  text-shadow: 0 0 15px rgba(255, 71, 87, 0.5); filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.6));
+}
+@keyframes vsPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+.problem-area {
+  background: rgba(0, 0, 0, 0.45); border: 2px solid var(--primary); border-radius: 10px;
+  padding: 28px; width: 100%; max-width: 700px; position: relative; z-index: 2;
+  backdrop-filter: blur(8px); box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+}
+.problem-text {
+  font-size: 1.15rem; color: #ffffff; margin-bottom: 18px; line-height: 1.7; font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9); letter-spacing: 0.5px;
+}
+.problem-context {
+  background: rgba(255, 190, 11, 0.2); border-left: 5px solid var(--accent); padding: 16px;
+  margin-bottom: 20px; border-radius: 6px; font-size: 1.05rem; color: #ffffff; font-weight: 600;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9); box-shadow: 0 4px 12px rgba(255, 190, 11, 0.15);
+}
+.hint-box {
+  background: rgba(100, 200, 255, 0.2); border-left: 5px solid var(--primary); padding: 16px;
+  margin-bottom: 18px; border-radius: 6px; font-size: 0.98rem; color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); font-style: italic; line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15); animation: slideIn 0.4s ease-out;
+}
+@keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+.attempts-indicator { font-size: 0.85rem; color: var(--warning); margin-bottom: 12px; font-weight: bold; text-align: center; }
+.input-group { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; justify-content: center; }
+input {
+  padding: 14px 16px; border: 2px solid var(--primary); background: rgba(0, 0, 0, 0.6);
+  color: #ffffff; font-family: 'JetBrains Mono'; font-size: 1.05rem; border-radius: 6px;
+  transition: all 0.3s; min-width: 180px; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8); box-shadow: 0 4px 12px rgba(0, 212, 255, 0.1);
+}
+input::placeholder { color: rgba(255, 255, 255, 0.5); }
+input:focus {
+  outline: none; box-shadow: 0 0 20px rgba(0, 212, 255, 0.6), inset 0 0 10px rgba(0, 212, 255, 0.2);
+  background: rgba(0, 0, 0, 0.7); transform: scale(1.02);
+}
+.action-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+button {
+  padding: 13px 28px; border: 2px solid var(--primary); background: rgba(0, 212, 255, 0.12);
+  color: var(--primary); font-family: 'JetBrains Mono'; font-weight: bold; font-size: 0.9rem;
+  cursor: pointer; border-radius: 6px; transition: all 0.3s; text-transform: uppercase;
+  letter-spacing: 1px; box-shadow: 0 4px 12px rgba(0, 212, 255, 0.1);
+}
+button:hover { background: rgba(0, 212, 255, 0.25); box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); transform: translateY(-3px); }
+button:active { transform: translateY(-1px); }
+.btn-success { border-color: var(--success); color: var(--success); box-shadow: 0 4px 12px rgba(0, 255, 136, 0.1); }
+.btn-success:hover { background: rgba(0, 255, 136, 0.2); box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+.btn-hint { border-color: var(--warning); color: var(--warning); padding: 11px 16px; font-size: 0.8rem; box-shadow: 0 4px 12px rgba(255, 165, 2, 0.1); }
+.btn-hint:hover { background: rgba(255, 165, 2, 0.2); box-shadow: 0 0 20px rgba(255, 165, 2, 0.5); }
+.quest-log {
+  width: 280px; background: rgba(42, 58, 90, 0.92); border: 2px solid var(--accent);
+  border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+  overflow-y: auto; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(255, 190, 11, 0.12);
+}
+.log-title {
+  font-size: 0.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2.5px;
+  font-weight: bold; border-bottom: 1.5px solid var(--accent); padding-bottom: 12px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.quest-item {
+  padding: 14px; background: rgba(0, 212, 255, 0.1); border: 1.5px solid rgba(255, 190, 11, 0.35);
+  border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 0.85rem; backdrop-filter: blur(5px);
+}
+.quest-item:hover { background: rgba(255, 190, 11, 0.15); border-color: var(--accent); transform: translateX(6px); box-shadow: 0 4px 12px rgba(255, 190, 11, 0.2); }
+.quest-item.active { background: rgba(255, 190, 11, 0.2); border-color: var(--accent); box-shadow: 0 0 15px rgba(255, 190, 11, 0.4); }
+.quest-item.completed { opacity: 0.6; border-color: var(--success); }
+.quest-item-name { color: var(--primary); font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; }
+.quest-item-status { font-size: 0.75rem; color: var(--neutral); }
+.quest-item-reward { font-size: 0.75rem; color: var(--success); margin-top: 5px; font-weight: bold; }
+.feedback {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3.5rem;
+  font-weight: bold; z-index: 100; animation: feedbackPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  pointer-events: none; text-shadow: 0 0 40px rgba(0, 0, 0, 0.95); filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.8));
+}
+@keyframes feedbackPop {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.2); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.2); }
+}
+.feedback.correct { color: var(--success); }
+.feedback.incorrect { color: var(--danger); }
+.particle { position: fixed; pointer-events: none; z-index: 50; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+.shake { animation: shake 0.4s; }
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.8); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+}
+.modal-overlay.active { display: flex; animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: linear-gradient(135deg, rgba(42, 58, 90, 0.96), rgba(61, 79, 122, 0.96));
+  border: 2px solid var(--primary); border-radius: 14px; padding: 40px; max-width: 520px;
+  text-align: center; animation: modalSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+}
+@keyframes modalSlideIn { from { opacity: 0; transform: translateY(-40px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.modal-title { font-size: 2.2rem; color: var(--success); margin-bottom: 15px; font-weight: bold; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); letter-spacing: 1px; }
+.modal-reward { font-size: 1.3rem; color: var(--accent); margin: 25px 0; font-weight: bold; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); }
+.modal-button { margin-top: 25px; }
+.name-modal {
+  background: linear-gradient(135deg, rgba(42, 58, 90, 0.96), rgba(61, 79, 122, 0.96));
+  border: 2px solid var(--primary); border-radius: 14px; padding: 45px; max-width: 480px;
+  text-align: center; animation: modalSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+}
+.name-modal h2 { font-size: 2rem; color: var(--primary); margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); letter-spacing: 1px; }
+.name-modal p { color: var(--neutral); margin-bottom: 24px; font-size: 0.98rem; line-height: 1.5; }
+.name-modal input { width: 100%; max-width: 320px; margin-bottom: 22px; font-size: 1.1rem; }
+@media (max-width: 1200px) {
+  .container { flex-direction: column; gap: 15px; }
+  .character-panel, .quest-log { width: 100%; max-height: 140px; }
+}
+@media (max-width: 768px) {
+  .container { padding: 10px; }
+  .character-panel, .quest-log { display: none; }
+  .battle-scene { flex-direction: column; gap: 20px; }
+  .combatant-hp { width: 180px; }
+  .problem-area { padding: 20px; }
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(0, 212, 255, 0.05); }
+::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 212, 255, 0.5); }
+/* ── BIG EQUATION DISPLAY ── */
+.eq-display {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px;
+  background: rgba(0,0,0,0.4); border-radius: 10px; padding: 14px 20px; margin: 12px 0;
+  border: 1.5px solid rgba(0,212,255,0.25);
+}
+.eq-tok { font-family: 'JetBrains Mono','Courier New',monospace; line-height: 1; font-weight: 900; }
+.eq-var { font-size: 2.6rem; color: #00d4ff; text-shadow: 0 0 14px rgba(0,212,255,0.6); }
+.eq-op  { font-size: 2.9rem; color: #ffbe0b; padding: 0 5px; text-shadow: 0 0 22px rgba(255,190,11,0.85); }
+.eq-num { font-size: 2.6rem; color: #ffffff; }
+/* multiple choice buttons */
+.btn-mc {
+  display: block; width: 100%; padding: 13px 16px; margin-bottom: 8px;
+  text-align: left; font-family: 'JetBrains Mono','Courier New',monospace;
+  font-size: 1rem; font-weight: bold; line-height: 1.5;
+  background: rgba(0,212,255,0.08); border: 1.5px solid rgba(0,212,255,0.3);
+  color: #ffffff; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+}
+.btn-mc:hover { background: rgba(0,212,255,0.2); border-color: #00d4ff; transform: translateX(4px); }
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/expressions-equations/">Expressions, Equations, and Variables</a><span>/</span><span>Unit 9.1 6.EE.9</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Unit 9.1 6.EE.9</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
-
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Unit-9.1-6.EE.9</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/expressions-equations/unit-9-1-6-ee-9/</span></p>
-      </div>
-    </section>
-
-    <div class="button-row">
-      <a class="primary-button" href="/expressions-equations/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+<div class="background-container">
+  <div class="stars-layer"></div>
+  <div class="nebula-layer"></div>
+  <div class="grid-layer"></div>
+</div>
+<div class="container">
+  <div class="character-panel">
+    <div class="char-header">
+      <div class="char-avatar-container" id="charAvatar">🧙</div>
+      <div class="char-name" id="charName">Scholar</div>
+      <div class="char-title" id="charTitle">Equation Novice</div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+    <div class="stat-row">
+      <div>
+        <div class="stat-label">Level</div>
+        <div class="stat-value" id="levelDisplay">1</div>
+      </div>
+      <div style="flex: 1; margin-left: 10px;">
+        <div class="stat-label">Experience</div>
+        <div class="xp-bar">
+          <div class="xp-bar-fill" id="xpBar"></div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-row" style="flex-direction: column; align-items: flex-start;">
+      <div class="stat-label">Health</div>
+      <div style="width: 100%; display: flex; align-items: center; gap: 8px;">
+        <div class="hp-bar" style="flex: 1;">
+          <div class="hp-bar-fill" id="playerHpBar"></div>
+        </div>
+        <span class="stat-value" id="hpDisplay">100/100</span>
+      </div>
+    </div>
+    <div class="stat-row" style="flex-direction: column; align-items: flex-start;">
+      <div class="stat-label">Mana</div>
+      <div style="width: 100%; display: flex; align-items: center; gap: 8px;">
+        <div class="mana-bar" style="flex: 1;">
+          <div class="mana-bar-fill" id="manaBar"></div>
+        </div>
+        <span class="stat-value" id="manaDisplay">50/50</span>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">Quests Won</div>
+      <div class="stat-value" id="questsWon">0</div>
+    </div>
+    <div class="inventory">
+      <div class="inventory-title">⚔️ Equipment</div>
+      <div class="equipment-slot">
+        <span class="slot-icon">🗡️</span>
+        <span class="slot-name" id="weaponName">Wooden Sword</span>
+        <span class="slot-bonus" id="weaponBonus">+1</span>
+      </div>
+      <div class="equipment-slot">
+        <span class="slot-icon">🛡️</span>
+        <span class="slot-name" id="armorName">Cloth Armor</span>
+        <span class="slot-bonus" id="armorBonus">+1</span>
+      </div>
+      <div class="equipment-slot">
+        <span class="slot-icon">💎</span>
+        <span class="slot-name" id="amuletName">Novice Amulet</span>
+        <span class="slot-bonus" id="amuletBonus">+5 XP</span>
+      </div>
+    </div>
+  </div>
+  <div class="game-area">
+    <div class="battle-panel" id="battlePanel">
+      <div class="quest-info">
+        <div class="quest-name" id="questName">Academy Trial</div>
+        <div class="quest-desc" id="questDesc">Defeat the equation guardian to prove your mastery</div>
+      </div>
+      <div class="battle-scene">
+        <div class="combatant">
+          <div class="combatant-avatar" id="playerAvatar">🧙</div>
+          <div class="combatant-name" id="playerCombatantName">You</div>
+          <div class="health-info">
+            <span id="playerBattleHp">100</span> / 100 HP
+          </div>
+          <div class="combatant-hp">
+            <div class="combatant-hp-fill" id="playerBattleHpBar"></div>
+          </div>
+        </div>
+        <div class="vs-text">⚔️</div>
+        <div class="combatant">
+          <div class="combatant-avatar" id="enemyAvatar">🤖</div>
+          <div class="combatant-name" id="enemyName">Equation Guardian</div>
+          <div class="health-info">
+            <span id="enemyHp">50</span> / 50 HP
+          </div>
+          <div class="combatant-hp">
+            <div class="combatant-hp-fill" id="enemyHpBar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="problem-area" id="problemArea"></div>
+    </div>
+  </div>
+  <div class="quest-log">
+    <div class="log-title">📜 Quest Log</div>
+    <div id="questsList"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Victory!</div>
+    <div style="font-size: 3.5rem; margin: 20px 0; filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.6));" id="modalEmoji">🎉</div>
+    <div class="modal-reward" id="modalReward">+250 XP, +1 Level</div>
+    <div style="font-size: 0.98rem; color: var(--neutral); line-height: 1.6; margin: 20px 0;" id="modalMessage"></div>
+    <button class="btn-success modal-button" onclick="game.closeModal(); game.nextQuest();">Continue Adventure →</button>
+  </div>
+</div>
+<div class="modal-overlay" id="nameModalOverlay" style="display: flex;">
+  <div class="name-modal">
+    <h2>⚔️ Equation Quest RPG</h2>
+    <p>What is your character's name, brave scholar?</p>
+    <input type="text" id="nameInput" placeholder="Enter your name..." maxlength="20" onkeypress="if(event.key==='Enter') game.startWithName()">
+    <button class="btn-success" onclick="game.startWithName()" style="width: 100%; margin-top: 15px;">Begin Quest →</button>
+  </div>
+</div>
+
+<script>
+// Safe arithmetic evaluator — no eval()
+function calcY(expression, xVal) {
+  expression = expression.replace(/\s/g, '');
+  var match = expression.match(/^(\d+)x(?:\+(\d+))?$/);
+  if (!match) return NaN;
+  var coeff    = parseInt(match[1], 10);
+  var constant = match[2] ? parseInt(match[2], 10) : 0;
+  return coeff * xVal + constant;
+}
+
+// Safe equation normalizer — no regex backslash issues
+function normAnswer(s) {
+  var out = '';
+  var clean = String(s).toLowerCase();
+  for (var i = 0; i < clean.length; i++) {
+    var c = clean[i];
+    if (c !== ' ' && c !== '*') out += c;
+  }
+  if (out.indexOf('y=') === 0) out = out.slice(2);
+  return out;
+}
+
+// Build large styled equation display from expression string e.g. "15x" or "10x+5"
+function buildEqDisplay(expr) {
+  expr = expr.replace(/\s/g, '');
+  var match = expr.match(/^(\d+)x(?:\+(\d+))?$/);
+  if (!match) return '<div class="eq-display">y = ' + expr + '</div>';
+  var coeff    = match[1];
+  var constant = match[2] || null;
+  var inner = '<span class="eq-tok eq-var">y</span>'
+            + '<span class="eq-tok eq-op">=</span>'
+            + '<span class="eq-tok eq-num">' + coeff + '</span>'
+            + '<span class="eq-tok eq-var">x</span>';
+  if (constant) {
+    inner += '<span class="eq-tok eq-op">+</span>'
+           + '<span class="eq-tok eq-num">' + constant + '</span>';
+  }
+  return '<div class="eq-display">' + inner + '</div>';
+}
+
+const game = {
+  character: {
+    name: 'Scholar',
+    title: 'Equation Novice',
+    avatar: '🧙',
+    level: 1,
+    xp: 0,
+    xpNeeded: 100,
+    maxHp: 100,
+    hp: 100,
+    maxMana: 50,
+    mana: 50,
+    questsWon: 0,
+    equipment: {
+      weapon: { name: 'Wooden Sword', bonus: '+1 Accuracy', icon: '🗡️' },
+      armor: { name: 'Cloth Armor', bonus: '+1 Defense', icon: '🛡️' },
+      amulet: { name: 'Novice Amulet', bonus: '+5 XP', icon: '💎' }
+    }
+  },
+  quests: [
+    {
+      id: 1,
+      name: 'Academy Trial',
+      desc: 'Defeat the equation guardian to prove your mastery',
+      difficulty: 1,
+      enemy: { name: 'Equation Guardian', hp: 50, avatar: '🤖', difficulty: 1 },
+      reward: { xp: 250, levelUp: false },
+      completed: false,
+      scenarios: [
+        { context: 'Pizza Pricing: Each pizza costs $15', independent: 'Pizzas (x)', dependent: 'Total Cost (y)', expression: '15x', difficulty: 1, hint: 'Remember: Cost = Price × Quantity. Each pizza is $15, so the equation is y = 15x (where x is pizzas and y is cost)' },
+        { context: 'Concert Tickets: Each ticket costs $25', independent: 'Tickets (x)', dependent: 'Total Spent (y)', expression: '25x', difficulty: 1, hint: 'Total spent = Ticket Price × Number of Tickets. Since each ticket is $25 and x is the number of tickets, y = 25x' },
+        { context: 'Movie Theater Snacks: Each snack costs $8', independent: 'Snacks (x)', dependent: 'Total Spent (y)', expression: '8x', difficulty: 1, hint: 'Multiply the price per snack ($8) by the number of snacks (x). The equation is y = 8x' }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Chamber of Relationships',
+      desc: 'Master the art of dependent variables',
+      difficulty: 2,
+      enemy: { name: 'Variable Wraith', hp: 75, avatar: '🌀', difficulty: 2 },
+      reward: { xp: 400, levelUp: true },
+      completed: false,
+      locked: true,
+      scenarios: [
+        { context: 'Lemonade Stand: Each cup sells for $2', independent: 'Cups (x)', dependent: 'Money Earned (y)', expression: '2x', difficulty: 2, hint: 'Money earned = Price per Cup × Number of Cups. That is: y = 2x (where x is cups sold and y is money earned)' },
+        { context: 'Garden Plants: Each row needs 8 plants', independent: 'Rows (x)', dependent: 'Plants Needed (y)', expression: '8x', difficulty: 2, hint: 'Total plants = Plants per Row × Number of Rows = 8 × x = 8x (where x is the number of rows)' },
+        { context: 'Book Rental: Each book costs $4', independent: 'Books (x)', dependent: 'Cost (y)', expression: '4x', difficulty: 2, hint: 'Cost = Price per Book × Number of Books = $4 × x = 4x (where x is books rented)' }
+      ]
+    },
+    {
+      id: 3,
+      name: 'The Coefficient Tower',
+      desc: 'Face equations with coefficients and constants',
+      difficulty: 3,
+      enemy: { name: 'Coefficient Dragon', hp: 100, avatar: '🐉', difficulty: 3 },
+      reward: { xp: 600, levelUp: true },
+      completed: false,
+      locked: true,
+      scenarios: [
+        { context: 'Bike Rental: $10 per hour PLUS a $5 deposit fee', independent: 'Hours (x)', dependent: 'Total Cost (y)', expression: '10x+5', difficulty: 3, hint: 'Total cost = (Cost per Hour × Hours) + Deposit = (10 × x) + 5 = 10x + 5 (where x is hours)' },
+        { context: 'Book Club: $3 per book PLUS $20 membership fee', independent: 'Books (x)', dependent: 'Total Spent (y)', expression: '3x+20', difficulty: 3, hint: 'Total spent = (Cost per Book × Books) + Membership = (3 × x) + 20 = 3x + 20 (where x is books)' },
+        { context: 'Gym Membership: $30 per month PLUS a $50 sign-up fee', independent: 'Months (x)', dependent: 'Total Cost (y)', expression: '30x+50', difficulty: 3, hint: 'Total cost = (Monthly Fee × Months) + Sign-up = (30 × x) + 50 = 30x + 50 (where x is months)' }
+      ]
+    },
+    {
+      id: 4,
+      name: 'Final Exam: The Equation Master',
+      desc: 'Defeat the ultimate guardian and become an Equation Master',
+      difficulty: 4,
+      enemy: { name: 'The Equation Lord', hp: 150, avatar: '👑', difficulty: 4 },
+      reward: { xp: 1000, levelUp: true },
+      completed: false,
+      locked: true,
+      scenarios: [
+        { context: 'Business Profit: $15 per item sold PLUS $30 startup cost', independent: 'Items Sold (x)', dependent: 'Profit (y)', expression: '15x+30', difficulty: 4, hint: 'Profit = (Earnings per Item × Items) + Startup = (15 × x) + 30 = 15x + 30 (where x is items sold)' },
+        { context: 'Streaming Service: $12 per month PLUS a $25 initial device fee', independent: 'Months (x)', dependent: 'Total Cost (y)', expression: '12x+25', difficulty: 4, hint: 'Total cost = (Monthly Fee × Months) + Device Fee = (12 × x) + 25 = 12x + 25 (where x is months)' }
+      ]
+    }
+  ],
+  currentQuestId: 1,
+  currentBattle: null,
+  currentAttempts: 0,
+  hintUsed: false,
+  synth: null,
+  synthInit: false,
+
+  normalizeAnswer(answer) {
+    return answer.toLowerCase().replace(/\s/g, '').replace(/y=/g, '').replace(/y =/g, '');
+  },
+
+  async initAudio() {
+    if (!this.synthInit) {
+      this.synth = new Tone.Synth({
+        oscillator: { type: 'square' },
+        envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }
+      }).toDestination();
+      this.synthInit = true;
+    }
+  },
+
+  async playSound(frequency, duration = 0.1) {
+    try {
+      await this.initAudio();
+      this.synth.triggerAttackRelease(frequency, duration);
+    } catch(e) {}
+  },
+
+  startWithName() {
+    const nameInput = document.getElementById('nameInput');
+    const name = nameInput.value.trim();
+    if (name.length === 0) { alert('Please enter a name!'); return; }
+    this.character.name = name;
+    document.getElementById('nameModalOverlay').style.display = 'none';
+    this.init();
+  },
+
+  init() {
+    this.renderCharacter();
+    this.renderQuestLog();
+    this.startQuest(1);
+  },
+
+  renderCharacter() {
+    document.getElementById('charAvatar').textContent = this.character.avatar;
+    document.getElementById('charName').textContent = this.character.name;
+    document.getElementById('charTitle').textContent = this.character.title;
+    document.getElementById('levelDisplay').textContent = this.character.level;
+    document.getElementById('hpDisplay').textContent = `${this.character.hp}/${this.character.maxHp}`;
+    document.getElementById('manaDisplay').textContent = `${this.character.mana}/${this.character.maxMana}`;
+    document.getElementById('questsWon').textContent = this.character.questsWon;
+    document.getElementById('playerHpBar').style.width = `${(this.character.hp / this.character.maxHp) * 100}%`;
+    document.getElementById('manaBar').style.width = `${(this.character.mana / this.character.maxMana) * 100}%`;
+    document.getElementById('xpBar').style.width = `${(this.character.xp / this.character.xpNeeded) * 100}%`;
+    document.getElementById('playerAvatar').textContent = this.character.avatar;
+    document.getElementById('playerCombatantName').textContent = this.character.name;
+    document.getElementById('weaponName').textContent = this.character.equipment.weapon.name;
+    document.getElementById('armorName').textContent = this.character.equipment.armor.name;
+    document.getElementById('amuletName').textContent = this.character.equipment.amulet.name;
+  },
+
+  renderQuestLog() {
+    const list = document.getElementById('questsList');
+    list.innerHTML = '';
+    this.quests.forEach(q => {
+      const div = document.createElement('div');
+      div.className = `quest-item ${q.id === this.currentQuestId ? 'active' : ''} ${q.completed ? 'completed' : ''} ${q.locked ? 'locked' : ''}`;
+      div.style.opacity = q.locked ? '0.5' : '1';
+      div.style.cursor = q.locked ? 'not-allowed' : 'pointer';
+      if (!q.locked) {
+        div.onclick = () => this.startQuest(q.id);
+      }
+      div.innerHTML = `<div class="quest-item-name">${q.completed ? '✓' : ''} ${q.name}</div>
+        <div class="quest-item-status">Difficulty: ${'⭐'.repeat(q.difficulty)}</div>
+        <div class="quest-item-reward">Reward: +${q.reward.xp} XP</div>`;
+      list.appendChild(div);
+    });
+  },
+
+  startQuest(questId) {
+    const quest = this.quests.find(q => q.id === questId);
+    if (!quest || quest.locked) return;
+    this.currentQuestId = questId;
+    this.character.hp = this.character.maxHp;
+    this.character.mana = this.character.maxMana;
+    this.currentBattle = {
+      enemy: { ...quest.enemy, maxHp: quest.enemy.hp, currentHp: quest.enemy.hp },
+      quest: quest,
+      playerHealth: this.character.hp,
+      round: 0
+    };
+    document.getElementById('questName').textContent = quest.name;
+    document.getElementById('questDesc').textContent = quest.desc;
+    document.getElementById('enemyName').textContent = quest.enemy.name;
+    document.getElementById('enemyAvatar').textContent = quest.enemy.avatar;
+    document.getElementById('enemyHp').textContent = quest.enemy.hp;
+    this.renderBattle();
+    this.renderCharacter();
+    this.renderQuestLog();
+    this.generateProblem();
+  },
+
+  generateProblem() {
+    this.currentAttempts = 0;
+    this.hintUsed = false;
+
+    const quest = this.currentBattle.quest;
+    const scenariosOfDifficulty = quest.scenarios.filter(s => s.difficulty === Math.min(this.currentBattle.round + 1, 4));
+    const scenario = scenariosOfDifficulty.length > 0
+      ? scenariosOfDifficulty[Math.floor(Math.random() * scenariosOfDifficulty.length)]
+      : quest.scenarios[Math.floor(Math.random() * quest.scenarios.length)];
+
+    const problemTypes = ['identify', 'write', 'analyze'];
+    const type = problemTypes[Math.floor(Math.random() * problemTypes.length)];
+
+    let html = `<div class="problem-context">📚 ${scenario.context}</div>`;
+    let yVal = 0;
+
+    if (type === 'identify') {
+      html += `<div class="problem-text">Which correctly identifies the independent variable (x) and the dependent variable (y)?</div>`;
+
+      // ✅ FIX: true correct option is stable, even after shuffle
+      const correctOpt =
+        `Independent variable (x): ${scenario.independent} | Dependent variable (y): ${scenario.dependent}`;
+
+      const options = [
+        correctOpt,
+        `Independent variable (x): ${scenario.dependent} | Dependent variable (y): ${scenario.independent}`,
+        'Both are independent variables'
+      ].sort(() => Math.random() - 0.5);
+
+      html += '<div class="input-group" style="flex-direction: column; align-items: center;">';
+      options.forEach((opt, idx) => {
+        const isCorrect = (opt === correctOpt);
+        // ✅ FIX: MC uses btn-mc styling + correctness tied to correctOpt
+        html += `<button class="btn-mc" onclick="game.checkAnswer(true, ${isCorrect})">${String.fromCharCode(65 + idx)}) ${opt}</button>`;
+      });
+      html += '</div>';
+
+    } else if (type === 'write') {
+      html += `<div class="problem-text">Write the equation where y equals the expression with the variable x</div>`;
+      html += `<div class="problem-text" style="font-size: 0.95rem; color: rgba(255,255,255,0.8);">(For example: y = 15x or y = 10x+5)</div>`;
+      html += `<div class="input-group"><input type="text" id="answerInput" placeholder="Type: y = " autofocus></div>`;
+      html += `<div id="attemptsDisplay" class="attempts-indicator"></div>`;
+      html += `<div class="action-buttons">`;
+      html += `<button class="btn-success" onclick="game.checkEquation('${scenario.expression}')">✓ Submit</button>`;
+      html += `<button class="btn-hint" onclick="game.showHint('${scenario.hint}')">💡 Hint</button>`;
+      html += `</div>`;
+      html += `<div id="hintArea"></div>`;
+
+    } else if (type === 'analyze') {
+      const x = Math.floor(Math.random() * 10) + 1;
+      const expression = scenario.expression.replace(/\s/g, '');
+      yVal = calcY(expression, x);
+
+      html += `<div class="problem-text">Using the equation: y = ${scenario.expression}</div>`;
+      html += `<div class="problem-text">If the variable x = ${x}, what is the value of y?</div>`;
+      html += `<div class="input-group"><input type="number" id="answerInput" placeholder="Enter the number" autofocus></div>`;
+      html += `<div id="attemptsDisplay" class="attempts-indicator"></div>`;
+      html += `<div class="action-buttons">`;
+      html += `<button class="btn-success" onclick="game.checkAnalyze(${yVal})">✓ Submit</button>`;
+      html += `<button class="btn-hint" onclick="game.showHint('Substitute x with ${x}: y = ${scenario.expression.replace(/x/g, x)}')">💡 Hint</button>`;
+      html += `</div>`;
+      html += `<div id="hintArea"></div>`;
+    }
+
+    document.getElementById('problemArea').innerHTML = html;
+    this.updateAttemptsDisplay();
+
+    const inp = document.getElementById('answerInput');
+    if (inp) {
+      inp.addEventListener('keypress', (e) => {
+        if (e.key !== 'Enter') return;
+        if (type === 'write')   this.checkEquation(scenario.expression);
+        if (type === 'analyze') this.checkAnalyze(yVal);
+      });
+      setTimeout(() => inp.focus(), 60);
+    }
+  },
+
+  updateAttemptsDisplay() {
+    const display = document.getElementById('attemptsDisplay');
+    if (display) {
+      const remaining = 3 - this.currentAttempts;
+      if (remaining > 0) {
+        display.textContent = `Attempts remaining: ${remaining}/3`;
+      }
+    }
+  },
+
+  showHint(hint) {
+    if (!this.hintUsed) {
+      this.hintUsed = true;
+      const hintArea = document.getElementById('hintArea');
+      hintArea.innerHTML = `<div class="hint-box">💡 ${hint}</div>`;
+    } else {
+      this.showFeedback('Hint used!', 'incorrect');
+    }
+  },
+
+  checkEquation(correct) {
+    const input = document.getElementById('answerInput').value;
+    const isCorrect = this.normalizeAnswer(input) === this.normalizeAnswer(correct);
+
+    if (isCorrect) {
+      // ✅ FIX: do NOT re-compare strings in checkAnswer(); pass boolean
+      this.checkAnswer(true, true);
+      return;
+    }
+
+    this.currentAttempts++;
+    if (this.currentAttempts < 3) {
+      this.playSound(300, 0.2);
+      this.showFeedback('✗ Try again!', 'incorrect');
+      document.getElementById('answerInput').value = '';
+      this.updateAttemptsDisplay();
+    } else {
+      this.character.hp -= 20;
+      this.playSound(150, 0.3);
+      this.showFeedback('✗ Out of attempts!', 'incorrect');
+      this.createParticles(8, 'rgb(255, 71, 87)');
+      this.renderBattle();
+      this.renderCharacter();
+      setTimeout(() => this.generateProblem(), 1200);
+    }
+  },
+
+  checkAnalyze(correct) {
+    const input = parseInt(document.getElementById('answerInput').value);
+    const isCorrect = input === correct;
+    if (isCorrect) {
+      this.checkAnswer(true, true);
+    } else {
+      this.currentAttempts++;
+      if (this.currentAttempts < 3) {
+        this.playSound(300, 0.2);
+        this.showFeedback('✗ Try again!', 'incorrect');
+        document.getElementById('answerInput').value = '';
+        this.updateAttemptsDisplay();
+      } else {
+        this.character.hp -= 20;
+        this.playSound(150, 0.3);
+        this.showFeedback('✗ Out of attempts!', 'incorrect');
+        this.createParticles(8, 'rgb(255, 71, 87)');
+        this.renderBattle();
+        this.renderCharacter();
+        setTimeout(() => this.generateProblem(), 1200);
+      }
+    }
+  },
+
+  async checkAnswer(correct, answer) {
+    const isCorrect = (typeof answer === 'boolean')
+      ? answer
+      : (String(answer).toLowerCase().replace(/\s/g, '') === String(correct).toLowerCase().replace(/\s/g, ''));
+
+    if (isCorrect) {
+      this.currentBattle.enemy.currentHp -= 20 + Math.floor(Math.random() * 15);
+      this.playSound(800, 0.25);
+      this.showFeedback('✓ HIT!', 'correct');
+      this.createParticles(25, 'rgb(0, 255, 136)');
+      this.createSparkles(30);
+    } else {
+      this.character.hp -= 15 + Math.floor(Math.random() * 10);
+      this.playSound(300, 0.2);
+      this.showFeedback('✗ MISS!', 'incorrect');
+      this.createParticles(12, 'rgb(255, 71, 87)');
+    }
+
+    this.character.mana = Math.max(0, this.character.mana - 5);
+    this.currentBattle.round++;
+    this.renderBattle();
+    this.renderCharacter();
+
+    if (this.currentBattle.enemy.currentHp <= 0) {
+      await this.questVictory();
+    } else if (this.character.hp <= 0) {
+      await this.questDefeat();
+    } else {
+      setTimeout(() => this.generateProblem(), 800);
+    }
+  },
+
+  async questVictory() {
+    const quest = this.quests.find(q => q.id === this.currentQuestId);
+    quest.completed = true;
+    this.character.questsWon++;
+    this.character.xp += quest.reward.xp;
+
+    while (this.character.xp >= this.character.xpNeeded) {
+      this.character.xp -= this.character.xpNeeded;
+      this.character.level++;
+      this.character.maxHp += 20;
+      this.character.hp = this.character.maxHp;
+      this.character.maxMana += 10;
+      this.character.mana = this.character.maxMana;
+      this.levelUpCharacter();
+    }
+
+    if (quest.id < 4) {
+      this.quests[quest.id].locked = false;
+    }
+
+    this.playSound(1200, 0.6);
+    this.createParticles(60, 'rgb(255, 190, 11)');
+    this.createSparkles(50);
+
+    document.getElementById('modalTitle').textContent = `${quest.name} Complete!`;
+    document.getElementById('modalEmoji').textContent = '🎉';
+    document.getElementById('modalReward').textContent = `+${quest.reward.xp} XP${quest.reward.levelUp ? ', Level Up!' : ''}`;
+    document.getElementById('modalMessage').textContent = `You defeated ${quest.enemy.name}! Your mastery of equations grows stronger.`;
+
+    this.showModal();
+    this.renderCharacter();
+    this.renderQuestLog();
+  },
+
+  async questDefeat() {
+    this.playSound(150, 0.4);
+    document.getElementById('modalTitle').textContent = 'Defeated!';
+    document.getElementById('modalEmoji').textContent = '💔';
+    document.getElementById('modalReward').textContent = '';
+    document.getElementById('modalMessage').textContent = `You were defeated by ${this.currentBattle.enemy.name}. Recover and try again!`;
+
+    this.showModal();
+    setTimeout(() => this.startQuest(this.currentQuestId), 2000);
+  },
+
+  levelUpCharacter() {
+    const titles = ['Equation Novice', 'Equation Student', 'Equation Adept', 'Equation Master', 'Legendary Mathematician'];
+    this.character.title = titles[Math.min(this.character.level - 1, titles.length - 1)];
+
+    const equipment = [
+      [
+        { name: 'Iron Sword', bonus: '+2 Accuracy', icon: '⚔️' },
+        { name: 'Iron Armor', bonus: '+2 Defense', icon: '🛡️' },
+        { name: 'Apprentice Amulet', bonus: '+10 XP', icon: '💎' }
+      ],
+      [
+        { name: 'Steel Blade', bonus: '+3 Accuracy', icon: '🗡️' },
+        { name: 'Steel Armor', bonus: '+3 Defense', icon: '🛡️' },
+        { name: 'Scholar Amulet', bonus: '+20 XP', icon: '✨' }
+      ],
+      [
+        { name: 'Crystal Sword', bonus: '+5 Accuracy', icon: '💠' },
+        { name: 'Crystal Armor', bonus: '+5 Defense', icon: '💠' },
+        { name: 'Master Amulet', bonus: '+50 XP', icon: '👑' }
+      ]
+    ];
+
+    if (this.character.level <= 3) {
+      this.character.equipment.weapon = equipment[this.character.level - 1][0];
+      this.character.equipment.armor = equipment[this.character.level - 1][1];
+      this.character.equipment.amulet = equipment[this.character.level - 1][2];
+    }
+  },
+
+  renderBattle() {
+    document.getElementById('playerBattleHp').textContent = Math.max(0, this.character.hp);
+    document.getElementById('playerBattleHpBar').style.width = `${Math.max(0, (this.character.hp / this.character.maxHp) * 100)}%`;
+    document.getElementById('enemyHp').textContent = Math.max(0, this.currentBattle.enemy.currentHp);
+    document.getElementById('enemyHpBar').style.width = `${Math.max(0, (this.currentBattle.enemy.currentHp / this.currentBattle.enemy.maxHp) * 100)}%`;
+  },
+
+  showFeedback(text, type) {
+    const feedback = document.createElement('div');
+    feedback.className = `feedback ${type}`;
+    feedback.textContent = text;
+    document.body.appendChild(feedback);
+    setTimeout(() => feedback.remove(), 800);
+  },
+
+  createParticles(count, color) {
+    for (let i = 0; i < count; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = window.innerWidth / 2 + 'px';
+      particle.style.top = window.innerHeight / 2 + 'px';
+      const size = Math.random() * 12 + 4;
+      particle.style.width = particle.style.height = size + 'px';
+      particle.style.background = color;
+      particle.style.borderRadius = '50%';
+      particle.style.opacity = '1';
+      document.body.appendChild(particle);
+
+      const duration = Math.random() * 1.2 + 0.6;
+      const distance = Math.random() * 150 + 50;
+      const angle = (Math.PI * 2 * i) / count;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+
+      gsap.to(particle, {
+        x: tx, y: ty, opacity: 0, duration: duration, ease: 'power2.out',
+        onComplete: () => particle.remove()
+      });
+    }
+  },
+
+  createSparkles(count) {
+    for (let i = 0; i < count; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'particle';
+      sparkle.style.left = window.innerWidth / 2 + 'px';
+      sparkle.style.top = window.innerHeight / 2 + 'px';
+      sparkle.textContent = '✨';
+      sparkle.style.fontSize = '1.5rem';
+      sparkle.style.borderRadius = '0';
+      document.body.appendChild(sparkle);
+
+      const duration = Math.random() * 1.5 + 1;
+      const distance = Math.random() * 200 + 80;
+      const angle = Math.random() * Math.PI * 2;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+
+      gsap.to(sparkle, {
+        x: tx, y: ty, opacity: 0, scale: 0.5, rotation: Math.random() * 360,
+        duration: duration, ease: 'power2.out',
+        onComplete: () => sparkle.remove()
+      });
+    }
+  },
+
+  showModal() {
+    document.getElementById('modalOverlay').classList.add('active');
+  },
+
+  closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+  },
+
+  nextQuest() {
+    const nextQuest = this.quests.find(q => !q.completed && !q.locked);
+    if (nextQuest) {
+      this.startQuest(nextQuest.id);
+    } else {
+      alert('🏆 You have completed all quests! You are an Equation Master!');
+    }
+  }
+};
+
+document.getElementById('nameInput').focus();
+</script>
 </body>
 </html>

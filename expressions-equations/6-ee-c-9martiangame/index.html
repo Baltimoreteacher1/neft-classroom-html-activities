@@ -1,37 +1,2044 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.ee.c.9 Martian Game classroom activity.">
-  <title>6.ee.c.9 Martian Game</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mars Variable Colony Manager</title>
+<style>
+  :root{
+    --bg:#06111d;
+    --bg2:#08182a;
+    --panel:rgba(10,24,40,.82);
+    --panel-strong:rgba(11,28,46,.94);
+    --line:rgba(141,226,255,.22);
+    --line-strong:rgba(141,226,255,.46);
+    --text:#eaf7ff;
+    --muted:#9db7c9;
+    --accent:#70ddff;
+    --accent-2:#6fffb0;
+    --warn:#ffd36f;
+    --danger:#ff887a;
+    --shadow:0 24px 60px rgba(0,0,0,.35);
+    --radius:22px;
+    --ease:180ms ease;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Calibri, Inter, Segoe UI, Arial, sans-serif;
+    background:
+      radial-gradient(circle at top, rgba(97,152,255,.12), transparent 32%),
+      radial-gradient(circle at 15% 10%, rgba(95,255,181,.08), transparent 18%),
+      linear-gradient(180deg, #04101a 0%, #051522 100%);
+    color:var(--text);
+    overflow:hidden;
+  }
+
+  body.reduce-motion *{animation:none !important; transition:none !important}
+
+  .screen{
+    position:absolute; inset:0;
+    opacity:0; pointer-events:none;
+    transform:translateY(12px) scale(.995);
+    transition:opacity var(--ease), transform var(--ease);
+  }
+  .screen.active{opacity:1; pointer-events:auto; transform:translateY(0) scale(1)}
+
+  .menu-shell{
+    height:100%;
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:24px;
+    padding:28px;
+  }
+  .glass{
+    background:linear-gradient(180deg, rgba(10,23,38,.92), rgba(7,18,30,.92));
+    border:1px solid var(--line);
+    border-radius:30px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .glass::before{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(135deg, rgba(255,255,255,.06), transparent 30%, transparent 70%, rgba(112,221,255,.05));
+    pointer-events:none;
+  }
+
+  .hero{
+    padding:34px 36px 36px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    min-height:0;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    letter-spacing:.08em; text-transform:uppercase; font-size:12px; color:var(--accent);
+    padding:8px 12px; border-radius:999px; border:1px solid rgba(112,221,255,.25); background:rgba(112,221,255,.08);
+    width:max-content;
+  }
+  .hero h1{
+    margin:18px 0 10px;
+    font-size:clamp(34px, 5vw, 58px);
+    line-height:1.02;
+    letter-spacing:-.03em;
+    max-width:720px;
+  }
+  .hero p{
+    margin:0;
+    color:var(--muted);
+    font-size:18px;
+    line-height:1.5;
+    max-width:760px;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-top:28px;
+  }
+  .mini-card{
+    background:rgba(112,221,255,.055);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:16px;
+    min-height:130px;
+  }
+  .mini-card h3{margin:0 0 10px; font-size:16px}
+  .mini-card p{font-size:14px; color:var(--muted)}
+
+  .menu-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:26px}
+  .btn{
+    border:none; border-radius:16px; padding:14px 18px; cursor:pointer;
+    background:linear-gradient(180deg, rgba(116,225,255,.18), rgba(80,185,255,.12));
+    color:var(--text); border:1px solid rgba(112,221,255,.28);
+    font:600 15px/1 Calibri, sans-serif;
+    transition:transform var(--ease), border-color var(--ease), background var(--ease), opacity var(--ease);
+  }
+  .btn:hover{transform:translateY(-1px); border-color:rgba(112,221,255,.5)}
+  .btn.secondary{background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.1); color:#d8edf7}
+  .btn.ghost{background:transparent; border:1px dashed rgba(255,255,255,.18)}
+  .btn[disabled]{opacity:.45; cursor:not-allowed; transform:none}
+  .footer-neft{
+    position:absolute; right:24px; bottom:18px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.38);
+  }
+
+  .menu-side{
+    padding:24px;
+    display:grid; grid-template-rows:1fr auto; gap:20px;
+  }
+  .menu-scene{position:relative; overflow:hidden; min-height:0; border-radius:22px; border:1px solid var(--line); background:linear-gradient(180deg, rgba(8,20,35,.82), rgba(5,14,24,.92));}
+  .menu-scene canvas{width:100%; height:100%; display:block}
+  .legend{
+    border:1px solid var(--line); border-radius:20px; padding:16px 18px; background:rgba(255,255,255,.035);
+  }
+  .legend h3{margin:0 0 12px; font-size:16px}
+  .legend ul{margin:0; padding-left:18px; color:var(--muted); line-height:1.55}
+
+  .app-shell{height:100%; display:grid; grid-template-rows:auto 1fr; gap:14px; padding:16px}
+  .hud{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    display:grid; grid-template-columns:auto 1fr auto; gap:16px;
+    align-items:center;
+    padding:14px 16px;
+  }
+  .hud-group{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+  .badge{
+    padding:8px 12px; border-radius:999px; border:1px solid var(--line-strong); background:rgba(112,221,255,.08); color:#dff7ff; font-size:13px; font-weight:700;
+  }
+  .badge.warn{background:rgba(255,211,111,.1); border-color:rgba(255,211,111,.34); color:#ffe8b0}
+  .resource-strip{display:grid; grid-template-columns:repeat(4, minmax(110px, 1fr)); gap:10px; min-width:0; width:100%}
+  .meter{
+    background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:10px 12px;
+  }
+  .meter-head{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:7px}
+  .bar{height:9px; border-radius:999px; background:rgba(255,255,255,.06); overflow:hidden}
+  .bar > span{display:block; height:100%; border-radius:999px; background:linear-gradient(90deg, rgba(112,221,255,.55), rgba(111,255,176,.95)); transition:width var(--ease)}
+
+  .play-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:14px; min-height:0}
+  .panel{
+    min-height:0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+  }
+  .scene-wrap{display:grid; grid-template-rows:1fr auto; min-height:0}
+  #sceneCanvas{width:100%; height:100%; display:block; min-height:440px; background:linear-gradient(180deg, rgba(4,13,23,.84), rgba(8,21,34,.98));}
+  .scene-meta{
+    display:flex; justify-content:space-between; align-items:center; gap:14px;
+    padding:12px 16px; border-top:1px solid var(--line); color:var(--muted); font-size:14px;
+    background:rgba(255,255,255,.025)
+  }
+
+  .mission-wrap{display:grid; grid-template-rows:auto 1fr auto; min-height:0}
+  .mission-head{padding:18px 20px 14px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.02)}
+  .mission-head-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-bottom:12px}
+  .mission-head h2{margin:0; font-size:24px; letter-spacing:-.02em}
+  .mission-head p{margin:8px 0 0; color:var(--muted); line-height:1.45}
+  .sector-tabs{display:flex; gap:8px; flex-wrap:wrap}
+  .sector-tab{
+    padding:10px 12px; border-radius:14px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03); color:#daefff; cursor:pointer; transition:all var(--ease); font-weight:700; font-size:13px;
+  }
+  .sector-tab.active{background:rgba(112,221,255,.12); border-color:rgba(112,221,255,.35)}
+  .sector-tab.locked{opacity:.4; cursor:not-allowed}
+
+  .mission-body{padding:18px 20px; overflow:auto; min-height:0}
+  .mission-card{
+    background:var(--panel-strong); border:1px solid rgba(112,221,255,.14); border-radius:22px; padding:18px;
+  }
+  .prompt{font-size:18px; line-height:1.55; margin-bottom:16px}
+  .subtle{color:var(--muted); font-size:14px; line-height:1.5}
+  .math{font-feature-settings:"tnum" 1; letter-spacing:.01em}
+
+  .choice-list{display:grid; gap:10px; margin-top:16px}
+  .choice{
+    display:flex; align-items:flex-start; gap:10px; padding:14px; border-radius:16px; cursor:pointer;
+    border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.03); transition:transform var(--ease), border-color var(--ease), background var(--ease);
+  }
+  .choice:hover{transform:translateY(-1px); border-color:rgba(112,221,255,.4)}
+  .choice input{margin-top:3px}
+  .choice.selected{border-color:rgba(112,221,255,.55); background:rgba(112,221,255,.08)}
+
+  table.data-table{width:100%; border-collapse:collapse; margin-top:14px; overflow:hidden; border-radius:16px; border:2px solid rgba(255,255,255,.12)}
+  .data-table th,.data-table td{border:2px solid rgba(255,255,255,.12); padding:12px 10px; text-align:center; font-size:18px}
+  .data-table th{background:rgba(112,221,255,.07); color:#dbf7ff}
+  .inline-input,.future-input{
+    width:100%; max-width:120px; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.14); background:rgba(0,0,0,.22); color:var(--text); font-size:18px; text-align:center;
+  }
+  .future-input{max-width:180px}
+  .inline-input:focus,.future-input:focus{outline:2px solid rgba(112,221,255,.45); outline-offset:2px}
+
+  .graph-shell{display:grid; grid-template-columns:1fr 220px; gap:14px; align-items:start}
+  .graph-canvas{width:100%; height:360px; display:block; border-radius:18px; border:1px solid rgba(112,221,255,.18); background:linear-gradient(180deg, rgba(5,14,22,.92), rgba(9,21,35,.98));}
+  .graph-side{display:grid; gap:12px}
+  .mini-panel{padding:14px; border-radius:16px; background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.08)}
+  .point-pill{display:inline-flex; margin:4px 6px 0 0; padding:6px 10px; border-radius:999px; border:1px solid rgba(112,221,255,.22); background:rgba(112,221,255,.08); font-size:13px}
+
+
+.context-grid{display:grid; grid-template-columns:1.12fr .88fr; gap:14px; margin:0 0 16px}
+.brief-box,.glossary-box,.build-panel{border:1px solid rgba(255,255,255,.08); border-radius:18px; background:rgba(255,255,255,.035)}
+.brief-box,.glossary-box{padding:14px 16px}
+.brief-box h3,.glossary-box h3{margin:0 0 8px; font-size:16px}
+.mini-choice-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:12px}
+.mini-choice{
+  display:flex; align-items:flex-start; gap:8px; padding:11px 12px; border-radius:14px; cursor:pointer;
+  border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.025); transition:border-color var(--ease), background var(--ease), transform var(--ease);
+  font-size:14px; color:#e8f7ff;
+}
+.mini-choice:hover{transform:translateY(-1px); border-color:rgba(112,221,255,.34)}
+.mini-choice.selected{border-color:rgba(111,255,176,.45); background:rgba(111,255,176,.09)}
+.mini-choice input{margin-top:2px}
+.variable-visual{
+  display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:12px; align-items:stretch;
+  margin:16px 0 10px;
+}
+.flow-node{
+  border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:14px 16px;
+  background:rgba(255,255,255,.035);
+}
+.flow-node.input{background:linear-gradient(180deg, rgba(112,221,255,.11), rgba(112,221,255,.05)); border-color:rgba(112,221,255,.3)}
+.flow-node.output{background:linear-gradient(180deg, rgba(111,255,176,.11), rgba(111,255,176,.05)); border-color:rgba(111,255,176,.26)}
+.flow-tag{
+  display:inline-flex; align-items:center; margin-bottom:10px; padding:6px 10px; border-radius:999px;
+  font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05);
+}
+.flow-word{display:block; font-size:24px; line-height:1.05; margin-bottom:6px}
+.flow-example{
+  margin-top:10px; padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.18);
+  border:1px dashed rgba(255,255,255,.12); color:#eefaff; font-size:14px;
+}
+.flow-arrow{
+  display:flex; align-items:center; justify-content:center; min-width:46px;
+  color:var(--accent); font-size:30px; font-weight:800;
+}
+.flow-caption{
+  margin-top:10px; padding:10px 12px; border-radius:14px; border:1px dashed rgba(112,221,255,.2);
+  background:rgba(112,221,255,.05); color:#dff6ff; font-size:14px; line-height:1.45;
+}
+@media (max-width:900px){
+  .variable-visual{grid-template-columns:1fr}
+  .flow-arrow{min-height:28px; transform:rotate(90deg)}
+}
+.glossary-chip{display:inline-flex; align-items:center; gap:8px; margin-bottom:10px; padding:7px 10px; border-radius:999px; border:1px solid rgba(112,221,255,.2); background:rgba(112,221,255,.08); color:#dcf6ff; font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase}
+.kbd{display:inline-flex; align-items:center; justify-content:center; min-width:28px; height:24px; padding:0 8px; border-radius:8px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#f5fbff; font:700 12px/1 Calibri, sans-serif}
+
+.build-panel{padding:14px 16px 16px; border-top:1px solid var(--line); background:linear-gradient(180deg, rgba(9,22,36,.92), rgba(6,16,27,.96)); display:grid; gap:12px}
+.build-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}
+.build-options{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
+.build-card{
+  text-align:left; padding:12px; border-radius:16px; border:1px solid rgba(112,221,255,.18); background:rgba(112,221,255,.06);
+  color:var(--text); cursor:pointer; transition:transform var(--ease), border-color var(--ease), background var(--ease);
+}
+.build-card:hover{transform:translateY(-1px); border-color:rgba(111,255,176,.45); background:rgba(111,255,176,.08)}
+.build-card strong{display:block; margin-bottom:6px; font-size:15px}
+.build-card small{display:block; color:var(--muted); line-height:1.45}
+.inventory-row{display:flex; flex-wrap:wrap; gap:8px}
+.inventory-pill{display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#ecf9ff; font-size:13px}
+.inventory-pill span{opacity:.7}
+
+  .build-panel{margin-top:14px; padding:14px 16px; border-top:1px solid var(--line); background:rgba(255,255,255,.02)}
+  .build-panel-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:14px; align-items:start}
+  .build-panel h3{margin:0 0 8px; font-size:16px}
+  .build-panel-top{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap}
+  .reward-bank{display:flex; gap:8px; flex-wrap:wrap}
+  .reward-chip{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; border:1px solid rgba(111,255,176,.24); background:rgba(111,255,176,.08); color:#ecfff5; font-size:13px; font-weight:700}
+  .reward-chip.alt{border-color:rgba(112,221,255,.24); background:rgba(112,221,255,.08); color:#e8faff}
+  .build-help{margin-top:8px; color:var(--muted); font-size:13px; line-height:1.45}
+
+  .builder-area{display:grid; gap:14px}
+  .slot-row{display:grid; grid-template-columns:repeat(4, minmax(72px, 1fr)); gap:10px}
+  .slot{
+    min-height:72px; border-radius:18px; border:2px dashed rgba(112,221,255,.22); background:rgba(255,255,255,.025);
+    display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#f0fbff; transition:border-color var(--ease), background var(--ease), transform var(--ease);
+  }
+  .slot.filled{border-style:solid; border-color:rgba(111,255,176,.4); background:rgba(111,255,176,.09)}
+  .token-bank{display:flex; gap:10px; flex-wrap:wrap}
+  .token{
+    user-select:none; touch-action:none;
+    padding:12px 16px; border-radius:16px; border:1px solid rgba(255,255,255,.14); background:rgba(112,221,255,.08);
+    color:#f2fcff; font-size:26px; font-weight:700; min-width:68px; text-align:center; cursor:grab; transition:transform var(--ease), border-color var(--ease), background var(--ease);
+  }
+  .token:hover{transform:translateY(-1px); border-color:rgba(112,221,255,.4)}
+  .token.dragging{opacity:.55}
+  .builder-tools{display:flex; gap:10px; flex-wrap:wrap}
+
+  .actions{
+    border-top:1px solid var(--line); padding:14px 20px; display:flex; justify-content:space-between; align-items:center; gap:10px; background:rgba(255,255,255,.02)
+  }
+  .status-line{color:var(--muted); font-size:14px}
+
+  .flash-success{animation:flashSuccess 420ms ease}
+  @keyframes flashSuccess{
+    0%{box-shadow:0 0 0 rgba(111,255,176,0)}
+    30%{box-shadow:0 0 0 2px rgba(111,255,176,.22), 0 0 38px rgba(111,255,176,.16)}
+    100%{box-shadow:none}
+  }
+
+  .hint-modal{
+    position:absolute; inset:0; background:rgba(2,7,13,.58); backdrop-filter:blur(8px);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    opacity:0; pointer-events:none; transition:opacity var(--ease);
+  }
+  .hint-modal.open{opacity:1; pointer-events:auto}
+  .hint-card{
+    width:min(860px, 100%); background:linear-gradient(180deg, rgba(10,23,38,.98), rgba(7,18,30,.98));
+    border:1px solid rgba(112,221,255,.26); border-radius:28px; box-shadow:var(--shadow); overflow:hidden;
+  }
+  .hint-top{padding:18px 20px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:14px}
+  .hint-body{padding:18px 20px 20px; display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .cue-box,.starter-box{padding:16px; border-radius:18px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03)}
+  .cue-visual{
+    margin-top:10px; height:120px; border-radius:16px;
+    background:
+      linear-gradient(135deg, rgba(112,221,255,.12), rgba(111,255,176,.04)),
+      radial-gradient(circle at 30% 55%, rgba(112,221,255,.42), transparent 18%),
+      radial-gradient(circle at 65% 40%, rgba(111,255,176,.26), transparent 22%),
+      linear-gradient(180deg, rgba(9,20,34,.95), rgba(5,12,19,.98));
+    border:1px solid rgba(112,221,255,.18);
+    position:relative;
+    overflow:hidden;
+  }
+  .cue-visual::before,.cue-visual::after{
+    content:""; position:absolute; border-radius:999px; border:1px solid rgba(112,221,255,.28)
+  }
+  .cue-visual::before{width:160px; height:160px; left:-20px; top:18px}
+  .cue-visual::after{width:120px; height:120px; right:20px; top:-10px}
+
+  .checklist{display:grid; gap:8px; color:var(--muted)}
+  .checklist div{padding-left:18px; position:relative}
+  .checklist div::before{content:"•"; position:absolute; left:0; color:var(--accent)}
+
+  .toast{
+    position:absolute; right:18px; bottom:18px; z-index:30; padding:12px 16px; border-radius:14px;
+    border:1px solid rgba(112,221,255,.22); background:rgba(8,21,35,.92); color:#effaff; box-shadow:var(--shadow);
+    opacity:0; transform:translateY(8px); transition:opacity var(--ease), transform var(--ease);
+  }
+  .toast.show{opacity:1; transform:translateY(0)}
+
+  @media (max-width: 1160px){
+    .menu-shell,.play-grid{grid-template-columns:1fr}
+    .graph-shell{grid-template-columns:1fr}
+    .resource-strip{grid-template-columns:repeat(2, minmax(110px, 1fr))}
+  }
+  @media (max-width: 760px){
+    body{overflow:auto}
+    .app-shell{height:auto; min-height:100vh}
+    #sceneCanvas{min-height:320px}
+    .menu-shell{padding:16px}
+    .hero-grid{grid-template-columns:1fr}
+    .hint-body,.context-grid{grid-template-columns:1fr}
+    .slot-row{grid-template-columns:repeat(2, minmax(72px, 1fr))}
+    .build-options,.mini-choice-grid,.build-panel-grid{grid-template-columns:1fr}
+  }
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/expressions-equations/">Expressions, Equations, and Variables</a><span>/</span><span>6.ee.c.9 Martian Game</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.ee.c.9 Martian Game</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+<section id="menuScreen" class="screen active" aria-label="Main menu">
+  <div class="menu-shell">
+    <div class="glass hero">
+      <div>
+        <div class="eyebrow">3D Sci‑Fi Colony Manager · Grade 6 Variables</div>
+        <h1>Mars Variable Colony Manager</h1>
+        <p>Run a Martian colony by solving procedurally generated missions on independent and dependent variables, data tables, coordinate graphing, and linear equations. Every correct decision strengthens the colony’s water, oxygen, energy, and trade systems and earns Build Tokens for new colony upgrades.</p>
+        <div class="hero-grid">
+          <div class="mini-card">
+            <h3>Logistics Bay</h3>
+            <p>Start with very easy one-step practice, then unlock harder versions as confidence grows.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Navigation Grid</h3>
+            <p>Plot points from rates and read equations from graphed lines through the origin.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Energy + Trade</h3>
+            <p>Build equations, extend patterns, and solve multi-step colony profit scenarios.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="menu-actions">
+          <button class="btn" id="startBtn">Launch Colony</button>
+          <button class="btn secondary" id="practiceBtn">Resume Endless Practice</button>
+          <button class="btn ghost" id="motionBtn">Toggle Reduced Motion</button>
+        </div>
+      </div>
+      <div class="footer-neft">Neft</div>
+    </div>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.ee.c.9MartianGame</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/expressions-equations/6-ee-c-9martiangame/</span></p>
+    <div class="menu-side">
+      <div class="menu-scene glass">
+        <canvas id="menuCanvas" width="900" height="640" aria-hidden="true"></canvas>
+      </div>
+      <div class="legend glass">
+        <h3>Mission Protocol</h3>
+        <ul>
+          <li>Correct answers grow colony resources, streaks, and Build Tokens.</li>
+          <li>Errors trigger a Notice/Wonder screen instead of revealing the answer.</li>
+          <li>Equation building supports drag-and-drop plus click-to-place fallback.</li>
+          <li>Every mission is generated from a reusable math engine for limitless gameplay.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gameScreen" class="screen" aria-label="Game screen">
+  <div class="app-shell">
+    <header class="hud">
+      <div class="hud-group">
+        <span class="badge" id="sectorBadge">Sector 1</span>
+        <span class="badge warn" id="missionBadge">Awaiting mission</span>
+      </div>
+      <div class="resource-strip" id="resourceStrip"></div>
+      <div class="hud-group">
+        <span class="badge" id="accuracyBadge">Accuracy 0%</span>
+        <span class="badge" id="streakBadge">Streak 0</span>
+      </div>
+    </header>
+
+    <div class="play-grid">
+      <section class="panel scene-wrap">
+        <canvas id="sceneCanvas" width="1100" height="760"></canvas>
+        <div class="scene-meta">
+          <div id="sceneLabel">Colony overview online.</div>
+          <div id="colonyLog">Solve the first mission to begin stabilizing systems.</div>
+        </div>
+      </section>
+
+      <section class="panel mission-wrap" id="missionPanel">
+        <div class="mission-head">
+          <div class="mission-head-top">
+            <div>
+              <h2 id="missionTitle">Mission Console</h2>
+              <p id="missionLead">Select a sector and complete each procedural task to keep the colony stable.</p>
+            </div>
+            <div class="sector-tabs" id="sectorTabs"></div>
+          </div>
+        </div>
+        <div class="mission-body" id="missionBody"></div>
+        <div class="actions">
+          <div class="status-line" id="statusLine">Use the mission panel to solve the current scenario.</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="btn secondary" id="menuBtn">Main Menu</button>
+            <button class="btn secondary" id="nextBtn" disabled>Next Mission</button>
+            <button class="btn" id="submitBtn">Commit Answer <span class="kbd">Enter</span></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel build-panel" aria-label="Colony rewards">
+      <div class="build-panel-grid">
+        <div>
+          <div class="build-panel-top">
+            <h3>Colony Rewards</h3>
+            <div class="reward-bank">
+              <span class="reward-chip" id="buildTokenBadge">Build Tokens 0</span>
+              <span class="reward-chip alt" id="buildCount">0 modules placed</span>
+            </div>
+          </div>
+          <div id="buildStatus" class="subtle">Solve missions to earn Build Tokens, then spend 1 token to place a new colony module.</div>
+          <div id="buildChoices" class="build-options" style="margin-top:12px;"></div>
+          <div class="build-help">Every correct answer awards <strong>1 Build Token</strong>. Spend a token on a school, restaurant, soccer field, greenhouse, or other colony upgrade.</div>
+        </div>
+        <div>
+          <h3 style="margin-bottom:8px;">Built So Far</h3>
+          <div id="buildInventory"></div>
+        </div>
       </div>
     </section>
+  </div>
 
-    <div class="button-row">
-      <a class="primary-button" href="/expressions-equations/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+  <div id="hintModal" class="hint-modal" role="dialog" aria-modal="true" aria-labelledby="hintTitle">
+    <div class="hint-card">
+      <div class="hint-top">
+        <div>
+          <div class="eyebrow" style="margin-bottom:8px;">Notice / Wonder</div>
+          <h2 id="hintTitle" style="margin:0; font-size:26px;">Try a different clue path</h2>
+        </div>
+        <button class="btn secondary" id="closeHintBtn">Return to Mission</button>
+      </div>
+      <div class="hint-body">
+        <div class="cue-box">
+          <h3 style="margin:0 0 8px;">Visual cue from the colony</h3>
+          <div class="subtle" id="hintCue"></div>
+          <div class="cue-visual" aria-hidden="true"></div>
+        </div>
+        <div class="starter-box">
+          <h3 style="margin:0 0 10px;">Sentence starters</h3>
+          <div class="checklist" id="hintStarters"></div>
+        </div>
+      </div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</section>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const state = {
+    sector: 1,
+    unlocked: 1,
+    resources: { oxygen: 56, water: 58, energy: 54, credits: 52 },
+    stats: { correct: 0, total: 0, streak: 0, best: 0 },
+    progress: { 1: 0, 2: 0, 3: 0, 4: 0 },
+    currentMission: null,
+    graphSelection: [],
+    lineGraph: null,
+    builderSlots: [],
+    reduceMotion: false,
+    missionSolved: false,
+    sceneTime: 0,
+    sceneBurst: 0,
+    burstLabel: '',
+    autoAdvanceTimer: null,
+    cleanup: null,
+    colonyBuilds: [],
+    pendingReward: null,
+    buildTokens: 0,
+    rewardsEarned: 0,
+    buildAnim: 0,
+    recentBuildSite: 0,
+    lastLog: 'All systems nominal.'
+  };
+
+  const resourcesMeta = {
+    oxygen: 'Oxygen',
+    water: 'Water',
+    energy: 'Energy',
+    credits: 'Trade'
+  };
+
+  const sectors = [
+    { id:1, name:'Logistics Bay', subtitle:'Variables & Tables', scene:'logistics' },
+    { id:2, name:'Navigation Grid', subtitle:'Coordinate Graphing', scene:'navigation' },
+    { id:3, name:'Energy Core', subtitle:'Equations', scene:'energy' },
+    { id:4, name:'Trade Hub', subtitle:'Multi-Step Extensions', scene:'trade' }
+  ];
+
+  const themes = [
+    { subject:'supply drone', unit:'crates', input:'minutes', resource:'credits' },
+    { subject:'solar panel array', unit:'energy cells', input:'cycles', resource:'energy' },
+    { subject:'water purifier', unit:'liters', input:'days', resource:'water' },
+    { subject:'oxygen recycler', unit:'oxygen packs', input:'hours', resource:'oxygen' },
+    { subject:'habitat printer', unit:'panels', input:'cycles', resource:'credits' },
+    { subject:'ice miner', unit:'ice blocks', input:'hours', resource:'water' },
+    { subject:'fusion charger', unit:'power units', input:'minutes', resource:'energy' }
+  ];
+
+
+const rewardPool = [
+  { id:'school', name:'Colony School', blurb:'Adds a learning dome for young explorers.' },
+  { id:'restaurant', name:'Mars Bistro', blurb:'Feeds the crew and boosts morale.' },
+  { id:'soccer', name:'Gravity Soccer Field', blurb:'Creates a recreation zone under a safety dome.' },
+  { id:'greenhouse', name:'Greenhouse', blurb:'Grows food and brightens the habitat.' },
+  { id:'lab', name:'Research Lab', blurb:'Supports new science missions.' },
+  { id:'medbay', name:'Med Bay', blurb:'Keeps colonists healthy and ready.' },
+  { id:'garage', name:'Rover Garage', blurb:'Stores and repairs colony vehicles.' },
+  { id:'park', name:'Mars Park', blurb:'Adds a calm public gathering space.' }
+];
+
+const buildSites = [
+  { x:-2.2, y:-1.3 },
+  { x:2.0, y:-1.4 },
+  { x:2.2, y:1.2 },
+  { x:-2.3, y:1.2 },
+  { x:-.15, y:-2.15 },
+  { x:0.2, y:2.15 },
+  { x:3.0, y:-.1 },
+  { x:-3.0, y:.4 }
+];
+
+  const colonyScenes = {
+    logistics: { label:'Logistics Bay active. Cargo lanes are synchronized with input-output tables.' },
+    navigation: { label:'Navigation Grid active. Route planning depends on clean coordinate data.' },
+    energy: { label:'Energy Core active. Stable equations keep every system in balance.' },
+    trade: { label:'Trade Hub active. Compare rates and fixed costs before approving deals.' }
+  };
+
+  const menuScreen = $('menuScreen');
+  const gameScreen = $('gameScreen');
+  const missionBody = $('missionBody');
+  const missionTitle = $('missionTitle');
+  const missionLead = $('missionLead');
+  const statusLine = $('statusLine');
+  const nextBtn = $('nextBtn');
+  const submitBtn = $('submitBtn');
+  const sectorTabs = $('sectorTabs');
+  const sceneCanvas = $('sceneCanvas');
+  const menuCanvas = $('menuCanvas');
+  const sceneCtx = sceneCanvas.getContext('2d');
+  const menuCtx = menuCanvas.getContext('2d');
+  const hintModal = $('hintModal');
+  const toast = $('toast');
+
+  function randInt(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function pick(arr){ return arr[randInt(0, arr.length - 1)]; }
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function shuffle(arr){
+    const a = [...arr];
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function pct(){
+    return state.stats.total ? Math.round((state.stats.correct / state.stats.total) * 100) : 0;
+  }
+  function fmtEq(m, b = null){
+    if (b === null) return `y = ${m}x`;
+    return `y = ${m}x − ${b}`;
+  }
+  function clearAutoAdvance(){
+    if(state.autoAdvanceTimer){
+      clearTimeout(state.autoAdvanceTimer);
+      state.autoAdvanceTimer = null;
+    }
+  }
+  function sectorDifficulty(sector){
+    const solved = Number(state.progress[sector] || 0);
+    if(solved < 4) return 1;
+    if(solved < 8) return 2;
+    if(solved < 12) return 3;
+    return 4;
+  }
+  function makeTheme(tier = 1, sector = state.sector){
+    const pool = sector === 1 && tier === 1
+      ? themes.filter(t => ['credits','water','energy'].includes(t.resource))
+      : themes;
+    const ranges = {
+      1:[1,3],
+      2:[2,5],
+      3:[3,8],
+      4:[4,12]
+    };
+    const [lo, hi] = ranges[tier] || ranges[4];
+    const theme = pick(pool);
+    return { ...theme, m: randInt(lo, hi), tier };
+  }
+  function launchSceneBurst(label){
+    state.sceneBurst = state.reduceMotion ? 20 : 56;
+    state.burstLabel = label;
+  }
+  function scheduleNextMission(){
+    clearAutoAdvance();
+    statusLine.textContent = 'Correct. Routing the colony to the next mission…';
+    state.autoAdvanceTimer = setTimeout(() => {
+      state.autoAdvanceTimer = null;
+      if(gameScreen.classList.contains('active') && state.missionSolved){
+        beginMission(state.sector);
+      }
+    }, state.reduceMotion ? 850 : 1250);
+  }
+  function saveState(){
+    localStorage.setItem('mars-variable-colony', JSON.stringify({
+      unlocked: state.unlocked,
+      resources: state.resources,
+      stats: state.stats,
+      progress: state.progress,
+      reduceMotion: state.reduceMotion,
+      colonyBuilds: state.colonyBuilds,
+      buildTokens: state.buildTokens,
+      rewardsEarned: state.rewardsEarned
+    }));
+  }
+  function loadState(){
+    const raw = localStorage.getItem('mars-variable-colony');
+    if(!raw) return;
+    try{
+      const data = JSON.parse(raw);
+      state.unlocked = clamp(data.unlocked || 1, 1, 4);
+      state.resources = { ...state.resources, ...(data.resources || {}) };
+      state.stats = { ...state.stats, ...(data.stats || {}) };
+      state.progress = { ...state.progress, ...(data.progress || {}) };
+      state.reduceMotion = !!data.reduceMotion;
+      state.colonyBuilds = Array.isArray(data.colonyBuilds) ? data.colonyBuilds : [];
+      state.buildTokens = Number.isFinite(Number(data.buildTokens)) ? Math.max(0, Number(data.buildTokens)) : 0;
+      state.rewardsEarned = Number.isFinite(Number(data.rewardsEarned)) ? Math.max(0, Number(data.rewardsEarned)) : 0;
+      document.body.classList.toggle('reduce-motion', state.reduceMotion);
+    }catch(err){ /* ignore malformed save */ }
+  }
+
+  function showToast(message){
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+
+function rewardChoices(){
+  const built = new Set(state.colonyBuilds.map(item => item.id));
+  const pool = rewardPool.filter(item => !built.has(item.id));
+  return shuffle(pool).slice(0, Math.min(3, pool.length));
+}
+
+function queueRewardChoice(){
+  if(state.colonyBuilds.length >= buildSites.length || state.pendingReward || state.buildTokens < 1) return;
+  const choices = rewardChoices();
+  if(!choices.length) return;
+  state.pendingReward = { choices };
+  showToast('Build Token ready. Choose a colony upgrade.');
+}
+
+function placeReward(id){
+  if(!state.pendingReward || state.buildTokens < 1) return;
+  const choice = state.pendingReward.choices.find(item => item.id === id);
+  if(!choice) return;
+  const site = Math.min(state.colonyBuilds.length, buildSites.length - 1);
+  state.colonyBuilds.push({ ...choice, site });
+  state.pendingReward = null;
+  state.buildTokens = Math.max(0, state.buildTokens - 1);
+  state.recentBuildSite = site;
+  state.buildAnim = state.reduceMotion ? 54 : 92;
+  state.lastLog = `${choice.name} deployed. The colony footprint has expanded.`;
+  launchSceneBurst('COLONY EXPANDED');
+  if(state.buildTokens > 0 && state.colonyBuilds.length < buildSites.length){
+    queueRewardChoice();
+  }
+  updateHUD();
+  saveState();
+  showToast(`${choice.name} built. 1 Build Token spent.`);
+}
+
+function updateBuildPanel(){
+  const status = $('buildStatus');
+  const count = $('buildCount');
+  const badge = $('buildTokenBadge');
+  const choices = $('buildChoices');
+  const inventory = $('buildInventory');
+  if(!status || !count || !choices || !inventory || !badge) return;
+  count.textContent = `${state.colonyBuilds.length} module${state.colonyBuilds.length === 1 ? '' : 's'} placed`;
+  badge.textContent = `Build Tokens ${state.buildTokens}`;
+  if(state.pendingReward && state.pendingReward.choices?.length){
+    status.textContent = 'You earned a Build Token. Spend 1 token to place a new colony upgrade right now.';
+    choices.innerHTML = state.pendingReward.choices.map(item => `
+      <button class="build-card" type="button" data-build-choice="${item.id}">
+        <strong>${item.name}</strong>
+        <small>${item.blurb}</small>
+        <small style="margin-top:8px; color:#e8fff0;">Spend 1 Build Token</small>
+      </button>`).join('');
+  } else {
+    status.textContent = state.colonyBuilds.length < buildSites.length
+      ? (state.buildTokens > 0
+          ? 'You have a Build Token ready. The next colony choices will appear automatically.'
+          : 'Solve a mission correctly to earn your next Build Token and unlock a colony choice.')
+      : 'The colony map is full. Keep solving to maintain systems and perfect your accuracy.';
+    choices.innerHTML = `<div class="subtle">${state.colonyBuilds.length < buildSites.length ? 'No colony choice is open yet.' : 'All build sites are filled.'}</div>`;
+  }
+  inventory.innerHTML = state.colonyBuilds.length
+    ? state.colonyBuilds.map(item => `<div class="inventory-pill"><strong>${item.name}</strong> <span>deployed</span></div>`).join('')
+    : '<div class="subtle">No civic modules placed yet.</div>';
+  choices.querySelectorAll('[data-build-choice]').forEach(btn => btn.addEventListener('click', () => placeReward(btn.dataset.buildChoice)));
+}
+
+  function updateHUD(){
+    $('sectorBadge').textContent = `Sector ${state.sector}`;
+    $('missionBadge').textContent = state.currentMission ? state.currentMission.shortTitle : 'Awaiting mission';
+    $('accuracyBadge').textContent = `Accuracy ${pct()}%`;
+    $('streakBadge').textContent = `Streak ${state.stats.streak}`;
+    $('sceneLabel').textContent = colonyScenes[sectors[state.sector - 1].scene].label;
+    $('colonyLog').textContent = state.lastLog;
+    updateBuildPanel();
+
+    const strip = $('resourceStrip');
+    strip.innerHTML = Object.entries(resourcesMeta).map(([key,label]) => {
+      const value = clamp(state.resources[key], 0, 100);
+      return `
+        <div class="meter">
+          <div class="meter-head"><span>${label}</span><strong>${value}%</strong></div>
+          <div class="bar"><span style="width:${value}%"></span></div>
+        </div>`;
+    }).join('');
+
+    sectorTabs.innerHTML = sectors.map(sec => {
+      const locked = sec.id > state.unlocked;
+      return `<button class="sector-tab ${sec.id === state.sector ? 'active' : ''} ${locked ? 'locked' : ''}" data-sector="${sec.id}" ${locked ? 'disabled' : ''}>S${sec.id} · ${sec.name}</button>`;
+    }).join('');
+  }
+
+  function showScreen(which){
+    menuScreen.classList.toggle('active', which === 'menu');
+    gameScreen.classList.toggle('active', which === 'game');
+  }
+
+  function weightedResource(resource, amount){
+    Object.keys(state.resources).forEach(key => {
+      if(key === resource){
+        state.resources[key] = clamp(state.resources[key] + amount, 0, 100);
+      } else {
+        state.resources[key] = clamp(state.resources[key] + Math.max(1, Math.floor(amount / 3)), 0, 100);
+      }
+    });
+  }
+
+  function penalize(resource){
+    Object.keys(state.resources).forEach(key => {
+      state.resources[key] = clamp(state.resources[key] - (key === resource ? 4 : 1), 0, 100);
+    });
+  }
+
+  function unlockNextSector(){
+    if(state.sector < 4 && state.unlocked < state.sector + 1){
+      state.unlocked = state.sector + 1;
+      showToast(`Sector ${state.unlocked} unlocked.`);
+    }
+  }
+
+  function correctMission(log){
+    state.stats.total += 1;
+    state.stats.correct += 1;
+    state.stats.streak += 1;
+    state.stats.best = Math.max(state.stats.best, state.stats.streak);
+    state.progress[state.currentMission.sector] = Number(state.progress[state.currentMission.sector] || 0) + 1;
+    weightedResource(state.currentMission.resource, 7);
+    state.buildTokens += state.colonyBuilds.length < buildSites.length ? 1 : 0;
+    state.rewardsEarned += state.colonyBuilds.length < buildSites.length ? 1 : 0;
+    state.lastLog = `${log} The colony earned 1 Build Token.`;
+    state.missionSolved = true;
+    state.buildAnim = state.reduceMotion ? 52 : 86;
+    state.recentBuildSite = Math.min(state.colonyBuilds.length, buildSites.length - 1);
+    launchSceneBurst('SYSTEM BOOST');
+    queueRewardChoice();
+    missionBody.classList.remove('flash-success');
+    void missionBody.offsetWidth;
+    missionBody.classList.add('flash-success');
+    statusLine.textContent = 'Correct. You earned 1 Build Token and the next mission is loading…';
+    unlockNextSector();
+    updateHUD();
+    saveState();
+    showToast(state.colonyBuilds.length < buildSites.length ? 'Mission complete. +1 Build Token earned.' : 'Mission complete. Colony systems boosted.');
+    scheduleNextMission();
+  }
+
+  function wrongMission(){
+    state.stats.total += 1;
+    state.stats.streak = 0;
+    penalize(state.currentMission.resource);
+    state.lastLog = 'System alert: the colony paused construction. Read the clue, then revise this same mission.';
+    statusLine.textContent = 'Not yet. Read the hint, think about the relationship, and try the same mission again.';
+    updateHUD();
+    saveState();
+    openHint();
+  }
+
+  function openHint(){
+    const mission = state.currentMission;
+    $('hintCue').textContent = mission.hint.cue;
+    $('hintStarters').innerHTML = mission.hint.starters.map(s => `<div>${s}</div>`).join('');
+    hintModal.classList.add('open');
+  }
+  function closeHint(){ hintModal.classList.remove('open'); }
+
+  function makeMissionForSector(sector){
+    const tier = sectorDifficulty(sector);
+    const theme = makeTheme(tier, sector);
+    if(sector === 1){
+      if(tier === 1) return makeLogisticsTable(theme, tier);
+      if(tier === 2) return Math.random() < .72 ? makeLogisticsTable(theme, tier) : makeLogisticsVariable(theme, tier);
+      return Math.random() < .5 ? makeLogisticsVariable(theme, tier) : makeLogisticsTable(theme, tier);
+    }
+    if(sector === 2){
+      if(tier === 1) return makeNavigationPlot(theme, tier);
+      return Math.random() < .5 ? makeNavigationPlot(theme, tier) : makeNavigationEquation(theme, tier);
+    }
+    if(sector === 3){
+      if(tier <= 2) return makeEnergyEquation(theme, tier);
+      return Math.random() < .45 ? makeEnergyEquation(theme, tier) : makeEnergyTranslate(theme, tier);
+    }
+    if(tier <= 2) return makeTradePattern(theme, tier);
+    return Math.random() < .5 ? makeTradePattern(theme, tier) : makeTradeProfit(theme, tier);
+  }
+
+  function makeHint(cue, starters){ return { cue, starters }; }
+
+  function makeLogisticsVariable(theme, tier = theme.tier || 1){
+    const options = shuffle([
+      `${theme.input}`,
+      `total ${theme.unit}`,
+      `${theme.unit} each ${theme.input.slice(0,-1) || theme.input}`
+    ]);
+    return {
+      kind:'l1a',
+      sector:1,
+      resource:theme.resource,
+      theme,
+      difficulty:tier,
+      title:'Logistics Bay · Input or Output?',
+      shortTitle:`Input / Output · T${tier}`,
+      lead:'Find the quantity the colony chooses first. That quantity is the input, or independent variable.',
+      prompt:`A <strong>${theme.subject}</strong> makes <strong class="math">${theme.m}</strong> <strong>${theme.unit}</strong> each <strong>${theme.input.slice(0,-1) || theme.input}</strong>. The colony decides the number of <strong>${theme.input}</strong> first, and then the total <strong>${theme.unit}</strong> changes. Which quantity is the <strong>input</strong> — also called the <strong>independent variable</strong> or <strong class="math">x</strong>?`,
+      options,
+      answer:`${theme.input}`,
+      brief:{
+        prompt:'If the colony changes the number of ' + theme.input + ', what total changes next?',
+        options:[`total ${theme.unit}`, `${theme.unit} each ${theme.input.slice(0,-1) || theme.input}`, `colony storage level`, `${theme.input}`],
+        answer:`total ${theme.unit}`
+      },
+      glossaryTitle:'Input vs. output',
+      glossaryText:`Input / independent variable / x = the number of ${theme.input} the colony chooses first. Output / dependent variable / y = the total ${theme.unit} that changes after the input is chosen.`,
+      hint:makeHint(
+        `The colony chooses the number of ${theme.input} first. After that, the total ${theme.unit} changes.` ,
+        [
+          `I noticed that the colony can pick the number of ${theme.input} to run.`,
+          `I wonder which answer names the input I choose first.`,
+          `I noticed that total ${theme.unit} changes after the input changes.`
+        ]
+      )
+    };
+  }
+
+  function makeLogisticsTable(theme, tier = theme.tier || 1){
+    const levelMap = {
+      1:{ xs:[1,2,3], blankCount:1 },
+      2:{ xs:[1,2,3,4], blankCount:2 },
+      3:{ xs:[2,3,4,5], blankCount:2 },
+      4:{ xs:[3,4,6,8], blankCount:3 }
+    };
+    const plan = levelMap[tier] || levelMap[4];
+    const xs = [...plan.xs];
+    const ys = xs.map(x => x * theme.m);
+    const choices = xs.map((_, i) => i);
+    const blanks = shuffle(choices).slice(0, plan.blankCount).sort((a,b) => a-b);
+    return {
+      blankProgress: 0,
+      kind:'l1b',
+      sector:1,
+      resource:theme.resource,
+      theme,
+      difficulty:tier,
+      title:'Logistics Bay · Missing Output Table',
+      shortTitle:`Missing Table · T${tier}`,
+      lead:tier === 1
+        ? 'Start with one easy table step. x is the input and y is the total output.'
+        : 'Use the same constant rate in every row to complete the outputs one step at a time.',
+      prompt:`A <strong>${theme.subject}</strong> produces <strong class="math">${theme.m}</strong> <strong>${theme.unit}</strong> per <strong>${theme.input.slice(0,-1) || theme.input}</strong>. Complete the holographic table one output at a time using the rule <strong class="math">y = ${theme.m}x</strong>.`,
+      brief:{
+        prompt:'In this table, x is the input. What does x count?',
+        options:[`${theme.input}`, `total ${theme.unit}`, `${theme.unit} each ${theme.input.slice(0,-1) || theme.input}`, 'the multiplier only'],
+        answer:`${theme.input}`
+      },
+      glossaryTitle:'Read the relationship',
+      glossaryText:`x counts the ${theme.input}. y is the total ${theme.unit}. Multiply each input by ${theme.m}.`,
+      xs, ys, blanks,
+      hint:makeHint(
+        `Each row glows with the same multiplier: every input value is scaled by ${theme.m}.`,
+        [
+          `I noticed that each output should be ${theme.m} times the input.`,
+          `I wonder what happens when I multiply ${theme.m} × the missing row input.`,
+          `I noticed that the same rule works in every row of the table.`
+        ]
+      )
+    };
+  }
+
+  function makeNavigationPlot(theme, tier = theme.tier || 1){
+    const m = Math.min(theme.m, tier <= 2 ? 4 : 6);
+    const xs = tier === 1 ? [1,2] : (tier >= 4 ? [1,2,3,4] : [1,2,3]);
+    const points = xs.map(x => ({x, y:x*m}));
+    const yMax = points[points.length - 1].y + 2;
+    return {
+      completedPoints: [],
+      pointProgress: 0,
+      kind:'l2a',
+      sector:2,
+      resource:'energy',
+      theme:{...theme, m},
+      title:'Navigation Grid · Plot the Route',
+      difficulty:tier,
+      shortTitle:`Plot Route · T${tier}`,
+      lead:'Plot one point at a time to match a constant rate on the colony route grid.',
+      prompt:`The rover advances using the rule <strong class="math">y = ${m}x</strong>. Plot the route nodes one at a time for <strong class="math">x = ${xs.join(', ')}</strong>.`,
+      brief:{
+        prompt:'What is the mission asking you to do?',
+        options:['Plot ordered pairs that fit the rule', 'Pick the larger y-value only', 'Add all x-values together', 'Subtract y from x each time'],
+        answer:'Plot ordered pairs that fit the rule'
+      },
+      glossaryTitle:'Coordinate reminder',
+      glossaryText:'Each point is written as (x, y). Move right for x, then up for y.',
+      points,
+      xMax:4,
+      yMax,
+      hint:makeHint(
+        `The navigation beacons climb by the same vertical amount each time the rover moves 1 unit to the right.`,
+        [
+          `I noticed that when x increases by 1, y increases by ${m}.`,
+          `I wonder which y-value matches x = 1, then x = 2, then x = 3.`,
+          `I noticed that all plotted points should stay on the same straight path from the origin.`
+        ]
+      )
+    };
+  }
+
+  function makeNavigationEquation(theme, tier = theme.tier || 1){
+    const m = Math.min(theme.m, tier <= 2 ? 4 : 6);
+    const xMax = 4;
+    const yMax = m * xMax + 2;
+    const optionSet = new Set([m]);
+    while(optionSet.size < 4){
+      optionSet.add(randInt(2, 10));
+    }
+    const options = shuffle([...optionSet]);
+    return {
+      kind:'l2b',
+      sector:2,
+      resource:'energy',
+      theme:{...theme, m},
+      title:'Navigation Grid · Equation Readout',
+      difficulty:tier,
+      shortTitle:`Equation Readout · T${tier}`,
+      lead:'Read a graphed line through the origin and match it to the correct equation.',
+      prompt:`A route line has already been graphed. Select the equation that matches the line through the origin and the highlighted nodes.`,
+      brief:{
+        prompt:'Because the line passes through the origin, which equation form should you expect?',
+        options:['y = mx with no starting amount', 'y = x + b only', 'x = my only', 'y = m + x'],
+        answer:'y = mx with no starting amount'
+      },
+      glossaryTitle:'Graph clue',
+      glossaryText:'A line through (0, 0) in a proportional relationship has no added starting value.',
+      m,
+      xMax,
+      yMax,
+      options:shuffle(options).map(v => fmtEq(v)),
+      answer:fmtEq(m),
+      hint:makeHint(
+        `The graphed line starts at the origin, so it follows a pure multiplier with no starting amount added or subtracted.`,
+        [
+          `I noticed that the line goes through (0, 0), so the equation should look like y = mx.`,
+          `I wonder how much y goes up each time x goes up by 1.`,
+          `I noticed that the slope and the constant rate are the same idea here.`
+        ]
+      )
+    };
+  }
+
+  function makeEnergyEquation(theme, tier = theme.tier || 1){
+    const xs = [1,2,3,4];
+    const ys = xs.map(x => x * theme.m);
+    return {
+      kind:'l3a',
+      sector:3,
+      resource:'oxygen',
+      theme,
+      title:'Energy Core · Build the Equation',
+      difficulty:tier,
+      shortTitle:`Build Equation · T${tier}`,
+      lead:'Use a complete table to build a linear equation with a constant rate.',
+      prompt:`Study the energy table and build the matching equation with the equation console.`,
+      brief:{
+        prompt:'What is your job in this mission?',
+        options:['Build the equation that matches the table', 'Find the largest x-value only', 'Change the table to make it non-proportional', 'Add every number in the table'],
+        answer:'Build the equation that matches the table'
+      },
+      glossaryTitle:'Equation focus',
+      glossaryText:'For a proportional table, the constant multiplier is the coefficient in front of x.',
+      xs, ys,
+      tokens:[ 'y', '=', String(theme.m), 'x', String(theme.m + 1), '+' ],
+      answer:['y','=','' + theme.m,'x'],
+      hint:makeHint(
+        `The conduit display pairs every x-value with the same multiplier. The equation only needs the variable names and that constant factor.`,
+        [
+          `I noticed that each output is ${theme.m} times the input.`,
+          `I wonder which number belongs directly in front of x.`,
+          `I noticed that the table shows no extra starting value.`
+        ]
+      )
+    };
+  }
+
+  function makeEnergyTranslate(theme, tier = theme.tier || 1){
+    const xs = [2,4,6];
+    const ys = xs.map(x => x * theme.m);
+    const blanks = [1,2];
+    return {
+      kind:'l3b',
+      sector:3,
+      resource:'oxygen',
+      theme,
+      stage:1,
+      title:'Energy Core · Translate Then Complete',
+      difficulty:tier,
+      shortTitle:`Translate + Table · T${tier}`,
+      lead:'Build an equation from a proportional scenario, then use it to finish a table.',
+      prompt:`A <strong>${theme.subject}</strong> generates <strong class="math">${theme.m}</strong> <strong>${theme.unit}</strong> every <strong>${theme.input.slice(0,-1) || theme.input}</strong>. First build the equation. Then use that equation to complete the table.`,
+      brief:{
+        prompt:'What must happen first?',
+        options:['Build the equation before filling the table', 'Fill the table before reading the prompt', 'Pick any equation and hope it fits', 'Subtract the inputs from the outputs'],
+        answer:'Build the equation before filling the table'
+      },
+      glossaryTitle:'Two-step mission',
+      glossaryText:'Use the words to write y = mx first. Then use that same rule for every table row.',
+      xs, ys, blanks,
+      tokens:['y','=',String(theme.m),'x',String(theme.m + 2),'-'],
+      answer:['y','=','' + theme.m,'x'],
+      hint:makeHint(
+        `The energy monitor repeats the same multiplier each cycle. Once the equation is built, every missing table value comes from that same rule.`,
+        [
+          `I noticed that the relationship is proportional, so the equation should be y = mx.`,
+          `I wonder what number of ${theme.unit} is made in 2, 4, and 6 inputs.`,
+          `I noticed that I can use the same multiplier for both the equation and the table.`
+        ]
+      )
+    };
+  }
+
+  function makeTradePattern(theme, tier = theme.tier || 1){
+    const maxRate = tier <= 2 ? 6 : 10;
+    const rateA = randInt(2,maxRate);
+    let rateB = randInt(2,maxRate);
+    while(rateB === rateA) rateB = randInt(2,12);
+    const future = tier <= 2 ? pick([5,6]) : pick([8,10]);
+    return {
+      kind:'l4a',
+      sector:4,
+      resource:'credits',
+      theme,
+      title:'Trade Hub · Rate Difference Forecast',
+      difficulty:tier,
+      shortTitle:`Rate Forecast · T${tier}`,
+      lead:'Compare two linear rates and extend the pattern to a future input.',
+      prompt:`Two colony routes scale at different rates. Extend the pattern and calculate the <strong>difference</strong> between the two totals at input <strong class="math">${future}</strong>.`,
+      brief:{
+        prompt:'What does difference mean in this mission?',
+        options:['Subtract the two future totals', 'Add the two totals together', 'Multiply the two rates', 'Use only Route A'],
+        answer:'Subtract the two future totals'
+      },
+      glossaryTitle:'Compare carefully',
+      glossaryText:'Extend both linear patterns to the same future input before you compare them.',
+      rateA, rateB, future,
+      hint:makeHint(
+        `The trade ledger shows two straight-line patterns. Extend each one to the future input, then compare the totals.`,
+        [
+          `I noticed that Route A grows by ${rateA} each step and Route B grows by ${rateB} each step.`,
+          `I wonder what each route total will be at input ${future}.`,
+          `I noticed that “difference” means I should subtract the two future totals.`
+        ]
+      )
+    };
+  }
+
+  function makeTradeProfit(theme, tier = theme.tier || 1){
+    const m = tier <= 2 ? randInt(2,5) : randInt(3,10);
+    const b = tier <= 2 ? randInt(2,8) : randInt(4,18);
+    const items = tier <= 2 ? randInt(2,5) : randInt(4,8);
+    return {
+      kind:'l4b',
+      sector:4,
+      resource:'credits',
+      theme,
+      title:'Trade Hub · Profit Calculation',
+      difficulty:tier,
+      shortTitle:`Profit Calc · T${tier}`,
+      lead:'Solve a multi-step profit scenario with a rate and a fixed cost.',
+      prompt:`A colony crew earns <strong class="math">${m}</strong> credits for each item traded, but they must pay a fixed docking cost of <strong class="math">${b}</strong> credits. What is the total profit when they trade <strong class="math">${items}</strong> items? Use the rule <strong class="math">${fmtEq(m,b)}</strong>.`,
+      brief:{
+        prompt:'Which operation happens first?',
+        options:[`Multiply ${m} by ${items}`, `Subtract ${b} first`, 'Add the cost to the earnings', 'Double the number of items'],
+        answer:`Multiply ${m} by ${items}`
+      },
+      glossaryTitle:'Multi-step reminder',
+      glossaryText:'In y = mx − b, multiply first to find earnings. Then subtract the fixed cost.',
+      m, b, items,
+      hint:makeHint(
+        `The ledger separates a repeated gain from one fixed cost. Multiply first, then subtract the starting charge.`,
+        [
+          `I noticed that the crew earns ${m} credits per item.`,
+          `I wonder what ${m} × ${items} is before I subtract the fixed cost of ${b}.`,
+          `I noticed that the fixed cost is not multiplied by the number of items.`
+        ]
+      )
+    };
+  }
+
+  function beginMission(sector = state.sector){
+    clearAutoAdvance();
+    closeHint();
+    if(state.cleanup){ state.cleanup(); state.cleanup = null; }
+    state.sector = sector;
+    state.missionSolved = false;
+    nextBtn.disabled = false;
+    state.graphSelection = [];
+    state.builderSlots = ['','','',''];
+    const mission = makeMissionForSector(sector);
+    mission.briefCompleted = false;
+    mission.taskStep = 1;
+    state.currentMission = mission;
+    missionTitle.textContent = mission.title;
+    missionLead.textContent = mission.lead;
+    const tier = sectorDifficulty(sector);
+    if(state.buildTokens > 0 && !state.pendingReward && state.colonyBuilds.length < buildSites.length) queueRewardChoice();
+    statusLine.textContent = tier === 1 ? 'Part 1: answer the Mission Brief. Then the game will reveal one easy math step at a time.' : 'Part 1: answer the Mission Brief. Then solve the mission one step at a time.';
+    updateHUD();
+    renderMission();
+    saveState();
+  }
+
+
+
+function renderMission(){
+  const m = state.currentMission;
+  const stageTotal = (m.brief ? 2 : 1) + ((m.kind === 'l1b' && m.briefCompleted) ? Math.max(0, m.blanks.length - 1) : 0) + ((m.kind === 'l2a' && m.briefCompleted) ? Math.max(0, m.points.length - 1) : 0);
+  let stageNow = 1;
+  if(m.briefCompleted) stageNow += 1;
+  if(m.kind === 'l1b' && m.briefCompleted) stageNow += (m.blankProgress || 0);
+  if(m.kind === 'l2a' && m.briefCompleted) stageNow += (m.pointProgress || 0);
+
+  const glossaryHtml = m.glossaryText ? `
+    <div class="glossary-box">
+      <div class="glossary-chip">${m.glossaryTitle || 'Key Idea'}</div>
+      <h3>${m.glossaryTitle || 'Key Idea'}</h3>
+      <div class="subtle">${m.glossaryText}</div>
+    </div>` : '';
+
+  const briefOnlyHtml = m.brief && !m.briefCompleted ? `
+    <div class="mission-card">
+      <div class="stage-chip">Part ${stageNow} of ${stageTotal}</div>
+      <div class="prompt">${m.prompt}</div>
+      <div class="context-grid">
+        <div class="brief-box">
+          <div class="glossary-chip">Mission Brief</div>
+          <h3>${m.brief.prompt}</h3>
+          <div class="subtle">Read the scenario carefully. Answer this reading question first.</div>
+          <div class="mini-choice-grid">
+            ${m.brief.options.map((opt, i) => `
+              <label class="mini-choice" data-mini-choice>
+                <input type="radio" name="briefChoice" value="${opt.replace(/"/g,'&quot;')}">
+                <span><strong>${String.fromCharCode(65+i)}.</strong> ${opt}</span>
+              </label>`).join('')}
+          </div>
+        </div>
+        ${glossaryHtml}
+      </div>
+      <div class="subtle" style="margin-top:14px;">After this brief is correct, the game will unlock the math step.</div>
+    </div>` : '';
+  if(briefOnlyHtml){
+    missionBody.innerHTML = briefOnlyHtml;
+    attachMissionInteractions();
+    return;
+  }
+
+  const variableVisual = (m.kind === 'l1a' || m.kind === 'l1b') ? `
+    <div class="variable-visual" aria-label="Input to output visual">
+      <div class="flow-node input">
+        <div class="flow-tag">Input · x · independent variable</div>
+        <strong class="flow-word">${m.theme.input}</strong>
+        <div class="subtle">This is the amount the colony chooses first.</div>
+        <div class="flow-example">Example input: choose <strong class="math">${m.xs ? m.xs[0] : 2}</strong> ${m.theme.input}</div>
+      </div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-node output">
+        <div class="flow-tag">Output · y · dependent variable</div>
+        <strong class="flow-word">total ${m.theme.unit}</strong>
+        <div class="subtle">This amount changes after the input is chosen.</div>
+        <div class="flow-example">Rule: <strong class="math">${m.xs ? m.xs[0] : 2} × ${m.theme.m} = ${(m.xs ? m.xs[0] : 2) * m.theme.m}</strong> total ${m.theme.unit}</div>
+      </div>
+    </div>
+    <div class="flow-caption"><strong>Think:</strong> ask “What do I choose first?” That quantity is the input. Then multiply to find the output.</div>` : '';
+
+  const taskHeader = `<div class="stage-chip">Part ${stageNow} of ${stageTotal}</div><div class="prompt">${m.prompt}</div>${glossaryHtml}${variableVisual}`;
+  let html = '';
+
+  if(m.kind === 'l1a'){
+    html = `<div class="mission-card">${taskHeader}
+      <div class="subtle" style="margin-bottom:12px;">Now answer the math question.</div>
+      <div class="choice-list">
+        ${m.options.map((opt, i) => `
+          <label class="choice" data-choice-label>
+            <input type="radio" name="varChoice" value="${opt.replace(/"/g,'&quot;')}">
+            <span><strong>${String.fromCharCode(65+i)}.</strong> ${opt}</span>
+          </label>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if(m.kind === 'l1b'){
+    const activeBlank = m.blanks[m.blankProgress || 0];
+    html = `<div class="mission-card">${taskHeader}
+      <div class="subtle" style="margin-bottom:12px;"><strong>Current step:</strong> fill the output for input <strong class="math">${m.xs[activeBlank]}</strong>. After that, the next blank will unlock.</div>
+      <table class="data-table" aria-label="Output table">
+        <thead><tr><th>Input x</th>${m.xs.map(x => `<th>${x}</th>`).join('')}</tr></thead>
+        <tbody>
+          <tr><th>Output y</th>${m.ys.map((y, i) => {
+            if(!m.blanks.includes(i)) return `<td>${y}</td>`;
+            if(i < (m.blankProgress || 0 ? m.blanks[m.blankProgress] : -1) && i !== activeBlank) return `<td>${y}</td>`;
+            if(i !== activeBlank && (m.blankProgress || 0) > m.blanks.indexOf(i)) return `<td>${y}</td>`;
+            if(i === activeBlank) return `<td><input class="inline-input" inputmode="numeric" data-blank-index="${i}" aria-label="Missing output for input ${m.xs[i]}" autofocus></td>`;
+            return `<td><span class="subtle">locked</span></td>`;
+          }).join('')}</tr>
+        </tbody>
+      </table>
+      <div class="subtle" style="margin-top:14px;">Top row = input <strong class="math">x</strong>. Bottom row = output <strong class="math">y</strong>. Multiply the current input by <strong class="math">${m.theme.m}</strong>.</div>
+    </div>`;
+  }
+
+  if(m.kind === 'l2a'){
+    const currentPoint = m.points[m.pointProgress || 0];
+    html = `<div class="mission-card">${taskHeader}
+      <div class="graph-shell">
+        <canvas id="graphCanvas" class="graph-canvas" width="720" height="420" aria-label="Interactive coordinate graph"></canvas>
+        <div class="graph-side">
+          <div class="mini-panel"><strong>Current step</strong><div class="subtle" style="margin-top:8px;">Plot point <strong>(${currentPoint.x}, ${currentPoint.y})</strong>. Follow the rule and place one beacon at a time.</div></div>
+          <div class="mini-panel"><strong>Completed points</strong><div id="selectedPoints" style="margin-top:8px;"></div></div>
+          <div class="mini-panel"><div class="subtle">Click one node on the grid. If it is the correct point for this step, the route will lock it in and move to the next point.</div></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if(m.kind === 'l2b'){
+    html = `<div class="mission-card">${taskHeader}
+      <div class="graph-shell">
+        <canvas id="graphCanvas" class="graph-canvas" width="720" height="420" aria-label="Graphed line"></canvas>
+        <div class="graph-side">
+          <div class="mini-panel"><strong>Mission note</strong><div class="subtle" style="margin-top:8px;">Read the constant rate from the line. The graph passes through the origin.</div></div>
+        </div>
+      </div>
+      <div class="choice-list" style="margin-top:16px;">
+        ${m.options.map((opt, i) => `
+          <label class="choice" data-choice-label>
+            <input type="radio" name="eqChoice" value="${opt}">
+            <span><strong>${String.fromCharCode(65+i)}.</strong> <span class="math">${opt}</span></span>
+          </label>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if(m.kind === 'l3a' || m.kind === 'l3b'){
+    const showTableStage = m.kind === 'l3a' || (m.kind === 'l3b' && m.stage === 2);
+    const stageText = m.kind === 'l3b'
+      ? `<div class="subtle" style="margin-bottom:14px;"><strong>Stage ${m.stage} of 2:</strong> ${m.stage === 1 ? 'Build the equation first.' : 'Use the completed equation to fill the table.'}</div>`
+      : '<div class="subtle" style="margin-bottom:14px;">Build the equation one token at a time.</div>';
+    html = `<div class="mission-card">${taskHeader}
+      ${stageText}
+      <div class="builder-area">
+        ${showTableStage ? `
+          <table class="data-table" aria-label="Equation table">
+            <thead><tr><th>Input x</th>${m.xs.map(x => `<th>${x}</th>`).join('')}</tr></thead>
+            <tbody><tr><th>Output y</th>${m.ys.map((y, i) => (m.kind === 'l3b' && m.blanks.includes(i))
+              ? `<td><input class="inline-input" inputmode="numeric" data-stage-blank="${i}" aria-label="Missing output for input ${m.xs[i]}"></td>`
+              : `<td>${y}</td>`).join('')}</tr></tbody>
+          </table>`
+        : ''}
+
+        <div>
+          <div class="subtle" style="margin-bottom:10px;">Equation builder</div>
+          <div class="slot-row" id="slotRow">
+            ${state.builderSlots.map((val, i) => `<div class="slot ${val ? 'filled' : ''}" data-slot="${i}">${val || ''}</div>`).join('')}
+          </div>
+        </div>
+
+        <div>
+          <div class="subtle" style="margin-bottom:10px;">Drag a token into a slot, or click a token to place it in the next open slot.</div>
+          <div class="token-bank" id="tokenBank">
+            ${m.tokens.map((token, i) => `<div class="token" draggable="true" data-token="${token}" data-token-id="${i}">${token}</div>`).join('')}
+          </div>
+        </div>
+
+        <div class="builder-tools">
+          <button class="btn secondary" type="button" id="resetBuilderBtn">Reset Equation</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if(m.kind === 'l4a'){
+    const xs = [1,2,3,4];
+    html = `<div class="mission-card">${taskHeader}
+      <table class="data-table" aria-label="Rate comparison table">
+        <thead><tr><th>Input x</th>${xs.map(x => `<th>${x}</th>`).join('')}</tr></thead>
+        <tbody>
+          <tr><th>Route A</th>${xs.map(x => `<td>${x * m.rateA}</td>`).join('')}</tr>
+          <tr><th>Route B</th>${xs.map(x => `<td>${x * m.rateB}</td>`).join('')}</tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div>Difference at input <strong class="math">${m.future}</strong>:</div>
+        <input class="future-input" id="futureDiffInput" inputmode="numeric" aria-label="Difference at future input">
+      </div>
+    </div>`;
+  }
+
+  if(m.kind === 'l4b'){
+    html = `<div class="mission-card">${taskHeader}
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:6px;">
+        <div>Total profit:</div>
+        <input class="future-input" id="profitInput" inputmode="numeric" aria-label="Total profit">
+        <div>credits</div>
+      </div>
+      <div class="subtle" style="margin-top:16px;">Multiply first, then subtract the fixed docking cost.</div>
+    </div>`;
+  }
+
+  missionBody.innerHTML = html;
+  attachMissionInteractions();
+}
+
+  function attachMissionInteractions(){
+    const m = state.currentMission;
+
+    missionBody.querySelectorAll('[data-choice-label], [data-mini-choice]').forEach(label => {
+      const input = label.querySelector('input');
+      const sync = () => {
+        missionBody.querySelectorAll('[data-choice-label]').forEach(x => x.classList.toggle('selected', x.querySelector('input').checked));
+        missionBody.querySelectorAll('[data-mini-choice]').forEach(x => x.classList.toggle('selected', x.querySelector('input').checked));
+      };
+      input.addEventListener('change', sync);
+      label.addEventListener('click', sync);
+    });
+
+    if(m.kind === 'l2a' || m.kind === 'l2b'){
+      const canvas = $('graphCanvas');
+      state.lineGraph = { canvas, bounds: null };
+      const handler = (ev) => {
+        if(m.kind !== 'l2a') return;
+        const bounds = canvas.getBoundingClientRect();
+        const x = (ev.clientX || ev.touches?.[0]?.clientX) - bounds.left;
+        const y = (ev.clientY || ev.touches?.[0]?.clientY) - bounds.top;
+        const hit = nearestGridPoint(m, x, y, canvas);
+        if(!hit) return;
+        state.graphSelection = [hit];
+        drawGraphMission();
+      };
+      canvas.addEventListener('click', handler);
+      state.cleanup = () => canvas.removeEventListener('click', handler);
+      drawGraphMission();
+    }
+
+    if(m.kind === 'l3a' || m.kind === 'l3b'){
+      const slots = [...missionBody.querySelectorAll('.slot')];
+      const tokens = [...missionBody.querySelectorAll('.token')];
+      const placeIntoSlot = (tokenText, index) => {
+        if(index === -1) return;
+        state.builderSlots[index] = tokenText;
+        refreshBuilderSlots();
+      };
+      const nextOpenSlot = () => state.builderSlots.findIndex(v => !v);
+      const onDragStart = (ev) => {
+        ev.target.classList.add('dragging');
+        ev.dataTransfer.setData('text/plain', ev.target.dataset.token);
+      };
+      const onDragEnd = (ev) => ev.target.classList.remove('dragging');
+      tokens.forEach(token => {
+        token.addEventListener('dragstart', onDragStart);
+        token.addEventListener('dragend', onDragEnd);
+        token.addEventListener('click', () => placeIntoSlot(token.dataset.token, nextOpenSlot()));
+      });
+      slots.forEach(slot => {
+        slot.addEventListener('dragover', (ev) => ev.preventDefault());
+        slot.addEventListener('drop', (ev) => {
+          ev.preventDefault();
+          const token = ev.dataTransfer.getData('text/plain');
+          const index = Number(slot.dataset.slot);
+          placeIntoSlot(token, index);
+        });
+        slot.addEventListener('click', () => {
+          const index = Number(slot.dataset.slot);
+          state.builderSlots[index] = '';
+          refreshBuilderSlots();
+        });
+      });
+      $('resetBuilderBtn').addEventListener('click', () => {
+        state.builderSlots = ['','','',''];
+        refreshBuilderSlots();
+      });
+      state.cleanup = () => {};
+    }
+  }
+
+  function refreshBuilderSlots(){
+    missionBody.querySelectorAll('.slot').forEach((slot, i) => {
+      const value = state.builderSlots[i];
+      slot.textContent = value;
+      slot.classList.toggle('filled', !!value);
+    });
+  }
+
+
+
+function validateMission(){
+  const m = state.currentMission;
+  if(!m) return;
+
+  if(m.brief && !m.briefCompleted){
+    const brief = missionBody.querySelector('input[name="briefChoice"]:checked');
+    if(!brief){
+      statusLine.textContent = 'Answer the Mission Brief first.';
+      return;
+    }
+    if(brief.value !== m.brief.answer){
+      wrongMission();
+      return;
+    }
+    m.briefCompleted = true;
+    statusLine.textContent = 'Mission Brief complete. Now solve the math step.';
+    renderMission();
+    showToast('Brief complete. Math step unlocked.');
+    return;
+  }
+
+  if(m.kind === 'l1a'){
+    const picked = missionBody.querySelector('input[name="varChoice"]:checked');
+    if(!picked){ statusLine.textContent = 'Select an answer choice first.'; return; }
+    picked.value === m.answer ? correctMission(`The colony correctly identified the input variable: ${m.theme.input}.`) : wrongMission();
+    return;
+  }
+
+  if(m.kind === 'l1b'){
+    const activeBlank = m.blanks[m.blankProgress || 0];
+    const input = missionBody.querySelector(`[data-blank-index="${activeBlank}"]`);
+    if(!input || input.value === ''){ statusLine.textContent = 'Fill in the current blank first.'; return; }
+    if(Number(input.value) !== m.ys[activeBlank]){ wrongMission(); return; }
+    m.blankProgress = (m.blankProgress || 0) + 1;
+    if(m.blankProgress < m.blanks.length){
+      statusLine.textContent = 'Nice. The next table blank is unlocked.';
+      renderMission();
+      showToast('Table step complete.');
+    } else {
+      correctMission(`Output tables were restored in the Logistics Bay using y = ${m.theme.m}x.`);
+    }
+    return;
+  }
+
+  if(m.kind === 'l2a'){
+    const currentPoint = m.points[m.pointProgress || 0];
+    if(state.graphSelection.length !== 1){
+      statusLine.textContent = 'Select the current point on the graph.';
+      return;
+    }
+    const picked = state.graphSelection[0];
+    const ok = picked.x === currentPoint.x && picked.y === currentPoint.y;
+    if(!ok){ wrongMission(); return; }
+    m.completedPoints = [...(m.completedPoints || []), currentPoint];
+    m.pointProgress = (m.pointProgress || 0) + 1;
+    state.graphSelection = [];
+    if(m.pointProgress < m.points.length){
+      statusLine.textContent = 'Point locked in. Plot the next point.';
+      renderMission();
+      showToast('Point confirmed.');
+    } else {
+      correctMission(`Navigation points were plotted successfully for ${fmtEq(m.theme.m)}.`);
+    }
+    return;
+  }
+
+  if(m.kind === 'l2b'){
+    const picked = missionBody.querySelector('input[name="eqChoice"]:checked');
+    if(!picked){ statusLine.textContent = 'Select an equation first.'; return; }
+    picked.value === m.answer ? correctMission(`The route equation ${m.answer} was confirmed from the graph.`) : wrongMission();
+    return;
+  }
+
+  if(m.kind === 'l3a'){
+    const ok = JSON.stringify(state.builderSlots) === JSON.stringify(m.answer);
+    ok ? correctMission(`The Energy Core accepted the equation ${fmtEq(m.theme.m)}.`) : wrongMission();
+    return;
+  }
+
+  if(m.kind === 'l3b'){
+    if(m.stage === 1){
+      const ok = JSON.stringify(state.builderSlots) === JSON.stringify(m.answer);
+      if(ok){
+        m.stage = 2;
+        state.builderSlots = [...m.answer];
+        statusLine.textContent = 'Equation accepted. Now use it to complete the table.';
+        renderMission();
+        showToast('Equation phase complete. Finish the table.');
+      } else {
+        wrongMission();
+      }
+      return;
+    }
+    const ok = m.blanks.every(i => Number(missionBody.querySelector(`[data-stage-blank="${i}"]`).value) === m.ys[i]);
+    ok ? correctMission(`The translated equation ${fmtEq(m.theme.m)} powered the Energy Core table.`) : wrongMission();
+    return;
+  }
+
+  if(m.kind === 'l4a'){
+    const answer = Math.abs((m.future * m.rateA) - (m.future * m.rateB));
+    Number($('futureDiffInput').value) === answer ? correctMission(`Trade forecasts were extended to input ${m.future} and compared correctly.`) : wrongMission();
+    return;
+  }
+
+  if(m.kind === 'l4b'){
+    const answer = (m.items * m.m) - m.b;
+    Number($('profitInput').value) === answer ? correctMission(`Profit analysis succeeded with ${fmtEq(m.m, m.b)}.`) : wrongMission();
+    return;
+  }
+}
+
+  function nearestGridPoint(mission, px, py, canvas){
+    const layout = graphLayout(mission, canvas);
+    let best = null;
+    let bestDist = 24;
+    for(let x = 0; x <= mission.xMax; x++){
+      for(let y = 0; y <= mission.yMax; y++){
+        const p = toGraphPixel(layout, x, y);
+        const d = Math.hypot(px - p.x, py - p.y);
+        if(d < bestDist){
+          best = {x,y};
+          bestDist = d;
+        }
+      }
+    }
+    return best;
+  }
+
+  function graphLayout(mission, canvas){
+    const padL = 78;
+    const padB = 58;
+    const padT = 26;
+    const padR = 30;
+    return {
+      x0: padL,
+      y0: canvas.height - padB,
+      width: canvas.width - padL - padR,
+      height: canvas.height - padT - padB,
+      xMax: mission.xMax,
+      yMax: mission.yMax
+    };
+  }
+
+  function toGraphPixel(layout, x, y){
+    return {
+      x: layout.x0 + (x / layout.xMax) * layout.width,
+      y: layout.y0 - (y / layout.yMax) * layout.height
+    };
+  }
+
+  function drawGraphMission(){
+    const m = state.currentMission;
+    const canvas = $('graphCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const layout = graphLayout(m, canvas);
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#061421';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // holographic frame
+    ctx.strokeStyle = 'rgba(112,221,255,.22)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+    // grid
+    for(let x = 0; x <= m.xMax; x++){
+      const p1 = toGraphPixel(layout, x, 0);
+      const p2 = toGraphPixel(layout, x, m.yMax);
+      ctx.strokeStyle = x === 0 ? 'rgba(255,255,255,.55)' : 'rgba(112,221,255,.14)';
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+      ctx.fillStyle = '#c9e9ff';
+      ctx.font = '14px Calibri';
+      ctx.fillText(String(x), p1.x - 4, layout.y0 + 24);
+    }
+    for(let y = 0; y <= m.yMax; y += Math.max(1, Math.ceil(m.yMax / 8))){
+      const p1 = toGraphPixel(layout, 0, y);
+      const p2 = toGraphPixel(layout, m.xMax, y);
+      ctx.strokeStyle = y === 0 ? 'rgba(255,255,255,.55)' : 'rgba(112,221,255,.14)';
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+      ctx.fillStyle = '#c9e9ff';
+      ctx.font = '14px Calibri';
+      ctx.fillText(String(y), layout.x0 - 28, p1.y + 4);
+    }
+
+    ctx.fillStyle = '#eaf7ff';
+    ctx.font = 'bold 16px Calibri';
+    ctx.fillText('x', canvas.width - 22, layout.y0 + 18);
+    ctx.fillText('y', layout.x0 - 16, 22);
+
+    // perspective scaffold
+    ctx.strokeStyle = 'rgba(111,255,176,.10)';
+    ctx.beginPath();
+    ctx.moveTo(layout.x0, layout.y0);
+    ctx.lineTo(layout.x0 - 30, layout.y0 - 20);
+    ctx.lineTo(canvas.width - 40, layout.y0 - 20);
+    ctx.lineTo(canvas.width - 10, layout.y0);
+    ctx.stroke();
+
+    if(m.kind === 'l2b'){
+      const pStart = toGraphPixel(layout, 0, 0);
+      const pEnd = toGraphPixel(layout, Math.min(m.xMax, Math.floor(m.yMax / m.m)), Math.min(m.yMax, m.m * Math.min(m.xMax, Math.floor(m.yMax / m.m))));
+      ctx.strokeStyle = 'rgba(111,255,176,.92)';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(pStart.x, pStart.y); ctx.lineTo(pEnd.x, pEnd.y); ctx.stroke();
+      for(let x = 0; x <= Math.min(m.xMax, Math.floor(m.yMax / m.m)); x++){
+        const y = x * m.m;
+        const p = toGraphPixel(layout, x, y);
+        ctx.fillStyle = x === 0 ? '#ffffff' : '#71ffb0';
+        ctx.beginPath(); ctx.arc(p.x, p.y, x === 0 ? 4 : 6, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    if(m.kind === 'l2a'){
+      for(let x = 0; x <= m.xMax; x++){
+        for(let y = 0; y <= m.yMax; y++){
+          const p = toGraphPixel(layout, x, y);
+          ctx.fillStyle = 'rgba(255,255,255,.16)';
+          ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI*2); ctx.fill();
+        }
+      }
+      (m.completedPoints || []).forEach(pt => {
+        const p = toGraphPixel(layout, pt.x, pt.y);
+        ctx.fillStyle = '#6fffb0';
+        ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, Math.PI*2); ctx.fill();
+      });
+      state.graphSelection.forEach(pt => {
+        const p = toGraphPixel(layout, pt.x, pt.y);
+        ctx.fillStyle = '#70ddff';
+        ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = 'rgba(112,221,255,.45)';
+        ctx.lineWidth = 8;
+        ctx.globalAlpha = .12;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 16, 0, Math.PI*2); ctx.stroke();
+        ctx.globalAlpha = 1;
+      });
+      const currentPoint = m.points[m.pointProgress || 0];
+      $('selectedPoints').innerHTML = `
+        ${(m.completedPoints || []).length ? (m.completedPoints || []).map(p => `<span class="point-pill">✓ (${p.x}, ${p.y})</span>`).join('') : '<span class="subtle">No locked points yet.</span>'}
+        <div class="subtle" style="margin-top:8px;">Next target: ${currentPoint ? `(${currentPoint.x}, ${currentPoint.y})` : 'complete'}</div>`;
+    }
+  }
+
+
+function drawIsometricScene(ctx, canvas, mode, t){
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+
+  const sky = ctx.createLinearGradient(0,0,0,h);
+  sky.addColorStop(0, '#091827');
+  sky.addColorStop(1, '#05111d');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,w,h);
+
+  ctx.fillStyle = 'rgba(118,160,255,.08)';
+  ctx.beginPath();
+  ctx.arc(w*0.82, h*0.2, 110, 0, Math.PI*2);
+  ctx.fill();
+
+  for(let i=0;i<45;i++){
+    const x = (i*127)%w;
+    const y = (i*61)%Math.floor(h*0.42);
+    ctx.fillStyle = `rgba(255,255,255,${0.08 + ((i%7)/18)})`;
+    ctx.fillRect(x, y, 2, 2);
+  }
+
+  ctx.fillStyle = '#7a3d2b';
+  ctx.beginPath();
+  ctx.moveTo(0, h*0.68);
+  ctx.bezierCurveTo(w*0.2, h*0.58, w*0.5, h*0.72, w, h*0.62);
+  ctx.lineTo(w, h);
+  ctx.lineTo(0, h);
+  ctx.closePath();
+  ctx.fill();
+
+  const cx = w*0.5;
+  const cy = h*0.62;
+  const tileW = 132;
+  const tileH = 64;
+
+  function iso(x,y,z=0){
+    return { x: cx + (x-y)*tileW/2, y: cy + (x+y)*tileH/2 - z };
+  }
+  function drawTile(x,y,fill){
+    const p = iso(x,y), right = iso(x+1,y), down = iso(x,y+1), diag = iso(x+1,y+1);
+    ctx.beginPath();
+    ctx.moveTo(p.x,p.y); ctx.lineTo(right.x,right.y); ctx.lineTo(diag.x,diag.y); ctx.lineTo(down.x,down.y); ctx.closePath();
+    ctx.fillStyle = fill; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.stroke();
+  }
+  function drawBox(x,y,wTiles,hTiles,height,top,right,left,glow){
+    const p1 = iso(x,y,height), p2 = iso(x+wTiles,y,height), p3 = iso(x+wTiles,y+hTiles,height), p4 = iso(x,y+hTiles,height);
+    const b1 = iso(x,y,0), b2 = iso(x+wTiles,y,0), b3 = iso(x+wTiles,y+hTiles,0), b4 = iso(x,y+hTiles,0);
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.lineTo(p3.x,p3.y); ctx.lineTo(p4.x,p4.y); ctx.closePath(); ctx.fillStyle = top; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(p2.x,p2.y); ctx.lineTo(b2.x,b2.y); ctx.lineTo(b3.x,b3.y); ctx.lineTo(p3.x,p3.y); ctx.closePath(); ctx.fillStyle = right; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(b1.x,b1.y); ctx.lineTo(b4.x,b4.y); ctx.lineTo(p4.x,p4.y); ctx.closePath(); ctx.fillStyle = left; ctx.fill();
+    if(glow){
+      ctx.strokeStyle = glow;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.lineTo(p3.x,p3.y); ctx.lineTo(p4.x,p4.y); ctx.closePath();
+      ctx.stroke();
+    }
+  }
+  function labelAt(point, text){
+    ctx.fillStyle = 'rgba(234,247,255,.9)';
+    ctx.font = '700 12px Calibri';
+    ctx.fillText(text, point.x - 18, point.y - 18);
+  }
+  function drawField(site){
+    const p = iso(site.x, site.y, 1);
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.beginPath();
+    ctx.moveTo(0,0); ctx.lineTo(68,-22); ctx.lineTo(126,6); ctx.lineTo(58,28); ctx.closePath();
+    ctx.fillStyle = '#4d8654'; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.28)'; ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(34,-10); ctx.lineTo(92,16);
+    ctx.moveTo(60,-18); ctx.lineTo(34,-10); ctx.lineTo(8,0);
+    ctx.strokeStyle = 'rgba(255,255,255,.55)';
+    ctx.stroke();
+    ctx.restore();
+  }
+  function drawCivicModule(item){
+    const site = buildSites[item.site] || buildSites[0];
+    if(item.id === 'soccer'){ drawField(site); labelAt(iso(site.x+.45, site.y+.2, 4), 'FIELD'); return; }
+    if(item.id === 'park'){
+      drawBox(site.x, site.y, .9,.9,20,'#5f8d5d','#416a43','#355339', null);
+      const tree = iso(site.x+.38, site.y+.38, 34);
+      ctx.fillStyle = '#6bd080'; ctx.beginPath(); ctx.arc(tree.x, tree.y, 16, 0, Math.PI*2); ctx.fill();
+      labelAt(tree, 'PARK');
+      return;
+    }
+    const styleMap = {
+      school:['#6b88b2','#49658a','#364d6c'],
+      restaurant:['#a86b57','#844b3d','#63362f'],
+      greenhouse:['#5e9468','#447453','#325541'],
+      lab:['#7b7fa6','#5b5f84','#434764'],
+      medbay:['#9fa8b0','#78828c','#5b6672'],
+      garage:['#8c744f','#6f593b','#554129']
+    };
+    const [top,right,left] = styleMap[item.id] || ['#7a89a0','#5b677d','#414c60'];
+    drawBox(site.x, site.y, 1,1,30,top,right,left,'rgba(112,221,255,.18)');
+    const roof = iso(site.x+.48, site.y+.36, 36);
+    ctx.fillStyle = item.id === 'restaurant' ? '#ffd36f' : item.id === 'medbay' ? '#ff887a' : '#70ddff';
+    ctx.fillRect(roof.x-10, roof.y-3, 20, 6);
+    labelAt(roof, item.name.split(' ')[0].toUpperCase());
+  }
+
+  for(let x=-3;x<4;x++){
+    for(let y=-3;y<4;y++){
+      drawTile(x,y, (x+y)%2===0 ? '#8b4b34' : '#92513a');
+    }
+  }
+
+  const pulse = (Math.sin(t/22)+1)/2;
+  const glow = mode === 'menu' ? 'rgba(112,221,255,.45)' : null;
+  drawBox(-1,-1,1.2,1.2,36,'#3f7f96','#214b66','#173349', glow && pulse>.3 ? glow : null);
+  drawBox(1,-1,1,1,48,'#548b4f','#345e3a','#27492c', null);
+  drawBox(0,1,1.3,1,42,'#816a47','#5b492d','#473c27', null);
+  drawBox(-2,1,1,1,30,'#5c6f85','#3b4d63','#29394c', null);
+
+  for(let i=0;i<3;i++){
+    const p = iso(1.5+i*.45, .55+i*.2, 4);
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.beginPath();
+    ctx.moveTo(0,0); ctx.lineTo(52,-18); ctx.lineTo(70,-8); ctx.lineTo(18,10); ctx.closePath();
+    const activeGlow = (mode === 'navigation' || mode === 'menu' || state.buildAnim > 0) ? 'rgba(112,221,255,.38)' : 'rgba(164,196,214,.18)';
+    ctx.fillStyle = activeGlow;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(112,221,255,.5)'; ctx.stroke();
+    ctx.restore();
+  }
+
+  state.colonyBuilds.forEach(drawCivicModule);
+
+  const dX = w*0.26 + Math.sin(t/28) * 70;
+  const dY = h*0.24 + Math.cos(t/31) * 18;
+  ctx.fillStyle = 'rgba(112,221,255,.92)';
+  ctx.beginPath(); ctx.arc(dX,dY,8,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(112,221,255,.25)'; ctx.beginPath(); ctx.arc(dX,dY,20,0,Math.PI*2); ctx.stroke();
+
+  const overlays = {
+    logistics:'LOGISTICS FLOW',
+    navigation:'NAV GRID',
+    energy:'ENERGY CORE',
+    trade:'TRADE HUB',
+    menu:'MARS COLONY PREVIEW'
+  };
+  ctx.fillStyle = 'rgba(234,247,255,.94)';
+  ctx.font = '700 22px Calibri';
+  ctx.fillText(overlays[mode] || 'SECTOR VIEW', 28, 38);
+  ctx.fillStyle = 'rgba(157,183,201,.8)';
+  ctx.font = '16px Calibri';
+  ctx.fillText('Flagship stability-first simulation HUD · procedural mission engine online', 28, 62);
+
+  if(mode !== 'menu'){
+    const info = {
+      logistics:'Variable and table missions are live in the cargo network.',
+      navigation:'Coordinate plotting and graph reading are online.',
+      energy:'Equation builder engaged. Click tokens or drag to slots.',
+      trade:'Multi-step trade modeling is active.'
+    };
+    ctx.fillStyle = 'rgba(112,221,255,.14)';
+    ctx.fillRect(24, h-92, 520, 48);
+    ctx.strokeStyle = 'rgba(112,221,255,.28)';
+    ctx.strokeRect(24, h-92, 520, 48);
+    ctx.fillStyle = '#e9f8ff';
+    ctx.font = '700 15px Calibri';
+    ctx.fillText(info[mode], 38, h-62);
+  }
+
+  if(mode !== 'menu' && state.buildAnim > 0){
+    const site = buildSites[state.recentBuildSite] || buildSites[0];
+    const target = iso(site.x+.5, site.y+.45, 8);
+    const start = { x:w*0.18, y:h*0.78 };
+    const progress = 1 - (state.buildAnim / (state.reduceMotion ? 54 : 92));
+    const workerX = start.x + (target.x - start.x) * Math.min(1, progress * 1.15);
+    const workerY = start.y + (target.y - start.y) * Math.min(1, progress * 1.15);
+    ctx.strokeStyle = 'rgba(255,255,255,.18)';
+    ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(target.x, target.y+18); ctx.stroke();
+    ctx.fillStyle = '#f4fbff';
+    ctx.beginPath(); ctx.arc(workerX, workerY-18, 9, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#70ddff';
+    ctx.fillRect(workerX-7, workerY-12, 14, 22);
+    ctx.fillStyle = '#9fd4ff';
+    ctx.fillRect(workerX+7, workerY-8, 12, 4);
+    const beamAlpha = Math.max(0, .8 - progress * .55);
+    ctx.save();
+    ctx.globalAlpha = beamAlpha;
+    ctx.strokeStyle = 'rgba(111,255,176,.95)';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(workerX+18, workerY-6); ctx.lineTo(target.x, target.y); ctx.stroke();
+    for(let i=0;i<8;i++){
+      const sparkX = target.x + Math.sin((t+i*11)/8) * 18;
+      const sparkY = target.y - i * 3;
+      ctx.fillStyle = i % 2 ? 'rgba(111,255,176,.95)' : 'rgba(112,221,255,.88)';
+      ctx.fillRect(sparkX, sparkY, 4, 4);
+    }
+    ctx.restore();
+  }
+
+  if(mode !== 'menu' && state.sceneBurst > 0){
+    const alpha = Math.max(.12, state.sceneBurst / 56);
+    const pulseRadius = 70 + (56 - state.sceneBurst) * 4;
+    ctx.save();
+    ctx.globalAlpha = alpha * .85;
+    const glow = ctx.createRadialGradient(w * .5, h * .48, 20, w * .5, h * .48, pulseRadius);
+    glow.addColorStop(0, 'rgba(111,255,176,.34)');
+    glow.addColorStop(.55, 'rgba(112,221,255,.18)');
+    glow.addColorStop(1, 'rgba(112,221,255,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(w * .5, h * .48, pulseRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(111,255,176,.72)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(w * .5, h * .48, pulseRadius * .72, 0, Math.PI * 2);
+    ctx.stroke();
+    for(let i = 0; i < 9; i++){
+      const drift = (56 - state.sceneBurst) * (8 + i * .6);
+      const px = w * .34 + i * 34 + Math.sin((t + i * 9) / 9) * 10;
+      const py = h * .64 - drift;
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(111,255,176,.88)' : 'rgba(112,221,255,.82)';
+      ctx.fillRect(px, py, 5, 5);
+    }
+    ctx.fillStyle = 'rgba(234,247,255,.96)';
+    ctx.font = '700 24px Calibri';
+    ctx.fillText(state.burstLabel || 'SYSTEM BOOST', w - 260, 46);
+    ctx.restore();
+  }
+}
+
+function animate(){
+
+    state.sceneTime += 1;
+    if(state.sceneBurst > 0) state.sceneBurst -= 1;
+    if(state.buildAnim > 0) state.buildAnim -= 1;
+    drawIsometricScene(menuCtx, menuCanvas, 'menu', state.sceneTime);
+    const sceneMode = sectors[state.sector - 1]?.scene || 'logistics';
+    drawIsometricScene(sceneCtx, sceneCanvas, sceneMode, state.sceneTime);
+    requestAnimationFrame(animate);
+  }
+
+  // events
+  $('startBtn').addEventListener('click', () => {
+    showScreen('game');
+    beginMission(1);
+  });
+  $('practiceBtn').addEventListener('click', () => {
+    showScreen('game');
+    beginMission(state.unlocked || 1);
+  });
+  $('motionBtn').addEventListener('click', () => {
+    state.reduceMotion = !state.reduceMotion;
+    document.body.classList.toggle('reduce-motion', state.reduceMotion);
+    saveState();
+    showToast(state.reduceMotion ? 'Reduced motion enabled.' : 'Reduced motion disabled.');
+  });
+  $('menuBtn').addEventListener('click', () => showScreen('menu'));
+  $('submitBtn').addEventListener('click', () => validateMission());
+  $('nextBtn').addEventListener('click', () => beginMission(state.sector));
+  $('closeHintBtn').addEventListener('click', closeHint);
+  sectorTabs.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('[data-sector]');
+    if(!btn || btn.disabled) return;
+    beginMission(Number(btn.dataset.sector));
+  });
+
+
+window.addEventListener('keydown', (ev) => {
+  if(ev.key === 'Escape') closeHint();
+  if(ev.key === 'Enter' && gameScreen.classList.contains('active') && !hintModal.classList.contains('open')){
+    const tag = document.activeElement?.tagName;
+    if(tag === 'BUTTON' && document.activeElement.id !== 'submitBtn') return;
+    ev.preventDefault();
+    validateMission();
+  }
+});
+
+  loadState();
+  updateHUD();
+  animate();
+  missionBody.innerHTML = `
+    <div class="mission-card">
+      <div class="prompt">Welcome, Commander. Launch the colony from the main menu or resume endless practice. Each sector generates new math missions every time.</div>
+      <div class="subtle">Press Enter to submit answers. Variable missions now include an Input → Output visual, and each correct mission earns 1 Build Token for new colony structures.</div>
+    </div>`;
+})();
+</script>
 </body>
 </html>

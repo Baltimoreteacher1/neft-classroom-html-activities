@@ -1,37 +1,1512 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Mean Median Mode Introhtml classroom activity.">
-  <title>Mean Median Mode Introhtml</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mean, Median, and Mode — Visual Student Lesson</title>
+  <style>
+:root{
+      --navy:#1C2E42;
+      --teal:#387F84;
+      --teal-light:#DFF2EE;
+      --amber:#F2C15B;
+      --cream:#F7F4EC;
+      --rust:#D96B48;
+      --rust-light:#FDE8DC;
+      --purple:#6B4FA0;
+      --purple-light:#EDE4F4;
+      --sage:#5A8A6A;
+      --body:#24323F;
+      --muted:#5C656E;
+      --border:#D6DBDF;
+      --white:#FFFFFF;
+
+      --mean-color:var(--teal);
+      --median-color:var(--rust);
+      --mode-color:var(--purple);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:'Nunito',sans-serif;
+      background:var(--cream);
+      color:var(--body);
+      min-height:100vh;
+    }
+
+    .app-header{
+      background:var(--navy);
+      color:#fff;
+      padding:0 1.25rem;
+      min-height:60px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+      position:sticky;
+      top:0;
+      z-index:20;
+      box-shadow:0 2px 12px rgba(0,0,0,.2);
+    }
+    .logo{
+      font-family:'Space Mono',monospace;
+      font-size:.8rem;
+      font-weight:700;
+      color:var(--amber);
+      letter-spacing:.08em;
+      white-space:nowrap;
+    }
+    .lesson-title{
+      font-size:1.05rem;
+      font-weight:900;
+      text-align:center;
+      flex:1;
+    }
+    .grade-pill{
+      background:var(--teal);
+      color:#fff;
+      font-size:.72rem;
+      font-weight:800;
+      padding:4px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+    .tab-bar{
+      display:flex;
+      gap:4px;
+      padding:.5rem .75rem 0;
+      background:var(--navy);
+      border-bottom:3px solid var(--amber);
+      overflow-x:auto;
+      scrollbar-width:none;
+    }
+    .tab-bar::-webkit-scrollbar{display:none;}
+
+    .tab-btn{
+      border:none;
+      background:transparent;
+      color:rgba(255,255,255,.65);
+      font-family:'Nunito',sans-serif;
+      font-weight:800;
+      font-size:.82rem;
+      padding:.75rem 1rem;
+      border-radius:10px 10px 0 0;
+      cursor:pointer;
+      transition:.2s ease;
+      white-space:nowrap;
+    }
+    .tab-btn:hover{
+      color:#fff;
+      background:rgba(255,255,255,.08);
+    }
+    .tab-btn.active{
+      color:var(--navy);
+      background:var(--amber);
+    }
+
+    .tab-panel{
+      display:none;
+      max-width:1040px;
+      margin:0 auto;
+      padding:1.5rem 1.2rem 3rem;
+      animation:fadeUp .25s ease;
+    }
+    .tab-panel.active{display:block;}
+
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(8px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    .hero{
+      border-radius:18px;
+      padding:1.5rem 1.5rem 1.7rem;
+      margin-bottom:1.2rem;
+      color:#fff;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero::after{
+      content:'';
+      position:absolute;
+      right:-40px;
+      top:-40px;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      background:rgba(255,255,255,.08);
+    }
+    .hero-label{
+      font-family:'Space Mono',monospace;
+      font-size:.72rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.8;
+      margin-bottom:.35rem;
+    }
+    .hero h1{
+      font-size:2.3rem;
+      line-height:1.05;
+      font-weight:900;
+      margin-bottom:.35rem;
+      position:relative;
+      z-index:1;
+    }
+    .hero p{
+      font-size:1rem;
+      line-height:1.55;
+      max-width:750px;
+      position:relative;
+      z-index:1;
+    }
+    .hero-icon{
+      position:absolute;
+      right:1.5rem;
+      bottom:.5rem;
+      font-size:4.75rem;
+      opacity:.18;
+      z-index:0;
+    }
+
+    .hero.mean{background:linear-gradient(135deg,#1C2E42 0%, #2A6267 100%);}
+    .hero.median{background:linear-gradient(135deg,#7A2A10 0%, #D96B48 100%);}
+    .hero.mode{background:linear-gradient(135deg,#352050 0%, #6B4FA0 100%);}
+    .hero.review{background:linear-gradient(135deg,#1C2E42 0%, #36495a 100%);}
+
+    .section-label{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:1.2rem 0 .8rem;
+    }
+    .label-pill{
+      background:var(--navy);
+      color:var(--amber);
+      font-family:'Space Mono',monospace;
+      font-size:.68rem;
+      font-weight:800;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      border-radius:999px;
+      padding:4px 10px;
+    }
+    .section-label h2{
+      font-size:1.06rem;
+      font-weight:900;
+      color:var(--navy);
+    }
+
+    .card{
+      background:var(--white);
+      border-radius:16px;
+      border:1.5px solid var(--border);
+      box-shadow:0 2px 12px rgba(0,0,0,.05);
+      padding:1rem 1.1rem;
+      margin-bottom:1rem;
+    }
+
+    .starter{
+      font-size:1rem;
+      line-height:1.65;
+      font-weight:700;
+    }
+    .starter strong{
+      color:var(--navy);
+    }
+
+    .tiny-note{
+      margin-top:.45rem;
+      font-size:.82rem;
+      line-height:1.5;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .concept-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1rem;
+      margin-bottom:1rem;
+    }
+    .concept-card{
+      background:var(--white);
+      border-radius:14px;
+      border:1.5px solid var(--border);
+      box-shadow:0 2px 12px rgba(0,0,0,.05);
+      padding:1rem;
+    }
+    .concept-icon{
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.3rem;
+      margin-bottom:.7rem;
+    }
+    .concept-title{
+      font-size:.92rem;
+      font-weight:900;
+      color:var(--navy);
+      margin-bottom:.28rem;
+    }
+    .concept-card p{
+      font-size:.87rem;
+      line-height:1.55;
+      font-weight:600;
+      color:var(--body);
+    }
+
+    .mean-theme .concept-icon{background:var(--teal-light);color:var(--mean-color);}
+    .median-theme .concept-icon{background:var(--rust-light);color:var(--median-color);}
+    .mode-theme .concept-icon{background:var(--purple-light);color:var(--mode-color);}
+
+    .visual-story{
+      background:var(--white);
+      border-radius:16px;
+      border:1.5px solid var(--border);
+      box-shadow:0 2px 12px rgba(0,0,0,.05);
+      padding:1rem 1.1rem;
+      margin-bottom:1rem;
+    }
+    .story-top{
+      margin-bottom:.75rem;
+    }
+    .story-kicker{
+      font-family:'Space Mono',monospace;
+      font-size:.7rem;
+      font-weight:800;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:.3rem;
+    }
+    .story-title{
+      font-size:1rem;
+      font-weight:900;
+      color:var(--navy);
+      margin-bottom:.2rem;
+    }
+    .story-copy{
+      font-size:.9rem;
+      line-height:1.55;
+      font-weight:600;
+      color:var(--body);
+    }
+
+    .equal-share{
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      gap:1rem;
+      align-items:center;
+      margin-top:.75rem;
+    }
+    .group-row,.shared-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.7rem;
+      justify-content:center;
+    }
+    .mini-box{
+      min-width:100px;
+      background:#F8FAFB;
+      border:2px solid var(--border);
+      border-radius:12px;
+      padding:.65rem;
+      text-align:center;
+    }
+    .mini-box.equal{
+      border-color:var(--mean-color);
+      background:#ECF7F7;
+    }
+    .mini-box-label{
+      font-family:'Space Mono',monospace;
+      font-size:.72rem;
+      font-weight:700;
+      color:var(--muted);
+      margin-bottom:.5rem;
+    }
+    .dot-row{
+      display:flex;
+      gap:4px;
+      flex-wrap:wrap;
+      justify-content:center;
+      min-height:38px;
+    }
+    .dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      display:inline-block;
+    }
+    .dot.mean{background:var(--mean-color);}
+    .dot.median{background:var(--median-color);}
+    .dot.mode{background:var(--mode-color);}
+    .arrow-big{
+      font-size:1.6rem;
+      font-weight:900;
+      color:var(--amber);
+      text-align:center;
+    }
+
+    .math-chip{
+      display:inline-block;
+      margin-top:.7rem;
+      padding:.45rem .8rem;
+      border-radius:10px;
+      background:var(--cream);
+      font-family:'Space Mono',monospace;
+      font-size:.9rem;
+      font-weight:700;
+      color:var(--navy);
+    }
+
+    .graph-wrap{
+      background:var(--white);
+      border-radius:16px;
+      border:1.5px solid var(--border);
+      box-shadow:0 2px 12px rgba(0,0,0,.05);
+      padding:1rem 1.1rem;
+      margin-bottom:1rem;
+    }
+    .graph-label{
+      font-family:'Space Mono',monospace;
+      font-size:.74rem;
+      color:var(--muted);
+      font-weight:700;
+      margin-bottom:.7rem;
+    }
+
+    .bars{
+      display:flex;
+      align-items:flex-end;
+      gap:10px;
+      height:150px;
+      border-bottom:2px solid var(--border);
+      padding-bottom:8px;
+      margin-bottom:.55rem;
+    }
+    .bar-item{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      align-items:center;
+      gap:6px;
+    }
+    .bar{
+      width:100%;
+      max-width:70px;
+      border-radius:10px 10px 0 0;
+      position:relative;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-top:.25rem;
+      color:#fff;
+      font-weight:900;
+      font-size:.82rem;
+    }
+    .bar.mean{background:var(--mean-color);}
+    .bar-label{
+      font-size:.72rem;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .mean-line{
+      position:relative;
+      border-top:3px dashed var(--amber);
+      margin-top:.65rem;
+    }
+    .mean-line span{
+      position:absolute;
+      right:0;
+      top:-22px;
+      background:#fff;
+      padding:0 4px;
+      font-family:'Space Mono',monospace;
+      font-size:.72rem;
+      color:var(--rust);
+      font-weight:700;
+    }
+
+    .middle-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1rem;
+      margin-top:.4rem;
+    }
+    .middle-demo{
+      background:#fff;
+      border:1.5px solid var(--border);
+      border-radius:14px;
+      padding:.95rem;
+    }
+    .middle-demo h3{
+      font-size:.92rem;
+      color:var(--navy);
+      font-weight:900;
+      margin-bottom:.25rem;
+    }
+    .middle-demo p{
+      font-size:.85rem;
+      line-height:1.5;
+      color:var(--body);
+      font-weight:600;
+      margin-bottom:.6rem;
+    }
+    .middle-track{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-bottom:.55rem;
+    }
+    .middle-number{
+      width:44px;
+      height:44px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:'Space Mono',monospace;
+      font-size:.95rem;
+      font-weight:700;
+      background:#FFF7F3;
+      border:2px solid #F4C8B8;
+      position:relative;
+      color:var(--navy);
+    }
+    .middle-number.crossed::before,
+    .middle-number.crossed::after{
+      content:'';
+      position:absolute;
+      width:48px;
+      height:2px;
+      background:var(--median-color);
+      top:50%;
+      left:-2px;
+    }
+    .middle-number.crossed::before{transform:rotate(34deg);}
+    .middle-number.crossed::after{transform:rotate(-34deg);}
+    .middle-number.center{
+      background:var(--rust-light);
+      border-color:var(--median-color);
+      color:var(--median-color);
+    }
+
+    .mode-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1rem;
+      margin-top:.3rem;
+    }
+    .mode-box{
+      background:#fff;
+      border:1.5px solid var(--border);
+      border-radius:14px;
+      padding:.95rem;
+      text-align:center;
+    }
+    .mode-box.win{
+      border-color:var(--mode-color);
+      background:#F7F3FC;
+    }
+    .mode-box h3{
+      font-size:.9rem;
+      font-weight:900;
+      color:var(--navy);
+      margin-bottom:.45rem;
+    }
+    .vote-stack{
+      min-height:56px;
+      display:flex;
+      gap:5px;
+      justify-content:center;
+      align-items:flex-end;
+      flex-wrap:wrap;
+      margin-bottom:.45rem;
+    }
+    .mode-box p{
+      font-size:.84rem;
+      line-height:1.45;
+      font-weight:700;
+      color:var(--body);
+    }
+
+    .case-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1rem;
+      margin-top:.35rem;
+    }
+    .case-card{
+      background:#fff;
+      border:1.5px solid var(--border);
+      border-radius:14px;
+      padding:.95rem;
+    }
+    .case-card h3{
+      font-size:.9rem;
+      color:var(--navy);
+      font-weight:900;
+      margin-bottom:.35rem;
+    }
+    .case-card p{
+      font-size:.84rem;
+      line-height:1.55;
+      font-weight:600;
+      color:var(--body);
+    }
+
+    .steps{
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      margin-bottom:1rem;
+    }
+    .step{
+      display:flex;
+      gap:.85rem;
+      background:#fff;
+      border:1.5px solid var(--border);
+      border-radius:14px;
+      padding:.95rem 1rem;
+      align-items:flex-start;
+      box-shadow:0 2px 10px rgba(0,0,0,.04);
+    }
+    .step-num{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-family:'Space Mono',monospace;
+      font-size:.85rem;
+      font-weight:700;
+      flex-shrink:0;
+    }
+    .step.mean .step-num{background:var(--mean-color);}
+    .step.median .step-num{background:var(--median-color);}
+    .step.mode .step-num{background:var(--mode-color);}
+    .step-content h3{
+      font-size:.82rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-family:'Space Mono',monospace;
+      color:var(--muted);
+      margin-bottom:.15rem;
+    }
+    .step-content p{
+      font-size:.92rem;
+      line-height:1.55;
+      font-weight:600;
+    }
+
+    .practice-card{
+      background:#fff;
+      border-radius:16px;
+      border:1.5px solid var(--border);
+      box-shadow:0 2px 12px rgba(0,0,0,.05);
+      padding:1rem 1.1rem;
+      margin-bottom:1rem;
+    }
+    .problem-tag{
+      font-family:'Space Mono',monospace;
+      font-size:.68rem;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      font-weight:800;
+      color:var(--muted);
+      margin-bottom:.35rem;
+    }
+    .problem-text{
+      font-size:.98rem;
+      line-height:1.55;
+      font-weight:800;
+      color:var(--navy);
+      margin-bottom:.75rem;
+    }
+    .chip-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      margin-bottom:.8rem;
+    }
+    .chip{
+      border-radius:10px;
+      border:2px solid var(--border);
+      background:var(--cream);
+      padding:5px 12px;
+      font-family:'Space Mono',monospace;
+      font-size:.92rem;
+      font-weight:700;
+      color:var(--navy);
+    }
+    .guided-box{
+      background:#F8FAFB;
+      border:1.5px dashed var(--border);
+      border-radius:12px;
+      padding:.85rem .95rem;
+      margin-bottom:.8rem;
+    }
+    .guided-title{
+      font-family:'Space Mono',monospace;
+      font-size:.7rem;
+      font-weight:800;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:.5rem;
+    }
+    .guided-row{
+      font-size:.88rem;
+      line-height:1.65;
+      font-weight:700;
+      color:var(--body);
+      margin-bottom:.2rem;
+    }
+
+    .answer-row{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:10px;
+    }
+    .answer-label{
+      font-size:.9rem;
+      font-weight:800;
+      color:var(--body);
+    }
+    .answer-input{
+      border:2px solid var(--border);
+      border-radius:10px;
+      padding:8px 12px;
+      width:110px;
+      font-family:'Space Mono',monospace;
+      font-size:.92rem;
+      font-weight:700;
+      color:var(--navy);
+      outline:none;
+      background:#fff;
+    }
+    .answer-input:focus{border-color:var(--teal);}
+    .check-btn{
+      border:none;
+      background:var(--navy);
+      color:#fff;
+      border-radius:10px;
+      padding:8px 16px;
+      font-family:'Nunito',sans-serif;
+      font-size:.85rem;
+      font-weight:900;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .check-btn:hover{background:var(--teal);}
+    .feedback{
+      font-size:.86rem;
+      font-weight:800;
+      min-height:20px;
+    }
+    .feedback.correct{color:var(--sage);}
+    .feedback.incorrect{color:var(--rust);}
+
+    .compare-table{
+      display:grid;
+      grid-template-columns:1.1fr 1fr 1fr 1fr;
+      gap:0;
+      overflow:hidden;
+      border-radius:16px;
+      border:1.5px solid var(--border);
+      background:#fff;
+      box-shadow:0 2px 12px rgba(0,0,0,.05);
+      margin-bottom:1rem;
+    }
+    .cell{
+      padding:.9rem .8rem;
+      border-right:1.5px solid var(--border);
+      border-bottom:1.5px solid var(--border);
+      font-size:.88rem;
+      line-height:1.5;
+      font-weight:700;
+    }
+    .cell:nth-child(4n){border-right:none;}
+    .head{
+      background:var(--navy);
+      color:#fff;
+      font-weight:900;
+    }
+    .subhead{
+      background:#EEF2F5;
+      color:var(--navy);
+      font-weight:900;
+    }
+
+    .mini-quiz{
+      background:#fff;
+      border-radius:16px;
+      border:1.5px solid var(--border);
+      box-shadow:0 2px 12px rgba(0,0,0,.05);
+      padding:1rem 1.1rem;
+      margin-bottom:1rem;
+    }
+    .choice-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:.75rem;
+      margin-top:.8rem;
+    }
+    .choice{
+      border:2px solid var(--border);
+      border-radius:12px;
+      background:var(--cream);
+      color:var(--navy);
+      padding:.8rem .85rem;
+      font-family:'Nunito',sans-serif;
+      font-size:.92rem;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s ease;
+      text-align:left;
+    }
+    .choice:hover{
+      border-color:var(--teal);
+      background:#EEF7F7;
+    }
+    .choice.correct{
+      background:#EAF5EE;
+      border-color:var(--sage);
+      color:var(--sage);
+    }
+    .choice.incorrect{
+      background:#FFF1EC;
+      border-color:var(--rust);
+      color:var(--rust);
+    }
+    .quiz-feedback{
+      min-height:22px;
+      margin-top:.8rem;
+      font-size:.9rem;
+      font-weight:800;
+    }
+
+    .footer{
+      background:var(--navy);
+      color:rgba(255,255,255,.5);
+      text-align:center;
+      padding:.95rem;
+      font-family:'Space Mono',monospace;
+      font-size:.72rem;
+      letter-spacing:.06em;
+    }
+
+    @media (max-width:900px){
+      .concept-grid,
+      .mode-grid,
+      .case-grid,
+      .compare-table{
+        grid-template-columns:1fr;
+      }
+      .middle-grid{
+        grid-template-columns:1fr;
+      }
+      .equal-share{
+        grid-template-columns:1fr;
+      }
+      .compare-table .cell{
+        border-right:none;
+      }
+    }
+
+    @media (max-width:640px){
+      .hero h1{font-size:2rem;}
+      .choice-grid{grid-template-columns:1fr;}
+      .lesson-title{font-size:.95rem;}
+      .app-header{padding:0 .9rem;}
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>Mean Median Mode Introhtml</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Mean Median Mode Introhtml</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> MeanMedianModeIntrohtml</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/statistics-data/meanmedianmodeintrohtml/</span></p>
-      </div>
-    </section>
+  <header class="app-header">
+    <div class="logo">EDUWONDERLAB</div>
+    <div class="lesson-title">Mean, Median &amp; Mode</div>
+    <div class="grade-pill">Grade 6</div>
+  </header>
 
-    <div class="button-row">
-      <a class="primary-button" href="/statistics-data/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+  <nav class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('mean', this)">➕ Mean</button>
+    <button class="tab-btn" onclick="showTab('median', this)">🎯 Median</button>
+    <button class="tab-btn" onclick="showTab('mode', this)">⭐ Mode</button>
+    <button class="tab-btn" onclick="showTab('review', this)">🧠 Review</button>
+  </nav>
+
+  <!-- MEAN -->
+  <section id="tab-mean" class="tab-panel active">
+    <div class="hero mean">
+      <div class="hero-label">Measure of Center</div>
+      <h1>Mean</h1>
+      <p>
+        The <strong>mean</strong> is the <strong>average</strong>. Think of it as the
+        <strong>fair share</strong> amount. If all the numbers were put together and
+        shared equally, the amount each group gets is the mean.
+      </p>
+      <div class="hero-icon">➗</div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+
+    <div class="card starter">
+      <strong>Simple definition:</strong> Add all the values. Then divide by how many values there are.
+      <div class="tiny-note">Ask yourself: “If everything was shared evenly, what would each group get?”</div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">IDEA</span><h2>Mean in simple steps</h2></div>
+    <div class="concept-grid mean-theme">
+      <div class="concept-card">
+        <div class="concept-icon">📥</div>
+        <div class="concept-title">1. Put everything together</div>
+        <p>Add all the numbers so you know the total amount.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">👥</div>
+        <div class="concept-title">2. Count how many values</div>
+        <p>Count how many numbers are in the data set.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">⚖️</div>
+        <div class="concept-title">3. Share equally</div>
+        <p>Divide the total by the number of values. That answer is the mean.</p>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">VISUAL</span><h2>See the fair-share idea</h2></div>
+    <div class="visual-story">
+      <div class="story-top">
+        <div class="story-kicker">Visual Story</div>
+        <div class="story-title">Four students have different numbers of stickers</div>
+        <div class="story-copy">
+          At first, the amounts are uneven. Then we imagine putting all the stickers together and
+          sharing them back equally.
+        </div>
+      </div>
+
+      <div class="equal-share">
+        <div class="group-row">
+          <div class="mini-box">
+            <div class="mini-box-label">A = 2</div>
+            <div class="dot-row">
+              <span class="dot mean"></span><span class="dot mean"></span>
+            </div>
+          </div>
+          <div class="mini-box">
+            <div class="mini-box-label">B = 4</div>
+            <div class="dot-row">
+              <span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span>
+            </div>
+          </div>
+          <div class="mini-box">
+            <div class="mini-box-label">C = 6</div>
+            <div class="dot-row">
+              <span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span>
+            </div>
+          </div>
+          <div class="mini-box">
+            <div class="mini-box-label">D = 8</div>
+            <div class="dot-row">
+              <span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow-big">→</div>
+
+        <div class="shared-row">
+          <div class="mini-box equal">
+            <div class="mini-box-label">A = 5</div>
+            <div class="dot-row">
+              <span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span>
+            </div>
+          </div>
+          <div class="mini-box equal">
+            <div class="mini-box-label">B = 5</div>
+            <div class="dot-row">
+              <span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span>
+            </div>
+          </div>
+          <div class="mini-box equal">
+            <div class="mini-box-label">C = 5</div>
+            <div class="dot-row">
+              <span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span>
+            </div>
+          </div>
+          <div class="mini-box equal">
+            <div class="mini-box-label">D = 5</div>
+            <div class="dot-row">
+              <span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span><span class="dot mean"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="math-chip">2 + 4 + 6 + 8 = 20, and 20 ÷ 4 = 5</div>
+      <div class="tiny-note">So the mean is 5 because 5 is the fair-share amount.</div>
+    </div>
+
+    <div class="graph-wrap">
+      <div class="graph-label">Bar graph example: 2, 4, 6, 8, 10</div>
+      <div class="bars">
+        <div class="bar-item">
+          <div class="bar mean" style="height:26px;">2</div>
+          <div class="bar-label">A</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar mean" style="height:52px;">4</div>
+          <div class="bar-label">B</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar mean" style="height:78px;">6</div>
+          <div class="bar-label">C</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar mean" style="height:104px;">8</div>
+          <div class="bar-label">D</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar mean" style="height:130px;">10</div>
+          <div class="bar-label">E</div>
+        </div>
+      </div>
+      <div class="mean-line"><span>Mean = 6</span></div>
+      <div class="tiny-note">The dashed line shows the level where the data would balance out.</div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">STEPS</span><h2>How to find the mean</h2></div>
+    <div class="steps">
+      <div class="step mean">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Add</h3>
+          <p>Add all the values together. Example: 3 + 7 + 5 + 9 + 1 = 25</p>
+        </div>
+      </div>
+      <div class="step mean">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Count</h3>
+          <p>Count how many values there are. Example: there are 5 numbers.</p>
+        </div>
+      </div>
+      <div class="step mean">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Divide</h3>
+          <p>Divide the total by the number of values. Example: 25 ÷ 5 = 5</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">PRACTICE</span><h2>Try it</h2></div>
+
+    <div class="practice-card">
+      <div class="problem-tag">Problem 1</div>
+      <div class="problem-text">Books read last month: 3, 7, 5, 9, 1. What is the mean?</div>
+      <div class="chip-row">
+        <span class="chip">3</span><span class="chip">7</span><span class="chip">5</span><span class="chip">9</span><span class="chip">1</span>
+      </div>
+      <div class="guided-box">
+        <div class="guided-title">Show the steps</div>
+        <div class="guided-row">Add: 3 + 7 + 5 + 9 + 1 = 25</div>
+        <div class="guided-row">Count: 5 numbers</div>
+        <div class="guided-row">Divide: 25 ÷ 5 = 5</div>
+      </div>
+      <div class="answer-row">
+        <div class="answer-label">Mean =</div>
+        <input class="answer-input" id="mean1" type="number" />
+        <button class="check-btn" onclick="checkAnswer('mean1', 5, 'mean1fb')">Check</button>
+        <div class="feedback" id="mean1fb"></div>
+      </div>
+    </div>
+
+    <div class="practice-card">
+      <div class="problem-tag">Problem 2</div>
+      <div class="problem-text">Goals scored in 4 games: 2, 6, 4, 8. What is the mean?</div>
+      <div class="chip-row">
+        <span class="chip">2</span><span class="chip">6</span><span class="chip">4</span><span class="chip">8</span>
+      </div>
+      <div class="guided-box">
+        <div class="guided-title">Show the steps</div>
+        <div class="guided-row">Add: 2 + 6 + 4 + 8 = 20</div>
+        <div class="guided-row">Count: 4 numbers</div>
+        <div class="guided-row">Divide: 20 ÷ 4 = 5</div>
+      </div>
+      <div class="answer-row">
+        <div class="answer-label">Mean =</div>
+        <input class="answer-input" id="mean2" type="number" />
+        <button class="check-btn" onclick="checkAnswer('mean2', 5, 'mean2fb')">Check</button>
+        <div class="feedback" id="mean2fb"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEDIAN -->
+  <section id="tab-median" class="tab-panel">
+    <div class="hero median">
+      <div class="hero-label">Measure of Center</div>
+      <h1>Median</h1>
+      <p>
+        The <strong>median</strong> is the <strong>middle value</strong> in a data set,
+        but first the numbers must be put in order from <strong>least to greatest</strong>.
+        If there are 2 middle numbers, find the <strong>mean</strong> of those 2 numbers.
+      </p>
+      <div class="hero-icon">🎯</div>
+    </div>
+
+    <div class="card starter">
+      <strong>Simple definition:</strong> Put the numbers in order. Then find the middle.
+      <div class="tiny-note">Think of students lining up. The person in the middle is like the median.</div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">IDEA</span><h2>Median in simple steps</h2></div>
+    <div class="concept-grid median-theme">
+      <div class="concept-card">
+        <div class="concept-icon">↕️</div>
+        <div class="concept-title">1. Order the numbers</div>
+        <p>Always go from smallest to largest first.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">➡️</div>
+        <div class="concept-title">2. Move to the middle</div>
+        <p>Cross off one number from each end until you reach the center.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">➗</div>
+        <div class="concept-title">3. If 2 are in the middle</div>
+        <p>Find the average of the 2 middle numbers.</p>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">VISUAL</span><h2>See the middle</h2></div>
+    <div class="visual-story">
+      <div class="story-top">
+        <div class="story-kicker">Visual Story</div>
+        <div class="story-title">Median is the center after the numbers are ordered</div>
+        <div class="story-copy">
+          You can cross off one number from the left and one from the right until the middle is left.
+        </div>
+      </div>
+
+      <div class="middle-grid">
+        <div class="middle-demo">
+          <h3>Odd number of values</h3>
+          <p>Example: 3, 7, 12, 15, 20</p>
+          <div class="middle-track">
+            <div class="middle-number crossed">3</div>
+            <div class="middle-number crossed">7</div>
+            <div class="middle-number center">12</div>
+            <div class="middle-number crossed">15</div>
+            <div class="middle-number crossed">20</div>
+          </div>
+          <div class="tiny-note">One number is in the middle, so the median is 12.</div>
+        </div>
+
+        <div class="middle-demo">
+          <h3>Even number of values</h3>
+          <p>Example: 4, 8, 10, 14</p>
+          <div class="middle-track">
+            <div class="middle-number crossed">4</div>
+            <div class="middle-number center">8</div>
+            <div class="middle-number center">10</div>
+            <div class="middle-number crossed">14</div>
+          </div>
+          <div class="math-chip">(8 + 10) ÷ 2 = 9</div>
+          <div class="tiny-note">Two numbers are in the middle, so the median is 9.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">STEPS</span><h2>How to find the median</h2></div>
+    <div class="steps">
+      <div class="step median">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Order</h3>
+          <p>Put all numbers in order from least to greatest. Example: 9, 3, 7, 1, 5 → 1, 3, 5, 7, 9</p>
+        </div>
+      </div>
+      <div class="step median">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Find the middle</h3>
+          <p>If one number is in the middle, that number is the median.</p>
+        </div>
+      </div>
+      <div class="step median">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Average if needed</h3>
+          <p>If two numbers are in the middle, find their mean.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">PRACTICE</span><h2>Try it</h2></div>
+
+    <div class="practice-card">
+      <div class="problem-tag">Problem 1</div>
+      <div class="problem-text">Ages in a club: 11, 14, 12, 13, 10. What is the median?</div>
+      <div class="chip-row">
+        <span class="chip">11</span><span class="chip">14</span><span class="chip">12</span><span class="chip">13</span><span class="chip">10</span>
+      </div>
+      <div class="guided-box">
+        <div class="guided-title">Show the steps</div>
+        <div class="guided-row">Put in order: 10, 11, 12, 13, 14</div>
+        <div class="guided-row">Middle number: 12</div>
+      </div>
+      <div class="answer-row">
+        <div class="answer-label">Median =</div>
+        <input class="answer-input" id="median1" type="number" />
+        <button class="check-btn" onclick="checkAnswer('median1', 12, 'median1fb')">Check</button>
+        <div class="feedback" id="median1fb"></div>
+      </div>
+    </div>
+
+    <div class="practice-card">
+      <div class="problem-tag">Problem 2</div>
+      <div class="problem-text">Test scores: 88, 72, 95, 81, 77, 90. What is the median?</div>
+      <div class="chip-row">
+        <span class="chip">88</span><span class="chip">72</span><span class="chip">95</span><span class="chip">81</span><span class="chip">77</span><span class="chip">90</span>
+      </div>
+      <div class="guided-box">
+        <div class="guided-title">Show the steps</div>
+        <div class="guided-row">Put in order: 72, 77, 81, 88, 90, 95</div>
+        <div class="guided-row">Middle numbers: 81 and 88</div>
+        <div class="guided-row">Mean of middle numbers: (81 + 88) ÷ 2 = 84.5</div>
+      </div>
+      <div class="answer-row">
+        <div class="answer-label">Median =</div>
+        <input class="answer-input" id="median2" type="number" step="0.1" />
+        <button class="check-btn" onclick="checkAnswer('median2', 84.5, 'median2fb', 0.1)">Check</button>
+        <div class="feedback" id="median2fb"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODE -->
+  <section id="tab-mode" class="tab-panel">
+    <div class="hero mode">
+      <div class="hero-label">Measure of Center</div>
+      <h1>Mode</h1>
+      <p>
+        The <strong>mode</strong> is the value that appears <strong>most often</strong>.
+        It is like the <strong>winner</strong> of the data set. A data set can have
+        <strong>one mode</strong>, <strong>two modes</strong>, or <strong>no mode</strong>.
+      </p>
+      <div class="hero-icon">⭐</div>
+    </div>
+
+    <div class="card starter">
+      <strong>Simple definition:</strong> Look for the value that repeats the most.
+      <div class="tiny-note">Ask yourself: “Which number shows up the most times?”</div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">IDEA</span><h2>Mode in simple steps</h2></div>
+    <div class="concept-grid mode-theme">
+      <div class="concept-card">
+        <div class="concept-icon">🔎</div>
+        <div class="concept-title">1. Look carefully</div>
+        <p>Read through the data and notice which values repeat.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🧮</div>
+        <div class="concept-title">2. Count the repeats</div>
+        <p>Keep track of how many times each value appears.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🏆</div>
+        <div class="concept-title">3. Pick the winner</div>
+        <p>The value with the greatest count is the mode.</p>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">VISUAL</span><h2>See which value wins</h2></div>
+    <div class="visual-story">
+      <div class="story-top">
+        <div class="story-kicker">Visual Story</div>
+        <div class="story-title">Favorite snack votes</div>
+        <div class="story-copy">
+          Each dot is one vote. The snack with the most dots is the mode.
+        </div>
+      </div>
+
+      <div class="mode-grid">
+        <div class="mode-box">
+          <h3>Apple</h3>
+          <div class="vote-stack">
+            <span class="dot mode"></span><span class="dot mode"></span>
+          </div>
+          <p>2 votes</p>
+        </div>
+
+        <div class="mode-box win">
+          <h3>Chips</h3>
+          <div class="vote-stack">
+            <span class="dot mode"></span><span class="dot mode"></span><span class="dot mode"></span><span class="dot mode"></span>
+          </div>
+          <p><strong>4 votes → mode</strong></p>
+        </div>
+
+        <div class="mode-box">
+          <h3>Cookie</h3>
+          <div class="vote-stack">
+            <span class="dot mode"></span><span class="dot mode"></span><span class="dot mode"></span>
+          </div>
+          <p>3 votes</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="case-grid">
+      <div class="case-card">
+        <h3>One mode</h3>
+        <p>1, 2, <strong style="color:var(--mode-color)">3, 3, 3</strong>, 4, 5<br />Only 3 appears most often.</p>
+      </div>
+      <div class="case-card">
+        <h3>Two modes</h3>
+        <p>1, <strong style="color:var(--mode-color)">2, 2</strong>, 3, <strong style="color:var(--mode-color)">4, 4</strong>, 5<br />2 and 4 are tied, so both are modes.</p>
+      </div>
+      <div class="case-card">
+        <h3>No mode</h3>
+        <p>1, 2, 3, 4, 5<br />Nothing repeats, so there is no mode.</p>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">STEPS</span><h2>How to find the mode</h2></div>
+    <div class="steps">
+      <div class="step mode">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Read the values</h3>
+          <p>Look through the data and notice repeated numbers.</p>
+        </div>
+      </div>
+      <div class="step mode">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Count each one</h3>
+          <p>Figure out how many times each value appears.</p>
+        </div>
+      </div>
+      <div class="step mode">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Choose the most frequent</h3>
+          <p>The value that appears the most is the mode.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">PRACTICE</span><h2>Try it</h2></div>
+
+    <div class="practice-card">
+      <div class="problem-tag">Problem 1</div>
+      <div class="problem-text">Shoe sizes: 7, 8, 6, 8, 9, 8, 7, 6, 8. What is the mode?</div>
+      <div class="chip-row">
+        <span class="chip">7</span><span class="chip">8</span><span class="chip">6</span><span class="chip">8</span><span class="chip">9</span><span class="chip">8</span><span class="chip">7</span><span class="chip">6</span><span class="chip">8</span>
+      </div>
+      <div class="guided-box">
+        <div class="guided-title">Count the repeats</div>
+        <div class="guided-row">6 appears 2 times</div>
+        <div class="guided-row">7 appears 2 times</div>
+        <div class="guided-row">8 appears 4 times</div>
+        <div class="guided-row">9 appears 1 time</div>
+      </div>
+      <div class="answer-row">
+        <div class="answer-label">Mode =</div>
+        <input class="answer-input" id="mode1" type="number" />
+        <button class="check-btn" onclick="checkAnswer('mode1', 8, 'mode1fb')">Check</button>
+        <div class="feedback" id="mode1fb"></div>
+      </div>
+    </div>
+
+    <div class="practice-card">
+      <div class="problem-tag">Problem 2</div>
+      <div class="problem-text">Colors: red, blue, red, green, red, blue. What is the mode?</div>
+      <div class="chip-row">
+        <span class="chip">red</span><span class="chip">blue</span><span class="chip">red</span><span class="chip">green</span><span class="chip">red</span><span class="chip">blue</span>
+      </div>
+      <div class="guided-box">
+        <div class="guided-title">Count the repeats</div>
+        <div class="guided-row">red appears 3 times</div>
+        <div class="guided-row">blue appears 2 times</div>
+        <div class="guided-row">green appears 1 time</div>
+      </div>
+      <div class="answer-row">
+        <div class="answer-label">Mode =</div>
+        <input class="answer-input" id="mode2" type="text" />
+        <button class="check-btn" onclick="checkTextAnswer('mode2', 'red', 'mode2fb')">Check</button>
+        <div class="feedback" id="mode2fb"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW -->
+  <section id="tab-review" class="tab-panel">
+    <div class="hero review">
+      <div class="hero-label">Quick Compare</div>
+      <h1>Review</h1>
+      <p>
+        Here is a simple way to remember the difference between mean, median, and mode.
+      </p>
+      <div class="hero-icon">🧠</div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">COMPARE</span><h2>What does each one mean?</h2></div>
+
+    <div class="compare-table">
+      <div class="cell head">Topic</div>
+      <div class="cell head">What it means</div>
+      <div class="cell head">What you do</div>
+      <div class="cell head">Helpful clue</div>
+
+      <div class="cell subhead">Mean</div>
+      <div class="cell">Average / fair share</div>
+      <div class="cell">Add, then divide</div>
+      <div class="cell">Think: share equally</div>
+
+      <div class="cell subhead">Median</div>
+      <div class="cell">Middle value</div>
+      <div class="cell">Put in order, then find the middle</div>
+      <div class="cell">Think: center of a line</div>
+
+      <div class="cell subhead">Mode</div>
+      <div class="cell">Most common value</div>
+      <div class="cell">Count repeats</div>
+      <div class="cell">Think: winner / most popular</div>
+    </div>
+
+    <div class="section-label"><span class="label-pill">CHECK</span><h2>Mini review questions</h2></div>
+
+    <div class="mini-quiz">
+      <div class="problem-tag">Question 1</div>
+      <div class="problem-text">Which measure tells the fair-share amount?</div>
+      <div class="choice-grid" id="quiz1">
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz1fb')">Median</button>
+        <button class="choice" onclick="gradeChoice(this, true, 'quiz1fb')">Mean</button>
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz1fb')">Mode</button>
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz1fb')">Range</button>
+      </div>
+      <div class="quiz-feedback" id="quiz1fb"></div>
+    </div>
+
+    <div class="mini-quiz">
+      <div class="problem-tag">Question 2</div>
+      <div class="problem-text">Which measure tells the middle number after the data is ordered?</div>
+      <div class="choice-grid" id="quiz2">
+        <button class="choice" onclick="gradeChoice(this, true, 'quiz2fb')">Median</button>
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz2fb')">Mean</button>
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz2fb')">Mode</button>
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz2fb')">Total</button>
+      </div>
+      <div class="quiz-feedback" id="quiz2fb"></div>
+    </div>
+
+    <div class="mini-quiz">
+      <div class="problem-tag">Question 3</div>
+      <div class="problem-text">Which measure tells the value that appears most often?</div>
+      <div class="choice-grid" id="quiz3">
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz3fb')">Mean</button>
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz3fb')">Median</button>
+        <button class="choice" onclick="gradeChoice(this, true, 'quiz3fb')">Mode</button>
+        <button class="choice" onclick="gradeChoice(this, false, 'quiz3fb')">Difference</button>
+      </div>
+      <div class="quiz-feedback" id="quiz3fb"></div>
+    </div>
+  </section>
+
+  <div class="footer">MEAN · MEDIAN · MODE · VISUAL STUDENT SUPPORT</div>
+
+  <script>
+    function showTab(tabName, btn){
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(button => button.classList.remove('active'));
+      document.getElementById('tab-' + tabName).classList.add('active');
+      btn.classList.add('active');
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function checkAnswer(inputId, answer, feedbackId, tolerance = 0){
+      const input = document.getElementById(inputId);
+      const feedback = document.getElementById(feedbackId);
+      const val = parseFloat(input.value);
+
+      if (isNaN(val)){
+        feedback.textContent = 'Type an answer first.';
+        feedback.className = 'feedback incorrect';
+        return;
+      }
+
+      if (Math.abs(val - answer) <= tolerance){
+        feedback.textContent = 'Correct!';
+        feedback.className = 'feedback correct';
+      } else {
+        feedback.textContent = 'Not yet. Try again.';
+        feedback.className = 'feedback incorrect';
+      }
+    }
+
+    function checkTextAnswer(inputId, answer, feedbackId){
+      const input = document.getElementById(inputId);
+      const feedback = document.getElementById(feedbackId);
+      const val = input.value.trim().toLowerCase();
+
+      if (!val){
+        feedback.textContent = 'Type an answer first.';
+        feedback.className = 'feedback incorrect';
+        return;
+      }
+
+      if (val === answer.toLowerCase()){
+        feedback.textContent = 'Correct!';
+        feedback.className = 'feedback correct';
+      } else {
+        feedback.textContent = 'Not yet. Try again.';
+        feedback.className = 'feedback incorrect';
+      }
+    }
+
+    function gradeChoice(button, isCorrect, feedbackId){
+      const wrap = button.parentElement;
+      const choices = wrap.querySelectorAll('.choice');
+      const feedback = document.getElementById(feedbackId);
+
+      choices.forEach(choice => choice.disabled = true);
+
+      if (isCorrect){
+        button.classList.add('correct');
+        feedback.textContent = 'Correct!';
+        feedback.style.color = 'var(--sage)';
+      } else {
+        button.classList.add('incorrect');
+        feedback.textContent = 'Not quite. The correct answer is highlighted.';
+        feedback.style.color = 'var(--rust)';
+        choices.forEach(choice => {
+          const text = choice.textContent.trim().toLowerCase();
+          if (
+            (feedbackId === 'quiz1fb' && text === 'mean') ||
+            (feedbackId === 'quiz2fb' && text === 'median') ||
+            (feedbackId === 'quiz3fb' && text === 'mode')
+          ){
+            choice.classList.add('correct');
+          }
+        });
+      }
+    }
+  </script>
+
 </body>
 </html>

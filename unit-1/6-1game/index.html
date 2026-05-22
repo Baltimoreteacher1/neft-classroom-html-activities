@@ -1,37 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.1 Game classroom activity.">
-  <title>6.1 Game</title>
+  <head>
   <link rel="stylesheet" href="/assets/shared.css">
-</head>
-<body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/unit-1/">Unit 1 Foundations</a><span>/</span><span>6.1 Game</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.1 Game</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STEM Camp Fraction Division Quest</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="strip">
+          <h1 id="title"></h1>
+          <p id="subtitle"></p>
+        </div>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.1Game</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/unit-1/6-1game/</span></p>
-      </div>
-    </section>
+        <div class="strip">
+          <p><strong>Objective:</strong> <span id="objective"></span></p>
+          <p><strong>Vocabulary:</strong> <span id="vocab"></span></p>
+        </div>
 
-    <div class="button-row">
-      <a class="primary-button" href="/unit-1/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+        <div class="strip xp-wrap">
+          <div class="hud-row">
+            <strong id="level-label">Level 1</strong>
+            <span id="xp-label">0 XP</span>
+          </div>
+          <div class="bar"><div class="fill" id="xp-fill"></div></div>
+          <div class="hud-row">
+            <span id="combo-label">Combo x1</span>
+            <span id="difficulty-label">Adaptive Difficulty: 1/5</span>
+          </div>
+        </div>
+
+        <div class="strip mastery">
+          <h2>Mastery Tracking</h2>
+          <div class="mastery-row">
+            <span>Unit Conversion</span>
+            <div class="bar"><div class="fill" id="mastery-unit"></div></div>
+          </div>
+          <div class="mastery-row">
+            <span>Model Reasoning</span>
+            <div class="bar"><div class="fill" id="mastery-model"></div></div>
+          </div>
+          <div class="mastery-row">
+            <span>Fraction Division</span>
+            <div class="bar"><div class="fill" id="mastery-frac"></div></div>
+          </div>
+        </div>
+
+        <div class="strip">
+          <h2>Badges</h2>
+          <div class="badges" id="badges"></div>
+        </div>
+
+        <div class="strip controls">
+          <button class="btn" id="open-tutorial">Tutorial</button>
+          <button class="btn" id="audio-toggle">Audio: On</button>
+          <button class="btn secondary" id="replay-stage">Replay Stage</button>
+          <button class="btn secondary" id="reset-progress">Reset Progress</button>
+        </div>
+
+        <div class="strip">
+          <h2>Analytics</h2>
+          <pre class="analytics" id="analytics-json"></pre>
+          <button class="btn" id="export-analytics">Export Analytics JSON</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section class="panel">
+          <h2>Stages</h2>
+          <div id="stage-grid" class="stage-grid"></div>
+        </section>
+
+        <section class="feedback" id="feedback">Start with Conversion Lab to begin progression.</section>
+
+        <section class="panel">
+          <h2 id="panel-title">Mission Control</h2>
+          <div class="bar"><div id="progress-fill" class="fill"></div></div>
+          <p id="progress-text">Select an unlocked stage.</p>
+          <div id="panel-body"></div>
+        </section>
+      </main>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
-</body>
+
+    <dialog id="tutorial-modal">
+      <h3>How To Play</h3>
+      <p>1. Start at <strong>Conversion Lab</strong> and clear each unlocked stage.</p>
+      <p>2. Keep your combo alive to earn XP multipliers and level up faster.</p>
+      <p>3. Adaptive difficulty rises when you show mastery and drops when you struggle.</p>
+      <p>4. Use hints strategically, then beat the <strong>Director Challenge</strong> boss.</p>
+      <form method="dialog">
+        <button class="btn" id="close-tutorial">Begin Mission</button>
+      </form>
+    </dialog>
+
+    <script type="module" src="./ui.js"></script>
+  </body>
 </html>

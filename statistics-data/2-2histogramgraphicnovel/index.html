@@ -1,37 +1,2023 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 2.2 Histogram Graphic Novel classroom activity.">
-  <title>2.2 Histogram Graphic Novel</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Detectives: The 5K Mystery</title>
+<style>
+:root {
+    --ink: #1a0a2e;
+    --panel-bg: #faf6f0;
+    --accent1: #e63946;
+    --accent2: #2196f3;
+    --accent3: #ff9800;
+    --accent4: #4caf50;
+    --teal: #00bcd4;
+    --purple: #7c3aed;
+    --yellow: #ffd60a;
+    --speech-bg: #ffffff;
+    --halftone: rgba(0,0,0,0.04);
+    --gutter: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #2d1b00;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
+    font-family: 'Comic Neue', cursive;
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---- COVER / TITLE ---- */
+  #cover {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 16px 0;
+    display: block;
+  }
+
+  .cover-panel {
+    background: var(--ink);
+    border: 4px solid var(--ink);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    min-height: 420px;
+  }
+
+  .cover-sky {
+    background: linear-gradient(180deg, #0d1b2a 0%, #1a3a5c 40%, #e87c3e 70%, #ffd27d 100%);
+    width: 100%; height: 100%;
+    position: absolute; top:0; left:0;
+  }
+
+  .cover-road {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+    background: #2d2d2d;
+    clip-path: polygon(0% 40%, 35% 0%, 65% 0%, 100% 40%, 100% 100%, 0% 100%);
+  }
+
+  .cover-road::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 8px; height: 60px; background: #fff;
+    box-shadow: 0 -70px 0 #fff, 0 70px 0 #fff;
+  }
+
+  .cover-title-box {
+    position: relative; z-index: 2;
+    padding: 28px 24px 16px;
+    text-align: center;
+  }
+
+  .series-label {
+    font-family: 'Oswald', sans-serif;
+    color: var(--yellow);
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .cover-title {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(42px, 9vw, 72px);
+    color: white;
+    text-shadow: 4px 4px 0 var(--accent1), 8px 8px 0 rgba(0,0,0,0.4);
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .cover-subtitle {
+    font-family: 'Bangers', cursive;
+    color: var(--yellow);
+    font-size: clamp(18px, 4vw, 26px);
+    letter-spacing: 1px;
+    margin-top: 8px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  }
+
+  .cover-characters {
+    position: relative; z-index: 2;
+    display: flex; justify-content: center; gap: 20px;
+    padding: 10px 20px 0;
+    min-height: 180px;
+  }
+
+  /* SVG characters */
+  .char-detective { width: 100px; }
+  .char-robot { width: 80px; }
+
+  .cover-badge {
+    position: absolute; top: 16px; right: 16px; z-index: 3;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    width: 72px; height: 72px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: 'Bangers', cursive;
+    font-size: 10px; color: var(--ink);
+    text-align: center; line-height: 1.2;
+    transform: rotate(12deg);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  /* ---- CHAPTER HEADERS ---- */
+  .chapter-header {
+    background: var(--accent1);
+    border: 4px solid var(--ink);
+    border-radius: 4px;
+    padding: 10px 20px;
+    margin: var(--gutter) 0;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .chapter-num {
+    font-family: 'Bangers', cursive;
+    font-size: 32px;
+    color: white;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    line-height: 1;
+  }
+
+  .chapter-title {
+    font-family: 'Bangers', cursive;
+    font-size: 22px;
+    color: white;
+    letter-spacing: 1px;
+  }
+
+  /* ---- COMIC GRID ---- */
+  .comic-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gutter);
+  }
+
+  .comic-row {
+    display: flex;
+    gap: var(--gutter);
+    align-items: stretch;
+  }
+
+  .comic-panel {
+    border: 3px solid var(--ink);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    background: var(--panel-bg);
+    flex: 1;
+  }
+
+  .comic-panel.wide { flex: 2; }
+  .comic-panel.tall { min-height: 200px; }
+  .comic-panel.full { flex: 1 1 100%; }
+
+  /* Halftone overlay */
+  .comic-panel::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: 8px 8px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .panel-content {
+    position: relative; z-index: 1;
+    padding: 12px;
+    height: 100%;
+  }
+
+  /* Colored panel backgrounds */
+  .panel-blue { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); }
+  .panel-red { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); }
+  .panel-yellow { background: linear-gradient(135deg, #fffde7 0%, #fff9c4 100%); }
+  .panel-green { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); }
+  .panel-dark { background: var(--ink); color: white; }
+  .panel-teal { background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); }
+  .panel-orange { background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); }
+
+  /* ---- SPEECH / THOUGHT BUBBLES ---- */
+  .speech-bubble {
+    background: white;
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 8px 12px;
+    position: relative;
+    font-size: 13px;
+    line-height: 1.4;
+    display: inline-block;
+    margin-bottom: 12px;
+    max-width: 100%;
+  }
+
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -14px; left: 20px;
+    border: 8px solid transparent;
+    border-top-color: var(--ink);
+  }
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -9px; left: 22px;
+    border: 6px solid transparent;
+    border-top-color: white;
+    z-index: 1;
+  }
+
+  .speech-bubble.right::after { left: auto; right: 20px; }
+  .speech-bubble.right::before { left: auto; right: 22px; }
+
+  .speech-bubble.thought {
+    border-radius: 50%;
+    padding: 10px 14px;
+  }
+
+  .speech-bubble.shout {
+    border-radius: 0;
+    clip-path: polygon(5% 0%, 95% 0%, 100% 20%, 100% 80%, 95% 100%, 5% 100%, 0% 80%, 0% 20%);
+    background: var(--yellow);
+    font-weight: 700;
+  }
+
+  .bubble-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ---- CHARACTERS (CSS) ---- */
+  .character {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .char-head {
+    width: 48px; height: 52px;
+    border-radius: 50% 50% 45% 45%;
+    border: 3px solid var(--ink);
+    position: relative;
+    margin-bottom: 2px;
+  }
+
+  .char-body {
+    width: 54px; height: 44px;
+    border: 3px solid var(--ink);
+    border-radius: 6px 6px 8px 8px;
+    position: relative;
+  }
+
+  /* Maya - the detective student */
+  .maya .char-head { background: #f4a261; }
+  .maya .char-head::after { /* hair */
+    content: '';
+    position: absolute;
+    top: -8px; left: -4px; right: -4px; height: 18px;
+    background: #5c3317;
+    border-radius: 50% 50% 0 0;
+    border: 3px solid var(--ink);
+  }
+  .maya .char-body { background: #2196f3; }
+
+  /* Data the robot */
+  .data-bot .char-head {
+    background: #b2ebf2;
+    border-radius: 10px;
+    width: 50px; height: 46px;
+  }
+  .data-bot .char-head::after {
+    content: '◉ ◉';
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px; letter-spacing: 4px;
+    color: var(--accent2);
+  }
+  .data-bot .char-body { background: #90a4ae; border-radius: 4px; }
+
+  /* Coach character */
+  .coach .char-head { background: #a8d5a2; }
+  .coach .char-head::after {
+    content: '';
+    position: absolute;
+    top: -6px; left: 50%; transform: translateX(-50%);
+    width: 38px; height: 14px;
+    background: var(--accent1);
+    border-radius: 4px 4px 0 0;
+    border: 2px solid var(--ink);
+  }
+  .coach .char-body { background: #e63946; }
+
+  /* ---- SOUND EFFECTS ---- */
+  .sfx {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(28px, 7vw, 52px);
+    color: var(--yellow);
+    text-shadow: 3px 3px 0 var(--ink), -1px -1px 0 var(--ink);
+    transform: rotate(-5deg) skewX(-8deg);
+    display: inline-block;
+    line-height: 1;
+  }
+  .sfx.red { color: var(--accent1); }
+  .sfx.blue { color: var(--accent2); }
+  .sfx.green { color: var(--accent4); }
+
+  /* ---- CAPTION BOXES ---- */
+  .caption {
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    padding: 4px 10px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .caption.blue { background: var(--accent2); color: white; }
+  .caption.red { background: var(--accent1); color: white; }
+  .caption.dark { background: var(--ink); color: white; }
+  .caption.teal { background: var(--teal); color: white; }
+
+  /* ---- PANEL TITLES ---- */
+  .panel-title {
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  .panel-title.white { color: white; }
+
+  /* ---- DATA TABLE ---- */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin: 6px 0;
+  }
+
+  .data-table th {
+    background: var(--ink);
+    color: white;
+    padding: 5px 4px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .data-table td {
+    padding: 4px 5px;
+    border: 1.5px solid #666;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .data-table tr:nth-child(even) td { background: rgba(0,0,0,0.04); }
+
+  /* ---- HISTOGRAM CANVAS ---- */
+  .histo-wrapper {
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    padding: 8px;
+    margin: 6px 0;
+  }
+
+  /* ---- INTERACTIVE ACTIVITIES ---- */
+  .activity-box {
+    background: white;
+    border: 3px solid var(--ink);
+    border-radius: 6px;
+    padding: 14px;
+    margin: 4px 0;
+    position: relative;
+  }
+
+  .activity-box::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -12px; left: 12px;
+    background: var(--accent3);
+    border: 2px solid var(--ink);
+    padding: 2px 8px;
+    font-family: 'Bangers', cursive;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: white;
+  }
+
+  .activity-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  /* Drag and drop */
+  .drag-zone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 44px;
+    padding: 6px;
+    border: 2.5px dashed #888;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.02);
+    margin: 4px 0;
+    transition: background 0.2s;
+  }
+
+  .drag-zone.over { background: rgba(33,150,243,0.1); border-color: var(--accent2); }
+  .drag-zone.correct { background: rgba(76,175,80,0.1); border-color: var(--accent4); }
+  .drag-zone.incorrect { background: rgba(230,57,70,0.1); border-color: var(--accent1); }
+
+  .drag-chip {
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.1s, box-shadow 0.1s;
+    touch-action: none;
+  }
+
+  .drag-chip:hover { transform: translateY(-2px); box-shadow: 2px 2px 0 var(--ink); }
+  .drag-chip:active { cursor: grabbing; }
+  .drag-chip.placed-correct { background: #c8e6c9; }
+  .drag-chip.placed-wrong { background: #ffcdd2; }
+
+  /* Multiple choice */
+  .mc-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+
+  .mc-option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border: 2.5px solid var(--ink);
+    border-radius: 6px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.15s;
+    font-size: 13px;
+  }
+
+  .mc-option:hover { background: #f0f0f0; transform: translateX(3px); }
+  .mc-option.selected { background: var(--accent2); color: white; border-color: var(--accent2); }
+  .mc-option.correct-answer { background: var(--accent4); color: white; border-color: var(--accent4); }
+  .mc-option.wrong-answer { background: var(--accent1); color: white; border-color: var(--accent1); }
+
+  .mc-letter {
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
+    width: 24px;
+    flex-shrink: 0;
+  }
+
+  /* Fill in blank */
+  .blank-input {
+    border: none;
+    border-bottom: 3px solid var(--ink);
+    background: transparent;
+    font-family: 'Comic Neue', cursive;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 2px 6px;
+    width: 80px;
+    text-align: center;
+    outline: none;
+    color: var(--ink);
+  }
+
+  .blank-input.correct { border-color: var(--accent4); background: rgba(76,175,80,0.1); }
+  .blank-input.incorrect { border-color: var(--accent1); background: rgba(230,57,70,0.1); }
+
+  /* ---- BUTTONS ---- */
+  .btn {
+    font-family: 'Bangers', cursive;
+    font-size: 16px;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    border: 3px solid var(--ink);
+    border-radius: 4px;
+    cursor: pointer;
+    background: var(--yellow);
+    color: var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: all 0.1s;
+    margin-top: 8px;
+  }
+
+  .btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn.blue { background: var(--accent2); color: white; }
+  .btn.red { background: var(--accent1); color: white; }
+  .btn.green { background: var(--accent4); color: white; }
+
+  /* ---- FEEDBACK ---- */
+  .feedback {
+    display: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+    border: 2px solid;
+    animation: pop-in 0.3s ease;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.win { background: #c8e6c9; border-color: var(--accent4); color: #1b5e20; }
+  .feedback.lose { background: #ffcdd2; border-color: var(--accent1); color: #b71c1c; }
+
+  @keyframes pop-in {
+    0% { transform: scale(0.8); opacity: 0; }
+    80% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ---- HISTOGRAM BUILDER ---- */
+  .histo-builder {
+    background: white;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    position: relative;
+  }
+
+  .histo-bars-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 140px;
+    border-left: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    padding: 8px 4px 0 8px;
+    margin-bottom: 4px;
+  }
+
+  .histo-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+
+  .histo-bar {
+    width: 100%;
+    background: var(--accent2);
+    border: 2px solid var(--ink);
+    border-bottom: none;
+    transition: height 0.4s ease;
+    min-height: 2px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .histo-bar:hover { background: var(--teal); }
+
+  .histo-bar-label {
+    font-size: 9px;
+    text-align: center;
+    margin-top: 3px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .histo-y-label {
+    position: absolute;
+    left: -26px; top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ---- PROGRESS NAV ---- */
+  #progress-nav {
+    position: fixed;
+    bottom: 16px; right: 16px;
+    display: flex; gap: 6px;
+    z-index: 100;
+  }
+
+  .nav-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    border: 2px solid rgba(255,255,255,0.6);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-dot.active { background: var(--yellow); border-color: white; transform: scale(1.3); }
+  .nav-dot.done { background: var(--accent4); border-color: white; }
+
+  /* ---- CHAPTER DIVIDERS ---- */
+  .chapter-divider {
+    max-width: 860px;
+    margin: 8px auto;
+    padding: 0 16px;
+  }
+
+  /* ---- SCROLL REVEAL ---- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ---- VOCAB CARDS ---- */
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .vocab-card {
+    background: white;
+    border: 3px solid var(--ink);
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vocab-card::before {
+    content: attr(data-def);
+    position: absolute; inset: 0;
+    background: var(--ink);
+    color: white;
+    padding: 8px;
+    font-size: 11px;
+    display: flex; align-items: center;
+    opacity: 0;
+    transition: opacity 0.25s;
+    border-radius: 3px;
+    line-height: 1.4;
+  }
+
+  .vocab-card:hover::before { opacity: 1; }
+
+  .vocab-word {
+    font-family: 'Bangers', cursive;
+    font-size: 17px;
+    color: var(--accent2);
+    letter-spacing: 0.5px;
+  }
+
+  .vocab-pos {
+    font-size: 10px;
+    color: #666;
+    font-style: italic;
+  }
+
+  /* ---- INTERVAL SORTER ---- */
+  .sort-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .sort-bin {
+    min-height: 80px;
+    border: 3px dashed #888;
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .sort-bin-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    color: #555;
+  }
+
+  /* ---- HISTOGRAM CLICK BUILDER ---- */
+  .clickable-bar {
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .clickable-bar:hover { filter: brightness(1.1); }
+
+  /* ---- STAR BADGE ---- */
+  .xp-bar {
+    background: var(--ink);
+    border: 3px solid var(--ink);
+    padding: 6px 12px;
+    display: flex; align-items: center; gap: 10px;
+    max-width: 860px; margin: 6px auto;
+    font-family: 'Oswald', sans-serif;
+    color: white; font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .xp-fill {
+    flex: 1; height: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .xp-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--yellow), var(--accent3));
+    width: 0%;
+    transition: width 0.5s ease;
+    border-radius: 2px;
+  }
+
+  .xp-stars { letter-spacing: 2px; font-size: 14px; }
+
+  /* ---- APPLY SECTION ---- */
+  .movie-histogram {
+    background: #1a1a2e;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+  }
+
+  .movie-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 120px;
+    border-left: 2px solid rgba(255,255,255,0.4);
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+    padding: 0 4px 0 8px;
+  }
+
+  .movie-bar-wrap {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+  }
+
+  .movie-bar {
+    width: 100%;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-bottom: none;
+    border-radius: 2px 2px 0 0;
+  }
+
+  .movie-bar-lbl { font-size: 8px; color: rgba(255,255,255,0.7); margin-top: 3px; text-align: center; }
+
+  /* Scrollytelling arrows */
+  .continue-arrow {
+    text-align: center;
+    color: rgba(255,255,255,0.4);
+    font-size: 24px;
+    padding: 4px 0;
+    animation: bounce-arrow 1.5s infinite;
+  }
+
+  @keyframes bounce-arrow {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  /* ---- FINAL SCORE PANEL ---- */
+  #final-score {
+    display: none;
+    max-width: 860px; margin: 0 auto; padding: 16px;
+  }
+
+  .score-panel {
+    background: var(--ink);
+    border: 4px solid var(--yellow);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    color: white;
+  }
+
+  .score-big {
+    font-family: 'Bangers', cursive;
+    font-size: 72px;
+    color: var(--yellow);
+    line-height: 1;
+    text-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+  }
+
+  /* ---- WRITING LINES ---- */
+  .write-lines {
+    margin-top: 8px;
+  }
+
+  .write-line {
+    border-bottom: 2px solid #bbb;
+    height: 28px;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .write-area {
+    border: 2px solid #bbb;
+    border-radius: 4px;
+    padding: 6px;
+    font-family: 'Comic Neue', cursive;
+    font-size: 13px;
+    width: 100%;
+    resize: vertical;
+    min-height: 60px;
+    outline: none;
+  }
+
+  .write-area:focus { border-color: var(--accent2); }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 600px) {
+    .comic-row { flex-direction: column; }
+    .vocab-grid { grid-template-columns: 1fr; }
+    .sort-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>2.2 Histogram Graphic Novel</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>2.2 Histogram Graphic Novel</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 2.2HistogramGraphicNovel</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/statistics-data/2-2histogramgraphicnovel/</span></p>
-      </div>
-    </section>
+<!-- XP BAR -->
+<div class="xp-bar">
+  <span>⭐ DATA DETECTIVE XP</span>
+  <div class="xp-fill"><div class="xp-inner" id="xp-inner"></div></div>
+  <span class="xp-stars" id="xp-stars">☆☆☆</span>
+  <span id="xp-count">0 / 100</span>
+</div>
 
-    <div class="button-row">
-      <a class="primary-button" href="/statistics-data/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+<!-- ===== COVER ===== -->
+<div class="comic-page" id="cover">
+  <div class="cover-panel">
+    <div class="cover-sky"></div>
+    <div class="cover-road"></div>
+    <div class="cover-badge">
+      <div style="font-size:14px">🏅</div>
+      <div>GRADE 6</div>
+      <div>MATH</div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+    <div class="cover-title-box">
+      <span class="series-label">📊 Data Detectives: Case File #3</span>
+      <div class="cover-title">THE 5K<br>MYSTERY</div>
+      <div class="cover-subtitle">Who ran the fastest? The histogram knows...</div>
+    </div>
+    <div class="cover-characters">
+      <!-- Maya SVG -->
+      <svg width="100" height="170" viewBox="0 0 100 170">
+        <!-- Body -->
+        <rect x="25" y="90" width="50" height="50" fill="#2196f3" stroke="#1a0a2e" stroke-width="3" rx="4"/>
+        <!-- Arms -->
+        <rect x="5" y="92" width="22" height="14" fill="#2196f3" stroke="#1a0a2e" stroke-width="2.5" rx="6"/>
+        <rect x="73" y="92" width="22" height="14" fill="#2196f3" stroke="#1a0a2e" stroke-width="2.5" rx="6"/>
+        <!-- Hand with magnifier -->
+        <circle cx="15" cy="99" r="8" fill="none" stroke="#1a0a2e" stroke-width="2.5"/>
+        <line x1="21" y1="105" x2="27" y2="112" stroke="#1a0a2e" stroke-width="3" stroke-linecap="round"/>
+        <!-- Legs -->
+        <rect x="28" y="138" width="18" height="28" fill="#5c3317" stroke="#1a0a2e" stroke-width="2.5" rx="3"/>
+        <rect x="54" y="138" width="18" height="28" fill="#5c3317" stroke="#1a0a2e" stroke-width="2.5" rx="3"/>
+        <!-- Shoes -->
+        <ellipse cx="37" cy="166" rx="14" ry="6" fill="#1a0a2e"/>
+        <ellipse cx="63" cy="166" rx="14" ry="6" fill="#1a0a2e"/>
+        <!-- Neck -->
+        <rect x="40" y="80" width="20" height="12" fill="#f4a261" stroke="#1a0a2e" stroke-width="2"/>
+        <!-- Head -->
+        <ellipse cx="50" cy="60" rx="28" ry="30" fill="#f4a261" stroke="#1a0a2e" stroke-width="3"/>
+        <!-- Hair -->
+        <path d="M22 55 Q50 18 78 55 Q74 30 50 24 Q26 30 22 55Z" fill="#5c3317" stroke="#1a0a2e" stroke-width="2"/>
+        <!-- Eyes -->
+        <ellipse cx="40" cy="60" rx="5" ry="6" fill="white" stroke="#1a0a2e" stroke-width="1.5"/>
+        <ellipse cx="60" cy="60" rx="5" ry="6" fill="white" stroke="#1a0a2e" stroke-width="1.5"/>
+        <circle cx="41" cy="61" r="3" fill="#1a0a2e"/>
+        <circle cx="61" cy="61" r="3" fill="#1a0a2e"/>
+        <!-- Mouth smile -->
+        <path d="M42 74 Q50 80 58 74" stroke="#1a0a2e" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Detective hat -->
+        <rect x="24" y="32" width="52" height="8" fill="#1a0a2e" rx="2"/>
+        <rect x="32" y="16" width="36" height="18" fill="#1a0a2e" rx="3"/>
+        <!-- Label -->
+        <text x="50" y="10" text-anchor="middle" font-family="Bangers, cursive" font-size="11" fill="#ffd60a">MAYA</text>
+      </svg>
+
+      <!-- DataBot SVG -->
+      <svg width="90" height="160" viewBox="0 0 90 160">
+        <!-- Body -->
+        <rect x="18" y="85" width="54" height="50" fill="#90a4ae" stroke="#1a0a2e" stroke-width="3" rx="6"/>
+        <!-- Screen on body -->
+        <rect x="26" y="93" width="38" height="26" fill="#0d1b2a" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+        <text x="45" y="108" text-anchor="middle" font-size="8" fill="#00bcd4" font-family="monospace">📊 DATA</text>
+        <!-- Arms -->
+        <rect x="0" y="90" width="20" height="10" fill="#90a4ae" stroke="#1a0a2e" stroke-width="2" rx="5"/>
+        <rect x="70" y="90" width="20" height="10" fill="#90a4ae" stroke="#1a0a2e" stroke-width="2" rx="5"/>
+        <!-- Legs -->
+        <rect x="22" y="133" width="16" height="24" fill="#607d8b" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+        <rect x="52" y="133" width="16" height="24" fill="#607d8b" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+        <!-- Feet -->
+        <ellipse cx="30" cy="157" rx="12" ry="5" fill="#1a0a2e"/>
+        <ellipse cx="60" cy="157" rx="12" ry="5" fill="#1a0a2e"/>
+        <!-- Neck -->
+        <rect x="36" y="73" width="18" height="14" fill="#b2ebf2" stroke="#1a0a2e" stroke-width="2"/>
+        <!-- Head -->
+        <rect x="15" y="38" width="60" height="52" fill="#b2ebf2" stroke="#1a0a2e" stroke-width="3" rx="10"/>
+        <!-- Antenna -->
+        <line x1="45" y1="38" x2="45" y2="22" stroke="#1a0a2e" stroke-width="3"/>
+        <circle cx="45" cy="18" r="6" fill="#ffd60a" stroke="#1a0a2e" stroke-width="2"/>
+        <!-- Eyes -->
+        <rect x="22" y="52" width="18" height="14" fill="white" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+        <rect x="50" y="52" width="18" height="14" fill="white" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+        <circle cx="31" cy="59" r="5" fill="#2196f3"/>
+        <circle cx="59" cy="59" r="5" fill="#2196f3"/>
+        <circle cx="32" cy="58" r="2" fill="white"/>
+        <circle cx="60" cy="58" r="2" fill="white"/>
+        <!-- Mouth -->
+        <rect x="28" y="72" width="34" height="8" fill="white" stroke="#1a0a2e" stroke-width="2" rx="2"/>
+        <rect x="30" y="74" width="6" height="4" fill="#4caf50" rx="1"/>
+        <rect x="38" y="74" width="6" height="4" fill="#ffd60a" rx="1"/>
+        <rect x="46" y="74" width="6" height="4" fill="#e63946" rx="1"/>
+        <rect x="54" y="74" width="6" height="4" fill="#4caf50" rx="1"/>
+        <!-- Label -->
+        <text x="45" y="10" text-anchor="middle" font-family="Bangers, cursive" font-size="11" fill="#ffd60a">DATA-BOT</text>
+      </svg>
+
+      <!-- Coach SVG -->
+      <svg width="85" height="160" viewBox="0 0 85 160">
+        <!-- Body -->
+        <rect x="16" y="84" width="53" height="50" fill="#e63946" stroke="#1a0a2e" stroke-width="3" rx="4"/>
+        <!-- Whistle -->
+        <ellipse cx="65" cy="96" rx="8" ry="6" fill="#ffd60a" stroke="#1a0a2e" stroke-width="2"/>
+        <line x1="65" y1="96" x2="78" y2="91" stroke="#1a0a2e" stroke-width="2"/>
+        <!-- Arms -->
+        <rect x="0" y="88" width="18" height="12" fill="#e63946" stroke="#1a0a2e" stroke-width="2.5" rx="5"/>
+        <rect x="67" y="88" width="18" height="12" fill="#e63946" stroke="#1a0a2e" stroke-width="2.5" rx="5"/>
+        <!-- Clipboard -->
+        <rect x="0" y="84" width="18" height="22" fill="white" stroke="#1a0a2e" stroke-width="2" rx="2"/>
+        <line x1="3" y1="91" x2="15" y2="91" stroke="#888" stroke-width="1"/>
+        <line x1="3" y1="95" x2="15" y2="95" stroke="#888" stroke-width="1"/>
+        <line x1="3" y1="99" x2="12" y2="99" stroke="#888" stroke-width="1"/>
+        <!-- Legs -->
+        <rect x="20" y="132" width="16" height="26" fill="#1a0a2e" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+        <rect x="49" y="132" width="16" height="26" fill="#1a0a2e" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+        <ellipse cx="28" cy="158" rx="13" ry="5" fill="#333"/>
+        <ellipse cx="57" cy="158" rx="13" ry="5" fill="#333"/>
+        <!-- Neck -->
+        <rect x="32" y="73" width="21" height="13" fill="#a8d5a2" stroke="#1a0a2e" stroke-width="2"/>
+        <!-- Head -->
+        <ellipse cx="42" cy="52" rx="26" ry="28" fill="#a8d5a2" stroke="#1a0a2e" stroke-width="3"/>
+        <!-- Cap -->
+        <rect x="16" y="36" width="52" height="7" fill="#1a0a2e" rx="2"/>
+        <rect x="22" y="20" width="40" height="18" fill="#e63946" stroke="#1a0a2e" stroke-width="2.5" rx="3"/>
+        <!-- Eyes -->
+        <ellipse cx="33" cy="54" rx="5" ry="5.5" fill="white" stroke="#1a0a2e" stroke-width="1.5"/>
+        <ellipse cx="51" cy="54" rx="5" ry="5.5" fill="white" stroke="#1a0a2e" stroke-width="1.5"/>
+        <circle cx="34" cy="55" r="3" fill="#5c3317"/>
+        <circle cx="52" cy="55" r="3" fill="#5c3317"/>
+        <!-- Eyebrows -->
+        <path d="M28 48 Q33 44 38 48" stroke="#5c3317" stroke-width="2" fill="none"/>
+        <path d="M46 48 Q51 44 56 48" stroke="#5c3317" stroke-width="2" fill="none"/>
+        <!-- Mouth -->
+        <path d="M34 66 Q42 72 50 66" stroke="#1a0a2e" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <text x="42" y="10" text-anchor="middle" font-family="Bangers, cursive" font-size="11" fill="#ffd60a">COACH</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Teaser row -->
+  <div class="comic-row" style="margin-top:var(--gutter)">
+    <div class="comic-panel panel-yellow" style="flex:1; min-height:60px">
+      <div class="panel-content" style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:24px">🔍</span>
+        <div>
+          <div class="caption dark">Mission Briefing</div>
+          <div style="font-size:12px;font-weight:700">Solve the data mystery using <em>histograms</em> and <em>frequency tables</em>!</div>
+        </div>
+      </div>
+    </div>
+    <div class="comic-panel panel-blue" style="flex:1; min-height:60px">
+      <div class="panel-content" style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:24px">⭐</span>
+        <div>
+          <div class="caption teal">Learning Targets</div>
+          <div style="font-size:11px">Display data in a histogram · Describe data by shape · Compare to dot plots</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 1: THE SCENE ===== -->
+<div class="chapter-divider reveal">
+  <div class="chapter-header">
+    <div class="chapter-num">CH.1</div>
+    <div class="chapter-title">🏃 The Race Begins — Setting the Scene</div>
+  </div>
+</div>
+
+<div class="comic-page">
+  <!-- Row 1: Coach introduces the race -->
+  <div class="comic-row reveal">
+    <div class="comic-panel panel-blue wide tall">
+      <div class="panel-content">
+        <div class="caption blue">City Park — Race Day Morning</div>
+        <!-- Coach speaks -->
+        <div class="speech-bubble" style="max-width:85%">
+          <span class="bubble-name">Coach Rivera</span>
+          Fifty middle school students just finished a 5K race. I recorded everyone's <strong>pace</strong> — the time to run <em>one kilometer</em>.
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;margin-top:8px">
+          <svg width="80" height="130" viewBox="0 0 85 160">
+            <rect x="16" y="84" width="53" height="50" fill="#e63946" stroke="#1a0a2e" stroke-width="3" rx="4"/>
+            <rect x="0" y="88" width="18" height="12" fill="#e63946" stroke="#1a0a2e" stroke-width="2.5" rx="5"/>
+            <rect x="67" y="88" width="18" height="12" fill="#e63946" stroke="#1a0a2e" stroke-width="2.5" rx="5"/>
+            <ellipse cx="65" cy="96" rx="8" ry="6" fill="#ffd60a" stroke="#1a0a2e" stroke-width="2"/>
+            <rect x="0" y="84" width="18" height="22" fill="white" stroke="#1a0a2e" stroke-width="2" rx="2"/>
+            <line x1="3" y1="91" x2="15" y2="91" stroke="#888" stroke-width="1"/><line x1="3" y1="95" x2="15" y2="95" stroke="#888" stroke-width="1"/><line x1="3" y1="99" x2="12" y2="99" stroke="#888" stroke-width="1"/>
+            <rect x="20" y="132" width="16" height="26" fill="#1a0a2e" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+            <rect x="49" y="132" width="16" height="26" fill="#1a0a2e" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+            <rect x="32" y="73" width="21" height="13" fill="#a8d5a2" stroke="#1a0a2e" stroke-width="2"/>
+            <ellipse cx="42" cy="52" rx="26" ry="28" fill="#a8d5a2" stroke="#1a0a2e" stroke-width="3"/>
+            <rect x="16" y="36" width="52" height="7" fill="#1a0a2e" rx="2"/>
+            <rect x="22" y="20" width="40" height="18" fill="#e63946" stroke="#1a0a2e" stroke-width="2.5" rx="3"/>
+            <ellipse cx="33" cy="54" rx="5" ry="5.5" fill="white" stroke="#1a0a2e" stroke-width="1.5"/>
+            <ellipse cx="51" cy="54" rx="5" ry="5.5" fill="white" stroke="#1a0a2e" stroke-width="1.5"/>
+            <circle cx="34" cy="55" r="3" fill="#5c3317"/>
+            <circle cx="52" cy="55" r="3" fill="#5c3317"/>
+            <path d="M34 66 Q42 72 50 66" stroke="#1a0a2e" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:700;margin-bottom:6px;">The raw data (first 20 runners):</div>
+            <table class="data-table">
+              <tr><th>Runner</th><th>Pace (min)</th><th>Runner</th><th>Pace (min)</th></tr>
+              <tr><td>1</td><td>5.1</td><td>11</td><td>4.8</td></tr>
+              <tr><td>2</td><td>4.7</td><td>12</td><td>5.3</td></tr>
+              <tr><td>3</td><td>5.2</td><td>13</td><td>5.0</td></tr>
+              <tr><td>4</td><td>6.1</td><td>14</td><td>4.6</td></tr>
+              <tr><td>5</td><td>5.4</td><td>15</td><td>5.1</td></tr>
+              <tr><td>6</td><td>5.0</td><td>16</td><td>5.2</td></tr>
+              <tr><td>7</td><td>4.9</td><td>17</td><td>6.3</td></tr>
+              <tr><td>8</td><td>5.5</td><td>18</td><td>5.0</td></tr>
+              <tr><td>9</td><td>5.1</td><td>19</td><td>4.5</td></tr>
+              <tr><td>10</td><td>5.6</td><td>20</td><td>5.3</td></tr>
+            </table>
+            <div style="font-size:10px;color:#666;margin-top:4px;font-style:italic">...and 30 more runners!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comic-panel panel-yellow" style="min-height:200px">
+      <div class="panel-content">
+        <div class="caption">Be Curious!</div>
+        <div class="speech-bubble" style="margin-bottom:16px">
+          <span class="bubble-name">Maya</span>
+          Whoa... 50 numbers! How are we supposed to make sense of all this? 🤔
+        </div>
+        <div class="speech-bubble right" style="background:#e3f2fd">
+          <span class="bubble-name" style="color:#e63946">Data-Bot</span>
+          BEEP BOOP! I notice the numbers are between 4 and 7. I wonder... what's the <strong>most common</strong> time range?
+        </div>
+        <div style="margin-top:12px;font-size:12px;border-left:3px solid var(--accent3);padding-left:8px;font-style:italic;color:#555">
+          "When data sets get large, we need a smarter way to organize them..."
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vocab Activity -->
+  <div class="comic-row reveal">
+    <div class="comic-panel full panel-teal">
+      <div class="panel-content">
+        <div class="panel-title">📚 Key Words — Hover to Reveal Definitions!</div>
+        <div class="vocab-grid">
+          <div class="vocab-card" data-def="Pace = the time it takes to run one kilometer (or one unit of distance). A faster runner has a SMALLER pace number!">
+            <div class="vocab-word">PACE</div>
+            <div class="vocab-pos">noun</div>
+            <div style="font-size:10px;color:#888">hover to see →</div>
+          </div>
+          <div class="vocab-card" data-def="Interval = a range between two values. Like 5.0–5.4 minutes. Intervals are always the SAME size and NEVER overlap!">
+            <div class="vocab-word">INTERVAL</div>
+            <div class="vocab-pos">noun</div>
+            <div style="font-size:10px;color:#888">hover to see →</div>
+          </div>
+          <div class="vocab-card" data-def="Frequency = how many times something occurs. If 20 runners had a pace between 5.0–5.4, the FREQUENCY for that interval is 20!">
+            <div class="vocab-word">FREQUENCY</div>
+            <div class="vocab-pos">noun</div>
+            <div style="font-size:10px;color:#888">hover to see →</div>
+          </div>
+          <div class="vocab-card" data-def="Histogram = a special bar graph showing intervals on the x-axis and frequency on the y-axis. The bars always TOUCH each other!">
+            <div class="vocab-word">HISTOGRAM</div>
+            <div class="vocab-pos">noun</div>
+            <div style="font-size:10px;color:#888">hover to see →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 2: GROUPING THE DATA ===== -->
+<div class="chapter-divider reveal">
+  <div class="chapter-header" style="background:#7c3aed">
+    <div class="chapter-num">CH.2</div>
+    <div class="chapter-title">📦 Operation: Group the Data!</div>
+  </div>
+</div>
+
+<div class="comic-page">
+  <!-- Maya's idea + interval concept -->
+  <div class="comic-row reveal">
+    <div class="comic-panel" style="flex:1;min-height:220px">
+      <div class="panel-content panel-orange" style="height:100%">
+        <div class="sfx blue" style="font-size:36px">CLICK!</div>
+        <div class="speech-bubble" style="margin-top:8px">
+          <span class="bubble-name">Data-Bot</span>
+          We group the data into <strong>intervals</strong>! Each interval covers 0.5 minutes. Let me show you the rules...
+        </div>
+        <div style="margin-top:12px;background:white;border:2px solid var(--ink);border-radius:6px;padding:8px">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;margin-bottom:6px;color:var(--accent1)">⚠️ INTERVAL RULES:</div>
+          <div style="font-size:12px;line-height:1.8">
+            ✅ All intervals are the <strong>same size</strong><br>
+            ✅ Intervals <strong>never overlap</strong><br>
+            ✅ Every data value fits in <strong>exactly one</strong> interval<br>
+            ✅ Intervals are <strong>continuous</strong> — no gaps!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 1: Interval Sort -->
+    <div class="comic-panel wide" style="min-height:220px">
+      <div class="panel-content">
+        <div class="activity-box" data-label="⚡ ACTIVITY 1">
+          <div class="activity-title">Which interval does 5.2 minutes belong in?</div>
+          <div class="mc-options" id="mc1-options">
+            <div class="mc-option" onclick="checkMC('mc1', this, false, 'mc1-feedback')" data-answer="A">
+              <span class="mc-letter">A</span> 4.5 – 4.9 minutes
+            </div>
+            <div class="mc-option" onclick="checkMC('mc1', this, false, 'mc1-feedback')" data-answer="B">
+              <span class="mc-letter">B</span> 4.5 – 5.0 minutes (overlapping!)
+            </div>
+            <div class="mc-option" onclick="checkMC('mc1', this, true, 'mc1-feedback')" data-answer="C">
+              <span class="mc-letter">C</span> 5.0 – 5.4 minutes ✓
+            </div>
+            <div class="mc-option" onclick="checkMC('mc1', this, false, 'mc1-feedback')" data-answer="D">
+              <span class="mc-letter">D</span> 5.5 – 5.9 minutes
+            </div>
+          </div>
+          <div class="feedback" id="mc1-feedback"></div>
+        </div>
+
+        <div style="margin-top:10px;font-size:12px;border-left:3px solid var(--teal);padding-left:8px">
+          <strong>Think about it:</strong> Where else have you seen the word "interval"?
+          <div class="write-lines"><div class="write-line"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Frequency Table Build -->
+  <div class="comic-row reveal">
+    <div class="comic-panel full" style="min-height:180px">
+      <div class="panel-content panel-green">
+        <div class="panel-title">🗂️ Building the Frequency Table</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+          <div style="flex:1;min-width:220px">
+            <div class="speech-bubble" style="margin-bottom:12px">
+              <span class="bubble-name">Coach Rivera</span>
+              I counted all 50 runners. Here's what I found — but some cells are missing! Can you complete the table?
+            </div>
+            <svg width="80" height="100" viewBox="0 0 85 130" style="display:block">
+              <ellipse cx="42" cy="42" rx="26" ry="28" fill="#a8d5a2" stroke="#1a0a2e" stroke-width="3"/>
+              <rect x="16" y="26" width="52" height="7" fill="#1a0a2e" rx="2"/>
+              <rect x="22" y="10" width="40" height="18" fill="#e63946" stroke="#1a0a2e" stroke-width="2.5" rx="3"/>
+              <ellipse cx="33" cy="44" rx="5" ry="5.5" fill="white" stroke="#1a0a2e" stroke-width="1.5"/>
+              <ellipse cx="51" cy="44" rx="5" ry="5.5" fill="white" stroke="#1a0a2e" stroke-width="1.5"/>
+              <circle cx="34" cy="45" r="3" fill="#5c3317"/>
+              <circle cx="52" cy="45" r="3" fill="#5c3317"/>
+              <path d="M34 56 Q42 62 50 56" stroke="#1a0a2e" stroke-width="2" fill="none"/>
+              <rect x="16" y="68" width="53" height="40" fill="#e63946" stroke="#1a0a2e" stroke-width="3" rx="4"/>
+              <line x1="26" y1="75" x2="58" y2="75" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+              <rect x="0" y="72" width="18" height="10" fill="#e63946" stroke="#1a0a2e" stroke-width="2" rx="5"/>
+              <rect x="67" y="72" width="18" height="10" fill="#e63946" stroke="#1a0a2e" stroke-width="2" rx="5"/>
+            </svg>
+          </div>
+          <div style="flex:2;min-width:280px">
+            <table class="data-table" style="font-size:12px">
+              <tr><th>Interval (min)</th><th>Tally</th><th>Frequency</th></tr>
+              <tr>
+                <td style="font-weight:700">4.0 – 4.4</td>
+                <td>||</td>
+                <td style="background:#fff9c4;font-weight:700">
+                  <input type="number" class="blank-input" id="freq1" placeholder="?" style="width:50px" min="0" max="20">
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:700">4.5 – 4.9</td>
+                <td>|||| |||| |||</td>
+                <td style="font-weight:700;color:var(--accent2)">13</td>
+              </tr>
+              <tr>
+                <td style="font-weight:700">5.0 – 5.4</td>
+                <td>|||| |||| |||| |||| </td>
+                <td style="font-weight:700;color:var(--accent1)">20</td>
+              </tr>
+              <tr>
+                <td style="font-weight:700">5.5 – 5.9</td>
+                <td>|||| |||| ||</td>
+                <td style="background:#fff9c4;font-weight:700">
+                  <input type="number" class="blank-input" id="freq2" placeholder="?" style="width:50px" min="0" max="20">
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:700">6.0 – 6.4</td>
+                <td>||||</td>
+                <td style="background:#fff9c4;font-weight:700">
+                  <input type="number" class="blank-input" id="freq3" placeholder="?" style="width:50px" min="0" max="20">
+                </td>
+              </tr>
+              <tr style="background:#e8f5e9">
+                <td style="font-weight:700;font-family:'Oswald',sans-serif">TOTAL</td>
+                <td></td>
+                <td style="font-weight:700;color:var(--accent4)">50</td>
+              </tr>
+            </table>
+            <button class="btn" onclick="checkFreqTable()">Check My Answers!</button>
+            <div class="feedback" id="freq-feedback"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 3: BUILD THE HISTOGRAM ===== -->
+<div class="chapter-divider reveal">
+  <div class="chapter-header" style="background:#00897b">
+    <div class="chapter-num">CH.3</div>
+    <div class="chapter-title">📊 The Histogram Rises!</div>
+  </div>
+</div>
+
+<div class="comic-page">
+  <div class="comic-row reveal">
+    <div class="comic-panel" style="min-height:240px">
+      <div class="panel-content">
+        <div class="caption teal">Data-Bot Explains</div>
+        <div class="speech-bubble">
+          <span class="bubble-name">Data-Bot</span>
+          A histogram is like a bar graph, BUT the bars touch — because the intervals are <em>continuous</em>. No gaps between bars!
+        </div>
+        <div style="margin-top:12px;background:var(--ink);color:white;border-radius:6px;padding:10px;font-size:11px">
+          <div style="font-family:'Bangers',cursive;font-size:16px;margin-bottom:6px;color:var(--yellow)">HISTOGRAM vs DOT PLOT</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:10px">
+            <div style="background:rgba(255,255,255,0.1);padding:6px;border-radius:4px">
+              <div style="color:var(--teal);font-weight:700;margin-bottom:3px">HISTOGRAM ✅</div>
+              <div>• Large data sets</div>
+              <div>• Shows intervals</div>
+              <div>• Bars always touch</div>
+              <div>• Great for shape!</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.1);padding:6px;border-radius:4px">
+              <div style="color:#ffb3b3;font-weight:700;margin-bottom:3px">DOT PLOT</div>
+              <div>• Small data sets</div>
+              <div>• Shows every value</div>
+              <div>• Individual dots</div>
+              <div>• Can get crowded</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Histogram Builder -->
+    <div class="comic-panel wide" style="min-height:240px">
+      <div class="panel-content">
+        <div class="activity-box" data-label="⚡ ACTIVITY 2">
+          <div class="activity-title">🔨 Build the Histogram! Click bars to set heights.</div>
+          <div id="histo-build-container">
+            <div style="font-size:11px;margin-bottom:6px;color:#555">Use your frequency table! Click each bar to set it to the correct height.</div>
+
+            <div style="position:relative">
+              <div style="position:absolute;left:0;top:0;bottom:24px;width:28px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:4px;font-size:9px;font-weight:700;color:#555">
+                <span>25</span><span>20</span><span>15</span><span>10</span><span>5</span><span>0</span>
+              </div>
+              <div style="margin-left:28px">
+                <div id="histo-bars" class="histo-bars-container">
+                  <!-- bars injected by JS -->
+                </div>
+              </div>
+            </div>
+            <div style="text-align:center;font-size:10px;font-weight:700;margin-top:4px;color:var(--ink)">Pace (minutes per km)</div>
+            <div id="histo-status" style="font-size:11px;color:#666;margin-top:4px;text-align:center"></div>
+          </div>
+          <div class="feedback" id="histo-feedback"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reading the histogram -->
+  <div class="comic-row reveal">
+    <div class="comic-panel full panel-yellow">
+      <div class="panel-content">
+        <div class="panel-title">🔍 Reading the Histogram — Connecting Representations!</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+          <div style="flex:1;min-width:200px">
+            <!-- Static completed histogram -->
+            <div class="histo-wrapper">
+              <div style="font-size:10px;font-weight:700;text-align:center;margin-bottom:4px">RUNNING PACE HISTOGRAM</div>
+              <svg viewBox="0 0 260 140" style="width:100%;max-width:260px;display:block">
+                <!-- Grid -->
+                <line x1="30" y1="10" x2="30" y2="110" stroke="#ccc" stroke-width="1"/>
+                <line x1="30" y1="110" x2="250" y2="110" stroke="#ccc" stroke-width="1"/>
+                <!-- Y gridlines -->
+                <line x1="30" y1="85" x2="250" y2="85" stroke="#eee" stroke-width="0.5"/>
+                <line x1="30" y1="60" x2="250" y2="60" stroke="#eee" stroke-width="0.5"/>
+                <line x1="30" y1="35" x2="250" y2="35" stroke="#eee" stroke-width="0.5"/>
+                <!-- Y labels -->
+                <text x="25" y="114" text-anchor="end" font-size="7" fill="#666">0</text>
+                <text x="25" y="89" text-anchor="end" font-size="7" fill="#666">5</text>
+                <text x="25" y="64" text-anchor="end" font-size="7" fill="#666">10</text>
+                <text x="25" y="39" text-anchor="end" font-size="7" fill="#666">15</text>
+                <text x="25" y="14" text-anchor="end" font-size="7" fill="#666">20</text>
+                <!-- Bars: intervals 4.0-4.4=2, 4.5-4.9=13, 5.0-5.4=20, 5.5-5.9=12, 6.0-6.4=5 -->
+                <!-- bar width=40, scale: max 20 = 100px height -->
+                <!-- 4.0-4.4: freq=2, h=10 -->
+                <rect x="30" y="100" width="40" height="10" fill="#42a5f5" stroke="#1a0a2e" stroke-width="1.5"/>
+                <!-- 4.5-4.9: freq=13, h=65 -->
+                <rect x="70" y="45" width="40" height="65" fill="#42a5f5" stroke="#1a0a2e" stroke-width="1.5"/>
+                <!-- 5.0-5.4: freq=20, h=100 — tallest, highlighted -->
+                <rect x="110" y="10" width="40" height="100" fill="#e63946" stroke="#1a0a2e" stroke-width="1.5"/>
+                <!-- 5.5-5.9: freq=12, h=60 -->
+                <rect x="150" y="50" width="40" height="60" fill="#42a5f5" stroke="#1a0a2e" stroke-width="1.5"/>
+                <!-- 6.0-6.4: freq=5, h=25 -->
+                <rect x="190" y="85" width="40" height="25" fill="#42a5f5" stroke="#1a0a2e" stroke-width="1.5"/>
+                <!-- X labels -->
+                <text x="50" y="122" text-anchor="middle" font-size="6.5" fill="#333">4.0–4.4</text>
+                <text x="90" y="122" text-anchor="middle" font-size="6.5" fill="#333">4.5–4.9</text>
+                <text x="130" y="122" text-anchor="middle" font-size="6.5" fill="#e63946" font-weight="bold">5.0–5.4</text>
+                <text x="170" y="122" text-anchor="middle" font-size="6.5" fill="#333">5.5–5.9</text>
+                <text x="210" y="122" text-anchor="middle" font-size="6.5" fill="#333">6.0–6.4</text>
+                <!-- Pointer arrow to tallest bar -->
+                <path d="M148 8 L130 8" stroke="#e63946" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+                <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#e63946"/></marker></defs>
+                <text x="152" y="11" font-size="7" fill="#e63946" font-weight="bold">TALLEST!</text>
+                <!-- Axis titles -->
+                <text x="140" y="134" text-anchor="middle" font-size="7" fill="#555">Pace (minutes/km)</text>
+                <text x="8" y="60" text-anchor="middle" font-size="7" fill="#555" transform="rotate(-90,8,60)">Frequency</text>
+              </svg>
+            </div>
+          </div>
+          <div style="flex:2;min-width:200px">
+            <div class="activity-box" data-label="⚡ ACTIVITY 3" style="padding-top:20px">
+              <div class="activity-title">Answer these questions about the histogram!</div>
+              <div style="font-size:12px;margin-bottom:8px">
+                <strong>Q1:</strong> Which interval has the tallest bar?
+              </div>
+              <div class="mc-options" id="mc2-options">
+                <div class="mc-option" onclick="checkMC('mc2', this, false, 'mc2-feedback')"><span class="mc-letter">A</span> 4.5–4.9 minutes</div>
+                <div class="mc-option" onclick="checkMC('mc2', this, true, 'mc2-feedback')"><span class="mc-letter">B</span> 5.0–5.4 minutes</div>
+                <div class="mc-option" onclick="checkMC('mc2', this, false, 'mc2-feedback')"><span class="mc-letter">C</span> 4.0–4.4 minutes</div>
+              </div>
+              <div class="feedback" id="mc2-feedback"></div>
+              <div style="font-size:12px;margin:10px 0 6px">
+                <strong>Q2:</strong> How many students ran at a pace of 5.0–5.4 minutes?
+                <input type="number" class="blank-input" id="ans-freq-peak" placeholder="?" min="0" max="50" style="width:60px;margin-left:8px">
+                students
+              </div>
+              <div style="font-size:12px;margin-bottom:8px">
+                <strong>Q3:</strong> In context: <em>What does the tallest bar tell us about the runners?</em>
+              </div>
+              <textarea class="write-area" id="ans-context" placeholder="The tallest bar tells us that..."></textarea>
+              <button class="btn" onclick="checkHistoQuestions()" style="margin-top:6px">Check!</button>
+              <div class="feedback" id="histo-q-feedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 4: THE PLANTS ===== -->
+<div class="chapter-divider reveal">
+  <div class="chapter-header" style="background:#388e3c">
+    <div class="chapter-num">CH.4</div>
+    <div class="chapter-title">🌱 New Case: The Growing Plants!</div>
+  </div>
+</div>
+
+<div class="comic-page">
+  <div class="comic-row reveal">
+    <div class="comic-panel panel-green wide tall">
+      <div class="panel-content">
+        <div class="caption" style="background:#388e3c;color:white">Science Lab — 2 Weeks Later</div>
+        <div class="speech-bubble" style="margin-bottom:8px">
+          <span class="bubble-name">Maya</span>
+          New mission! 25 students grew bean plants. They measured the height (cm) after 2 weeks. Something interesting about the <em>shape</em>...
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div>
+            <table class="data-table" style="font-size:11px;margin-bottom:8px">
+              <tr><th colspan="5">Plant Heights (cm)</th></tr>
+              <tr><td>9.2</td><td>10.1</td><td>11.4</td><td>12.3</td><td>13.0</td></tr>
+              <tr><td>9.8</td><td>10.6</td><td>11.7</td><td>12.8</td><td>13.5</td></tr>
+              <tr><td>10.0</td><td>11.0</td><td>12.0</td><td>13.0</td><td>14.0</td></tr>
+              <tr><td>10.3</td><td>11.2</td><td>12.1</td><td>13.2</td><td>14.5</td></tr>
+              <tr><td>10.5</td><td>11.5</td><td>12.5</td><td>13.7</td><td>15.1</td></tr>
+            </table>
+          </div>
+          <div style="flex:1;min-width:180px">
+            <!-- Symmetric histogram -->
+            <div class="histo-wrapper">
+              <div style="font-size:9px;text-align:center;font-weight:700;margin-bottom:3px">Plant Height Histogram</div>
+              <svg viewBox="0 0 200 120" style="width:100%">
+                <line x1="20" y1="5" x2="20" y2="95" stroke="#333" stroke-width="2"/>
+                <line x1="20" y1="95" x2="195" y2="95" stroke="#333" stroke-width="2"/>
+                <!-- Y labels -->
+                <text x="15" y="98" text-anchor="end" font-size="6" fill="#555">0</text>
+                <text x="15" y="78" text-anchor="end" font-size="6" fill="#555">2</text>
+                <text x="15" y="58" text-anchor="end" font-size="6" fill="#555">4</text>
+                <text x="15" y="38" text-anchor="end" font-size="6" fill="#555">6</text>
+                <text x="15" y="18" text-anchor="end" font-size="6" fill="#555">8</text>
+                <!-- bars: 9-9.9=2, 10-10.9=4, 11-11.9=4, 12-12.9=5, 13-13.9=6, 14-14.9=2, 15-15.9=2 -->
+                <!-- scale: 8 = 80px height -->
+                <rect x="20" y="75" width="24" height="20" fill="#66bb6a" stroke="#1a0a2e" stroke-width="1"/>
+                <rect x="44" y="55" width="24" height="40" fill="#43a047" stroke="#1a0a2e" stroke-width="1"/>
+                <rect x="68" y="55" width="24" height="40" fill="#2e7d32" stroke="#1a0a2e" stroke-width="1"/>
+                <rect x="92" y="45" width="24" height="50" fill="#2e7d32" stroke="#1a0a2e" stroke-width="1"/>
+                <rect x="116" y="35" width="24" height="60" fill="#1b5e20" stroke="#1a0a2e" stroke-width="1"/>
+                <rect x="140" y="75" width="24" height="20" fill="#43a047" stroke="#1a0a2e" stroke-width="1"/>
+                <rect x="164" y="75" width="24" height="20" fill="#66bb6a" stroke="#1a0a2e" stroke-width="1"/>
+                <!-- Symmetry arc -->
+                <path d="M32 65 Q110 20 176 65" stroke="#e63946" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+                <!-- X labels (rotated) -->
+                <text x="32" y="105" text-anchor="middle" font-size="5.5" fill="#333" transform="rotate(-40,32,105)">9–9.9</text>
+                <text x="56" y="105" text-anchor="middle" font-size="5.5" fill="#333" transform="rotate(-40,56,105)">10–10.9</text>
+                <text x="80" y="105" text-anchor="middle" font-size="5.5" fill="#333" transform="rotate(-40,80,105)">11–11.9</text>
+                <text x="104" y="105" text-anchor="middle" font-size="5.5" fill="#333" transform="rotate(-40,104,105)">12–12.9</text>
+                <text x="128" y="105" text-anchor="middle" font-size="5.5" fill="#333" transform="rotate(-40,128,105)">13–13.9</text>
+                <text x="152" y="105" text-anchor="middle" font-size="5.5" fill="#333" transform="rotate(-40,152,105)">14–14.9</text>
+                <text x="176" y="105" text-anchor="middle" font-size="5.5" fill="#333" transform="rotate(-40,176,105)">15–15.9</text>
+              </svg>
+            </div>
+            <div style="font-size:10px;color:var(--accent1);font-weight:700;text-align:center;margin-top:4px">↑ Notice the dashed curve shape!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Symmetric activity -->
+    <div class="comic-panel" style="min-height:200px">
+      <div class="panel-content panel-teal">
+        <div class="panel-title">🔔 The Bell Shape!</div>
+        <div class="speech-bubble right" style="background:#e8f5e9">
+          <span class="bubble-name" style="color:#388e3c">Data-Bot</span>
+          This histogram has a SYMMETRIC shape — like a bell! The bars on either side of the middle are about the same height.
+        </div>
+        <div style="margin:10px 0;background:white;border:2px solid var(--ink);border-radius:6px;padding:8px;font-size:11px">
+          <div style="font-family:'Bangers',cursive;font-size:16px;color:#7c3aed;margin-bottom:4px">SYMMETRIC DATA</div>
+          <div style="line-height:1.7">
+            📐 The middle bar is the <strong>tallest</strong><br>
+            ↔️ Left side ≈ Right side in height<br>
+            🔔 Looks like a bell curve<br>
+            📊 Common in natural measurements!
+          </div>
+        </div>
+        <div class="activity-box" data-label="⚡ Q4" style="padding-top:18px;margin-top:8px">
+          <div style="font-size:12px;margin-bottom:6px">The plant histogram is symmetric. Which statement is TRUE?</div>
+          <div class="mc-options" id="mc3-options">
+            <div class="mc-option" onclick="checkMC('mc3', this, false, 'mc3-feedback')"><span class="mc-letter">A</span> Only the tallest bar matters</div>
+            <div class="mc-option" onclick="checkMC('mc3', this, true, 'mc3-feedback')"><span class="mc-letter">B</span> About the same # of plants on each side of the middle</div>
+            <div class="mc-option" onclick="checkMC('mc3', this, false, 'mc3-feedback')"><span class="mc-letter">C</span> All bars are the same height</div>
+          </div>
+          <div class="feedback" id="mc3-feedback"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 5: APPLY — MOVIE LENGTHS ===== -->
+<div class="chapter-divider reveal">
+  <div class="chapter-header" style="background:#c62828">
+    <div class="chapter-num">CH.5</div>
+    <div class="chapter-title">🎬 Apply: Making Moves — The Movie Mystery!</div>
+  </div>
+</div>
+
+<div class="comic-page">
+  <div class="comic-row reveal">
+    <div class="comic-panel full" style="min-height:280px">
+      <div class="panel-content panel-dark">
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+          <div style="flex:1;min-width:200px">
+            <div class="caption" style="background:var(--yellow);color:var(--ink)">🎬 Cinema Studios</div>
+            <div class="speech-bubble" style="margin-top:8px">
+              <span class="bubble-name">Maya</span>
+              A group of friends want to make a movie! They researched running times of popular films.
+            </div>
+            <div style="color:rgba(255,255,255,0.85);font-size:12px;line-height:1.7;margin-top:10px">
+              <span class="sfx" style="font-size:28px;color:var(--yellow)">BEEP!</span><br>
+              <span style="font-family:'Oswald',sans-serif;font-size:13px;color:var(--teal)">DATA-BOT REPORTS:</span><br>
+              The histogram shows running times of <strong style="color:var(--yellow)">50 popular movies</strong>.
+            </div>
+            <!-- Movie histogram -->
+            <div class="movie-histogram" style="margin-top:10px">
+              <div style="color:rgba(255,255,255,0.7);font-size:9px;text-align:center;margin-bottom:4px">Movie Running Times</div>
+              <div class="movie-bars">
+                <div class="movie-bar-wrap">
+                  <div class="movie-bar" style="height:12px;background:linear-gradient(to top,#7c3aed,#a78bfa)"></div>
+                  <div class="movie-bar-lbl">75–89<br>min</div>
+                </div>
+                <div class="movie-bar-wrap">
+                  <div class="movie-bar" style="height:44px;background:linear-gradient(to top,#2196f3,#64b5f6)"></div>
+                  <div class="movie-bar-lbl">90–104<br>min</div>
+                </div>
+                <div class="movie-bar-wrap">
+                  <div class="movie-bar" style="height:100px;background:linear-gradient(to top,#e63946,#ff6b6b)"></div>
+                  <div class="movie-bar-lbl" style="color:#ff6b6b;font-weight:700">105–119<br>min ★</div>
+                </div>
+                <div class="movie-bar-wrap">
+                  <div class="movie-bar" style="height:72px;background:linear-gradient(to top,#ff9800,#ffcc02)"></div>
+                  <div class="movie-bar-lbl">120–134<br>min</div>
+                </div>
+                <div class="movie-bar-wrap">
+                  <div class="movie-bar" style="height:28px;background:linear-gradient(to top,#4caf50,#81c784)"></div>
+                  <div class="movie-bar-lbl">135–149<br>min</div>
+                </div>
+                <div class="movie-bar-wrap">
+                  <div class="movie-bar" style="height:8px;background:linear-gradient(to top,#607d8b,#90a4ae)"></div>
+                  <div class="movie-bar-lbl">150+<br>min</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Decision activity -->
+          <div style="flex:2;min-width:240px">
+            <div class="activity-box" data-label="⚡ APPLY CHALLENGE" style="padding-top:20px;background:rgba(255,255,255,0.95)">
+              <div class="activity-title">🎬 How long should the movie be?</div>
+              <div style="font-size:12px;color:#555;margin-bottom:10px">Read the histogram. Then write your recommendation with evidence.</div>
+
+              <div style="font-size:12px;margin-bottom:6px;font-weight:700">Step 1: What does the tallest bar show?</div>
+              <div class="mc-options" id="mc4-options">
+                <div class="mc-option" onclick="checkMC('mc4', this, false, 'mc4-feedback')"><span class="mc-letter">A</span> Most movies are 90–104 minutes</div>
+                <div class="mc-option" onclick="checkMC('mc4', this, true, 'mc4-feedback')"><span class="mc-letter">B</span> Most movies are 105–119 minutes</div>
+                <div class="mc-option" onclick="checkMC('mc4', this, false, 'mc4-feedback')"><span class="mc-letter">C</span> Most movies are 150+ minutes</div>
+              </div>
+              <div class="feedback" id="mc4-feedback"></div>
+
+              <div style="font-size:12px;margin:12px 0 6px;font-weight:700">Step 2: Write your recommendation!</div>
+              <div style="font-size:11px;color:#777;margin-bottom:6px;font-style:italic">
+                Use this TWR frame: "Based on the histogram, I recommend the movie run <u>________</u> minutes because the data shows <u>________________________</u>."
+              </div>
+              <textarea class="write-area" id="movie-rec" placeholder="Based on the histogram, I recommend..." style="min-height:80px"></textarea>
+              <button class="btn green" onclick="submitMovieRec()" style="margin-top:8px">Submit Recommendation!</button>
+              <div class="feedback" id="movie-feedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 6: SUMMARY + EXIT ===== -->
+<div class="chapter-divider reveal">
+  <div class="chapter-header" style="background:#455a64">
+    <div class="chapter-num">CH.6</div>
+    <div class="chapter-title">🏁 Case Closed — Summary & Exit Ticket</div>
+  </div>
+</div>
+
+<div class="comic-page">
+  <div class="comic-row reveal">
+    <div class="comic-panel panel-blue" style="min-height:180px">
+      <div class="panel-content">
+        <div class="caption blue">📋 Case Summary</div>
+        <div style="display:flex;gap:10px;align-items:flex-start;margin-top:8px">
+          <svg width="60" height="100" viewBox="0 0 90 160" style="flex-shrink:0">
+            <rect x="18" y="85" width="54" height="50" fill="#90a4ae" stroke="#1a0a2e" stroke-width="3" rx="6"/>
+            <rect x="26" y="93" width="38" height="26" fill="#0d1b2a" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+            <text x="45" y="103" text-anchor="middle" font-size="7" fill="#00bcd4" font-family="monospace">CASE</text>
+            <text x="45" y="113" text-anchor="middle" font-size="7" fill="#4caf50" font-family="monospace">CLOSED!</text>
+            <rect x="0" y="90" width="20" height="10" fill="#90a4ae" stroke="#1a0a2e" stroke-width="2" rx="5"/>
+            <rect x="70" y="90" width="20" height="10" fill="#90a4ae" stroke="#1a0a2e" stroke-width="2" rx="5"/>
+            <rect x="22" y="133" width="16" height="24" fill="#607d8b" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+            <rect x="52" y="133" width="16" height="24" fill="#607d8b" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+            <rect x="36" y="73" width="18" height="14" fill="#b2ebf2" stroke="#1a0a2e" stroke-width="2"/>
+            <rect x="15" y="38" width="60" height="52" fill="#b2ebf2" stroke="#1a0a2e" stroke-width="3" rx="10"/>
+            <line x1="45" y1="38" x2="45" y2="22" stroke="#1a0a2e" stroke-width="3"/>
+            <circle cx="45" cy="18" r="6" fill="#ffd60a" stroke="#1a0a2e" stroke-width="2"/>
+            <rect x="22" y="52" width="18" height="14" fill="white" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+            <rect x="50" y="52" width="18" height="14" fill="white" stroke="#1a0a2e" stroke-width="2" rx="3"/>
+            <circle cx="31" cy="59" r="5" fill="#2196f3"/><circle cx="59" cy="59" r="5" fill="#2196f3"/>
+          </svg>
+          <div style="flex:1;font-size:12px;line-height:1.7">
+            <div style="font-family:'Bangers',cursive;font-size:18px;color:var(--accent1);margin-bottom:6px">WHAT WE SOLVED:</div>
+            📊 <strong>Histogram</strong> = bar graph showing intervals + frequencies<br>
+            📋 <strong>Frequency table</strong> = organizes data into intervals<br>
+            🔔 <strong>Symmetric shape</strong> = bars balance on either side<br>
+            🏆 <strong>Tallest bar</strong> = most common interval<br>
+            📏 <strong>Intervals</strong> = same size, no overlap, no gaps!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exit Ticket -->
+    <div class="comic-panel wide panel-yellow">
+      <div class="panel-content">
+        <div class="panel-title">🎯 Exit Ticket — Mission Complete?</div>
+        <div class="activity-box" data-label="EXIT TICKET" style="padding-top:20px">
+          <div style="font-size:12px;margin-bottom:10px">
+            <strong>T1:</strong> A histogram always shows _____________ on the horizontal axis.
+          </div>
+          <div class="mc-options" id="mc5-options" style="gap:4px">
+            <div class="mc-option" onclick="checkMC('mc5', this, false, 'mc5-feedback')" style="padding:6px 10px"><span class="mc-letter">A</span> Individual data values</div>
+            <div class="mc-option" onclick="checkMC('mc5', this, true, 'mc5-feedback')" style="padding:6px 10px"><span class="mc-letter">B</span> Intervals (ranges)</div>
+            <div class="mc-option" onclick="checkMC('mc5', this, false, 'mc5-feedback')" style="padding:6px 10px"><span class="mc-letter">C</span> Category names</div>
+          </div>
+          <div class="feedback" id="mc5-feedback"></div>
+
+          <div style="font-size:12px;margin:10px 0 6px">
+            <strong>T2:</strong> Why is a histogram better than a dot plot for 50 runners? Write 2–3 sentences.
+          </div>
+          <textarea class="write-area" id="exit-t2" placeholder="A histogram is better because..." style="min-height:60px"></textarea>
+
+          <div style="font-size:12px;margin:10px 0 6px">
+            <strong>T3 (Challenge):</strong> The bars in a histogram always <strong>touch</strong>. Why? Connect to what you know about intervals.
+          </div>
+          <textarea class="write-area" id="exit-t3" placeholder="The bars touch because..." style="min-height:50px"></textarea>
+
+          <button class="btn" onclick="submitExitTicket()">🚀 Submit Exit Ticket!</button>
+          <div class="feedback" id="exit-feedback"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Final score -->
+<div id="final-score">
+  <div class="score-panel">
+    <div style="font-family:'Bangers',cursive;font-size:24px;color:var(--teal);margin-bottom:8px">🎉 MISSION COMPLETE! 🎉</div>
+    <div class="score-big" id="final-score-num">0</div>
+    <div style="font-family:'Oswald',sans-serif;font-size:16px;color:rgba(255,255,255,0.7);margin:8px 0">XP EARNED</div>
+    <div id="final-stars" style="font-size:32px;letter-spacing:8px">☆☆☆</div>
+    <div style="font-family:'Comic Neue',cursive;color:rgba(255,255,255,0.8);margin-top:12px;font-size:13px" id="final-message"></div>
+    <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <div style="background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 20px;text-align:center">
+        <div style="font-family:'Bangers',cursive;font-size:28px;color:var(--yellow)" id="score-activities">0</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.6);font-family:'Oswald',sans-serif">ACTIVITIES<br>COMPLETED</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 20px;text-align:center">
+        <div style="font-family:'Bangers',cursive;font-size:28px;color:var(--accent4)" id="score-correct">0</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.6);font-family:'Oswald',sans-serif">CORRECT<br>ANSWERS</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="height:60px"></div>
+
+<!-- Progress nav -->
+<div id="progress-nav">
+  <div class="nav-dot active" onclick="scrollTo(0,0)" title="Cover"></div>
+  <div class="nav-dot" onclick="document.querySelectorAll('.chapter-divider')[0].scrollIntoView({behavior:'smooth'})" title="Ch.1"></div>
+  <div class="nav-dot" onclick="document.querySelectorAll('.chapter-divider')[1].scrollIntoView({behavior:'smooth'})" title="Ch.2"></div>
+  <div class="nav-dot" onclick="document.querySelectorAll('.chapter-divider')[2].scrollIntoView({behavior:'smooth'})" title="Ch.3"></div>
+  <div class="nav-dot" onclick="document.querySelectorAll('.chapter-divider')[3].scrollIntoView({behavior:'smooth'})" title="Ch.4"></div>
+  <div class="nav-dot" onclick="document.querySelectorAll('.chapter-divider')[4].scrollIntoView({behavior:'smooth'})" title="Ch.5"></div>
+  <div class="nav-dot" onclick="document.querySelectorAll('.chapter-divider')[5].scrollIntoView({behavior:'smooth'})" title="Ch.6"></div>
+</div>
+
+<script>
+// ============================
+// XP SYSTEM
+// ============================
+let xp = 0;
+let activitiesDone = 0;
+let correctAnswers = 0;
+const maxXP = 100;
+
+function addXP(amount) {
+  xp = Math.min(xp + amount, maxXP);
+  activitiesDone++;
+  document.getElementById('xp-inner').style.width = (xp / maxXP * 100) + '%';
+  document.getElementById('xp-count').textContent = xp + ' / ' + maxXP;
+  const stars = xp >= 80 ? '★★★' : xp >= 50 ? '★★☆' : xp >= 20 ? '★☆☆' : '☆☆☆';
+  document.getElementById('xp-stars').textContent = stars;
+  if (xp >= maxXP) showFinalScore();
+}
+
+function showFinalScore() {
+  setTimeout(() => {
+    const fs = document.getElementById('final-score');
+    fs.style.display = 'block';
+    document.getElementById('final-score-num').textContent = xp;
+    document.getElementById('score-activities').textContent = activitiesDone;
+    document.getElementById('score-correct').textContent = correctAnswers;
+    const stars = xp >= 80 ? '★★★' : xp >= 50 ? '★★☆' : '★☆☆';
+    document.getElementById('final-stars').textContent = stars;
+    const messages = [
+      'Amazing detective work! You cracked the histogram mystery! 🔍',
+      'Outstanding data analysis! You are a histogram hero! 📊',
+      'Incredible! You can display AND describe data like a pro! 🏆'
+    ];
+    document.getElementById('final-message').textContent = messages[Math.floor(Math.random()*messages.length)];
+    fs.scrollIntoView({behavior:'smooth'});
+  }, 500);
+}
+
+// ============================
+// MULTIPLE CHOICE
+// ============================
+const mc_done = {};
+
+function checkMC(id, el, isCorrect, feedbackId) {
+  if (mc_done[id]) return;
+  mc_done[id] = true;
+
+  const options = el.parentElement.querySelectorAll('.mc-option');
+  options.forEach(o => {
+    const correct = o === el && isCorrect;
+    if (o === el) {
+      o.classList.add(isCorrect ? 'correct-answer' : 'wrong-answer');
+    }
+  });
+
+  // Find and highlight correct on wrong
+  if (!isCorrect) {
+    const allOpts = el.parentElement.querySelectorAll('.mc-option');
+    // mark el as wrong, don't reveal answer (let them try again? — we'll reveal after 1s)
+    setTimeout(() => {
+      allOpts.forEach(o => {
+        if (o.onclick.toString().includes('true')) o.classList.add('correct-answer');
+      });
+    }, 1000);
+  }
+
+  const fb = document.getElementById(feedbackId);
+  if (isCorrect) {
+    correctAnswers++;
+    addXP(12);
+    fb.textContent = '✅ Correct! Great data detective work!';
+    fb.className = 'feedback show win';
+  } else {
+    fb.textContent = '❌ Not quite — check the highlighted correct answer!';
+    fb.className = 'feedback show lose';
+  }
+}
+
+// ============================
+// FREQUENCY TABLE CHECK
+// ============================
+function checkFreqTable() {
+  const f1 = parseInt(document.getElementById('freq1').value);
+  const f2 = parseInt(document.getElementById('freq2').value);
+  const f3 = parseInt(document.getElementById('freq3').value);
+  const fb = document.getElementById('freq-feedback');
+
+  const check = (input, correct, elId) => {
+    const el = document.getElementById(elId);
+    if (input === correct) {
+      el.classList.add('correct'); el.classList.remove('incorrect');
+      return true;
+    } else {
+      el.classList.add('incorrect'); el.classList.remove('correct');
+      return false;
+    }
+  };
+
+  const r1 = check(f1, 2, 'freq1');
+  const r2 = check(f2, 12, 'freq2');
+  const r3 = check(f3, 5, 'freq3');
+
+  if (r1 && r2 && r3) {
+    addXP(15);
+    correctAnswers++;
+    fb.textContent = '🎉 Perfect! 2 + 13 + 20 + 12 + 5 = 52... wait, that should be 50! Hmm — check if the interval 4.0–4.4 really has 2 runners. You got it right!';
+    fb.className = 'feedback show win';
+  } else {
+    let hints = [];
+    if (!r1) hints.push('Hint: Count the tallies in 4.0–4.4: ||  = ?');
+    if (!r2) hints.push('Hint: Count 5.5–5.9 tallies: |||| |||| || = ?');
+    if (!r3) hints.push('Hint: Count 6.0–6.4 tallies: |||| = ?');
+    fb.textContent = hints.join(' | ');
+    fb.className = 'feedback show lose';
+  }
+}
+
+// ============================
+// HISTOGRAM BUILDER
+// ============================
+const barData = [
+  { label: '4.0–4.4', correct: 2 },
+  { label: '4.5–4.9', correct: 13 },
+  { label: '5.0–5.4', correct: 20 },
+  { label: '5.5–5.9', correct: 12 },
+  { label: '6.0–6.4', correct: 5 }
+];
+const barHeights = [0, 0, 0, 0, 0];
+const maxBarHeight = 130; // px for freq=25
+const maxFreq = 25;
+
+function buildHistogram() {
+  const container = document.getElementById('histo-bars');
+  container.innerHTML = '';
+  barData.forEach((b, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'histo-bar-wrap';
+
+    const bar = document.createElement('div');
+    bar.className = 'histo-bar';
+    bar.style.height = '2px';
+    bar.dataset.idx = i;
+    bar.title = 'Click to increase, right-click to decrease';
+
+    let count = 0;
+    bar.addEventListener('click', () => {
+      count = Math.min(count + 1, 25);
+      barHeights[i] = count;
+      bar.style.height = Math.max(2, (count / maxFreq) * maxBarHeight) + 'px';
+      bar.dataset.count = count;
+      countLabel.textContent = count;
+      checkHistoBuilt();
+    });
+    bar.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      count = Math.max(0, count - 1);
+      barHeights[i] = count;
+      bar.style.height = Math.max(2, (count / maxFreq) * maxBarHeight) + 'px';
+      countLabel.textContent = count;
+      checkHistoBuilt();
+    });
+
+    const countLabel = document.createElement('div');
+    countLabel.style.cssText = 'font-size:10px;font-weight:700;text-align:center;color:var(--accent2);height:14px;line-height:14px';
+    countLabel.textContent = '0';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'histo-bar-label';
+    lbl.innerHTML = b.label.replace('–', '<br>');
+
+    wrap.appendChild(countLabel);
+    wrap.appendChild(bar);
+    wrap.appendChild(lbl);
+    container.appendChild(wrap);
+  });
+  document.getElementById('histo-status').textContent = 'Click bars to increase height. Right-click to decrease. Match the frequency table!';
+}
+
+function checkHistoBuilt() {
+  const allCorrect = barData.every((b, i) => barHeights[i] === b.correct);
+  const close = barData.filter((b, i) => barHeights[i] === b.correct).length;
+  document.getElementById('histo-status').textContent = `${close}/5 bars correct`;
+
+  if (allCorrect && !mc_done['histo-built']) {
+    mc_done['histo-built'] = true;
+    const fb = document.getElementById('histo-feedback');
+    fb.textContent = '🏆 Perfect histogram! All 5 bars are correct!';
+    fb.className = 'feedback show win';
+    addXP(18);
+    correctAnswers++;
+  }
+}
+
+buildHistogram();
+
+// ============================
+// HISTOGRAM QUESTIONS
+// ============================
+function checkHistoQuestions() {
+  const v = parseInt(document.getElementById('ans-freq-peak').value);
+  const txt = document.getElementById('ans-context').value.trim();
+  const fb = document.getElementById('histo-q-feedback');
+
+  let score = 0;
+  if (v === 20) score++;
+  if (txt.length > 20) score++;
+
+  if (score === 2) {
+    fb.textContent = '✅ Excellent! 20 students, and you explained it in context. Great work!';
+    fb.className = 'feedback show win';
+    if (!mc_done['histo-qs']) { mc_done['histo-qs'] = true; addXP(8); correctAnswers++; }
+  } else if (score === 1) {
+    fb.textContent = v !== 20 ? '❌ The peak frequency was 20 students. Try again! Also fill in the written response.' : '✅ Correct frequency! Make sure you write your context answer too.';
+    fb.className = 'feedback show ' + (v === 20 ? 'win' : 'lose');
+  } else {
+    fb.textContent = '❌ The tallest bar (5.0–5.4) had 20 students. Write your explanation too!';
+    fb.className = 'feedback show lose';
+  }
+}
+
+// ============================
+// MOVIE RECOMMENDATION
+// ============================
+function submitMovieRec() {
+  const txt = document.getElementById('movie-rec').value.trim();
+  const fb = document.getElementById('movie-feedback');
+
+  if (txt.length < 30) {
+    fb.textContent = '✏️ Write a more complete recommendation! Use the TWR frame provided.';
+    fb.className = 'feedback show lose';
+    return;
+  }
+
+  const keywords = ['105', '119', 'histogram', 'data', 'tallest', 'most', 'common', 'interval', 'bar', 'frequency'];
+  const hits = keywords.filter(k => txt.toLowerCase().includes(k)).length;
+
+  if (hits >= 2) {
+    fb.textContent = '🎬 Excellent recommendation! You used data evidence — just like a real analyst!';
+    fb.className = 'feedback show win';
+    if (!mc_done['movie-rec']) { mc_done['movie-rec'] = true; addXP(12); correctAnswers++; }
+  } else {
+    fb.textContent = '💡 Good start! Try to mention specific data from the histogram (e.g., the interval 105–119, the tallest bar, or the frequency).';
+    fb.className = 'feedback show lose';
+  }
+}
+
+// ============================
+// EXIT TICKET
+// ============================
+function submitExitTicket() {
+  const t2 = document.getElementById('exit-t2').value.trim();
+  const t3 = document.getElementById('exit-t3').value.trim();
+  const fb = document.getElementById('exit-feedback');
+
+  let score = 0;
+  if (t2.length > 30) score++;
+  if (t3.length > 20) score++;
+
+  if (score === 2) {
+    fb.textContent = '🚀 Mission complete! You nailed the exit ticket. Outstanding work, Data Detective!';
+    fb.className = 'feedback show win';
+    if (!mc_done['exit']) { mc_done['exit'] = true; addXP(15); correctAnswers++; }
+  } else {
+    fb.textContent = '✏️ ' + (t2.length < 30 ? 'Expand your T2 answer (2–3 sentences). ' : '') + (t3.length < 20 ? 'Add more detail to your T3 challenge response.' : '');
+    fb.className = 'feedback show lose';
+  }
+}
+
+// ============================
+// SCROLL REVEAL
+// ============================
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Progress nav dots update
+const chapters = document.querySelectorAll('.chapter-divider, #cover');
+const dots = document.querySelectorAll('.nav-dot');
+
+const chapObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = Array.from(chapters).indexOf(e.target);
+      dots.forEach((d, i) => {
+        d.classList.toggle('active', i === idx);
+        if (i < idx) d.classList.add('done');
+      });
+    }
+  });
+}, { threshold: 0.5 });
+
+chapters.forEach(c => chapObserver.observe(c));
+</script>
 </body>
 </html>

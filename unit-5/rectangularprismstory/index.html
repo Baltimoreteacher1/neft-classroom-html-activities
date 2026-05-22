@@ -1,37 +1,1109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Rectangular Prism Story classroom activity.">
-  <title>Rectangular Prism Story</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MathQuest Surface Area Adventure — Regular Reading Version</title>
+  <style>
+    :root {
+      --navy: #0f172a;
+      --teal: #0f766e;
+      --cyan: #06b6d4;
+      --cream: #fff7ed;
+      --amber: #fef3c7;
+      --white: #ffffff;
+      --slate: #475569;
+      --border: 2px solid #0f172a;
+      --shadow: 6px 6px 0 rgba(15, 23, 42, 0.16);
+      --radius: 24px;
+      --font: Calibri, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background:
+        radial-gradient(circle at top left, rgba(204, 251, 241, 0.9), transparent 28%),
+        radial-gradient(circle at top right, rgba(254, 243, 199, 0.9), transparent 25%),
+        linear-gradient(135deg, #f8fafc, #ecfeff, #fff7ed);
+      color: var(--navy);
+      line-height: 1.15;
+    }
+
+    button, input, textarea, select { font-family: var(--font); }
+    .page { max-width: 1180px; margin: 0 auto; padding: 28px 16px; }
+
+    .hero {
+      overflow: hidden;
+      background: var(--white);
+      border: var(--border);
+      border-radius: 34px;
+      box-shadow: 10px 10px 0 rgba(15, 23, 42, 0.16);
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+
+    .hero-main { padding: 38px; }
+    .hero-side {
+      padding: 32px;
+      background: #020617;
+      color: var(--white);
+      border-left: var(--border);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: var(--border);
+      border-radius: 999px;
+      background: var(--amber);
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--navy);
+    }
+
+    h1 {
+      margin: 18px 0 14px;
+      font-size: clamp(38px, 6vw, 66px);
+      line-height: 0.94;
+      letter-spacing: -0.04em;
+    }
+
+    h2 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
+    h3 { margin: 0; font-size: 20px; letter-spacing: -0.01em; }
+    p { margin: 0; }
+
+    .intro {
+      max-width: 720px;
+      color: var(--slate);
+      font-size: 19px;
+      line-height: 1.45;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 26px;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 900;
+      color: #334155;
+    }
+
+    input, textarea {
+      width: 100%;
+      min-height: 48px;
+      border: var(--border);
+      border-radius: 18px;
+      padding: 12px 14px;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      background: white;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    input:focus, textarea:focus { box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.22); }
+
+    .adventure-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .choice-card {
+      background: var(--white);
+      border: var(--border);
+      border-radius: 24px;
+      padding: 15px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .choice-card:hover { transform: translateY(-2px); background: #ecfeff; }
+    .choice-card.selected { background: #cffafe; box-shadow: 4px 4px 0 rgba(15, 23, 42, 0.18); }
+
+    .choice-inner { display: flex; gap: 12px; align-items: center; }
+    .emoji { font-size: 34px; line-height: 1; }
+
+    .tiny {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+
+    .start-btn, .primary-btn, .secondary-btn {
+      border: var(--border);
+      border-radius: 18px;
+      padding: 13px 20px;
+      font-size: 17px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .start-btn, .primary-btn {
+      background: var(--navy);
+      color: white;
+      box-shadow: 4px 4px 0 rgba(20, 184, 166, 0.65);
+    }
+
+    .secondary-btn { background: white; color: var(--navy); }
+    .start-btn { margin-top: 26px; }
+    button:hover:not(:disabled) { transform: translateY(-2px); }
+    button:disabled { opacity: 0.42; cursor: not-allowed; }
+
+    .adventure-preview {
+      margin-top: 22px;
+      border-radius: 30px;
+      padding: 24px;
+      color: white;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+
+    .grad-stadium { background: linear-gradient(135deg, #059669, #06b6d4); }
+    .grad-racing { background: linear-gradient(135deg, #f97316, #ef4444); }
+    .grad-stage { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+    .grad-bracelet { background: linear-gradient(135deg, #d946ef, #f59e0b); }
+
+    .formula-box {
+      margin-top: 22px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .formula-box .formula { margin-top: 8px; font-size: 26px; font-weight: 900; }
+    .app { display: none; }
+    .app.active { display: block; }
+
+    .app-header {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .title-card, .progress-card, .story-card, .panel, .challenge-card, .nav-card,
+    .path-card, .reflection-card, .strategy-card, .sentence-card, .notes-card, .side-adventure {
+      border: var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .title-card, .progress-card, .story-card, .path-card, .reflection-card, .sentence-card, .notes-card, .challenge-card {
+      background: white;
+    }
+
+    .title-card { padding: 22px; }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+    }
+
+    .progress-card { padding: 15px; align-self: stretch; }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #334155;
+    }
+
+    .progress-track { height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #14b8a6, #06b6d4);
+      transition: width 0.25s ease;
+    }
+
+    .layout { display: grid; grid-template-columns: 1fr 340px; gap: 18px; }
+    .main-stack, .side-stack { display: flex; flex-direction: column; gap: 16px; }
+    .story-card { padding: 24px; }
+
+    .badge {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 6px 12px;
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .story-text { font-size: 21px; line-height: 1.45; color: #1e293b; }
+
+    .objective, .formula-callout {
+      margin-top: 16px;
+      border: 2px solid #0f766e;
+      border-radius: 18px;
+      padding: 14px;
+      background: #f0fdfa;
+    }
+
+    .formula-callout { border-color: #0f172a; background: #fef3c7; }
+
+    .callout-title {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+
+    .callout-text { font-size: 20px; font-weight: 900; }
+
+    .visual-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+    .prism-card {
+      height: 230px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f8fafc, #ecfeff);
+      border-radius: var(--radius);
+      border: var(--border);
+      box-shadow: inset 0 0 30px rgba(15, 118, 110, 0.08);
+      padding: 14px;
+    }
+
+    svg { width: 100%; height: 100%; display: block; }
+
+    .organizer { overflow: hidden; border: var(--border); border-radius: 20px; background: white; box-shadow: var(--shadow); }
+    .org-head { background: var(--navy); color: white; padding: 10px 14px; font-size: 14px; font-weight: 900; }
+    .org-row { display: grid; grid-template-columns: 1.15fr 1fr 0.7fr; border-bottom: 1px solid #cbd5e1; font-size: 14px; }
+    .org-row.header { background: #ecfeff; font-weight: 900; border-bottom: var(--border); }
+    .org-cell { padding: 10px; border-right: 1px solid #cbd5e1; }
+    .org-cell:last-child { border-right: 0; }
+    .org-total { display: flex; justify-content: space-between; gap: 10px; padding: 12px 14px; background: #fef3c7; font-weight: 900; }
+
+    .vocab-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+
+    .vocab-card {
+      min-height: 150px;
+      border: var(--border);
+      border-radius: 22px;
+      background: white;
+      padding: 16px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 rgba(15, 23, 42, 0.12);
+    }
+
+    .vocab-card h3 { margin-top: 6px; font-size: 23px; }
+    .vocab-card p { margin-top: 10px; color: #475569; font-weight: 700; line-height: 1.35; }
+
+    .challenge-card { padding: 20px; }
+
+    .challenge-prompt {
+      margin: 0 0 16px;
+      font-size: 20px;
+      line-height: 1.42;
+      font-weight: 800;
+    }
+
+    .options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+    .option-btn {
+      border: var(--border);
+      border-radius: 18px;
+      padding: 12px;
+      background: white;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .option-btn.selected { background: #cffafe; }
+    .answer-row { display: flex; gap: 12px; }
+    .answer-row input { flex: 1; }
+
+    .hint-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+    .hint-btn {
+      border: 2px solid #0f766e;
+      color: #134e4a;
+      background: #f0fdfa;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .hint-btn.second { border-color: #92400e; color: #78350f; background: #fffbeb; }
+
+    .hint-box {
+      margin-top: 10px;
+      border-radius: 16px;
+      padding: 12px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .hint-one { background: #f0fdfa; color: #134e4a; }
+    .hint-two { background: #fffbeb; color: #78350f; }
+
+    .feedback {
+      display: none;
+      margin-top: 14px;
+      border-radius: 18px;
+      padding: 14px;
+      border: 2px solid;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .feedback.correct { display: block; border-color: #047857; background: #dcfce7; color: #064e3b; }
+    .feedback.incorrect { display: block; border-color: #be123c; background: #ffe4e6; color: #881337; }
+
+    .path-card { padding: 18px; }
+    .path-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+
+    .choice-result {
+      display: none;
+      margin-top: 12px;
+      border: 2px solid #0f766e;
+      background: #f0fdfa;
+      color: #134e4a;
+      border-radius: 18px;
+      padding: 14px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .choice-result.active { display: block; }
+
+    .side-adventure { padding: 18px; color: white; }
+
+    .strategy-card { background: #020617; color: white; padding: 18px; }
+    .strategy-card ol { margin: 14px 0 0; padding-left: 22px; color: #cbd5e1; font-weight: 700; line-height: 1.45; }
+    .strategy-card strong { color: white; }
+
+    .formula-pill {
+      margin-top: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.1);
+      padding: 12px;
+      text-align: center;
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .sentence-card, .notes-card { padding: 18px; }
+    .sentence-card p { margin-top: 8px; font-weight: 800; color: #475569; }
+
+    .nav-card {
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: white;
+    }
+
+    .scene-count { text-align: center; font-size: 14px; color: #475569; font-weight: 900; }
+
+    .locked-message {
+      display: none;
+      text-align: center;
+      margin: -4px 0 2px;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .reflection-card { padding: 20px; }
+    .reflection-card label { margin-top: 14px; display:block; }
+
+    .completion {
+      margin-top: 14px;
+      border-radius: 24px;
+      color: white;
+      padding: 18px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 980px) {
+      .hero, .app-header, .layout, .visual-grid { grid-template-columns: 1fr; }
+      .hero-side { border-left: 0; border-top: var(--border); }
+    }
+
+    @media (max-width: 720px) {
+      .adventure-grid, .vocab-grid, .options, .path-grid { grid-template-columns: 1fr; }
+      .answer-row { flex-direction: column; }
+      .hero-main, .hero-side { padding: 22px; }
+      .story-text { font-size: 18px; }
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/unit-5/">Unit 5 Geometry and Measurement</a><span>/</span><span>Rectangular Prism Story</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Rectangular Prism Story</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <main class="page">
+    <section id="startScreen" class="hero">
+      <div class="hero-main">
+        <div class="eyebrow">R Version — Regular Reading · 45–60 Minute Journey</div>
+        <h1>MathQuest: Surface Area Adventure</h1>
+        <p class="intro">
+          Choose a story path, enter your name, and solve a full adventure about the surface area of rectangular prisms.
+          This version includes a longer, more adventurous story with choices, vocabulary, guided learning, practice, missing dimensions, final challenges, and reflection.
+        </p>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> RectangularPrismStory</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/unit-5/rectangularprismstory/</span></p>
+        <div class="form-grid">
+          <label>
+            <span class="label">Student Name</span>
+            <input id="studentName" type="text" placeholder="Type your name" />
+          </label>
+          <div style="border:2px solid #0f172a;border-radius:18px;padding:14px;background:#f0fdfa;">
+            <span class="label">Reading Version</span>
+            <p style="font-weight:900;font-size:18px;">R Version — Regular Reading</p>
+            <p style="margin-top:6px;color:#475569;font-weight:700;line-height:1.35;">This version uses fuller Grade 6 story text and standard academic wording.</p>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <p class="label">Choose Your Adventure</p>
+          <div id="adventureChoices" class="adventure-grid"></div>
+        </div>
+
+        <button id="startBtn" class="start-btn" disabled>Begin the Journey</button>
+        <p id="nameReminder" style="margin-top:10px; font-weight:800; color:#64748b;">Enter a name to begin.</p>
+      </div>
+
+      <div class="hero-side">
+        <h2>Selected Adventure</h2>
+        <div id="adventurePreview" class="adventure-preview grad-stadium"></div>
+        <div class="formula-box">
+          <div class="tiny" style="color:#bae6fd;">Math Tool</div>
+          <div class="formula">SA = 2lw + 2lh + 2wh</div>
+        </div>
+        <div class="prism-card" style="margin-top: 18px; border:0;">
+          <svg viewBox="0 0 360 210" role="img" aria-label="3D rectangular prism diagram">
+            <defs>
+              <linearGradient id="frontStart" x1="0" x2="1"><stop offset="0" stop-color="#dff7fb"/><stop offset="1" stop-color="#bdeff5"/></linearGradient>
+              <linearGradient id="topStart" x1="0" x2="1"><stop offset="0" stop-color="#fef3c7"/><stop offset="1" stop-color="#fde68a"/></linearGradient>
+              <linearGradient id="sideStart" x1="0" x2="1"><stop offset="0" stop-color="#ccfbf1"/><stop offset="1" stop-color="#99f6e4"/></linearGradient>
+            </defs>
+            <polygon points="80,65 235,65 295,25 140,25" fill="url(#topStart)" stroke="#0f172a" stroke-width="3"/>
+            <polygon points="235,65 295,25 295,135 235,175" fill="url(#sideStart)" stroke="#0f172a" stroke-width="3"/>
+            <polygon points="80,65 235,65 235,175 80,175" fill="url(#frontStart)" stroke="#0f172a" stroke-width="3"/>
+            <text x="150" y="196" text-anchor="middle" fill="#0f172a" font-size="18" font-weight="900">length = 6</text>
+            <text x="304" y="88" fill="#0f172a" font-size="18" font-weight="900">height = 3</text>
+            <text x="206" y="26" text-anchor="middle" fill="#0f172a" font-size="18" font-weight="900">width = 4</text>
+          </svg>
+        </div>
       </div>
     </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/unit-5/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
-    </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
+    <section id="appScreen" class="app">
+      <header class="app-header">
+        <div class="title-card">
+          <div id="sceneMeta" class="meta"></div>
+          <h2 id="sceneTitle"></h2>
+        </div>
+        <div class="progress-card">
+          <div class="progress-row">
+            <span>Journey Progress</span>
+            <span id="progressPct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+        </div>
+      </header>
+
+      <section class="layout">
+        <div class="main-stack">
+          <article class="story-card">
+            <div id="storyBadge" class="badge grad-stadium">Story Scene</div>
+            <p id="storyText" class="story-text"></p>
+            <div id="objectiveBox" class="objective hidden">
+              <div class="callout-title">Learning Target</div>
+              <div id="objectiveText" class="callout-text"></div>
+            </div>
+            <div id="formulaBox" class="formula-callout hidden">
+              <div class="callout-title">Formula Tool</div>
+              <div id="formulaText" class="callout-text"></div>
+            </div>
+          </article>
+
+          <div id="visualSection" class="visual-grid hidden"></div>
+          <div id="vocabSection" class="vocab-grid hidden"></div>
+          <div id="challengeSection" class="main-stack"></div>
+          <div id="pathSection" class="path-card hidden"></div>
+          <div id="reflectionSection" class="reflection-card hidden"></div>
+
+          <div class="nav-card">
+            <button id="backBtn" class="secondary-btn">Back</button>
+            <div id="sceneCount" class="scene-count"></div>
+            <button id="continueBtn" class="primary-btn">Continue</button>
+          </div>
+          <p id="lockedMessage" class="locked-message"></p>
+        </div>
+
+        <aside class="side-stack">
+          <div id="sideAdventure" class="side-adventure grad-stadium"></div>
+
+          <div class="strategy-card">
+            <div class="tiny" style="color:#bae6fd;">Strategy Card</div>
+            <h2 style="margin-top:6px;">Surface Area Steps</h2>
+            <ol>
+              <li><strong>Find</strong> length × width.</li>
+              <li><strong>Find</strong> length × height.</li>
+              <li><strong>Find</strong> width × height.</li>
+              <li><strong>Double</strong> each face area.</li>
+              <li><strong>Add</strong> all three pairs.</li>
+            </ol>
+            <div class="formula-pill">SA = 2lw + 2lh + 2wh</div>
+          </div>
+
+          <div class="sentence-card">
+            <div class="label">Sentence Starters</div>
+            <p>• First, I found...</p>
+            <p>• The matching face has the same area because...</p>
+            <p>• I doubled this area because...</p>
+            <p>• My final answer is ___ square units.</p>
+          </div>
+
+          <div class="notes-card">
+            <label>
+              <span class="label">Adventure Notes</span>
+              <textarea id="adventureNotes" placeholder="Show work, write vocabulary, or explain your strategy..."></textarea>
+            </label>
+          </div>
+
+          <button id="resetBtn" class="secondary-btn">Reset Adventure</button>
+        </aside>
+      </section>
+    </section>
   </main>
-  <script src="/assets/app.js" defer></script>
+
+  <script>
+    const DATA = {"adventures": [{"id": "stadium-rescue", "type": "Sports Adventure", "title": "Stadium Rescue: The Final Quarter", "shortTitle": "Final Quarter", "setting": "Velocity Stadium", "role": "surface-area captain", "mission": "save the championship game before the final quarter begins", "artifact": "championship shield", "objectA": "equipment crates", "objectB": "scoreboard power boxes", "finalObject": "broadcast tower prisms", "grad": "grad-stadium", "emoji": "🏟️", "choiceFlavor": {"left": "sprint through the mascot tunnel", "right": "climb the scoreboard ladder"}}, {"id": "prism-prix", "type": "Sports Adventure", "title": "Prism Prix: Pit Crew Escape", "shortTitle": "Pit Crew Escape", "setting": "Turbo Track Arena", "role": "pit crew engineer", "mission": "repair the race team’s gear before the last lap", "artifact": "victory engine core", "objectA": "tool cases", "objectB": "fuel-cell display boxes", "finalObject": "finish-line supply crates", "grad": "grad-racing", "emoji": "🏎️", "choiceFlavor": {"left": "dash through the pit lane", "right": "cut across the tire-stack maze"}}, {"id": "eras-stage", "type": "Taylor Swift Fan Adventure", "title": "Eras Stage Rescue: The Prism Panic", "shortTitle": "Eras Stage Rescue", "setting": "The Starlight Arena", "role": "stage design problem-solver", "mission": "fix the glowing stage pieces before the crowd countdown ends", "artifact": "sparkle stage key", "objectA": "stage prop boxes", "objectB": "light-panel cases", "finalObject": "tour display prisms", "grad": "grad-stage", "emoji": "🎤", "choiceFlavor": {"left": "follow the glitter trail backstage", "right": "race under the moving spotlight bridge"}}, {"id": "bracelet-vault", "type": "Taylor Swift Fan Adventure", "title": "Friendship Bracelet Vault Quest", "shortTitle": "Bracelet Vault Quest", "setting": "The Starlight Pop-Up Shop", "role": "merch-math designer", "mission": "unlock the bracelet vault before the fan line reaches the doors", "artifact": "golden bracelet charm", "objectA": "bracelet display boxes", "objectB": "gift-wrap stations", "finalObject": "collector display cases", "grad": "grad-bracelet", "emoji": "✨", "choiceFlavor": {"left": "slide behind the glitter display wall", "right": "follow the coded bracelet pattern"}}], "vocab": [{"term": "Rectangular Prism", "definition": "A 3D solid with six rectangular faces, like a box.", "example": "shoe box, cereal box, display box"}, {"term": "Surface Area", "definition": "The total area covering the outside of a 3D object.", "example": "paper needed to wrap a box"}, {"term": "Face", "definition": "A flat side of a 3D object.", "example": "front face, top face, side face"}, {"term": "Opposite Faces", "definition": "Two matching faces across from each other on a prism. They have the same area.", "example": "top and bottom"}, {"term": "Dimensions", "definition": "The measurements of a prism: length, width, and height.", "example": "l = 8, w = 3, h = 2"}, {"term": "Square Units", "definition": "Units used for area, such as square inches, square feet, or square centimeters.", "example": "96 square units or 96 units²"}, {"term": "Net", "definition": "A flat pattern that can fold into a 3D shape.", "example": "6 rectangles connected together"}, {"term": "Formula", "definition": "A rule written with numbers and variables that helps you solve a problem.", "example": "SA = 2lw + 2lh + 2wh"}], "scenesByAdventure": {"stadium-rescue": [{"id": "briefing", "title": "Chapter 1: The Countdown Begins", "time": "4 min", "type": "story", "text": "It is the end of April, and everyone is ready for something more exciting than another worksheet. Suddenly, your screen flashes: EMERGENCY MISSION. At Velocity Stadium, the control system has locked every box-shaped object behind a surface-area code. As the surface-area captain, you must save the championship game before the final quarter begins. The countdown has started.", "objective": "I can find the surface area of a rectangular prism by adding the areas of all six faces.", "choices": [{"label": "Accept the mission", "value": "mission-accepted", "result": "Your mission badge lights up. The first gate opens with a loud click."}, {"label": "Scan the area first", "value": "scan-first", "result": "Smart move. Your scanner finds six glowing rectangular faces on the nearest prism."}]}, {"id": "route", "title": "Chapter 2: Pick Your Route", "time": "3 min", "type": "story", "text": "The mission map splits into two routes. You can sprint through the mascot tunnel toward the equipment crates, or you can climb the scoreboard ladder toward the scoreboard power boxes. Both routes lead deeper into the surface-area mystery.", "choices": [{"label": "Route A: Sprint through the mascot tunnel", "value": "route-a", "result": "You choose Route A. The floor panels glow in the shape of rectangles as you move toward the equipment crates."}, {"label": "Route B: Climb the scoreboard ladder", "value": "route-b", "result": "You choose Route B. A warning sign flashes: ONLY A SURFACE-AREA EXPERT MAY PASS."}]}, {"id": "vocab", "title": "Chapter 3: The Vocabulary Vault", "time": "7 min", "type": "vocab", "text": "A metal vault door blocks the path. Eight math words spin across the lock. To continue, tap the cards, unlock the meanings, and prove you know the language of the mission.", "challenge": [{"id": "vocab-check-1", "kind": "mc", "prompt": "Which word means the total area covering the outside of a 3D object?", "options": ["Surface Area", "Height", "Volume", "Edge"], "answer": "Surface Area", "hint1": "Think about wrapping paper around a box.", "hint2": "It is not the space inside. It is the area outside.", "explain": "Surface area is the total area of the outside faces of a 3D object."}]}, {"id": "outside", "title": "Chapter 4: Outside, Not Inside", "time": "5 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "text": "A training prism rises from the floor. A glowing laser outlines the outside of the prism. The mission computer warns: Do not find the inside space. Find the area needed to cover every outside face.", "challenge": [{"id": "outside-1", "kind": "mc", "prompt": "If you are finding surface area, what are you measuring?", "options": ["outside faces", "inside space", "one edge", "only the top"], "answer": "outside faces", "hint1": "Think about covering or wrapping the object.", "hint2": "Surface area uses all the outside faces.", "explain": "Surface area measures the total area of the outside faces of a 3D object."}]}, {"id": "facepairs", "title": "Chapter 5: The Three Matching Pairs", "time": "6 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "text": "The prism spins slowly. You notice a pattern: the top and bottom match, the front and back match, and the left and right match. If one face has an area, its opposite face has the same area.", "challenge": [{"id": "pair-1", "kind": "number", "prompt": "For l = 4, w = 3, h = 2, what is the area of the top face?", "answer": 12, "unit": "square units", "hint1": "The top face uses length × width.", "hint2": "4 × 3 = ?", "explain": "The top face area is length × width, so 4 × 3 = 12 square units."}]}, {"id": "formula", "title": "Chapter 6: Build the Power Formula", "time": "7 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "formula": "Surface Area = 2(lw) + 2(lh) + 2(wh)", "text": "A huge formula beam shoots across the room: Surface Area = 2(lw) + 2(lh) + 2(wh). The formula is not magic. It simply doubles each different rectangle face because every face has a matching opposite face.", "challenge": [{"id": "guided-1", "kind": "number", "prompt": "Find the surface area of the prism with l = 4, w = 3, h = 2.", "answer": 52, "unit": "square units", "hint1": "Find the three face areas first: lw, lh, and wh.", "hint2": "2(4×3) + 2(4×2) + 2(3×2) = ?", "explain": "2(4×3) + 2(4×2) + 2(3×2) = 24 + 16 + 12 = 52 square units."}]}, {"id": "net", "title": "Chapter 7: The Net Bridge", "time": "6 min", "type": "guided", "dimensions": {"l": 6, "w": 4, "h": 3}, "text": "The floor unfolds into a giant net bridge. Each rectangle is a face of the prism. If you skip one rectangle, the bridge shakes. To cross safely, account for all six faces.", "challenge": [{"id": "net-1", "kind": "number", "prompt": "Find the surface area of a rectangular prism with l = 6, w = 4, h = 3.", "answer": 108, "unit": "square units", "hint1": "Use 2(lw) + 2(lh) + 2(wh).", "hint2": "2(6×4) + 2(6×3) + 2(4×3).", "explain": "2(24) + 2(18) + 2(12) = 48 + 36 + 24 = 108 square units."}]}, {"id": "checkpoint", "title": "Chapter 8: The First Gate Opens", "time": "4 min", "type": "story", "text": "The first gate opens, but the mission gets louder. Sirens flash around the equipment crates and scoreboard power boxes. A message appears: ONLY STUDENTS WHO CAN ORGANIZE ALL SIX FACES MAY CONTINUE.", "choices": [{"label": "Use the face-pair organizer", "value": "organizer", "result": "Your organizer locks into place. Every matching pair is ready."}, {"label": "Use the formula scanner", "value": "scanner", "result": "Your scanner projects the formula across the wall. The next prism is waiting."}]}, {"id": "level1a", "title": "Chapter 9: Level 1 — First Real Mission", "time": "6 min", "type": "practice", "dimensions": {"l": 8, "w": 3, "h": 2}, "text": "You reach the first set of equipment crates. The surface is scratched, and the repair team needs the exact amount of covering material. No guessing. No shortcuts.", "challenge": [{"id": "l1-1", "kind": "number", "prompt": "Equipment crates A has l = 8, w = 3, h = 2. What is its surface area?", "answer": 92, "unit": "square units", "hint1": "Find 2(lw), 2(lh), and 2(wh).", "hint2": "2(8×3) + 2(8×2) + 2(3×2).", "explain": "2(24) + 2(16) + 2(6) = 48 + 32 + 12 = 92 square units."}]}, {"id": "level1b", "title": "Chapter 10: Level 1 — The Bigger Box", "time": "6 min", "type": "practice", "dimensions": {"l": 7, "w": 5, "h": 4}, "text": "The next prism is bigger, and the timer ticks faster. The numbers are all different, so your best move is to stay organized and label each face pair.", "challenge": [{"id": "l1-2", "kind": "number", "prompt": "Equipment crates B has l = 7, w = 5, h = 4. What is its surface area?", "answer": 166, "unit": "square units", "hint1": "The three different face areas are 7×5, 7×4, and 5×4.", "hint2": "2(35) + 2(28) + 2(20).", "explain": "70 + 56 + 40 = 166 square units."}]}, {"id": "level1c", "title": "Chapter 11: Level 1 — Same Dimensions Trap", "time": "6 min", "type": "practice", "dimensions": {"l": 10, "w": 4, "h": 4}, "text": "A warning flashes: SAME DIMENSIONS DO NOT MEAN SKIP A FACE. This prism has two equal dimensions, but the method is still the same. Three face pairs. Six faces total.", "challenge": [{"id": "l1-3", "kind": "number", "prompt": "Scoreboard power boxes C has l = 10, w = 4, h = 4. What is its surface area?", "answer": 192, "unit": "square units", "hint1": "Even when width and height are the same, still use all three face pairs.", "hint2": "2(10×4) + 2(10×4) + 2(4×4).", "explain": "80 + 80 + 32 = 192 square units."}]}, {"id": "strategy", "title": "Chapter 12: Strategy Stop", "time": "5 min", "type": "reflection-lite", "text": "The mission pauses at a glowing checkpoint. You cannot just be fast; you need to be clear. Explain your strategy like another sixth grader will use your notes to survive the next gate.", "reflectionPrompts": ["Why do we double each face area in the surface area formula?", "What mistake should a student avoid when finding surface area?"]}, {"id": "mysteryA", "title": "Chapter 13: Level 2 — Missing Height Mystery", "time": "7 min", "type": "practice", "dimensions": {"l": 5, "w": 3, "h": 4}, "text": "The next scanner is damaged. It gives the total surface area and two dimensions, but it hides the height. You must work backward from the formula to crack the code.", "challenge": [{"id": "l2-1", "kind": "number", "prompt": "A rectangular prism has l = 5, w = 3, and surface area = 94 square units. What is h?", "answer": 4, "unit": "units", "hint1": "Start with 2(lw) + 2(lh) + 2(wh) = 94.", "hint2": "2(5×3) + 2(5×h) + 2(3×h) = 94, so 30 + 10h + 6h = 94.", "explain": "30 + 16h = 94. Subtract 30 to get 16h = 64. Divide by 16. h = 4 units."}]}, {"id": "mysteryB", "title": "Chapter 14: Level 2 — The Second Hidden Dimension", "time": "7 min", "type": "practice", "dimensions": {"l": 6, "w": 2, "h": 5}, "text": "A second lock slides into place. This one is trickier because the equation has several h terms. If you combine them correctly, the gate will open.", "challenge": [{"id": "l2-2", "kind": "number", "prompt": "A rectangular prism has l = 6, w = 2, and surface area = 104 square units. What is h?", "answer": 5, "unit": "units", "hint1": "Use 2(6×2) + 2(6×h) + 2(2×h) = 104.", "hint2": "24 + 12h + 4h = 104.", "explain": "24 + 16h = 104. Subtract 24 to get 16h = 80. Divide by 16. h = 5 units."}]}, {"id": "mysteryC", "title": "Chapter 15: Level 2 — The Final Scanner", "time": "7 min", "type": "practice", "dimensions": {"l": 8, "w": 5, "h": 6}, "text": "The final scanner puzzle is the toughest yet. The numbers are larger, the lights are flickering, and the countdown is louder. Slow down and combine like terms carefully.", "challenge": [{"id": "l2-3", "kind": "number", "prompt": "A rectangular prism has l = 8, w = 5, and surface area = 236 square units. What is h?", "answer": 6, "unit": "units", "hint1": "Use 2(8×5) + 2(8×h) + 2(5×h) = 236.", "hint2": "80 + 16h + 10h = 236.", "explain": "80 + 26h = 236. Subtract 80 to get 26h = 156. Divide by 26. h = 6 units."}]}, {"id": "bigchoice", "title": "Chapter 16: The Risky Decision", "time": "4 min", "type": "story", "text": "The mission map shakes. Two final routes appear. One route is shorter but has a cracked bridge. The other route is longer but gives you more time to check your calculations. Choose carefully.", "choices": [{"label": "Take the short, risky route", "value": "risky", "result": "You take the risky route. The bridge wobbles, but your surface-area badge keeps it steady."}, {"label": "Take the longer calculation route", "value": "safe", "result": "You take the longer route. Extra formula lights appear to help you organize the final challenge."}]}, {"id": "compare", "title": "Chapter 17: Level 3 — Compare Two Designs", "time": "8 min", "type": "practice", "text": "Two prism designs flash on the mission wall. One will save material; the other will be stronger. Calculate both surface areas and compare them before the system chooses the wrong one.", "challenge": [{"id": "l3-1", "kind": "number", "prompt": "Design A has l = 12, w = 3, h = 2. Design B has l = 7, w = 5, h = 3. How many more square units does Design B need than Design A?", "answer": 10, "unit": "square units", "hint1": "Find the surface area of each design separately first.", "hint2": "Design A = 132. Design B = 142. Find the difference.", "explain": "Design A: 2(36)+2(24)+2(6)=132. Design B: 2(35)+2(21)+2(15)=142. Difference = 10 square units."}]}, {"id": "final", "title": "Chapter 18: The Final Build", "time": "8–10 min", "type": "practice", "text": "The final lock surrounds the championship shield. To open it, calculate the total surface area for two broadcast tower prisms. This is the mission-ending calculation. Show the work. Trust the formula.", "challenge": [{"id": "final-1", "kind": "number", "prompt": "Box 1 has l = 9, w = 4, h = 3. Box 2 has l = 6, w = 5, h = 2. What is the total surface area of both boxes?", "answer": 254, "unit": "square units", "hint1": "Find the surface area of each box separately first.", "hint2": "Box 1 = 150 square units. Box 2 = 104 square units. Now add.", "explain": "Box 1: 2(36) + 2(27) + 2(12) = 150. Box 2: 2(30) + 2(12) + 2(10) = 104. Total = 254 square units."}]}, {"id": "reflection", "title": "Chapter 19: Mission Complete", "time": "5 min", "type": "reflection", "text": "The championship shield glows. The countdown stops. You did not just click through a story; you used math to solve every gate. Before you leave Velocity Stadium, explain your strategy so the next mission team can follow your thinking.", "reflectionPrompts": ["How do you find the surface area of a rectangular prism?", "Why do you use square units for surface area?", "What mistake should students watch out for?", "Which challenge was hardest, and what helped you solve it?"]}], "prism-prix": [{"id": "briefing", "title": "Chapter 1: The Countdown Begins", "time": "4 min", "type": "story", "text": "It is the end of April, and everyone is ready for something more exciting than another worksheet. Suddenly, your screen flashes: EMERGENCY MISSION. At Turbo Track Arena, the control system has locked every box-shaped object behind a surface-area code. As the pit crew engineer, you must repair the race team’s gear before the last lap. The countdown has started.", "objective": "I can find the surface area of a rectangular prism by adding the areas of all six faces.", "choices": [{"label": "Accept the mission", "value": "mission-accepted", "result": "Your mission badge lights up. The first gate opens with a loud click."}, {"label": "Scan the area first", "value": "scan-first", "result": "Smart move. Your scanner finds six glowing rectangular faces on the nearest prism."}]}, {"id": "route", "title": "Chapter 2: Pick Your Route", "time": "3 min", "type": "story", "text": "The mission map splits into two routes. You can dash through the pit lane toward the tool cases, or you can cut across the tire-stack maze toward the fuel-cell display boxes. Both routes lead deeper into the surface-area mystery.", "choices": [{"label": "Route A: Dash through the pit lane", "value": "route-a", "result": "You choose Route A. The floor panels glow in the shape of rectangles as you move toward the tool cases."}, {"label": "Route B: Cut across the tire-stack maze", "value": "route-b", "result": "You choose Route B. A warning sign flashes: ONLY A SURFACE-AREA EXPERT MAY PASS."}]}, {"id": "vocab", "title": "Chapter 3: The Vocabulary Vault", "time": "7 min", "type": "vocab", "text": "A metal vault door blocks the path. Eight math words spin across the lock. To continue, tap the cards, unlock the meanings, and prove you know the language of the mission.", "challenge": [{"id": "vocab-check-1", "kind": "mc", "prompt": "Which word means the total area covering the outside of a 3D object?", "options": ["Surface Area", "Height", "Volume", "Edge"], "answer": "Surface Area", "hint1": "Think about wrapping paper around a box.", "hint2": "It is not the space inside. It is the area outside.", "explain": "Surface area is the total area of the outside faces of a 3D object."}]}, {"id": "outside", "title": "Chapter 4: Outside, Not Inside", "time": "5 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "text": "A training prism rises from the floor. A glowing laser outlines the outside of the prism. The mission computer warns: Do not find the inside space. Find the area needed to cover every outside face.", "challenge": [{"id": "outside-1", "kind": "mc", "prompt": "If you are finding surface area, what are you measuring?", "options": ["outside faces", "inside space", "one edge", "only the top"], "answer": "outside faces", "hint1": "Think about covering or wrapping the object.", "hint2": "Surface area uses all the outside faces.", "explain": "Surface area measures the total area of the outside faces of a 3D object."}]}, {"id": "facepairs", "title": "Chapter 5: The Three Matching Pairs", "time": "6 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "text": "The prism spins slowly. You notice a pattern: the top and bottom match, the front and back match, and the left and right match. If one face has an area, its opposite face has the same area.", "challenge": [{"id": "pair-1", "kind": "number", "prompt": "For l = 4, w = 3, h = 2, what is the area of the top face?", "answer": 12, "unit": "square units", "hint1": "The top face uses length × width.", "hint2": "4 × 3 = ?", "explain": "The top face area is length × width, so 4 × 3 = 12 square units."}]}, {"id": "formula", "title": "Chapter 6: Build the Power Formula", "time": "7 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "formula": "Surface Area = 2(lw) + 2(lh) + 2(wh)", "text": "A huge formula beam shoots across the room: Surface Area = 2(lw) + 2(lh) + 2(wh). The formula is not magic. It simply doubles each different rectangle face because every face has a matching opposite face.", "challenge": [{"id": "guided-1", "kind": "number", "prompt": "Find the surface area of the prism with l = 4, w = 3, h = 2.", "answer": 52, "unit": "square units", "hint1": "Find the three face areas first: lw, lh, and wh.", "hint2": "2(4×3) + 2(4×2) + 2(3×2) = ?", "explain": "2(4×3) + 2(4×2) + 2(3×2) = 24 + 16 + 12 = 52 square units."}]}, {"id": "net", "title": "Chapter 7: The Net Bridge", "time": "6 min", "type": "guided", "dimensions": {"l": 6, "w": 4, "h": 3}, "text": "The floor unfolds into a giant net bridge. Each rectangle is a face of the prism. If you skip one rectangle, the bridge shakes. To cross safely, account for all six faces.", "challenge": [{"id": "net-1", "kind": "number", "prompt": "Find the surface area of a rectangular prism with l = 6, w = 4, h = 3.", "answer": 108, "unit": "square units", "hint1": "Use 2(lw) + 2(lh) + 2(wh).", "hint2": "2(6×4) + 2(6×3) + 2(4×3).", "explain": "2(24) + 2(18) + 2(12) = 48 + 36 + 24 = 108 square units."}]}, {"id": "checkpoint", "title": "Chapter 8: The First Gate Opens", "time": "4 min", "type": "story", "text": "The first gate opens, but the mission gets louder. Sirens flash around the tool cases and fuel-cell display boxes. A message appears: ONLY STUDENTS WHO CAN ORGANIZE ALL SIX FACES MAY CONTINUE.", "choices": [{"label": "Use the face-pair organizer", "value": "organizer", "result": "Your organizer locks into place. Every matching pair is ready."}, {"label": "Use the formula scanner", "value": "scanner", "result": "Your scanner projects the formula across the wall. The next prism is waiting."}]}, {"id": "level1a", "title": "Chapter 9: Level 1 — First Real Mission", "time": "6 min", "type": "practice", "dimensions": {"l": 8, "w": 3, "h": 2}, "text": "You reach the first set of tool cases. The surface is scratched, and the repair team needs the exact amount of covering material. No guessing. No shortcuts.", "challenge": [{"id": "l1-1", "kind": "number", "prompt": "Tool cases A has l = 8, w = 3, h = 2. What is its surface area?", "answer": 92, "unit": "square units", "hint1": "Find 2(lw), 2(lh), and 2(wh).", "hint2": "2(8×3) + 2(8×2) + 2(3×2).", "explain": "2(24) + 2(16) + 2(6) = 48 + 32 + 12 = 92 square units."}]}, {"id": "level1b", "title": "Chapter 10: Level 1 — The Bigger Box", "time": "6 min", "type": "practice", "dimensions": {"l": 7, "w": 5, "h": 4}, "text": "The next prism is bigger, and the timer ticks faster. The numbers are all different, so your best move is to stay organized and label each face pair.", "challenge": [{"id": "l1-2", "kind": "number", "prompt": "Tool cases B has l = 7, w = 5, h = 4. What is its surface area?", "answer": 166, "unit": "square units", "hint1": "The three different face areas are 7×5, 7×4, and 5×4.", "hint2": "2(35) + 2(28) + 2(20).", "explain": "70 + 56 + 40 = 166 square units."}]}, {"id": "level1c", "title": "Chapter 11: Level 1 — Same Dimensions Trap", "time": "6 min", "type": "practice", "dimensions": {"l": 10, "w": 4, "h": 4}, "text": "A warning flashes: SAME DIMENSIONS DO NOT MEAN SKIP A FACE. This prism has two equal dimensions, but the method is still the same. Three face pairs. Six faces total.", "challenge": [{"id": "l1-3", "kind": "number", "prompt": "Fuel-cell display boxes C has l = 10, w = 4, h = 4. What is its surface area?", "answer": 192, "unit": "square units", "hint1": "Even when width and height are the same, still use all three face pairs.", "hint2": "2(10×4) + 2(10×4) + 2(4×4).", "explain": "80 + 80 + 32 = 192 square units."}]}, {"id": "strategy", "title": "Chapter 12: Strategy Stop", "time": "5 min", "type": "reflection-lite", "text": "The mission pauses at a glowing checkpoint. You cannot just be fast; you need to be clear. Explain your strategy like another sixth grader will use your notes to survive the next gate.", "reflectionPrompts": ["Why do we double each face area in the surface area formula?", "What mistake should a student avoid when finding surface area?"]}, {"id": "mysteryA", "title": "Chapter 13: Level 2 — Missing Height Mystery", "time": "7 min", "type": "practice", "dimensions": {"l": 5, "w": 3, "h": 4}, "text": "The next scanner is damaged. It gives the total surface area and two dimensions, but it hides the height. You must work backward from the formula to crack the code.", "challenge": [{"id": "l2-1", "kind": "number", "prompt": "A rectangular prism has l = 5, w = 3, and surface area = 94 square units. What is h?", "answer": 4, "unit": "units", "hint1": "Start with 2(lw) + 2(lh) + 2(wh) = 94.", "hint2": "2(5×3) + 2(5×h) + 2(3×h) = 94, so 30 + 10h + 6h = 94.", "explain": "30 + 16h = 94. Subtract 30 to get 16h = 64. Divide by 16. h = 4 units."}]}, {"id": "mysteryB", "title": "Chapter 14: Level 2 — The Second Hidden Dimension", "time": "7 min", "type": "practice", "dimensions": {"l": 6, "w": 2, "h": 5}, "text": "A second lock slides into place. This one is trickier because the equation has several h terms. If you combine them correctly, the gate will open.", "challenge": [{"id": "l2-2", "kind": "number", "prompt": "A rectangular prism has l = 6, w = 2, and surface area = 104 square units. What is h?", "answer": 5, "unit": "units", "hint1": "Use 2(6×2) + 2(6×h) + 2(2×h) = 104.", "hint2": "24 + 12h + 4h = 104.", "explain": "24 + 16h = 104. Subtract 24 to get 16h = 80. Divide by 16. h = 5 units."}]}, {"id": "mysteryC", "title": "Chapter 15: Level 2 — The Final Scanner", "time": "7 min", "type": "practice", "dimensions": {"l": 8, "w": 5, "h": 6}, "text": "The final scanner puzzle is the toughest yet. The numbers are larger, the lights are flickering, and the countdown is louder. Slow down and combine like terms carefully.", "challenge": [{"id": "l2-3", "kind": "number", "prompt": "A rectangular prism has l = 8, w = 5, and surface area = 236 square units. What is h?", "answer": 6, "unit": "units", "hint1": "Use 2(8×5) + 2(8×h) + 2(5×h) = 236.", "hint2": "80 + 16h + 10h = 236.", "explain": "80 + 26h = 236. Subtract 80 to get 26h = 156. Divide by 26. h = 6 units."}]}, {"id": "bigchoice", "title": "Chapter 16: The Risky Decision", "time": "4 min", "type": "story", "text": "The mission map shakes. Two final routes appear. One route is shorter but has a cracked bridge. The other route is longer but gives you more time to check your calculations. Choose carefully.", "choices": [{"label": "Take the short, risky route", "value": "risky", "result": "You take the risky route. The bridge wobbles, but your surface-area badge keeps it steady."}, {"label": "Take the longer calculation route", "value": "safe", "result": "You take the longer route. Extra formula lights appear to help you organize the final challenge."}]}, {"id": "compare", "title": "Chapter 17: Level 3 — Compare Two Designs", "time": "8 min", "type": "practice", "text": "Two prism designs flash on the mission wall. One will save material; the other will be stronger. Calculate both surface areas and compare them before the system chooses the wrong one.", "challenge": [{"id": "l3-1", "kind": "number", "prompt": "Design A has l = 12, w = 3, h = 2. Design B has l = 7, w = 5, h = 3. How many more square units does Design B need than Design A?", "answer": 10, "unit": "square units", "hint1": "Find the surface area of each design separately first.", "hint2": "Design A = 132. Design B = 142. Find the difference.", "explain": "Design A: 2(36)+2(24)+2(6)=132. Design B: 2(35)+2(21)+2(15)=142. Difference = 10 square units."}]}, {"id": "final", "title": "Chapter 18: The Final Build", "time": "8–10 min", "type": "practice", "text": "The final lock surrounds the victory engine core. To open it, calculate the total surface area for two finish-line supply crates. This is the mission-ending calculation. Show the work. Trust the formula.", "challenge": [{"id": "final-1", "kind": "number", "prompt": "Box 1 has l = 9, w = 4, h = 3. Box 2 has l = 6, w = 5, h = 2. What is the total surface area of both boxes?", "answer": 254, "unit": "square units", "hint1": "Find the surface area of each box separately first.", "hint2": "Box 1 = 150 square units. Box 2 = 104 square units. Now add.", "explain": "Box 1: 2(36) + 2(27) + 2(12) = 150. Box 2: 2(30) + 2(12) + 2(10) = 104. Total = 254 square units."}]}, {"id": "reflection", "title": "Chapter 19: Mission Complete", "time": "5 min", "type": "reflection", "text": "The victory engine core glows. The countdown stops. You did not just click through a story; you used math to solve every gate. Before you leave Turbo Track Arena, explain your strategy so the next mission team can follow your thinking.", "reflectionPrompts": ["How do you find the surface area of a rectangular prism?", "Why do you use square units for surface area?", "What mistake should students watch out for?", "Which challenge was hardest, and what helped you solve it?"]}], "eras-stage": [{"id": "briefing", "title": "Chapter 1: The Countdown Begins", "time": "4 min", "type": "story", "text": "It is the end of April, and everyone is ready for something more exciting than another worksheet. Suddenly, your screen flashes: EMERGENCY MISSION. At The Starlight Arena, the control system has locked every box-shaped object behind a surface-area code. As the stage design problem-solver, you must fix the glowing stage pieces before the crowd countdown ends. The countdown has started.", "objective": "I can find the surface area of a rectangular prism by adding the areas of all six faces.", "choices": [{"label": "Accept the mission", "value": "mission-accepted", "result": "Your mission badge lights up. The first gate opens with a loud click."}, {"label": "Scan the area first", "value": "scan-first", "result": "Smart move. Your scanner finds six glowing rectangular faces on the nearest prism."}]}, {"id": "route", "title": "Chapter 2: Pick Your Route", "time": "3 min", "type": "story", "text": "The mission map splits into two routes. You can follow the glitter trail backstage toward the stage prop boxes, or you can race under the moving spotlight bridge toward the light-panel cases. Both routes lead deeper into the surface-area mystery.", "choices": [{"label": "Route A: Follow the glitter trail backstage", "value": "route-a", "result": "You choose Route A. The floor panels glow in the shape of rectangles as you move toward the stage prop boxes."}, {"label": "Route B: Race under the moving spotlight bridge", "value": "route-b", "result": "You choose Route B. A warning sign flashes: ONLY A SURFACE-AREA EXPERT MAY PASS."}]}, {"id": "vocab", "title": "Chapter 3: The Vocabulary Vault", "time": "7 min", "type": "vocab", "text": "A metal vault door blocks the path. Eight math words spin across the lock. To continue, tap the cards, unlock the meanings, and prove you know the language of the mission.", "challenge": [{"id": "vocab-check-1", "kind": "mc", "prompt": "Which word means the total area covering the outside of a 3D object?", "options": ["Surface Area", "Height", "Volume", "Edge"], "answer": "Surface Area", "hint1": "Think about wrapping paper around a box.", "hint2": "It is not the space inside. It is the area outside.", "explain": "Surface area is the total area of the outside faces of a 3D object."}]}, {"id": "outside", "title": "Chapter 4: Outside, Not Inside", "time": "5 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "text": "A training prism rises from the floor. A glowing laser outlines the outside of the prism. The mission computer warns: Do not find the inside space. Find the area needed to cover every outside face.", "challenge": [{"id": "outside-1", "kind": "mc", "prompt": "If you are finding surface area, what are you measuring?", "options": ["outside faces", "inside space", "one edge", "only the top"], "answer": "outside faces", "hint1": "Think about covering or wrapping the object.", "hint2": "Surface area uses all the outside faces.", "explain": "Surface area measures the total area of the outside faces of a 3D object."}]}, {"id": "facepairs", "title": "Chapter 5: The Three Matching Pairs", "time": "6 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "text": "The prism spins slowly. You notice a pattern: the top and bottom match, the front and back match, and the left and right match. If one face has an area, its opposite face has the same area.", "challenge": [{"id": "pair-1", "kind": "number", "prompt": "For l = 4, w = 3, h = 2, what is the area of the top face?", "answer": 12, "unit": "square units", "hint1": "The top face uses length × width.", "hint2": "4 × 3 = ?", "explain": "The top face area is length × width, so 4 × 3 = 12 square units."}]}, {"id": "formula", "title": "Chapter 6: Build the Power Formula", "time": "7 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "formula": "Surface Area = 2(lw) + 2(lh) + 2(wh)", "text": "A huge formula beam shoots across the room: Surface Area = 2(lw) + 2(lh) + 2(wh). The formula is not magic. It simply doubles each different rectangle face because every face has a matching opposite face.", "challenge": [{"id": "guided-1", "kind": "number", "prompt": "Find the surface area of the prism with l = 4, w = 3, h = 2.", "answer": 52, "unit": "square units", "hint1": "Find the three face areas first: lw, lh, and wh.", "hint2": "2(4×3) + 2(4×2) + 2(3×2) = ?", "explain": "2(4×3) + 2(4×2) + 2(3×2) = 24 + 16 + 12 = 52 square units."}]}, {"id": "net", "title": "Chapter 7: The Net Bridge", "time": "6 min", "type": "guided", "dimensions": {"l": 6, "w": 4, "h": 3}, "text": "The floor unfolds into a giant net bridge. Each rectangle is a face of the prism. If you skip one rectangle, the bridge shakes. To cross safely, account for all six faces.", "challenge": [{"id": "net-1", "kind": "number", "prompt": "Find the surface area of a rectangular prism with l = 6, w = 4, h = 3.", "answer": 108, "unit": "square units", "hint1": "Use 2(lw) + 2(lh) + 2(wh).", "hint2": "2(6×4) + 2(6×3) + 2(4×3).", "explain": "2(24) + 2(18) + 2(12) = 48 + 36 + 24 = 108 square units."}]}, {"id": "checkpoint", "title": "Chapter 8: The First Gate Opens", "time": "4 min", "type": "story", "text": "The first gate opens, but the mission gets louder. Sirens flash around the stage prop boxes and light-panel cases. A message appears: ONLY STUDENTS WHO CAN ORGANIZE ALL SIX FACES MAY CONTINUE.", "choices": [{"label": "Use the face-pair organizer", "value": "organizer", "result": "Your organizer locks into place. Every matching pair is ready."}, {"label": "Use the formula scanner", "value": "scanner", "result": "Your scanner projects the formula across the wall. The next prism is waiting."}]}, {"id": "level1a", "title": "Chapter 9: Level 1 — First Real Mission", "time": "6 min", "type": "practice", "dimensions": {"l": 8, "w": 3, "h": 2}, "text": "You reach the first set of stage prop boxes. The surface is scratched, and the repair team needs the exact amount of covering material. No guessing. No shortcuts.", "challenge": [{"id": "l1-1", "kind": "number", "prompt": "Stage prop boxes A has l = 8, w = 3, h = 2. What is its surface area?", "answer": 92, "unit": "square units", "hint1": "Find 2(lw), 2(lh), and 2(wh).", "hint2": "2(8×3) + 2(8×2) + 2(3×2).", "explain": "2(24) + 2(16) + 2(6) = 48 + 32 + 12 = 92 square units."}]}, {"id": "level1b", "title": "Chapter 10: Level 1 — The Bigger Box", "time": "6 min", "type": "practice", "dimensions": {"l": 7, "w": 5, "h": 4}, "text": "The next prism is bigger, and the timer ticks faster. The numbers are all different, so your best move is to stay organized and label each face pair.", "challenge": [{"id": "l1-2", "kind": "number", "prompt": "Stage prop boxes B has l = 7, w = 5, h = 4. What is its surface area?", "answer": 166, "unit": "square units", "hint1": "The three different face areas are 7×5, 7×4, and 5×4.", "hint2": "2(35) + 2(28) + 2(20).", "explain": "70 + 56 + 40 = 166 square units."}]}, {"id": "level1c", "title": "Chapter 11: Level 1 — Same Dimensions Trap", "time": "6 min", "type": "practice", "dimensions": {"l": 10, "w": 4, "h": 4}, "text": "A warning flashes: SAME DIMENSIONS DO NOT MEAN SKIP A FACE. This prism has two equal dimensions, but the method is still the same. Three face pairs. Six faces total.", "challenge": [{"id": "l1-3", "kind": "number", "prompt": "Light-panel cases C has l = 10, w = 4, h = 4. What is its surface area?", "answer": 192, "unit": "square units", "hint1": "Even when width and height are the same, still use all three face pairs.", "hint2": "2(10×4) + 2(10×4) + 2(4×4).", "explain": "80 + 80 + 32 = 192 square units."}]}, {"id": "strategy", "title": "Chapter 12: Strategy Stop", "time": "5 min", "type": "reflection-lite", "text": "The mission pauses at a glowing checkpoint. You cannot just be fast; you need to be clear. Explain your strategy like another sixth grader will use your notes to survive the next gate.", "reflectionPrompts": ["Why do we double each face area in the surface area formula?", "What mistake should a student avoid when finding surface area?"]}, {"id": "mysteryA", "title": "Chapter 13: Level 2 — Missing Height Mystery", "time": "7 min", "type": "practice", "dimensions": {"l": 5, "w": 3, "h": 4}, "text": "The next scanner is damaged. It gives the total surface area and two dimensions, but it hides the height. You must work backward from the formula to crack the code.", "challenge": [{"id": "l2-1", "kind": "number", "prompt": "A rectangular prism has l = 5, w = 3, and surface area = 94 square units. What is h?", "answer": 4, "unit": "units", "hint1": "Start with 2(lw) + 2(lh) + 2(wh) = 94.", "hint2": "2(5×3) + 2(5×h) + 2(3×h) = 94, so 30 + 10h + 6h = 94.", "explain": "30 + 16h = 94. Subtract 30 to get 16h = 64. Divide by 16. h = 4 units."}]}, {"id": "mysteryB", "title": "Chapter 14: Level 2 — The Second Hidden Dimension", "time": "7 min", "type": "practice", "dimensions": {"l": 6, "w": 2, "h": 5}, "text": "A second lock slides into place. This one is trickier because the equation has several h terms. If you combine them correctly, the gate will open.", "challenge": [{"id": "l2-2", "kind": "number", "prompt": "A rectangular prism has l = 6, w = 2, and surface area = 104 square units. What is h?", "answer": 5, "unit": "units", "hint1": "Use 2(6×2) + 2(6×h) + 2(2×h) = 104.", "hint2": "24 + 12h + 4h = 104.", "explain": "24 + 16h = 104. Subtract 24 to get 16h = 80. Divide by 16. h = 5 units."}]}, {"id": "mysteryC", "title": "Chapter 15: Level 2 — The Final Scanner", "time": "7 min", "type": "practice", "dimensions": {"l": 8, "w": 5, "h": 6}, "text": "The final scanner puzzle is the toughest yet. The numbers are larger, the lights are flickering, and the countdown is louder. Slow down and combine like terms carefully.", "challenge": [{"id": "l2-3", "kind": "number", "prompt": "A rectangular prism has l = 8, w = 5, and surface area = 236 square units. What is h?", "answer": 6, "unit": "units", "hint1": "Use 2(8×5) + 2(8×h) + 2(5×h) = 236.", "hint2": "80 + 16h + 10h = 236.", "explain": "80 + 26h = 236. Subtract 80 to get 26h = 156. Divide by 26. h = 6 units."}]}, {"id": "bigchoice", "title": "Chapter 16: The Risky Decision", "time": "4 min", "type": "story", "text": "The mission map shakes. Two final routes appear. One route is shorter but has a cracked bridge. The other route is longer but gives you more time to check your calculations. Choose carefully.", "choices": [{"label": "Take the short, risky route", "value": "risky", "result": "You take the risky route. The bridge wobbles, but your surface-area badge keeps it steady."}, {"label": "Take the longer calculation route", "value": "safe", "result": "You take the longer route. Extra formula lights appear to help you organize the final challenge."}]}, {"id": "compare", "title": "Chapter 17: Level 3 — Compare Two Designs", "time": "8 min", "type": "practice", "text": "Two prism designs flash on the mission wall. One will save material; the other will be stronger. Calculate both surface areas and compare them before the system chooses the wrong one.", "challenge": [{"id": "l3-1", "kind": "number", "prompt": "Design A has l = 12, w = 3, h = 2. Design B has l = 7, w = 5, h = 3. How many more square units does Design B need than Design A?", "answer": 10, "unit": "square units", "hint1": "Find the surface area of each design separately first.", "hint2": "Design A = 132. Design B = 142. Find the difference.", "explain": "Design A: 2(36)+2(24)+2(6)=132. Design B: 2(35)+2(21)+2(15)=142. Difference = 10 square units."}]}, {"id": "final", "title": "Chapter 18: The Final Build", "time": "8–10 min", "type": "practice", "text": "The final lock surrounds the sparkle stage key. To open it, calculate the total surface area for two tour display prisms. This is the mission-ending calculation. Show the work. Trust the formula.", "challenge": [{"id": "final-1", "kind": "number", "prompt": "Box 1 has l = 9, w = 4, h = 3. Box 2 has l = 6, w = 5, h = 2. What is the total surface area of both boxes?", "answer": 254, "unit": "square units", "hint1": "Find the surface area of each box separately first.", "hint2": "Box 1 = 150 square units. Box 2 = 104 square units. Now add.", "explain": "Box 1: 2(36) + 2(27) + 2(12) = 150. Box 2: 2(30) + 2(12) + 2(10) = 104. Total = 254 square units."}]}, {"id": "reflection", "title": "Chapter 19: Mission Complete", "time": "5 min", "type": "reflection", "text": "The sparkle stage key glows. The countdown stops. You did not just click through a story; you used math to solve every gate. Before you leave The Starlight Arena, explain your strategy so the next mission team can follow your thinking.", "reflectionPrompts": ["How do you find the surface area of a rectangular prism?", "Why do you use square units for surface area?", "What mistake should students watch out for?", "Which challenge was hardest, and what helped you solve it?"]}], "bracelet-vault": [{"id": "briefing", "title": "Chapter 1: The Countdown Begins", "time": "4 min", "type": "story", "text": "It is the end of April, and everyone is ready for something more exciting than another worksheet. Suddenly, your screen flashes: EMERGENCY MISSION. At The Starlight Pop-Up Shop, the control system has locked every box-shaped object behind a surface-area code. As the merch-math designer, you must unlock the bracelet vault before the fan line reaches the doors. The countdown has started.", "objective": "I can find the surface area of a rectangular prism by adding the areas of all six faces.", "choices": [{"label": "Accept the mission", "value": "mission-accepted", "result": "Your mission badge lights up. The first gate opens with a loud click."}, {"label": "Scan the area first", "value": "scan-first", "result": "Smart move. Your scanner finds six glowing rectangular faces on the nearest prism."}]}, {"id": "route", "title": "Chapter 2: Pick Your Route", "time": "3 min", "type": "story", "text": "The mission map splits into two routes. You can slide behind the glitter display wall toward the bracelet display boxes, or you can follow the coded bracelet pattern toward the gift-wrap stations. Both routes lead deeper into the surface-area mystery.", "choices": [{"label": "Route A: Slide behind the glitter display wall", "value": "route-a", "result": "You choose Route A. The floor panels glow in the shape of rectangles as you move toward the bracelet display boxes."}, {"label": "Route B: Follow the coded bracelet pattern", "value": "route-b", "result": "You choose Route B. A warning sign flashes: ONLY A SURFACE-AREA EXPERT MAY PASS."}]}, {"id": "vocab", "title": "Chapter 3: The Vocabulary Vault", "time": "7 min", "type": "vocab", "text": "A metal vault door blocks the path. Eight math words spin across the lock. To continue, tap the cards, unlock the meanings, and prove you know the language of the mission.", "challenge": [{"id": "vocab-check-1", "kind": "mc", "prompt": "Which word means the total area covering the outside of a 3D object?", "options": ["Surface Area", "Height", "Volume", "Edge"], "answer": "Surface Area", "hint1": "Think about wrapping paper around a box.", "hint2": "It is not the space inside. It is the area outside.", "explain": "Surface area is the total area of the outside faces of a 3D object."}]}, {"id": "outside", "title": "Chapter 4: Outside, Not Inside", "time": "5 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "text": "A training prism rises from the floor. A glowing laser outlines the outside of the prism. The mission computer warns: Do not find the inside space. Find the area needed to cover every outside face.", "challenge": [{"id": "outside-1", "kind": "mc", "prompt": "If you are finding surface area, what are you measuring?", "options": ["outside faces", "inside space", "one edge", "only the top"], "answer": "outside faces", "hint1": "Think about covering or wrapping the object.", "hint2": "Surface area uses all the outside faces.", "explain": "Surface area measures the total area of the outside faces of a 3D object."}]}, {"id": "facepairs", "title": "Chapter 5: The Three Matching Pairs", "time": "6 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "text": "The prism spins slowly. You notice a pattern: the top and bottom match, the front and back match, and the left and right match. If one face has an area, its opposite face has the same area.", "challenge": [{"id": "pair-1", "kind": "number", "prompt": "For l = 4, w = 3, h = 2, what is the area of the top face?", "answer": 12, "unit": "square units", "hint1": "The top face uses length × width.", "hint2": "4 × 3 = ?", "explain": "The top face area is length × width, so 4 × 3 = 12 square units."}]}, {"id": "formula", "title": "Chapter 6: Build the Power Formula", "time": "7 min", "type": "guided", "dimensions": {"l": 4, "w": 3, "h": 2}, "formula": "Surface Area = 2(lw) + 2(lh) + 2(wh)", "text": "A huge formula beam shoots across the room: Surface Area = 2(lw) + 2(lh) + 2(wh). The formula is not magic. It simply doubles each different rectangle face because every face has a matching opposite face.", "challenge": [{"id": "guided-1", "kind": "number", "prompt": "Find the surface area of the prism with l = 4, w = 3, h = 2.", "answer": 52, "unit": "square units", "hint1": "Find the three face areas first: lw, lh, and wh.", "hint2": "2(4×3) + 2(4×2) + 2(3×2) = ?", "explain": "2(4×3) + 2(4×2) + 2(3×2) = 24 + 16 + 12 = 52 square units."}]}, {"id": "net", "title": "Chapter 7: The Net Bridge", "time": "6 min", "type": "guided", "dimensions": {"l": 6, "w": 4, "h": 3}, "text": "The floor unfolds into a giant net bridge. Each rectangle is a face of the prism. If you skip one rectangle, the bridge shakes. To cross safely, account for all six faces.", "challenge": [{"id": "net-1", "kind": "number", "prompt": "Find the surface area of a rectangular prism with l = 6, w = 4, h = 3.", "answer": 108, "unit": "square units", "hint1": "Use 2(lw) + 2(lh) + 2(wh).", "hint2": "2(6×4) + 2(6×3) + 2(4×3).", "explain": "2(24) + 2(18) + 2(12) = 48 + 36 + 24 = 108 square units."}]}, {"id": "checkpoint", "title": "Chapter 8: The First Gate Opens", "time": "4 min", "type": "story", "text": "The first gate opens, but the mission gets louder. Sirens flash around the bracelet display boxes and gift-wrap stations. A message appears: ONLY STUDENTS WHO CAN ORGANIZE ALL SIX FACES MAY CONTINUE.", "choices": [{"label": "Use the face-pair organizer", "value": "organizer", "result": "Your organizer locks into place. Every matching pair is ready."}, {"label": "Use the formula scanner", "value": "scanner", "result": "Your scanner projects the formula across the wall. The next prism is waiting."}]}, {"id": "level1a", "title": "Chapter 9: Level 1 — First Real Mission", "time": "6 min", "type": "practice", "dimensions": {"l": 8, "w": 3, "h": 2}, "text": "You reach the first set of bracelet display boxes. The surface is scratched, and the repair team needs the exact amount of covering material. No guessing. No shortcuts.", "challenge": [{"id": "l1-1", "kind": "number", "prompt": "Bracelet display boxes A has l = 8, w = 3, h = 2. What is its surface area?", "answer": 92, "unit": "square units", "hint1": "Find 2(lw), 2(lh), and 2(wh).", "hint2": "2(8×3) + 2(8×2) + 2(3×2).", "explain": "2(24) + 2(16) + 2(6) = 48 + 32 + 12 = 92 square units."}]}, {"id": "level1b", "title": "Chapter 10: Level 1 — The Bigger Box", "time": "6 min", "type": "practice", "dimensions": {"l": 7, "w": 5, "h": 4}, "text": "The next prism is bigger, and the timer ticks faster. The numbers are all different, so your best move is to stay organized and label each face pair.", "challenge": [{"id": "l1-2", "kind": "number", "prompt": "Bracelet display boxes B has l = 7, w = 5, h = 4. What is its surface area?", "answer": 166, "unit": "square units", "hint1": "The three different face areas are 7×5, 7×4, and 5×4.", "hint2": "2(35) + 2(28) + 2(20).", "explain": "70 + 56 + 40 = 166 square units."}]}, {"id": "level1c", "title": "Chapter 11: Level 1 — Same Dimensions Trap", "time": "6 min", "type": "practice", "dimensions": {"l": 10, "w": 4, "h": 4}, "text": "A warning flashes: SAME DIMENSIONS DO NOT MEAN SKIP A FACE. This prism has two equal dimensions, but the method is still the same. Three face pairs. Six faces total.", "challenge": [{"id": "l1-3", "kind": "number", "prompt": "Gift-wrap stations C has l = 10, w = 4, h = 4. What is its surface area?", "answer": 192, "unit": "square units", "hint1": "Even when width and height are the same, still use all three face pairs.", "hint2": "2(10×4) + 2(10×4) + 2(4×4).", "explain": "80 + 80 + 32 = 192 square units."}]}, {"id": "strategy", "title": "Chapter 12: Strategy Stop", "time": "5 min", "type": "reflection-lite", "text": "The mission pauses at a glowing checkpoint. You cannot just be fast; you need to be clear. Explain your strategy like another sixth grader will use your notes to survive the next gate.", "reflectionPrompts": ["Why do we double each face area in the surface area formula?", "What mistake should a student avoid when finding surface area?"]}, {"id": "mysteryA", "title": "Chapter 13: Level 2 — Missing Height Mystery", "time": "7 min", "type": "practice", "dimensions": {"l": 5, "w": 3, "h": 4}, "text": "The next scanner is damaged. It gives the total surface area and two dimensions, but it hides the height. You must work backward from the formula to crack the code.", "challenge": [{"id": "l2-1", "kind": "number", "prompt": "A rectangular prism has l = 5, w = 3, and surface area = 94 square units. What is h?", "answer": 4, "unit": "units", "hint1": "Start with 2(lw) + 2(lh) + 2(wh) = 94.", "hint2": "2(5×3) + 2(5×h) + 2(3×h) = 94, so 30 + 10h + 6h = 94.", "explain": "30 + 16h = 94. Subtract 30 to get 16h = 64. Divide by 16. h = 4 units."}]}, {"id": "mysteryB", "title": "Chapter 14: Level 2 — The Second Hidden Dimension", "time": "7 min", "type": "practice", "dimensions": {"l": 6, "w": 2, "h": 5}, "text": "A second lock slides into place. This one is trickier because the equation has several h terms. If you combine them correctly, the gate will open.", "challenge": [{"id": "l2-2", "kind": "number", "prompt": "A rectangular prism has l = 6, w = 2, and surface area = 104 square units. What is h?", "answer": 5, "unit": "units", "hint1": "Use 2(6×2) + 2(6×h) + 2(2×h) = 104.", "hint2": "24 + 12h + 4h = 104.", "explain": "24 + 16h = 104. Subtract 24 to get 16h = 80. Divide by 16. h = 5 units."}]}, {"id": "mysteryC", "title": "Chapter 15: Level 2 — The Final Scanner", "time": "7 min", "type": "practice", "dimensions": {"l": 8, "w": 5, "h": 6}, "text": "The final scanner puzzle is the toughest yet. The numbers are larger, the lights are flickering, and the countdown is louder. Slow down and combine like terms carefully.", "challenge": [{"id": "l2-3", "kind": "number", "prompt": "A rectangular prism has l = 8, w = 5, and surface area = 236 square units. What is h?", "answer": 6, "unit": "units", "hint1": "Use 2(8×5) + 2(8×h) + 2(5×h) = 236.", "hint2": "80 + 16h + 10h = 236.", "explain": "80 + 26h = 236. Subtract 80 to get 26h = 156. Divide by 26. h = 6 units."}]}, {"id": "bigchoice", "title": "Chapter 16: The Risky Decision", "time": "4 min", "type": "story", "text": "The mission map shakes. Two final routes appear. One route is shorter but has a cracked bridge. The other route is longer but gives you more time to check your calculations. Choose carefully.", "choices": [{"label": "Take the short, risky route", "value": "risky", "result": "You take the risky route. The bridge wobbles, but your surface-area badge keeps it steady."}, {"label": "Take the longer calculation route", "value": "safe", "result": "You take the longer route. Extra formula lights appear to help you organize the final challenge."}]}, {"id": "compare", "title": "Chapter 17: Level 3 — Compare Two Designs", "time": "8 min", "type": "practice", "text": "Two prism designs flash on the mission wall. One will save material; the other will be stronger. Calculate both surface areas and compare them before the system chooses the wrong one.", "challenge": [{"id": "l3-1", "kind": "number", "prompt": "Design A has l = 12, w = 3, h = 2. Design B has l = 7, w = 5, h = 3. How many more square units does Design B need than Design A?", "answer": 10, "unit": "square units", "hint1": "Find the surface area of each design separately first.", "hint2": "Design A = 132. Design B = 142. Find the difference.", "explain": "Design A: 2(36)+2(24)+2(6)=132. Design B: 2(35)+2(21)+2(15)=142. Difference = 10 square units."}]}, {"id": "final", "title": "Chapter 18: The Final Build", "time": "8–10 min", "type": "practice", "text": "The final lock surrounds the golden bracelet charm. To open it, calculate the total surface area for two collector display cases. This is the mission-ending calculation. Show the work. Trust the formula.", "challenge": [{"id": "final-1", "kind": "number", "prompt": "Box 1 has l = 9, w = 4, h = 3. Box 2 has l = 6, w = 5, h = 2. What is the total surface area of both boxes?", "answer": 254, "unit": "square units", "hint1": "Find the surface area of each box separately first.", "hint2": "Box 1 = 150 square units. Box 2 = 104 square units. Now add.", "explain": "Box 1: 2(36) + 2(27) + 2(12) = 150. Box 2: 2(30) + 2(12) + 2(10) = 104. Total = 254 square units."}]}, {"id": "reflection", "title": "Chapter 19: Mission Complete", "time": "5 min", "type": "reflection", "text": "The golden bracelet charm glows. The countdown stops. You did not just click through a story; you used math to solve every gate. Before you leave The Starlight Pop-Up Shop, explain your strategy so the next mission team can follow your thinking.", "reflectionPrompts": ["How do you find the surface area of a rectangular prism?", "Why do you use square units for surface area?", "What mistake should students watch out for?", "Which challenge was hardest, and what helped you solve it?"]}]}, "versionLabel": "R Version — Regular Reading", "versionCode": "R"};
+
+    const state = {
+      studentName: "",
+      adventureId: DATA.adventures[0].id,
+      sceneIndex: 0,
+      answers: {},
+      results: {},
+      notes: {},
+      path: [],
+      flipped: {},
+      choiceResults: {},
+      hints: {}
+    };
+
+    const STORAGE_KEY = "mathquest-surface-area-" + DATA.versionCode.toLowerCase() + "-final";
+
+    function $(id) { return document.getElementById(id); }
+    function currentAdventure() { return DATA.adventures.find(a => a.id === state.adventureId) || DATA.adventures[0]; }
+    function currentScenes() { return DATA.scenesByAdventure[state.adventureId] || DATA.scenesByAdventure[DATA.adventures[0].id]; }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        Object.assign(state, saved);
+      } catch (e) {}
+    }
+
+    function makePrismSvg(l, w, h) {
+      const uid = "g" + Math.random().toString(36).slice(2);
+      return `
+        <svg viewBox="0 0 360 210" role="img" aria-label="3D rectangular prism diagram">
+          <defs>
+            <linearGradient id="front${uid}" x1="0" x2="1"><stop offset="0" stop-color="#dff7fb"/><stop offset="1" stop-color="#bdeff5"/></linearGradient>
+            <linearGradient id="top${uid}" x1="0" x2="1"><stop offset="0" stop-color="#fef3c7"/><stop offset="1" stop-color="#fde68a"/></linearGradient>
+            <linearGradient id="side${uid}" x1="0" x2="1"><stop offset="0" stop-color="#ccfbf1"/><stop offset="1" stop-color="#99f6e4"/></linearGradient>
+          </defs>
+          <polygon points="80,65 235,65 295,25 140,25" fill="url(#top${uid})" stroke="#0f172a" stroke-width="3"/>
+          <polygon points="235,65 295,25 295,135 235,175" fill="url(#side${uid})" stroke="#0f172a" stroke-width="3"/>
+          <polygon points="80,65 235,65 235,175 80,175" fill="url(#front${uid})" stroke="#0f172a" stroke-width="3"/>
+          <line x1="80" y1="175" x2="235" y2="175" stroke="#0f172a" stroke-width="3"/>
+          <line x1="235" y1="175" x2="295" y2="135" stroke="#0f172a" stroke-width="3"/>
+          <line x1="295" y1="25" x2="295" y2="135" stroke="#0f172a" stroke-width="3"/>
+          <text x="150" y="196" text-anchor="middle" fill="#0f172a" font-size="18" font-weight="900">length = ${l}</text>
+          <text x="304" y="88" fill="#0f172a" font-size="18" font-weight="900">height = ${h}</text>
+          <text x="206" y="26" text-anchor="middle" fill="#0f172a" font-size="18" font-weight="900">width = ${w}</text>
+        </svg>
+      `;
+    }
+
+    function makeOrganizer(l, w, h) {
+      const rows = [
+        ["Top + Bottom", `2 × (${l} × ${w})`, 2 * l * w],
+        ["Front + Back", `2 × (${l} × ${h})`, 2 * l * h],
+        ["Left + Right", `2 × (${w} × ${h})`, 2 * w * h]
+      ];
+      const total = rows.reduce((s, r) => s + r[2], 0);
+      return `
+        <div class="organizer">
+          <div class="org-head">Face-Pair Organizer</div>
+          <div class="org-row header">
+            <div class="org-cell">Face Pair</div>
+            <div class="org-cell">Expression</div>
+            <div class="org-cell">Area</div>
+          </div>
+          ${rows.map(r => `
+            <div class="org-row">
+              <div class="org-cell"><strong>${r[0]}</strong></div>
+              <div class="org-cell">${r[1]}</div>
+              <div class="org-cell"><strong>${r[2]}</strong></div>
+            </div>
+          `).join("")}
+          <div class="org-total">
+            <span>Total Surface Area</span>
+            <span>${total} square units</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdventureChoices() {
+      const wrap = $("adventureChoices");
+      wrap.innerHTML = DATA.adventures.map(a => `
+        <button class="choice-card ${a.id === state.adventureId ? "selected" : ""}" data-adventure="${a.id}">
+          <div class="choice-inner">
+            <span class="emoji">${a.emoji}</span>
+            <span>
+              <span class="tiny">${a.type}</span>
+              <h3>${a.shortTitle}</h3>
+            </span>
+          </div>
+        </button>
+      `).join("");
+
+      wrap.querySelectorAll("[data-adventure]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.adventureId = btn.dataset.adventure;
+          state.sceneIndex = 0;
+          state.answers = {};
+          state.results = {};
+          state.notes = {};
+          state.path = [];
+          state.flipped = {};
+          state.choiceResults = {};
+          state.hints = {};
+          saveState();
+          renderStartScreen();
+        });
+      });
+    }
+
+    function renderAdventurePreview() {
+      const a = currentAdventure();
+      const preview = $("adventurePreview");
+      preview.className = "adventure-preview " + a.grad;
+      preview.innerHTML = `
+        <div style="font-size:48px;">${a.emoji}</div>
+        <div class="tiny" style="margin-top:14px;color:rgba(255,255,255,.82);">${a.type}</div>
+        <h2 style="margin-top:4px;font-size:30px;line-height:1.02;">${a.title}</h2>
+        <p style="margin-top:12px;font-weight:800;line-height:1.35;">You are the ${a.role}. Your mission is to ${a.mission}.</p>
+      `;
+    }
+
+    function renderStartScreen() {
+      $("studentName").value = state.studentName;
+      $("startBtn").disabled = !state.studentName.trim();
+      $("nameReminder").style.display = state.studentName.trim() ? "none" : "block";
+      renderAdventureChoices();
+      renderAdventurePreview();
+    }
+
+    function renderApp() {
+      const scenes = currentScenes();
+      if (state.sceneIndex >= scenes.length) state.sceneIndex = scenes.length - 1;
+      const scene = scenes[state.sceneIndex];
+      const a = currentAdventure();
+      const pct = Math.round(((state.sceneIndex + 1) / scenes.length) * 100);
+
+      $("sceneMeta").innerHTML = `
+        <span>${DATA.versionLabel}</span><span>•</span>
+        <span>${state.studentName}</span><span>•</span>
+        <span>${a.shortTitle}</span><span>•</span>
+        <span>${scene.time}</span>
+      `;
+      $("sceneTitle").textContent = scene.title;
+      $("progressPct").textContent = pct + "%";
+      $("progressFill").style.width = pct + "%";
+
+      $("storyBadge").className = "badge " + a.grad;
+      $("storyText").textContent = scene.text;
+
+      $("objectiveBox").classList.toggle("hidden", !scene.objective);
+      $("objectiveText").textContent = scene.objective || "";
+
+      $("formulaBox").classList.toggle("hidden", !scene.formula);
+      $("formulaText").textContent = scene.formula || "";
+
+      renderVisual(scene);
+      renderVocab(scene);
+      renderChallenges(scene);
+      renderChoices(scene);
+      renderReflection(scene);
+      renderSidePanel(a, scene);
+      renderNav(scene, scenes);
+      saveState();
+    }
+
+    function renderVisual(scene) {
+      const section = $("visualSection");
+      if (!scene.dimensions) {
+        section.classList.add("hidden");
+        section.innerHTML = "";
+        return;
+      }
+      const { l, w, h } = scene.dimensions;
+      section.classList.remove("hidden");
+      section.innerHTML = `
+        <div class="prism-card">${makePrismSvg(l, w, h)}</div>
+        ${makeOrganizer(l, w, h)}
+      `;
+    }
+
+    function renderVocab(scene) {
+      const section = $("vocabSection");
+      if (scene.type !== "vocab") {
+        section.classList.add("hidden");
+        section.innerHTML = "";
+        return;
+      }
+
+      section.classList.remove("hidden");
+      section.innerHTML = DATA.vocab.map(item => {
+        const key = "vocab-" + item.term;
+        const flipped = state.flipped[key];
+        return `
+          <button class="vocab-card" data-vocab="${item.term}">
+            ${flipped ? `
+              <div class="tiny" style="color:#b45309;">Definition</div>
+              <h3>${item.term}</h3>
+              <p>${item.definition}</p>
+            ` : `
+              <div class="tiny" style="color:#0f766e;">Tap to define</div>
+              <h3>${item.term}</h3>
+              <p>Example: ${item.example}</p>
+            `}
+          </button>
+        `;
+      }).join("");
+
+      section.querySelectorAll("[data-vocab]").forEach(card => {
+        card.addEventListener("click", () => {
+          const key = "vocab-" + card.dataset.vocab;
+          state.flipped[key] = !state.flipped[key];
+          renderVocab(scene);
+          saveState();
+        });
+      });
+    }
+
+    function renderChallenges(scene) {
+      const section = $("challengeSection");
+      section.innerHTML = "";
+      if (!scene.challenge) return;
+
+      scene.challenge.forEach(ch => {
+        const result = state.results[ch.id] || "";
+        const hintLevel = state.hints[ch.id] || 0;
+        const card = document.createElement("div");
+        card.className = "challenge-card";
+        card.innerHTML = `
+          <div class="badge" style="background:#ccfbf1;color:#134e4a;">Math Challenge</div>
+          <p class="challenge-prompt">${ch.prompt}</p>
+
+          ${ch.kind === "mc" ? `
+            <div class="options">
+              ${ch.options.map(opt => `
+                <button class="option-btn ${state.answers[ch.id] === opt ? "selected" : ""}" data-choice="${opt}">${opt}</button>
+              `).join("")}
+            </div>
+          ` : `
+            <div class="answer-row">
+              <input type="text" value="${state.answers[ch.id] || ""}" placeholder="Type your answer" data-answer-input="${ch.id}">
+              <button class="primary-btn" data-check="${ch.id}">Check Answer</button>
+            </div>
+          `}
+
+          <div class="hint-row">
+            <button class="hint-btn" data-hint1="${ch.id}">Hint 1</button>
+            <button class="hint-btn second" data-hint2="${ch.id}">Hint 2</button>
+          </div>
+
+          ${hintLevel >= 1 ? `<div class="hint-box hint-one">Hint 1: ${ch.hint1}</div>` : ""}
+          ${hintLevel >= 2 ? `<div class="hint-box hint-two">Hint 2: ${ch.hint2}</div>` : ""}
+
+          <div class="feedback ${result === "correct" ? "correct" : result === "incorrect" ? "incorrect" : ""}">
+            ${result === "correct" ? `<strong>Correct — mission power restored.</strong><br>${ch.explain}` : ""}
+            ${result === "incorrect" ? `<strong>Try again — check the face pairs.</strong><br>Common mistake: forgetting that each face has a matching opposite face.` : ""}
+          </div>
+        `;
+
+        section.appendChild(card);
+
+        card.querySelectorAll("[data-choice]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            state.answers[ch.id] = btn.dataset.choice;
+            state.results[ch.id] = btn.dataset.choice === String(ch.answer) ? "correct" : "incorrect";
+            renderApp();
+          });
+        });
+
+        const input = card.querySelector(`[data-answer-input="${ch.id}"]`);
+        if (input) {
+          input.addEventListener("input", () => {
+            state.answers[ch.id] = input.value;
+            saveState();
+          });
+        }
+
+        const checkBtn = card.querySelector(`[data-check="${ch.id}"]`);
+        if (checkBtn) {
+          checkBtn.addEventListener("click", () => {
+            const raw = state.answers[ch.id] || "";
+            const numeric = Number(String(raw).trim());
+            state.results[ch.id] = Math.abs(numeric - Number(ch.answer)) < 0.001 ? "correct" : "incorrect";
+            renderApp();
+          });
+        }
+
+        card.querySelector(`[data-hint1="${ch.id}"]`).addEventListener("click", () => {
+          state.hints[ch.id] = Math.max(state.hints[ch.id] || 0, 1);
+          renderApp();
+        });
+
+        card.querySelector(`[data-hint2="${ch.id}"]`).addEventListener("click", () => {
+          state.hints[ch.id] = Math.max(state.hints[ch.id] || 0, 2);
+          renderApp();
+        });
+      });
+    }
+
+    function renderChoices(scene) {
+      const section = $("pathSection");
+      if (!scene.choices) {
+        section.classList.add("hidden");
+        section.innerHTML = "";
+        return;
+      }
+
+      const selected = state.path[state.sceneIndex];
+      const selectedChoice = scene.choices.find(c => c.value === selected);
+
+      section.classList.remove("hidden");
+      section.innerHTML = `
+        <div class="label">Choose Your Path</div>
+        <div class="path-grid">
+          ${scene.choices.map(c => `
+            <button class="choice-card ${selected === c.value ? "selected" : ""}" data-path="${c.value}">
+              <strong>${c.label}</strong>
+            </button>
+          `).join("")}
+        </div>
+        <div class="choice-result ${selectedChoice ? "active" : ""}">
+          ${selectedChoice ? selectedChoice.result : ""}
+        </div>
+      `;
+
+      section.querySelectorAll("[data-path]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.path[state.sceneIndex] = btn.dataset.path;
+          renderChoices(scene);
+          renderNav(scene, currentScenes());
+          saveState();
+        });
+      });
+    }
+
+    function renderReflection(scene) {
+      const section = $("reflectionSection");
+      if (scene.type !== "reflection" && scene.type !== "reflection-lite") {
+        section.classList.add("hidden");
+        section.innerHTML = "";
+        return;
+      }
+
+      const a = currentAdventure();
+      section.classList.remove("hidden");
+      section.innerHTML = `
+        <div class="label">${scene.type === "reflection" ? "Final Reflection" : "Strategy Reflection"}</div>
+        ${scene.reflectionPrompts.map((p, idx) => `
+          <label>
+            <span style="display:block;font-weight:900;margin-bottom:8px;">${p}</span>
+            <textarea data-reflection="${idx}" placeholder="Write your thinking here...">${state.notes[`reflection-${scene.id}-${idx}`] || ""}</textarea>
+          </label>
+        `).join("")}
+        ${scene.type === "reflection" ? `
+          <div class="completion ${a.grad}">
+            <div class="tiny" style="color:rgba(255,255,255,.85);">Completion Message</div>
+            <h2 style="margin-top:4px;">Great work, ${state.studentName}! You completed ${a.title}.</h2>
+          </div>
+        ` : ""}
+      `;
+
+      section.querySelectorAll("[data-reflection]").forEach(area => {
+        area.addEventListener("input", () => {
+          state.notes[`reflection-${scene.id}-${area.dataset.reflection}`] = area.value;
+          saveState();
+        });
+      });
+    }
+
+    function renderSidePanel(a, scene) {
+      const side = $("sideAdventure");
+      side.className = "side-adventure " + a.grad;
+      side.innerHTML = `
+        <div style="font-size:40px;">${a.emoji}</div>
+        <div class="tiny" style="margin-top:8px;color:rgba(255,255,255,.85);">Current Adventure</div>
+        <h2 style="margin-top:4px;">${a.shortTitle}</h2>
+        <p style="margin-top:8px;font-weight:800;line-height:1.35;">Mission: ${a.mission}.</p>
+      `;
+
+      const notes = $("adventureNotes");
+      const key = "note-" + scene.id;
+      notes.value = state.notes[key] || "";
+      notes.oninput = () => {
+        state.notes[key] = notes.value;
+        saveState();
+      };
+    }
+
+    function sceneComplete(scene) {
+      if (scene.challenge && scene.challenge.length) {
+        return scene.challenge.every(ch => state.results[ch.id] === "correct");
+      }
+      if (scene.choices && scene.choices.length) {
+        return !!state.path[state.sceneIndex];
+      }
+      return true;
+    }
+
+    function renderNav(scene, scenes) {
+      const complete = sceneComplete(scene);
+      $("backBtn").disabled = state.sceneIndex === 0;
+      $("continueBtn").disabled = state.sceneIndex === scenes.length - 1 || !complete;
+      $("sceneCount").textContent = `Scene ${state.sceneIndex + 1} of ${scenes.length}`;
+
+      const message = scene.challenge && scene.challenge.length
+        ? "Solve the math challenge correctly to continue the story."
+        : scene.choices && scene.choices.length
+          ? "Choose a path to continue the adventure."
+          : "";
+      $("lockedMessage").textContent = complete ? "" : message;
+      $("lockedMessage").style.display = complete ? "none" : "block";
+    }
+
+    $("studentName").addEventListener("input", e => {
+      state.studentName = e.target.value;
+      renderStartScreen();
+      saveState();
+    });
+
+    $("startBtn").addEventListener("click", () => {
+      state.sceneIndex = 0;
+      state.answers = {};
+      state.results = {};
+      state.notes = {};
+      state.path = [];
+      state.flipped = {};
+      state.choiceResults = {};
+      state.hints = {};
+      $("startScreen").style.display = "none";
+      $("appScreen").classList.add("active");
+      renderApp();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    $("backBtn").addEventListener("click", () => {
+      state.sceneIndex = Math.max(0, state.sceneIndex - 1);
+      renderApp();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    $("continueBtn").addEventListener("click", () => {
+      const scenes = currentScenes();
+      state.sceneIndex = Math.min(scenes.length - 1, state.sceneIndex + 1);
+      renderApp();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    $("resetBtn").addEventListener("click", () => {
+      const keepName = state.studentName;
+      const keepAdventure = state.adventureId;
+      Object.assign(state, {
+        studentName: keepName,
+        adventureId: keepAdventure,
+        sceneIndex: 0,
+        answers: {},
+        results: {},
+        notes: {},
+        path: [],
+        flipped: {},
+        choiceResults: {},
+        hints: {}
+      });
+      localStorage.removeItem(STORAGE_KEY);
+      $("appScreen").classList.remove("active");
+      $("startScreen").style.display = "grid";
+      renderStartScreen();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    loadState();
+    renderStartScreen();
+
+    if (state.studentName && state.sceneIndex > 0) {
+      $("startScreen").style.display = "none";
+      $("appScreen").classList.add("active");
+      renderApp();
+    }
+  </script>
 </body>
 </html>

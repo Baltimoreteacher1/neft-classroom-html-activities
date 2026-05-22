@@ -1,37 +1,1197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 5.1 5.3 Practice classroom activity.">
-  <title>5.1 5.3 Practice</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Area Engine — Geometry Learning Studio</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --bg-elev: rgba(255,255,255,.82);
+      --surface: rgba(255,255,255,.92);
+      --surface-strong: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --muted-2: #94a3b8;
+      --line: rgba(148,163,184,.28);
+      --line-strong: rgba(148,163,184,.45);
+      --primary: #2563eb;
+      --primary-2: #7c3aed;
+      --success: #16a34a;
+      --warning: #d97706;
+      --error: #dc2626;
+      --focus: #0ea5e9;
+      --shadow: 0 18px 60px rgba(15,23,42,.10);
+      --shadow-soft: 0 10px 30px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --radius-xs: 10px;
+      --transition: 180ms cubic-bezier(.2,.8,.2,1);
+      --grid: rgba(37,99,235,.08);
+      --grid-2: rgba(124,58,237,.06);
+      --hero: linear-gradient(135deg, rgba(37,99,235,.12), rgba(124,58,237,.10));
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1220;
+      --bg-elev: rgba(15,23,42,.82);
+      --surface: rgba(17,24,39,.92);
+      --surface-strong: #111827;
+      --text: #e5eefc;
+      --muted: #9fb0c8;
+      --muted-2: #72819a;
+      --line: rgba(148,163,184,.18);
+      --line-strong: rgba(148,163,184,.28);
+      --primary: #60a5fa;
+      --primary-2: #a78bfa;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --error: #f87171;
+      --focus: #22d3ee;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --shadow-soft: 0 10px 28px rgba(0,0,0,.25);
+      --grid: rgba(96,165,250,.09);
+      --grid-2: rgba(167,139,250,.06);
+      --hero: linear-gradient(135deg, rgba(96,165,250,.10), rgba(167,139,250,.08));
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(1200px 700px at 10% 0%, var(--grid), transparent 52%),
+        radial-gradient(900px 500px at 90% 8%, var(--grid-2), transparent 48%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    a, button, input, select { font: inherit; }
+    button, input, select {
+      border: 1px solid var(--line-strong);
+      background: var(--surface-strong);
+      color: var(--text);
+      border-radius: 14px;
+      padding: .78rem 1rem;
+      transition: transform var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition);
+      box-shadow: 0 1px 0 rgba(255,255,255,.05) inset;
+    }
+    button { cursor: pointer; }
+    button:hover, select:hover, input:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--line-strong)); }
+    button:active { transform: translateY(1px); }
+    button:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--focus) 70%, transparent);
+      outline-offset: 2px;
+    }
+    button.primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 12px 28px color-mix(in srgb, var(--primary) 24%, transparent);
+    }
+    button.ghost {
+      background: color-mix(in srgb, var(--surface-strong) 70%, transparent);
+    }
+    button.icon {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      justify-content: center;
+    }
+    button.soft {
+      background: color-mix(in srgb, var(--surface-strong) 85%, transparent);
+    }
+    button.small { padding: .56rem .8rem; border-radius: 12px; }
+    button.active {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      box-shadow: 0 12px 28px color-mix(in srgb, var(--primary) 24%, transparent);
+    }
+    button[disabled], input[disabled], select[disabled] {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 1.25rem;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1rem;
+      align-items: stretch;
+      margin-bottom: 1rem;
+    }
+
+    .brand-card, .meta-card, .workspace, .panel, .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand-card {
+      padding: 1.15rem 1.2rem;
+      background: var(--hero), var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 120px;
+    }
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .8rem;
+      color: var(--muted);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: .35rem;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.4vw, 2.15rem);
+      line-height: 1.1;
+      letter-spacing: -.03em;
+    }
+
+    .subtitle {
+      margin-top: .55rem;
+      color: var(--muted);
+      max-width: 62ch;
+      font-size: .96rem;
+    }
+
+    .brand-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .65rem;
+      justify-content: flex-end;
+    }
+
+    .meta-card {
+      padding: 1rem;
+      display: grid;
+      gap: .85rem;
+      align-content: center;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .75rem;
+    }
+
+    .metric {
+      padding: .8rem .9rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--surface-strong) 72%, transparent);
+      min-height: 74px;
+    }
+
+    .metric .k {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: .25rem;
+    }
+
+    .metric .v {
+      font-size: 1.3rem;
+      font-weight: 750;
+      letter-spacing: -.02em;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: .8rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .segmented {
+      display: inline-flex;
+      gap: .35rem;
+      padding: .35rem;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--surface-strong) 78%, transparent);
+      flex-wrap: wrap;
+    }
+
+    .segmented button {
+      border: 0;
+      border-radius: 12px;
+      padding: .72rem .95rem;
+      background: transparent;
+      box-shadow: none;
+      min-width: 94px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: .7rem;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .search-row input {
+      width: min(100%, 360px);
+      min-width: 0;
+    }
+
+    .workspace {
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr) 340px;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 1rem;
+    }
+
+    .panel h3 {
+      margin: 0 0 .8rem 0;
+      font-size: 1rem;
+      letter-spacing: -.01em;
+    }
+
+    .panel .muted {
+      color: var(--muted);
+      font-size: .93rem;
+    }
+
+    .stack {
+      display: grid;
+      gap: .8rem;
+    }
+
+    .shape-list {
+      display: grid;
+      gap: .55rem;
+    }
+
+    .shape-chip {
+      width: 100%;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .75rem;
+      padding: .85rem .9rem;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface-strong) 82%, transparent);
+    }
+
+    .shape-chip small { color: var(--muted); }
+
+    .canvas-wrap {
+      display: grid;
+      gap: 1rem;
+      min-width: 0;
+    }
+
+    .hero-stage {
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(900px 380px at 50% 0%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 50%),
+        color-mix(in srgb, var(--surface-strong) 85%, transparent);
+    }
+
+    .svg-container {
+      width: 100%;
+      height: 360px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(transparent, transparent),
+        color-mix(in srgb, #ffffff 96%, var(--bg));
+      position: relative;
+    }
+
+    [data-theme="dark"] .svg-container {
+      background: #09111f;
+    }
+
+    svg { width: 100%; height: 100%; display: block; }
+
+    .formula-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: .8rem;
+      align-items: center;
+    }
+
+    .formula {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      padding: .85rem 1rem;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--surface-strong) 88%, transparent);
+      border: 1px solid var(--line);
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    .activity-toggle {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .activity-toggle button {
+      min-width: 124px;
+    }
+
+    .card {
+      padding: 1rem;
+    }
+
+    .lesson-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: .8rem;
+    }
+
+    .lesson-title {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .lesson-desc {
+      margin: .3rem 0 0 0;
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .stepper {
+      display: grid;
+      gap: .75rem;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface-strong) 80%, transparent);
+      border-radius: 16px;
+      padding: .95rem;
+    }
+
+    .step.active { border-color: color-mix(in srgb, var(--primary) 70%, var(--line)); }
+    .step.done { border-color: color-mix(in srgb, var(--success) 55%, var(--line)); }
+
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      gap: .8rem;
+      align-items: center;
+      margin-bottom: .65rem;
+    }
+
+    .step-top strong { font-size: .95rem; }
+    .step-top span { color: var(--muted); font-size: .85rem; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+    }
+
+    .field {
+      display: grid;
+      gap: .35rem;
+    }
+
+    .field label {
+      font-size: .86rem;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+    }
+
+    .inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      align-items: center;
+    }
+
+    .inputs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+      align-items: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .inputs input {
+      width: 95px;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .feedback {
+      margin-top: .65rem;
+      min-height: 1.3rem;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error { color: var(--error); }
+
+    .micro {
+      color: var(--muted-2);
+      font-size: .82rem;
+    }
+
+    .hidden { display: none !important; }
+
+    .challenge-grid {
+      display: grid;
+      gap: .8rem;
+    }
+
+    .challenge-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: .9rem;
+      background: color-mix(in srgb, var(--surface-strong) 80%, transparent);
+    }
+
+    .challenge-card h4 {
+      margin: 0 0 .35rem 0;
+      font-size: .95rem;
+    }
+
+    .progress {
+      display: grid;
+      gap: .45rem;
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--text) 10%, transparent);
+      border: 1px solid var(--line);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2));
+      transition: width var(--transition);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: .85rem;
+      padding: 0 .15rem;
+    }
+
+    .live {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1180px) {
+      .topbar { grid-template-columns: 1fr; }
+      .workspace { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .shell { padding: .8rem; }
+      .brand-row, .lesson-header, .formula-bar, .footer { flex-direction: column; align-items: start; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+      .svg-container { height: 280px; }
+      .segmented { width: 100%; }
+      .segmented button { flex: 1; min-width: 0; }
+      .brand-actions { justify-content: start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/unit-5/">Unit 5 Geometry and Measurement</a><span>/</span><span>5.1 5.3 Practice</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>5.1 5.3 Practice</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <div class="shell">
+    <div class="topbar">
+      <section class="brand-card">
+        <div class="brand-row">
+          <div>
+            <div class="eyebrow">Geometry learning studio</div>
+            <h1 class="title">Area Engine</h1>
+            <p class="subtitle">
+              A polished, adaptive practice environment for exploring area, building fluency, and scaling into future challenge modes.
+            </p>
+          </div>
+          <div class="brand-actions">
+            <button id="btn-theme" class="ghost icon" aria-pressed="false">🌓 Theme</button>
+            <button id="btn-reset" class="ghost icon">↻ Reset</button>
+          </div>
+        </div>
+        <div class="micro">Designed as a modular learning product, with a reusable activity system for future expansion.</div>
+      </section>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 5.1-5.3Practice</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/unit-5/5-1-5-3practice/</span></p>
-      </div>
-    </section>
-
-    <div class="button-row">
-      <a class="primary-button" href="/unit-5/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+      <aside class="meta-card" aria-label="Progress summary">
+        <div class="meta-grid">
+          <div class="metric">
+            <div class="k">Level</div>
+            <div class="v" id="hud-level">1</div>
+          </div>
+          <div class="metric">
+            <div class="k">Accuracy</div>
+            <div class="v"><span id="hud-acc">100</span>%</div>
+          </div>
+          <div class="metric">
+            <div class="k">Streak</div>
+            <div class="v" id="hud-streak">0</div>
+          </div>
+        </div>
+        <div class="progress">
+          <div class="inline" style="justify-content: space-between;">
+            <strong style="font-size:.95rem;">Mastery</strong>
+            <span class="micro" id="mastery-label">0 / 20</span>
+          </div>
+          <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="mastery-fill"></div></div>
+        </div>
+      </aside>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+
+    <div class="toolbar">
+      <div class="search-row">
+        <input id="search-shape" type="search" placeholder="Search activities: area, perimeter, compare, mixed..." aria-label="Search activities" />
+      </div>
+
+      <div class="segmented" role="tablist" aria-label="Mode selection">
+        <button id="btn-mode-explore" class="active" role="tab" aria-selected="true">Explore</button>
+        <button id="btn-mode-practice" role="tab" aria-selected="false">Practice</button>
+        <button id="btn-mode-challenge" role="tab" aria-selected="false">Challenge</button>
+      </div>
+
+      <div class="segmented" role="tablist" aria-label="Language and track">
+        <button id="btn-en" class="active" aria-pressed="true">EN</button>
+        <button id="btn-r" aria-pressed="false">R</button>
+      </div>
+
+      <button id="btn-next" class="primary">Next Problem</button>
+    </div>
+
+    <main class="workspace">
+      <aside class="panel">
+        <h3>Shapes</h3>
+        <p class="muted">Choose a figure, then move through guided discovery or faster drills.</p>
+        <div class="shape-list" id="shape-list"></div>
+
+        <div style="height:1rem"></div>
+
+        <h3>Activity bank</h3>
+        <div class="stack" id="activity-bank"></div>
+      </aside>
+
+      <section class="canvas-wrap">
+        <div class="hero-stage">
+          <div class="formula-bar">
+            <div>
+              <div class="eyebrow" id="mode-label">Explore mode</div>
+              <div class="formula" id="formula-display" aria-live="polite">A = b × h</div>
+            </div>
+            <div class="activity-toggle" id="quick-actions"></div>
+          </div>
+
+          <div class="svg-container" id="svg-root" aria-label="Geometry visualization"></div>
+        </div>
+
+        <div class="card">
+          <div class="lesson-header">
+            <div>
+              <h2 class="lesson-title" id="lesson-title">Discover the shape</h2>
+              <p class="lesson-desc" id="lesson-desc">Adjust values to see how dimensions affect area in real time.</p>
+            </div>
+            <div class="micro" id="problem-meta">Ready</div>
+          </div>
+
+          <div class="stepper" id="stepper"></div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h3>Session insights</h3>
+        <div class="challenge-grid">
+          <div class="challenge-card">
+            <h4>Current objective</h4>
+            <div class="muted" id="objective-text">Explore a shape and review how the formula is applied.</div>
+          </div>
+          <div class="challenge-card">
+            <h4>Hints</h4>
+            <div class="muted" id="hint-text">Use the vertical segment as height. Slanted sides are distractors.</div>
+          </div>
+          <div class="challenge-card">
+            <h4>Build notes</h4>
+            <div class="muted">
+              Modular activities, mobile-friendly controls, live feedback, and accessible SVG markup are built in for future iterations.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <div class="footer">
+      <div>Area Engine • flagship learning build</div>
+      <div>Keyboard-friendly • responsive • accessible feedback</div>
+    </div>
+  </div>
+
+  <div id="live-region" class="live" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+const CONFIG = {
+  limits: {
+    EN: { min: 2, max: 12, decimal: false },
+    R: { min: 4, max: 25, decimal: true }
+  },
+  canvas: { w: 760, h: 360, padding: 54 },
+  masteryGoal: 20
+};
+
+const APP = {
+  track: 'EN',
+  mode: 'explore',
+  shape: 'parallelogram',
+  activity: 'guided',
+  stats: { streak: 0, correct: 0, total: 0, mastery: 0 },
+  current: null,
+  filtered: '',
+  step: 1
+};
+
+const $ = id => document.getElementById(id);
+const rand = (min, max, dec) => {
+  const v = Math.random() * (max - min) + min;
+  return dec ? Math.round(v * 2) / 2 : Math.round(v);
+};
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const fmt = n => Number.isInteger(n) ? String(n) : String(Number(n.toFixed(1)));
+
+window.addEventListener('DOMContentLoaded', () => {
+  init();
+});
+
+function init() {
+  attach();
+  buildShapeList();
+  buildActivities();
+  syncTheme();
+  renderAll();
+  announce('Area Engine loaded.');
+}
+
+function attach() {
+  $('btn-theme').addEventListener('click', toggleTheme);
+  $('btn-reset').addEventListener('click', resetSession);
+  $('btn-en').addEventListener('click', () => setTrack('EN'));
+  $('btn-r').addEventListener('click', () => setTrack('R'));
+  $('btn-mode-explore').addEventListener('click', () => setMode('explore'));
+  $('btn-mode-practice').addEventListener('click', () => setMode('practice'));
+  $('btn-mode-challenge').addEventListener('click', () => setMode('challenge'));
+  $('btn-next').addEventListener('click', nextProblem);
+  $('search-shape').addEventListener('input', e => {
+    APP.filtered = e.target.value.trim().toLowerCase();
+    buildActivities();
+  });
+}
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = next;
+  syncTheme();
+  announce(`Theme switched to ${next}.`);
+}
+
+function syncTheme() {
+  $('btn-theme').setAttribute('aria-pressed', String(document.documentElement.dataset.theme === 'dark'));
+}
+
+function setTrack(track) {
+  if (APP.track === track) return;
+  APP.track = track;
+  $('btn-en').classList.toggle('active', track === 'EN');
+  $('btn-r').classList.toggle('active', track === 'R');
+  $('btn-en').setAttribute('aria-pressed', String(track === 'EN'));
+  $('btn-r').setAttribute('aria-pressed', String(track === 'R'));
+  if (APP.mode !== 'explore') newProblem();
+  renderAll();
+  announce(`Track changed to ${track}.`);
+}
+
+function setMode(mode) {
+  APP.mode = mode;
+  $('btn-mode-explore').classList.toggle('active', mode === 'explore');
+  $('btn-mode-practice').classList.toggle('active', mode === 'practice');
+  $('btn-mode-challenge').classList.toggle('active', mode === 'challenge');
+  $('btn-mode-explore').setAttribute('aria-selected', String(mode === 'explore'));
+  $('btn-mode-practice').setAttribute('aria-selected', String(mode === 'practice'));
+  $('btn-mode-challenge').setAttribute('aria-selected', String(mode === 'challenge'));
+  $('mode-label').innerText = `${mode.charAt(0).toUpperCase()}${mode.slice(1)} mode`;
+  newProblem();
+  renderAll();
+  announce(`${mode} mode active.`);
+}
+
+function setShape(shape) {
+  APP.shape = shape;
+  buildShapeList();
+  newProblem();
+  renderAll();
+  announce(`${shape} selected.`);
+}
+
+function resetSession() {
+  APP.stats = { streak: 0, correct: 0, total: 0, mastery: 0 };
+  APP.step = 1;
+  newProblem();
+  renderAll();
+  announce('Session reset.');
+}
+
+function buildShapeList() {
+  const shapes = [
+    ['parallelogram', 'Parallelogram', 'Base × height'],
+    ['triangle', 'Triangle', 'Half the base × height'],
+    ['trapezoid', 'Trapezoid', 'Half the sum of bases × height']
+  ];
+  $('shape-list').innerHTML = shapes
+    .filter(([id, name]) => !APP.filtered || `${id} ${name} ${id}`.includes(APP.filtered))
+    .map(([id, name, desc]) => `
+      <button class="shape-chip ${APP.shape === id ? 'active' : ''}" data-shape="${id}">
+        <span>
+          <strong>${name}</strong><br><small>${desc}</small>
+        </span>
+        <span>›</span>
+      </button>
+    `).join('');
+  document.querySelectorAll('.shape-chip').forEach(btn => {
+    btn.addEventListener('click', () => setShape(btn.dataset.shape));
+  });
+}
+
+function buildActivities() {
+  const items = [
+    ['guided', 'Guided explore', 'Adjust sliders and inspect the formula.'],
+    ['substitute', 'Substitute values', 'Fill in the dimensions from the figure.'],
+    ['calculate', 'Calculate area', 'Solve the final area with precision.'],
+    ['compare', 'Compare two shapes', 'See which shape has the larger area.'],
+    ['mixed', 'Mixed review', 'Randomize shapes and solve faster.'],
+    ['error-spot', 'Find the error', 'Identify a wrong formula or value.']
+  ];
+  $('activity-bank').innerHTML = items
+    .filter(([id, name]) => !APP.filtered || `${id} ${name}`.toLowerCase().includes(APP.filtered))
+    .map(([id, name, desc]) => `
+      <button class="shape-chip ${APP.activity === id ? 'active' : ''}" data-activity="${id}">
+        <span><strong>${name}</strong><br><small>${desc}</small></span>
+        <span>⟶</span>
+      </button>
+    `).join('');
+  document.querySelectorAll('[data-activity]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      APP.activity = btn.dataset.activity;
+      buildActivities();
+      newProblem();
+      renderAll();
+      announce(`${APP.activity} activity selected.`);
+    });
+  });
+}
+
+function newProblem() {
+  const l = CONFIG.limits[APP.track];
+  const b = rand(l.min, l.max, l.decimal);
+  const h = rand(l.min, l.max, l.decimal);
+  const b2 = APP.shape === 'trapezoid' ? rand(l.min, l.max, l.decimal) : 0;
+  const area = APP.shape === 'parallelogram' ? b * h : APP.shape === 'triangle' ? .5 * b * h : .5 * (b + b2) * h;
+  APP.current = {
+    b, h, b2,
+    area: Number(area.toFixed(2)),
+    perimeterHint: Number((b + h).toFixed(2))
+  };
+  APP.step = 1;
+}
+
+function renderAll() {
+  renderHUD();
+  renderFormula();
+  renderStage();
+  renderStepper();
+  renderObjective();
+  buildShapeList();
+  buildActivities();
+}
+
+function renderHUD() {
+  $('hud-streak').innerText = APP.stats.streak;
+  $('hud-acc').innerText = APP.stats.total ? Math.round((APP.stats.correct / APP.stats.total) * 100) : 100;
+  $('hud-level').innerText = Math.floor(APP.stats.correct / 5) + 1;
+  $('mastery-label').innerText = `${APP.stats.mastery} / ${CONFIG.masteryGoal}`;
+  $('mastery-fill').style.width = `${clamp((APP.stats.mastery / CONFIG.masteryGoal) * 100, 0, 100)}%`;
+  $('problem-meta').innerText = `${APP.mode.toUpperCase()} • ${APP.track} track • ${APP.shape}`;
+  $('lesson-title').innerText = lessonTitle();
+  $('lesson-desc').innerText = lessonDesc();
+  $('hint-text').innerText = hintText();
+}
+
+function renderFormula() {
+  const p = APP.current;
+  const s = APP.shape;
+  const f = s === 'parallelogram'
+    ? `A = b × h = ${fmt(p.b)} × ${fmt(p.h)} = ${fmt(p.area)}`
+    : s === 'triangle'
+      ? `A = 1/2 × b × h = 1/2 × ${fmt(p.b)} × ${fmt(p.h)} = ${fmt(p.area)}`
+      : `A = 1/2 × (b1 + b2) × h = 1/2 × (${fmt(p.b)} + ${fmt(p.b2)}) × ${fmt(p.h)} = ${fmt(p.area)}`;
+  $('formula-display').innerText = f;
+}
+
+function renderStage() {
+  const p = APP.current;
+  drawSVG(p.b, p.h, p.b2);
+}
+
+function renderStepper() {
+  const p = APP.current;
+  if (APP.mode === 'explore') {
+    $('stepper').innerHTML = `
+      <div class="step active">
+        <div class="step-top"><strong>Explore controls</strong><span>Visualize how the dimensions interact</span></div>
+        <div class="row">
+          <div class="field">
+            <label for="sl-b">Base</label>
+            <input id="sl-b" type="range" min="${CONFIG.limits[APP.track].min}" max="${CONFIG.limits[APP.track].max}" step="${CONFIG.limits[APP.track].decimal ? .5 : 1}" value="${p.b}">
+          </div>
+          <div class="field">
+            <label for="sl-h">Height</label>
+            <input id="sl-h" type="range" min="${CONFIG.limits[APP.track].min}" max="${CONFIG.limits[APP.track].max}" step="${CONFIG.limits[APP.track].decimal ? .5 : 1}" value="${p.h}">
+          </div>
+        </div>
+        ${APP.shape === 'trapezoid' ? `
+          <div class="field" style="margin-top:.75rem;">
+            <label for="sl-b2">Base 2</label>
+            <input id="sl-b2" type="range" min="${CONFIG.limits[APP.track].min}" max="${CONFIG.limits[APP.track].max}" step="${CONFIG.limits[APP.track].decimal ? .5 : 1}" value="${p.b2}">
+          </div>` : ''}
+        <div class="feedback">Move the sliders to see the formula update instantly.</div>
+      </div>
+    `;
+    bindExploreSliders();
+    return;
+  }
+
+  const step1 = APP.mode === 'challenge' ? 'Choose the correct formula under pressure.' : 'Choose the correct formula.';
+  const eq = equationBuilder();
+  $('stepper').innerHTML = `
+    <div class="step ${APP.step === 1 ? 'active' : APP.step > 1 ? 'done' : ''}">
+      <div class="step-top"><strong>Step 1 · Formula</strong><span>${step1}</span></div>
+      <div class="inline">
+        <select id="sel-formula" aria-label="Select formula">
+          <option value="">-- Choose formula --</option>
+          <option value="parallelogram">A = b × h</option>
+          <option value="triangle">A = 1/2 × b × h</option>
+          <option value="trapezoid">A = 1/2 × (b1 + b2) × h</option>
+        </select>
+        <button id="chk-step-1" class="primary small">Validate</button>
+      </div>
+      <div class="feedback" id="fb-1"></div>
+    </div>
+
+    <div class="step ${APP.step === 2 ? 'active' : APP.step > 2 ? 'done' : ''}">
+      <div class="step-top"><strong>Step 2 · Substitute</strong><span>Use the labeled values from the figure</span></div>
+      <div class="inputs" id="eq-builder">${eq}</div>
+      <button id="chk-step-2" class="primary small" style="margin-top:.75rem;">Validate</button>
+      <div class="feedback" id="fb-2"></div>
+    </div>
+
+    <div class="step ${APP.step === 3 ? 'active' : ''}">
+      <div class="step-top"><strong>Step 3 · Final answer</strong><span>Enter the area</span></div>
+      <div class="inline">
+        <span class="inputs">A = <input type="number" id="inp-area" step="0.01" inputmode="decimal" aria-label="Area answer"></span>
+        <button id="chk-step-3" class="primary small">Submit</button>
+      </div>
+      <div class="feedback" id="fb-3"></div>
+      <div class="inline" style="margin-top:.75rem;">
+        <button id="btn-quick-hint" class="soft small">Show hint</button>
+      </div>
+    </div>
+  `;
+  bindPractice();
+}
+
+function equationBuilder() {
+  if (APP.shape === 'parallelogram') return `A = <input id="inp-b" type="number" step="0.01" inputmode="decimal" aria-label="Base"> × <input id="inp-h" type="number" step="0.01" inputmode="decimal" aria-label="Height">`;
+  if (APP.shape === 'triangle') return `A = 1/2 × <input id="inp-b" type="number" step="0.01" inputmode="decimal" aria-label="Base"> × <input id="inp-h" type="number" step="0.01" inputmode="decimal" aria-label="Height">`;
+  return `A = 1/2 × (<input id="inp-b" type="number" step="0.01" inputmode="decimal" aria-label="Base one"> + <input id="inp-b2" type="number" step="0.01" inputmode="decimal" aria-label="Base two">) × <input id="inp-h" type="number" step="0.01" inputmode="decimal" aria-label="Height">`;
+}
+
+function bindExploreSliders() {
+  ['sl-b', 'sl-h', 'sl-b2'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      APP.current[id === 'sl-b' ? 'b' : id === 'sl-h' ? 'h' : 'b2'] = parseFloat(el.value);
+      renderFormula();
+      renderStage();
+    });
+  });
+}
+
+function bindPractice() {
+  $('chk-step-1').addEventListener('click', validateStep1);
+  $('chk-step-2').addEventListener('click', validateStep2);
+  $('chk-step-3').addEventListener('click', validateStep3);
+  $('btn-quick-hint').addEventListener('click', () => {
+    feedback(3, false, hintText(), false);
+    announce(hintText());
+  });
+}
+
+function validateStep1() {
+  const v = $('sel-formula').value;
+  if (v === APP.shape) return pass(1, 'Correct formula selected.');
+  fail(1, APP.track === 'EN' ? 'Hint: Look at the number of parallel sides and whether the shape needs a 1/2 factor.' : 'Incorrect formula. Review the shape and try again.');
+}
+
+function validateStep2() {
+  const p = APP.current;
+  const b = parseFloat($('inp-b')?.value);
+  const h = parseFloat($('inp-h')?.value);
+  const b2 = $('inp-b2') ? parseFloat($('inp-b2').value) : null;
+  let ok = false;
+
+  if (APP.shape === 'trapezoid') {
+    ok = ((b === p.b && b2 === p.b2) || (b === p.b2 && b2 === p.b)) && h === p.h;
+  } else {
+    ok = b === p.b && h === p.h;
+  }
+
+  if (ok) return pass(2, 'Values substituted correctly.');
+  fail(2, APP.track === 'EN'
+    ? 'Hint: Height is the vertical distance. Do not use a slanted side.'
+    : 'Check the labels carefully and avoid the distractor length.');
+}
+
+function validateStep3() {
+  const ans = parseFloat($('inp-area').value);
+  const target = APP.current.area;
+  if (Number(ans.toFixed(2)) === Number(target.toFixed(2))) {
+    pass(3, 'Excellent calculation.');
+    APP.stats.correct++;
+    APP.stats.total++;
+    APP.stats.streak++;
+    APP.stats.mastery = clamp(APP.stats.mastery + 1, 0, CONFIG.masteryGoal);
+    renderHUD();
+    announce('Correct answer.');
+    $('btn-next').focus();
+  } else {
+    fail(3, 'Calculation error. Re-check the formula and arithmetic.');
+    APP.stats.total++;
+    APP.stats.streak = 0;
+    renderHUD();
+    announce('Incorrect answer.');
+  }
+}
+
+function pass(step, msg) {
+  feedback(step, true, msg);
+  APP.step = Math.min(3, step + 1);
+  renderStepper();
+  APP.stats.correct += step === 1 ? 1 : 0;
+  APP.stats.total += step === 1 ? 1 : 0;
+  renderHUD();
+  announce(msg);
+}
+
+function fail(step, msg) {
+  feedback(step, false, msg);
+  APP.stats.total += step === 1 ? 1 : 0;
+  APP.stats.streak = 0;
+  renderHUD();
+}
+
+function feedback(step, ok, msg, touchStats = true) {
+  const el = $(`fb-${step}`);
+  if (!el) return;
+  el.innerText = msg;
+  el.className = `feedback ${ok ? 'success' : 'error'}`;
+  if (ok) {
+    const block = el.closest('.step');
+    if (block) {
+      block.classList.remove('active');
+      block.classList.add('done');
+    }
+    if (step < 3) {
+      APP.step = step + 1;
+    }
+  }
+  if (touchStats) renderHUD();
+}
+
+function nextProblem() {
+  newProblem();
+  if (APP.mode !== 'explore') renderStepper();
+  renderAll();
+  announce('New problem loaded.');
+}
+
+function lessonTitle() {
+  if (APP.mode === 'explore') return 'Discover the shape';
+  if (APP.mode === 'challenge') return 'Timed challenge';
+  return 'Guided practice';
+}
+
+function lessonDesc() {
+  if (APP.mode === 'explore') return 'Adjust values and watch the formula respond in real time.';
+  if (APP.mode === 'challenge') return 'Work faster, with less scaffolding, and build automatic recall.';
+  return 'Use a structured sequence to move from formula selection to final area.';
+}
+
+function objectiveText() {
+  if (APP.mode === 'explore') return 'Explore the visual relationship between base and height.';
+  if (APP.mode === 'challenge') return 'Solve quickly and accurately across mixed geometry prompts.';
+  return 'Practice the full solve path with prompts and feedback.';
+}
+
+function hintText() {
+  if (APP.shape === 'trapezoid') return 'Use both parallel bases, then multiply by the height and divide by 2.';
+  if (APP.shape === 'triangle') return 'The triangle formula is half of base times height.';
+  return 'Area of a parallelogram is base times height.';
+}
+
+function renderObjective() {
+  $('objective-text').innerText = objectiveText();
+}
+
+function drawSVG(b, h, b2 = 0) {
+  const cw = CONFIG.canvas.w, ch = CONFIG.canvas.h, pad = CONFIG.canvas.padding;
+  const maxVal = Math.max(b, h, b2, 12);
+  const scale = (Math.min(cw, ch) - pad * 2) / maxVal;
+  const pb = b * scale, ph = h * scale, pb2 = b2 * scale;
+  const yBot = ch - pad, yTop = yBot - ph;
+
+  const addMeasure = (x1, y1, x2, y2, label, dx = 0, dy = 0) => `
+    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="measure-line" />
+    <text x="${(x1 + x2) / 2 + dx}" y="${(y1 + y2) / 2 + dy}" class="measure-text" text-anchor="middle">${label}</text>
+  `;
+
+  let pts = '';
+  let measures = '';
+  let desc = '';
+  let title = '';
+
+  if (APP.shape === 'parallelogram') {
+    const slant = ph * 0.33;
+    const x = (cw - (pb + slant)) / 2;
+    pts = `${x + slant},${yTop} ${x + pb + slant},${yTop} ${x + pb},${yBot} ${x},${yBot}`;
+    measures += addMeasure(x, yBot + 26, x + pb, yBot + 26, fmt(b), 0, 6);
+    measures += addMeasure(x + pb + 14, yTop, x + pb + 14, yBot, fmt(h), 16, 0);
+    desc = `A parallelogram with base ${fmt(b)} and height ${fmt(h)}.`;
+    title = 'Parallelogram visualization';
+  } else if (APP.shape === 'triangle') {
+    const x = (cw - pb) / 2;
+    const topX = x + pb * 0.44;
+    pts = `${x},${yBot} ${x + pb},${yBot} ${topX},${yTop}`;
+    measures += addMeasure(x, yBot + 26, x + pb, yBot + 26, fmt(b), 0, 6);
+    measures += addMeasure(topX, yTop, topX, yBot, fmt(h), 16, 0);
+    const sideLen = Math.sqrt(Math.pow(pb * 0.44, 2) + Math.pow(ph, 2)) / scale;
+    measures += addMeasure(x - 16, yBot, topX - 16, yTop, Number(sideLen.toFixed(1)), -20, 0);
+    desc = `A triangle with base ${fmt(b)} and height ${fmt(h)}.`;
+    title = 'Triangle visualization';
+  } else {
+    const x = (cw - Math.max(pb, pb2)) / 2;
+    const offset = (Math.max(pb, pb2) - pb2) / 2;
+    pts = `${x},${yBot} ${x + pb},${yBot} ${x + offset + pb2},${yTop} ${x + offset},${yTop}`;
+    measures += addMeasure(x, yBot + 26, x + pb, yBot + 26, fmt(b), 0, 6);
+    measures += addMeasure(x + offset, yTop - 14, x + offset + pb2, yTop - 14, fmt(b2), 0, -6);
+    measures += addMeasure(x - 16, yTop, x - 16, yBot, fmt(h), -18, 0);
+    desc = `A trapezoid with bases ${fmt(b)} and ${fmt(b2)}, height ${fmt(h)}.`;
+    title = 'Trapezoid visualization';
+  }
+
+  $('svg-root').innerHTML = `
+    <svg viewBox="0 0 ${cw} ${ch}" role="img" aria-labelledby="svg-title svg-desc">
+      <title id="svg-title">${title}</title>
+      <desc id="svg-desc">${desc}</desc>
+      <defs>
+        <linearGradient id="shapeFill" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="var(--primary)" stop-opacity=".28"/>
+          <stop offset="100%" stop-color="var(--primary-2)" stop-opacity=".18"/>
+        </linearGradient>
+        <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.18 0"/>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect x="0" y="0" width="${cw}" height="${ch}" fill="transparent"/>
+      <g opacity=".7">
+        ${gridLines(cw, ch)}
+      </g>
+      <polygon points="${pts}" fill="url(#shapeFill)" stroke="var(--primary)" stroke-width="3" filter="url(#softGlow)"/>
+      <g>${measures}</g>
+    </svg>
+  `;
+}
+
+function gridLines(w, h) {
+  let out = '';
+  for (let x = 40; x < w; x += 40) out += `<line x1="${x}" y1="0" x2="${x}" y2="${h}" stroke="var(--line)" stroke-width="1" />`;
+  for (let y = 40; y < h; y += 40) out += `<line x1="0" y1="${y}" x2="${w}" y2="${y}" stroke="var(--line)" stroke-width="1" />`;
+  return out;
+}
+
+function announce(msg) {
+  $('live-region').innerText = msg;
+}
+
+newProblem();
+</script>
 </body>
 </html>

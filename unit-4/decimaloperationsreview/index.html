@@ -1,37 +1,1829 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Decimaloperationsreview classroom activity.">
-  <title>Decimaloperationsreview</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decimal Operations Interactive Review</title>
+  <style>
+    :root {
+      --bg-1: #edf4ff;
+      --bg-2: #f7fbff;
+      --ink: #152235;
+      --muted: #5f6b7b;
+      --line: #d6e0f0;
+      --surface: rgba(255,255,255,0.92);
+      --surface-strong: #ffffff;
+      --navy: #173b8c;
+      --teal: #0f766e;
+      --purple: #6d28d9;
+      --gold: #c17d11;
+      --red: #c0392b;
+      --green: #19744c;
+      --green-bg: #e7f8ef;
+      --red-bg: #fdeceb;
+      --blue-bg: #eef5ff;
+      --yellow-bg: #fff6dc;
+      --shadow-lg: 0 18px 40px rgba(18, 34, 66, 0.11);
+      --shadow-md: 0 10px 24px rgba(18, 34, 66, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Calibri, Arial, sans-serif;
+      color: var(--ink);
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.11), transparent 28%),
+        radial-gradient(circle at top right, rgba(109, 40, 217, 0.11), transparent 24%),
+        radial-gradient(circle at bottom left, rgba(15, 118, 110, 0.10), transparent 22%),
+        linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+      background-attachment: fixed;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.16;
+      background-image:
+        linear-gradient(rgba(23,59,140,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,59,140,0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.12));
+    }
+
+    .app {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 22px;
+      position: relative;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 34px;
+      background:
+        linear-gradient(135deg, rgba(23,59,140,0.98) 0%, rgba(15,118,110,0.96) 52%, rgba(109,40,217,0.96) 100%);
+      color: white;
+      box-shadow: var(--shadow-lg);
+      padding: 30px 30px 26px;
+      border: 2px solid rgba(255,255,255,0.16);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 260px;
+      height: 260px;
+      right: -70px;
+      top: -85px;
+    }
+
+    .hero::after {
+      width: 200px;
+      height: 200px;
+      left: -60px;
+      bottom: -95px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr;
+      gap: 18px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2.5rem;
+      line-height: 1.05;
+      letter-spacing: 0.2px;
+    }
+
+    .hero p {
+      margin: 8px 0;
+      font-size: 1.08rem;
+      line-height: 1.45;
+      max-width: 960px;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.93rem;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.25);
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-side {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 24px;
+      padding: 18px;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-side h3 {
+      margin: 0 0 10px;
+      font-size: 1.18rem;
+    }
+
+    .hero-side ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .panel {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+      border: 2px solid rgba(22, 34, 53, 0.06);
+      backdrop-filter: blur(8px);
+    }
+
+    .top-tools {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .tool-card {
+      padding: 18px;
+    }
+
+    .tool-card h2 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stat-chip {
+      background: linear-gradient(180deg, #fdfefe 0%, #f4f8ff 100%);
+      border: 2px solid #d8e5fb;
+      border-radius: 16px;
+      padding: 10px 12px;
+      min-width: 115px;
+    }
+
+    .stat-chip strong {
+      display: block;
+      font-size: 1.28rem;
+      color: var(--navy);
+    }
+
+    .progress-bar-wrap,
+    .boss-meter {
+      height: 16px;
+      background: #dae6fb;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid #cad8f4;
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563eb 0%, #0f766e 50%, #7c3aed 100%);
+      transition: width 0.25s ease;
+    }
+
+    .toggle-row,
+    .mini-controls,
+    .answer-row,
+    .step-row,
+    .mc-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    button,
+    .tab-btn,
+    .choice-btn {
+      font: inherit;
+      cursor: pointer;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      padding: 10px 14px;
+      font-weight: 700;
+      transition: 0.16s ease;
+    }
+
+    button:hover,
+    .tab-btn:hover,
+    .choice-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary-btn {
+      background: linear-gradient(180deg, #2d68ea 0%, #1547b7 100%);
+      color: white;
+    }
+
+    .secondary-btn {
+      background: white;
+      border-color: #c2d1eb;
+      color: var(--ink);
+    }
+
+    .support-on {
+      background: linear-gradient(180deg, #169b90 0%, #0f766e 100%);
+      color: white;
+    }
+
+    .tabs {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      background: #edf3ff;
+      color: var(--ink);
+      border-color: #d7e3fb;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(180deg, #1f3360 0%, #14233c 100%);
+      color: white;
+      border-color: #14233c;
+    }
+
+    .tab-panel {
+      display: none;
+      margin-top: 16px;
+      padding: 24px;
+    }
+
+    .tab-panel.active { display: block; }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1.78rem;
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-top: 5px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: #eef4ff;
+      border: 2px solid #ccdaf8;
+      color: var(--navy);
+    }
+
+    .card {
+      background: var(--surface-strong);
+      border: 2px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: 0 8px 18px rgba(17, 34, 68, 0.05);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.22rem;
+    }
+
+    .learn-grid,
+    .practice-grid,
+    .glossary-grid,
+    .game-grid,
+    .boss-wrap,
+    .equation-board,
+    .score-box,
+    .interactive-guide-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .glossary-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .interactive-guide-grid {
+      grid-template-columns: 1.1fr 1fr;
+    }
+
+    .learn-grid,
+    .practice-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .equation-board,
+    .boss-wrap,
+    .game-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .score-box {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .score-tile {
+      text-align: center;
+      background: linear-gradient(180deg, #fbfdff 0%, #f2f7ff 100%);
+      border: 2px solid #d6e4fb;
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .score-tile strong {
+      display: block;
+      font-size: 1.55rem;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .support-box,
+    .feedback,
+    .tip-box,
+    .game-status,
+    .visual-hint {
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 12px;
+      border: 2px solid transparent;
+    }
+
+    .support-box,
+    .visual-hint,
+    .feedback.neutral,
+    .game-status.neutral {
+      background: var(--blue-bg);
+      border-color: #c6d8fb;
+      color: #1d3f87;
+    }
+
+    .tip-box {
+      background: var(--yellow-bg);
+      border-color: #f0d785;
+      color: #8c6310;
+    }
+
+    .feedback.ok,
+    .game-status.ok {
+      background: var(--green-bg);
+      border-color: #a3dbc0;
+      color: var(--green);
+    }
+
+    .feedback.bad,
+    .game-status.bad {
+      background: var(--red-bg);
+      border-color: #efbeb7;
+      color: var(--red);
+    }
+
+    .support-list,
+    .step-list {
+      margin: 8px 0 0 18px;
+      line-height: 1.6;
+      padding: 0;
+    }
+
+    .step-list li { margin-bottom: 6px; }
+
+    .vertical-math {
+      display: inline-grid;
+      justify-items: end;
+      font-family: "Courier New", monospace;
+      font-size: 1.45rem;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 2px solid #d3def1;
+      border-radius: 18px;
+      padding: 14px 18px;
+      margin: 10px 0;
+      min-width: 255px;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5);
+    }
+
+    .vertical-math .line {
+      border-top: 3px solid #1f2937;
+      width: 100%;
+      margin: 5px 0 7px;
+    }
+
+    .vertical-math .highlight {
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .operation-card {
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      border: 2px solid #d8e4f6;
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .operation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .op-chip {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: white;
+    }
+
+    .chip-add { background: linear-gradient(180deg, #2563eb, #1d4ed8); }
+    .chip-sub { background: linear-gradient(180deg, #059669, #047857); }
+    .chip-mul { background: linear-gradient(180deg, #7c3aed, #6d28d9); }
+    .chip-div { background: linear-gradient(180deg, #d97706, #b45309); }
+
+    .step-reveal {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .step-box {
+      background: #f8fbff;
+      border: 2px solid #d9e5f9;
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: none;
+    }
+
+    .step-box.visible { display: block; }
+
+    .visual-hint {
+      display: none;
+    }
+
+    .visual-hint.visible { display: block; }
+
+    .mini-visual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .mini-svg-wrap {
+      background: white;
+      border: 2px solid #d7e4f7;
+      border-radius: 16px;
+      padding: 10px;
+    }
+
+    .vocab-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+
+    .vocab-table th,
+    .vocab-table td {
+      border: 2px solid #222;
+      padding: 10px;
+      vertical-align: top;
+      background: white;
+    }
+
+    .vocab-table th {
+      background: #edf4ff;
+    }
+
+    .problem-card {
+      border: 2px solid #d9e4f4;
+      border-radius: 20px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .problem-card h4 {
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+    }
+
+    .problem-label {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #edf3ff;
+      border: 2px solid #ccdaf8;
+      color: var(--navy);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .mini-steps {
+      background: linear-gradient(180deg, #f8fbff 0%, #f4f9ff 100%);
+      border: 2px solid #dbe7fb;
+      border-radius: 16px;
+      padding: 12px;
+      margin-top: 10px;
+      line-height: 1.65;
+    }
+
+    .hint-wrap {
+      margin-top: 10px;
+    }
+
+    .hint-card {
+      display: none;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      background: #f7fbff;
+      border: 2px dashed #9db9ef;
+    }
+
+    .hint-card.visible { display: block; }
+
+    input[type="text"],
+    input[type="number"] {
+      font: inherit;
+      padding: 10px 12px;
+      border: 2px solid #b7c8e0;
+      border-radius: 12px;
+      min-width: 90px;
+      background: white;
+    }
+
+    input.small { width: 78px; min-width: 78px; text-align: center; }
+    input.medium { width: 124px; }
+    input.large { width: 180px; }
+
+    .dropzone {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 160px;
+      min-height: 58px;
+      border: 2px dashed #7fa8f3;
+      border-radius: 14px;
+      background: #f8fbff;
+      font-weight: 700;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .draggables {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .drag-chip {
+      background: white;
+      border: 2px solid #abc2ea;
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: grab;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .drag-chip.used {
+      opacity: 0.45;
+    }
+
+    .question-banner {
+      padding: 14px;
+      background: linear-gradient(180deg, #eff6ff 0%, #e8f2ff 100%);
+      border: 2px solid #cad9fb;
+      border-radius: 18px;
+      font-size: 1.16rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .boss-card {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #fff9ed 0%, #ffe6e2 100%);
+    }
+
+    .boss-card::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(192,57,43,0.08);
+    }
+
+    .boss-portrait {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .boss-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #24448f 0%, #0f766e 100%);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 2.2rem;
+      font-weight: 800;
+      border: 4px solid rgba(255,255,255,0.7);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+      position: relative;
+      z-index: 1;
+    }
+
+    .boss-meter-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #dc2626 0%, #f59e0b 100%);
+      transition: width 0.2s ease;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.55;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1150px) {
+      .hero-grid,
+      .top-tools,
+      .learn-grid,
+      .practice-grid,
+      .glossary-grid,
+      .interactive-guide-grid,
+      .game-grid,
+      .boss-wrap,
+      .equation-board,
+      .score-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app { padding: 12px; }
+      .hero { padding: 20px; }
+      .hero h1 { font-size: 1.9rem; }
+      .tab-panel { padding: 16px; }
+      .vertical-math { font-size: 1.18rem; min-width: 100%; }
+      .boss-portrait { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/unit-4/">Unit 4 Decimal Operations</a><span>/</span><span>Decimaloperationsreview</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Decimaloperationsreview</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
-
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Decimaloperationsreview</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/unit-4/decimaloperationsreview/</span></p>
+  <div class="app">
+    <section class="hero panel">
+      <div class="hero-grid">
+        <div>
+          <h1>Decimal Operations Interactive Review Studio</h1>
+          <p>Learn, practice, and play with adding, subtracting, multiplying, and dividing decimals.</p>
+          <p><strong>Built for clarity:</strong> vertical worked examples, interactive step reveals, optional click-to-open hints, mixed practice, and two polished game tabs.</p>
+          <p><strong>ESOL-friendly supports:</strong> simplified directions, sentence frames, math vocabulary, visual cues, and guided scaffolds that only appear when needed.</p>
+          <div class="hero-badges">
+            <span class="badge">Interactive learn tab</span>
+            <span class="badge">Hidden hints on click</span>
+            <span class="badge">Vertical worked examples</span>
+            <span class="badge">2 game tabs</span>
+            <span class="badge">Teacher-ready polish</span>
+          </div>
+        </div>
+        <div class="hero-side">
+          <h3>How to use this review</h3>
+          <ul>
+            <li>Start on <strong>Tab 1</strong> and click through the steps.</li>
+            <li>Use <strong>Show Hint</strong> only when needed.</li>
+            <li>Work longer problems on paper.</li>
+            <li>Finish with the two game tabs.</li>
+          </ul>
+        </div>
       </div>
     </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/unit-4/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
-    </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+    <section class="top-tools">
+      <div class="panel tool-card">
+        <h2>Progress</h2>
+        <div class="stat-row">
+          <div class="stat-chip"><strong id="correctCount">0</strong><span>Correct</span></div>
+          <div class="stat-chip"><strong id="checkedCount">0</strong><span>Checked</span></div>
+          <div class="stat-chip"><strong id="gameStars">0</strong><span>Game Stars</span></div>
+          <div class="stat-chip"><strong id="bossHits">0</strong><span>Boss Hits</span></div>
+        </div>
+        <div class="progress-bar-wrap"><div id="masterProgress" class="progress-bar"></div></div>
+      </div>
+
+      <div class="panel tool-card">
+        <h2>Student Tools</h2>
+        <div class="toggle-row">
+          <button id="supportToggle" class="support-on">Extra Support: ON</button>
+          <button id="resetProgressBtn" class="secondary-btn">Reset Scores</button>
+        </div>
+        <div class="mini-controls" style="margin-top:10px;">
+          <button id="expandLearnBtn" class="secondary-btn">Open All Learn Steps</button>
+          <button id="collapseLearnBtn" class="secondary-btn">Reset Learn Steps</button>
+        </div>
+      </div>
+
+      <div class="panel tool-card">
+        <h2>Decimal Reminders</h2>
+        <div class="tip-box" style="margin-top:0;">
+          <strong>Add / Subtract:</strong> line up the decimal points.<br />
+          <strong>Multiply:</strong> multiply first, then count decimal places.<br />
+          <strong>Divide:</strong> make the divisor a whole number first.
+        </div>
+      </div>
+    </section>
+
+    <section class="tabs" id="tabs"></section>
+
+    <section id="tab-learn" class="tab-panel panel active">
+      <div class="section-title">
+        <div>
+          <h2>Tab 1 — Learn With Interactive Step Reveals</h2>
+          <div class="helper">Click through one clear step at a time. Use the visual hints only if you want extra help.</div>
+        </div>
+        <span class="pill">ESOL-friendly</span>
+      </div>
+
+      <div class="support-box" data-support>
+        <strong>Sentence Frames</strong>
+        <ul class="support-list">
+          <li>I line up the <strong>decimal points</strong> because I am adding or subtracting.</li>
+          <li>I count the total number of <strong>decimal places</strong> because I am multiplying.</li>
+          <li>I move the decimal in the divisor to make a <strong>whole number</strong> because I am dividing.</li>
+          <li>My answer is reasonable because it is close to __________.</li>
+        </ul>
+      </div>
+
+      <div class="glossary-grid" style="margin-top:16px;">
+        <div class="card"><h3>Decimal Point</h3><p>The dot that separates whole numbers and parts of a whole.</p></div>
+        <div class="card"><h3>Place Value</h3><p>The value of a digit based on its position: ones, tenths, hundredths, thousandths.</p></div>
+        <div class="card"><h3>Product</h3><p>The answer to a multiplication problem.</p></div>
+        <div class="card"><h3>Quotient</h3><p>The answer to a division problem.</p></div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3>Decimal Vocabulary Chart</h3>
+        <table class="vocab-table">
+          <thead>
+            <tr>
+              <th>Word</th>
+              <th>Simple Meaning</th>
+              <th>Helpful Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>align</td>
+              <td>put in a straight line</td>
+              <td>For add/subtract, line up decimal points.</td>
+            </tr>
+            <tr>
+              <td>estimate</td>
+              <td>find a close answer</td>
+              <td>Round to check if your exact answer makes sense.</td>
+            </tr>
+            <tr>
+              <td>decimal places</td>
+              <td>digits to the right of the decimal point</td>
+              <td>Used a lot when multiplying decimals.</td>
+            </tr>
+            <tr>
+              <td>divisor</td>
+              <td>the number you divide by</td>
+              <td>Make the divisor a whole number first.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="learn-grid" style="margin-top:16px;">
+        <div class="operation-card">
+          <div class="operation-header">
+            <h3>Add Decimals</h3>
+            <span class="op-chip chip-add">Add</span>
+          </div>
+          <p><strong>Problem:</strong> 12.45 + 3.8</p>
+          <div class="vertical-math">
+            <div>12.45</div>
+            <div>+&nbsp;3.80</div>
+            <div class="line"></div>
+            <div class="highlight">16.25</div>
+          </div>
+          <div class="step-reveal" data-steps="addSteps">
+            <div class="step-box" id="addSteps-1">Step 1: Line up the decimal points.</div>
+            <div class="step-box" id="addSteps-2">Step 2: Write 3.8 as 3.80 so both numbers have the same number of decimal places.</div>
+            <div class="step-box" id="addSteps-3">Step 3: Add from right to left.</div>
+            <div class="step-box" id="addSteps-4">Step 4: Bring the decimal point straight down into the answer.</div>
+          </div>
+          <div class="answer-row" style="margin-top:12px;">
+            <button class="primary-btn" onclick="revealStep('addSteps', 4)">Next Step</button>
+            <button class="secondary-btn" onclick="resetStepGroup('addSteps', 4)">Reset</button>
+            <button class="secondary-btn" onclick="toggleBox('addHint')">Show Visual Hint</button>
+          </div>
+          <div id="addHint" class="visual-hint">
+            <div class="mini-visual">
+              <div class="mini-svg-wrap">
+                <svg viewBox="0 0 220 110" width="100%" height="100" aria-hidden="true">
+                  <text x="18" y="28" font-size="22" font-family="Calibri" fill="#173b8c">12.45</text>
+                  <text x="18" y="58" font-size="22" font-family="Calibri" fill="#173b8c">+ 3.80</text>
+                  <line x1="14" y1="68" x2="126" y2="68" stroke="#111" stroke-width="3" />
+                  <circle cx="73" cy="24" r="6" fill="#0f766e" />
+                  <circle cx="73" cy="54" r="6" fill="#0f766e" />
+                  <text x="137" y="42" font-size="16" font-family="Calibri" fill="#0f766e">decimal points line up</text>
+                </svg>
+              </div>
+              <div>
+                <strong>Visual guide:</strong>
+                <ul class="support-list">
+                  <li>Look for the decimal point first.</li>
+                  <li>Put the decimal points in one vertical line.</li>
+                  <li>Add zeros if one number has fewer digits.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Estimate:</strong> 12 + 4 is about 16, so 16.25 makes sense.</div>
+        </div>
+
+        <div class="operation-card">
+          <div class="operation-header">
+            <h3>Subtract Decimals</h3>
+            <span class="op-chip chip-sub">Subtract</span>
+          </div>
+          <p><strong>Problem:</strong> 9.2 − 4.67</p>
+          <div class="vertical-math">
+            <div>9.20</div>
+            <div>-&nbsp;4.67</div>
+            <div class="line"></div>
+            <div class="highlight">4.53</div>
+          </div>
+          <div class="step-reveal" data-steps="subSteps">
+            <div class="step-box" id="subSteps-1">Step 1: Line up the decimal points.</div>
+            <div class="step-box" id="subSteps-2">Step 2: Write 9.2 as 9.20.</div>
+            <div class="step-box" id="subSteps-3">Step 3: Subtract carefully from right to left.</div>
+            <div class="step-box" id="subSteps-4">Step 4: Bring the decimal point straight down.</div>
+          </div>
+          <div class="answer-row" style="margin-top:12px;">
+            <button class="primary-btn" onclick="revealStep('subSteps', 4)">Next Step</button>
+            <button class="secondary-btn" onclick="resetStepGroup('subSteps', 4)">Reset</button>
+            <button class="secondary-btn" onclick="toggleBox('subHint')">Show Visual Hint</button>
+          </div>
+          <div id="subHint" class="visual-hint">
+            <div class="mini-visual">
+              <div class="mini-svg-wrap">
+                <svg viewBox="0 0 230 110" width="100%" height="100" aria-hidden="true">
+                  <text x="20" y="28" font-size="22" font-family="Calibri" fill="#047857">9.20</text>
+                  <text x="20" y="58" font-size="22" font-family="Calibri" fill="#047857">- 4.67</text>
+                  <line x1="14" y1="68" x2="126" y2="68" stroke="#111" stroke-width="3" />
+                  <rect x="83" y="15" width="22" height="22" rx="4" fill="#d1fae5" stroke="#10b981" />
+                  <text x="88" y="31" font-size="16" font-family="Calibri" fill="#065f46">0</text>
+                  <text x="140" y="42" font-size="16" font-family="Calibri" fill="#047857">add a zero to match places</text>
+                </svg>
+              </div>
+              <div>
+                <strong>Visual guide:</strong>
+                <ul class="support-list">
+                  <li>If one number is shorter, add a zero at the end.</li>
+                  <li>Subtract in columns.</li>
+                  <li>Keep the decimal in the same line.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Estimate:</strong> 9.2 is a little more than 9 and 4.67 is a little less than 5, so the answer should be a little more than 4.</div>
+        </div>
+
+        <div class="operation-card">
+          <div class="operation-header">
+            <h3>Multiply Decimals</h3>
+            <span class="op-chip chip-mul">Multiply</span>
+          </div>
+          <p><strong>Problem:</strong> 2.4 × 1.3</p>
+          <div class="vertical-math">
+            <div>&nbsp;&nbsp;24</div>
+            <div>×&nbsp;13</div>
+            <div class="line"></div>
+            <div>&nbsp;72</div>
+            <div>240</div>
+            <div class="line"></div>
+            <div>&nbsp;312</div>
+            <div class="highlight">3.12</div>
+          </div>
+          <div class="step-reveal" data-steps="mulSteps">
+            <div class="step-box" id="mulSteps-1">Step 1: Ignore the decimal points at first.</div>
+            <div class="step-box" id="mulSteps-2">Step 2: Multiply 24 × 13 = 312.</div>
+            <div class="step-box" id="mulSteps-3">Step 3: Count the decimal places in the factors: 1 place in 2.4 and 1 place in 1.3.</div>
+            <div class="step-box" id="mulSteps-4">Step 4: Put the decimal in the product so there are 2 decimal places total: 3.12.</div>
+          </div>
+          <div class="answer-row" style="margin-top:12px;">
+            <button class="primary-btn" onclick="revealStep('mulSteps', 4)">Next Step</button>
+            <button class="secondary-btn" onclick="resetStepGroup('mulSteps', 4)">Reset</button>
+            <button class="secondary-btn" onclick="toggleBox('mulHint')">Show Visual Hint</button>
+          </div>
+          <div id="mulHint" class="visual-hint">
+            <div class="mini-visual">
+              <div class="mini-svg-wrap">
+                <svg viewBox="0 0 240 110" width="100%" height="100" aria-hidden="true">
+                  <text x="16" y="34" font-size="22" font-family="Calibri" fill="#6d28d9">2.4 × 1.3</text>
+                  <circle cx="36" cy="29" r="5" fill="#8b5cf6" />
+                  <circle cx="100" cy="29" r="5" fill="#8b5cf6" />
+                  <text x="138" y="34" font-size="16" font-family="Calibri" fill="#6d28d9">2 decimal places total</text>
+                  <text x="16" y="74" font-size="22" font-family="Calibri" fill="#6d28d9">312 → 3.12</text>
+                </svg>
+              </div>
+              <div>
+                <strong>Visual guide:</strong>
+                <ul class="support-list">
+                  <li>Multiply like whole numbers first.</li>
+                  <li>Then count all decimal places in both factors.</li>
+                  <li>Move the decimal into the product.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Estimate:</strong> 2.4 × 1.3 is a little more than 2.4, so 3.12 is reasonable.</div>
+        </div>
+
+        <div class="operation-card">
+          <div class="operation-header">
+            <h3>Divide Decimals</h3>
+            <span class="op-chip chip-div">Divide</span>
+          </div>
+          <p><strong>Problem:</strong> 8.64 ÷ 0.3</p>
+          <div class="vertical-math">
+            <div>8.64 ÷ 0.3</div>
+            <div class="line"></div>
+            <div>86.4 ÷ 3</div>
+            <div class="line"></div>
+            <div class="highlight">28.8</div>
+          </div>
+          <div class="step-reveal" data-steps="divSteps">
+            <div class="step-box" id="divSteps-1">Step 1: Make the divisor a whole number.</div>
+            <div class="step-box" id="divSteps-2">Step 2: Move the decimal in 0.3 one place right to make 3.</div>
+            <div class="step-box" id="divSteps-3">Step 3: Move the decimal in 8.64 one place right too, so it becomes 86.4.</div>
+            <div class="step-box" id="divSteps-4">Step 4: Divide 86.4 by 3 to get 28.8.</div>
+          </div>
+          <div class="answer-row" style="margin-top:12px;">
+            <button class="primary-btn" onclick="revealStep('divSteps', 4)">Next Step</button>
+            <button class="secondary-btn" onclick="resetStepGroup('divSteps', 4)">Reset</button>
+            <button class="secondary-btn" onclick="toggleBox('divHint')">Show Visual Hint</button>
+          </div>
+          <div id="divHint" class="visual-hint">
+            <div class="mini-visual">
+              <div class="mini-svg-wrap">
+                <svg viewBox="0 0 240 110" width="100%" height="100" aria-hidden="true">
+                  <text x="12" y="28" font-size="22" font-family="Calibri" fill="#b45309">8.64 ÷ 0.3</text>
+                  <text x="12" y="66" font-size="22" font-family="Calibri" fill="#b45309">86.4 ÷ 3</text>
+                  <path d="M68 34 L76 34 L76 56" stroke="#d97706" stroke-width="3" fill="none" />
+                  <path d="M173 34 L181 34 L181 56" stroke="#d97706" stroke-width="3" fill="none" />
+                  <text x="92" y="47" font-size="15" font-family="Calibri" fill="#b45309">move both decimals the same amount</text>
+                </svg>
+              </div>
+              <div>
+                <strong>Visual guide:</strong>
+                <ul class="support-list">
+                  <li>Only move decimals to make the divisor a whole number.</li>
+                  <li>Move the decimal in both numbers the same number of places.</li>
+                  <li>Then divide as usual.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Estimate:</strong> Dividing by 0.3 makes the answer bigger than 8.64.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-guided" class="tab-panel panel">
+      <div class="section-title">
+        <div>
+          <h2>Tab 2 — Guided Practice</h2>
+          <div class="helper">The first problems have built-in spaces for students to work through the steps.</div>
+        </div>
+      </div>
+
+      <div class="support-box" data-support>
+        <strong>How to work this tab</strong>
+        <ul class="support-list">
+          <li>Fill in each blank box.</li>
+          <li>Then click <strong>Check</strong>.</li>
+          <li>If you are stuck, click <strong>Show Hint</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="practice-grid" style="margin-top:16px;">
+        <div class="problem-card">
+          <div class="problem-label">Guided Add</div>
+          <h4>1) 7.35 + 2.4</h4>
+          <div class="mini-steps">
+            Write 2.4 as <input id="g1step1" class="small" type="text" /> so the decimal places match.<br /><br />
+            Then add: <strong>7.35 + 2.40 =</strong> <input id="g1final" class="medium" type="text" />
+          </div>
+          <div class="answer-row">
+            <button class="primary-btn" onclick="checkGuided1()">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('g1hint')">Show Hint</button>
+          </div>
+          <div id="g1hint" class="hint-card">
+            <div class="vertical-math" style="margin-top:0; min-width: 220px;">
+              <div>7.35</div>
+              <div>+ 2.40</div>
+              <div class="line"></div>
+              <div>?</div>
+            </div>
+            Start by making both numbers end in the same place value.
+          </div>
+          <div id="g1fb" class="feedback neutral">Waiting for your answer.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Guided Subtract</div>
+          <h4>2) 15.6 − 8.27</h4>
+          <div class="mini-steps">
+            Write 15.6 as <input id="g2step1" class="small" type="text" /> so the decimal places match.<br /><br />
+            Then subtract: <strong>15.60 − 8.27 =</strong> <input id="g2final" class="medium" type="text" />
+          </div>
+          <div class="answer-row">
+            <button class="primary-btn" onclick="checkGuided2()">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('g2hint')">Show Hint</button>
+          </div>
+          <div id="g2hint" class="hint-card">
+            <svg viewBox="0 0 250 90" width="100%" height="85" aria-hidden="true">
+              <text x="12" y="28" font-size="22" font-family="Calibri" fill="#047857">15.60</text>
+              <text x="12" y="58" font-size="22" font-family="Calibri" fill="#047857">- 8.27</text>
+              <line x1="8" y1="67" x2="112" y2="67" stroke="#111" stroke-width="3" />
+              <text x="132" y="42" font-size="16" font-family="Calibri" fill="#047857">add a zero first</text>
+            </svg>
+          </div>
+          <div id="g2fb" class="feedback neutral">Waiting for your answer.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Guided Multiply</div>
+          <h4>3) 4.2 × 0.6</h4>
+          <div class="mini-steps">
+            Ignore the decimal points first: 42 × 6 = <input id="g3step1" class="small" type="text" /><br /><br />
+            Total decimal places in 4.2 and 0.6 = <input id="g3step2" class="small" type="text" /><br /><br />
+            Final answer = <input id="g3final" class="medium" type="text" />
+          </div>
+          <div class="answer-row">
+            <button class="primary-btn" onclick="checkGuided3()">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('g3hint')">Show Hint</button>
+          </div>
+          <div id="g3hint" class="hint-card">
+            <strong>Guide:</strong> Multiply like whole numbers first. Then count decimal places: 1 place + 1 place = 2 places total.
+          </div>
+          <div id="g3fb" class="feedback neutral">Waiting for your answer.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Guided Divide</div>
+          <h4>4) 5.52 ÷ 0.4</h4>
+          <div class="mini-steps">
+            Make the divisor a whole number: 0.4 becomes <input id="g4step1" class="small" type="text" /><br /><br />
+            Move the decimal in 5.52 the same way: 5.52 becomes <input id="g4step2" class="small" type="text" /><br /><br />
+            Then divide: <input id="g4step2copy" class="small" type="text" /> ÷ 4 = <input id="g4final" class="medium" type="text" />
+          </div>
+          <div class="answer-row">
+            <button class="primary-btn" onclick="checkGuided4()">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('g4hint')">Show Hint</button>
+          </div>
+          <div id="g4hint" class="hint-card">
+            <strong>Guide:</strong> Move both decimals one place right. Then divide 55.2 by 4.
+          </div>
+          <div id="g4fb" class="feedback neutral">Waiting for your answer.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-independent" class="tab-panel panel">
+      <div class="section-title">
+        <div>
+          <h2>Tab 3 — Independent Practice</h2>
+          <div class="helper">Work the problems on paper. Type only the final answer here. Each problem has an optional click-to-open hint.</div>
+        </div>
+      </div>
+
+      <div class="practice-grid">
+        <div class="problem-card">
+          <div class="problem-label">Add / Subtract</div>
+          <h4>1) 6.38 + 1.9</h4>
+          <div class="answer-row">
+            <input id="i1" class="medium" type="text" placeholder="answer" />
+            <button class="primary-btn" onclick="checkSingle('i1', '8.28', 'i1fb', 'Remember to line up the decimal points.')">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('i1hint')">Show Hint</button>
+          </div>
+          <div id="i1hint" class="hint-card">Write 1.9 as 1.90.</div>
+          <div id="i1fb" class="feedback neutral">Ready.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Add / Subtract</div>
+          <h4>2) 14.05 − 3.8</h4>
+          <div class="answer-row">
+            <input id="i2" class="medium" type="text" placeholder="answer" />
+            <button class="primary-btn" onclick="checkSingle('i2', '10.25', 'i2fb', 'Write 3.8 as 3.80 first.')">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('i2hint')">Show Hint</button>
+          </div>
+          <div id="i2hint" class="hint-card">Line up decimals: 14.05 − 3.80.</div>
+          <div id="i2fb" class="feedback neutral">Ready.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Multiply</div>
+          <h4>3) 3.7 × 2.5</h4>
+          <div class="answer-row">
+            <input id="i3" class="medium" type="text" placeholder="answer" />
+            <button class="primary-btn" onclick="checkSingle('i3', '9.25', 'i3fb', 'Count the total decimal places after multiplying.')">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('i3hint')">Show Hint</button>
+          </div>
+          <div id="i3hint" class="hint-card">Think 37 × 25 first, then place 2 decimal places in the product.</div>
+          <div id="i3fb" class="feedback neutral">Ready.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Multiply</div>
+          <h4>4) 0.48 × 0.6</h4>
+          <div class="answer-row">
+            <input id="i4" class="medium" type="text" placeholder="answer" />
+            <button class="primary-btn" onclick="checkSingle('i4', '0.288', 'i4fb', 'There are 3 decimal places total.')">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('i4hint')">Show Hint</button>
+          </div>
+          <div id="i4hint" class="hint-card">48 × 6 = 288. Then move the decimal 3 places.</div>
+          <div id="i4fb" class="feedback neutral">Ready.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Divide</div>
+          <h4>5) 7.2 ÷ 0.9</h4>
+          <div class="answer-row">
+            <input id="i5" class="medium" type="text" placeholder="answer" />
+            <button class="primary-btn" onclick="checkSingle('i5', '8', 'i5fb', 'Move both decimals one place right: 72 ÷ 9.')">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('i5hint')">Show Hint</button>
+          </div>
+          <div id="i5hint" class="hint-card">Make 0.9 into 9. Then divide 72 by 9.</div>
+          <div id="i5fb" class="feedback neutral">Ready.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Divide</div>
+          <h4>6) 12.96 ÷ 0.8</h4>
+          <div class="answer-row">
+            <input id="i6" class="medium" type="text" placeholder="answer" />
+            <button class="primary-btn" onclick="checkSingle('i6', '16.2', 'i6fb', 'Make the divisor a whole number first.')">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('i6hint')">Show Hint</button>
+          </div>
+          <div id="i6hint" class="hint-card">Shift both decimals once: 129.6 ÷ 8.</div>
+          <div id="i6fb" class="feedback neutral">Ready.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Mixed</div>
+          <h4>7) (4.6 + 1.25) × 0.4</h4>
+          <div class="answer-row">
+            <input id="i7" class="medium" type="text" placeholder="answer" />
+            <button class="primary-btn" onclick="checkSingle('i7', '2.34', 'i7fb', 'Add inside the parentheses first.')">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('i7hint')">Show Hint</button>
+          </div>
+          <div id="i7hint" class="hint-card">Do the parentheses first: 4.6 + 1.25 = 5.85, then multiply.</div>
+          <div id="i7fb" class="feedback neutral">Ready.</div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label">Mixed</div>
+          <h4>8) 9.5 − 1.2 ÷ 0.3</h4>
+          <div class="answer-row">
+            <input id="i8" class="medium" type="text" placeholder="answer" />
+            <button class="primary-btn" onclick="checkSingle('i8', '5.5', 'i8fb', 'Use order of operations: divide before subtract.')">Check</button>
+            <button class="secondary-btn" onclick="toggleHint('i8hint')">Show Hint</button>
+          </div>
+          <div id="i8hint" class="hint-card">Divide 1.2 by 0.3 first. Then subtract from 9.5.</div>
+          <div id="i8fb" class="feedback neutral">Ready.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-mixed" class="tab-panel panel">
+      <div class="section-title">
+        <div>
+          <h2>Tab 4 — Mixed Review and Error Analysis</h2>
+          <div class="helper">Sort steps, catch mistakes, and strengthen decimal reasoning.</div>
+        </div>
+      </div>
+
+      <div class="interactive-guide-grid">
+        <div class="card">
+          <h3>Error Analysis</h3>
+          <p><strong>Problem:</strong> 3.4 × 0.7</p>
+          <p>A student says: <strong>3.4 × 0.7 = 23.8</strong></p>
+          <div class="mc-row">
+            <button class="choice-btn secondary-btn" onclick="chooseError('They forgot the decimal places.', true)">They forgot the decimal places.</button>
+            <button class="choice-btn secondary-btn" onclick="chooseError('They should have divided instead.', false)">They should have divided instead.</button>
+            <button class="choice-btn secondary-btn" onclick="chooseError('They lined up decimals wrong.', false)">They lined up decimals wrong.</button>
+          </div>
+          <div id="errorChoiceFb" class="feedback neutral">Choose the best explanation.</div>
+        </div>
+
+        <div class="card">
+          <h3>Quick Visual Reminder</h3>
+          <div class="mini-svg-wrap">
+            <svg viewBox="0 0 300 150" width="100%" height="145" aria-hidden="true">
+              <rect x="16" y="20" width="120" height="46" rx="10" fill="#eef5ff" stroke="#bfd4fb" stroke-width="2"/>
+              <text x="28" y="49" font-size="22" font-family="Calibri" fill="#173b8c">3.4 × 0.7</text>
+              <rect x="164" y="20" width="120" height="46" rx="10" fill="#f5f3ff" stroke="#d8cbff" stroke-width="2"/>
+              <text x="190" y="49" font-size="22" font-family="Calibri" fill="#6d28d9">23.8</text>
+              <text x="92" y="103" font-size="19" font-family="Calibri" fill="#0f766e">34 × 7 = 238</text>
+              <text x="72" y="129" font-size="18" font-family="Calibri" fill="#0f766e">2 decimal places → 2.38</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3>Drag the Steps Into the Correct Order</h3>
+        <p><strong>Task:</strong> Put the steps for dividing 6.24 ÷ 0.6 in order.</p>
+        <div class="equation-board">
+          <div class="card">
+            <strong>Drop Zones</strong>
+            <div class="step-row"><span>1.</span><div class="dropzone" data-step="1"></div></div>
+            <div class="step-row"><span>2.</span><div class="dropzone" data-step="2"></div></div>
+            <div class="step-row"><span>3.</span><div class="dropzone" data-step="3"></div></div>
+            <div class="step-row"><span>4.</span><div class="dropzone" data-step="4"></div></div>
+          </div>
+          <div class="card">
+            <strong>Draggable Steps</strong>
+            <div id="draggables" class="draggables">
+              <div class="drag-chip" draggable="true" data-order="3">Divide 62.4 by 6.</div>
+              <div class="drag-chip" draggable="true" data-order="1">Move the decimal in 0.6 one place right.</div>
+              <div class="drag-chip" draggable="true" data-order="4">Write the quotient: 10.4.</div>
+              <div class="drag-chip" draggable="true" data-order="2">Move the decimal in 6.24 one place right to get 62.4.</div>
+            </div>
+            <div class="answer-row" style="margin-top:12px;">
+              <button class="primary-btn" onclick="checkDragOrder()">Check Order</button>
+              <button class="secondary-btn" onclick="resetDragOrder()">Reset Order</button>
+            </div>
+          </div>
+        </div>
+        <div id="dragFb" class="feedback neutral">Drag each step into a box.</div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3>Quick Mixed Check</h3>
+        <div class="practice-grid">
+          <div class="problem-card">
+            <h4>1) 0.75 + 0.08 = ?</h4>
+            <div class="answer-row">
+              <input id="m1" class="medium" type="text" />
+              <button class="primary-btn" onclick="checkSingle('m1', '0.83', 'm1fb', 'Add hundredths carefully.')">Check</button>
+            </div>
+            <div id="m1fb" class="feedback neutral">Ready.</div>
+          </div>
+          <div class="problem-card">
+            <h4>2) 5.6 × 0.2 = ?</h4>
+            <div class="answer-row">
+              <input id="m2" class="medium" type="text" />
+              <button class="primary-btn" onclick="checkSingle('m2', '1.12', 'm2fb', 'Multiply first, then place the decimal.')">Check</button>
+            </div>
+            <div id="m2fb" class="feedback neutral">Ready.</div>
+          </div>
+          <div class="problem-card">
+            <h4>3) 4.5 ÷ 0.5 = ?</h4>
+            <div class="answer-row">
+              <input id="m3" class="medium" type="text" />
+              <button class="primary-btn" onclick="checkSingle('m3', '9', 'm3fb', 'Dividing by one-half doubles the number.')">Check</button>
+            </div>
+            <div id="m3fb" class="feedback neutral">Ready.</div>
+          </div>
+          <div class="problem-card">
+            <h4>4) 8.1 − 3.47 = ?</h4>
+            <div class="answer-row">
+              <input id="m4" class="medium" type="text" />
+              <button class="primary-btn" onclick="checkSingle('m4', '4.63', 'm4fb', 'Write 8.1 as 8.10 first.')">Check</button>
+            </div>
+            <div id="m4fb" class="feedback neutral">Ready.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-game1" class="tab-panel panel">
+      <div class="section-title">
+        <div>
+          <h2>Tab 5 — Game 1: Decimal Treasure Track</h2>
+          <div class="helper">Answer correctly to move across the track and collect stars.</div>
+        </div>
+      </div>
+
+      <div class="game-grid">
+        <div class="card">
+          <h3>Treasure Track Scoreboard</h3>
+          <div class="score-box">
+            <div class="score-tile"><strong id="trackPosition">0</strong><span>Spaces Moved</span></div>
+            <div class="score-tile"><strong id="trackQuestionNum">1</strong><span>Question</span></div>
+            <div class="score-tile"><strong id="trackStars">0</strong><span>Stars</span></div>
+            <div class="score-tile"><strong id="trackStreak">0</strong><span>Streak</span></div>
+          </div>
+          <div class="tip-box"><strong>Bonus:</strong> Every 3-question streak earns an extra star.</div>
+        </div>
+
+        <div class="card">
+          <div id="trackQuestion" class="question-banner">Loading question...</div>
+          <div class="answer-row">
+            <input id="trackAnswer" class="medium" type="text" placeholder="type answer" />
+            <button class="primary-btn" onclick="submitTrackAnswer()">Submit</button>
+            <button class="secondary-btn" onclick="nextTrackQuestion()">Skip</button>
+          </div>
+          <div id="trackFb" class="game-status neutral">Answer a question to earn stars.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-game2" class="tab-panel panel">
+      <div class="section-title">
+        <div>
+          <h2>Tab 6 — Ultimate Boss Battle: Defeat Mr. Neft</h2>
+          <div class="helper">Each correct answer hits the boss. Clear every round to win the full challenge.</div>
+        </div>
+      </div>
+
+      <div class="boss-wrap">
+        <div class="card boss-card">
+          <h3>Ultimate Boss</h3>
+          <div class="boss-portrait">
+            <div class="boss-avatar">MN</div>
+            <div>
+              <strong style="font-size:1.2rem;">Mr. Neft's Decimal Challenge</strong>
+              <p style="margin:8px 0 0; line-height:1.55;">Beat the challenge by answering decimal operation questions correctly. Wrong answers let Mr. Neft recover a little energy.</p>
+            </div>
+          </div>
+          <div class="boss-meter"><div id="bossMeterFill" class="boss-meter-fill"></div></div>
+          <div class="score-box" style="margin-top:14px;">
+            <div class="score-tile"><strong id="bossRound">1</strong><span>Round</span></div>
+            <div class="score-tile"><strong id="bossHealthNum">100</strong><span>Health</span></div>
+            <div class="score-tile"><strong id="bossCombo">0</strong><span>Combo</span></div>
+            <div class="score-tile"><strong id="bossWins">0</strong><span>Wins</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div id="bossQuestion" class="question-banner">Loading boss round...</div>
+          <div class="answer-row">
+            <input id="bossAnswer" class="medium" type="text" placeholder="type answer" />
+            <button class="primary-btn" onclick="submitBossAnswer()">Attack</button>
+            <button class="secondary-btn" onclick="healBoss()">Boss Heals</button>
+          </div>
+          <div id="bossFb" class="game-status neutral">Correct answers deal 20 damage. A combo deals bonus damage.</div>
+          <div class="tip-box"><strong>Boss rule:</strong> Two correct answers in a row give a combo bonus.</div>
+        </div>
+      </div>
+
+      <div class="footer-note">This version is built as a polished single-file classroom interactive. Future upgrades can easily add audio read-aloud, teacher data tracking, printable companion pages, drag-and-drop mini-games, timed challenge mode, and more tab sets without rebuilding the structure.</div>
+    </section>
+  </div>
+
+  <script>
+    const CONFIG = Object.freeze({
+      tabIds: ["tab-learn", "tab-guided", "tab-independent", "tab-mixed", "tab-game1", "tab-game2"],
+      tabLabels: [
+        "1. Learn",
+        "2. Guided Practice",
+        "3. Independent Practice",
+        "4. Mixed Review",
+        "5. Game: Treasure Track",
+        "6. Boss: Mr. Neft"
+      ],
+      progressChecksTotal: 22,
+      trackQuestions: [
+        { q: "6.4 + 2.35", a: "8.75" },
+        { q: "9.8 - 1.46", a: "8.34" },
+        { q: "2.3 × 0.4", a: "0.92" },
+        { q: "7.2 ÷ 0.6", a: "12" },
+        { q: "1.25 + 0.75", a: "2" },
+        { q: "3.6 × 1.5", a: "5.4" },
+        { q: "8.4 ÷ 0.7", a: "12" },
+        { q: "10.0 - 3.28", a: "6.72" }
+      ],
+      bossQuestions: [
+        { q: "Round 1: 2.8 + 3.47", a: "6.27" },
+        { q: "Round 2: 12.0 - 4.86", a: "7.14" },
+        { q: "Round 3: 0.9 × 2.4", a: "2.16" },
+        { q: "Round 4: 5.04 ÷ 0.7", a: "7.2" },
+        { q: "Round 5: (1.5 + 2.5) × 0.6", a: "2.4" }
+      ]
+    });
+
+    function validateConfig() {
+      if (!Array.isArray(CONFIG.tabIds) || !Array.isArray(CONFIG.tabLabels)) throw new Error("Invalid tab config.");
+      if (CONFIG.tabIds.length !== CONFIG.tabLabels.length) throw new Error("Tab labels do not match tab ids.");
+      if (!Array.isArray(CONFIG.trackQuestions) || !CONFIG.trackQuestions.length) throw new Error("Track questions missing.");
+      if (!Array.isArray(CONFIG.bossQuestions) || !CONFIG.bossQuestions.length) throw new Error("Boss questions missing.");
+      return true;
+    }
+
+    function normalizeAnswer(value) {
+      const raw = String(value).trim().replace(/,/g, "");
+      if (raw === "") return "";
+      const num = Number(raw);
+      if (Number.isNaN(num)) return raw.toLowerCase();
+      return String(parseFloat(num.toFixed(12)));
+    }
+
+    function checkEquivalent(student, expected) {
+      return normalizeAnswer(student) === normalizeAnswer(expected);
+    }
+
+    function selfTest() {
+      console.assert(normalizeAnswer("8.00") === "8", "normalizeAnswer failed 1");
+      console.assert(normalizeAnswer("0.288") === "0.288", "normalizeAnswer failed 2");
+      console.assert(checkEquivalent("2.00", "2"), "equivalent check failed");
+      return true;
+    }
+
+    validateConfig();
+    selfTest();
+
+    const state = {
+      supportOn: true,
+      correct: 0,
+      checked: 0,
+      countMap: {},
+      stepCounters: { addSteps: 0, subSteps: 0, mulSteps: 0, divSteps: 0 },
+      trackIndex: 0,
+      trackPosition: 0,
+      trackStars: 0,
+      trackStreak: 0,
+      bossIndex: 0,
+      bossHealth: 100,
+      bossCombo: 0,
+      bossWins: 0,
+      bossHits: 0
+    };
+
+    function registerCheck(key, correctNow) {
+      if (!state.countMap[key]) state.countMap[key] = { checked: false, correct: false };
+      const entry = state.countMap[key];
+      if (!entry.checked) {
+        state.checked += 1;
+        entry.checked = true;
+      }
+      if (correctNow && !entry.correct) {
+        state.correct += 1;
+        entry.correct = true;
+      }
+      updateDashboard();
+    }
+
+    function updateDashboard() {
+      document.getElementById("correctCount").textContent = state.correct;
+      document.getElementById("checkedCount").textContent = state.checked;
+      document.getElementById("gameStars").textContent = state.trackStars;
+      document.getElementById("bossHits").textContent = state.bossHits;
+      const percent = Math.min(100, Math.round(((state.correct + state.trackStars + state.bossHits) / (CONFIG.progressChecksTotal + 15)) * 100));
+      document.getElementById("masterProgress").style.width = percent + "%";
+    }
+
+    function setFeedback(id, type, message) {
+      const el = document.getElementById(id);
+      el.className = "feedback " + type;
+      el.textContent = message;
+    }
+
+    function setGameFeedback(id, type, message) {
+      const el = document.getElementById(id);
+      el.className = "game-status " + type;
+      el.textContent = message;
+    }
+
+    function checkSingle(inputId, expected, feedbackId, hint) {
+      const student = document.getElementById(inputId).value;
+      const ok = checkEquivalent(student, expected);
+      registerCheck(inputId, ok);
+      setFeedback(feedbackId, ok ? "ok" : "bad", ok ? "Correct! Great job." : "Not yet. Hint: " + hint);
+    }
+
+    function toggleHint(id) {
+      document.getElementById(id).classList.toggle("visible");
+    }
+
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle("visible");
+    }
+
+    function revealStep(group, total) {
+      if (state.stepCounters[group] < total) state.stepCounters[group] += 1;
+      for (let i = 1; i <= total; i++) {
+        document.getElementById(`${group}-${i}`).classList.toggle("visible", i <= state.stepCounters[group]);
+      }
+    }
+
+    function resetStepGroup(group, total) {
+      state.stepCounters[group] = 0;
+      for (let i = 1; i <= total; i++) {
+        document.getElementById(`${group}-${i}`).classList.remove("visible");
+      }
+    }
+
+    function expandAllLearnSteps() {
+      [["addSteps",4],["subSteps",4],["mulSteps",4],["divSteps",4]].forEach(([group, total]) => {
+        state.stepCounters[group] = total;
+        for (let i = 1; i <= total; i++) document.getElementById(`${group}-${i}`).classList.add("visible");
+      });
+    }
+
+    function collapseAllLearnSteps() {
+      [["addSteps",4],["subSteps",4],["mulSteps",4],["divSteps",4]].forEach(([group, total]) => resetStepGroup(group, total));
+    }
+
+    function checkGuided1() {
+      const ok1 = checkEquivalent(document.getElementById("g1step1").value, "2.40");
+      const ok2 = checkEquivalent(document.getElementById("g1final").value, "9.75");
+      const ok = ok1 && ok2;
+      registerCheck("g1", ok);
+      setFeedback("g1fb", ok ? "ok" : "bad", ok ? "Correct! 7.35 + 2.40 = 9.75" : "Check both blanks. Rewrite 2.4 correctly first.");
+    }
+
+    function checkGuided2() {
+      const ok1 = checkEquivalent(document.getElementById("g2step1").value, "15.60");
+      const ok2 = checkEquivalent(document.getElementById("g2final").value, "7.33");
+      const ok = ok1 && ok2;
+      registerCheck("g2", ok);
+      setFeedback("g2fb", ok ? "ok" : "bad", ok ? "Correct! 15.60 − 8.27 = 7.33" : "Not yet. Rewrite 15.6 with two decimal places first.");
+    }
+
+    function checkGuided3() {
+      const ok1 = checkEquivalent(document.getElementById("g3step1").value, "252");
+      const ok2 = checkEquivalent(document.getElementById("g3step2").value, "2");
+      const ok3 = checkEquivalent(document.getElementById("g3final").value, "2.52");
+      const ok = ok1 && ok2 && ok3;
+      registerCheck("g3", ok);
+      setFeedback("g3fb", ok ? "ok" : "bad", ok ? "Correct! The product is 2.52" : "Check the whole-number product and the decimal places.");
+    }
+
+    function checkGuided4() {
+      const ok1 = checkEquivalent(document.getElementById("g4step1").value, "4");
+      const ok2 = checkEquivalent(document.getElementById("g4step2").value, "55.2");
+      const ok3 = checkEquivalent(document.getElementById("g4step2copy").value, "55.2");
+      const ok4 = checkEquivalent(document.getElementById("g4final").value, "13.8");
+      const ok = ok1 && ok2 && ok3 && ok4;
+      registerCheck("g4", ok);
+      setFeedback("g4fb", ok ? "ok" : "bad", ok ? "Correct! 5.52 ÷ 0.4 = 13.8" : "Move both decimals one place right, then divide.");
+    }
+
+    function chooseError(message, isCorrect) {
+      registerCheck("errorChoice", isCorrect);
+      setFeedback("errorChoiceFb", isCorrect ? "ok" : "bad", isCorrect ? message + " Correct! The real answer is 2.38." : "Try again. Think about the decimal places in 3.4 and 0.7.");
+    }
+
+    let draggedItem = null;
+
+    function wireDnD() {
+      document.querySelectorAll(".drag-chip").forEach((chip) => {
+        chip.addEventListener("dragstart", (e) => {
+          draggedItem = chip;
+          e.dataTransfer.setData("text/plain", chip.dataset.order);
+        });
+      });
+      document.querySelectorAll(".dropzone").forEach((zone) => {
+        zone.addEventListener("dragover", (e) => e.preventDefault());
+        zone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          if (!draggedItem) return;
+          zone.textContent = draggedItem.textContent;
+          zone.dataset.filledOrder = draggedItem.dataset.order;
+          draggedItem.classList.add("used");
+          draggedItem.setAttribute("draggable", "false");
+        });
+      });
+    }
+
+    function resetDragOrder() {
+      document.querySelectorAll(".dropzone").forEach((z) => {
+        z.textContent = "";
+        delete z.dataset.filledOrder;
+      });
+      document.querySelectorAll(".drag-chip").forEach((chip) => {
+        chip.classList.remove("used");
+        chip.setAttribute("draggable", "true");
+      });
+      setFeedback("dragFb", "neutral", "Drag each step into a box.");
+      wireDnD();
+    }
+
+    function checkDragOrder() {
+      const zones = [...document.querySelectorAll(".dropzone")];
+      const ok = zones.every((zone, i) => String(i + 1) === String(zone.dataset.filledOrder || ""));
+      registerCheck("dragOrder", ok);
+      setFeedback("dragFb", ok ? "ok" : "bad", ok ? "Correct order! Great job organizing the steps." : "Not yet. Think: make the divisor a whole number first.");
+    }
+
+    function renderTabs() {
+      const tabs = document.getElementById("tabs");
+      tabs.innerHTML = "";
+      CONFIG.tabIds.forEach((id, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "tab-btn" + (idx === 0 ? " active" : "");
+        btn.textContent = CONFIG.tabLabels[idx];
+        btn.addEventListener("click", () => showTab(id, btn));
+        tabs.appendChild(btn);
+      });
+    }
+
+    function showTab(id, btn) {
+      document.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach((tab) => tab.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      btn.classList.add("active");
+    }
+
+    document.getElementById("supportToggle").addEventListener("click", () => {
+      state.supportOn = !state.supportOn;
+      document.getElementById("supportToggle").textContent = "Extra Support: " + (state.supportOn ? "ON" : "OFF");
+      document.querySelectorAll("[data-support]").forEach((el) => {
+        el.classList.toggle("hidden", !state.supportOn);
+      });
+    });
+
+    document.getElementById("expandLearnBtn").addEventListener("click", expandAllLearnSteps);
+    document.getElementById("collapseLearnBtn").addEventListener("click", collapseAllLearnSteps);
+
+    document.getElementById("resetProgressBtn").addEventListener("click", () => {
+      state.correct = 0;
+      state.checked = 0;
+      state.countMap = {};
+      state.trackPosition = 0;
+      state.trackStars = 0;
+      state.trackStreak = 0;
+      state.trackIndex = 0;
+      state.bossHealth = 100;
+      state.bossCombo = 0;
+      state.bossHits = 0;
+      state.bossWins = 0;
+      state.bossIndex = 0;
+      updateTrackBoard();
+      updateBossBoard();
+      updateDashboard();
+      setGameFeedback("trackFb", "neutral", "Answer a question to earn stars.");
+      setGameFeedback("bossFb", "neutral", "Correct answers deal 20 damage. A combo deals bonus damage.");
+    });
+
+    function updateTrackBoard() {
+      document.getElementById("trackPosition").textContent = state.trackPosition;
+      document.getElementById("trackQuestionNum").textContent = state.trackIndex + 1;
+      document.getElementById("trackStars").textContent = state.trackStars;
+      document.getElementById("trackStreak").textContent = state.trackStreak;
+      document.getElementById("trackQuestion").textContent = CONFIG.trackQuestions[state.trackIndex].q;
+    }
+
+    function nextTrackQuestion() {
+      state.trackIndex = (state.trackIndex + 1) % CONFIG.trackQuestions.length;
+      document.getElementById("trackAnswer").value = "";
+      updateTrackBoard();
+    }
+
+    function submitTrackAnswer() {
+      const input = document.getElementById("trackAnswer").value;
+      const current = CONFIG.trackQuestions[state.trackIndex];
+      if (checkEquivalent(input, current.a)) {
+        state.trackPosition += 1;
+        state.trackStars += 1;
+        state.trackStreak += 1;
+        if (state.trackStreak % 3 === 0) state.trackStars += 1;
+        setGameFeedback("trackFb", "ok", "Correct! You moved forward and earned star power.");
+      } else {
+        state.trackStreak = 0;
+        setGameFeedback("trackFb", "bad", "Not yet. Try the next one or estimate first.");
+      }
+      nextTrackQuestion();
+      updateDashboard();
+    }
+
+    function updateBossBoard() {
+      document.getElementById("bossRound").textContent = state.bossIndex + 1;
+      document.getElementById("bossHealthNum").textContent = state.bossHealth;
+      document.getElementById("bossCombo").textContent = state.bossCombo;
+      document.getElementById("bossWins").textContent = state.bossWins;
+      document.getElementById("bossMeterFill").style.width = state.bossHealth + "%";
+      document.getElementById("bossQuestion").textContent = CONFIG.bossQuestions[state.bossIndex].q;
+    }
+
+    function advanceBossRound() {
+      if (state.bossIndex < CONFIG.bossQuestions.length - 1) {
+        state.bossIndex += 1;
+        state.bossHealth = 100;
+        state.bossCombo = 0;
+        setGameFeedback("bossFb", "ok", "Round cleared! Mr. Neft unlocked the next challenge.");
+      } else {
+        state.bossWins += 1;
+        state.bossIndex = 0;
+        state.bossHealth = 100;
+        state.bossCombo = 0;
+        setGameFeedback("bossFb", "ok", "You defeated Mr. Neft's Decimal Challenge! Starting a new game.");
+      }
+      document.getElementById("bossAnswer").value = "";
+      updateBossBoard();
+      updateDashboard();
+    }
+
+    function submitBossAnswer() {
+      const input = document.getElementById("bossAnswer").value;
+      const current = CONFIG.bossQuestions[state.bossIndex];
+      if (checkEquivalent(input, current.a)) {
+        state.bossCombo += 1;
+        let damage = 20;
+        if (state.bossCombo >= 2) damage += 10;
+        state.bossHealth = Math.max(0, state.bossHealth - damage);
+        state.bossHits += 1;
+        setGameFeedback("bossFb", "ok", `Hit! You dealt ${damage} damage to Mr. Neft.`);
+        if (state.bossHealth === 0) {
+          advanceBossRound();
+          return;
+        }
+      } else {
+        state.bossCombo = 0;
+        state.bossHealth = Math.min(100, state.bossHealth + 5);
+        setGameFeedback("bossFb", "bad", "Miss! Mr. Neft recovered a little health.");
+      }
+      document.getElementById("bossAnswer").value = "";
+      updateBossBoard();
+      updateDashboard();
+    }
+
+    function healBoss() {
+      state.bossHealth = Math.min(100, state.bossHealth + 10);
+      state.bossCombo = 0;
+      setGameFeedback("bossFb", "neutral", "Mr. Neft healed 10 health. Try again.");
+      updateBossBoard();
+    }
+
+    renderTabs();
+    wireDnD();
+    updateTrackBoard();
+    updateBossBoard();
+    updateDashboard();
+    collapseAllLearnSteps();
+  </script>
 </body>
 </html>

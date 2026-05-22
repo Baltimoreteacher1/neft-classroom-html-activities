@@ -2,6 +2,55 @@
 
 `neft-classroom-html-activities` is a plain static HTML collection for Mr. Neft's math, ESOL, AI PD, and classroom activities. It is designed for Cloudflare Pages and does not use Vite, React, npm, or any build system.
 
+Folder structure:
+
+```text
+/
+  index.html
+  README.md
+  AGENTS.md
+  source-repos.md
+  assets/
+    shared.css
+    app.js
+    vendor/
+  geometry-prep/
+    index.html
+  surface-area-review/
+    index.html
+  unit-1/
+    index.html
+    ...activity-folders/
+  unit-4/
+    index.html
+    ...activity-folders/
+  unit-5/
+    index.html
+    ...activity-folders/
+  unit-5-practice/
+    index.html
+  world-architect-math-project/
+    index.html
+  number-system/
+    index.html
+    ...activity-folders/
+  ratios-proportions/
+    index.html
+    ...activity-folders/
+  expressions-equations/
+    index.html
+    ...activity-folders/
+  statistics-data/
+    index.html
+    ...activity-folders/
+  esol-reading-writing/
+    index.html
+    ...activity-folders/
+  mcap-review/
+    index.html
+    ...activity-folders/
+```
+
 ## How This Repo Works
 
 The root `index.html` is the polished launch dashboard. Each standalone activity lives in its own folder with its own `index.html`, so activity URLs use the folder path with a trailing slash.
@@ -45,7 +94,7 @@ Every activity can have its own `index.html` inside its folder. Cloudflare Pages
 
 Use these settings:
 
-- Framework preset: None
+- Framework preset: `None`
 - Build command: leave blank or use `exit 0`
 - Build output directory: `/`
 - Root directory: leave blank unless deploying a subfolder

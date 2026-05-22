@@ -1,37 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Variablecomparisongame classroom activity.">
-  <title>Variablecomparisongame</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Galaxy 3D | Neft.Alba v2</title>
+  <style>
+    :root {
+      --navy: #263238;
+      --teal: #009688;
+      --coral: #FF7043;
+      --paper: #FFFDE7;
+      --text: #ecf8ff;
+      --panel: rgba(18, 42, 59, 0.95);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: var(--navy); font-family: 'Inter', sans-serif; color: var(--text); }
+
+    /* Layout */
+    #app { display: grid; grid-template-columns: 380px 1fr; height: 100vh; visibility: hidden; }
+    #sidebar { background: #1a2a36; border-right: 1px solid rgba(255,255,255,0.1); padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
+    #sceneWrap { position: relative; background: #000; }
+    #scene { width: 100%; height: 100%; cursor: crosshair; }
+
+    /* UI Elements */
+    .panel { background: var(--panel); border-radius: 12px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    h2 { font-size: 0.8rem; text-transform: uppercase; color: var(--teal); margin: 0 0 10px 0; }
+    .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    button { background: var(--teal); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    button:hover { filter: brightness(1.2); transform: translateY(-1px); }
+    .secondary { background: rgba(255,255,255,0.1); }
+
+    /* Loading Overlay */
+    #loadingOverlay { position: fixed; inset: 0; background: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+    #startBtn { padding: 20px 40px; font-size: 1.2rem; background: var(--coral); display: none; }
+
+    .coord-readout { position: absolute; bottom: 20px; right: 20px; background: var(--navy); padding: 10px 20px; border-radius: 30px; border: 2px solid var(--teal); font-weight: 900; }
+    .table-view { font-family: monospace; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; font-size: 0.8rem; color: #ffd166; white-space: pre; }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/expressions-equations/">Expressions, Equations, and Variables</a><span>/</span><span>Variablecomparisongame</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Variablecomparisongame</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Variablecomparisongame</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/expressions-equations/variablecomparisongame/</span></p>
+  <div id="loadingOverlay">
+    <h1 id="statusMsg">Loading Galaxy Engine...</h1>
+    <button id="startBtn">ENTER GALAXY</button>
+  </div>
+
+  <div id="app">
+    <aside id="sidebar">
+      <div class="panel">
+        <h1 style="font-size: 1.2rem; margin: 0;">Graph Galaxy 3D</h1>
+        <div style="font-size: 0.8rem; opacity: 0.7;">Neft.Alba Premium Math</div>
       </div>
-    </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/expressions-equations/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
-    </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+      <div class="panel">
+        <h2>Active Mission</h2>
+        <div id="missionDesc" style="font-size: 0.9rem; margin-bottom: 10px;">Establishing data link...</div>
+        <div id="choices" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Data Core</h2>
+        <div id="tableView" class="table-view">...</div>
+      </div>
+
+      <div class="panel">
+        <h2>Controls</h2>
+        <div class="controls">
+          <button id="deployBtn">Deploy Beacon</button>
+          <button id="resetBtn" class="secondary">Reset View</button>
+        </div>
+        <div style="font-size: 0.7rem; margin-top: 10px; opacity: 0.6;">WASD to Move • Space to Deploy</div>
+      </div>
+    </aside>
+
+    <main id="sceneWrap">
+      <div id="scene"></div>
+      <div id="coordReadout" class="coord-readout">LASER: (0, 0)</div>
+    </main>
+  </div>
+
+  <script type="module">
+    import * as THREE from '/assets/vendor/three-0.160.0/build/three.module.js';
+    import { OrbitControls } from '/assets/vendor/three-0.160.0/examples/jsm/controls/OrbitControls.js';
+
+    let scene, camera, renderer, controls, hero, target;
+    const keys = {};
+
+    // 1. SAFE STARTUP
+    document.addEventListener('DOMContentLoaded', () => {
+      const startBtn = document.getElementById('startBtn');
+      const status = document.getElementById('statusMsg');
+
+      // Reveal the start button after a tiny delay
+      setTimeout(() => {
+        status.textContent = "Engine Ready";
+        startBtn.style.display = "block";
+      }, 1000);
+
+      startBtn.addEventListener('click', () => {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById('app').style.visibility = 'visible';
+        init();
+      });
+    });
+
+    function init() {
+      const container = document.getElementById('scene');
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x050a0f);
+      scene.fog = new THREE.Fog(0x050a0f, 10, 60);
+
+      camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
+      camera.position.set(12, 10, 15);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(renderer.domElement);
+
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+
+      // Lights
+      scene.add(new THREE.AmbientLight(0xffffff, 1));
+      const pLight = new THREE.PointLight(0x009688, 20, 100);
+      pLight.position.set(5, 10, 5);
+      scene.add(pLight);
+
+      // Simple Grid
+      const grid = new THREE.GridHelper(20, 20, 0x009688, 0x222222);
+      scene.add(grid);
+
+      // Hero
+      const heroGeo = new THREE.SphereGeometry(0.4, 16, 16);
+      const heroMat = new THREE.MeshStandardMaterial({ color: 0xFF7043, emissive: 0xFF7043 });
+      hero = new THREE.Mesh(heroGeo, heroMat);
+      hero.position.set(0, 0.5, 0);
+      scene.add(hero);
+
+      // Target
+      const targetGeo = new THREE.TorusGeometry(0.5, 0.1, 16, 32);
+      const targetMat = new THREE.MeshStandardMaterial({ color: 0xffd166 });
+      target = new THREE.Mesh(targetGeo, targetMat);
+      target.position.set(5, 5, 0);
+      target.rotation.x = Math.PI/2;
+      scene.add(target);
+
+      // Controls
+      window.addEventListener('keydown', e => keys[e.code] = true);
+      window.addEventListener('keyup', e => keys[e.code] = false);
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+
+      setupGame();
+      animate();
+    }
+
+    function setupGame() {
+      document.getElementById('missionDesc').innerHTML = "Plot the point <b>(5, 5)</b>. Use WASD to fly the orange drone.";
+      document.getElementById('tableView').textContent = "X (Hours) | Y (Miles)\n----------|---------\n1         | 1\n5         | 5";
+
+      const choices = document.getElementById('choices');
+      const btn = document.createElement('button');
+      btn.textContent = "Independent: Hours";
+      btn.onclick = () => btn.style.background = "#4caf50";
+      choices.appendChild(btn);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Move
+      const s = 0.1;
+      if (keys['KeyW']) hero.position.z -= s;
+      if (keys['KeyS']) hero.position.z += s;
+      if (keys['KeyA']) hero.position.x -= s;
+      if (keys['KeyD']) hero.position.x += s;
+      if (keys['KeyQ']) hero.position.y += s;
+      if (keys['KeyE']) hero.position.y -= s;
+
+      // Coordinate HUD
+      document.getElementById('coordReadout').textContent = `LASER: (${Math.round(hero.position.x)}, ${Math.round(hero.position.y)})`;
+
+      target.rotation.z += 0.02;
+      controls.update();
+      renderer.render(scene, camera);
+    }
+  </script>
 </body>
 </html>

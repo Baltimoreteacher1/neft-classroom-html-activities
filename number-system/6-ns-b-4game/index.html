@@ -1,37 +1,692 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.NS.B.4 Game classroom activity.">
-  <title>6.NS.B.4 Game</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<title>Factor Factory — 6.NS.B.4</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+:root {
+    --bg: #08090f;
+    --surface: #0f1624;
+    --card: #161d2e;
+    --border: #232f48;
+    --accent: #10b981;
+    --accent2: #38bdf8;
+    --accent3: #f59e0b;
+    --danger: #ef4444;
+    --purple: #a78bfa;
+    --text: #f1f5f9;
+    --muted: #64748b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === ANIMATED BG === */
+  .bg-particles {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bg-particles span {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.04;
+    animation: drift 12s infinite ease-in-out;
+  }
+  @keyframes drift {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-40px) scale(1.05); }
+  }
+
+  /* === HEADER === */
+  .game-header {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(180deg, #0d1b3e 0%, #080c1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 22px 20px 16px;
+    text-align: center;
+  }
+  .game-badge {
+    display: inline-block;
+    background: rgba(167,139,250,0.15);
+    border: 1px solid rgba(167,139,250,0.3);
+    color: var(--purple);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .game-header h1 {
+    font-size: clamp(24px,4vw,42px);
+    font-weight: 800;
+    background: linear-gradient(90deg, #38bdf8, #a78bfa, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .game-header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  /* === HUD === */
+  .hud {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 14px 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .hud-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .hud-chip .val { color: var(--accent3); font-size: 18px; margin-left: 6px; }
+  .hud-chip.streak-chip .val { color: var(--accent); }
+  .hud-chip.level-chip  .val { color: var(--purple); }
+
+  /* === MAIN GAME === */
+  #game {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* === PROMPT CARD === */
+  .prompt-card {
+    background: linear-gradient(135deg, #0d1f3c, #0a1628);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .prompt-numbers {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .num-bubble {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(56,189,248,0.3);
+    border-radius: 14px;
+    padding: 14px 28px;
+    font-size: clamp(26px,5vw,40px);
+    font-weight: 800;
+    color: var(--accent2);
+  }
+  .prompt-divider { color: var(--muted); font-size: 20px; font-weight: 700; }
+  .prompt-instruction {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 4px;
+    text-align: center;
+  }
+  .prompt-instruction strong { color: var(--accent3); }
+
+  /* === TIMER BAR === */
+  .timer-bar-outer {
+    height: 5px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .timer-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    transition: width 1s linear;
+  }
+
+  /* === GRID === */
+  .number-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  @media(max-width:520px){ .number-grid { grid-template-columns: repeat(4,1fr); } }
+
+  .tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 18px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    user-select: none;
+  }
+  .tile:hover {
+    background: rgba(56,189,248,0.12);
+    border-color: var(--accent2);
+    transform: scale(1.05);
+    color: var(--accent2);
+  }
+  .tile.correct {
+    background: rgba(16,185,129,0.2) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+    animation: pulse-correct 0.4s ease;
+  }
+  .tile.wrong {
+    background: rgba(239,68,68,0.18) !important;
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+    animation: shake 0.3s ease;
+  }
+  .tile.disabled { pointer-events: none; opacity: 0.4; }
+
+  @keyframes pulse-correct {
+    0%  { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100%{ transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100%{ transform: translateX(0); }
+    25%    { transform: translateX(-5px); }
+    75%    { transform: translateX(5px); }
+  }
+
+  /* === ANSWER HISTORY === */
+  .history-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .history-section h3 {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .history-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 32px;
+  }
+  .history-item {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: var(--accent);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .history-item.miss {
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.3);
+    color: var(--danger);
+  }
+
+  /* === CONTROLS === */
+  .controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .btn-next {
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--accent), #059669);
+    border: none;
+    border-radius: 12px;
+    color: #000;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .btn-next:hover { opacity: 0.88; transform: scale(1.03); }
+
+  .btn-hint {
+    padding: 12px 22px;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 12px;
+    color: var(--purple);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .btn-hint:hover { background: rgba(167,139,250,0.22); }
+  .btn-hint:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* === HINT BOX === */
+  .hint-box {
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--purple);
+    margin-bottom: 14px;
+    display: none;
+  }
+
+  /* === LEVEL BADGE === */
+  .level-up-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .level-up-overlay.show { display: flex; }
+  .level-up-card {
+    background: linear-gradient(135deg, #0d1b3e, #1a0d3e);
+    border: 2px solid var(--purple);
+    border-radius: 20px;
+    padding: 40px 60px;
+    text-align: center;
+    animation: zoomIn 0.4s ease;
+  }
+  @keyframes zoomIn {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .level-up-card h2 { font-size: 32px; font-weight: 800; color: var(--purple); }
+  .level-up-card p  { color: var(--muted); margin: 10px 0 20px; font-size: 15px; }
+  .level-up-card button {
+    padding: 12px 30px;
+    background: var(--purple);
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    color: #000;
+  }
+
+  /* === LEADERBOARD MINI === */
+  .leaderboard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .leaderboard h3 {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .lb-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 14px;
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank { color: var(--accent3); font-weight: 800; width: 24px; }
+  .lb-name { flex: 1; padding-left: 10px; color: var(--muted); }
+  .lb-score { font-weight: 700; color: var(--text); }
+  .lb-row.you .lb-name { color: var(--accent2); font-weight: 600; }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--accent);
+    color: #000;
+    font-weight: 800;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-size: 15px;
+    transition: transform 0.35s ease;
+    z-index: 200;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  .footer {
+    text-align: center;
+    padding: 22px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/number-system/">Number System</a><span>/</span><span>6.NS.B.4 Game</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.NS.B.4 Game</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.NS.B.4Game</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/number-system/6-ns-b-4game/</span></p>
-      </div>
-    </section>
+<!-- BG Particles -->
+<div class="bg-particles">
+  <span style="width:400px;height:400px;background:#38bdf8;top:-100px;left:20%;animation-delay:0s"></span>
+  <span style="width:300px;height:300px;background:#a78bfa;bottom:5%;right:10%;animation-delay:4s"></span>
+  <span style="width:200px;height:200px;background:#10b981;top:40%;left:5%;animation-delay:2s"></span>
+</div>
 
-    <div class="button-row">
-      <a class="primary-button" href="/number-system/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+<!-- HEADER -->
+<div class="game-header">
+  <div class="game-badge">6.NS.B.4 — Arcade Mode</div>
+  <h1>⚙️ Factor Factory</h1>
+  <p>Find the GCF — tap the correct tile before time runs out!</p>
+</div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="hud-chip">Score <span class="val" id="score">0</span></div>
+  <div class="hud-chip streak-chip">Streak <span class="val" id="streak">0</span> 🔥</div>
+  <div class="hud-chip level-chip">Level <span class="val" id="level">1</span></div>
+  <div class="hud-chip">Best <span class="val" id="best">0</span></div>
+</div>
+
+<!-- GAME -->
+<div id="game">
+
+  <!-- Prompt -->
+  <div class="prompt-card">
+    <div class="prompt-numbers">
+      <div class="num-bubble" id="numA">—</div>
+      <div class="prompt-divider">&amp;</div>
+      <div class="num-bubble" id="numB">—</div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+    <div class="prompt-instruction">Tap the tile that shows the <strong>GCF</strong> of these two numbers</div>
+    <div class="timer-bar-outer"><div class="timer-bar-inner" id="timerBar"></div></div>
+  </div>
+
+  <!-- Hint -->
+  <div class="hint-box" id="hintBox"></div>
+
+  <!-- Grid -->
+  <div class="number-grid" id="grid"></div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn-hint" id="hintBtn" onclick="showHint()">💡 Hint (−5 pts)</button>
+    <button class="btn-next" onclick="nextRound()">Next Machine →</button>
+  </div>
+
+  <!-- History -->
+  <div class="history-section">
+    <h3>Round History</h3>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="leaderboard">
+    <h3>🏆 Session Leaderboard</h3>
+    <div id="leaderboard">
+      <div class="lb-row"><div class="lb-rank">1</div><div class="lb-name">Top Player</div><div class="lb-score">150</div></div>
+      <div class="lb-row"><div class="lb-rank">2</div><div class="lb-name">Factor Pro</div><div class="lb-score">120</div></div>
+      <div class="lb-row"><div class="lb-rank">3</div><div class="lb-name">GCF Master</div><div class="lb-score">90</div></div>
+      <div class="lb-row you" id="myRow"><div class="lb-rank">—</div><div class="lb-name">You</div><div class="lb-score" id="myScore">0</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Level Up Overlay -->
+<div class="level-up-overlay" id="levelOverlay">
+  <div class="level-up-card">
+    <div style="font-size:48px;margin-bottom:10px">🎉</div>
+    <h2>Level Up!</h2>
+    <p id="levelMsg">You reached Level 2! Numbers are getting bigger...</p>
+    <button onclick="dismissLevel()">Keep Going</button>
+  </div>
+</div>
+
+<div id="toast">✅ Correct!</div>
+
+<div class="footer">Factor Factory · 6.NS.B.4 Arcade · GCF Mastery Game</div>
+
+<script>
+  let score = 0, streak = 0, level = 1, best = 0;
+  let targetA, targetB, gcf;
+  let hintUsed = false;
+  let timerInterval = null;
+  let timerSeconds = 15;
+  let roundAnswered = false;
+  let history = [];
+
+  const LEVELS = [
+    { min:10, max:30, time:15 },
+    { min:15, max:50, time:12 },
+    { min:20, max:80, time:10 },
+    { min:30, max:100, time:8  },
+  ];
+
+  function gcd(a, b) {
+    while (b) { [a,b] = [b, a % b]; }
+    return a;
+  }
+
+  function getLevelCfg() {
+    return LEVELS[Math.min(level - 1, LEVELS.length - 1)];
+  }
+
+  function nextRound() {
+    clearInterval(timerInterval);
+    roundAnswered = false;
+    hintUsed = false;
+
+    const cfg = getLevelCfg();
+    targetA = Math.floor(Math.random() * (cfg.max - cfg.min) + cfg.min);
+    targetB = Math.floor(Math.random() * (cfg.max - cfg.min) + cfg.min);
+    gcf = gcd(targetA, targetB);
+
+    document.getElementById('numA').textContent = targetA;
+    document.getElementById('numB').textContent = targetB;
+    document.getElementById('hintBox').style.display = 'none';
+    document.getElementById('hintBtn').disabled = false;
+
+    generateGrid();
+    startTimer(cfg.time);
+  }
+
+  function startTimer(seconds) {
+    timerSeconds = seconds;
+    const bar = document.getElementById('timerBar');
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+
+    setTimeout(() => {
+      bar.style.transition = 'width ' + seconds + 's linear';
+      bar.style.width = '0%';
+    }, 50);
+
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        if (!roundAnswered) {
+          timeUp();
+        }
+      }
+    }, 1000);
+  }
+
+  function timeUp() {
+    roundAnswered = true;
+    streak = 0;
+    updateHUD();
+    addHistory(targetA, targetB, gcf, false);
+    showToast('⏱ Time's up! GCF was ' + gcf);
+    document.querySelectorAll('.tile').forEach(t => t.classList.add('disabled'));
+  }
+
+  function generateGrid() {
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+
+    // Guarantee GCF appears 1-2 times
+    let nums = [gcf];
+    if (Math.random() > 0.4) nums.push(gcf);
+
+    while (nums.length < 24) {
+      let n = Math.floor(Math.random() * 30) + 1;
+      nums.push(n);
+    }
+
+    // Shuffle
+    nums = nums.sort(() => Math.random() - 0.5).slice(0, 24);
+
+    nums.forEach(n => {
+      const div = document.createElement('div');
+      div.className = 'tile';
+      div.textContent = n;
+      div.onclick = () => selectTile(n, div);
+      grid.appendChild(div);
+    });
+  }
+
+  function selectTile(n, el) {
+    if (roundAnswered) return;
+
+    if (n === gcf) {
+      roundAnswered = true;
+      clearInterval(timerInterval);
+      el.classList.add('correct');
+
+      const bonus = hintUsed ? 5 : 10;
+      const streakBonus = streak >= 2 ? 5 : 0;
+      streak++;
+      score += bonus + streakBonus;
+      if (score > best) best = score;
+
+      updateHUD();
+      addHistory(targetA, targetB, gcf, true);
+
+      const msg = streak >= 3
+        ? '🔥 ' + streak + '-Streak! +'  + (bonus + streakBonus) + ' pts'
+        : '✅ Correct! +' + (bonus + streakBonus) + ' pts';
+      showToast(msg);
+
+      // Level up every 50 pts
+      const newLevel = Math.floor(score / 50) + 1;
+      if (newLevel > level) {
+        level = newLevel;
+        setTimeout(() => triggerLevelUp(), 600);
+      }
+
+      updateLeaderboard();
+
+    } else {
+      el.classList.add('wrong');
+      el.classList.add('disabled');
+      streak = 0;
+      updateHUD();
+      showToast('✘ Not quite — keep looking!');
+    }
+  }
+
+  function showHint() {
+    const btn = document.getElementById('hintBtn');
+    btn.disabled = true;
+    hintUsed = true;
+    score = Math.max(0, score - 5);
+    updateHUD();
+
+    const factors = [];
+    for (let i = 1; i <= Math.min(targetA, targetB); i++) {
+      if (targetA % i === 0 && targetB % i === 0) factors.push(i);
+    }
+    const hintBox = document.getElementById('hintBox');
+    hintBox.style.display = 'block';
+    hintBox.innerHTML = '💡 <strong>Hint:</strong> Common factors of ' + targetA + ' and ' + targetB + ': <strong>' + factors.join(', ') + '</strong> — the GCF is the largest one.';
+  }
+
+  function addHistory(a, b, g, correct) {
+    history.unshift({ a, b, g, correct });
+    if (history.length > 8) history.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('historyList');
+    list.innerHTML = history.map(h =>
+      '<div class="history-item ' + (h.correct ? '' : 'miss') + '">' +
+      'GCF(' + h.a + ',' + h.b + ')=' + h.g + ' ' + (h.correct ? '✔' : '✘') +
+      '</div>'
+    ).join('');
+  }
+
+  function updateHUD() {
+    document.getElementById('score').textContent = score;
+    document.getElementById('streak').textContent = streak;
+    document.getElementById('level').textContent = level;
+    document.getElementById('best').textContent = best;
+  }
+
+  function updateLeaderboard() {
+    document.getElementById('myScore').textContent = score;
+    document.getElementById('myRow').querySelector('.lb-rank').textContent = score > 150 ? '1' : score > 120 ? '2' : score > 90 ? '3' : '4';
+  }
+
+  function triggerLevelUp() {
+    document.getElementById('levelMsg').textContent =
+      'You reached Level ' + level + '! ' +
+      (level === 2 ? 'Numbers are getting bigger...' :
+       level === 3 ? 'Timer is faster now. Stay sharp!' :
+       level === 4 ? 'Expert mode! Max difficulty!' :
+       'Incredible! You are a Factor Master!');
+    document.getElementById('levelOverlay').classList.add('show');
+  }
+
+  function dismissLevel() {
+    document.getElementById('levelOverlay').classList.remove('show');
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  nextRound();
+</script>
+
 </body>
 </html>

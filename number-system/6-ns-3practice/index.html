@@ -1,37 +1,1117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.NS.3 Practice classroom activity.">
-  <title>6.NS.3 Practice</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Integer & Coordinate Plane Arcade | 6.NS.C.6 Review</title>
+  <style>
+    :root{
+      --navy:#263238;
+      --teal:#009688;
+      --coral:#FF7043;
+      --sand:#F5F5F5;
+      --paper:#FFFDF8;
+      --ink:#1f2937;
+      --muted:#64748b;
+      --line:#dbe5ec;
+      --blue:#2563eb;
+      --blue-soft:#eff6ff;
+      --green:#15803d;
+      --green-soft:#f0fdf4;
+      --amber:#b45309;
+      --amber-soft:#fff7ed;
+      --red:#b91c1c;
+      --red-soft:#fef2f2;
+      --violet:#7c3aed;
+      --violet-soft:#f5f3ff;
+      --shadow:0 12px 32px rgba(15,23,42,.08),0 3px 10px rgba(15,23,42,.05);
+      --radius-xl:24px;
+      --radius-lg:18px;
+      --radius-md:14px;
+      --radius-sm:12px;
+      --font:Inter,"Segoe UI",Arial,sans-serif;
+      --mono:"JetBrains Mono","SFMono-Regular",Consolas,monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:var(--font);
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(37,99,235,.08), transparent 25%),
+        radial-gradient(circle at bottom left, rgba(0,150,136,.08), transparent 25%),
+        linear-gradient(180deg,#f8fbfd,#eef4f7);
+      min-height:100vh;
+    }
+    button,input,select{font:inherit}
+    .app{max-width:1360px;margin:0 auto;padding:18px}
+    .hero{
+      background:linear-gradient(135deg,#ffffff,#f9fcff);
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      padding:22px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      width:260px;height:260px;
+      border-radius:50%;
+      right:-80px;top:-100px;
+      background:radial-gradient(circle, rgba(255,112,67,.12), transparent 68%);
+      pointer-events:none;
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 11px;border-radius:999px;
+      background:#eefcf9;border:1px solid #bfe8e0;
+      color:var(--teal);font-size:.74rem;font-weight:900;
+      text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:clamp(1.8rem,3.2vw,2.8rem);
+      line-height:1.03;letter-spacing:-.03em;color:var(--navy);
+    }
+    .sub{
+      margin:0;color:var(--muted);line-height:1.55;font-size:1rem;max-width:980px;
+    }
+
+    .stats{
+      margin-top:16px;
+      display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:10px;
+    }
+    @media (max-width:980px){.stats{grid-template-columns:1fr 1fr}}
+    .tile{
+      background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px;
+    }
+    .tile .label{
+      font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;
+    }
+    .tile .value{font-size:1.55rem;font-weight:900;line-height:1;color:var(--navy)}
+    .tile .subv{margin-top:5px;font-size:.82rem;color:var(--muted)}
+    .track{
+      height:12px;border-radius:999px;background:#e7eef4;overflow:hidden;border:1px solid #d7e2eb;margin-top:10px;
+    }
+    .fill{
+      height:100%;width:0%;
+      background:linear-gradient(90deg,var(--teal),var(--blue),var(--coral));
+      transition:width .35s ease;
+      border-radius:999px;
+    }
+
+    .shell{
+      margin-top:18px;
+      display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;
+    }
+    @media (max-width:1100px){.shell{grid-template-columns:1fr}}
+
+    .panel{
+      background:#fff;border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow);
+    }
+
+    .sidebar{padding:14px}
+    .tab-btn{
+      width:100%;appearance:none;border:1px solid var(--line);background:#fbfdfd;
+      border-radius:16px;padding:13px 13px 12px;cursor:pointer;text-align:left;
+      margin-bottom:10px;transition:.18s ease;
+    }
+    .tab-btn:hover{transform:translateY(-1px)}
+    .tab-btn.active{background:linear-gradient(135deg,#eff6ff,#eefcf9);border-color:#bfd7ff}
+    .tab-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:900;color:var(--navy);margin-bottom:3px}
+    .tab-desc{font-size:.84rem;line-height:1.45;color:var(--muted)}
+    .check{
+      width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+      border:2px solid #d5e0e8;background:#fff;color:#fff;font-weight:900;font-size:.85rem;
+    }
+    .check.done{background:linear-gradient(180deg,#16a34a,#15803d);border-color:#16a34a}
+
+    .main{padding:0}
+    .tab-panel{display:none;padding:20px}
+    .tab-panel.active{display:block}
+    .panel-title{margin:0 0 6px;font-size:1.55rem;line-height:1.1;letter-spacing:-.02em;color:var(--navy)}
+    .panel-sub{margin:0 0 16px;color:var(--muted);line-height:1.55}
+
+    .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    @media (max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+    .card{
+      border:1px solid var(--line);border-radius:18px;background:#fcfefe;padding:16px;
+    }
+    .card h3,.card h4{margin:0 0 8px;color:var(--navy)}
+    .card p{margin:0;line-height:1.55}
+    .mini{font-size:.84rem;color:var(--muted)}
+    .big{font-size:1.05rem;font-weight:900;color:var(--navy)}
+    .pill-row{display:flex;flex-wrap:wrap;gap:8px}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:8px 10px;border-radius:999px;background:#fff;border:1px solid var(--line);
+      font-size:.82rem;font-weight:800;color:var(--navy);
+    }
+
+    .btn{
+      appearance:none;border:none;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer;transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+    .btn-primary{background:linear-gradient(180deg,var(--blue),#1d4ed8);color:#fff}
+    .btn-teal{background:linear-gradient(180deg,var(--teal),#0d7f73);color:#fff}
+    .btn-coral{background:linear-gradient(180deg,var(--coral),#ef6239);color:#fff}
+    .btn-soft{background:#fff;border:1px solid var(--line);color:var(--navy)}
+    .btn-success{background:linear-gradient(180deg,#16a34a,#15803d);color:#fff}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+
+    .feedback{
+      margin-top:12px;padding:12px 13px;border-radius:14px;display:none;line-height:1.55;border:1px solid transparent;font-size:.95rem;
+    }
+    .feedback.show{display:block}
+    .feedback.good{background:var(--green-soft);color:var(--green);border-color:#bbf7d0}
+    .feedback.bad{background:var(--red-soft);color:var(--red);border-color:#fecaca}
+    .feedback.info{background:var(--amber-soft);color:var(--amber);border-color:#fed7aa}
+
+    /* quick learn */
+    .flash-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    @media (max-width:980px){.flash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:650px){.flash-grid{grid-template-columns:1fr}}
+    .flip{
+      perspective:1000px;height:200px;
+    }
+    .flip-inner{
+      position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s ease;
+    }
+    .flip.flipped .flip-inner{transform:rotateY(180deg)}
+    .flip-face{
+      position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:20px;background:#fff;padding:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+    }
+    .flip-back{transform:rotateY(180deg);background:linear-gradient(180deg,#fff,#f8fbff)}
+    .flip-term{font-size:1.15rem;font-weight:900;color:var(--navy);margin-bottom:8px}
+    .flip-icon{font-size:2rem;margin-bottom:10px}
+    .flip-example{font-family:var(--mono);font-weight:900;color:var(--blue);margin-top:8px}
+
+    /* drag sort */
+    .sort-layout{display:grid;grid-template-columns:300px 1fr 1fr;gap:14px}
+    @media (max-width:980px){.sort-layout{grid-template-columns:1fr}}
+    .bank,.dropzone{
+      border:1px solid var(--line);border-radius:18px;background:#fbfdfd;padding:14px;
+    }
+    .draggable{
+      user-select:none;cursor:grab;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;font-weight:900;margin:10px 0;box-shadow:0 6px 14px rgba(15,23,42,.04)
+    }
+    .draggable.dragging{opacity:.55}
+    .dropzone.over{background:#eff6ff;border-color:#93c5fd}
+    .drop-slot{
+      min-height:64px;border:2px dashed #d7e2eb;border-radius:14px;padding:10px;margin:10px 0;background:#fff;
+    }
+    .drop-slot.correct{background:var(--green-soft);border-color:#86efac}
+    .drop-slot.bad{background:var(--red-soft);border-color:#fca5a5}
+
+    /* number line */
+    .numberline-box{border:1px solid var(--line);border-radius:20px;background:#fff;padding:16px}
+    .numberline{
+      position:relative;height:150px;overflow:hidden;
+    }
+    .nl-line{position:absolute;left:28px;right:28px;top:78px;height:4px;border-radius:999px;background:#d8e5ef}
+    .nl-ticks{position:absolute;left:28px;right:28px;top:46px;display:flex;justify-content:space-between}
+    .nl-tick{position:relative;width:1px;text-align:center;font-size:.74rem;font-weight:900;color:#475569}
+    .nl-tick:before{content:"";position:absolute;left:50%;transform:translateX(-50%);top:18px;width:2px;height:18px;background:#94a3b8;border-radius:2px}
+    .marker{position:absolute;top:18px;transform:translateX(-50%);text-align:center;transition:left .35s ease}
+    .marker .dot{width:18px;height:18px;border-radius:50%;margin:0 auto 6px;border:2px solid #fff;box-shadow:0 4px 10px rgba(15,23,42,.12)}
+    .marker.start .dot{background:linear-gradient(180deg,var(--blue),#1d4ed8)}
+    .marker.end .dot{background:linear-gradient(180deg,#16a34a,#15803d)}
+    .marker .tag{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:.75rem;font-weight:900}
+    .path{position:absolute;top:76px;height:8px;border-radius:999px;background:linear-gradient(90deg, rgba(37,99,235,.18), rgba(37,99,235,.52));transition:all .35s ease}
+
+    /* coordinate plane */
+    .coord-layout{display:grid;grid-template-columns:390px 1fr;gap:16px}
+    @media (max-width:1000px){.coord-layout{grid-template-columns:1fr}}
+    .plane-card{border:1px solid var(--line);border-radius:20px;background:#fff;padding:12px;overflow:auto}
+    svg{display:block;max-width:100%}
+    .point-options,.choice-row{display:flex;flex-wrap:wrap;gap:8px}
+    .point-btn,.choice{
+      border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 12px;font-weight:900;cursor:pointer;
+    }
+    .point-btn.active,.choice.active{background:#eff6ff;border-color:#93c5fd}
+    .choice.correct{background:var(--green-soft);border-color:#86efac}
+    .choice.bad{background:var(--red-soft);border-color:#fca5a5}
+
+    /* mission cards */
+    .mission-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    @media (max-width:980px){.mission-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:650px){.mission-grid{grid-template-columns:1fr}}
+    .mission{
+      border:1px solid var(--line);border-radius:20px;background:#fff;padding:15px;
+    }
+    .mission h4{margin:0 0 8px;color:var(--navy)}
+    .mission .question{font-weight:800;line-height:1.5;margin-bottom:10px}
+    .mission .status{margin-top:10px;font-size:.88rem;font-weight:900}
+
+    /* quiz */
+    .quiz-stack{display:grid;gap:14px}
+    .quiz-item{border:1px solid var(--line);border-radius:18px;background:#fff;padding:15px}
+    .quiz-q{font-weight:900;color:var(--navy);line-height:1.5;margin-bottom:10px}
+    .input,.select{
+      width:100%;border:2px solid var(--line);border-radius:12px;padding:12px;background:#fff;outline:none;
+    }
+    .input:focus,.select:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(59,130,246,.14)}
+    .celebrate{display:none;margin-top:16px;border:2px solid #86efac;background:linear-gradient(180deg,#fff,#f7fff9);border-radius:20px;padding:18px}
+    .celebrate.show{display:block}
+
+    .partner{
+      display:grid;gap:10px;margin-top:14px;
+    }
+    .talk{
+      border:1px solid var(--line);border-radius:14px;background:#fbfdfd;padding:12px 13px;
+    }
+    .talk strong{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+
+    @media print{
+      body{background:#fff}
+      .sidebar{display:none}
+      .shell{grid-template-columns:1fr}
+      .panel,.card,.tile,.mission,.flip-face,.bank,.dropzone,.drop-slot,.plane-card,.numberline-box,.quiz-item{box-shadow:none}
+      .btn{display:none!important}
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/number-system/">Number System</a><span>/</span><span>6.NS.3 Practice</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.NS.3 Practice</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+<div class="app">
+  <section class="hero">
+    <div class="eyebrow">Flagship TpT Review · 6.NS.C.6 + 6.NS.C.6a + 6.NS.C.6b</div>
+    <h1>Integer & Coordinate Plane Arcade</h1>
+    <p class="sub">
+      Student-friendly, activity-first review. Less reading, more doing: flip cards, drag-sort, number line play, coordinate plane challenges, sign missions, and a mastery check.
+    </p>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.NS.3Practice</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/number-system/6-ns-3practice/</span></p>
+    <div class="stats">
+      <div class="tile">
+        <div class="label">Progress</div>
+        <div class="value" id="progressValue">0 / 6 tabs</div>
+        <div class="track"><div class="fill" id="progressFill"></div></div>
+        <div class="subv" id="progressSub">Start with Tab 1.</div>
       </div>
-    </section>
-
-    <div class="button-row">
-      <a class="primary-button" href="/number-system/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+      <div class="tile">
+        <div class="label">Tabs Done</div>
+        <div class="value" id="scoreTabs">0</div>
+        <div class="subv">Completed sections</div>
+      </div>
+      <div class="tile">
+        <div class="label">Checks</div>
+        <div class="value" id="scoreChecks">0</div>
+        <div class="subv">Total submitted</div>
+      </div>
+      <div class="tile">
+        <div class="label">Correct</div>
+        <div class="value" id="scoreCorrect">0</div>
+        <div class="subv">Accurate answers</div>
+      </div>
+      <div class="tile">
+        <div class="label">XP</div>
+        <div class="value" id="scoreXP">0</div>
+        <div class="subv">Arcade points</div>
+      </div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+  </section>
+
+  <section class="shell">
+    <aside class="sidebar panel">
+      <button class="tab-btn active" data-tab="tab1" type="button">
+        <div class="tab-head"><span>1. Flash Learn</span><span class="check" id="mark-tab1">✓</span></div>
+        <div class="tab-desc">Tap cards to learn key ideas fast.</div>
+      </button>
+      <button class="tab-btn" data-tab="tab2" type="button">
+        <div class="tab-head"><span>2. Drag Sort</span><span class="check" id="mark-tab2">✓</span></div>
+        <div class="tab-desc">Sort examples into the right concept.</div>
+      </button>
+      <button class="tab-btn" data-tab="tab3" type="button">
+        <div class="tab-head"><span>3. Number Line Lab</span><span class="check" id="mark-tab3">✓</span></div>
+        <div class="tab-desc">Move points and solve quick checks.</div>
+      </button>
+      <button class="tab-btn" data-tab="tab4" type="button">
+        <div class="tab-head"><span>4. Coordinate Plane</span><span class="check" id="mark-tab4">✓</span></div>
+        <div class="tab-desc">Plot, classify, and reflect points.</div>
+      </button>
+      <button class="tab-btn" data-tab="tab5" type="button">
+        <div class="tab-head"><span>5. Sign Missions</span><span class="check" id="mark-tab5">✓</span></div>
+        <div class="tab-desc">Choose positive or negative in real contexts.</div>
+      </button>
+      <button class="tab-btn" data-tab="tab6" type="button">
+        <div class="tab-head"><span>6. Mastery Check</span><span class="check" id="mark-tab6">✓</span></div>
+        <div class="tab-desc">Final mixed review.</div>
+      </button>
+    </aside>
+
+    <main class="main panel">
+      <!-- TAB 1 -->
+      <section class="tab-panel active" id="tab1">
+        <h2 class="panel-title">Flash Learn</h2>
+        <p class="panel-sub">Tap each card to reveal the meaning and example. Fast review first, then move into the games.</p>
+
+        <div class="flash-grid">
+          <button class="flip" data-flip type="button">
+            <div class="flip-inner">
+              <div class="flip-face">
+                <div class="flip-icon">↔️</div>
+                <div class="flip-term">Opposite</div>
+                <div class="mini">Tap to reveal</div>
+              </div>
+              <div class="flip-face flip-back">
+                <div class="flip-term">Opposite</div>
+                <div>Same distance from 0, different sides of 0.</div>
+                <div class="flip-example">5 and −5</div>
+              </div>
+            </div>
+          </button>
+
+          <button class="flip" data-flip type="button">
+            <div class="flip-inner">
+              <div class="flip-face">
+                <div class="flip-icon">📏</div>
+                <div class="flip-term">Absolute Value</div>
+                <div class="mini">Tap to reveal</div>
+              </div>
+              <div class="flip-face flip-back">
+                <div class="flip-term">Absolute Value</div>
+                <div>Distance from 0 on the number line.</div>
+                <div class="flip-example">|−7| = 7</div>
+              </div>
+            </div>
+          </button>
+
+          <button class="flip" data-flip type="button">
+            <div class="flip-inner">
+              <div class="flip-face">
+                <div class="flip-icon">🧭</div>
+                <div class="flip-term">Quadrant</div>
+                <div class="mini">Tap to reveal</div>
+              </div>
+              <div class="flip-face flip-back">
+                <div class="flip-term">Quadrant</div>
+                <div>One of the 4 regions on the coordinate plane.</div>
+                <div class="flip-example">(4, 3) is in QI</div>
+              </div>
+            </div>
+          </button>
+
+          <button class="flip" data-flip type="button">
+            <div class="flip-inner">
+              <div class="flip-face">
+                <div class="flip-icon">🪞</div>
+                <div class="flip-term">Reflection</div>
+                <div class="mini">Tap to reveal</div>
+              </div>
+              <div class="flip-face flip-back">
+                <div class="flip-term">Reflection</div>
+                <div>A flip across an axis.</div>
+                <div class="flip-example">(3,2) → (−3,2)</div>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div class="grid-3" style="margin-top:14px;">
+          <div class="card">
+            <h3>Sign Clue</h3>
+            <div class="big">(+ , +)</div>
+            <p class="mini">Both positive means the point is in Quadrant I.</p>
+          </div>
+          <div class="card">
+            <h3>Sign Clue</h3>
+            <div class="big">(− , +)</div>
+            <p class="mini">Negative x, positive y means Quadrant II.</p>
+          </div>
+          <div class="card">
+            <h3>Sign Clue</h3>
+            <div class="big">(− , −) or (+ , −)</div>
+            <p class="mini">Quadrant III has both negative. Quadrant IV has positive x, negative y.</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn btn-primary" type="button" id="completeTab1">Mark Tab Complete</button>
+          <button class="btn btn-soft" type="button" data-goto="tab2">Next: Drag Sort</button>
+        </div>
+      </section>
+
+      <!-- TAB 2 -->
+      <section class="tab-panel" id="tab2">
+        <h2 class="panel-title">Drag Sort</h2>
+        <p class="panel-sub">Drag each card into the correct category.</p>
+
+        <div class="sort-layout">
+          <div class="bank">
+            <h3>Card Bank</h3>
+            <div class="draggable" draggable="true" data-match="opposite">−4 and 4</div>
+            <div class="draggable" draggable="true" data-match="absolute">|−9| = 9</div>
+            <div class="draggable" draggable="true" data-match="quadrant">Point (−3, 2)</div>
+            <div class="draggable" draggable="true" data-match="reflection">Point (5, −1) → (−5, −1)</div>
+          </div>
+
+          <div class="dropzone">
+            <h3>Number Line Ideas</h3>
+            <div class="drop-slot" data-accept="opposite"><strong>Opposite</strong></div>
+            <div class="drop-slot" data-accept="absolute"><strong>Absolute Value</strong></div>
+          </div>
+
+          <div class="dropzone">
+            <h3>Coordinate Plane Ideas</h3>
+            <div class="drop-slot" data-accept="quadrant"><strong>Quadrant</strong></div>
+            <div class="drop-slot" data-accept="reflection"><strong>Reflection</strong></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn btn-teal" type="button" id="checkSort">Check Sort</button>
+          <button class="btn btn-soft" type="button" id="resetSort">Reset</button>
+        </div>
+        <div class="feedback" id="sortFeedback"></div>
+      </section>
+
+      <!-- TAB 3 -->
+      <section class="tab-panel" id="tab3">
+        <h2 class="panel-title">Number Line Lab</h2>
+        <p class="panel-sub">Choose a number and its opposite. Then solve two quick challenges.</p>
+
+        <div class="numberline-box">
+          <div class="grid-2">
+            <div>
+              <div class="mini">Start number</div>
+              <select class="select" id="startSelect">
+                <option value="-8">−8</option><option value="-6">−6</option><option value="-4">−4</option><option value="-2">−2</option>
+                <option value="2">2</option><option value="4">4</option><option value="6">6</option><option value="8">8</option>
+              </select>
+            </div>
+            <div>
+              <div class="mini">Opposite number</div>
+              <select class="select" id="oppSelect">
+                <option value="8">8</option><option value="6">6</option><option value="4">4</option><option value="2">2</option>
+                <option value="-2">−2</option><option value="-4">−4</option><option value="-6">−6</option><option value="-8">−8</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="numberline" style="margin-top:14px;">
+            <div class="nl-line"></div>
+            <div class="nl-ticks" id="nlTicks"></div>
+            <div class="path" id="nlPath"></div>
+            <div class="marker start" id="startMarker"><div class="dot"></div><div class="tag">Start</div></div>
+            <div class="marker end" id="endMarker"><div class="dot"></div><div class="tag">Opposite</div></div>
+          </div>
+          <div class="feedback show info" id="nlCaption">Pick values to compare.</div>
+        </div>
+
+        <div class="grid-2" style="margin-top:14px;">
+          <div class="card">
+            <h3>Quick Check</h3>
+            <p>What is the opposite of <strong>−7</strong>?</p>
+            <input class="input" id="oppInput" type="text" placeholder="Enter integer" />
+            <div class="controls"><button class="btn btn-primary" type="button" id="checkOpp">Check</button></div>
+            <div class="feedback" id="oppFeedback"></div>
+          </div>
+          <div class="card">
+            <h3>Quick Check</h3>
+            <p>What is the absolute value of <strong>−12</strong>?</p>
+            <input class="input" id="absInput" type="text" placeholder="Enter value" />
+            <div class="controls"><button class="btn btn-primary" type="button" id="checkAbs">Check</button></div>
+            <div class="feedback" id="absFeedback"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4 -->
+      <section class="tab-panel" id="tab4">
+        <h2 class="panel-title">Coordinate Plane Challenge</h2>
+        <p class="panel-sub">Click a point chip to graph it. Then answer the two challenge tasks.</p>
+
+        <div class="coord-layout">
+          <div class="plane-card">
+            <svg id="planeSvg" width="360" height="360" viewBox="0 0 360 360" aria-label="Coordinate plane">
+              <rect width="360" height="360" fill="#ffffff"></rect>
+              <g id="gridLayer"></g>
+              <g id="axisLayer"></g>
+              <g id="labelLayer"></g>
+              <g id="pointLayer"></g>
+            </svg>
+          </div>
+
+          <div>
+            <div class="card">
+              <h3>Plot a Point</h3>
+              <div class="point-options" id="pointButtons"></div>
+              <div class="feedback show info" id="pointHint">Click a point chip to graph it.</div>
+            </div>
+
+            <div class="grid-2" style="margin-top:14px;">
+              <div class="card">
+                <h3>Quadrant Check</h3>
+                <p>Which quadrant is <strong>(−4, 3)</strong> in?</p>
+                <div class="choice-row" id="quadChoices">
+                  <button class="choice" type="button" data-val="Quadrant I">QI</button>
+                  <button class="choice" type="button" data-val="Quadrant II">QII</button>
+                  <button class="choice" type="button" data-val="Quadrant III">QIII</button>
+                  <button class="choice" type="button" data-val="Quadrant IV">QIV</button>
+                </div>
+                <div class="feedback" id="quadFeedback"></div>
+              </div>
+
+              <div class="card">
+                <h3>Reflection Check</h3>
+                <p>Reflect <strong>(3, 5)</strong> across the <strong>y-axis</strong>.</p>
+                <input class="input" id="reflectInput" type="text" placeholder="Example: (-3, 5)" />
+                <div class="controls"><button class="btn btn-primary" type="button" id="checkReflect">Check</button></div>
+                <div class="feedback" id="reflectFeedback"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5 -->
+      <section class="tab-panel" id="tab5">
+        <h2 class="panel-title">Sign Missions</h2>
+        <p class="panel-sub">Pick whether each real-world quantity should be positive or negative.</p>
+
+        <div class="mission-grid" id="missionGrid"></div>
+
+        <div class="controls">
+          <button class="btn btn-coral" type="button" id="checkMissions">Check Missions</button>
+          <button class="btn btn-soft" type="button" id="resetMissions">Reset</button>
+        </div>
+        <div class="feedback" id="missionFeedback"></div>
+      </section>
+
+      <!-- TAB 6 -->
+      <section class="tab-panel" id="tab6">
+        <h2 class="panel-title">Mastery Check</h2>
+        <p class="panel-sub">Final mixed review. Score 4 out of 5 or better to master the arcade.</p>
+
+        <div class="quiz-stack">
+          <div class="quiz-item">
+            <div class="quiz-q">1. What is the opposite of <strong>6</strong>?</div>
+            <input class="input" id="m1" type="text" placeholder="Enter integer" />
+          </div>
+
+          <div class="quiz-item">
+            <div class="quiz-q">2. What is the absolute value of <strong>−15</strong>?</div>
+            <input class="input" id="m2" type="text" placeholder="Enter value" />
+          </div>
+
+          <div class="quiz-item">
+            <div class="quiz-q">3. Which quadrant is <strong>(4, −2)</strong> in?</div>
+            <select class="select" id="m3">
+              <option value="">Choose one</option>
+              <option>Quadrant I</option>
+              <option>Quadrant II</option>
+              <option>Quadrant III</option>
+              <option>Quadrant IV</option>
+            </select>
+          </div>
+
+          <div class="quiz-item">
+            <div class="quiz-q">4. Reflect <strong>(−5, 3)</strong> across the <strong>x-axis</strong>.</div>
+            <input class="input" id="m4" type="text" placeholder="Example: (-5, -3)" />
+          </div>
+
+          <div class="quiz-item">
+            <div class="quiz-q">5. True or False: <strong>(2, −4)</strong> and <strong>(−2, −4)</strong> are reflections across the <strong>y-axis</strong>.</div>
+            <select class="select" id="m5">
+              <option value="">Choose one</option>
+              <option>True</option>
+              <option>False</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn btn-success" type="button" id="checkMastery">Check Mastery</button>
+          <button class="btn btn-soft" type="button" id="resetMastery">Reset</button>
+        </div>
+        <div class="feedback" id="masteryFeedback"></div>
+
+        <div class="celebrate" id="celebrateBox">
+          <h3 style="margin:0 0 6px;color:var(--navy)">Arcade Complete</h3>
+          <p class="mini" id="celebrateText"></p>
+        </div>
+      </section>
+    </main>
+  </section>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const state = {
+    tabsDone: new Set(),
+    checks: 0,
+    correct: 0,
+    xp: 0,
+    quadChoice: "",
+    missionAnswers: {}
+  };
+
+  const missions = [
+    {id:"a", prompt:"14 feet below sea level", answer:"Negative"},
+    {id:"b", prompt:"A deposit of $32", answer:"Positive"},
+    {id:"c", prompt:"9° below zero", answer:"Negative"},
+    {id:"d", prompt:"Moving 5 floors above ground", answer:"Positive"}
+  ];
+
+  const pointSet = [
+    {label:"A", x:4, y:3},
+    {label:"B", x:-4, y:3},
+    {label:"C", x:-3, y:-4},
+    {label:"D", x:3, y:-4}
+  ];
+
+  const scoreTabs = document.getElementById("scoreTabs");
+  const scoreChecks = document.getElementById("scoreChecks");
+  const scoreCorrect = document.getElementById("scoreCorrect");
+  const scoreXP = document.getElementById("scoreXP");
+  const progressValue = document.getElementById("progressValue");
+  const progressFill = document.getElementById("progressFill");
+  const progressSub = document.getElementById("progressSub");
+
+  function updateScoreboard(){
+    scoreTabs.textContent = state.tabsDone.size;
+    scoreChecks.textContent = state.checks;
+    scoreCorrect.textContent = state.correct;
+    scoreXP.textContent = state.xp;
+    progressValue.textContent = `${state.tabsDone.size} / 6 tabs`;
+    progressFill.style.width = `${(state.tabsDone.size/6)*100}%`;
+    progressSub.textContent = state.tabsDone.size === 6 ? "All tabs complete." : "Keep playing through the tabs.";
+  }
+
+  function completeTab(tabId, xp = 10){
+    if(!state.tabsDone.has(tabId)){
+      state.tabsDone.add(tabId);
+      document.getElementById(`mark-${tabId}`).classList.add("done");
+      state.xp += xp;
+      updateScoreboard();
+    }
+  }
+
+  function addCheck(isCorrect, xp){
+    state.checks += 1;
+    if(isCorrect){
+      state.correct += 1;
+      state.xp += xp;
+    }
+    updateScoreboard();
+  }
+
+  function showFeedback(id, type, html){
+    const el = document.getElementById(id);
+    el.className = `feedback show ${type}`;
+    el.innerHTML = html;
+  }
+
+  function switchTab(tabId){
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tabId));
+    document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.id === tabId));
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
+  document.querySelectorAll("[data-goto]").forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.goto)));
+
+  // Tab 1
+  document.querySelectorAll("[data-flip]").forEach(card => {
+    card.addEventListener("click", () => {
+      card.classList.toggle("flipped");
+      const flipped = [...document.querySelectorAll("[data-flip].flipped")].length;
+      if(flipped === 4){
+        completeTab("tab1", 15);
+      }
+    });
+  });
+  document.getElementById("completeTab1").addEventListener("click", () => completeTab("tab1", 15));
+
+  // Tab 2 drag sort
+  let dragged = null;
+  function bindSort(){
+    document.querySelectorAll(".draggable").forEach(item => {
+      item.addEventListener("dragstart", () => { dragged = item; item.classList.add("dragging"); });
+      item.addEventListener("dragend", () => item.classList.remove("dragging"));
+    });
+
+    document.querySelectorAll(".drop-slot").forEach(slot => {
+      slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("over"); });
+      slot.addEventListener("dragleave", () => slot.classList.remove("over"));
+      slot.addEventListener("drop", e => {
+        e.preventDefault();
+        slot.classList.remove("over");
+        if(!dragged) return;
+        if(slot.querySelector(".draggable")){
+          document.querySelector(".bank").appendChild(slot.querySelector(".draggable"));
+        }
+        slot.appendChild(dragged);
+      });
+    });
+  }
+
+  document.getElementById("checkSort").addEventListener("click", () => {
+    let correct = 0;
+    document.querySelectorAll(".drop-slot").forEach(slot => {
+      slot.classList.remove("correct","bad");
+      const item = slot.querySelector(".draggable");
+      if(item && item.dataset.match === slot.dataset.accept){
+        correct++;
+        slot.classList.add("correct");
+      } else {
+        slot.classList.add("bad");
+      }
+    });
+    const all = correct === 4;
+    addCheck(all, 20);
+    if(all){
+      completeTab("tab2", 12);
+      showFeedback("sortFeedback","good","✅ Nice job. Every card is sorted correctly.");
+    } else {
+      showFeedback("sortFeedback","bad",`❌ You sorted <strong>${correct}/4</strong> correctly. Try again.`);
+    }
+  });
+
+  document.getElementById("resetSort").addEventListener("click", () => {
+    const bank = document.querySelector(".bank");
+    document.querySelectorAll(".drop-slot .draggable").forEach(d => bank.appendChild(d));
+    document.querySelectorAll(".drop-slot").forEach(slot => slot.classList.remove("correct","bad"));
+    document.getElementById("sortFeedback").className = "feedback";
+    document.getElementById("sortFeedback").innerHTML = "";
+  });
+
+  // Tab 3 number line
+  const nlTicks = document.getElementById("nlTicks");
+  const nlPath = document.getElementById("nlPath");
+  const startMarker = document.getElementById("startMarker");
+  const endMarker = document.getElementById("endMarker");
+  const startSelect = document.getElementById("startSelect");
+  const oppSelect = document.getElementById("oppSelect");
+
+  function buildTicks(){
+    nlTicks.innerHTML = "";
+    for(let n=-10;n<=10;n++){
+      const tick = document.createElement("div");
+      tick.className = "nl-tick";
+      tick.textContent = String(n).replace("-", "−");
+      nlTicks.appendChild(tick);
+    }
+  }
+
+  function nlPos(n){
+    const box = document.querySelector(".numberline");
+    const usable = box.clientWidth - 56;
+    return 28 + ((n + 10) / 20) * usable;
+  }
+
+  function renderNumberLine(){
+    const a = parseInt(startSelect.value,10);
+    const b = parseInt(oppSelect.value,10);
+    const x1 = nlPos(a);
+    const x2 = nlPos(b);
+    startMarker.style.left = `${x1}px`;
+    endMarker.style.left = `${x2}px`;
+    startMarker.querySelector(".tag").textContent = `Start ${String(a).replace("-", "−")}`;
+    endMarker.querySelector(".tag").textContent = `Opposite ${String(b).replace("-", "−")}`;
+    nlPath.style.left = `${Math.min(x1,x2)}px`;
+    nlPath.style.width = `${Math.max(6,Math.abs(x1-x2))}px`;
+
+    const good = a === -b;
+    showFeedback("nlCaption", good ? "good" : "info", good
+      ? `✅ Yes. ${String(a).replace("-", "−")} and ${String(b).replace("-", "−")} are opposites.`
+      : `ℹ️ These are not opposites. Opposites have the same distance from 0 and different signs.`);
+  }
+
+  function parseIntClean(v){
+    const s = String(v).trim().replace(/[−–—]/g,"-");
+    if(!/^-?\d+$/.test(s)) return null;
+    return parseInt(s,10);
+  }
+
+  document.getElementById("checkOpp").addEventListener("click", () => {
+    const val = parseIntClean(document.getElementById("oppInput").value);
+    const ok = val === 7;
+    addCheck(ok, 12);
+    if(ok){
+      completeTab("tab3", 10);
+      showFeedback("oppFeedback","good","✅ Correct. The opposite of −7 is 7.");
+    } else {
+      showFeedback("oppFeedback","bad","❌ Try again. Change the sign but keep the distance from 0.");
+    }
+  });
+
+  document.getElementById("checkAbs").addEventListener("click", () => {
+    const val = parseIntClean(document.getElementById("absInput").value);
+    const ok = val === 12;
+    addCheck(ok, 12);
+    if(ok){
+      completeTab("tab3", 10);
+      showFeedback("absFeedback","good","✅ Correct. |−12| = 12.");
+    } else {
+      showFeedback("absFeedback","bad","❌ Absolute value is distance from 0, so it is never negative.");
+    }
+  });
+
+  // Tab 4 coordinate plane
+  const gridLayer = document.getElementById("gridLayer");
+  const axisLayer = document.getElementById("axisLayer");
+  const labelLayer = document.getElementById("labelLayer");
+  const pointLayer = document.getElementById("pointLayer");
+  const pointButtons = document.getElementById("pointButtons");
+
+  function planePos(n){ return 180 + n * 28; }
+
+  function drawPlane(){
+    gridLayer.innerHTML = "";
+    axisLayer.innerHTML = "";
+    labelLayer.innerHTML = "";
+    pointLayer.innerHTML = "";
+
+    for(let i=-6;i<=6;i++){
+      const x = planePos(i), y = planePos(i);
+
+      const v = document.createElementNS("http://www.w3.org/2000/svg","line");
+      v.setAttribute("x1",x); v.setAttribute("x2",x);
+      v.setAttribute("y1",12); v.setAttribute("y2",348);
+      v.setAttribute("stroke","#e6eef3");
+      v.setAttribute("stroke-width", i===0 ? "0":"1");
+      gridLayer.appendChild(v);
+
+      const h = document.createElementNS("http://www.w3.org/2000/svg","line");
+      h.setAttribute("x1",12); h.setAttribute("x2",348);
+      h.setAttribute("y1",y); h.setAttribute("y2",y);
+      h.setAttribute("stroke","#e6eef3");
+      h.setAttribute("stroke-width", i===0 ? "0":"1");
+      gridLayer.appendChild(h);
+    }
+
+    const xAxis = document.createElementNS("http://www.w3.org/2000/svg","line");
+    xAxis.setAttribute("x1",12); xAxis.setAttribute("x2",348);
+    xAxis.setAttribute("y1",180); xAxis.setAttribute("y2",180);
+    xAxis.setAttribute("stroke","#263238"); xAxis.setAttribute("stroke-width","3");
+    axisLayer.appendChild(xAxis);
+
+    const yAxis = document.createElementNS("http://www.w3.org/2000/svg","line");
+    yAxis.setAttribute("x1",180); yAxis.setAttribute("x2",180);
+    yAxis.setAttribute("y1",12); yAxis.setAttribute("y2",348);
+    yAxis.setAttribute("stroke","#263238"); yAxis.setAttribute("stroke-width","3");
+    axisLayer.appendChild(yAxis);
+
+    for(let i=-6;i<=6;i++){
+      if(i!==0){
+        const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+        tx.setAttribute("x",planePos(i)); tx.setAttribute("y",198);
+        tx.setAttribute("text-anchor","middle");
+        tx.setAttribute("font-size","11"); tx.setAttribute("font-weight","800"); tx.setAttribute("fill","#475569");
+        tx.textContent = i;
+        labelLayer.appendChild(tx);
+
+        const ty = document.createElementNS("http://www.w3.org/2000/svg","text");
+        ty.setAttribute("x",164); ty.setAttribute("y",planePos(-i)+4);
+        ty.setAttribute("text-anchor","middle");
+        ty.setAttribute("font-size","11"); ty.setAttribute("font-weight","800"); ty.setAttribute("fill","#475569");
+        ty.textContent = i;
+        labelLayer.appendChild(ty);
+      }
+    }
+  }
+
+  function plotPoint(p){
+    pointLayer.innerHTML = "";
+    const cx = planePos(p.x);
+    const cy = planePos(-p.y);
+
+    const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    circle.setAttribute("cx",cx); circle.setAttribute("cy",cy);
+    circle.setAttribute("r",7); circle.setAttribute("fill","#FF7043");
+    circle.setAttribute("stroke","#fff"); circle.setAttribute("stroke-width","3");
+    pointLayer.appendChild(circle);
+
+    const label = document.createElementNS("http://www.w3.org/2000/svg","text");
+    label.setAttribute("x",cx+10); label.setAttribute("y",cy-10);
+    label.setAttribute("font-size","12"); label.setAttribute("font-weight","900"); label.setAttribute("fill","#263238");
+    label.textContent = `${p.label} (${p.x}, ${p.y})`;
+    pointLayer.appendChild(label);
+
+    document.getElementById("pointHint").className = "feedback show info";
+    document.getElementById("pointHint").innerHTML = `ℹ️ ${p.label} has x = ${p.x} and y = ${p.y}.`;
+  }
+
+  function buildPointButtons(){
+    pointSet.forEach(p => {
+      const btn = document.createElement("button");
+      btn.className = "point-btn";
+      btn.type = "button";
+      btn.textContent = `${p.label} (${p.x}, ${p.y})`;
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".point-btn").forEach(x => x.classList.remove("active"));
+        btn.classList.add("active");
+        plotPoint(p);
+      });
+      pointButtons.appendChild(btn);
+    });
+  }
+
+  document.querySelectorAll("#quadChoices .choice").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#quadChoices .choice").forEach(x => x.classList.remove("active","correct","bad"));
+      btn.classList.add("active");
+      state.quadChoice = btn.dataset.val;
+      const ok = state.quadChoice === "Quadrant II";
+      addCheck(ok, 15);
+      if(ok){
+        completeTab("tab4", 12);
+        btn.classList.add("correct");
+        showFeedback("quadFeedback","good","✅ Correct. (−4, 3) is in Quadrant II.");
+      } else {
+        btn.classList.add("bad");
+        showFeedback("quadFeedback","bad","❌ Recheck the signs: negative x and positive y.");
+      }
+    });
+  });
+
+  document.getElementById("checkReflect").addEventListener("click", () => {
+    const val = document.getElementById("reflectInput").value.replace(/\s+/g,"").replace(/[−–—]/g,"-");
+    const ok = val === "(-3,5)";
+    addCheck(ok, 15);
+    if(ok){
+      completeTab("tab4", 12);
+      showFeedback("reflectFeedback","good","✅ Correct. Across the y-axis, only x changes sign.");
+    } else {
+      showFeedback("reflectFeedback","bad","❌ Try again. Keep y the same and switch the sign of x.");
+    }
+  });
+
+  // Tab 5 missions
+  function buildMissions(){
+    const grid = document.getElementById("missionGrid");
+    missions.forEach(m => {
+      const box = document.createElement("div");
+      box.className = "mission";
+      box.innerHTML = `
+        <h4>Mission</h4>
+        <div class="question">${m.prompt}</div>
+        <div class="choice-row">
+          <button class="choice" type="button" data-id="${m.id}" data-value="Positive">Positive</button>
+          <button class="choice" type="button" data-id="${m.id}" data-value="Negative">Negative</button>
+        </div>
+        <div class="status mini" id="status-${m.id}">Choose one.</div>
+      `;
+      grid.appendChild(box);
+    });
+
+    grid.addEventListener("click", e => {
+      const btn = e.target.closest(".choice");
+      if(!btn) return;
+      const id = btn.dataset.id;
+      const value = btn.dataset.value;
+      state.missionAnswers[id] = value;
+      btn.parentElement.querySelectorAll(".choice").forEach(c => c.classList.remove("active","correct","bad"));
+      btn.classList.add("active");
+      document.getElementById(`status-${id}`).textContent = `${value} selected.`;
+    });
+  }
+
+  document.getElementById("checkMissions").addEventListener("click", () => {
+    let correct = 0;
+    missions.forEach(m => {
+      const choices = document.querySelectorAll(`.choice[data-id="${m.id}"]`);
+      choices.forEach(c => c.classList.remove("correct","bad"));
+      const selected = state.missionAnswers[m.id];
+      choices.forEach(c => {
+        if(c.dataset.value === selected){
+          if(selected === m.answer){
+            c.classList.add("correct");
+            correct++;
+            document.getElementById(`status-${m.id}`).textContent = "Correct.";
+          } else {
+            c.classList.add("bad");
+            document.getElementById(`status-${m.id}`).textContent = "Try again.";
+          }
+        }
+      });
+    });
+
+    const ok = correct === missions.length;
+    addCheck(ok, 20);
+    if(ok){
+      completeTab("tab5", 14);
+      showFeedback("missionFeedback","good","✅ Great job. All four sign missions are correct.");
+    } else {
+      showFeedback("missionFeedback","bad",`❌ You got <strong>${correct}/4</strong> correct. Think about above/below zero and gain/loss.`);
+    }
+  });
+
+  document.getElementById("resetMissions").addEventListener("click", () => {
+    state.missionAnswers = {};
+    document.querySelectorAll('#missionGrid .choice').forEach(c => c.classList.remove("active","correct","bad"));
+    missions.forEach(m => document.getElementById(`status-${m.id}`).textContent = "Choose one.");
+    document.getElementById("missionFeedback").className = "feedback";
+    document.getElementById("missionFeedback").innerHTML = "";
+  });
+
+  // Tab 6 mastery
+  document.getElementById("checkMastery").addEventListener("click", () => {
+    const m1 = parseIntClean(document.getElementById("m1").value) === -6;
+    const m2 = parseIntClean(document.getElementById("m2").value) === 15;
+    const m3 = document.getElementById("m3").value === "Quadrant IV";
+    const m4 = document.getElementById("m4").value.replace(/\s+/g,"").replace(/[−–—]/g,"-") === "(-5,-3)";
+    const m5 = document.getElementById("m5").value === "True";
+
+    const score = [m1,m2,m3,m4,m5].filter(Boolean).length;
+    const ok = score >= 4;
+    addCheck(ok, 30);
+    if(ok) completeTab("tab6", 18);
+
+    if(score === 5){
+      showFeedback("masteryFeedback","good","✅ Perfect score. Full mastery.");
+    } else if(score >= 4){
+      showFeedback("masteryFeedback","good",`✅ Strong work. You scored <strong>${score}/5</strong>.`);
+    } else {
+      showFeedback("masteryFeedback","bad",`❌ You scored <strong>${score}/5</strong>. Replay the arcade tabs and try again.`);
+    }
+
+    if(state.tabsDone.size === 6){
+      const accuracy = Math.round((state.correct / Math.max(1,state.checks)) * 100);
+      document.getElementById("celebrateBox").classList.add("show");
+      document.getElementById("celebrateText").innerHTML =
+        `You finished all 6 tabs, completed <strong>${state.checks}</strong> checks, got <strong>${state.correct}</strong> correct, earned <strong>${state.xp} XP</strong>, and finished with <strong>${accuracy}%</strong> check accuracy.`;
+    }
+  });
+
+  document.getElementById("resetMastery").addEventListener("click", () => {
+    ["m1","m2","m4"].forEach(id => document.getElementById(id).value = "");
+    ["m3","m5"].forEach(id => document.getElementById(id).selectedIndex = 0);
+    document.getElementById("masteryFeedback").className = "feedback";
+    document.getElementById("masteryFeedback").innerHTML = "";
+  });
+
+  // helpers
+  function parseIntClean(v){
+    const s = String(v).trim().replace(/[−–—]/g,"-");
+    if(!/^-?\d+$/.test(s)) return null;
+    return parseInt(s,10);
+  }
+
+  function init(){
+    updateScoreboard();
+    bindSort();
+    buildTicks();
+    renderNumberLine();
+    drawPlane();
+    buildPointButtons();
+    buildMissions();
+
+    startSelect.addEventListener("change", renderNumberLine);
+    oppSelect.addEventListener("change", renderNumberLine);
+    window.addEventListener("resize", renderNumberLine);
+  }
+
+  init();
+})();
+</script>
 </body>
 </html>

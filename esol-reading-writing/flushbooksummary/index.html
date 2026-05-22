@@ -1,37 +1,792 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Flushbooksummary classroom activity.">
-  <title>Flushbooksummary</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flush Interactive Review Mission</title>
+  <style>
+    :root{
+      --navy:#09243a;
+      --deep:#0d344f;
+      --teal:#0f7c8a;
+      --aqua:#52c7d8;
+      --mint:#c8f1e7;
+      --cream:#fff6df;
+      --sand:#f5d79e;
+      --coral:#ff7b67;
+      --gold:#f5b84b;
+      --ink:#102336;
+      --muted:#557086;
+      --white:#ffffff;
+      --danger:#e45646;
+      --success:#22a06b;
+      --shadow: 0 18px 50px rgba(5, 26, 42, .18);
+      --soft-shadow: 0 10px 24px rgba(5, 26, 42, .12);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --border: 2px solid rgba(9,36,58,.13);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Calibri, Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(82,199,216,.26), transparent 35%),
+        radial-gradient(circle at 85% 14%, rgba(245,184,75,.20), transparent 30%),
+        linear-gradient(180deg, #f4fbfb 0%, #fff9ea 48%, #eef9f8 100%);
+      line-height:1.45;
+    }
+
+    .app-shell{display:grid; grid-template-columns: 290px 1fr; min-height:100vh;}
+    .side{
+      position:sticky; top:0; height:100vh; overflow:auto;
+      background:linear-gradient(180deg, var(--navy), #0b3e59 70%, #0c5564);
+      color:white; padding:26px 18px; box-shadow: 8px 0 26px rgba(4,19,35,.15); z-index:20;
+    }
+    .brand{display:flex; align-items:center; gap:12px; margin-bottom:18px}
+    .brand-mark{
+      width:56px; height:56px; border-radius:18px;
+      background:linear-gradient(135deg, var(--aqua), var(--gold));
+      display:grid; place-items:center; font-size:31px; box-shadow: inset 0 -4px rgba(0,0,0,.1);
+    }
+    .brand h1{font-size:22px; line-height:1.02; margin:0; letter-spacing:.2px}
+    .brand p{margin:3px 0 0; color:rgba(255,255,255,.74); font-size:13px;}
+    .progress-card{
+      background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
+      border-radius:22px; padding:16px; margin:18px 0; backdrop-filter: blur(8px);
+    }
+    .progress-top{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:8px;}
+    .progress-top strong{font-size:14px; text-transform:uppercase; letter-spacing:.08em}
+    .progress-top span{font-size:22px; font-weight:800; color:var(--mint)}
+    .meter{height:12px; border-radius:999px; background:rgba(255,255,255,.2); overflow:hidden; border:1px solid rgba(255,255,255,.16)}
+    .meter > div{height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg, var(--gold), var(--aqua)); transition:width .45s ease;}
+    .side nav{display:grid; gap:8px; margin-top:16px}
+    .side a{
+      color:white; text-decoration:none; font-weight:700; font-size:15px;
+      padding:11px 12px; border-radius:14px; display:flex; align-items:center; gap:9px;
+      background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10);
+    }
+    .side a:hover,.side a.active{background:rgba(82,199,216,.20); border-color:rgba(255,255,255,.25); transform:translateX(2px)}
+    .side .small-note{font-size:12px; color:rgba(255,255,255,.72); margin-top:18px;}
+    .reset-btn,.print-btn{
+      width:100%; border:none; cursor:pointer; margin-top:9px;
+      border-radius:14px; padding:11px 12px; font-weight:800;
+      background:rgba(255,255,255,.92); color:var(--navy);
+    }
+    .print-btn{background:linear-gradient(135deg,var(--gold),#ffd37a)}
+
+    main{padding:26px clamp(18px, 4vw, 56px) 60px; max-width:1300px; width:100%;}
+    section{margin:26px 0 34px; scroll-margin-top:20px;}
+    .hero{
+      position:relative; overflow:hidden; color:white;
+      background:
+        linear-gradient(135deg, rgba(9,36,58,.95), rgba(15,124,138,.82)),
+        radial-gradient(circle at 75% 28%, rgba(245,184,75,.7), transparent 26%);
+      border-radius:32px; min-height:420px; padding:36px; box-shadow:var(--shadow);
+      display:grid; grid-template-columns: 1.05fr .95fr; gap:26px; align-items:center;
+    }
+    .hero:before,.hero:after{content:""; position:absolute; left:-5%; right:-5%; height:92px; background:rgba(255,255,255,.09); border-radius:50%; filter:blur(.2px);}
+    .hero:before{bottom:-38px; animation:wave 8s linear infinite;}
+    .hero:after{bottom:-55px; opacity:.65; animation:wave 12s linear infinite reverse;}
+    @keyframes wave{from{transform:translateX(-4%)} to{transform:translateX(4%)}}
+    .eyebrow{display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); border-radius:999px; padding:8px 12px; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:.08em;}
+    .hero h2{font-size: clamp(42px, 6vw, 82px); line-height:.9; margin:22px 0 12px; letter-spacing:-2.2px;}
+    .hero h2 span{color:var(--gold)}
+    .hero p{font-size:19px; max-width:640px; color:rgba(255,255,255,.86); margin:0 0 20px;}
+    .hero-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:18px}
+    .btn{
+      border:none; border-radius:16px; padding:13px 16px; font-weight:900; cursor:pointer;
+      background:var(--white); color:var(--navy); box-shadow:0 8px 18px rgba(5,26,42,.16); text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn.primary{background:linear-gradient(135deg,var(--gold),#ffdc8c)}
+    .btn.secondary{background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.25); color:white;}
+    .hero-visual{position:relative; min-height:330px;}
+    .water-card{
+      position:absolute; inset:20px 10px 10px; border-radius:32px; background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.2); backdrop-filter: blur(8px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07);
+    }
+    .boat{
+      position:absolute; left:7%; top:24%; width:82%; height:52%;
+      filter: drop-shadow(0 18px 16px rgba(0,0,0,.22));
+    }
+    .dye-trail{position:absolute; left:26%; right:8%; bottom:64px; height:18px; border-radius:999px; background:linear-gradient(90deg, rgba(255,123,103,.95), rgba(255,123,103,.18)); transform:rotate(5deg); animation:pulseTrail 2.2s ease-in-out infinite;}
+    @keyframes pulseTrail{50%{opacity:.65; transform:rotate(5deg) scaleX(.92)}}
+    .floating-badge{position:absolute; right:22px; top:12px; background:rgba(255,255,255,.92); color:var(--navy); border-radius:20px; padding:12px 14px; font-weight:900; box-shadow:var(--soft-shadow);}
+    .turtle{position:absolute; left:12%; bottom:22px; font-size:46px; transform:rotate(-8deg); animation:bob 3s ease-in-out infinite;}
+    @keyframes bob{50%{transform:translateY(-8px) rotate(-4deg)}}
+
+    .section-head{display:flex; align-items:end; justify-content:space-between; gap:18px; margin-bottom:16px;}
+    .section-head h2{font-size:34px; margin:0; line-height:1; color:var(--navy); letter-spacing:-.7px;}
+    .section-head p{max-width:760px; margin:6px 0 0; color:var(--muted); font-size:17px;}
+    .tag{display:inline-flex; align-items:center; gap:7px; font-weight:900; padding:7px 11px; border-radius:999px; background:var(--mint); color:#064250; font-size:13px; border:1px solid rgba(15,124,138,.15)}
+    .grid{display:grid; gap:18px;}
+    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr));}
+    .card{
+      background:rgba(255,255,255,.88); border:var(--border); border-radius:var(--radius); padding:20px; box-shadow:var(--soft-shadow);
+    }
+    .card h3{margin:0 0 9px; font-size:22px; color:var(--navy)}
+    .card p{margin:0 0 10px; color:#263f52;}
+    .stat-strip{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:18px;}
+    .stat{background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.18); border-radius:20px; padding:15px;}
+    .stat strong{display:block; font-size:26px; color:var(--gold);}
+    .stat span{display:block; color:rgba(255,255,255,.82); font-size:13px; font-weight:700;}
+
+    .mission-map{display:grid; grid-template-columns:1.2fr .8fr; gap:18px;}
+    .map-panel{position:relative; overflow:hidden; min-height:480px; background:linear-gradient(180deg,#d9f7ff,#fff4c8 72%,#e9c78a); border-radius:28px; border:var(--border); box-shadow:var(--shadow);}
+    .map-sky{height:58%; position:relative; overflow:hidden; background:linear-gradient(180deg,#bdefff,#e9fbff);}
+    .sun{position:absolute; right:60px; top:45px; width:88px; height:88px; border-radius:50%; background:radial-gradient(circle, #fff4a8 0,#ffc85b 60%,rgba(255,200,91,.1) 62%); box-shadow:0 0 55px rgba(245,184,75,.62);}
+    .cloud{position:absolute; background:white; border-radius:999px; opacity:.88; filter:drop-shadow(0 5px 5px rgba(0,0,0,.06));}
+    .cloud.c1{left:55px; top:58px; width:150px; height:36px}.cloud.c1:before{content:""; position:absolute; left:25px; top:-18px; width:52px; height:52px; border-radius:50%; background:white}.cloud.c1:after{content:""; position:absolute; right:25px; top:-12px; width:46px; height:46px; border-radius:50%; background:white}
+    .cloud.c2{left:330px; top:105px; width:118px; height:28px}.cloud.c2:before{content:""; position:absolute; left:18px; top:-14px; width:38px; height:38px; border-radius:50%; background:white}
+    .water{position:absolute; left:0; right:0; bottom:0; height:47%; background:linear-gradient(180deg,#3cc3d7,#126f88); overflow:hidden;}
+    .water:before,.water:after{content:""; position:absolute; left:-10%; right:-10%; height:58px; border-radius:50%; background:rgba(255,255,255,.22); top:-28px; animation:wave 7s ease-in-out infinite alternate;}
+    .water:after{top:-12px; opacity:.4; animation-duration:10s;}
+    .island{position:absolute; bottom:0; left:0; right:0; height:150px; background:linear-gradient(180deg,#f0cb7e,#d7a75e); clip-path: polygon(0 52%, 10% 45%, 19% 57%, 33% 44%, 44% 61%, 59% 50%, 75% 58%, 91% 43%, 100% 53%, 100% 100%, 0 100%);}
+    .hotspot{
+      position:absolute; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; border:3px solid #fff; background:var(--coral); color:white; font-weight:1000; cursor:pointer; box-shadow:0 12px 24px rgba(5,26,42,.24); z-index:5; animation:ring 2.6s infinite;
+    }
+    @keyframes ring{0%,100%{box-shadow:0 0 0 0 rgba(255,123,103,.45),0 12px 24px rgba(5,26,42,.24)}50%{box-shadow:0 0 0 12px rgba(255,123,103,0),0 12px 24px rgba(5,26,42,.24)}}
+    .hs-boat{left:51%; top:46%}.hs-beach{left:17%; bottom:92px}.hs-jail{left:9%; top:25%}.hs-turtle{right:16%; bottom:86px}.hs-green{right:8%; top:19%}
+    .svg-boat{position:absolute; width:270px; left:43%; top:38%; z-index:4; filter:drop-shadow(0 16px 16px rgba(5,26,42,.25));}
+    .map-caption{position:absolute; left:22px; right:22px; bottom:18px; z-index:8; background:rgba(255,255,255,.92); border:1px solid rgba(9,36,58,.13); border-radius:18px; padding:14px 16px; font-weight:800; color:var(--navy);}
+    .map-caption span{display:block; color:var(--muted); font-weight:700; font-size:14px; margin-top:2px;}
+    .info-stack{display:grid; gap:14px;}
+    .callout{border-left:7px solid var(--teal); background:#fff; padding:16px; border-radius:18px; box-shadow:var(--soft-shadow);}
+    .callout strong{display:block; color:var(--navy); margin-bottom:5px; font-size:18px;}
+
+    .flip-card{perspective:1000px; min-height:250px; cursor:pointer;}
+    .flip-inner{position:relative; width:100%; min-height:250px; transform-style:preserve-3d; transition: transform .55s cubic-bezier(.2,.75,.1,1);}
+    .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+    .front,.back{position:absolute; inset:0; backface-visibility:hidden; border-radius:var(--radius); padding:18px; border:var(--border); box-shadow:var(--soft-shadow); background:rgba(255,255,255,.92); display:flex; flex-direction:column;}
+    .front{overflow:hidden;}
+    .back{transform:rotateY(180deg); background:linear-gradient(180deg,#fff,#edfafa);}
+    .avatar{height:98px; border-radius:22px; background:linear-gradient(135deg, var(--mint), #fff0c1); display:grid; place-items:center; font-size:52px; margin-bottom:13px; border:1px solid rgba(9,36,58,.09);}
+    .role{font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:var(--teal); font-size:12px; margin-bottom:7px;}
+    .traits{display:flex; flex-wrap:wrap; gap:6px; margin-top:auto;}
+    .pill{font-size:12px; font-weight:800; padding:5px 8px; border-radius:999px; background:#eff7f8; color:#0b5664; border:1px solid rgba(15,124,138,.14)}
+    .back ul{margin:8px 0 0; padding-left:20px;}.back li{margin:5px 0;}
+
+    .theme-stage{display:grid; grid-template-columns:270px 1fr; gap:18px;}
+    .theme-tabs{display:grid; gap:10px;}
+    .theme-tab{border:none; border-radius:18px; padding:14px; text-align:left; cursor:pointer; font-weight:900; color:var(--navy); background:#fff; border:var(--border); box-shadow:var(--soft-shadow);}
+    .theme-tab.active{background:linear-gradient(135deg,var(--navy),var(--teal)); color:white; transform:translateX(4px)}
+    .theme-panel{background:#fff; border:var(--border); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); min-height:310px;}
+    .theme-panel .theme-icon{font-size:64px; float:right; margin-left:14px;}
+    .theme-panel h3{font-size:30px; color:var(--navy); margin:0 0 10px;}
+    .evidence-list{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;}
+    .evidence-list div{background:#f4fbfb; border:1px solid rgba(15,124,138,.13); border-radius:16px; padding:13px; font-weight:700;}
+    .sentence-box{margin-top:14px; padding:15px; border-radius:18px; background:#fff7df; border:2px dashed rgba(245,184,75,.55);}
+
+    .timeline-controls{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px;}
+    .timeline{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;}
+    .event-card{background:#fff; border:2px solid rgba(9,36,58,.13); border-radius:18px; padding:14px 14px 14px 54px; min-height:86px; position:relative; cursor:grab; box-shadow:var(--soft-shadow);}
+    .event-card:active{cursor:grabbing}
+    .event-card .num{position:absolute; left:13px; top:13px; width:29px; height:29px; border-radius:10px; display:grid; place-items:center; background:var(--navy); color:white; font-weight:900;}
+    .event-card h4{margin:0 0 3px; color:var(--navy);}.event-card p{margin:0; font-size:14px; color:var(--muted);}
+    .drag-over{outline:3px dashed var(--gold); outline-offset:4px;}
+    .feedback{margin-top:12px; font-weight:900; border-radius:16px; padding:12px 14px; display:none;}
+    .feedback.ok{display:block; background:#e9f8ef; color:#126143;}.feedback.no{display:block; background:#fff0eb; color:#98392e;}
+
+    .evidence-board{display:grid; grid-template-columns:1.1fr .9fr; gap:18px;}
+    .case-file{background:linear-gradient(180deg,#fff,#f7fbfb); border:var(--border); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow);}
+    .case-row{display:grid; grid-template-columns:1fr 210px; gap:10px; align-items:center; border-bottom:1px solid rgba(9,36,58,.09); padding:13px 0;}
+    .case-row:last-child{border-bottom:none}.case-row label{font-weight:800; color:var(--navy)}
+    select,input[type="text"],textarea{width:100%; border:2px solid rgba(9,36,58,.16); border-radius:14px; padding:10px 12px; font:inherit; background:#fff; color:var(--ink);}
+    textarea{min-height:110px; resize:vertical;}
+    .visual-board{position:relative; min-height:410px; border-radius:var(--radius); overflow:hidden; border:var(--border); background:linear-gradient(180deg,#e8faff,#fdf1ca); box-shadow:var(--shadow);}
+    .sticky-note{position:absolute; background:#fff7b7; border:2px solid rgba(9,36,58,.13); border-radius:12px; padding:10px; width:148px; box-shadow:0 10px 18px rgba(5,26,42,.16); font-weight:800; transform:rotate(-3deg);}
+    .sticky-note.n2{background:#d8fff3; right:22px; top:40px; transform:rotate(4deg)}.sticky-note.n3{background:#ffd7cf; left:44px; bottom:60px; transform:rotate(2deg)}.sticky-note.n4{background:#e5e2ff; right:60px; bottom:68px; transform:rotate(-4deg)}
+    .string{position:absolute; background:rgba(9,36,58,.25); height:3px; transform-origin:left center;}
+    .string.s1{left:150px; top:98px; width:230px; transform:rotate(18deg)}.string.s2{left:178px; bottom:123px; width:245px; transform:rotate(-28deg)}
+    .board-boat{position:absolute; left:calc(50% - 120px); top:150px; width:240px;}
+
+    .vocab-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px;}
+    .vocab-card{background:#fff; border:var(--border); border-radius:20px; padding:16px; box-shadow:var(--soft-shadow); min-height:175px; display:flex; flex-direction:column;}
+    .vocab-card .icon{font-size:36px; margin-bottom:8px}.vocab-card h4{margin:0; font-size:20px; color:var(--navy)}.vocab-card p{font-size:14px; color:var(--muted); margin:8px 0 0}.vocab-card button{margin-top:auto;}
+    .mini-btn{border:none; border-radius:12px; padding:8px 10px; background:#eff7f8; color:var(--teal); font-weight:900; cursor:pointer;}
+
+    .quiz-shell{display:grid; grid-template-columns:.86fr 1.14fr; gap:18px;}
+    .quiz-card{background:#fff; border:var(--border); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); min-height:360px;}
+    .question-top{display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:14px;}.question-top strong{font-size:14px; color:var(--teal); text-transform:uppercase; letter-spacing:.08em}.score-badge{background:var(--navy); color:white; border-radius:999px; padding:8px 11px; font-weight:900;}
+    .quiz-card h3{font-size:26px; margin:0 0 14px; color:var(--navy)}
+    .answers{display:grid; gap:10px;}.answer{border:2px solid rgba(9,36,58,.13); background:#fff; border-radius:16px; padding:13px; text-align:left; cursor:pointer; font-weight:800; color:var(--ink);}.answer:hover{border-color:var(--aqua); background:#f1fbfc}.answer.correct{background:#e8f8ef; border-color:#51b981}.answer.wrong{background:#fff0eb; border-color:#e58978}
+    .quiz-visual{position:relative; border-radius:var(--radius); overflow:hidden; border:var(--border); box-shadow:var(--shadow); background:linear-gradient(180deg,#bdefff,#206e88); min-height:360px; padding:22px; color:white;}
+    .bubble{position:absolute; bottom:-30px; width:18px; height:18px; border-radius:50%; background:rgba(255,255,255,.55); animation:bubble 7s linear infinite;}.b1{left:18%; animation-delay:0s}.b2{left:36%; width:11px; height:11px; animation-delay:2s}.b3{left:72%; width:25px; height:25px; animation-delay:1s}.b4{left:88%; width:14px; height:14px; animation-delay:4s}@keyframes bubble{to{transform:translateY(-420px); opacity:0}}
+    .review-radar{position:relative; z-index:2; background:rgba(9,36,58,.44); border:1px solid rgba(255,255,255,.22); border-radius:22px; padding:18px; backdrop-filter:blur(7px)}
+    .radar-grid{display:grid; gap:10px; margin-top:12px}.radar-item{display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(255,255,255,.1); padding:10px 12px; border-radius:14px; font-weight:800}.radar-item span:last-child{color:var(--gold)}
+
+    .challenge{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+    .rubric{display:grid; gap:10px;}.check-row{display:flex; gap:10px; align-items:flex-start; background:#fff; border:var(--border); border-radius:16px; padding:12px; box-shadow:var(--soft-shadow);}.check-row input{margin-top:4px; transform:scale(1.2)}.check-row strong{color:var(--navy)}.check-row span{display:block; color:var(--muted); font-size:14px;}
+    .certificate{background:linear-gradient(135deg,#fffef7,#e8fbfb); border:3px solid rgba(9,36,58,.18); border-radius:28px; padding:24px; text-align:center; box-shadow:var(--shadow); position:relative; overflow:hidden;}
+    .certificate:before{content:""; position:absolute; inset:14px; border:2px dashed rgba(245,184,75,.7); border-radius:22px; pointer-events:none;}.certificate h3{font-size:30px; margin:0; color:var(--navy)}.certificate .seal{width:86px; height:86px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--coral)); color:white; display:grid; place-items:center; font-size:40px; margin:18px auto; box-shadow:var(--soft-shadow)}
+
+    details{background:#fff; border:var(--border); border-radius:18px; padding:12px 14px; box-shadow:var(--soft-shadow);} summary{cursor:pointer; font-weight:900; color:var(--navy);} details p{margin:8px 0 0; color:var(--muted);}
+    .teacher-key{display:grid; gap:10px; margin-top:16px;}
+    .footer{color:var(--muted); font-size:13px; border-top:1px solid rgba(9,36,58,.14); padding-top:18px; margin-top:40px;}
+
+    @media (max-width: 980px){
+      .app-shell{grid-template-columns:1fr}.side{position:relative;height:auto}.side nav{grid-template-columns:repeat(2,minmax(0,1fr))}.hero,.mission-map,.theme-stage,.evidence-board,.quiz-shell,.challenge{grid-template-columns:1fr}.grid.cols-3,.grid.cols-4,.vocab-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-strip{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width: 640px){
+      main{padding:14px}.hero{padding:22px}.hero h2{font-size:46px}.side nav{grid-template-columns:1fr}.grid.cols-2,.grid.cols-3,.grid.cols-4,.timeline,.vocab-grid,.evidence-list{grid-template-columns:1fr}.case-row{grid-template-columns:1fr}.section-head{display:block}.svg-boat{width:210px; left:34%;}.hotspot{width:40px;height:40px}
+    }
+    @media print{
+      .side,.hero-actions,.timeline-controls,.btn,.mini-btn,.reset-btn,.print-btn{display:none!important}
+      .app-shell{display:block} body{background:white} main{max-width:100%; padding:0} section,.card,.quiz-card,.certificate{box-shadow:none; break-inside:avoid}.hero{color:#102336; background:#fff; box-shadow:none; border:2px solid #102336}.hero p,.brand p{color:#102336}.flip-inner{transform:none!important}.front,.back{position:relative; transform:none; min-height:auto; margin-bottom:10px}.back{display:block}.theme-stage,.evidence-board,.quiz-shell,.challenge{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/esol-reading-writing/">ESOL, Reading, and Writing</a><span>/</span><span>Flushbooksummary</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Flushbooksummary</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
-
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Flushbooksummary</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/esol-reading-writing/flushbooksummary/</span></p>
+  <div class="app-shell">
+    <aside class="side">
+      <div class="brand">
+        <div class="brand-mark">🌊</div>
+        <div>
+          <h1>Flush Review Mission</h1>
+          <p>Interactive book review for Grade 6</p>
+        </div>
       </div>
-    </section>
+      <div class="progress-card">
+        <div class="progress-top"><strong>Mission Progress</strong><span id="progressPct">0%</span></div>
+        <div class="meter"><div id="progressBar"></div></div>
+        <p class="small-note">Complete activities to unlock stronger review confidence.</p>
+      </div>
+      <nav id="navLinks">
+        <a href="#briefing">🚤 Mission Briefing</a>
+        <a href="#map">🗺️ Setting Map</a>
+        <a href="#characters">👥 Characters</a>
+        <a href="#themes">💡 Themes</a>
+        <a href="#timeline">🧭 Event Timeline</a>
+        <a href="#evidence">🧪 Evidence Board</a>
+        <a href="#vocab">🧠 Vocabulary</a>
+        <a href="#quiz">🎮 Review Game</a>
+        <a href="#final">🏁 Final Challenge</a>
+      </nav>
+      <button class="print-btn" onclick="window.print()">Print / Save Review Sheet</button>
+      <button class="reset-btn" onclick="resetMission()">Restart Mission</button>
+      <p class="small-note">Spoiler warning: this review covers major plot events and the ending.</p>
+    </aside>
 
-    <div class="button-row">
-      <a class="primary-button" href="/esol-reading-writing/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
-    </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+    <main>
+      <section class="hero" id="briefing">
+        <div>
+          <span class="eyebrow">📘 Carl Hiaasen • Environmental Mystery • Florida Keys</span>
+          <h2><span>Flush</span><br/>Review Mission</h2>
+          <p>Help Noah Underwood build a clear case against greed, pollution, and bullying. Review the big ideas, character moves, plot evidence, themes, and final message of the novel in one visual mission.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#map">Start Mission</a>
+            <button class="btn secondary" onclick="complete('briefing')">Mark Briefing Complete</button>
+          </div>
+          <div class="stat-strip">
+            <div class="stat"><strong>Noah</strong><span>Narrator + problem solver</span></div>
+            <div class="stat"><strong>Abbey</strong><span>Brave younger sister</span></div>
+            <div class="stat"><strong>Coral Queen</strong><span>Casino boat at the center</span></div>
+            <div class="stat"><strong>Royal Flush</strong><span>The proof plan</span></div>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Illustration of a casino boat on water">
+          <div class="water-card"></div>
+          <div class="floating-badge">Mission: prove it</div>
+          <svg class="boat" viewBox="0 0 520 280" role="img" aria-label="Original illustration of Coral Queen-style casino boat">
+            <defs>
+              <linearGradient id="boatHull" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6df"/><stop offset="1" stop-color="#f5d79e"/></linearGradient>
+            </defs>
+            <path d="M62 180 L468 180 L422 230 L118 230 Z" fill="url(#boatHull)" stroke="#09243a" stroke-width="8"/>
+            <rect x="126" y="88" width="274" height="96" rx="14" fill="#ffffff" stroke="#09243a" stroke-width="7"/>
+            <rect x="164" y="108" width="46" height="35" rx="7" fill="#52c7d8" stroke="#09243a" stroke-width="5"/>
+            <rect x="236" y="108" width="46" height="35" rx="7" fill="#52c7d8" stroke="#09243a" stroke-width="5"/>
+            <rect x="308" y="108" width="46" height="35" rx="7" fill="#52c7d8" stroke="#09243a" stroke-width="5"/>
+            <path d="M190 88 L226 44 L330 44 L366 88" fill="#ff7b67" stroke="#09243a" stroke-width="7"/>
+            <text x="260" y="166" text-anchor="middle" font-size="34" font-weight="900" fill="#09243a" font-family="Calibri,Arial">CORAL QUEEN</text>
+            <circle cx="128" cy="229" r="11" fill="#09243a"/><circle cx="392" cy="229" r="11" fill="#09243a"/>
+          </svg>
+          <div class="dye-trail"></div>
+          <div class="turtle" aria-hidden="true">🐢</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="tag">🎯 Big Picture</span>
+            <h2>The novel in one clear idea</h2>
+            <p><em>Flush</em> is about a kid who learns that doing the right thing takes evidence, courage, and teamwork—not just anger.</p>
+          </div>
+        </div>
+        <div class="grid cols-3">
+          <article class="card">
+            <h3>Central Problem</h3>
+            <p>Dusty Muleman’s casino boat is suspected of dumping sewage into the ocean, but Noah’s family needs proof that the Coral Queen is the source.</p>
+          </article>
+          <article class="card">
+            <h3>Main Conflict</h3>
+            <p>Noah wants justice, Paine wants action, Donna wants stability, and Dusty wants money. The story keeps asking: what is the smartest way to fight wrong?</p>
+          </article>
+          <article class="card">
+            <h3>Takeaway</h3>
+            <p>Strong values matter, but values become powerful when people use planning, evidence, and courage to protect others.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="map">
+        <div class="section-head">
+          <div>
+            <span class="tag">🗺️ Explore the Setting</span>
+            <h2>Florida Keys mission map</h2>
+            <p>Click the glowing markers to review the places and symbols that matter most.</p>
+          </div>
+          <button class="btn" onclick="complete('map')">Mark Map Complete</button>
+        </div>
+        <div class="mission-map">
+          <div class="map-panel">
+            <div class="map-sky"><div class="sun"></div><div class="cloud c1"></div><div class="cloud c2"></div></div>
+            <div class="water"></div>
+            <div class="island"></div>
+            <svg class="svg-boat" viewBox="0 0 520 280" aria-hidden="true">
+              <path d="M62 180 L468 180 L422 230 L118 230 Z" fill="#fff6df" stroke="#09243a" stroke-width="8"/>
+              <rect x="126" y="88" width="274" height="96" rx="14" fill="#ffffff" stroke="#09243a" stroke-width="7"/>
+              <rect x="164" y="108" width="46" height="35" rx="7" fill="#52c7d8" stroke="#09243a" stroke-width="5"/>
+              <rect x="236" y="108" width="46" height="35" rx="7" fill="#52c7d8" stroke="#09243a" stroke-width="5"/>
+              <rect x="308" y="108" width="46" height="35" rx="7" fill="#52c7d8" stroke="#09243a" stroke-width="5"/>
+              <path d="M190 88 L226 44 L330 44 L366 88" fill="#ff7b67" stroke="#09243a" stroke-width="7"/>
+              <text x="260" y="166" text-anchor="middle" font-size="32" font-weight="900" fill="#09243a" font-family="Calibri,Arial">CORAL QUEEN</text>
+            </svg>
+            <button class="hotspot hs-jail" data-map="Paine begins the story in jail because he sank the Coral Queen as a protest. This creates the family conflict: was he wrong, right, or both?">1</button>
+            <button class="hotspot hs-boat" data-map="The Coral Queen is the casino boat Noah must connect to the pollution. It represents greed, secrecy, and the need for evidence.">2</button>
+            <button class="hotspot hs-beach" data-map="Thunder Beach and the shoreline show the human cost of pollution: closed beaches, unsafe water, and damaged community trust.">3</button>
+            <button class="hotspot hs-turtle" data-map="Sea life reminds readers that pollution hurts more than people. Environmental responsibility is one of the novel’s biggest ideas.">4</button>
+            <button class="hotspot hs-green" data-map="The green flash at the end works like a symbol of hope, repair, and the family finally getting a moment of peace together.">5</button>
+            <div class="map-caption" id="mapCaption">Tap a marker. <span>Build your mental map before playing the review games.</span></div>
+          </div>
+          <div class="info-stack">
+            <div class="callout"><strong>Setting matters.</strong>The Florida Keys are not just a background. The water, beaches, boats, and wildlife create the stakes of the story.</div>
+            <div class="callout"><strong>Visual clue:</strong>Every important place connects to a question: Who has power? Who is harmed? What evidence proves the truth?</div>
+            <div class="callout"><strong>Review move:</strong>When explaining a scene, name the setting first. Then explain how the setting increases the conflict.</div>
+            <details>
+              <summary>Quick writing frame</summary>
+              <p>The setting of __________ matters because it shows __________. This affects Noah by __________.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="characters">
+        <div class="section-head">
+          <div>
+            <span class="tag">👥 Character Lab</span>
+            <h2>Characters, motives, and changes</h2>
+            <p>Click each card to flip it. Focus on what each character wants, what they do, and what they reveal about the novel’s message.</p>
+          </div>
+          <button class="btn" onclick="complete('characters')">Mark Characters Complete</button>
+        </div>
+        <div class="grid cols-4" id="characterGrid"></div>
+      </section>
+
+      <section id="themes">
+        <div class="section-head">
+          <div>
+            <span class="tag">💡 Theme Analyzer</span>
+            <h2>Big ideas that keep returning</h2>
+            <p>Choose a theme, study the evidence, then say the theme in a complete sentence.</p>
+          </div>
+          <button class="btn" onclick="complete('themes')">Mark Themes Complete</button>
+        </div>
+        <div class="theme-stage">
+          <div class="theme-tabs" id="themeTabs"></div>
+          <div class="theme-panel" id="themePanel"></div>
+        </div>
+      </section>
+
+      <section id="timeline">
+        <div class="section-head">
+          <div>
+            <span class="tag">🧭 Plot Timeline</span>
+            <h2>Put the major events in order</h2>
+            <p>Drag the cards into the correct order. Then check your sequence.</p>
+          </div>
+        </div>
+        <div class="timeline-controls">
+          <button class="btn" onclick="shuffleTimeline()">Shuffle Events</button>
+          <button class="btn primary" onclick="checkTimeline()">Check Order</button>
+          <button class="btn" onclick="complete('timeline')">Mark Timeline Complete</button>
+        </div>
+        <div class="timeline" id="timelineList"></div>
+        <div id="timelineFeedback" class="feedback"></div>
+      </section>
+
+      <section id="evidence">
+        <div class="section-head">
+          <div>
+            <span class="tag">🧪 Evidence Board</span>
+            <h2>Match the clue to the claim</h2>
+            <p>Good readers do not just say what happened. They explain how each clue proves or develops an idea.</p>
+          </div>
+        </div>
+        <div class="evidence-board">
+          <div class="case-file">
+            <h3>Case File: Operation Royal Flush</h3>
+            <p>Choose the best claim for each piece of evidence.</p>
+            <div id="caseRows"></div>
+            <button class="btn primary" onclick="checkEvidence()">Check Evidence Matches</button>
+            <button class="btn" onclick="complete('evidence')">Mark Evidence Complete</button>
+            <div id="evidenceFeedback" class="feedback"></div>
+          </div>
+          <div class="visual-board" aria-label="Evidence board illustration">
+            <div class="sticky-note n1" style="left:24px; top:30px;">Food dye trail</div>
+            <div class="sticky-note n2">Witness needed</div>
+            <div class="sticky-note n3">Beach warning</div>
+            <div class="sticky-note n4">Who benefits?</div>
+            <div class="string s1"></div><div class="string s2"></div>
+            <svg class="board-boat" viewBox="0 0 520 280" aria-hidden="true">
+              <path d="M62 180 L468 180 L422 230 L118 230 Z" fill="#fff6df" stroke="#09243a" stroke-width="8"/>
+              <rect x="126" y="88" width="274" height="96" rx="14" fill="#ffffff" stroke="#09243a" stroke-width="7"/>
+              <path d="M190 88 L226 44 L330 44 L366 88" fill="#ff7b67" stroke="#09243a" stroke-width="7"/>
+              <text x="260" y="166" text-anchor="middle" font-size="32" font-weight="900" fill="#09243a" font-family="Calibri,Arial">CASE</text>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section id="vocab">
+        <div class="section-head">
+          <div>
+            <span class="tag">🧠 Vocabulary Dock</span>
+            <h2>Words that help you explain the book</h2>
+            <p>Tap “Use it” to get a sentence frame for each word.</p>
+          </div>
+          <button class="btn" onclick="complete('vocab')">Mark Vocabulary Complete</button>
+        </div>
+        <div class="vocab-grid" id="vocabGrid"></div>
+      </section>
+
+      <section id="quiz">
+        <div class="section-head">
+          <div>
+            <span class="tag">🎮 Review Game</span>
+            <h2>Coral Queen Quick-Fire</h2>
+            <p>Answer 15 questions. The goal is not just speed—it is accurate recall plus theme thinking.</p>
+          </div>
+        </div>
+        <div class="quiz-shell">
+          <div class="quiz-card">
+            <div class="question-top"><strong id="qCount">Question 1 of 15</strong><span class="score-badge" id="scoreBadge">Score: 0</span></div>
+            <h3 id="questionText"></h3>
+            <div class="answers" id="answers"></div>
+            <div id="quizFeedback" class="feedback"></div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+              <button class="btn" onclick="nextQuestion()">Next</button>
+              <button class="btn" onclick="restartQuiz()">Restart Quiz</button>
+            </div>
+          </div>
+          <div class="quiz-visual">
+            <div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div><div class="bubble b4"></div>
+            <div class="review-radar">
+              <h3 style="margin:0;font-size:28px;">Review Radar</h3>
+              <p style="color:rgba(255,255,255,.86);">By the end, you should be able to explain these without looking:</p>
+              <div class="radar-grid">
+                <div class="radar-item"><span>Main conflict</span><span>pollution + proof</span></div>
+                <div class="radar-item"><span>Key plan</span><span>food dye</span></div>
+                <div class="radar-item"><span>Big theme</span><span>courage with brains</span></div>
+                <div class="radar-item"><span>Ending symbol</span><span>green flash</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="final">
+        <div class="section-head">
+          <div>
+            <span class="tag">🏁 Final Challenge</span>
+            <h2>Write like a book reviewer</h2>
+            <p>Use the review mission to write a strong final response. Save or print when finished.</p>
+          </div>
+          <button class="btn" onclick="complete('final')">Mark Final Complete</button>
+        </div>
+        <div class="challenge">
+          <div class="card">
+            <h3>Final Prompt</h3>
+            <p><strong>Explain how Noah uses courage, evidence, and teamwork to expose the truth in <em>Flush</em>.</strong> Include at least two important events and one theme.</p>
+            <textarea id="finalResponse" placeholder="Start with: In Flush, Noah shows courage by..."></textarea>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+              <button class="btn primary" onclick="saveFinal()">Save Response</button>
+              <button class="btn" onclick="loadStarter()">Use Sentence Starter</button>
+            </div>
+          </div>
+          <div>
+            <div class="rubric">
+              <label class="check-row"><input type="checkbox" class="rubricCheck"><div><strong>I named the central problem.</strong><span>Dusty, the Coral Queen, pollution, and proof.</span></div></label>
+              <label class="check-row"><input type="checkbox" class="rubricCheck"><div><strong>I included two key events.</strong><span>Example: Paine’s arrest, Operation Royal Flush, the rescue, the Coral Queen fire.</span></div></label>
+              <label class="check-row"><input type="checkbox" class="rubricCheck"><div><strong>I explained a theme.</strong><span>Not just a topic like courage, but a message about courage.</span></div></label>
+              <label class="check-row"><input type="checkbox" class="rubricCheck"><div><strong>I used clear academic language.</strong><span>Evidence, conflict, theme, character, consequence, symbol.</span></div></label>
+            </div>
+          </div>
+        </div>
+        <div class="certificate" style="margin-top:18px;">
+          <h3>Mission Certificate</h3>
+          <div class="seal">🌊</div>
+          <p><strong id="certText">Complete the mission activities to earn review confidence.</strong></p>
+          <p>Reader skill focus: summarize, explain evidence, connect characters to themes, and write a final response.</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div>
+            <span class="tag">✅ Parent Check</span>
+            <h2>What “ready” sounds like</h2>
+            <p>Use these quick prompts to check review understanding without turning it into a worksheet.</p>
+          </div>
+        </div>
+        <div class="grid cols-3">
+          <details open><summary>60-second summary</summary><p>Tell the story from Paine’s arrest to Operation Royal Flush to the green flash. Keep it under one minute.</p></details>
+          <details open><summary>Theme check</summary><p>Choose one: courage, family, greed, environment, or values in conflict. Explain the message in one complete sentence.</p></details>
+          <details open><summary>Evidence check</summary><p>Name one clue that proves the Coral Queen is connected to the pollution. Explain why that clue matters.</p></details>
+        </div>
+      </section>
+
+      <div class="footer">
+        <p><strong>Copyright-safe note:</strong> This original review tool uses student-friendly summaries and custom illustrations. It does not reproduce official book art or long passages from the novel.</p>
+        <p>Source base for factual review content: public publisher/author summaries and educator guide descriptions for <em>Flush</em> by Carl Hiaasen. Students should use their own book copy for page-specific evidence.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'flushReviewMission_v1';
+    const completed = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+    const activities = ['briefing','map','characters','themes','timeline','evidence','vocab','quiz','final'];
+
+    function complete(id){ completed.add(id); persistProgress(); }
+    function persistProgress(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...completed]));
+      const pct = Math.round((completed.size / activities.length) * 100);
+      document.getElementById('progressPct').textContent = pct + '%';
+      document.getElementById('progressBar').style.width = pct + '%';
+      const cert = document.getElementById('certText');
+      if(cert) cert.textContent = pct === 100 ? 'Mission complete: you are ready to explain Flush with evidence.' : `${completed.size}/${activities.length} mission checkpoints complete.`;
+    }
+    function resetMission(){
+      if(!confirm('Restart mission progress and quiz score?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem('flushFinalResponse');
+      completed.clear();
+      restartQuiz();
+      shuffleTimeline();
+      document.getElementById('finalResponse').value='';
+      document.querySelectorAll('.rubricCheck').forEach(c=>c.checked=false);
+      persistProgress();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    document.querySelectorAll('.hotspot').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.getElementById('mapCaption').innerHTML = btn.dataset.map + '<span>Ask: What does this place or symbol reveal about the conflict?</span>';
+      });
+    });
+
+    const characters = [
+      {name:'Noah Underwood', avatar:'🧢', role:'Narrator / problem solver', traits:['loyal','observant','brave'], back:['Wants to help his father without destroying his family.','Learns that evidence is stronger than anger.','Uses planning and teamwork to expose wrongdoing.'], q:'How is Noah similar to Paine, and how is he different?'},
+      {name:'Abbey Underwood', avatar:'🎥', role:'Younger sister / risk-taker', traits:['bold','protective','quick'], back:['Tries to gather evidence herself with the video camera.','Helps with the getaway during Operation Royal Flush.','Shows courage, but sometimes acts before thinking through danger.'], q:'Why does Abbey make Noah a stronger problem-solver?'},
+      {name:'Paine Underwood', avatar:'⚓', role:'Father / environmental activist', traits:['passionate','reckless','principled'], back:['Sinks the Coral Queen because he believes Dusty is polluting.','His values are strong, but his method puts his family under stress.','Raises the question: can a good cause excuse breaking the law?'], q:'Is Paine heroic, reckless, or both? Explain.'},
+      {name:'Donna Underwood', avatar:'🏠', role:'Mother / stability keeper', traits:['practical','worried','protective'], back:['Wants her family safe and together.','Gets tired of Paine’s arrests and risky actions.','Represents the cost that activism can place on family life.'], q:'Why is Donna’s point of view important?'},
+      {name:'Dusty Muleman', avatar:'💰', role:'Antagonist / casino owner', traits:['greedy','dishonest','powerful'], back:['Wants profit and control.','Uses influence and intimidation to avoid consequences.','Shows how greed can harm a whole community.'], q:'How does Dusty represent greed and corruption?'},
+      {name:'Shelly', avatar:'🍹', role:'Ally / inside connection', traits:['tough','clever','courageous'], back:['Knows the Coral Queen world from the inside.','Helps make Operation Royal Flush possible.','Shows courage by helping even when it puts her at risk.'], q:'Why is Shelly’s help different from Noah and Abbey’s help?'},
+      {name:'Lice Peeking', avatar:'🕵️', role:'Potential witness', traits:['unreliable','fearful','important'], back:['Could connect Dusty to the dumping.','His disappearance makes the mystery feel more dangerous.','Shows that truth can be hard to prove when witnesses are scared.'], q:'Why does Lice matter even though he is unreliable?'},
+      {name:'Grandpa Bobby', avatar:'🏴‍☠️', role:'Mysterious rescuer', traits:['unexpected','resourceful','legendary'], back:['Appears at a critical danger point.','Connects the family story to adventure and survival.','Helps the children when the mission nearly fails.'], q:'How does Grandpa Bobby change the ending of the mission?'},
+      {name:'Jasper Jr. & Bull', avatar:'🥊', role:'Bullies / troublemakers', traits:['mean','impulsive','dangerous'], back:['Pressure and threaten Noah.','Show how bullying connects to power and insecurity.','Their actions later create major consequences for Dusty and the Coral Queen.'], q:'How does Noah use brains instead of fists?'},
+      {name:'Miles Umlatt', avatar:'📰', role:'Reporter', traits:['curious','public','important'], back:['Helps turn private conflict into public attention.','Shows how media can pressure powerful people.','Connects the story to public accountability.'], q:'Why does public attention matter in the case?'},
+      {name:'Luno', avatar:'🔦', role:'Security threat', traits:['intimidating','loyal to Dusty','dangerous'], back:['Represents the physical danger around Dusty’s operation.','Makes the children’s mission risky.','Shows how power can be enforced through fear.'], q:'What does Luno add to the suspense?'},
+      {name:'The Coral Queen', avatar:'🚢', role:'Symbol / problem center', traits:['profit','secrecy','pollution'], back:['The casino boat is more than a setting.','It concentrates the conflicts: greed, pollution, proof, law, and community harm.','Its fate helps reveal the consequences of corruption.'], q:'How can a boat function like a character or symbol?'}
+    ];
+    function renderCharacters(){
+      const grid = document.getElementById('characterGrid');
+      grid.innerHTML = characters.map((c,i)=>`<div class="flip-card" tabindex="0" role="button" aria-label="Flip character card for ${c.name}" onclick="this.classList.toggle('flipped')" onkeypress="if(event.key==='Enter') this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="front"><div class="avatar">${c.avatar}</div><div class="role">${c.role}</div><h3>${c.name}</h3><div class="traits">${c.traits.map(t=>`<span class="pill">${t}</span>`).join('')}</div></div>
+          <div class="back"><div class="role">Why ${c.name} matters</div><ul>${c.back.map(b=>`<li>${b}</li>`).join('')}</ul><div class="sentence-box"><strong>Review Question:</strong><br>${c.q}</div></div>
+        </div>
+      </div>`).join('');
+    }
+
+    const themes = [
+      {title:'Environmental Responsibility', icon:'🐢', topic:'Protecting nature requires action, but action becomes stronger when it is backed by proof.', evidence:['The polluted water affects beaches, swimmers, wildlife, and the community.','Noah’s team must prove the Coral Queen is the source instead of only believing it.'], frame:'One theme in Flush is that people must protect the environment, but they need evidence and teamwork to create real change.'},
+      {title:'Courage with Brains', icon:'🧠', topic:'The novel values brave choices, but it also shows that reckless choices can hurt people.', evidence:['Paine acts boldly but creates trouble for his family.','Noah and Abbey create a smarter plan that exposes the truth.'], frame:'A message about courage is that bravery works best when characters think carefully and use a plan.'},
+      {title:'Family Loyalty', icon:'👨‍👩‍👧‍👦', topic:'Noah’s family is messy, worried, and imperfect, but they keep trying to protect one another.', evidence:['Donna is frustrated with Paine but still cares about the family.','Noah and Abbey risk themselves partly because they believe in their father.'], frame:'The book shows that family loyalty can be complicated because love and disagreement can exist at the same time.'},
+      {title:'Values in Conflict', icon:'⚖️', topic:'Characters disagree about what “right” means when the law, family safety, and moral responsibility collide.', evidence:['Paine breaks the law to protest pollution.','Noah must decide how far he should go to help expose Dusty.'], frame:'The novel suggests that doing the right thing is not always simple, especially when laws and morals conflict.'},
+      {title:'Greed and Power', icon:'💰', topic:'Dusty’s greed damages people, wildlife, and public trust while he tries to avoid consequences.', evidence:['Dusty benefits financially from the Coral Queen.','He relies on intimidation, influence, and secrecy to protect himself.'], frame:'A theme about greed is that selfish choices can harm an entire community, especially when powerful people avoid accountability.'},
+      {title:'Bullying and Intimidation', icon:'🥊', topic:'The story shows bullying at multiple levels: kids bullying kids and adults using power to silence others.', evidence:['Jasper Jr. and Bull pressure Noah.','Dusty’s operation uses fear and connections to avoid being exposed.'], frame:'The book shows that bullies can be defeated when people use courage, evidence, and support instead of only fighting back.'}
+    ];
+    function renderThemes(){
+      const tabs = document.getElementById('themeTabs');
+      tabs.innerHTML = themes.map((t,i)=>`<button class="theme-tab ${i===0?'active':''}" onclick="selectTheme(${i})">${t.icon} ${t.title}</button>`).join('');
+      selectTheme(0);
+    }
+    function selectTheme(i){
+      document.querySelectorAll('.theme-tab').forEach((b,idx)=>b.classList.toggle('active',idx===i));
+      const t = themes[i];
+      document.getElementById('themePanel').innerHTML = `<div class="theme-icon">${t.icon}</div><h3>${t.title}</h3><p style="font-size:18px;">${t.topic}</p><div class="evidence-list">${t.evidence.map(e=>`<div>${e}</div>`).join('')}</div><div class="sentence-box"><strong>Theme sentence:</strong><br>${t.frame}</div>`;
+    }
+
+    const events = [
+      {id:1, title:'Paine is arrested', desc:'He sinks the Coral Queen because he believes Dusty is dumping sewage.'},
+      {id:2, title:'The family conflict grows', desc:'Donna worries about Paine’s choices while Noah and Abbey worry about proving the truth.'},
+      {id:3, title:'Noah looks for a witness', desc:'Lice Peeking might know about Dusty’s dumping, but he is unreliable and then disappears.'},
+      {id:4, title:'Abbey tries surveillance', desc:'She attempts to record evidence, but the video is too dark to prove the case.'},
+      {id:5, title:'Shelly joins the plan', desc:'Her inside knowledge helps Noah and Abbey create a stronger way to prove the dumping.'},
+      {id:6, title:'Operation Royal Flush', desc:'Food coloring is flushed to create a visible trail if the boat dumps waste.'},
+      {id:7, title:'The escape goes wrong', desc:'The kids are caught in danger when the boat engine fails and security appears.'},
+      {id:8, title:'Grandpa Bobby appears', desc:'The mysterious rescuer and Paine help bring Noah and Abbey back safely.'},
+      {id:9, title:'The Coral Queen is shut down', desc:'The dye trail gives authorities proof connected to the casino boat.'},
+      {id:10, title:'Dusty gets a small penalty', desc:'The weak consequence frustrates Paine and shows how hard accountability can be.'},
+      {id:11, title:'The Coral Queen burns', desc:'Suspicion falls on Paine, but the truth points to Jasper Jr. and Bull.'},
+      {id:12, title:'The family sees the green flash', desc:'The ending gives the family a hopeful moment after the conflict.'}
+    ];
+    function renderTimeline(list=events){
+      const el = document.getElementById('timelineList');
+      el.innerHTML = list.map((e,idx)=>`<div class="event-card" draggable="true" data-id="${e.id}"><div class="num">${idx+1}</div><h4>${e.title}</h4><p>${e.desc}</p></div>`).join('');
+      setupDrag();
+    }
+    function shuffleTimeline(){
+      const shuffled = [...events].sort(()=>Math.random()-.5);
+      renderTimeline(shuffled);
+      document.getElementById('timelineFeedback').className='feedback';
+      document.getElementById('timelineFeedback').textContent='';
+    }
+    let dragged;
+    function setupDrag(){
+      document.querySelectorAll('.event-card').forEach(card=>{
+        card.addEventListener('dragstart',()=>{dragged=card; setTimeout(()=>card.style.opacity=.4,0);});
+        card.addEventListener('dragend',()=>{card.style.opacity=1; document.querySelectorAll('.event-card').forEach(c=>c.classList.remove('drag-over')); updateEventNumbers();});
+        card.addEventListener('dragover',e=>{e.preventDefault(); card.classList.add('drag-over');});
+        card.addEventListener('dragleave',()=>card.classList.remove('drag-over'));
+        card.addEventListener('drop',e=>{e.preventDefault(); card.classList.remove('drag-over'); if(dragged && dragged!==card){ const list=document.getElementById('timelineList'); const cards=[...list.children]; const draggedIdx=cards.indexOf(dragged); const targetIdx=cards.indexOf(card); if(draggedIdx < targetIdx){ list.insertBefore(dragged, card.nextSibling); } else { list.insertBefore(dragged, card); } updateEventNumbers(); }});
+      });
+    }
+    function updateEventNumbers(){document.querySelectorAll('.event-card .num').forEach((n,i)=>n.textContent=i+1);}
+    function checkTimeline(){
+      const ids = [...document.querySelectorAll('.event-card')].map(c=>Number(c.dataset.id));
+      const correct = ids.every((id,i)=>id===i+1);
+      const f=document.getElementById('timelineFeedback');
+      f.className='feedback '+(correct?'ok':'no');
+      f.textContent=correct ? 'Correct sequence. You can explain the plot from conflict to resolution.' : 'Not yet. Hint: start with Paine’s arrest, then evidence gathering, then Operation Royal Flush, then consequences.';
+      if(correct) complete('timeline');
+    }
+
+    const evidenceItems = [
+      {e:'Paine sinks the Coral Queen.', a:'Values can conflict with the law.'},
+      {e:'Abbey’s video is too dark to prove anything.', a:'Belief is not enough without strong evidence.'},
+      {e:'Food coloring creates a visible trail from the boat.', a:'A smart plan can turn suspicion into proof.'},
+      {e:'Shelly helps from inside the Coral Queen.', a:'Teamwork matters because each ally brings different knowledge.'},
+      {e:'Dusty avoids serious consequences at first.', a:'Power and money can make accountability difficult.'},
+      {e:'The green flash ends the story.', a:'The ending suggests hope and family repair.'}
+    ];
+    const claimOptions = [...new Set(evidenceItems.map(x=>x.a))];
+    function renderEvidence(){
+      const rows=document.getElementById('caseRows');
+      rows.innerHTML=evidenceItems.map((item,i)=>`<div class="case-row"><label>${item.e}</label><select data-answer="${item.a}"><option value="">Choose the best claim...</option>${claimOptions.map(o=>`<option>${o}</option>`).join('')}</select></div>`).join('');
+    }
+    function checkEvidence(){
+      const selects=[...document.querySelectorAll('#caseRows select')];
+      const correct=selects.filter(s=>s.value===s.dataset.answer).length;
+      const f=document.getElementById('evidenceFeedback');
+      f.className='feedback '+(correct===selects.length?'ok':'no');
+      f.textContent = correct===selects.length ? 'Evidence board complete. You matched every clue to the strongest claim.' : `${correct}/${selects.length} correct. Reread the claim choices and ask: What idea does this clue prove?`;
+      if(correct===selects.length) complete('evidence');
+    }
+
+    const vocab = [
+      {word:'evidence', icon:'🧪', def:'information that proves or supports a claim.', frame:'The strongest evidence is __________ because it proves __________.'},
+      {word:'conflict', icon:'⚡', def:'the main problem or struggle in a story.', frame:'The central conflict begins when __________.'},
+      {word:'theme', icon:'💡', def:'a message or lesson about life, not just one word.', frame:'One theme is that __________.'},
+      {word:'civil disobedience', icon:'⚖️', def:'breaking a law as protest against something believed to be wrong.', frame:'Paine’s action could be called civil disobedience because __________.'},
+      {word:'accountability', icon:'📣', def:'being responsible for actions and consequences.', frame:'Dusty avoids accountability when __________.'},
+      {word:'intimidation', icon:'🔦', def:'using fear or threats to control someone.', frame:'The story shows intimidation when __________.'},
+      {word:'symbol', icon:'🌅', def:'an object or event that stands for a bigger idea.', frame:'The green flash may symbolize __________.'},
+      {word:'environmental responsibility', icon:'🐢', def:'protecting nature and considering the effects of human choices.', frame:'The novel teaches environmental responsibility by showing __________.'}
+    ];
+    function renderVocab(){
+      const grid=document.getElementById('vocabGrid');
+      grid.innerHTML=vocab.map((v,i)=>`<div class="vocab-card"><div class="icon">${v.icon}</div><h4>${v.word}</h4><p>${v.def}</p><button class="mini-btn" onclick="alert('${v.frame.replace(/'/g,"\\'")}')">Use it</button></div>`).join('');
+    }
+
+    const quiz = [
+      {q:'Who narrates most of the story?', a:'Noah Underwood', opts:['Dusty Muleman','Noah Underwood','Paine Underwood','Miles Umlatt'], why:'Noah’s point of view shapes how readers understand the family and mystery.'},
+      {q:'Why is Paine Underwood in jail at the beginning?', a:'He sank the Coral Queen as a protest.', opts:['He stole from Dusty','He sank the Coral Queen as a protest.','He started the final fire','He bullied Jasper Jr.'], why:'Paine believes the Coral Queen is polluting the water and acts recklessly.'},
+      {q:'What is the Coral Queen?', a:'A casino boat', opts:['A fishing pier','A casino boat','A beach hotel','A school newspaper'], why:'The casino boat is the center of the pollution conflict.'},
+      {q:'What does Noah need most to stop Dusty?', a:'Proof', opts:['A bigger boat','Proof','A secret map','A new camera only'], why:'The authorities need evidence, not just suspicion.'},
+      {q:'Who is Noah’s younger sister?', a:'Abbey', opts:['Shelly','Donna','Abbey','Lice'], why:'Abbey becomes a brave and important partner.'},
+      {q:'Why does Abbey’s video not solve the case?', a:'It is too dark and unclear.', opts:['It is too dark and unclear.','It shows the wrong boat.','It gets mailed away.','It proves Paine was wrong.'], why:'This moment teaches that evidence must be clear enough to prove a claim.'},
+      {q:'What is Operation Royal Flush built around?', a:'Food coloring flushed into the boat toilets', opts:['A fake newspaper','Food coloring flushed into the boat toilets','A turtle rescue trap','A courtroom speech'], why:'The dye marks the waste trail and connects it to the Coral Queen.'},
+      {q:'Which character helps because of inside knowledge of the Coral Queen?', a:'Shelly', opts:['Bull','Shelly','Miles','Donna'], why:'Shelly’s connection to the boat makes the plan possible.'},
+      {q:'Which pair acts as bullies toward Noah?', a:'Jasper Jr. and Bull', opts:['Jasper Jr. and Bull','Paine and Bobby','Miles and Lice','Donna and Abbey'], why:'Their intimidation mirrors the larger bullying Dusty uses.'},
+      {q:'What theme best fits Noah using a careful plan instead of just fighting?', a:'Courage works best with brains.', opts:['Money always wins.','Courage works best with brains.','Nature cannot recover.','Families should never disagree.'], why:'Noah’s success comes from strategy, not just bravery.'},
+      {q:'Why is Dusty Muleman an antagonist?', a:'His greed and dishonesty harm others.', opts:['He helps clean the beach.','His greed and dishonesty harm others.','He rescues Noah.','He tells the truth immediately.'], why:'Dusty’s choices create the central conflict.'},
+      {q:'What does the polluted water affect?', a:'People, beaches, wildlife, and community trust', opts:['Only the casino boat','People, beaches, wildlife, and community trust','Only Paine','Only the newspaper'], why:'The environmental problem has many consequences.'},
+      {q:'Why is Donna frustrated with Paine?', a:'His risky activism keeps hurting family stability.', opts:['He refuses to read','His risky activism keeps hurting family stability.','He works for Dusty','He dislikes Noah'], why:'Donna’s view adds complexity to the family theme.'},
+      {q:'What does the green flash at the end suggest?', a:'Hope and a moment of peace', opts:['A new crime','Hope and a moment of peace','Dusty escaping forever','The boat returning'], why:'The ending gives the family a hopeful shared experience.'},
+      {q:'Which final review statement is strongest?', a:'Flush shows that fighting wrong requires courage, evidence, and teamwork.', opts:['Flush is only about a boat.','Flush shows that fighting wrong requires courage, evidence, and teamwork.','Flush says kids should never help adults.','Flush has no themes.'], why:'This statement connects plot, characters, and theme.'}
+    ];
+    let qIndex=0, score=0, answered=false;
+    function renderQuiz(){
+      const item=quiz[qIndex]; answered=false;
+      document.getElementById('qCount').textContent=`Question ${qIndex+1} of ${quiz.length}`;
+      document.getElementById('scoreBadge').textContent=`Score: ${score}`;
+      document.getElementById('questionText').textContent=item.q;
+      document.getElementById('quizFeedback').className='feedback';
+      document.getElementById('answers').innerHTML=item.opts.map(opt=>`<button class="answer" onclick="answerQuestion(this,'${opt.replace(/'/g,"\\'")}')">${opt}</button>`).join('');
+    }
+    function answerQuestion(btn,opt){
+      if(answered) return;
+      answered=true;
+      const item=quiz[qIndex];
+      document.querySelectorAll('.answer').forEach(b=>{ if(b.textContent===item.a) b.classList.add('correct'); });
+      const f=document.getElementById('quizFeedback');
+      if(opt===item.a){ score++; btn.classList.add('correct'); f.className='feedback ok'; f.textContent='Correct. '+item.why; }
+      else { btn.classList.add('wrong'); f.className='feedback no'; f.textContent='Not quite. '+item.why; }
+      document.getElementById('scoreBadge').textContent=`Score: ${score}`;
+      if(qIndex===quiz.length-1 && score>=12) complete('quiz');
+    }
+    function nextQuestion(){
+      if(qIndex<quiz.length-1){ qIndex++; renderQuiz(); }
+      else{
+        const f=document.getElementById('quizFeedback');
+        f.className='feedback '+(score>=12?'ok':'no');
+        f.textContent= score>=12 ? `Mission win: ${score}/${quiz.length}. Strong review readiness.` : `Score: ${score}/${quiz.length}. Restart and aim for 12 or higher.`;
+        if(score>=12) complete('quiz');
+      }
+    }
+    function restartQuiz(){ qIndex=0; score=0; renderQuiz(); }
+
+    function saveFinal(){
+      const txt=document.getElementById('finalResponse').value.trim();
+      localStorage.setItem('flushFinalResponse', txt);
+      if(txt.length>80) complete('final');
+      alert(txt.length>80 ? 'Saved. Strong final response length.' : 'Saved. Add more detail: include two events and a theme.');
+    }
+    function loadStarter(){
+      document.getElementById('finalResponse').value = 'In Flush, Noah shows courage by helping expose the truth about the Coral Queen. At first, the problem is that Paine believes Dusty Muleman is polluting the water, but the family needs stronger evidence. One important event is __________. Another important event is __________. These events show the theme that __________.';
+    }
+
+    function navObserver(){
+      const links=[...document.querySelectorAll('#navLinks a')];
+      const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+      window.addEventListener('scroll',()=>{
+        let current=sections[0]?.id;
+        sections.forEach(sec=>{ if(window.scrollY >= sec.offsetTop-100) current=sec.id; });
+        links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+current));
+      });
+    }
+
+    renderCharacters(); renderThemes(); renderTimeline(events); renderEvidence(); renderVocab(); renderQuiz(); navObserver(); persistProgress();
+    const savedFinal = localStorage.getItem('flushFinalResponse'); if(savedFinal) document.getElementById('finalResponse').value=savedFinal;
+  </script>
 </body>
 </html>

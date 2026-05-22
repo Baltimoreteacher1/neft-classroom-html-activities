@@ -1,37 +1,1483 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.SP.B.5 Interactive Review classroom activity.">
-  <title>6.SP.B.5 Interactive Review</title>
   <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>6.SP.B.5 Premium Interactive Review — Final</title>
+<style>
+  :root{
+    --bg:#0f1720;
+    --bg-2:#13202c;
+    --panel:#172330;
+    --panel-2:#203447;
+    --card:#ffffff;
+    --ink:#12202b;
+    --muted:#526374;
+    --accent:#11b5a4;
+    --accent-2:#ff8a5b;
+    --line:#d7dee6;
+    --ok:#188038;
+    --bad:#c62828;
+    --warn:#9a6700;
+    --ok-bg:#eef9f0;
+    --bad-bg:#fff1f1;
+    --warn-bg:#fff7e8;
+    --blue-bg:#edf7ff;
+    --blue:#1d5f8f;
+    --shadow:0 10px 28px rgba(0,0,0,.18);
+    --radius:18px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:Calibri, Arial, Helvetica, sans-serif;
+    background:linear-gradient(180deg,var(--bg) 0%, var(--bg-2) 100%);
+    color:#eef4f8;
+  }
+
+  .wrap{
+    max-width:1320px;
+    margin:0 auto;
+    padding:18px;
+  }
+
+  .hero{
+    background:linear-gradient(135deg, rgba(17,181,164,.22), rgba(255,138,91,.18));
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+  .hero h1{
+    margin:0 0 8px 0;
+    font-size:34px;
+    letter-spacing:.2px;
+  }
+  .hero p{
+    margin:6px 0;
+    line-height:1.45;
+    color:#d8e3ea;
+  }
+
+  .toolbar{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(120px,1fr));
+    gap:12px;
+    margin-top:16px;
+  }
+  .stat{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:16px;
+    padding:12px 14px;
+  }
+  .stat .label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:#c7d4dc;
+  }
+  .stat .value{
+    font-size:24px;
+    font-weight:700;
+    margin-top:4px;
+  }
+
+  .progressWrap{
+    margin-top:16px;
+  }
+  .progressLabel{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:14px;
+    color:#d7e4ec;
+    margin-bottom:6px;
+  }
+  .progressbar{
+    height:15px;
+    background:rgba(255,255,255,.12);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .progressfill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    transition:.25s ease;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:270px 1fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .nav{
+    position:sticky;
+    top:12px;
+    background:var(--panel);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    padding:14px;
+    box-shadow:var(--shadow);
+  }
+  .nav h2{
+    margin:4px 8px 12px;
+    font-size:18px;
+  }
+  .nav button{
+    width:100%;
+    text-align:left;
+    padding:12px 14px;
+    margin:6px 0;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    background:var(--panel-2);
+    color:#edf5fa;
+    cursor:pointer;
+    font-size:15px;
+    transition:.15s ease;
+  }
+  .nav button:hover,
+  .nav button.active{
+    background:linear-gradient(135deg, rgba(17,181,164,.25), rgba(255,138,91,.22));
+    transform:translateY(-1px);
+  }
+
+  .content{
+    display:grid;
+    gap:18px;
+  }
+
+  .card{
+    display:none;
+    background:var(--card);
+    color:var(--ink);
+    border-radius:22px;
+    padding:20px;
+    box-shadow:var(--shadow);
+  }
+  .card.active{display:block}
+  .card h2{
+    margin:0 0 12px;
+    font-size:28px;
+    color:var(--ink);
+  }
+  .card h3{
+    margin:18px 0 10px;
+    font-size:20px;
+    color:var(--ink);
+  }
+  .card h4{
+    margin:0 0 8px;
+    font-size:17px;
+    color:var(--ink);
+  }
+  .sub{
+    color:var(--muted);
+    margin:0 0 14px;
+  }
+
+  .grid2,.grid3,.grid4{
+    display:grid;
+    gap:14px;
+  }
+  .grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid4{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+  .mini{
+    background:#fff;
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:14px;
+  }
+
+  .pill{
+    display:inline-block;
+    background:#e8f7f5;
+    color:#0b6f64;
+    border:1px solid #b6e8e1;
+    border-radius:999px;
+    padding:5px 10px;
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:10px;
+  }
+
+  .banner{
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:14px;
+    background:var(--warn-bg);
+    border:2px solid #f2d08d;
+    color:var(--warn);
+    font-weight:700;
+  }
+
+  .qblock{
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:14px;
+    margin:12px 0;
+    background:#fff;
+  }
+
+  .dataset{
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:.02em;
+    background:#f5f8fb;
+    border:2px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+    display:inline-block;
+    margin:6px 0 12px;
+    color:var(--ink);
+  }
+
+  label{
+    font-weight:700;
+    color:var(--ink);
+    display:block;
+    margin:8px 0 4px;
+  }
+
+  input[type="number"],
+  input[type="text"],
+  textarea,
+  select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:12px;
+    border:2px solid #cfd8e2;
+    font-size:16px;
+    font-family:inherit;
+    color:var(--ink);
+    background:#fff;
+  }
+  textarea{
+    min-height:100px;
+    resize:vertical;
+  }
+
+  .btnrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:10px;
+  }
+
+  button.action,
+  button.secondary,
+  button.ghost,
+  .tabBtn{
+    border:none;
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  button.action{background:var(--accent); color:#fff}
+  button.secondary{background:#e9eef3; color:#213343}
+  button.ghost{background:#fff; color:#213343; border:2px solid var(--line)}
+
+  .feedback{
+    margin-top:8px;
+    padding:10px 12px;
+    border-radius:12px;
+    font-weight:700;
+    display:none;
+  }
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--ok-bg); color:var(--ok); border:2px solid #b8dfc0}
+  .feedback.bad{background:var(--bad-bg); color:var(--bad); border:2px solid #efb8b8}
+
+  .mc{
+    display:grid;
+    gap:10px;
+    margin-top:10px;
+  }
+  .choice{
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:11px 12px;
+    cursor:pointer;
+    background:#fff;
+    color:var(--ink);
+  }
+  .choice:hover{border-color:#90a8bb}
+  .choice.selected{border-color:#3b82f6; background:#eff6ff}
+  .choice.correct{border-color:var(--ok); background:var(--ok-bg)}
+  .choice.incorrect{border-color:var(--bad); background:var(--bad-bg)}
+
+  .tablewrap{overflow:auto}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    color:var(--ink);
+  }
+  th,td{
+    border:2px solid #111;
+    padding:10px 10px;
+    vertical-align:top;
+    text-align:left;
+    color:var(--ink);
+  }
+  th{background:#eef2f6}
+
+  .small{font-size:13px;color:var(--muted)}
+  .tight li{margin-bottom:8px}
+
+  .checkline{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    margin-top:10px;
+    color:var(--ink);
+  }
+
+  .stamp{
+    display:inline-block;
+    padding:8px 10px;
+    border-radius:10px;
+    background:var(--blue-bg);
+    border:2px solid #bdd8f2;
+    color:var(--blue);
+    font-weight:700;
+  }
+
+  .wordbank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:8px;
+  }
+  .word{
+    padding:10px 12px;
+    border:2px solid var(--line);
+    border-radius:12px;
+    background:#f7fafc;
+    color:var(--ink);
+    cursor:grab;
+    user-select:none;
+    font-weight:700;
+  }
+  .drop{
+    min-height:62px;
+    border:2px dashed #9bb0c2;
+    border-radius:14px;
+    padding:10px;
+    background:#fbfdff;
+    color:var(--ink);
+  }
+  .drop.good{border-color:var(--ok); background:#f2fbf4}
+  .drop.bad{border-color:var(--bad); background:#fff4f4}
+  .drop .label{
+    font-size:13px;
+    color:var(--muted);
+    margin:0 0 6px;
+    font-weight:400;
+  }
+
+  .svgHolder{
+    background:#fff;
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:8px;
+    overflow:auto;
+  }
+
+  .chartBox{
+    background:#fff;
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:12px;
+  }
+
+  .sortArea{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .sortColumn{
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:12px;
+    background:#fff;
+  }
+  .sortableItem{
+    padding:10px 12px;
+    border:2px solid var(--line);
+    border-radius:12px;
+    margin:8px 0;
+    background:#f7fafc;
+    color:var(--ink);
+    cursor:grab;
+    font-weight:700;
+  }
+  .dropList{
+    min-height:180px;
+    border:2px dashed #97adbf;
+    border-radius:14px;
+    padding:10px;
+    background:#fcfeff;
+  }
+
+  .printBar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:14px;
+  }
+
+  .footerBox{
+    margin-top:16px;
+    font-size:13px;
+    color:#d4e0e8;
+    text-align:center;
+  }
+
+  .hiddenPrintOnly{display:none}
+
+  @media (max-width: 1020px){
+    .layout{grid-template-columns:1fr}
+    .nav{position:relative; top:auto}
+    .grid2,.grid3,.grid4,.toolbar,.sortArea{grid-template-columns:1fr}
+  }
+
+  @media print{
+    body{
+      background:#fff !important;
+      color:#111 !important;
+    }
+    .nav,.hero .toolbar,.printBar,.btnrow,.footerBox{
+      display:none !important;
+    }
+    .layout{
+      display:block;
+    }
+    .card{
+      display:block !important;
+      box-shadow:none !important;
+      border:2px solid #111 !important;
+      margin-bottom:14px;
+      page-break-inside:avoid;
+    }
+    .hero{
+      background:#fff !important;
+      color:#111 !important;
+      border:2px solid #111 !important;
+      box-shadow:none !important;
+    }
+    .hero p,.hero h1,.progressLabel{
+      color:#111 !important;
+    }
+    .progressbar{
+      border:2px solid #111 !important;
+      background:#fff !important;
+    }
+    .progressfill{
+      background:#999 !important;
+    }
+  }
+</style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>6.SP.B.5 Interactive Review</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.SP.B.5 Interactive Review</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+<div class="wrap">
+  <section class="hero">
+    <h1>6.SP.B.5 Premium Interactive Review</h1>
+    <p><strong>Standard Focus:</strong> Summarize numerical data sets in relation to their context by describing center, variation, overall pattern, and striking deviations from the overall pattern.</p>
+    <p>This final version includes a full review arc: vocabulary, fluency, multiple-choice practice, data interpretation, visual models, compare/contrast tasks, writing, mastery check, answer key, score tracker, and print mode.</p>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.SP.B.5_Interactive_Review.html</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/statistics-data/6-sp-b-5-interactive-review/</span></p>
-      </div>
-    </section>
-
-    <div class="button-row">
-      <a class="primary-button" href="/statistics-data/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+    <div class="toolbar">
+      <div class="stat"><div class="label">Sections</div><div class="value">11</div></div>
+      <div class="stat"><div class="label">Scored Tasks</div><div class="value">20</div></div>
+      <div class="stat"><div class="label">Writing Tasks</div><div class="value">4</div></div>
+      <div class="stat"><div class="label">Visual Models</div><div class="value">3</div></div>
+      <div class="stat"><div class="label">Mastery Goal</div><div class="value">85%</div></div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+
+    <div class="progressWrap">
+      <div class="progressLabel">
+        <span>Progress</span>
+        <span id="progressText">0% complete</span>
+      </div>
+      <div class="progressbar"><div class="progressfill" id="globalProgress"></div></div>
+    </div>
+
+    <div class="printBar">
+      <button class="ghost" onclick="window.print()">Print / Save PDF</button>
+      <button class="ghost" onclick="resetAll()">Reset Review</button>
+      <button class="ghost" onclick="showSummary()">Show Score Summary</button>
+    </div>
+  </section>
+
+  <div class="layout">
+    <aside class="nav">
+      <h2>Review Menu</h2>
+      <button class="active" onclick="openCard(event,'overview')">1. Overview + Success Criteria</button>
+      <button onclick="openCard(event,'vocab')">2. Vocabulary Match</button>
+      <button onclick="openCard(event,'warmup')">3. Warm-Up Skill Check</button>
+      <button onclick="openCard(event,'center')">4. Center: Mean & Median</button>
+      <button onclick="openCard(event,'variation')">5. Variation & Spread</button>
+      <button onclick="openCard(event,'visuals')">6. Visual Data Activities</button>
+      <button onclick="openCard(event,'context')">7. Describe Data in Context</button>
+      <button onclick="openCard(event,'compare')">8. Compare Two Data Sets</button>
+      <button onclick="openCard(event,'sort')">9. Sort the Statements</button>
+      <button onclick="openCard(event,'writing')">10. Constructed Response</button>
+      <button onclick="openCard(event,'mastery')">11. Mastery Check</button>
+      <button onclick="openCard(event,'teacher')">12. Teacher / Answer Key</button>
+    </aside>
+
+    <main class="content">
+
+      <section class="card active" id="overview">
+        <h2>Overview + Success Criteria</h2>
+        <p class="sub">A strong data summary goes beyond computation. It explains what the numbers show about the situation.</p>
+
+        <div class="grid2">
+          <div class="mini">
+            <span class="pill">I can...</span>
+            <ul class="tight">
+              <li>find and interpret the <strong>mean</strong> and <strong>median</strong></li>
+              <li>describe <strong>variation</strong> with range and MAD</li>
+              <li>identify an <strong>outlier</strong> or striking deviation</li>
+              <li>describe the <strong>overall pattern</strong> of a data set</li>
+              <li>write a summary about data in <strong>context</strong></li>
+            </ul>
+          </div>
+          <div class="mini">
+            <span class="pill">Success Criteria</span>
+            <ul class="tight">
+              <li>I use correct data vocabulary.</li>
+              <li>I calculate accurately.</li>
+              <li>I explain what the numbers mean.</li>
+              <li>I notice clusters and unusual values.</li>
+              <li>I compare groups using evidence.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Quick Read: What should a strong summary include?</h3>
+        <div class="tablewrap">
+          <table>
+            <tr>
+              <th>Part of a Data Summary</th>
+              <th>What to Say</th>
+              <th>Sample Sentence Stem</th>
+            </tr>
+            <tr>
+              <td>Center</td>
+              <td>Tell about the typical value using mean or median.</td>
+              <td>The typical number of ___ is about ___ because the mean/median is ___.</td>
+            </tr>
+            <tr>
+              <td>Variation</td>
+              <td>Explain how spread out the data are.</td>
+              <td>The data vary by ___ and are fairly spread out / close together.</td>
+            </tr>
+            <tr>
+              <td>Overall Pattern</td>
+              <td>Describe whether values are clustered, balanced, or stretched out.</td>
+              <td>Most of the values are between ___ and ___, so the data are clustered around ___.</td>
+            </tr>
+            <tr>
+              <td>Striking Deviations</td>
+              <td>Point out any unusual values or outliers.</td>
+              <td>A striking deviation is ___ because it is much larger / smaller than the rest.</td>
+            </tr>
+            <tr>
+              <td>Context</td>
+              <td>Connect the numbers back to the real-world situation.</td>
+              <td>This means that in this group, students usually / often / rarely ___.</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="banner">Tip: A complete response includes center, variation, pattern, unusual values, and context.</div>
+      </section>
+
+      <section class="card" id="vocab">
+        <h2>Vocabulary Match</h2>
+        <p class="sub">Drag each term into the matching definition box.</p>
+
+        <div class="wordbank" id="wordbank">
+          <div class="word" draggable="true" data-word="mean">Mean</div>
+          <div class="word" draggable="true" data-word="median">Median</div>
+          <div class="word" draggable="true" data-word="range">Range</div>
+          <div class="word" draggable="true" data-word="mad">Mean Absolute Deviation</div>
+          <div class="word" draggable="true" data-word="outlier">Outlier</div>
+          <div class="word" draggable="true" data-word="cluster">Cluster</div>
+        </div>
+
+        <div class="grid2" style="margin-top:14px">
+          <div class="drop" data-answer="median"><div class="label">The middle value when the data are put in order</div></div>
+          <div class="drop" data-answer="range"><div class="label">The difference between the greatest and least value</div></div>
+          <div class="drop" data-answer="mad"><div class="label">The average distance of each data value from the mean</div></div>
+          <div class="drop" data-answer="outlier"><div class="label">A value much farther from the rest of the data</div></div>
+          <div class="drop" data-answer="mean"><div class="label">The sum of all values divided by the number of values</div></div>
+          <div class="drop" data-answer="cluster"><div class="label">A group of values close together</div></div>
+        </div>
+
+        <div class="btnrow">
+          <button class="action" onclick="checkMatching()">Check Matching</button>
+          <button class="secondary" onclick="resetMatching()">Reset Matching</button>
+        </div>
+        <div class="feedback" id="matchFeedback"></div>
+      </section>
+
+      <section class="card" id="warmup">
+        <h2>Warm-Up Skill Check</h2>
+        <p class="sub">Compute first. Then interpret.</p>
+
+        <div class="qblock">
+          <h3>1. Number of books read in one month</h3>
+          <div class="dataset">2, 4, 4, 5, 10</div>
+          <div class="grid3">
+            <div><label>Mean</label><input type="number" id="wu1_mean"></div>
+            <div><label>Median</label><input type="number" id="wu1_median"></div>
+            <div><label>Range</label><input type="number" id="wu1_range"></div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="checkWarmup1()">Check #1</button></div>
+          <div class="feedback" id="wu1_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>2. Which value is a striking deviation?</h3>
+          <div class="dataset">7, 8, 7, 9, 8, 22</div>
+          <div class="mc" id="wu2">
+            <div class="choice" data-value="7">7</div>
+            <div class="choice" data-value="8">8</div>
+            <div class="choice" data-value="9">9</div>
+            <div class="choice" data-value="22">22</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('wu2','22','wu2_feedback')">Check #2</button></div>
+          <div class="feedback" id="wu2_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>3. Which sentence best describes the data?</h3>
+          <div class="dataset">5, 5, 6, 6, 6, 7, 7, 20</div>
+          <div class="mc" id="wu3">
+            <div class="choice" data-value="a">The data are evenly spread with no unusual values.</div>
+            <div class="choice" data-value="b">Most values cluster between 5 and 7, with 20 as a striking deviation.</div>
+            <div class="choice" data-value="c">The median is 20, so the data center is 20.</div>
+            <div class="choice" data-value="d">There is no cluster because the mean exists.</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('wu3','b','wu3_feedback')">Check #3</button></div>
+          <div class="feedback" id="wu3_feedback"></div>
+        </div>
+      </section>
+
+      <section class="card" id="center">
+        <h2>Center: Mean &amp; Median</h2>
+        <p class="sub">Choose the best measure of center and explain why.</p>
+
+        <div class="grid2">
+          <div class="mini">
+            <h4>Data Set A: Daily screen time (hours)</h4>
+            <div class="dataset">2, 2, 3, 3, 4, 9</div>
+            <label>Mean</label><input type="number" id="c1_mean" step="0.1">
+            <label>Median</label><input type="number" id="c1_median">
+            <label>Best measure of center</label>
+            <select id="c1_best">
+              <option value="">Choose one</option>
+              <option value="mean">Mean</option>
+              <option value="median">Median</option>
+            </select>
+            <div class="btnrow"><button class="action" onclick="checkCenter1()">Check Data Set A</button></div>
+            <div class="feedback" id="c1_feedback"></div>
+          </div>
+
+          <div class="mini">
+            <h4>Data Set B: Minutes spent reading</h4>
+            <div class="dataset">20, 22, 24, 26, 28, 30</div>
+            <label>Mean</label><input type="number" id="c2_mean">
+            <label>Median</label><input type="number" id="c2_median">
+            <label>Best measure of center</label>
+            <select id="c2_best">
+              <option value="">Choose one</option>
+              <option value="mean">Mean</option>
+              <option value="median">Median</option>
+            </select>
+            <div class="btnrow"><button class="action" onclick="checkCenter2()">Check Data Set B</button></div>
+            <div class="feedback" id="c2_feedback"></div>
+          </div>
+        </div>
+
+        <div class="qblock">
+          <h3>4. Explain the difference</h3>
+          <p>Why is the median usually a better choice than the mean when a data set has an outlier?</p>
+          <textarea id="centerExplain" placeholder="Write 2–3 complete sentences."></textarea>
+          <div class="btnrow">
+            <button class="action" onclick="scoreWriting('centerExplain',['outlier','mean','median','typical'],'centerExplain_feedback')">Check Writing for Key Ideas</button>
+          </div>
+          <div class="feedback" id="centerExplain_feedback"></div>
+        </div>
+      </section>
+
+      <section class="card" id="variation">
+        <h2>Variation &amp; Spread</h2>
+        <p class="sub">Use range and mean absolute deviation to describe how spread out the values are.</p>
+
+        <div class="qblock">
+          <h3>5. Find the range</h3>
+          <div class="dataset">12, 13, 13, 14, 18</div>
+          <label>Range</label>
+          <input type="number" id="v1">
+          <div class="btnrow"><button class="action" onclick="checkNumeric('v1',6,'v1_feedback','The range is 18 − 12 = 6.')">Check #5</button></div>
+          <div class="feedback" id="v1_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>6. Estimate the MAD</h3>
+          <p>Data: <span class="dataset">4, 5, 5, 6, 10</span></p>
+          <p class="small">Hint: The mean is 6. Find each distance from 6: 2, 1, 1, 0, 4. Then average those distances.</p>
+          <label>MAD</label>
+          <input type="number" id="v2" step="0.1">
+          <div class="btnrow"><button class="action" onclick="checkMAD()">Check #6</button></div>
+          <div class="feedback" id="v2_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>7. Which data set has more variation?</h3>
+          <div class="grid2">
+            <div class="mini"><h4>Set A</h4><div class="dataset">8, 9, 10, 11, 12</div></div>
+            <div class="mini"><h4>Set B</h4><div class="dataset">2, 6, 10, 14, 18</div></div>
+          </div>
+          <div class="mc" id="v3">
+            <div class="choice" data-value="A">Set A has more variation.</div>
+            <div class="choice" data-value="B">Set B has more variation.</div>
+            <div class="choice" data-value="same">Both have the same variation.</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('v3','B','v3_feedback')">Check #7</button></div>
+          <div class="feedback" id="v3_feedback"></div>
+        </div>
+      </section>
+
+      <section class="card" id="visuals">
+        <h2>Visual Data Activities</h2>
+        <p class="sub">Read the graph, interpret the pattern, and decide what the display shows.</p>
+
+        <div class="qblock">
+          <h3>8. Read the dot plot</h3>
+          <div class="svgHolder">
+            <svg width="720" height="180" viewBox="0 0 720 180" aria-label="dot plot">
+              <line x1="60" y1="135" x2="660" y2="135" stroke="#111" stroke-width="3"/>
+              <g font-family="Calibri, Arial" font-size="18" fill="#111">
+                <text x="52" y="160">0</text><text x="112" y="160">1</text><text x="172" y="160">2</text>
+                <text x="232" y="160">3</text><text x="292" y="160">4</text><text x="352" y="160">5</text>
+                <text x="412" y="160">6</text><text x="472" y="160">7</text><text x="532" y="160">8</text>
+                <text x="592" y="160">9</text><text x="646" y="160">10</text>
+              </g>
+              <g stroke="#111" stroke-width="2">
+                <line x1="60" y1="128" x2="60" y2="142"/><line x1="120" y1="128" x2="120" y2="142"/>
+                <line x1="180" y1="128" x2="180" y2="142"/><line x1="240" y1="128" x2="240" y2="142"/>
+                <line x1="300" y1="128" x2="300" y2="142"/><line x1="360" y1="128" x2="360" y2="142"/>
+                <line x1="420" y1="128" x2="420" y2="142"/><line x1="480" y1="128" x2="480" y2="142"/>
+                <line x1="540" y1="128" x2="540" y2="142"/><line x1="600" y1="128" x2="600" y2="142"/>
+                <line x1="660" y1="128" x2="660" y2="142"/>
+              </g>
+              <g fill="#11b5a4" stroke="#0d6d63" stroke-width="2">
+                <circle cx="240" cy="110" r="10"/>
+                <circle cx="300" cy="110" r="10"/>
+                <circle cx="300" cy="80" r="10"/>
+                <circle cx="360" cy="110" r="10"/>
+                <circle cx="360" cy="80" r="10"/>
+                <circle cx="360" cy="50" r="10"/>
+                <circle cx="420" cy="110" r="10"/>
+                <circle cx="420" cy="80" r="10"/>
+                <circle cx="540" cy="110" r="10"/>
+              </g>
+            </svg>
+          </div>
+          <div class="grid2" style="margin-top:12px">
+            <div>
+              <label>What value seems to be the center?</label>
+              <input type="number" id="v4_center">
+            </div>
+            <div>
+              <label>Which value might be a striking deviation?</label>
+              <input type="number" id="v4_outlier">
+            </div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="checkDotPlot()">Check #8</button></div>
+          <div class="feedback" id="v4_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>9. Read the box plot</h3>
+          <div class="svgHolder">
+            <svg width="760" height="170" viewBox="0 0 760 170" aria-label="box plot">
+              <line x1="60" y1="110" x2="700" y2="110" stroke="#111" stroke-width="3"/>
+              <g stroke="#111" stroke-width="2">
+                <line x1="100" y1="102" x2="100" y2="118"/>
+                <line x1="180" y1="102" x2="180" y2="118"/>
+                <line x1="260" y1="102" x2="260" y2="118"/>
+                <line x1="340" y1="102" x2="340" y2="118"/>
+                <line x1="420" y1="102" x2="420" y2="118"/>
+                <line x1="500" y1="102" x2="500" y2="118"/>
+                <line x1="580" y1="102" x2="580" y2="118"/>
+                <line x1="660" y1="102" x2="660" y2="118"/>
+              </g>
+              <g font-family="Calibri, Arial" font-size="18" fill="#111">
+                <text x="90" y="145">0</text>
+                <text x="170" y="145">2</text>
+                <text x="250" y="145">4</text>
+                <text x="330" y="145">6</text>
+                <text x="410" y="145">8</text>
+                <text x="490" y="145">10</text>
+                <text x="570" y="145">12</text>
+                <text x="650" y="145">14</text>
+              </g>
+              <line x1="180" y1="70" x2="260" y2="70" stroke="#111" stroke-width="3"/>
+              <line x1="500" y1="70" x2="580" y2="70" stroke="#111" stroke-width="3"/>
+              <line x1="260" y1="40" x2="500" y2="40" stroke="#111" stroke-width="3"/>
+              <line x1="260" y1="100" x2="500" y2="100" stroke="#111" stroke-width="3"/>
+              <line x1="260" y1="40" x2="260" y2="100" stroke="#111" stroke-width="3"/>
+              <line x1="500" y1="40" x2="500" y2="100" stroke="#111" stroke-width="3"/>
+              <line x1="380" y1="40" x2="380" y2="100" stroke="#ff8a5b" stroke-width="4"/>
+              <line x1="180" y1="55" x2="180" y2="85" stroke="#111" stroke-width="3"/>
+              <line x1="580" y1="55" x2="580" y2="85" stroke="#111" stroke-width="3"/>
+            </svg>
+          </div>
+          <div class="grid3" style="margin-top:12px">
+            <div>
+              <label>Minimum</label>
+              <input type="number" id="box_min">
+            </div>
+            <div>
+              <label>Median</label>
+              <input type="number" id="box_med">
+            </div>
+            <div>
+              <label>Maximum</label>
+              <input type="number" id="box_max">
+            </div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="checkBoxPlot()">Check #9</button></div>
+          <div class="feedback" id="box_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>10. Which display suggests one high outlier?</h3>
+          <div class="mc" id="vis3">
+            <div class="choice" data-value="a">A graph where all values are evenly spaced with no gaps</div>
+            <div class="choice" data-value="b">A graph with one value much farther right than the cluster</div>
+            <div class="choice" data-value="c">A graph where every value is the same</div>
+            <div class="choice" data-value="d">A graph with only two data values</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('vis3','b','vis3_feedback')">Check #10</button></div>
+          <div class="feedback" id="vis3_feedback"></div>
+        </div>
+      </section>
+
+      <section class="card" id="context">
+        <h2>Describe Data in Context</h2>
+        <p class="sub">Summaries should mention the situation, not just the numbers.</p>
+
+        <div class="qblock">
+          <h3>11. Class plant growth data (centimeters)</h3>
+          <div class="dataset">12, 13, 14, 14, 15, 15, 16, 24</div>
+          <div class="grid2">
+            <div>
+              <label>What is one center value you could report?</label>
+              <input type="text" id="ctx1_center" placeholder="Example: median 14.5 cm">
+            </div>
+            <div>
+              <label>What is one striking deviation?</label>
+              <input type="text" id="ctx1_outlier" placeholder="Example: 24 cm">
+            </div>
+          </div>
+          <label>Write a short summary in context.</label>
+          <textarea id="ctx1_write" placeholder="Most plants were about... The data are... One unusual value is..."></textarea>
+          <div class="btnrow">
+            <button class="action" onclick="scoreWriting('ctx1_write',['most','plants','24','about','unusual'],'ctx1_feedback')">Check Summary for Key Ideas</button>
+          </div>
+          <div class="feedback" id="ctx1_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>12. Which summary is strongest?</h3>
+          <div class="mc" id="ctx2">
+            <div class="choice" data-value="a">The numbers are 12, 13, 14, 14, 15, 15, 16, 24.</div>
+            <div class="choice" data-value="b">The median is 14.5, so that is the answer.</div>
+            <div class="choice" data-value="c">Most plant heights are clustered from 12 to 16 cm, with 24 cm standing out as unusually high.</div>
+            <div class="choice" data-value="d">There is variation because all data sets have variation.</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('ctx2','c','ctx2_feedback')">Check #12</button></div>
+          <div class="feedback" id="ctx2_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>13. What is the attribute being measured?</h3>
+          <div class="mc" id="ctx3">
+            <div class="choice" data-value="a">The names of the students</div>
+            <div class="choice" data-value="b">Plant height in centimeters</div>
+            <div class="choice" data-value="c">The classroom number</div>
+            <div class="choice" data-value="d">The color of the paper</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('ctx3','b','ctx3_feedback')">Check #13</button></div>
+          <div class="feedback" id="ctx3_feedback"></div>
+        </div>
+      </section>
+
+      <section class="card" id="compare">
+        <h2>Compare Two Data Sets</h2>
+        <p class="sub">State which group has more variation or a stronger center, then support your answer with evidence.</p>
+
+        <div class="grid2">
+          <div class="mini">
+            <h4>Group A quiz scores</h4>
+            <div class="dataset">7, 8, 8, 9, 8</div>
+          </div>
+          <div class="mini">
+            <h4>Group B quiz scores</h4>
+            <div class="dataset">4, 8, 8, 12, 8</div>
+          </div>
+        </div>
+
+        <div class="qblock">
+          <h3>14. Which group has the same center but greater variation?</h3>
+          <div class="mc" id="cmp1">
+            <div class="choice" data-value="A">Group A</div>
+            <div class="choice" data-value="B">Group B</div>
+            <div class="choice" data-value="same">Neither; they are identical in spread</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('cmp1','B','cmp1_feedback')">Check #14</button></div>
+          <div class="feedback" id="cmp1_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>15. Support with evidence</h3>
+          <textarea id="cmp2" placeholder="Explain which group is more consistent and use numbers to support your answer."></textarea>
+          <div class="btnrow"><button class="action" onclick="scoreWriting('cmp2',['group','range','more','consistent','8'],'cmp2_feedback')">Check Writing for Key Ideas</button></div>
+          <div class="feedback" id="cmp2_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>16. Select all statements that are true.</h3>
+          <div class="checkline"><input type="checkbox" id="cmp3a"><label for="cmp3a">Both groups have a median of 8.</label></div>
+          <div class="checkline"><input type="checkbox" id="cmp3b"><label for="cmp3b">Group B has a larger range than Group A.</label></div>
+          <div class="checkline"><input type="checkbox" id="cmp3c"><label for="cmp3c">Group A has an outlier of 20.</label></div>
+          <div class="checkline"><input type="checkbox" id="cmp3d"><label for="cmp3d">Group A is more tightly clustered.</label></div>
+          <div class="btnrow"><button class="action" onclick="checkCompareChecks()">Check #16</button></div>
+          <div class="feedback" id="cmp3_feedback"></div>
+        </div>
+      </section>
+
+      <section class="card" id="sort">
+        <h2>Sort the Statements</h2>
+        <p class="sub">Drag each statement into the correct category.</p>
+
+        <div class="sortArea">
+          <div class="sortColumn">
+            <h3>Statement Bank</h3>
+            <div id="sortBank">
+              <div class="sortableItem" draggable="true" data-sort="center">The median is 8, so a typical value is 8.</div>
+              <div class="sortableItem" draggable="true" data-sort="variation">The data range from 4 to 12, so the spread is 8.</div>
+              <div class="sortableItem" draggable="true" data-sort="pattern">Most values are clustered between 7 and 9.</div>
+              <div class="sortableItem" draggable="true" data-sort="deviation">The value 24 is much higher than the rest.</div>
+            </div>
+          </div>
+
+          <div class="sortColumn">
+            <h3>Drop Zones</h3>
+            <div class="grid2">
+              <div class="dropList dropZone" data-sort-answer="center"><strong>Center</strong></div>
+              <div class="dropList dropZone" data-sort-answer="variation"><strong>Variation</strong></div>
+              <div class="dropList dropZone" data-sort-answer="pattern"><strong>Overall Pattern</strong></div>
+              <div class="dropList dropZone" data-sort-answer="deviation"><strong>Striking Deviation</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button class="action" onclick="checkSort()">Check Sort</button>
+          <button class="secondary" onclick="resetSort()">Reset Sort</button>
+        </div>
+        <div class="feedback" id="sort_feedback"></div>
+      </section>
+
+      <section class="card" id="writing">
+        <h2>Constructed Response</h2>
+        <p class="sub">This is the kind of written response that makes the review feel complete and teacher-ready.</p>
+
+        <div class="qblock">
+          <h3>17. Full Data Summary Paragraph</h3>
+          <p>A teacher records the number of minutes students spend reading at home: <span class="dataset">10, 12, 12, 13, 15, 16, 30</span></p>
+          <p>Write a summary that includes the attribute, center, variation, pattern, and a striking deviation.</p>
+          <textarea id="wr1" placeholder="Write a strong paragraph."></textarea>
+          <div class="btnrow"><button class="action" onclick="scoreWriting('wr1',['minutes','reading','median','range','30'],'wr1_feedback')">Check Paragraph for Key Ideas</button></div>
+          <div class="feedback" id="wr1_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>18. Sentence Frame Support</h3>
+          <div class="tablewrap">
+            <table>
+              <tr><th>Need</th><th>Sentence Frame</th></tr>
+              <tr><td>Name the attribute</td><td>The data show the number of __________.</td></tr>
+              <tr><td>Describe center</td><td>A typical value is about __________ because the mean/median is __________.</td></tr>
+              <tr><td>Describe variation</td><td>The data are spread from __________ to __________, so the range is __________.</td></tr>
+              <tr><td>Name a striking deviation</td><td>A striking deviation is __________ because it is much __________ than the rest.</td></tr>
+              <tr><td>State a pattern</td><td>Most of the values are clustered around __________.</td></tr>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="mastery">
+        <h2>Mastery Check</h2>
+        <p class="sub">Final mixed review. Aim for 6 out of 7 correct.</p>
+
+        <div class="qblock">
+          <h3>19. What does “center” describe in a data set?</h3>
+          <div class="mc" id="m1">
+            <div class="choice" data-value="a">The largest value only</div>
+            <div class="choice" data-value="b">A typical or middle value for the data</div>
+            <div class="choice" data-value="c">How many students were absent</div>
+            <div class="choice" data-value="d">The name of the graph</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('m1','b','m1_feedback')">Check #19</button></div>
+          <div class="feedback" id="m1_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>20. Data: 3, 4, 5, 5, 6, 20. Which is the best measure of center?</h3>
+          <div class="mc" id="m2">
+            <div class="choice" data-value="a">Mean, because the outlier makes it better</div>
+            <div class="choice" data-value="b">Median, because it is less affected by the outlier</div>
+            <div class="choice" data-value="c">Range, because it is a center value</div>
+            <div class="choice" data-value="d">Maximum, because it is the largest</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('m2','b','m2_feedback')">Check #20</button></div>
+          <div class="feedback" id="m2_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>21. How many observations are in this data set?</h3>
+          <div class="dataset">11, 12, 14, 14, 18, 19</div>
+          <input type="number" id="m3">
+          <div class="btnrow"><button class="action" onclick="checkNumeric('m3',6,'m3_feedback','There are 6 observations because there are 6 values.')">Check #21</button></div>
+          <div class="feedback" id="m3_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>22. Which statement best describes variation?</h3>
+          <div class="mc" id="m4">
+            <div class="choice" data-value="a">Variation describes how spread out the values are.</div>
+            <div class="choice" data-value="b">Variation tells the title of the graph.</div>
+            <div class="choice" data-value="c">Variation means the same as the median.</div>
+            <div class="choice" data-value="d">Variation is always 0.</div>
+          </div>
+          <div class="btnrow"><button class="action" onclick="gradeSingleChoice('m4','a','m4_feedback')">Check #22</button></div>
+          <div class="feedback" id="m4_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>23. Data: 1, 2, 2, 3, 3, 4, 10. Which value is a striking deviation?</h3>
+          <input type="number" id="m5">
+          <div class="btnrow"><button class="action" onclick="checkNumeric('m5',10,'m5_feedback','10 is much farther from the rest of the data.')">Check #23</button></div>
+          <div class="feedback" id="m5_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>24. What is the range of 6, 8, 9, 9, 11?</h3>
+          <input type="number" id="m6">
+          <div class="btnrow"><button class="action" onclick="checkNumeric('m6',5,'m6_feedback','The range is 11 − 6 = 5.')">Check #24</button></div>
+          <div class="feedback" id="m6_feedback"></div>
+        </div>
+
+        <div class="qblock">
+          <h3>25. Reflection</h3>
+          <textarea id="m7" placeholder="What is one thing you understand better now about describing data?"></textarea>
+          <div class="btnrow"><button class="action" onclick="scoreWriting('m7',['data'],'m7_feedback')">Save Reflection</button></div>
+          <div class="feedback" id="m7_feedback"></div>
+        </div>
+      </section>
+
+      <section class="card" id="teacher">
+        <h2>Teacher / Answer Key</h2>
+        <p class="sub">Answer key, completion notes, and score support for classroom or marketplace use.</p>
+
+        <div class="tablewrap">
+          <table>
+            <tr>
+              <th>Item</th>
+              <th>Answer / Expected Idea</th>
+            </tr>
+            <tr><td>#1</td><td>Mean 5, Median 4, Range 8</td></tr>
+            <tr><td>#2</td><td>22</td></tr>
+            <tr><td>#3</td><td>Most values cluster between 5 and 7, with 20 as a striking deviation.</td></tr>
+            <tr><td>#4</td><td>Mean ≈ 3.8, Median 3, best center = median</td></tr>
+            <tr><td>Data Set B</td><td>Mean 25, Median 25, either center value matches; mean is fully appropriate because there is no outlier.</td></tr>
+            <tr><td>#5</td><td>6</td></tr>
+            <tr><td>#6</td><td>MAD = 1.6</td></tr>
+            <tr><td>#7</td><td>Set B</td></tr>
+            <tr><td>#8</td><td>Center around 5 or 6; striking deviation 8</td></tr>
+            <tr><td>#9</td><td>Minimum 2, Median 6, Maximum 12</td></tr>
+            <tr><td>#10</td><td>Choice B</td></tr>
+            <tr><td>#12</td><td>Choice C</td></tr>
+            <tr><td>#13</td><td>Plant height in centimeters</td></tr>
+            <tr><td>#14</td><td>Group B</td></tr>
+            <tr><td>#16</td><td>True: A, B, D</td></tr>
+            <tr><td>Sort</td><td>Center → median is 8; Variation → range 8; Pattern → clustered between 7 and 9; Deviation → value 24 is much higher</td></tr>
+            <tr><td>#19–24</td><td>19=B, 20=B, 21=6, 22=A, 23=10, 24=5</td></tr>
+          </table>
+        </div>
+
+        <h3>Built-in Marketplace Features</h3>
+        <ul class="tight">
+          <li>full review sequence instead of isolated questions</li>
+          <li>drag-and-drop vocabulary and sorting tasks</li>
+          <li>visual model interpretation with dot plot and box plot</li>
+          <li>context-based writing and compare/contrast reasoning</li>
+          <li>print mode for worksheet/PDF use</li>
+          <li>score tracker and summary modal</li>
+        </ul>
+
+        <div class="stamp">Final flagship review script</div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="footerBox">6.SP.B.5 Premium Interactive Review • final script • classroom-ready • marketplace-style completeness</div>
+</div>
+
+<script>
+  const completionKeys = [
+    'matching','wu1','wu2','wu3','c1','c2','centerExplain','v1','v2','v3',
+    'v4','box','vis3','ctx1','ctx2','ctx3','cmp1','cmp2','cmp3','sort',
+    'wr1','m1','m2','m3','m4','m5','m6','m7'
+  ];
+  let completed = new Set();
+
+  function openCard(evt,id){
+    document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    evt.currentTarget.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function showFeedback(id, ok, msg){
+    const el = document.getElementById(id);
+    el.className = 'feedback show ' + (ok ? 'ok' : 'bad');
+    el.textContent = msg;
+  }
+
+  function markComplete(key){
+    completed.add(key);
+    updateProgress();
+  }
+
+  function updateProgress(){
+    const percent = Math.round((completed.size / completionKeys.length) * 100);
+    document.getElementById('globalProgress').style.width = percent + '%';
+    document.getElementById('progressText').textContent = percent + '% complete';
+  }
+
+  function showSummary(){
+    const percent = Math.round((completed.size / completionKeys.length) * 100);
+    alert('Completed tasks: ' + completed.size + ' of ' + completionKeys.length + '\nProgress: ' + percent + '%');
+  }
+
+  function resetAll(){
+    if(!confirm('Reset the whole review?')) return;
+    location.reload();
+  }
+
+  // Multiple choice selection
+  document.addEventListener('click', e=>{
+    if(e.target.classList.contains('choice')){
+      const parent = e.target.parentElement;
+      parent.querySelectorAll('.choice').forEach(c=>c.classList.remove('selected'));
+      e.target.classList.add('selected');
+    }
+  });
+
+  function gradeSingleChoice(containerId, answer, feedbackId){
+    const box = document.getElementById(containerId);
+    const choices = box.querySelectorAll('.choice');
+    let picked = null;
+    choices.forEach(c=>{
+      c.classList.remove('correct','incorrect');
+      if(c.classList.contains('selected')) picked = c;
+    });
+    if(!picked){
+      showFeedback(feedbackId,false,'Choose an answer first.');
+      return;
+    }
+    if(picked.dataset.value === answer){
+      picked.classList.add('correct');
+      showFeedback(feedbackId,true,'Correct.');
+      markComplete(containerId);
+    } else {
+      picked.classList.add('incorrect');
+      choices.forEach(c=>{ if(c.dataset.value === answer) c.classList.add('correct'); });
+      showFeedback(feedbackId,false,'Not yet. The green choice is correct.');
+    }
+  }
+
+  function checkNumeric(inputId, answer, feedbackId, explain=''){
+    const v = Number(document.getElementById(inputId).value);
+    if(v === answer){
+      showFeedback(feedbackId,true,'Correct. ' + explain);
+      markComplete(inputId);
+    } else {
+      showFeedback(feedbackId,false,'Check your calculation and try again.');
+    }
+  }
+
+  function scoreWriting(inputId, keywords, feedbackId){
+    const text = document.getElementById(inputId).value.toLowerCase().trim();
+    if(text.length < 12){
+      showFeedback(feedbackId,false,'Add a more complete response.');
+      return;
+    }
+    let hits = 0;
+    keywords.forEach(k=>{
+      if(text.includes(k.toLowerCase())) hits++;
+    });
+    if(hits >= Math.max(1, Math.ceil(keywords.length/2))){
+      showFeedback(feedbackId,true,'Strong start. Your response includes several important ideas.');
+      markComplete(inputId);
+    } else {
+      showFeedback(feedbackId,false,'Your response is written, but add more key ideas such as center, variation, pattern, or an unusual value.');
+    }
+  }
+
+  function checkWarmup1(){
+    const mean = Number(document.getElementById('wu1_mean').value);
+    const median = Number(document.getElementById('wu1_median').value);
+    const range = Number(document.getElementById('wu1_range').value);
+    if(mean===5 && median===4 && range===8){
+      showFeedback('wu1_feedback', true, 'Correct. Mean = 5, median = 4, and range = 8.');
+      markComplete('wu1');
+    } else {
+      showFeedback('wu1_feedback', false, 'One or more values are incorrect. Recheck the mean, median, and range.');
+    }
+  }
+
+  function checkCenter1(){
+    const mean = Number(document.getElementById('c1_mean').value);
+    const median = Number(document.getElementById('c1_median').value);
+    const best = document.getElementById('c1_best').value;
+    if(Math.abs(mean - 3.8) < 0.2 && median === 3 && best === 'median'){
+      showFeedback('c1_feedback', true, 'Correct. The outlier 9 pulls the mean up, so the median is the better measure of center.');
+      markComplete('c1');
+    } else {
+      showFeedback('c1_feedback', false, 'Recheck the center values and think about the effect of the outlier.');
+    }
+  }
+
+  function checkCenter2(){
+    const mean = Number(document.getElementById('c2_mean').value);
+    const median = Number(document.getElementById('c2_median').value);
+    const best = document.getElementById('c2_best').value;
+    if(mean === 25 && median === 25 && (best === 'mean' || best === 'median')){
+      showFeedback('c2_feedback', true, 'Correct. Mean and median are both 25. There is no outlier, so the mean is fully appropriate and the median also matches the center.');
+      markComplete('c2');
+    } else {
+      showFeedback('c2_feedback', false, 'Recalculate mean and median. Then decide which measure makes sense with no outlier.');
+    }
+  }
+
+  function checkMAD(){
+    const v = Number(document.getElementById('v2').value);
+    if(Math.abs(v - 1.6) < 0.11){
+      showFeedback('v2_feedback', true, 'Correct. The distances average to 1.6.');
+      markComplete('v2');
+    } else {
+      showFeedback('v2_feedback', false, 'Try again. Average the distances 2, 1, 1, 0, and 4.');
+    }
+  }
+
+  function checkDotPlot(){
+    const c = Number(document.getElementById('v4_center').value);
+    const o = Number(document.getElementById('v4_outlier').value);
+    if((c === 5 || c === 6) && o === 8){
+      showFeedback('v4_feedback', true, 'Correct. The center is around 5–6 and 8 stands out from the cluster.');
+      markComplete('v4');
+    } else {
+      showFeedback('v4_feedback', false, 'Look for where most dots are clustered and which value stands apart.');
+    }
+  }
+
+  function checkBoxPlot(){
+    const min = Number(document.getElementById('box_min').value);
+    const med = Number(document.getElementById('box_med').value);
+    const max = Number(document.getElementById('box_max').value);
+    if(min===2 && med===6 && max===12){
+      showFeedback('box_feedback', true, 'Correct. Minimum = 2, median = 6, maximum = 12.');
+      markComplete('box');
+    } else {
+      showFeedback('box_feedback', false, 'Recheck the whiskers and median line on the box plot.');
+    }
+  }
+
+  function checkCompareChecks(){
+    const a = document.getElementById('cmp3a').checked;
+    const b = document.getElementById('cmp3b').checked;
+    const c = document.getElementById('cmp3c').checked;
+    const d = document.getElementById('cmp3d').checked;
+    if(a && b && !c && d){
+      showFeedback('cmp3_feedback', true, 'Correct. Both medians are 8, Group B has the larger range, and Group A is more tightly clustered.');
+      markComplete('cmp3');
+    } else {
+      showFeedback('cmp3_feedback', false, 'Check which statements are true about center and spread.');
+    }
+  }
+
+  // Vocabulary drag/drop
+  function allowDnD(){
+    document.querySelectorAll('.word').forEach(word=>{
+      word.addEventListener('dragstart', e=>{
+        e.dataTransfer.setData('text/plain', word.dataset.word);
+        e.dataTransfer.setData('text/label', word.textContent);
+      });
+    });
+
+    document.querySelectorAll('.drop').forEach(drop=>{
+      drop.addEventListener('dragover', e=>e.preventDefault());
+      drop.addEventListener('drop', e=>{
+        e.preventDefault();
+        const val = e.dataTransfer.getData('text/plain');
+        const label = e.dataTransfer.getData('text/label');
+        drop.dataset.current = val;
+        const labelText = drop.getAttribute('data-label');
+        drop.innerHTML = '<div class="label">' + labelText + '</div>';
+        const chip = document.createElement('div');
+        chip.className = 'word';
+        chip.textContent = label;
+        chip.draggable = false;
+        chip.style.cursor = 'default';
+        drop.appendChild(chip);
+      });
+    });
+  }
+
+  document.querySelectorAll('.drop').forEach(drop=>{
+    const label = drop.querySelector('.label').textContent;
+    drop.setAttribute('data-label', label);
+  });
+
+  function resetMatching(){
+    document.querySelectorAll('.drop').forEach(drop=>{
+      drop.classList.remove('good','bad');
+      drop.dataset.current = '';
+      drop.innerHTML = '<div class="label">' + drop.getAttribute('data-label') + '</div>';
+    });
+    document.getElementById('matchFeedback').className = 'feedback';
+    document.getElementById('matchFeedback').textContent = '';
+  }
+
+  function checkMatching(){
+    let correct = 0;
+    document.querySelectorAll('.drop').forEach(drop=>{
+      drop.classList.remove('good','bad');
+      const expected = drop.dataset.answer;
+      const current = drop.dataset.current;
+      if(current === expected){
+        correct++;
+        drop.classList.add('good');
+      } else {
+        drop.classList.add('bad');
+      }
+    });
+
+    if(correct === 6){
+      showFeedback('matchFeedback', true, 'Excellent. All 6 vocabulary matches are correct.');
+      markComplete('matching');
+    } else {
+      showFeedback('matchFeedback', false, 'You matched ' + correct + ' out of 6 correctly. Fix the red boxes and try again.');
+    }
+  }
+
+  // Sort activity
+  function allowSortDnD(){
+    document.querySelectorAll('.sortableItem').forEach(item=>{
+      item.addEventListener('dragstart', e=>{
+        e.dataTransfer.setData('text/sort', item.dataset.sort);
+        e.dataTransfer.setData('text/html', item.outerHTML);
+        e.dataTransfer.setData('text/id', item.textContent);
+        item.classList.add('dragging');
+      });
+      item.addEventListener('dragend', ()=>{
+        item.classList.remove('dragging');
+      });
+    });
+
+    document.querySelectorAll('.dropZone, #sortBank').forEach(zone=>{
+      zone.addEventListener('dragover', e=>e.preventDefault());
+      zone.addEventListener('drop', e=>{
+        e.preventDefault();
+        const html = e.dataTransfer.getData('text/html');
+        const bank = document.getElementById('sortBank');
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        const newItem = temp.firstElementChild;
+        if(!newItem) return;
+
+        // remove existing identical text from all zones/bank
+        document.querySelectorAll('.sortableItem').forEach(item=>{
+          if(item.textContent === newItem.textContent) item.remove();
+        });
+
+        zone.appendChild(newItem);
+        allowSortDnD();
+      });
+    });
+  }
+
+  function resetSort(){
+    const bank = document.getElementById('sortBank');
+    bank.innerHTML = `
+      <div class="sortableItem" draggable="true" data-sort="center">The median is 8, so a typical value is 8.</div>
+      <div class="sortableItem" draggable="true" data-sort="variation">The data range from 4 to 12, so the spread is 8.</div>
+      <div class="sortableItem" draggable="true" data-sort="pattern">Most values are clustered between 7 and 9.</div>
+      <div class="sortableItem" draggable="true" data-sort="deviation">The value 24 is much higher than the rest.</div>
+    `;
+    document.querySelectorAll('.dropZone').forEach(z=>{
+      z.innerHTML = '<strong>' + z.textContent.trim().split('\n')[0] + '</strong>';
+    });
+    document.getElementById('sort_feedback').className = 'feedback';
+    document.getElementById('sort_feedback').textContent = '';
+    allowSortDnD();
+  }
+
+  function checkSort(){
+    let correct = 0;
+    document.querySelectorAll('.dropZone').forEach(zone=>{
+      const expected = zone.dataset.sortAnswer;
+      const items = zone.querySelectorAll('.sortableItem');
+      if(items.length === 1 && items[0].dataset.sort === expected){
+        correct++;
+      }
+    });
+
+    if(correct === 4){
+      showFeedback('sort_feedback', true, 'Correct. All statements are sorted into the right categories.');
+      markComplete('sort');
+    } else {
+      showFeedback('sort_feedback', false, 'Some statements are in the wrong category. Recheck center, variation, pattern, and deviation.');
+    }
+  }
+
+  allowDnD();
+  allowSortDnD();
+  updateProgress();
+</script>
 </body>
 </html>
