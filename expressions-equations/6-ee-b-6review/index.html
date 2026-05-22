@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Variable Quest · 6.EE.B.6</title>
+<style>
+:root{
+  --sky:#f0f7ff;--white:#ffffff;--panel:#f8faff;
+  --blue:#3b82f6;--blue2:#60a5fa;--blue-light:#dbeafe;
+  --purple:#8b5cf6;--purple-light:#ede9fe;
+  --green:#22c55e;--green-light:#dcfce7;
+  --yellow:#f59e0b;--yellow-light:#fef3c7;
+  --red:#ef4444;--red-light:#fee2e2;
+  --teal:#14b8a6;--teal-light:#ccfbf1;
+  --orange:#f97316;--orange-light:#ffedd5;
+  --pink:#ec4899;--pink-light:#fce7f3;
+  --gray:#6b7280;--gray2:#9ca3af;--gray-light:#f3f4f6;--gray-border:#e5e7eb;
+  --text:#1e293b;--text2:#475569;
+  --radius:16px;--radius-sm:10px;
+  --shadow:0 2px 12px rgba(0,0,0,.08);
+  --shadow-md:0 4px 20px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--sky);
+  font-family:'Nunito',system-ui;
+  color:var(--text);
+  min-height:100vh;
+}
+
+/* ── HEADER ── */
+#hdr{
+  background:var(--white);
+  border-bottom:2px solid var(--gray-border);
+  padding:14px 24px 0;
+  position:sticky;top:0;z-index:200;
+  box-shadow:var(--shadow);
+}
+#hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+#logo{display:flex;align-items:center;gap:10px}
+#logo-icon{font-size:2rem;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+#logo-text{font-family:'Fredoka One',cursive;font-size:1.5rem;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#logo-sub{font-size:.7rem;color:var(--gray);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+
+#score-hud{display:flex;gap:10px;flex-wrap:wrap}
+.hud-pill{
+  background:var(--gray-light);border-radius:50px;
+  padding:6px 16px;display:flex;align-items:center;gap:6px;
+  font-weight:800;font-size:.82rem;border:2px solid var(--gray-border);
+}
+.hud-pill .hp-val{color:var(--blue);font-size:1rem}
+.hud-pill .hp-icon{font-size:1rem}
+
+/* ── TABS ── */
+#tab-bar{display:flex;gap:3px;overflow-x:auto;padding-bottom:0;scrollbar-width:none}
+#tab-bar::-webkit-scrollbar{display:none}
+.tab{
+  padding:10px 18px;border-radius:10px 10px 0 0;
+  border:2px solid transparent;border-bottom:none;
+  cursor:pointer;font-size:.78rem;font-weight:800;
+  color:var(--gray);transition:.2s;white-space:nowrap;
+  position:relative;top:2px;background:var(--gray-light);
+  font-family:'Nunito',system-ui;
+}
+.tab:hover{background:var(--blue-light);color:var(--blue)}
+.tab.active{background:var(--sky);color:var(--blue);border-color:var(--gray-border);border-bottom-color:var(--sky)}
+.tab .t-icon{margin-right:5px}
+.tab .t-stars{font-size:.65rem;color:var(--yellow);margin-left:4px}
+
+/* ── MAIN ── */
+#main{padding:24px;max-width:1000px;margin:0 auto}
+.activity{display:none}.activity.active{display:block;animation:slideIn .25s ease-out}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION HEADER ── */
+.sec-head{
+  background:var(--white);border-radius:var(--radius);
+  padding:20px 24px;margin-bottom:18px;
+  border:2px solid var(--gray-border);
+  display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  box-shadow:var(--shadow);
+}
+.sec-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--text);margin-bottom:4px}
+.sec-desc{font-size:.82rem;color:var(--text2);line-height:1.5;max-width:480px}
+.sec-badge{
+  background:var(--blue-light);color:var(--blue);
+  border-radius:50px;padding:4px 14px;font-size:.7rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:inline-block;
+}
+.btn-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{
+  padding:9px 18px;border-radius:50px;border:none;
+  font-weight:800;font-size:.78rem;cursor:pointer;
+  transition:.15s;font-family:'Nunito',system-ui;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+.btn:active{transform:scale(.95)}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{background:#2563eb}
+.btn-outline{background:var(--white);color:var(--gray);border:2px solid var(--gray-border)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#16a34a}
+.btn-purple{background:var(--purple);color:#fff}
+
+/* ── PROGRESS ── */
+.prog-wrap{margin-bottom:16px}
+.prog-meta{display:flex;justify-content:space-between;font-size:.72rem;font-weight:700;color:var(--gray2);margin-bottom:5px}
+.prog-bar{height:8px;background:var(--gray-light);border-radius:8px;overflow:hidden;border:1px solid var(--gray-border)}
+.prog-fill{height:100%;border-radius:8px;transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+
+/* ── LEVEL SYSTEM ── */
+.level-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.lvl-btn{
+  padding:7px 16px;border-radius:50px;
+  border:2px solid var(--gray-border);
+  background:var(--white);color:var(--gray2);
+  font-size:.75rem;font-weight:800;cursor:pointer;
+  transition:.2s;font-family:'Nunito',system-ui;
+}
+.lvl-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.lvl-btn.done{background:var(--green-light);color:var(--green);border-color:var(--green)}
+.lvl-btn.locked{opacity:.45;cursor:not-allowed}
+.lvl-btn .lstar{color:var(--yellow);font-size:.8rem}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:var(--white);border-radius:50px;
+  padding:12px 28px;font-weight:800;font-size:.88rem;
+  z-index:9999;transition:.3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;box-shadow:var(--shadow-lg);border:2px solid var(--gray-border);
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.correct{border-color:var(--green);color:var(--green);background:var(--green-light)}
+#toast.wrong{border-color:var(--red);color:var(--red);background:var(--red-light)}
+#toast.info{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+
+/* ── CONFETTI ── */
+.confetti-piece{
+  position:fixed;width:10px;height:10px;
+  border-radius:2px;pointer-events:none;z-index:9998;
+  animation:confettiFall 1.2s ease-in forwards;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+
+/* ── RESULTS PANEL ── */
+.result-panel{
+  background:var(--white);border-radius:var(--radius);
+  border:2px solid var(--gray-border);padding:28px;
+  text-align:center;margin-top:20px;box-shadow:var(--shadow);
+}
+.result-panel .r-emoji{font-size:3rem;margin-bottom:8px}
+.result-panel .r-title{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--text);margin-bottom:6px}
+.result-panel .r-score{font-size:3rem;font-weight:900;color:var(--blue);margin:8px 0}
+.result-panel .r-stars{font-size:1.8rem;margin-bottom:8px}
+.result-panel .r-msg{font-size:.85rem;color:var(--text2)}
+
+/* ══════════════════════════════
+   TAB 0 – DRAG TO CATEGORY
+══════════════════════════════ */
+#cat-bank{
+  background:var(--white);border:2px dashed var(--blue2);
+  border-radius:var(--radius);padding:16px;
+  display:flex;flex-wrap:wrap;gap:9px;
+  min-height:62px;margin-bottom:18px;
+}
+.chip{
+  background:var(--blue-light);border:2px solid var(--blue2);
+  border-radius:50px;padding:8px 16px;
+  font-size:.88rem;font-weight:800;cursor:grab;
+  user-select:none;transition:.2s;color:var(--blue);
+}
+.chip:hover{background:var(--blue);color:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(59,130,246,.3)}
+.chip.dragging{opacity:.3}
+.chip.chip-ok{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.chip.chip-bad{background:var(--red-light);border-color:var(--red);color:var(--red)}
+
+.cat-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.cat-col{
+  background:var(--white);border:2px dashed var(--gray-border);
+  border-radius:var(--radius);padding:14px;min-height:130px;
+  transition:.2s;
+}
+.cat-col.over{border-color:var(--blue);background:var(--blue-light)}
+.cat-col.col-ok{border-color:var(--green);border-style:solid}
+.cat-col-title{
+  font-size:.72rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:10px;padding-bottom:8px;
+  border-bottom:2px solid var(--gray-border);
+}
+.cat-col-items{display:flex;flex-wrap:wrap;gap:6px;min-height:32px}
+
+/* ══════════════════════════════
+   TAB 1 – MATCH
+══════════════════════════════ */
+.match-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.match-col-h{font-size:.72rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.6px;color:var(--gray);margin-bottom:10px}
+.mc{
+  background:var(--white);border:2px solid var(--gray-border);
+  border-radius:var(--radius-sm);padding:13px 16px;margin-bottom:8px;
+  cursor:pointer;font-size:.88rem;font-weight:700;
+  transition:.2s;user-select:none;line-height:1.4;
+  box-shadow:0 1px 4px rgba(0,0,0,.05);
+}
+.mc:hover{border-color:var(--blue);transform:translateX(3px)}
+.mc.sel{border-color:var(--yellow);background:var(--yellow-light);box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+.mc.matched{border-color:var(--green);background:var(--green-light);color:var(--green);cursor:default;opacity:.75}
+.mc.bad{border-color:var(--red);background:var(--red-light);animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ══════════════════════════════
+   TAB 2 – EVALUATE CHOOSE
+══════════════════════════════ */
+.eval-wrap{
+  background:var(--white);border:2px solid var(--gray-border);
+  border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);
+}
+.eval-context-box{
+  background:var(--yellow-light);border:2px solid var(--yellow);
+  border-radius:var(--radius-sm);padding:14px 18px;
+  font-size:.88rem;font-weight:700;line-height:1.6;margin-bottom:16px;
+  border-left:5px solid var(--yellow);
+}
+.eval-expr{
+  font-family:'Fredoka One',cursive;font-size:2.6rem;
+  color:var(--purple);text-align:center;margin-bottom:16px;
+  text-shadow:0 2px 8px rgba(139,92,246,.15);
+}
+.eval-vars{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.var-pill{
+  background:var(--purple-light);border:2px solid var(--purple);
+  border-radius:50px;padding:6px 16px;font-weight:800;
+  font-size:.88rem;color:var(--purple);
+}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:460px;margin:0 auto}
+.choice{
+  background:var(--white);border:2px solid var(--gray-border);
+  border-radius:var(--radius-sm);padding:16px;
+  font-size:1.2rem;font-weight:900;text-align:center;
+  cursor:pointer;transition:.2s;color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,.05);
+}
+.choice:hover{border-color:var(--blue);background:var(--blue-light);color:var(--blue);transform:translateY(-2px)}
+.choice.correct{border-color:var(--green)!important;background:var(--green-light)!important;color:var(--green)!important}
+.choice.wrong{border-color:var(--red)!important;background:var(--red-light)!important;color:var(--red)!important}
+.choice.locked{cursor:default;pointer-events:none}
+.eval-fb{text-align:center;font-weight:800;font-size:.9rem;min-height:24px;margin-top:14px}
+
+/* ══════════════════════════════
+   TAB 3 – TRUE FALSE
+══════════════════════════════ */
+.tf-card{
+  background:var(--white);border:2px solid var(--gray-border);
+  border-radius:var(--radius);padding:24px 28px;
+  text-align:center;font-size:1.05rem;font-weight:700;
+  line-height:1.5;max-width:540px;margin:0 auto 16px;
+  box-shadow:var(--shadow-md);min-height:90px;
+  display:flex;align-items:center;justify-content:center;
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.tf-btns{display:flex;justify-content:center;gap:14px;margin-bottom:22px}
+.tf-btn{
+  padding:14px 44px;border-radius:50px;
+  border:3px solid;font-size:1rem;font-weight:900;
+  cursor:pointer;transition:.2s;font-family:'Nunito',system-ui;
+}
+.tf-btn:active{transform:scale(.93)}
+.tf-t{border-color:var(--green);color:var(--green);background:var(--green-light)}
+.tf-t:hover{background:var(--green);color:#fff}
+.tf-f{border-color:var(--red);color:var(--red);background:var(--red-light)}
+.tf-f:hover{background:var(--red);color:#fff}
+.tf-piles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tf-pile{background:var(--white);border:2px solid var(--gray-border);border-radius:var(--radius);padding:14px;min-height:60px}
+.tf-pile h4{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;padding-bottom:7px;border-bottom:2px solid var(--gray-border)}
+.tp-t h4{color:var(--green)}.tp-f h4{color:var(--red)}
+.tf-item{font-size:.76rem;padding:6px 10px;background:var(--gray-light);border-radius:8px;margin-bottom:5px;border:2px solid var(--gray-border);line-height:1.3;font-weight:600}
+.tf-item.ok{border-color:var(--green);background:var(--green-light);color:#166534}
+.tf-item.bad{border-color:var(--red);background:var(--red-light);color:#991b1b}
+
+/* ══════════════════════════════
+   TAB 4 – WORD PROBLEM
+══════════════════════════════ */
+.wp-scenario{
+  background:var(--teal-light);border:2px solid var(--teal);
+  border-radius:var(--radius);padding:18px 20px;
+  font-size:.92rem;font-weight:700;line-height:1.65;
+  margin-bottom:16px;
+  border-left:5px solid var(--teal);
+  position:relative;
+}
+.wp-scenario::before{content:'📖';position:absolute;top:-14px;left:16px;font-size:1.4rem}
+.wp-q{font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--gray);margin-bottom:10px}
+.wp-choices{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;max-width:540px}
+.wpc{
+  background:var(--white);border:2px solid var(--gray-border);
+  border-radius:var(--radius-sm);padding:13px;
+  font-size:.95rem;font-weight:800;text-align:center;
+  cursor:pointer;transition:.2s;font-family:'Fredoka One',cursive;
+  color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.05);
+}
+.wpc:hover{border-color:var(--purple);background:var(--purple-light);color:var(--purple);transform:translateY(-2px)}
+.wpc.correct{border-color:var(--green)!important;background:var(--green-light)!important;color:var(--green)!important}
+.wpc.wrong{border-color:var(--red)!important;background:var(--red-light)!important;color:var(--red)!important}
+.wpc.locked{cursor:default;pointer-events:none}
+.wp-fb{font-weight:800;font-size:.88rem;min-height:22px;margin:10px 0;text-align:center}
+.wp-hint{
+  background:var(--orange-light);border:2px solid var(--orange);
+  border-radius:var(--radius-sm);padding:10px 14px;
+  font-size:.78rem;font-weight:700;color:#92400e;margin-top:10px;
+  display:none;line-height:1.5;
+}
+
+/* ══════════════════════════════
+   TAB 5 – VOCAB MATCH
+══════════════════════════════ */
+.vocab-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.vcol h3{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--gray);margin-bottom:10px}
+.vc{
+  background:var(--white);border:2px solid var(--gray-border);
+  border-radius:var(--radius-sm);padding:13px 15px;margin-bottom:7px;
+  cursor:pointer;font-size:.86rem;font-weight:700;line-height:1.4;
+  transition:.2s;user-select:none;box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.vc:hover{border-color:var(--blue)}
+.vc.sel{border-color:var(--yellow);background:var(--yellow-light);box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+.vc.matched{border-color:var(--green);background:var(--green-light);cursor:default;opacity:.7}
+.vc.bad{border-color:var(--red);background:var(--red-light);animation:shake .35s}
+.vc.term-c{color:var(--blue);font-weight:800;font-family:'Fredoka One',cursive;font-size:.95rem}
+
+/* ── NUMBER LINE TAB ── */
+.nl-outer{
+  background:var(--white);border:2px solid var(--gray-border);
+  border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
+.nl-q{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--purple);text-align:center;margin-bottom:20px}
+.nl-instruction{font-size:.78rem;font-weight:700;color:var(--gray2);text-align:center;margin-bottom:14px}
+#nl-track{position:relative;height:68px;margin:0 16px 10px}
+#nl-rail{position:absolute;left:0;right:0;top:50%;height:4px;background:var(--gray-border);border-radius:4px}
+.nl-t{position:absolute;display:flex;flex-direction:column;align-items:center;transform:translateX(-50%)}
+.nl-t-tick{width:2px;height:14px;background:var(--gray2);margin-top:calc(50% - 7px)}
+.nl-t-lbl{font-size:.62rem;font-weight:800;color:var(--gray2);margin-top:32px;position:absolute;top:14px;white-space:nowrap}
+.nl-t.z-tick .nl-t-tick{background:var(--blue);height:22px;margin-top:calc(50% - 11px)}
+.nl-t.z-tick .nl-t-lbl{color:var(--blue)}
+#nl-marker{
+  position:absolute;top:50%;width:32px;height:32px;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));
+  border-radius:50%;border:3px solid var(--white);
+  transform:translate(-50%,-50%);cursor:grab;
+  box-shadow:0 4px 16px rgba(249,115,22,.45);z-index:5;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:900;color:#fff;
+  transition:box-shadow .2s;
+}
+#nl-marker:active{cursor:grabbing;box-shadow:0 6px 24px rgba(249,115,22,.7)}
+.nl-ctrls{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:4px}
+.nl-arrow{
+  background:var(--white);border:2px solid var(--gray-border);
+  border-radius:10px;padding:8px 16px;font-size:.95rem;
+  font-weight:900;cursor:pointer;transition:.15s;color:var(--text);
+}
+.nl-arrow:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+#nl-val{font-size:1.8rem;font-weight:900;color:var(--blue);min-width:52px;text-align:center}
+#nl-fb{text-align:center;font-weight:800;font-size:.9rem;min-height:26px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hdr">
+  <div id="hdr-top">
+    <div id="logo">
+      <div id="logo-icon">🔮</div>
+      <div>
+        <div id="logo-text">Variable Quest</div>
+        <div id="logo-sub">CCSS 6.EE.B.6 · Variables &amp; Expressions</div>
+      </div>
+    </div>
+    <div id="score-hud">
+      <div class="hud-pill"><span class="hp-icon">⭐</span><span class="hp-val" id="g-score">0</span><span style="color:var(--gray);font-size:.7rem">pts</span></div>
+      <div class="hud-pill"><span class="hp-icon">🎯</span><span class="hp-val" id="g-pct">—</span></div>
+      <div class="hud-pill"><span class="hp-icon">🔥</span><span class="hp-val" id="g-streak">0</span><span style="color:var(--gray);font-size:.7rem">streak</span></div>
+    </div>
+  </div>
+  <div id="tab-bar">
+    <div class="tab active" onclick="switchTab(0)"><span class="t-icon">📦</span>Sort It<span class="t-stars" id="ts0"></span></div>
+    <div class="tab" onclick="switchTab(1)"><span class="t-icon">🔗</span>Match It<span class="t-stars" id="ts1"></span></div>
+    <div class="tab" onclick="switchTab(2)"><span class="t-icon">🧮</span>Evaluate<span class="t-stars" id="ts2"></span></div>
+    <div class="tab" onclick="switchTab(3)"><span class="t-icon">📏</span>Number Line<span class="t-stars" id="ts3"></span></div>
+    <div class="tab" onclick="switchTab(4)"><span class="t-icon">✅</span>True/False<span class="t-stars" id="ts4"></span></div>
+    <div class="tab" onclick="switchTab(5)"><span class="t-icon">📝</span>Word Problems<span class="t-stars" id="ts5"></span></div>
+  </div>
+</div>
+
+<div id="main">
+
+<!-- ══ TAB 0 SORT ══ -->
+<div class="activity active" id="act-0">
+  <div class="sec-head">
+    <div>
+      <div class="sec-badge">📦 Activity 1 of 6</div>
+      <div class="sec-title">Sort Expressions by Type</div>
+      <div class="sec-desc">Drag each card into the correct category. Is it an <b>Expression with a Variable</b>, a <b>Numerical Expression</b>, or an <b>Equation</b>?</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="initCat()">🔄 Reset</button>
+      <button class="btn btn-blue" onclick="checkCat()">✔ Check</button>
+    </div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="cat-lv-lbl">⭐ Level 1 — Basic</span><span id="cat-meta">0 / 12</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="cat-fill" style="width:0%;background:var(--blue)"></div></div>
+  </div>
+  <div class="level-row" id="cat-level-row"></div>
+  <div id="cat-bank"></div>
+  <div class="cat-columns" id="cat-cols"></div>
+  <div id="cat-res" style="display:none" class="result-panel">
+    <div class="r-emoji">🎉</div>
+    <div class="r-title">Sort Complete!</div>
+    <div class="r-score" id="cat-score-txt">0/12</div>
+    <div class="r-stars" id="cat-stars"></div>
+    <div class="r-msg" id="cat-msg"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 1 MATCH ══ -->
+<div class="activity" id="act-1">
+  <div class="sec-head">
+    <div>
+      <div class="sec-badge">🔗 Activity 2 of 6</div>
+      <div class="sec-title">Match the Expression</div>
+      <div class="sec-desc">Click a word phrase on the left, then its matching algebraic expression on the right.</div>
+    </div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="initMatch()">🔄 Reset</button></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="match-lv-lbl">⭐ Level 1 — Basic Phrases</span><span id="match-meta">0 / 9</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="match-fill" style="width:0%;background:var(--purple)"></div></div>
+  </div>
+  <div class="level-row" id="match-level-row"></div>
+  <div class="match-cols">
+    <div><div class="match-col-h">💬 Word Phrase</div><div id="m-left"></div></div>
+    <div><div class="match-col-h">✏️ Expression</div><div id="m-right"></div></div>
+  </div>
+  <div id="match-res" style="display:none" class="result-panel">
+    <div class="r-emoji">⭐</div><div class="r-title">All Matched!</div>
+    <div class="r-stars" id="match-stars"></div>
+    <div class="r-msg" id="match-msg"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 2 EVALUATE ══ -->
+<div class="activity" id="act-2">
+  <div class="sec-head">
+    <div>
+      <div class="sec-badge">🧮 Activity 3 of 6</div>
+      <div class="sec-title">Evaluate the Expression</div>
+      <div class="sec-desc">Substitute the value(s) for the variable(s) and pick the correct answer. 3 levels — gets harder!</div>
+    </div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="initEval()">🔄 Reset</button></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="eval-lv-lbl">⭐ Level 1 — One Variable</span><span id="eval-meta">0 / 10</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="eval-fill" style="width:0%;background:var(--purple)"></div></div>
+  </div>
+  <div class="level-row" id="eval-level-row"></div>
+  <div class="eval-wrap">
+    <div class="eval-context-box" id="eval-ctx"></div>
+    <div class="eval-expr" id="eval-expr">—</div>
+    <div class="eval-vars" id="eval-vars"></div>
+    <div class="choices" id="eval-choices"></div>
+    <div class="eval-fb" id="eval-fb"></div>
+  </div>
+  <div style="display:flex;justify-content:center;margin-top:12px">
+    <button class="btn btn-green" id="eval-next" style="display:none" onclick="nextEval()">Next Question ➜</button>
+  </div>
+  <div id="eval-res" style="display:none" class="result-panel">
+    <div class="r-emoji">🧮</div><div class="r-title">Evaluation Master!</div>
+    <div class="r-score" id="eval-score-txt"></div><div class="r-stars" id="eval-stars"></div>
+    <div class="r-msg" id="eval-msg"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 3 NUMBER LINE ══ -->
+<div class="activity" id="act-3">
+  <div class="sec-head">
+    <div>
+      <div class="sec-badge">📏 Activity 4 of 6</div>
+      <div class="sec-title">Place It on the Number Line</div>
+      <div class="sec-desc">Evaluate the expression, then drag the marker to the correct position on the number line.</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="initNL()">🔄 Reset</button>
+      <button class="btn btn-blue" onclick="checkNL()">✔ Submit</button>
+    </div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="nl-lv-lbl">⭐ Level 1</span><span id="nl-meta">0 / 8</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="nl-fill" style="width:0%;background:var(--teal)"></div></div>
+  </div>
+  <div class="nl-outer">
+    <div class="nl-q" id="nl-q">Loading…</div>
+    <div class="nl-instruction">← Drag the 🟠 marker or tap the arrow buttons →</div>
+    <div id="nl-track"><div id="nl-rail"></div><div id="nl-marker">0</div></div>
+    <div class="nl-ctrls">
+      <button class="nl-arrow" onclick="moveNL(-1)">◀ −1</button>
+      <div id="nl-val">0</div>
+      <button class="nl-arrow" onclick="moveNL(1)">+1 ▶</button>
+    </div>
+    <div id="nl-fb"></div>
+  </div>
+  <div id="nl-res" style="display:none" class="result-panel">
+    <div class="r-emoji">📏</div><div class="r-title">Number Line Champion!</div>
+    <div class="r-score" id="nl-score-txt"></div><div class="r-stars" id="nl-stars"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 4 TRUE FALSE ══ -->
+<div class="activity" id="act-4">
+  <div class="sec-head">
+    <div>
+      <div class="sec-badge">✅ Activity 5 of 6</div>
+      <div class="sec-title">True or False?</div>
+      <div class="sec-desc">Read each statement about variables and expressions — is it TRUE or FALSE? Sort them all!</div>
+    </div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="initTF()">🔄 Reset</button></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="tf-lv-lbl">⭐ Level 1</span><span id="tf-meta">0 / 10</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="tf-fill" style="width:0%;background:var(--teal)"></div></div>
+  </div>
+  <div id="tf-stage" style="text-align:center;margin-bottom:14px"></div>
+  <div class="tf-btns">
+    <button class="tf-btn tf-t" onclick="doTF(true)">✅ TRUE</button>
+    <button class="tf-btn tf-f" onclick="doTF(false)">❌ FALSE</button>
+  </div>
+  <div class="tf-piles">
+    <div class="tf-pile tp-t"><h4>✅ True Pile</h4><div id="tf-tp"></div></div>
+    <div class="tf-pile tp-f"><h4>❌ False Pile</h4><div id="tf-fp"></div></div>
+  </div>
+  <div id="tf-res" style="display:none" class="result-panel">
+    <div class="r-emoji">✅</div><div class="r-title">Sort Complete!</div>
+    <div class="r-score" id="tf-score-txt"></div><div class="r-stars" id="tf-stars"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 5 WORD PROBLEMS ══ -->
+<div class="activity" id="act-5">
+  <div class="sec-head">
+    <div>
+      <div class="sec-badge">📝 Activity 6 of 6</div>
+      <div class="sec-title">Word Problem → Expression</div>
+      <div class="sec-desc">Read the real-world scenario and choose the algebraic expression that models it. Use the 💡 hint if you need a nudge!</div>
+    </div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="initWP()">🔄 Reset</button></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="wp-lv-lbl">⭐ Level 1 — Single Operation</span><span id="wp-meta">0 / 9</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="wp-fill" style="width:0%;background:var(--orange)"></div></div>
+  </div>
+  <div class="level-row" id="wp-level-row"></div>
+  <div style="background:var(--white);border:2px solid var(--gray-border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)">
+    <div class="wp-scenario" id="wp-scenario">Loading…</div>
+    <div class="wp-q">Which expression represents this situation?</div>
+    <div class="wp-choices" id="wp-choices"></div>
+    <div class="wp-hint" id="wp-hint"></div>
+    <div class="wp-fb" id="wp-fb"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-outline" id="hint-btn" onclick="showHint()" style="font-size:.75rem">💡 Hint</button>
+      <button class="btn btn-green" id="wp-next" style="display:none" onclick="nextWP()">Next ➜</button>
+    </div>
+  </div>
+  <div id="wp-res" style="display:none" class="result-panel">
+    <div class="r-emoji">🏆</div><div class="r-title">Word Problems Done!</div>
+    <div class="r-score" id="wp-score-txt"></div><div class="r-stars" id="wp-stars"></div>
+    <div class="r-msg" id="wp-msg"></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+<div id="toast"></div>
+
+<script>
+/* ════ GLOBAL ════ */
+let gScore=0,gCorrect=0,gAttempts=0,gStreak=0;
+function addPts(pts,ok){
+  gScore+=pts; if(ok){gCorrect++;gStreak++;}else gStreak=0;
+  gAttempts++;
+  document.getElementById('g-score').innerText=gScore;
+  document.getElementById('g-streak').innerText=gStreak;
+  const pct=gAttempts>0?Math.round(gCorrect/gAttempts*100)+'%':'—';
+  document.getElementById('g-pct').innerText=pct;
+  if(ok&&gStreak>=3) toast('🔥 '+gStreak+' in a row!','info');
+}
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.activity').forEach((a,j)=>a.classList.toggle('active',i===j));
+}
+
+/* TOAST */
+let tTmr;
+function toast(msg,type='info'){
+  const el=document.getElementById('toast');
+  el.innerText=msg; el.className='show '+type;
+  clearTimeout(tTmr); tTmr=setTimeout(()=>el.className='',2200);
+}
+
+/* STARS */
+function starsFor(pct){
+  if(pct===100) return'⭐⭐⭐';
+  if(pct>=70)  return'⭐⭐';
+  return'⭐';
+}
+function setTabStar(idx,pct){
+  document.getElementById('ts'+idx).innerText=' '+starsFor(pct);
+}
+
+/* CONFETTI */
+function confetti(){
+  const colors=['#3b82f6','#8b5cf6','#22c55e','#f59e0b','#ef4444','#ec4899','#14b8a6'];
+  for(let i=0;i<55;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.cssText=`left:${10+Math.random()*80}%;top:-10px;background:${colors[i%colors.length]};
+      width:${8+Math.random()*8}px;height:${8+Math.random()*8}px;
+      animation-delay:${Math.random()*.6}s;animation-duration:${1+Math.random()*.8}s;
+      border-radius:${Math.random()>.5?'50%':'2px'}`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2200);
+  }
+}
+
+/* ════ TAB 0 – DRAG TO CATEGORY ════ */
+const CAT_LEVELS=[
+  {label:'⭐ Level 1 — Identify Basics',items:[
+    {t:'x + 3',cat:'expr'},{t:'5 × 4',cat:'num'},{t:'2n = 10',cat:'eq'},
+    {t:'7 − 2',cat:'num'},{t:'y − 6',cat:'expr'},{t:'m + 4 = 9',cat:'eq'},
+  ]},
+  {label:'⭐⭐ Level 2 — Multi-Term',items:[
+    {t:'3x + 2',cat:'expr'},{t:'4(9−1)',cat:'num'},{t:'2y + 1 = 7',cat:'eq'},
+    {t:'5² − 3',cat:'num'},{t:'2(k + 4)',cat:'expr'},{t:'n/3 = 5',cat:'eq'},
+  ]},
+];
+const CAT_CATS=[
+  {id:'expr',label:'✏️ Expression with Variable',color:'var(--blue)',bg:'var(--blue-light)'},
+  {id:'num', label:'🔢 Numerical Expression',    color:'var(--orange)',bg:'var(--orange-light)'},
+  {id:'eq',  label:'⚖️ Equation (has =)',        color:'var(--purple)',bg:'var(--purple-light)'},
+];
+let catLvl=0,catPlaced={};
+function initCat(){
+  catPlaced={}; renderCatLevelBtns();
+  const lv=CAT_LEVELS[catLvl];
+  document.getElementById('cat-lv-lbl').innerText=lv.label;
+  const bank=document.getElementById('cat-bank');
+  bank.innerHTML='';
+  [...lv.items].sort(()=>Math.random()-.5).forEach(item=>bank.appendChild(makeChip(item)));
+  const cols=document.getElementById('cat-cols');
+  cols.innerHTML='';
+  CAT_CATS.forEach(cat=>{
+    const col=document.createElement('div');
+    col.className='cat-col'; col.dataset.cat=cat.id;
+    col.innerHTML=`<div class="cat-col-title" style="color:${cat.color}">${cat.label}</div><div class="cat-col-items" id="ci-${cat.id}"><span style="font-size:.72rem;color:#d1d5db;font-style:italic">Drop here…</span></div>`;
+    col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('over')});
+    col.addEventListener('dragleave',()=>col.classList.remove('over'));
+    col.addEventListener('drop',e=>{
+      e.preventDefault(); col.classList.remove('over');
+      const id=e.dataTransfer.getData('text');
+      const chip=document.getElementById('ch-'+id);
+      if(!chip) return;
+      const ci=document.getElementById('ci-'+cat.id);
+      ci.querySelector('span')?.remove();
+      ci.appendChild(chip); catPlaced[id]=cat.id; updateCatProg();
+    });
+    cols.appendChild(col);
+  });
+  document.getElementById('cat-res').style.display='none'; updateCatProg();
+}
+function renderCatLevelBtns(){
+  const row=document.getElementById('cat-level-row');
+  row.innerHTML='';
+  CAT_LEVELS.forEach((lv,i)=>{
+    const b=document.createElement('button');
+    b.className='lvl-btn'+(i===catLvl?' active':'');
+    b.innerText=lv.label;
+    b.onclick=()=>{catLvl=i;initCat()};
+    row.appendChild(b);
+  });
+}
+function makeChip(item){
+  const c=document.createElement('div');
+  c.className='chip'; c.id='ch-'+item.t; c.innerText=item.t; c.draggable=true;
+  c.addEventListener('dragstart',e=>{e.dataTransfer.setData('text',item.t);c.classList.add('dragging')});
+  c.addEventListener('dragend',()=>c.classList.remove('dragging'));
+  return c;
+}
+function updateCatProg(){
+  const lv=CAT_LEVELS[catLvl],n=Object.keys(catPlaced).length,total=lv.items.length;
+  document.getElementById('cat-fill').style.width=(n/total*100)+'%';
+  document.getElementById('cat-meta').innerText=n+' / '+total;
+}
+function checkCat(){
+  const lv=CAT_LEVELS[catLvl]; let ok=0;
+  lv.items.forEach(item=>{
+    const chip=document.getElementById('ch-'+item.t); if(!chip) return;
+    const placed=catPlaced[item.t];
+    if(placed===item.cat){ok++;chip.classList.add('chip-ok');chip.classList.remove('chip-bad');}
+    else if(placed){chip.classList.add('chip-bad');chip.classList.remove('chip-ok');}
+  });
+  const total=lv.items.length,pct=Math.round(ok/total*100);
+  document.getElementById('cat-res').style.display='block';
+  document.getElementById('cat-score-txt').innerText=ok+'/'+total;
+  document.getElementById('cat-stars').innerText=starsFor(pct);
+  document.getElementById('cat-msg').innerText=pct===100?'Perfect! Every card in the right spot! 🎉':'Red chips are misplaced — reset and try again!';
+  addPts(ok*10,ok===total); setTabStar(0,pct);
+  if(pct===100) confetti();
+  toast(pct===100?'🎉 Perfect!':'⚡ '+ok+'/'+total+' correct',pct===100?'correct':'wrong');
+}
+
+/* ════ TAB 1 – MATCH ════ */
+const MATCH_LEVELS=[
+  {label:'⭐ Level 1 — Basic Phrases', total:5, pairs:[
+    {phrase:'"5 more than n"',    expr:'n + 5'},
+    {phrase:'"3 times x"',        expr:'3x'},
+    {phrase:'"y divided by 4"',   expr:'y ÷ 4'},
+    {phrase:'"8 less than k"',    expr:'k − 8'},
+    {phrase:'"half of p"',        expr:'p/2'},
+  ]},
+  {label:'⭐⭐ Level 2 — Multi-Step', total:4, pairs:[
+    {phrase:'"twice a number plus 1"',  expr:'2n + 1'},
+    {phrase:'"4 more than 3 times t"',  expr:'3t + 4'},
+    {phrase:'"the product of 6 and m"', expr:'6m'},
+    {phrase:'"n decreased by 7"',       expr:'n − 7'},
+  ]},
+];
+let mLvl=0,mSel=null,mPairs=0;
+function initMatch(){
+  mSel=null; mPairs=0;
+  renderMatchLvlBtns();
+  const lv=MATCH_LEVELS[mLvl];
+  document.getElementById('match-lv-lbl').innerText=lv.label;
+  document.getElementById('match-meta').innerText='0 / '+lv.total;
+  document.getElementById('match-fill').style.width='0%';
+  document.getElementById('m-left').innerHTML='';
+  document.getElementById('m-right').innerHTML='';
+  document.getElementById('match-res').style.display='none';
+  const sp=[...lv.pairs].sort(()=>Math.random()-.5);
+  const se=[...lv.pairs].map(p=>p.expr).sort(()=>Math.random()-.5);
+  sp.forEach(p=>{const c=makeMC(p.phrase,'L','phrase',p.phrase);document.getElementById('m-left').appendChild(c)});
+  se.forEach(e=>{const p=lv.pairs.find(x=>x.expr===e);const c=makeMC(e,'R','expr',p.phrase);document.getElementById('m-right').appendChild(c)});
+}
+function renderMatchLvlBtns(){
+  const row=document.getElementById('match-level-row');row.innerHTML='';
+  MATCH_LEVELS.forEach((lv,i)=>{
+    const b=document.createElement('button');
+    b.className='lvl-btn'+(i===mLvl?' active':'');b.innerText=lv.label;
+    b.onclick=()=>{mLvl=i;initMatch()};row.appendChild(b);
+  });
+}
+function makeMC(text,side,type,key){
+  const c=document.createElement('div'); c.className='mc';
+  c.dataset.key=key; c.dataset.side=side; c.dataset.type=type;
+  c.innerText=text; c.onclick=()=>handleMatch(c); return c;
+}
+function handleMatch(card){
+  if(card.classList.contains('matched')) return;
+  const lv=MATCH_LEVELS[mLvl];
+  if(!mSel){document.querySelectorAll('.mc.sel').forEach(c=>c.classList.remove('sel'));card.classList.add('sel');mSel=card;return;}
+  if(card===mSel){card.classList.remove('sel');mSel=null;return;}
+  if(card.dataset.side===mSel.dataset.side){document.querySelectorAll('.mc.sel').forEach(c=>c.classList.remove('sel'));card.classList.add('sel');mSel=card;return;}
+  const ok=card.dataset.key===mSel.dataset.key;
+  if(ok){
+    [mSel,card].forEach(c=>{c.classList.remove('sel');c.classList.add('matched')});
+    mPairs++; addPts(20,true); toast('✅ Match!','correct');
+    document.getElementById('match-fill').style.width=(mPairs/lv.total*100)+'%';
+    document.getElementById('match-meta').innerText=mPairs+' / '+lv.total;
+    if(mPairs===lv.total){
+      document.getElementById('match-res').style.display='block';
+      document.getElementById('match-stars').innerText='⭐⭐⭐';
+      document.getElementById('match-msg').innerText='All matched — you speak algebra!';
+      confetti(); setTabStar(1,100);
+    }
+  } else {
+    [mSel,card].forEach(c=>{c.classList.add('bad');setTimeout(()=>c.classList.remove('bad'),400)});
+    addPts(0,false); toast('❌ Not a match — try again','wrong');
+  }
+  mSel=null; document.querySelectorAll('.mc.sel').forEach(c=>c.classList.remove('sel'));
+}
+
+/* ════ TAB 2 – EVALUATE ════ */
+const EVAL_LEVELS=[
+  {label:'⭐ Level 1 — One Variable', qs:[
+    {expr:'3x + 2',  ctx:'Evaluate when x = 4.',   vars:{x:4},   ans:14, d:[10,12,16]},
+    {expr:'5k',      ctx:'Evaluate when k = 7.',   vars:{k:7},   ans:35, d:[12,30,40]},
+    {expr:'y/4 + 3', ctx:'Evaluate when y = 12.',  vars:{y:12},  ans:6,  d:[4,8,7]},
+    {expr:'m + 9',   ctx:'Evaluate when m = −3.',  vars:{m:-3},  ans:6,  d:[12,-6,3]},
+  ]},
+  {label:'⭐⭐ Level 2 — Two Variables', qs:[
+    {expr:'2a + b',  ctx:'Evaluate when a = 3, b = 4.',vars:{a:3,b:4},ans:10,d:[9,11,14]},
+    {expr:'xy − 1',  ctx:'Evaluate when x = 4, y = 3.',vars:{x:4,y:3},ans:11,d:[12,10,13]},
+    {expr:'3p − q',  ctx:'Evaluate when p = 5, q = 2.',vars:{p:5,q:2},ans:13,d:[15,11,17]},
+  ]},
+  {label:'⭐⭐⭐ Level 3 — Challenge', qs:[
+    {expr:'x² + 1',  ctx:'Evaluate when x = 3.',   vars:{x:3},   ans:10, d:[7,13,16]},
+    {expr:'2(n + 4)',ctx:'Evaluate when n = 5.',   vars:{n:5},   ans:18, d:[14,20,13]},
+    {expr:'6 − 2n',  ctx:'Evaluate when n = 4.',   vars:{n:4},   ans:-2, d:[2,-4,14]},
+  ]},
+];
+let eLvl=0,eIdx=0,eCorrect=0,eLocked=false;
+function initEval(){
+  eLvl=0;eIdx=0;eCorrect=0;eLocked=false;
+  renderEvalLvlBtns();
+  document.getElementById('eval-res').style.display='none';
+  document.getElementById('eval-next').style.display='none';
+  const total=EVAL_LEVELS.reduce((a,b)=>a+b.qs.length,0);
+  document.getElementById('eval-meta').innerText='0 / '+total;
+  document.getElementById('eval-fill').style.width='0%';
+  loadEval();
+}
+function renderEvalLvlBtns(){
+  const row=document.getElementById('eval-level-row');row.innerHTML='';
+  EVAL_LEVELS.forEach((lv,i)=>{
+    const b=document.createElement('button');
+    b.className='lvl-btn'+(i===eLvl?' active':'');b.innerText=lv.label;
+    b.onclick=()=>{eLvl=i;eIdx=0;eCorrect=0;loadEval();renderEvalLvlBtns()};
+    row.appendChild(b);
+  });
+}
+function loadEval(){
+  const lv=EVAL_LEVELS[eLvl];
+  if(eIdx>=lv.qs.length){
+    if(eLvl<EVAL_LEVELS.length-1){eLvl++;eIdx=0;renderEvalLvlBtns();loadEval();return;}
+    showEvalRes();return;
+  }
+  eLocked=false;
+  document.getElementById('eval-next').style.display='none';
+  document.getElementById('eval-fb').innerText='';
+  document.getElementById('eval-lv-lbl').innerText=lv.label;
+  const q=lv.qs[eIdx];
+  document.getElementById('eval-ctx').innerText=q.ctx;
+  document.getElementById('eval-expr').innerText=q.expr;
+  const vr=document.getElementById('eval-vars');vr.innerHTML='';
+  Object.entries(q.vars).forEach(([k,v])=>{
+    const p=document.createElement('div');p.className='var-pill';p.innerText=k+' = '+v;vr.appendChild(p);
+  });
+  const choices=[q.ans,...q.d.filter(d=>d!==q.ans).slice(0,3)].sort(()=>Math.random()-.5);
+  const cc=document.getElementById('eval-choices');cc.innerHTML='';
+  choices.forEach(val=>{
+    const c=document.createElement('div');c.className='choice';c.innerText=val;
+    c.onclick=()=>{
+      if(eLocked)return;eLocked=true;
+      const ok=val===q.ans;
+      c.classList.add(ok?'correct':'wrong');
+      if(!ok) document.querySelectorAll('.choice').forEach(ch=>{if(Number(ch.innerText)===q.ans||ch.innerText===String(q.ans)) ch.classList.add('correct')});
+      document.querySelectorAll('.choice').forEach(ch=>ch.classList.add('locked'));
+      document.getElementById('eval-fb').innerHTML=ok
+        ?`<span style="color:var(--green)">✅ Correct! The answer is ${q.ans}.</span>`
+        :`<span style="color:var(--red)">❌ The answer was ${q.ans}. Substitute carefully!</span>`;
+      addPts(ok?15:0,ok);
+      if(ok)toast('✅ Correct! +15 pts','correct');else toast('❌ Answer: '+q.ans,'wrong');
+      eCorrect+=(ok?1:0);
+      const total=EVAL_LEVELS.reduce((a,b)=>a+b.qs.length,0);
+      const done=EVAL_LEVELS.slice(0,eLvl).reduce((a,b)=>a+b.qs.length,0)+eIdx+1;
+      document.getElementById('eval-fill').style.width=(done/total*100)+'%';
+      document.getElementById('eval-meta').innerText=done+' / '+total;
+      eIdx++;
+      document.getElementById('eval-next').style.display='block';
+    };
+    cc.appendChild(c);
+  });
+}
+function nextEval(){document.getElementById('eval-next').style.display='none';loadEval();}
+function showEvalRes(){
+  const total=EVAL_LEVELS.reduce((a,b)=>a+b.qs.length,0);
+  const pct=Math.round(eCorrect/total*100);
+  document.getElementById('eval-res').style.display='block';
+  document.getElementById('eval-score-txt').innerText=eCorrect+'/'+total;
+  document.getElementById('eval-stars').innerText=starsFor(pct);
+  document.getElementById('eval-msg').innerText=pct===100?'Flawless! All three levels cleared!':'Great effort — retry any level to improve!';
+  setTabStar(2,pct);if(pct===100)confetti();
+}
+
+/* ════ TAB 3 – NUMBER LINE ════ */
+const NL_Q=[
+  {expr:'n + 4, where n = 2',   ans:6},
+  {expr:'3x, where x = 2',      ans:6},
+  {expr:'m − 5, where m = 8',   ans:3},
+  {expr:'2k + 1, where k = 3',  ans:7},
+  {expr:'y − 3, where y = 1',   ans:-2},
+  {expr:'4n − 6, where n = 2',  ans:2},
+  {expr:'p/2, where p = 10',    ans:5},
+  {expr:'x² − 1, where x = 3', ans:8},
+];
+const NL_MIN=-10,NL_MAX=10;
+let nlPos=0,nlIdx=0,nlCorrect=0,nlDrag=false;
+function initNL(){
+  nlPos=0;nlIdx=0;nlCorrect=0;
+  document.getElementById('nl-res').style.display='none';
+  document.getElementById('nl-fill').style.width='0%';
+  document.getElementById('nl-meta').innerText='0 / '+NL_Q.length;
+  renderNLTicks(); loadNLQ();
+}
+function renderNLTicks(){
+  const track=document.getElementById('nl-track');
+  track.querySelectorAll('.nl-t').forEach(t=>t.remove());
+  for(let v=NL_MIN;v<=NL_MAX;v+=2){
+    const t=document.createElement('div');
+    t.className='nl-t'+(v===0?' z-tick':'');
+    t.style.left=nlPct(v)+'%'; t.style.position='absolute';
+    t.innerHTML=`<div class="nl-t-tick"></div><div class="nl-t-lbl">${v}</div>`;
+    track.appendChild(t);
+  }
+}
+function nlPct(v){return((v-NL_MIN)/(NL_MAX-NL_MIN))*100}
+function nlFromPct(pct){return Math.round((pct/100)*(NL_MAX-NL_MIN)+NL_MIN)}
+function loadNLQ(){
+  if(nlIdx>=NL_Q.length){showNLRes();return;}
+  nlPos=0; updateNLMarker();
+  document.getElementById('nl-q').innerText='Evaluate: '+NL_Q[nlIdx].expr+' = ?';
+  document.getElementById('nl-fb').innerText='';
+  document.getElementById('nl-lv-lbl').innerText='⭐ Question '+(nlIdx+1)+' of '+NL_Q.length;
+}
+function updateNLMarker(){
+  const m=document.getElementById('nl-marker');
+  m.style.left=nlPct(nlPos)+'%';m.innerText=nlPos;
+  document.getElementById('nl-val').innerText=nlPos;
+}
+function moveNL(d){nlPos=Math.max(NL_MIN,Math.min(NL_MAX,nlPos+d));updateNLMarker();}
+function checkNL(){
+  const q=NL_Q[nlIdx];
+  if(nlPos===q.ans){
+    document.getElementById('nl-fb').innerHTML=`<span style="color:var(--green)">✅ Correct! The answer is ${q.ans}.</span>`;
+    addPts(15,true); toast('✅ Correct! +15 pts','correct');
+    nlCorrect++; nlIdx++;
+    document.getElementById('nl-fill').style.width=(nlIdx/NL_Q.length*100)+'%';
+    document.getElementById('nl-meta').innerText=nlIdx+' / '+NL_Q.length;
+    setTimeout(loadNLQ,800);
+  } else {
+    document.getElementById('nl-fb').innerHTML=`<span style="color:var(--red)">❌ Not quite — the answer evaluates differently. Try again!</span>`;
+    addPts(0,false); toast('❌ Keep trying!','wrong');
+  }
+}
+function showNLRes(){
+  const pct=Math.round(nlCorrect/NL_Q.length*100);
+  document.getElementById('nl-res').style.display='block';
+  document.getElementById('nl-score-txt').innerText=nlCorrect+'/'+NL_Q.length;
+  document.getElementById('nl-stars').innerText=starsFor(pct);
+  setTabStar(3,pct); if(pct===100)confetti();
+}
+// drag
+(()=>{
+  const m=document.getElementById('nl-marker');
+  let sx,sp;
+  m.addEventListener('mousedown',e=>{nlDrag=true;sx=e.clientX;sp=nlPos;e.preventDefault()});
+  m.addEventListener('touchstart',e=>{nlDrag=true;sx=e.touches[0].clientX;sp=nlPos},{passive:true});
+  document.addEventListener('mousemove',e=>{
+    if(!nlDrag)return;
+    const track=document.getElementById('nl-track');
+    const rect=track.getBoundingClientRect();
+    nlPos=Math.max(NL_MIN,Math.min(NL_MAX,nlFromPct(((e.clientX-rect.left)/rect.width)*100)));
+    updateNLMarker();
+  });
+  document.addEventListener('touchmove',e=>{
+    if(!nlDrag)return;
+    const track=document.getElementById('nl-track');
+    const rect=track.getBoundingClientRect();
+    nlPos=Math.max(NL_MIN,Math.min(NL_MAX,nlFromPct(((e.touches[0].clientX-rect.left)/rect.width)*100)));
+    updateNLMarker();
+  },{passive:true});
+  document.addEventListener('mouseup',()=>nlDrag=false);
+  document.addEventListener('touchend',()=>nlDrag=false);
+})();
+
+/* ════ TAB 4 – TRUE FALSE ════ */
+const TF_D=[
+  {s:'A variable can represent any number.',ans:true},
+  {s:'In 4x + 7, the coefficient is 7.',ans:false},
+  {s:'3n when n = 5 equals 15.',ans:true},
+  {s:'"6 less than y" is written as 6 − y.',ans:false},
+  {s:'5 + x and x + 5 are equivalent.',ans:true},
+  {s:'The coefficient in 8m is 8.',ans:true},
+  {s:'An expression always has an = sign.',ans:false},
+  {s:'"Twice n plus 3" = 2n + 3.',ans:true},
+  {s:'x = 0 makes 7x equal to 7.',ans:false},
+  {s:'Expressions can have more than one variable.',ans:true},
+];
+let tfIdx=0,tfCorrect=0,tfS=[];
+function initTF(){
+  tfIdx=0;tfCorrect=0;tfS=[...TF_D].sort(()=>Math.random()-.5);
+  document.getElementById('tf-tp').innerHTML='';
+  document.getElementById('tf-fp').innerHTML='';
+  document.getElementById('tf-res').style.display='none';
+  document.getElementById('tf-fill').style.width='0%';
+  document.getElementById('tf-meta').innerText='0 / '+TF_D.length;
+  renderTFCard();
+}
+function renderTFCard(){
+  const stage=document.getElementById('tf-stage');stage.innerHTML='';
+  if(tfIdx>=tfS.length){showTFRes();return;}
+  const c=document.createElement('div');c.className='tf-card';
+  c.innerHTML='<span>'+tfS[tfIdx].s+'</span>';stage.appendChild(c);
+}
+function doTF(ans){
+  if(tfIdx>=tfS.length)return;
+  const item=tfS[tfIdx],ok=ans===item.ans;
+  const el=document.createElement('div');el.className='tf-item '+(ok?'ok':'bad');
+  el.innerText=(ok?'✅ ':'❌ ')+item.s;
+  document.getElementById(ans?'tf-tp':'tf-fp').appendChild(el);
+  addPts(ok?10:0,ok);if(ok){tfCorrect++;toast('✅ Correct!','correct');}
+  else toast('❌ That was '+(ans===false?'True':'False'),'wrong');
+  tfIdx++;
+  document.getElementById('tf-fill').style.width=(tfIdx/TF_D.length*100)+'%';
+  document.getElementById('tf-meta').innerText=tfIdx+' / '+TF_D.length;
+  document.getElementById('tf-lv-lbl').innerText='⭐ Card '+(tfIdx)+' of '+TF_D.length;
+  renderTFCard();
+}
+function showTFRes(){
+  const pct=Math.round(tfCorrect/TF_D.length*100);
+  document.getElementById('tf-stage').innerHTML='<div style="font-size:2rem;padding:20px">🏆 All sorted!</div>';
+  document.getElementById('tf-res').style.display='block';
+  document.getElementById('tf-score-txt').innerText=tfCorrect+'/'+TF_D.length;
+  document.getElementById('tf-stars').innerText=starsFor(pct);
+  setTabStar(4,pct);if(pct===100)confetti();
+}
+
+/* ════ TAB 5 – WORD PROBLEMS ════ */
+const WP_LEVELS=[
+  {label:'⭐ Level 1 — Single Operation', qs:[
+    {s:'Mia earns $12 per hour. Let h = hours worked.',hint:'Earnings = rate × time → multiply',ans:'12h',choices:['12h','h + 12','12 + h','h/12']},
+    {s:'A bookshelf has b books. 15 more are added.',hint:'Start with b, then add 15',ans:'b + 15',choices:['b + 15','15b','b − 15','b/15']},
+    {s:'Jordan saves m dollars and spends $9.',hint:'He starts with m and loses some',ans:'m − 9',choices:['m − 9','9m','m + 9','9 − m']},
+    {s:'A pizza has p slices split equally among 4.',hint:'Divide total slices by 4',ans:'p/4',choices:['p/4','4p','p + 4','p − 4']},
+  ]},
+  {label:'⭐⭐ Level 2 — Multi-Step', qs:[
+    {s:'A rectangle has width 5 and length l.',hint:'Area = length × width',ans:'5l',choices:['5l','5 + l','l − 5','l/5']},
+    {s:'A car goes 60 mph. Let t = hours driven.',hint:'Distance = speed × time',ans:'60t',choices:['60t','60 + t','t/60','60 − t']},
+    {s:'A recipe uses twice as much flour as sugar s, plus 3 extra cups.',hint:'Start with 2s, then add 3',ans:'2s + 3',choices:['2s + 3','2 + s + 3','s + 3','2s − 3']},
+  ]},
+  {label:'⭐⭐⭐ Level 3 — Challenge', qs:[
+    {s:'Ana scored p points in Game 1, double that in Game 2. Total scored?',hint:'First game + second game (2 times first)',ans:'p + 2p',choices:['p + 2p','2p − p','3p + p','p × 2']},
+    {s:'A store has n items. Each week it doubles plus gains 5 more.',hint:'Double n, then add 5',ans:'2n + 5',choices:['2n + 5','n + 5','2(n + 5)','n² + 5']},
+  ]},
+];
+let wpLvl=0,wpIdx=0,wpCorrect=0,wpLocked=false;
+function initWP(){
+  wpLvl=0;wpIdx=0;wpCorrect=0;wpLocked=false;
+  renderWPLvlBtns();
+  document.getElementById('wp-res').style.display='none';
+  document.getElementById('wp-next').style.display='none';
+  document.getElementById('wp-hint').style.display='none';
+  const total=WP_LEVELS.reduce((a,b)=>a+b.qs.length,0);
+  document.getElementById('wp-meta').innerText='0 / '+total;
+  document.getElementById('wp-fill').style.width='0%';
+  loadWP();
+}
+function renderWPLvlBtns(){
+  const row=document.getElementById('wp-level-row');row.innerHTML='';
+  WP_LEVELS.forEach((lv,i)=>{
+    const b=document.createElement('button');
+    b.className='lvl-btn'+(i===wpLvl?' active':'');b.innerText=lv.label;
+    b.onclick=()=>{wpLvl=i;wpIdx=0;wpCorrect=0;wpLocked=false;renderWPLvlBtns();loadWP()};
+    row.appendChild(b);
+  });
+}
+function loadWP(){
+  const lv=WP_LEVELS[wpLvl];
+  if(wpIdx>=lv.qs.length){
+    if(wpLvl<WP_LEVELS.length-1){wpLvl++;wpIdx=0;renderWPLvlBtns();loadWP();return;}
+    showWPRes();return;
+  }
+  wpLocked=false;
+  document.getElementById('wp-next').style.display='none';
+  document.getElementById('wp-hint').style.display='none';
+  document.getElementById('wp-fb').innerText='';
+  document.getElementById('wp-lv-lbl').innerText=lv.label;
+  const q=lv.qs[wpIdx];
+  document.getElementById('wp-scenario').innerText=q.s;
+  document.getElementById('wp-hint').innerText='💡 Hint: '+q.hint;
+  const cc=document.getElementById('wp-choices');cc.innerHTML='';
+  [...q.choices].sort(()=>Math.random()-.5).forEach(ch=>{
+    const c=document.createElement('div');c.className='wpc';c.innerText=ch;
+    c.onclick=()=>{
+      if(wpLocked)return;wpLocked=true;
+      const ok=ch===q.ans;
+      c.classList.add(ok?'correct':'wrong');
+      if(!ok) document.querySelectorAll('.wpc').forEach(x=>{if(x.innerText===q.ans)x.classList.add('correct')});
+      document.querySelectorAll('.wpc').forEach(x=>x.classList.add('locked'));
+      document.getElementById('wp-fb').innerHTML=ok
+        ?`<span style="color:var(--green)">✅ Correct! <b>${q.ans}</b> models this situation.</span>`
+        :`<span style="color:var(--red)">❌ The expression is <b>${q.ans}</b>. Review the hint!</span>`;
+      addPts(ok?15:0,ok);if(ok){wpCorrect++;toast('✅ Correct! +15 pts','correct');}else toast('❌ Check the hint!','wrong');
+      wpIdx++;
+      const total=WP_LEVELS.reduce((a,b)=>a+b.qs.length,0);
+      const done=WP_LEVELS.slice(0,wpLvl).reduce((a,b)=>a+b.qs.length,0)+wpIdx;
+      document.getElementById('wp-fill').style.width=(done/total*100)+'%';
+      document.getElementById('wp-meta').innerText=done+' / '+total;
+      document.getElementById('wp-next').style.display='block';
+    };
+    cc.appendChild(c);
+  });
+}
+function showHint(){document.getElementById('wp-hint').style.display='block';}
+function nextWP(){document.getElementById('wp-hint').style.display='none';loadWP();}
+function showWPRes(){
+  const total=WP_LEVELS.reduce((a,b)=>a+b.qs.length,0);
+  const pct=Math.round(wpCorrect/total*100);
+  document.getElementById('wp-res').style.display='block';
+  document.getElementById('wp-score-txt').innerText=wpCorrect+'/'+total;
+  document.getElementById('wp-stars').innerText=starsFor(pct);
+  document.getElementById('wp-msg').innerText=pct===100?'All 3 levels cleared — you are an algebra wizard! 🔮':'Great work — try replaying harder levels!';
+  setTabStar(5,pct);if(pct===100)confetti();
+}
+
+/* BOOT */
+initCat();initMatch();initEval();initNL();initTF();initWP();
+</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6.SP.A.1 Statistical Question Data Lab</title>
+  <style>
+    :root{
+      --navy:#24343d;
+      --teal:#0c9d8f;
+      --coral:#ff7a59;
+      --mint:#eefaf7;
+      --paper:#ffffff;
+      --line:#d7e1e5;
+      --ink:#22313a;
+      --good:#256f4f;
+      --warn:#9a6700;
+      --shadow:0 12px 30px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#f8fbfc 0%,#eef4f6 100%)}
+    .wrap{max-width:1200px;margin:0 auto;padding:18px}
+    .hero{background:linear-gradient(135deg,var(--navy),#34505c 60%,var(--teal));color:#fff;border-radius:28px;padding:28px;box-shadow:var(--shadow)}
+    .eyebrow{display:inline-block;background:rgba(255,255,255,.14);padding:7px 11px;border-radius:999px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    h1{margin:12px 0 8px;font-size:clamp(30px,4.5vw,48px)}
+    .sub{font-size:17px;line-height:1.6;max-width:780px}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:16px}
+    .panel{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+    .panel h2,.panel h3{margin:0 0 10px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:16px 0}
+    .pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 14px;font-weight:800}
+    .action{border:none;background:var(--teal);color:#fff;padding:12px 16px;border-radius:14px;font-weight:800;cursor:pointer}
+    .action.secondary{background:#607d8b}
+    .step{background:#f7fbfc;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+    .step strong{color:var(--navy)}
+    label{display:block;font-weight:800;margin:12px 0 6px}
+    textarea,input,select{width:100%;padding:12px 14px;border:1px solid #cad8de;border-radius:14px;font:inherit;background:#fff}
+    .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .responses{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .response{padding:10px;border:1px solid var(--line);border-radius:12px;background:#fbfcfd}
+    .summary{background:var(--mint);border:1px solid #b8eadf;border-radius:18px;padding:16px}
+    .chartWrap{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:12px}
+    svg{width:100%;height:auto;display:block}
+    .tiny{font-size:13px;color:#5b6b75}
+    .badge{display:inline-block;padding:8px 12px;border-radius:999px;background:#fff5e8;color:#9a4e00;font-weight:900;border:1px solid #ffd2b8}
+    @media (max-width: 900px){.grid,.data-grid,.responses{grid-template-columns:1fr}}
+    @media print{.toolbar,.action{display:none!important}.panel{box-shadow:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Premium Data Investigation · 6.SP.A.1</span>
+      <h1>Statistical Question Lab</h1>
+      <p class="sub">Students create a statistical question, collect a small class data set, inspect variability, and view an instant visual summary. This premium build adds validation, model examples, printable output, and simple graphing from entered responses.</p>
+    </section>
+
+    <div class="toolbar">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div class="pill">Question Check: <span id="questionStatus">Not checked</span></div>
+        <div class="pill">Data Points: <span id="dataCount">0</span></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="action secondary" id="sampleBtn">Load Sample</button>
+        <button class="action secondary" id="resetBtn">Reset</button>
+        <button class="action" id="printBtn">Print / Save PDF</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Investigation builder</h2>
+        <div class="step">
+          <strong>Step 1 · Write a statistical question</strong>
+          <label for="question">Question</label>
+          <input id="question" placeholder="Example: How many minutes do students in our class read each night?" />
+          <label for="reason">Why is it statistical?</label>
+          <textarea id="reason" placeholder="It is statistical because students will likely give different answers."></textarea>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="action" id="checkQuestion">Check My Question</button>
+          </div>
+          <div class="tiny" id="questionFeedback" style="margin-top:10px"></div>
+        </div>
+
+        <div class="step">
+          <strong>Step 2 · Enter sample responses</strong>
+          <p class="tiny">Type short answers or numbers separated by commas. Example: 10, 15, 15, 20, 30</p>
+          <label for="responsesInput">Responses</label>
+          <textarea id="responsesInput" placeholder="Enter at least 5 responses, separated by commas."></textarea>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="action" id="analyzeBtn">Analyze Responses</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Teacher / student model</h2>
+        <div class="badge">Strong example</div>
+        <p style="margin-top:10px"><strong>Question:</strong> How many minutes do students in our class spend reading on a school night?</p>
+        <p><strong>Why it is statistical:</strong> The answers will vary from student to student, so the class can collect a data set.</p>
+        <div class="summary">
+          <strong>What to look for</strong>
+          <ul>
+            <li>The question is about a group.</li>
+            <li>The answers are expected to vary.</li>
+            <li>The responses can be collected and compared.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <section class="panel">
+        <h2>Response list</h2>
+        <div class="responses" id="responsesList"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Instant analysis</h2>
+        <div class="data-grid">
+          <div class="summary"><strong>Unique values / categories</strong><div id="uniqueOut">—</div></div>
+          <div class="summary"><strong>Most common value</strong><div id="modeOut">—</div></div>
+          <div class="summary"><strong>Smallest value</strong><div id="minOut">—</div></div>
+          <div class="summary"><strong>Largest value</strong><div id="maxOut">—</div></div>
+        </div>
+        <div class="chartWrap">
+          <h3 style="margin:0 0 8px">Visual summary</h3>
+          <svg id="chart" viewBox="0 0 640 300" aria-label="Bar chart of response frequencies"></svg>
+          <div class="tiny">If the responses are words, the graph shows category counts. If the responses are numbers, it shows value frequencies.</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const qInput = document.getElementById('question');
+    const reasonInput = document.getElementById('reason');
+    const responsesInput = document.getElementById('responsesInput');
+    const questionFeedback = document.getElementById('questionFeedback');
+    const questionStatus = document.getElementById('questionStatus');
+    const dataCount = document.getElementById('dataCount');
+
+    function parseResponses(){
+      return responsesInput.value.split(',').map(x => x.trim()).filter(Boolean);
+    }
+    function isLikelyStatisticalQuestion(text){
+      const lower = text.toLowerCase();
+      const groupClues = ['students','people','class','grade','our class','teachers','families','players'];
+      const variableClues = ['how many','how long','how tall','what is each','what are','favorite','minutes','hours','pets','siblings','shoe size'];
+      return groupClues.some(g => lower.includes(g)) && variableClues.some(v => lower.includes(v));
+    }
+    function checkQuestion(){
+      const q = qInput.value.trim();
+      const r = reasonInput.value.trim().toLowerCase();
+      if(!q){
+        questionFeedback.textContent = 'Add a question first.';
+        questionFeedback.style.color = 'var(--warn)';
+        questionStatus.textContent = 'Needs revision';
+        return;
+      }
+      const hasVariabilityLanguage = r.includes('vary') || r.includes('different');
+      const likely = isLikelyStatisticalQuestion(q) && hasVariabilityLanguage;
+      if(likely){
+        questionFeedback.textContent = 'Strong. Your question appears statistical because it targets a group and your explanation names variability.';
+        questionFeedback.style.color = 'var(--good)';
+        questionStatus.textContent = 'Strong';
+      } else {
+        questionFeedback.textContent = 'Revise it so the question clearly targets a group and your explanation says the answers will vary.';
+        questionFeedback.style.color = 'var(--warn)';
+        questionStatus.textContent = 'Revise';
+      }
+    }
+    function analyze(){
+      const responses = parseResponses();
+      dataCount.textContent = responses.length;
+      const list = document.getElementById('responsesList');
+      list.innerHTML = '';
+      responses.forEach((r, i) => {
+        const div = document.createElement('div');
+        div.className = 'response';
+        div.textContent = `${i+1}. ${r}`;
+        list.appendChild(div);
+      });
+      if(responses.length < 5){
+        alert('Enter at least 5 responses to analyze.');
+        return;
+      }
+      const counts = {};
+      responses.forEach(r => counts[r] = (counts[r] || 0) + 1);
+      const entries = Object.entries(counts).sort((a,b) => {
+        const na = Number(a[0]), nb = Number(b[0]);
+        const bothNum = !Number.isNaN(na) && !Number.isNaN(nb);
+        return bothNum ? na - nb : a[0].localeCompare(b[0]);
+      });
+      document.getElementById('uniqueOut').textContent = entries.length;
+      const mode = entries.reduce((best, cur) => cur[1] > best[1] ? cur : best, entries[0]);
+      document.getElementById('modeOut').textContent = `${mode[0]} (${mode[1]})`;
+      const nums = responses.map(Number).filter(n => !Number.isNaN(n));
+      document.getElementById('minOut').textContent = nums.length === responses.length ? Math.min(...nums) : 'N/A';
+      document.getElementById('maxOut').textContent = nums.length === responses.length ? Math.max(...nums) : 'N/A';
+      drawChart(entries);
+    }
+    function drawChart(entries){
+      const svg = document.getElementById('chart');
+      const width = 640, height = 300, pad = 40;
+      const max = Math.max(...entries.map(e => e[1]), 1);
+      const barW = Math.max(38, (width - pad*2) / Math.max(entries.length,1) - 16);
+      let bars = `<rect x="0" y="0" width="${width}" height="${height}" fill="white"></rect>`;
+      bars += `<line x1="${pad}" y1="${height-pad}" x2="${width-pad}" y2="${height-pad}" stroke="#6b7b85" stroke-width="2" />`;
+      bars += `<line x1="${pad}" y1="${pad}" x2="${pad}" y2="${height-pad}" stroke="#6b7b85" stroke-width="2" />`;
+      entries.forEach((entry, i) => {
+        const x = pad + 18 + i * ((width - pad*2) / Math.max(entries.length,1));
+        const h = (entry[1] / max) * (height - pad*2 - 16);
+        const y = height - pad - h;
+        bars += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="8" fill="#0c9d8f"></rect>`;
+        bars += `<text x="${x + barW/2}" y="${y - 8}" font-size="14" text-anchor="middle" fill="#22313a" font-weight="700">${entry[1]}</text>`;
+        bars += `<text x="${x + barW/2}" y="${height - pad + 18}" font-size="12" text-anchor="middle" fill="#22313a">${String(entry[0]).slice(0,10)}</text>`;
+      });
+      svg.innerHTML = bars;
+    }
+    document.getElementById('checkQuestion').addEventListener('click', checkQuestion);
+    document.getElementById('analyzeBtn').addEventListener('click', analyze);
+    document.getElementById('sampleBtn').addEventListener('click', () => {
+      qInput.value = 'How many minutes do students in our class read on a school night?';
+      reasonInput.value = 'It is statistical because the answers will vary from student to student.';
+      responsesInput.value = '10, 15, 15, 20, 20, 20, 25, 30';
+      checkQuestion();
+      analyze();
+    });
+    document.getElementById('resetBtn').addEventListener('click', () => location.reload());
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+  </script>
+</body>
+</html>

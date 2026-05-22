@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratio Realm — The Potion Chronicles</title>
+<style>
+:root{
+  --void:#0a0608;--deep:#130c10;--mid:#1e1018;
+  --parch:#f5e6c8;--parch2:#ede0bb;
+  --ruby:#c0392b;--ruby2:#96281b;
+  --emerald:#1a6b3c;--em2:#0e4526;
+  --sapphire:#1a3a6b;--sap2:#0e2244;
+  --gold:#d4a017;--gold2:#b8860b;--gold-light:rgba(212,160,23,.15);
+  --amethyst:#6b2d8b;--am2:#4a1f61;
+  --bronze:#8b5e3c;--bronze2:#6b4423;
+  --text:#f0e6d3;--dim:#9a8070;
+  --glow-gold:0 0 20px rgba(212,160,23,.4);
+  --glow-ruby:0 0 20px rgba(192,57,43,.5);
+  --glow-emerald:0 0 20px rgba(26,107,60,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;cursor:default}
+body{font-family:'Lato',sans-serif;background:var(--void);color:var(--text)}
+
+/* ===== PARCHMENT TEXTURE (CSS) ===== */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(212,160,23,.015) 2px,rgba(212,160,23,.015) 4px),
+    repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(255,255,255,.008) 3px,rgba(255,255,255,.008) 6px);
+  pointer-events:none;z-index:0
+}
+
+/* ===== SCREEN SYSTEM ===== */
+.scr{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.scr.active{display:flex;animation:scIn .45s ease}
+@keyframes scIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== HUD ===== */
+#hud{position:fixed;top:0;left:0;right:0;z-index:80;display:none;
+  background:linear-gradient(180deg,rgba(10,6,8,.98),rgba(10,6,8,.8));
+  border-bottom:2px solid rgba(212,160,23,.3);backdrop-filter:blur(8px);padding:0 24px}
+#hud.vis{display:block}
+.hud-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+.hud-gold{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);display:flex;align-items:center;gap:6px}
+.hud-zone{font-family:'Cinzel',serif;font-size:12px;color:rgba(212,160,23,.6);background:rgba(212,160,23,.08);padding:4px 14px;border:1px solid rgba(212,160,23,.2);border-radius:3px}
+.hud-hp{display:flex;align-items:center;gap:5px;font-size:14px}
+.hp-gem{width:16px;height:16px;border-radius:50%;transition:all .3s}
+.hp-gem.full{background:radial-gradient(circle at 30% 30%,#ff6b6b,var(--ruby));box-shadow:0 0 8px rgba(192,57,43,.5)}
+.hp-gem.empty{background:#2a1a1a;border:1px solid rgba(255,255,255,.1)}
+.xp-bar-wrap{height:3px;background:rgba(255,255,255,.08)}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--ruby));transition:width .5s}
+.streak-banner{position:fixed;top:54px;left:50%;transform:translateX(-50%);
+  font-family:'Cinzel',serif;font-size:13px;color:var(--gold);
+  background:rgba(10,6,8,.9);border:1px solid rgba(212,160,23,.3);
+  padding:5px 18px;border-radius:3px;z-index:90;opacity:0;transition:opacity .3s;pointer-events:none}
+.streak-banner.vis{opacity:1}
+
+/* ===== SPLASH ===== */
+#splash{text-align:center;background:radial-gradient(ellipse at 50% 40%,rgba(212,160,23,.06),transparent 70%)}
+.game-crest{font-size:80px;margin-bottom:12px;animation:crestFloat 4s ease-in-out infinite}
+@keyframes crestFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-16px) rotate(2deg)}}
+.game-title{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(38px,7vw,72px);
+  color:var(--gold);letter-spacing:6px;text-shadow:var(--glow-gold),0 0 80px rgba(212,160,23,.2);
+  line-height:1;margin-bottom:4px}
+.game-subtitle{font-family:'IM Fell English',serif;font-style:italic;font-size:18px;color:rgba(212,160,23,.6);margin-bottom:6px}
+.game-std{font-size:12px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px}
+.lore-box{background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.18);
+  border-radius:6px;padding:18px 28px;max-width:520px;font-family:'IM Fell English',serif;
+  font-size:15px;color:var(--parch2);line-height:1.7;text-align:left;margin-bottom:36px}
+.lore-box em{color:var(--gold)}
+
+.btn-rune{
+  font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;background:transparent;color:var(--gold);
+  border:2px solid rgba(212,160,23,.5);padding:14px 36px;cursor:pointer;
+  transition:all .25s;position:relative;overflow:hidden;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)
+}
+.btn-rune::before{content:'';position:absolute;inset:0;background:rgba(212,160,23,.1);transform:scaleX(0);transform-origin:left;transition:transform .25s;z-index:-1}
+.btn-rune:hover{color:var(--parch);border-color:var(--gold);box-shadow:var(--glow-gold)}.btn-rune:hover::before{transform:scaleX(1)}
+.btn-rune.ruby{color:#ff8a80;border-color:rgba(192,57,43,.5)}.btn-rune.ruby::before{background:rgba(192,57,43,.15)}.btn-rune.ruby:hover{color:var(--parch)}
+.btn-rune.sm{font-size:12px;padding:9px 22px;letter-spacing:2px}
+.splash-feats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.feat-chip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:7px 16px;border-radius:4px;font-size:12.5px;color:var(--dim)}
+
+/* ===== REALM MAP ===== */
+#mapScr{padding-top:65px;background:radial-gradient(ellipse at 50% 50%,rgba(19,12,16,.9),var(--void))}
+.map-title{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);text-align:center;letter-spacing:3px;margin-bottom:3px}
+.map-lore{font-family:'IM Fell English',serif;font-style:italic;font-size:14px;color:var(--dim);text-align:center;margin-bottom:32px}
+.realm-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;max-width:940px;width:100%}
+@media(max-width:640px){.realm-grid{grid-template-columns:repeat(3,1fr)}}
+
+.loc-card{
+  background:rgba(255,255,255,.03);border:2px solid rgba(212,160,23,.15);
+  border-radius:8px;padding:18px 12px;text-align:center;cursor:pointer;
+  transition:all .28s;position:relative
+}
+.loc-card:hover:not(.locked){transform:translateY(-5px);border-color:rgba(212,160,23,.5);box-shadow:var(--glow-gold)}
+.loc-icon{font-size:36px;margin-bottom:8px;display:block;transition:transform .3s}
+.loc-card:hover:not(.locked) .loc-icon{transform:scale(1.15)}
+.loc-name{font-family:'Cinzel',serif;font-size:11.5px;color:var(--parch2);letter-spacing:.5px;margin-bottom:3px}
+.loc-skill{font-size:11px;color:var(--dim);margin-bottom:8px;line-height:1.3}
+.loc-stars{font-size:14px;letter-spacing:2px;min-height:20px}
+.loc-card.locked{cursor:not-allowed;opacity:.4;filter:grayscale(.7)}
+.lock-ico{position:absolute;top:-8px;right:6px;font-size:16px}
+.loc-card.boss-card{border-color:rgba(192,57,43,.35);background:rgba(192,57,43,.05)}
+.loc-card.boss-card:hover:not(.locked){border-color:var(--ruby);box-shadow:var(--glow-ruby)}
+.map-total{margin-top:22px;font-family:'Cinzel',serif;font-size:13px;color:var(--dim);text-align:center}
+.map-total span{color:var(--gold)}
+
+/* ===== GAME SCREEN ===== */
+#gameScr{padding:72px 16px 24px;max-width:740px;margin:0 auto;width:100%}
+.zone-banner{text-align:center;margin-bottom:16px}
+.zone-icon{font-size:40px;display:block;margin-bottom:6px;animation:zonePulse 2s infinite alternate ease-in-out}
+@keyframes zonePulse{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.1) rotate(3deg)}}
+.zone-name{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);letter-spacing:2px}
+.q-counter{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.qd{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);transition:all .3s}
+.qd.cur{background:var(--gold);border-color:var(--gold);animation:qdPulse 1s infinite alternate}
+.qd.win{background:var(--emerald);border-color:var(--emerald)}
+.qd.loss{background:var(--ruby);border-color:var(--ruby)}
+@keyframes qdPulse{from{transform:scale(1)}to{transform:scale(1.4)}}
+
+.scroll{
+  background:linear-gradient(160deg,rgba(30,16,24,.95),rgba(20,12,16,.97));
+  border:1px solid rgba(212,160,23,.2);border-radius:8px;padding:24px;
+  margin-bottom:16px;position:relative;overflow:hidden
+}
+.scroll::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.scroll-type{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:3px;color:rgba(212,160,23,.5);text-transform:uppercase;margin-bottom:10px}
+.scroll-text{font-family:'IM Fell English',serif;font-size:17px;line-height:1.6;color:var(--parch2)}
+.scroll-text .hl{color:var(--gold);font-style:normal;font-weight:700}
+.scroll-text .ruby{color:#ff8a80}
+.scroll-text .em{color:#6bff9e}
+
+.data-stone{
+  background:rgba(212,160,23,.05);border:1px solid rgba(212,160,23,.15);
+  border-radius:8px;overflow:hidden;margin:14px auto;display:inline-block;min-width:200px
+}
+.ds-head{background:rgba(212,160,23,.12);display:flex}
+.ds-th{padding:8px 16px;font-family:'Cinzel',serif;font-size:11px;color:var(--gold);letter-spacing:.5px;flex:1;text-align:center;border-right:1px solid rgba(212,160,23,.1)}
+.ds-th:last-child{border-right:none}
+.ds-row{display:flex;border-top:1px solid rgba(255,255,255,.06)}
+.ds-row:nth-child(even){background:rgba(255,255,255,.02)}
+.ds-td{padding:7px 16px;flex:1;text-align:center;font-family:'Cinzel',serif;font-size:14px;color:var(--parch2);border-right:1px solid rgba(255,255,255,.05)}
+.ds-td:last-child{border-right:none}
+.ds-td.hl-row{color:var(--gold)}
+
+/* ANSWER PANEL */
+.ans-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.ans-opt{
+  background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.1);
+  color:var(--parch2);padding:14px;border-radius:6px;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:14px;text-align:center;
+  transition:all .18s;font-weight:400;letter-spacing:.3px
+}
+.ans-opt:hover:not(:disabled){border-color:rgba(212,160,23,.5);background:rgba(212,160,23,.07);color:var(--gold)}
+.ans-opt.correct{border-color:var(--emerald)!important;background:rgba(26,107,60,.2)!important;color:#6bff9e!important;animation:correctPop .4s}
+.ans-opt.wrong{border-color:var(--ruby)!important;background:rgba(192,57,43,.15)!important;color:#ff8a80!important;animation:wrongShk .4s}
+@keyframes correctPop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes wrongShk{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+.fill-rune{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.rune-input{
+  background:rgba(212,160,23,.06);border:2px solid rgba(212,160,23,.35);
+  color:var(--parch);padding:11px 18px;border-radius:6px;
+  font-family:'Cinzel',serif;font-size:18px;width:160px;text-align:center;
+  outline:none;transition:all .2s
+}
+.rune-input:focus{border-color:var(--gold);box-shadow:0 0 14px rgba(212,160,23,.2)}
+.rune-input.correct{border-color:var(--emerald);box-shadow:0 0 12px rgba(26,107,60,.3)}
+.rune-input.wrong{border-color:var(--ruby);animation:wrongShk .4s}
+.cast-btn{
+  font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:2px;
+  background:var(--gold);color:var(--void);border:none;padding:12px 22px;
+  border-radius:5px;cursor:pointer;transition:all .2s;text-transform:uppercase
+}
+.cast-btn:hover{background:var(--parch)}
+
+/* ===== FEEDBACK ===== */
+#fbFlash{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .2s}
+#fbFlash.show{opacity:1}
+.fb-txt{font-family:'Cinzel',serif;font-size:clamp(40px,7vw,72px);font-weight:900;animation:fbPop .45s ease;text-shadow:0 0 40px currentColor}
+.fb-cor{color:#6bff9e}.fb-wrg{color:#ff8a80}
+@keyframes fbPop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+
+/* ===== MAGIC PARTICLES ===== */
+.spark{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:400;animation:sparkFly var(--d) ease-out forwards}
+@keyframes sparkFly{0%{transform:translate(0,0);opacity:1}100%{transform:translate(var(--tx),var(--ty));opacity:0}}
+
+/* ===== LEVEL COMPLETE ===== */
+#lvlDoneScr{text-align:center}
+.zone-clear{font-family:'Cinzel',serif;font-size:32px;color:var(--gold);text-shadow:var(--glow-gold);margin-bottom:8px}
+.reward-scroll{
+  background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.25);
+  border-radius:8px;padding:22px 32px;display:inline-block;margin:16px 0;min-width:320px
+}
+.reward-row{display:flex;justify-content:space-between;align-items:center;gap:40px;margin-bottom:10px}
+.reward-row:last-child{margin-bottom:0}
+.rew-lbl{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;font-family:'Cinzel',serif}
+.rew-val{font-family:'Cinzel',serif;font-size:22px;color:var(--gold)}
+.stars-row{font-size:42px;letter-spacing:6px;margin:12px 0}
+.lore-fact{background:rgba(255,255,255,.04);border-left:3px solid rgba(212,160,23,.4);
+  padding:12px 18px;border-radius:0 6px 6px 0;font-family:'IM Fell English',serif;
+  font-size:14px;color:var(--parch2);margin:12px 0;max-width:440px;line-height:1.6}
+.lore-fact strong{color:var(--gold)}
+
+/* ===== GAME OVER ===== */
+#gameOverScr{text-align:center}
+.rip-icon{font-size:72px;animation:rip 2s infinite ease-in-out}
+@keyframes rip{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg) scale(.9)}}
+.rip-title{font-family:'Cinzel',serif;font-size:50px;color:var(--ruby);text-shadow:var(--glow-ruby);margin:10px 0}
+
+/* ===== VICTORY ===== */
+#victoryScr{text-align:center;padding-top:66px;background:radial-gradient(ellipse at 50% 40%,rgba(212,160,23,.08),transparent 60%)}
+.victory-title{font-family:'Cinzel',serif;font-size:clamp(26px,5vw,52px);color:var(--gold);text-shadow:var(--glow-gold),0 0 100px rgba(212,160,23,.15);letter-spacing:5px;margin-bottom:4px}
+.crown-ico{font-size:80px;display:block;animation:crownFloat 2.5s ease-in-out infinite}
+@keyframes crownFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-16px) rotate(3deg)}}
+.final-score{font-family:'Cinzel',serif;font-size:64px;color:var(--gold);margin:12px 0}
+.rank-badge{font-family:'Cinzel',serif;font-size:20px;letter-spacing:2px;margin-bottom:20px}
+.zone-recap{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:16px 0}
+.recap-chip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:10px 16px;text-align:center;font-family:'Cinzel',serif}
+.recap-chip-stars{font-size:14px;letter-spacing:2px}
+.recap-chip-lbl{font-size:10px;color:var(--dim);margin-top:3px}
+
+/* ===== TOOLTIP HINT ===== */
+#hint-overlay{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.92);border:1px solid rgba(212,160,23,.2);
+  border-radius:6px;padding:10px 20px;font-family:'IM Fell English',serif;
+  font-size:13px;color:var(--parch2);z-index:85;max-width:480px;text-align:center;
+  opacity:0;transition:opacity .3s;pointer-events:none
+}
+#hint-overlay.vis{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-row">
+    <div class="hud-gold">🜃 <span id="hudGold">0</span> Gold</div>
+    <div class="hud-zone" id="hudZone">THE REALM</div>
+    <div class="hud-hp" id="hudHP"></div>
+  </div>
+  <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBar" style="width:0%"></div></div>
+</div>
+<div class="streak-banner" id="streakBanner">🔥 Streak Bonus Active!</div>
+
+<!-- SCREENS -->
+
+<!-- SPLASH -->
+<div class="scr active" id="splash">
+  <div class="game-crest">⚗️</div>
+  <div class="game-title">RATIO REALM</div>
+  <div class="game-subtitle">The Potion Chronicles</div>
+  <div class="game-std">CCSS 6.RP.A.3 · Ratios &amp; Proportional Reasoning · Grade 6</div>
+  <div class="lore-box">
+    <em>The realm of Proportia is in peril.</em> The ancient Ratio Stone has shattered into five fragments, each hidden in a different corner of the land. Only a scholar who masters <em>equivalent ratios, unit rates, percents, tape diagrams,</em> and <em>proportions</em> can reassemble it and restore balance to the kingdom.<br><br>
+    Your quest begins now, Apprentice.
+  </div>
+  <button class="btn-rune" onclick="showMap()">⚔ BEGIN QUEST</button>
+  <div class="splash-feats">
+    <div class="feat-chip">⚗️ 5 Zones to Conquer</div>
+    <div class="feat-chip">❤️ 3 Life Crystals</div>
+    <div class="feat-chip">🔥 Streak Gold Multiplier</div>
+    <div class="feat-chip">🏆 Earn Archmage Rank</div>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="scr" id="mapScr">
+  <div class="map-title">⚜ THE REALM OF PROPORTIA ⚜</div>
+  <div class="map-lore" id="mapLore">Choose your destination, apprentice</div>
+  <div class="realm-grid" id="realmGrid"></div>
+  <div class="map-total">Total Stars: <span id="mapStars">0</span> / 15 &nbsp;·&nbsp; Gold: <span id="mapGold">0</span></div>
+</div>
+
+<!-- GAME -->
+<div class="scr" id="gameScr">
+  <div class="zone-banner">
+    <span class="zone-icon" id="zoneIcon">⚗️</span>
+    <div class="zone-name" id="zoneName">ALCHEMIST'S WORKSHOP</div>
+    <div class="q-counter" id="qCounter"></div>
+  </div>
+  <div class="scroll">
+    <div class="scroll-type" id="qTypeTag">MISSION SCROLL</div>
+    <div class="scroll-text" id="qBody">Loading...</div>
+    <div id="qExtra"></div>
+  </div>
+  <div id="qAns"></div>
+  <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
+    <button class="btn-rune sm ruby" onclick="abortQuest()">↩ Retreat</button>
+  </div>
+</div>
+
+<!-- LEVEL COMPLETE -->
+<div class="scr" id="lvlDoneScr">
+  <div class="zone-clear" id="lvlClearTitle">ZONE CONQUERED!</div>
+  <div id="lvlClearIcon" style="font-size:52px;margin:8px 0"></div>
+  <div class="stars-row" id="starsRow">⭐⭐⭐</div>
+  <div class="reward-scroll">
+    <div class="reward-row"><span class="rew-lbl">Correct Answers</span><span class="rew-val" id="rcCorrect">5/5</span></div>
+    <div class="reward-row"><span class="rew-lbl">Gold Earned</span><span class="rew-val" id="rcGold">+250</span></div>
+    <div class="reward-row"><span class="rew-lbl">Best Streak</span><span class="rew-val" id="rcStreak">5🔥</span></div>
+  </div>
+  <div class="lore-fact" id="loreFact"></div>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:12px">
+    <button class="btn-rune" id="nextZoneBtn" onclick="goNextZone()">NEXT ZONE ▶</button>
+    <button class="btn-rune sm" onclick="showMap()">◀ REALM MAP</button>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div class="scr" id="gameOverScr">
+  <div class="rip-icon">💀</div>
+  <div class="rip-title">DEFEATED</div>
+  <p style="color:var(--dim);margin-bottom:10px;font-family:'IM Fell English',serif;font-style:italic">Your life crystals were exhausted</p>
+  <p style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold);margin-bottom:28px">FINAL GOLD: <span id="goGold">0</span></p>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+    <button class="btn-rune" onclick="restartAll()">🔄 Try Again</button>
+    <button class="btn-rune sm" onclick="showMap()">◀ Realm Map</button>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="scr" id="victoryScr">
+  <span class="crown-ico">👑</span>
+  <div class="victory-title">RATIO REALM SAVED!</div>
+  <p style="font-family:'IM Fell English',serif;font-style:italic;color:var(--dim);margin-bottom:8px">The Ratio Stone is whole once more</p>
+  <div class="final-score" id="vScore">0</div>
+  <div class="rank-badge" id="vRank" style="color:var(--gold)">ARCHMAGE OF PROPORTIA</div>
+  <div class="zone-recap" id="vRecap"></div>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+    <button class="btn-rune" onclick="restartAll()">🔄 Play Again</button>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div id="fbFlash"><div class="fb-txt" id="fbTxt"></div></div>
+<div id="hint-overlay"></div>
+
+<script>
+/* ============================================================
+   ZONES (5 locations, 5 questions each, different 6.RP.A.3 skills)
+============================================================ */
+const ZONES = [
+{
+  id:1, name:"Alchemist's Workshop", icon:'⚗️', skill:'Equivalent Ratios',
+  color:'amethyst',
+  questions:[
+    {type:'mc',tag:'EQUIVALENT RATIO SCROLL',
+     body:'Master Alwyn mixes <span class="hl">silver dust and moonwater</span> in a ratio of <span class="hl">2 : 5</span>. Which of the following is an equivalent ratio?',
+     opts:['4 : 8','6 : 15','8 : 18','10 : 22'],correct:'6 : 15',
+     explain:'Multiply both 2 and 5 by 3: 2×3=6, 5×3=15. ✓ 6:15 is equivalent.'},
+    {type:'mc',tag:'SIMPLIFY THE RATIO',
+     body:'A potion recipe calls for <span class="hl">18 drops of wyvern blood</span> and <span class="hl">24 drops of spring water</span>. What is this ratio in its simplest form?',
+     opts:['9 : 12','6 : 8','3 : 4','2 : 3'],correct:'3 : 4',
+     explain:'GCF of 18 and 24 is 6. 18÷6=3, 24÷6=4. Simplified: 3:4.'},
+    {type:'mc',tag:'FIND THE MISSING VALUE',
+     body:'An apprentice fills ingredient jars. The ratio of herbs to crystals is always <span class="hl">4 : 7</span>. If she uses <span class="hl">28 crystals</span>, how many herbs does she need?',
+     table:{cols:['Herbs','Crystals'],rows:[['4','7'],['8','14'],['?','28']]},
+     opts:['12','14','16','18'],correct:'16',
+     explain:'28 ÷ 7 = 4 (multiplier). 4 × 4 = 16 herbs.'},
+    {type:'mc',tag:'RATIO TABLE CHALLENGE',
+     body:'A scroll shows a ratio table. Which value completes the table so all ratios are equivalent to <span class="hl">3 : 8</span>?',
+     table:{cols:['Ratio A','Ratio B'],rows:[['3','8'],['9','24'],['15','?']]},
+     opts:['35','38','40','45'],correct:'40',
+     explain:'15 ÷ 3 = 5 (multiplier). 8 × 5 = 40.'},
+    {type:'fill',tag:'BREW THE POTION',
+     body:'The master alchemist\'s formula uses <span class="hl">fire essence and ice dust</span> in a ratio of <span class="hl">5 : 9</span>. To brew a <span class="hl">large batch with 45 parts ice dust</span>, how many parts of fire essence are needed?',
+     correct:'25',hint:'45 ÷ 9 = 5 (multiplier). 5 × 5 = ?',
+     explain:'45 ÷ 9 = 5 multiplier. 5 × 5 = 25 parts fire essence.'},
+  ],
+  facts:['To find an equivalent ratio, multiply or divide BOTH numbers by the same value.',
+         'To simplify a ratio, divide both parts by their Greatest Common Factor (GCF).',
+         'Every row in an equivalent ratio table has the same unit rate!']
+},
+{
+  id:2, name:"Merchant's Bazaar", icon:'🏪', skill:'Unit Rates',
+  color:'sapphire',
+  questions:[
+    {type:'mc',tag:'UNIT PRICE SCROLL',
+     body:'Merchant Dara sells <span class="hl">6 enchanted gems for $4.50</span>. What is the price of ONE gem?',
+     opts:['$0.65','$0.75','$0.80','$1.25'],correct:'$0.75',
+     explain:'$4.50 ÷ 6 = $0.75 per gem. The unit rate is $0.75 per gem.'},
+    {type:'mc',tag:'FASTEST TRAVELER',
+     body:'Three couriers report their speeds. <span class="hl">Courier A: 180 miles in 3 hours</span>. <span class="hl">Courier B: 210 miles in 3.5 hours</span>. <span class="hl">Courier C: 156 miles in 2.6 hours</span>. Which courier is fastest?',
+     opts:['Courier A (60 mph)','Courier B (60 mph)','Courier C (60 mph)','They all tie at 60 mph'],correct:'They all tie at 60 mph',
+     explain:'A: 180÷3=60. B: 210÷3.5=60. C: 156÷2.6=60. All three travel at 60 mph!'},
+    {type:'mc',tag:'BEST VALUE SCROLL',
+     body:'The apothecary sells healing herbs in two bundle sizes. <span class="hl">Bundle A: 5 bunches for $11.50</span>. <span class="hl">Bundle B: 8 bunches for $17.60</span>. Which is the better deal per bunch?',
+     opts:['Bundle A ($2.30/bunch)','Bundle B ($2.20/bunch)','They cost the same','Need more information'],correct:'Bundle B ($2.20/bunch)',
+     explain:'A: $11.50÷5=$2.30/bunch. B: $17.60÷8=$2.20/bunch. Bundle B is cheaper per bunch.'},
+    {type:'fill',tag:'TRADE CALCULATION',
+     body:'A blacksmith produces <span class="hl">15 arrowheads in 3 hours</span>. At this rate, how many arrowheads will he produce in <span class="hl">7 hours</span>?',
+     correct:'35',hint:'15÷3 = 5 per hour (unit rate). 5 × 7 = ?',
+     explain:'Unit rate = 15÷3 = 5 arrowheads/hour. 5 × 7 = 35 arrowheads.'},
+    {type:'mc',tag:'UNIT RATE FROM TABLE',
+     body:'This market table shows the cost of magic candles. What is the unit price per candle?',
+     table:{cols:['Candles','Total Cost'],rows:[['4','$14.00'],['7','$24.50'],['10','$35.00']]},
+     opts:['$3.00','$3.25','$3.50','$4.00'],correct:'$3.50',
+     explain:'$14.00÷4=$3.50, $24.50÷7=$3.50, $35.00÷10=$3.50. Unit price = $3.50 per candle.'},
+  ],
+  facts:['A UNIT RATE tells you the quantity per ONE unit (per 1 hour, per 1 item, etc.).',
+         'To find unit rate, DIVIDE: total ÷ number of units.',
+         'To compare prices, find the unit rate (cost per 1 item) for each.']
+},
+{
+  id:3, name:"The Oracle's Temple", icon:'🔮', skill:'Percents',
+  color:'ruby',
+  questions:[
+    {type:'mc',tag:'PERCENT PROPHECY',
+     body:'The Oracle declares: <span class="hl">"30% of the kingdom\'s 400 soldiers will attend the tournament."</span> How many soldiers is that?',
+     opts:['100','110','120','130'],correct:'120',
+     explain:'30% = 30/100. 400 × 30/100 = 400 × 0.30 = 120 soldiers.'},
+    {type:'mc',tag:'FIND THE WHOLE',
+     body:'A seer tells you that <span class="hl">45 knights represent 15% of the castle guard</span>. What is the total size of the castle guard?',
+     opts:['200','250','300','350'],correct:'300',
+     explain:'If 45 = 15% of whole, then whole = 45 ÷ 0.15 = 300 guards.'},
+    {type:'fill',tag:'PERCENT OF A QUANTITY',
+     body:'A merchant says <span class="hl">75% of his 240 potion bottles</span> have already been sold. How many bottles have been sold?',
+     correct:'180',hint:'240 × 75/100 = 240 × 0.75 = ?',
+     explain:'240 × 0.75 = 180 bottles sold.'},
+    {type:'mc',tag:'DISCOUNT SCROLL',
+     body:'A magic robe normally costs <span class="hl">$80</span>. The temple is offering a <span class="hl">20% discount</span>. What is the sale price?',
+     opts:['$60','$62','$64','$66'],correct:'$64',
+     explain:'20% of $80 = $16 discount. $80 − $16 = $64. (Or: 80% × $80 = $64)'},
+    {type:'mc',tag:'PERCENT COMPARISON',
+     body:'Two apprentices scored on their scroll-reading test. <span class="hl">Kira got 36 out of 45</span>. <span class="hl">Owen got 40 out of 50</span>. Who scored a higher percent?',
+     opts:['Kira (78%)','Owen (78%)','Kira (80%)','They tied at 80%'],correct:'They tied at 80%',
+     explain:'Kira: 36/45=0.80=80%. Owen: 40/50=0.80=80%. They both scored exactly 80%!'},
+  ],
+  facts:['Percent means "per hundred." 40% = 40/100 = 0.40.',
+         'To find a percent of a number: multiply by the decimal form. (e.g. 25% × 60 = 0.25 × 60)',
+         'To find the WHOLE when you know the part and percent: Whole = Part ÷ Percent (decimal)']
+},
+{
+  id:4, name:"The Cartographer's Guild", icon:'🗺️', skill:'Ratios & Conversions',
+  color:'emerald',
+  questions:[
+    {type:'mc',tag:'MAP SCALE SCROLL',
+     body:'A guild map uses a scale of <span class="hl">1 inch : 35 miles</span>. Two kingdoms are <span class="hl">5 inches apart</span> on the map. How far apart are they in reality?',
+     opts:['140 miles','170 miles','175 miles','180 miles'],correct:'175 miles',
+     explain:'5 inches × 35 miles/inch = 175 miles.'},
+    {type:'fill',tag:'UNIT CONVERSION',
+     body:'A caravan travels <span class="hl">3 leagues per hour</span>. There are <span class="hl">4 kilometers in 1 league</span>. How many kilometers does the caravan travel in <span class="hl">5 hours</span>?',
+     correct:'60',hint:'3 leagues/hr × 4 km/league = 12 km/hr. 12 × 5 = ?',
+     explain:'3 leagues/hr × 4 km/league = 12 km/hr. 12 km/hr × 5 hr = 60 km.'},
+    {type:'mc',tag:'RATIO IN CONTEXT',
+     body:'A castle wall is <span class="hl">8 feet tall</span> and casts a shadow of <span class="hl">6 feet</span>. At the same time, a tower casts a shadow of <span class="hl">15 feet</span>. How tall is the tower?',
+     opts:['16 ft','18 ft','20 ft','22 ft'],correct:'20 ft',
+     explain:'Height/Shadow ratio: 8/6 = tower/15. Tower = (8×15)÷6 = 120÷6 = 20 ft.'},
+    {type:'mc',tag:'DOUBLE NUMBER LINE',
+     body:'A recipe on a scroll calls for ingredients in proportion. If <span class="hl">3 cups of wheat flour cost 9 copper coins</span>, how much would <span class="hl">7 cups of wheat flour</span> cost?',
+     opts:['19 coins','21 coins','23 coins','25 coins'],correct:'21 coins',
+     explain:'Unit rate: 9÷3=3 coins per cup. 7 cups × 3 coins/cup = 21 coins.'},
+    {type:'mc',tag:'PROPORTION IN THE FIELD',
+     body:'A cartographer notes that <span class="hl">every 2 cm on his drawing equals 5 km</span> in the field. A mountain range measures <span class="hl">14 cm on the drawing</span>. How long is the actual mountain range?',
+     opts:['28 km','30 km','35 km','40 km'],correct:'35 km',
+     explain:'Unit rate: 5km÷2cm=2.5 km/cm. 14cm × 2.5 = 35 km.'},
+  ],
+  facts:['A MAP SCALE is a ratio: drawing measurement : real-world measurement.',
+         'Unit conversion uses ratio reasoning: multiply by the conversion rate.',
+         'Set up proportions as two equivalent fractions and cross-multiply to solve.']
+},
+{
+  id:5, name:"The Dragon\'s Vault", icon:'🐉', skill:'Boss — All Skills',
+  color:'boss',
+  questions:[
+    {type:'mc',tag:'BOSS CHALLENGE — EQUIVALENT RATIOS',
+     body:'The dragon demands: <span class="ruby">"Prove your knowledge of equivalent ratios!"</span> The ratio of red scales to gold scales on my hide is <span class="hl">5 : 8</span>. If I have <span class="hl">40 red scales</span>, how many gold scales do I have?',
+     opts:['56','60','64','72'],correct:'64',
+     explain:'40÷5=8 (multiplier). 8×8=64 gold scales.'},
+    {type:'mc',tag:'BOSS CHALLENGE — UNIT RATE',
+     body:'The dragon breathes fire at <span class="hl">60 meters every 4 seconds</span>. You need to run <span class="hl">90 meters</span> to reach safety. How many seconds do you have before the fire reaches you?',
+     opts:['5 seconds','6 seconds','7 seconds','8 seconds'],correct:'6 seconds',
+     explain:'Unit rate: 60÷4=15 m/s. Time = 90÷15 = 6 seconds. Run!'},
+    {type:'fill',tag:'BOSS CHALLENGE — PERCENT',
+     body:'The dragon\'s hoard contains <span class="hl">350 gold coins</span>. He will spare you if you can tell him <span class="hl">what 60% of his hoard</span> is.',
+     correct:'210',hint:'350 × 60/100 = 350 × 0.60 = ?',
+     explain:'350 × 0.60 = 210 gold coins.'},
+    {type:'mc',tag:'BOSS CHALLENGE — PROPORTIONS',
+     body:'The dragon offers a deal: <span class="hl">3 treasures for every 5 scrolls</span> you bring. If you bring <span class="hl">35 scrolls</span>, how many treasures will he give you?',
+     opts:['15','18','21','24'],correct:'21',
+     explain:'35÷5=7 (multiplier). 3×7=21 treasures.'},
+    {type:'mc',tag:'BOSS FINAL CHALLENGE — ALL SKILLS',
+     body:'<span class="ruby">FINAL BLOW!</span> The dragon\'s weakness scroll says: <span class="hl">"The potion is 40% salt water. You have 75 mL of total mixture. The potion-to-water ratio is 3:2. How many mL of salt water are in the potion?"</span>',
+     opts:['25 mL','28 mL','30 mL','32 mL'],correct:'30 mL',
+     explain:'40% of 75 mL = 0.40 × 75 = 30 mL of salt water.'},
+  ],
+  facts:['You\'ve mastered all four 6.RP.A.3 skills!',
+         'Ratios, unit rates, percents, and proportions are all connected through the same multiplicative reasoning.',
+         'The Ratio Realm is saved — you are a true Archmage of Proportia!']
+}
+];
+
+/* ============================================================
+   STATE
+============================================================ */
+const G={
+  gold:0,lives:3,streak:0,bestStreak:0,
+  curZone:0,curQ:0,
+  zoneCorrect:0,zoneGold:0,
+  zoneStars:[0,0,0,0,0],
+  wrongThisQ:false,
+};
+
+/* ============================================================
+   HUD
+============================================================ */
+function setHud(visible,zoneName){
+  const h=document.getElementById('hud');
+  visible?h.classList.add('vis'):h.classList.remove('vis');
+  if(zoneName)document.getElementById('hudZone').textContent=zoneName;
+  updateHud();
+}
+function updateHud(){
+  document.getElementById('hudGold').textContent=G.gold;
+  document.getElementById('xpBar').style.width=Math.min(G.gold/1500*100,100)+'%';
+  const hp=document.getElementById('hudHP');
+  hp.innerHTML='';
+  for(let i=0;i<3;i++){
+    const gem=document.createElement('div');gem.className='hp-gem '+(i<G.lives?'full':'empty');
+    hp.appendChild(gem);
+  }
+  const sb=document.getElementById('streakBanner');
+  if(G.streak>=2){sb.textContent=`🔥 ${G.streak}× Streak! Bonus Gold!`;sb.classList.add('vis')}
+  else sb.classList.remove('vis');
+}
+
+/* ============================================================
+   SHOW MAP
+============================================================ */
+function showMap(){
+  setHud(false);buildMap();showScreen('mapScr');
+  document.getElementById('mapStars').textContent=G.zoneStars.reduce((a,b)=>a+b,0);
+  document.getElementById('mapGold').textContent=G.gold;
+  const all=G.zoneStars.every(s=>s>0);
+  document.getElementById('mapLore').textContent=all?'All zones conquered! Select any zone to replay.':'Choose your destination, apprentice';
+}
+function buildMap(){
+  const grid=document.getElementById('realmGrid');grid.innerHTML='';
+  ZONES.forEach((z,i)=>{
+    const unlocked=i===0||G.zoneStars[i-1]>0;
+    const stars=G.zoneStars[i];
+    const div=document.createElement('div');
+    div.className='loc-card'+(i===4?' boss-card':'')+(unlocked?'':' locked');
+    div.innerHTML=`
+      ${!unlocked?'<span class="lock-ico">🔒</span>':''}
+      <span class="loc-icon">${z.icon}</span>
+      <div class="loc-name">${z.name}</div>
+      <div class="loc-skill">${z.skill}</div>
+      <div class="loc-stars">${stars?'⭐'.repeat(stars)+'☆'.repeat(3-stars):'☆☆☆'}</div>`;
+    if(unlocked) div.onclick=()=>startZone(i);
+    grid.appendChild(div);
+  });
+}
+
+/* ============================================================
+   ZONE FLOW
+============================================================ */
+function startZone(idx){
+  G.curZone=idx;G.curQ=0;G.zoneCorrect=0;G.zoneGold=0;
+  G.streak=0;G.bestStreak=0;G.lives=3;
+  const z=ZONES[idx];
+  document.getElementById('zoneIcon').textContent=z.icon;
+  document.getElementById('zoneName').textContent=z.name.toUpperCase();
+  buildQCounter(z.questions.length);
+  setHud(true,z.name);
+  showScreen('gameScr');
+  renderQ();
+}
+function buildQCounter(n){
+  const c=document.getElementById('qCounter');c.innerHTML='';
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');d.className='qd'+(i===0?' cur':'');d.id='qd'+i;c.appendChild(d);
+  }
+}
+function updateQDot(idx,win){
+  const d=document.getElementById('qd'+idx);
+  if(d){d.classList.remove('cur');d.classList.add(win?'win':'loss')}
+  const nxt=document.getElementById('qd'+(idx+1));if(nxt)nxt.classList.add('cur');
+}
+
+/* ============================================================
+   RENDER QUESTION
+============================================================ */
+function renderQ(){
+  const z=ZONES[G.curZone];const q=z.questions[G.curQ];
+  G.wrongThisQ=false;
+  document.getElementById('qTypeTag').textContent=q.tag||'SCROLL';
+  document.getElementById('qBody').innerHTML=q.body;
+  const extra=document.getElementById('qExtra');extra.innerHTML='';
+  if(q.table) extra.appendChild(buildDataStone(q.table));
+  const ans=document.getElementById('qAns');ans.innerHTML='';
+  if(q.type==='mc') renderMC(ans,q);
+  else renderFill(ans,q);
+}
+
+function buildDataStone(t){
+  const wrap=document.createElement('div');wrap.className='data-stone';
+  const head=document.createElement('div');head.className='ds-head';
+  t.cols.forEach(c=>{const th=document.createElement('div');th.className='ds-th';th.textContent=c;head.appendChild(th)});
+  wrap.appendChild(head);
+  t.rows.forEach(row=>{
+    const dr=document.createElement('div');dr.className='ds-row';
+    row.forEach((cell,ci)=>{
+      const td=document.createElement('div');td.className='ds-td'+(cell==='?'?' hl-row':'');td.textContent=cell;dr.appendChild(td);
+    });
+    wrap.appendChild(dr);
+  });
+  return wrap;
+}
+
+function renderMC(container,q){
+  const grid=document.createElement('div');grid.className='ans-grid';
+  q.opts.forEach(o=>{
+    const btn=document.createElement('button');btn.className='ans-opt';btn.textContent=o;
+    btn.onclick=()=>pickMC(o,q.correct,q.explain,grid,btn);
+    grid.appendChild(btn);
+  });
+  container.appendChild(grid);
+}
+
+function renderFill(container,q){
+  const row=document.createElement('div');row.className='fill-rune';
+  const inp=document.createElement('input');inp.className='rune-input';inp.type='text';inp.placeholder='...';inp.id='fillInp';
+  const btn=document.createElement('button');btn.className='cast-btn';btn.textContent='CAST SPELL';
+  btn.onclick=()=>pickFill(inp,q);
+  inp.addEventListener('keypress',e=>{if(e.key==='Enter')pickFill(inp,q)});
+  row.appendChild(inp);row.appendChild(btn);
+  container.appendChild(row);
+  setTimeout(()=>inp.focus(),120);
+}
+
+/* ============================================================
+   ANSWER LOGIC
+============================================================ */
+function pickMC(chosen,correct,explain,grid,btn){
+  grid.querySelectorAll('.ans-opt').forEach(b=>b.disabled=true);
+  const right=chosen===correct;
+  btn.classList.add(right?'correct':'wrong');
+  if(!right){grid.querySelectorAll('.ans-opt').forEach(b=>{if(b.textContent===correct)b.classList.add('correct')})}
+  processAnswer(right,explain);
+}
+function pickFill(inp,q){
+  inp.disabled=true;document.querySelector('.cast-btn').disabled=true;
+  const v=inp.value.replace(/[$\s,]/g,'');
+  const right=Math.abs(parseFloat(v)-parseFloat(q.correct))<0.02||(q.alts||[]).map(a=>a.replace(/[$\s]/g,'')).includes(v);
+  inp.classList.add(right?'correct':'wrong');
+  processAnswer(right,q.explain);
+}
+
+function processAnswer(right,explain){
+  flashFeedback(right);sparks(right);
+  if(right){
+    const bonus=G.streak>=3?80:G.streak>=2?40:0;
+    const earned=100+bonus;
+    G.gold+=earned;G.zoneGold+=earned;G.zoneCorrect++;
+    G.streak++;if(G.streak>G.bestStreak)G.bestStreak=G.streak;
+    hint('✅ '+explain,3000);
+  } else {
+    G.streak=0;
+    if(!G.wrongThisQ){G.lives--;G.wrongThisQ=true}
+    hint('💡 '+explain,3600);
+    if(G.lives<=0){updateHud();setTimeout(gameOver,1600);return}
+  }
+  updateHud();
+  updateQDot(G.curQ,right);
+  setTimeout(()=>{
+    G.curQ++;
+    const z=ZONES[G.curZone];
+    if(G.curQ>=z.questions.length)setTimeout(zoneComplete,400);
+    else renderQ();
+  },right?1300:2300);
+}
+
+function abortQuest(){showMap()}
+
+/* ============================================================
+   ZONE COMPLETE
+============================================================ */
+function zoneComplete(){
+  setHud(false);
+  const z=ZONES[G.curZone];
+  const tot=z.questions.length;
+  const pct=G.zoneCorrect/tot;
+  const stars=pct>=1?3:pct>=.8?2:pct>=.6?1:0;
+  if(stars>G.zoneStars[G.curZone])G.zoneStars[G.curZone]=stars;
+
+  document.getElementById('lvlClearTitle').textContent=G.zoneCorrect===tot?'PERFECT VICTORY!':'ZONE CLEARED!';
+  document.getElementById('lvlClearIcon').textContent=z.icon;
+  document.getElementById('starsRow').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  document.getElementById('rcCorrect').textContent=G.zoneCorrect+'/'+tot;
+  document.getElementById('rcGold').textContent='+'+G.zoneGold+' 🜃';
+  document.getElementById('rcStreak').textContent=G.bestStreak+'🔥';
+
+  const facts=z.facts||[];
+  const fact=facts[Math.floor(Math.random()*facts.length)];
+  document.getElementById('loreFact').innerHTML=`<strong>📜 Arcane Knowledge:</strong> ${fact}`;
+
+  const nb=document.getElementById('nextZoneBtn');
+  const nextIdx=G.curZone+1;
+  if(G.zoneStars.every(s=>s>0)&&nextIdx>=ZONES.length){
+    nb.textContent='🏆 CLAIM VICTORY';nb.onclick=showVictory;nb.style.display='inline-block';
+  } else if(nextIdx<ZONES.length&&stars>0){
+    nb.textContent='NEXT ZONE ▶';nb.onclick=goNextZone;nb.style.display='inline-block';
+  } else {
+    nb.style.display='none';
+  }
+
+  showScreen('lvlDoneScr');
+  if(G.zoneStars.every(s=>s>0)&&nextIdx>=ZONES.length)setTimeout(showVictory,4000);
+}
+function goNextZone(){
+  const next=G.curZone+1;
+  if(next<ZONES.length)startZone(next);else showVictory();
+}
+
+/* ============================================================
+   GAME OVER / VICTORY
+============================================================ */
+function gameOver(){
+  setHud(false);document.getElementById('goGold').textContent=G.gold;showScreen('gameOverScr');
+}
+function showVictory(){
+  setHud(false);
+  document.getElementById('vScore').textContent=G.gold+' 🜃';
+  const rank=G.gold>=2500?'⚡ ARCHMAGE OF PROPORTIA':G.gold>=1500?'🌟 GRAND SCHOLAR':G.gold>=800?'📜 ADEPT SCRIBE':'🔰 APPRENTICE';
+  document.getElementById('vRank').textContent=rank;
+  document.getElementById('vRank').style.color=G.gold>=2500?'#ffd700':G.gold>=1500?'#6bff9e':'#80dfff';
+  const recap=document.getElementById('vRecap');recap.innerHTML='';
+  ZONES.forEach(z=>{const div=document.createElement('div');div.className='recap-chip';div.innerHTML=`<div class="recap-chip-stars">${'⭐'.repeat(G.zoneStars[ZONES.indexOf(z)])||'—'}</div><div class="recap-chip-lbl">${z.icon} ${z.name}</div>`;recap.appendChild(div)});
+  showScreen('victoryScr');sparks(true);setTimeout(()=>{sparks(true);sparks(true)},500);
+}
+
+/* ============================================================
+   UTILS
+============================================================ */
+function showScreen(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function flashFeedback(right){
+  const fl=document.getElementById('fbFlash'),tx=document.getElementById('fbTxt');
+  tx.textContent=right?'CORRECT!':'WRONG!';tx.className='fb-txt '+(right?'fb-cor':'fb-wrg');
+  fl.classList.add('show');setTimeout(()=>fl.classList.remove('show'),900);
+}
+function sparks(right){
+  const colors=right?['#d4a017','#6bff9e','#ffeb3b']:['#ff1744','#ff6b35'];
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='spark';
+    const a=Math.random()*Math.PI*2,dist=80+Math.random()*140;
+    const tx=(Math.cos(a)*dist).toFixed(0)+'px',ty=(Math.sin(a)*dist).toFixed(0)+'px';
+    const dur=(0.55+Math.random()*.5).toFixed(2)+'s';
+    p.style.cssText=`background:${colors[Math.floor(Math.random()*colors.length)]};left:50%;top:50%;--d:${dur};--tx:${tx};--ty:${ty}`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),800);
+  }
+}
+function hint(msg,dur){
+  const h=document.getElementById('hint-overlay');h.textContent=msg;h.classList.add('vis');
+  clearTimeout(h._t);h._t=setTimeout(()=>h.classList.remove('vis'),dur);
+}
+function restartAll(){
+  Object.assign(G,{gold:0,lives:3,streak:0,bestStreak:0,curZone:0,curQ:0,zoneCorrect:0,zoneGold:0,zoneStars:[0,0,0,0,0],wrongThisQ:false});
+  setHud(false);showScreen('splash');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚾ Equation All-Stars</title>
+<style>
+:root{--navy:#0d1b3e;--teal:#1fa6a2;--yellow:#f5c518;--red:#d42b2b;--green:#27ae60;--bg:#1a3a6b;--card:#fff;--text:#0d1b3e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(160deg,#0d1b3e 0%,#1a3a6b 50%,#2d5a1b 100%);min-height:100vh;color:#fff}
+
+/* HEADER */
+.hdr{background:#0a1220;border-bottom:3px solid var(--yellow);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.logo{font:900 1.5rem 'Impact',sans-serif;color:var(--yellow);letter-spacing:2px}
+.stats{display:flex;gap:10px}
+.stat{background:#111;border:2px solid var(--yellow);border-radius:6px;padding:4px 12px;text-align:center;min-width:64px}
+.stat-lbl{font-size:.55rem;font-weight:800;letter-spacing:2px;color:var(--yellow);text-transform:uppercase}
+.stat-val{font:700 1.3rem 'Impact',sans-serif;color:#fff;line-height:1.1}
+.outs{display:flex;gap:5px;align-items:center;justify-content:center;padding-top:2px}
+.dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--yellow);background:transparent;transition:.2s}
+.dot.on{background:var(--red);border-color:var(--red)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;padding:10px 12px 0;flex-wrap:wrap;justify-content:center;background:#0d1b3e}
+.tab{font:700 .72rem 'Arial Black',sans-serif;letter-spacing:.5px;padding:7px 12px;border:2px solid rgba(245,197,24,.3);border-radius:6px 6px 0 0;background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);cursor:pointer;transition:.15s;text-transform:uppercase;white-space:nowrap}
+.tab:hover{color:#fff;border-color:var(--yellow)}
+.tab.on{background:var(--yellow);color:var(--navy);border-color:var(--yellow);font-weight:900}
+
+/* PANELS */
+.wrap{max-width:820px;margin:0 auto;padding:16px}
+.panel{display:none}.panel.on{display:block}
+
+/* CARD */
+.card{background:#fff;color:var(--navy);border-radius:14px;padding:22px;margin-bottom:14px;box-shadow:0 6px 24px rgba(0,0,0,.3);border-left:5px solid var(--teal)}
+.pill{font:800 .7rem 'Arial Black',sans-serif;letter-spacing:2px;color:var(--teal);text-transform:uppercase;margin-bottom:5px}
+.qtext{font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:14px;line-height:1.4}
+.mathbox{background:linear-gradient(135deg,#e8f4f8,#d4eef8);border:2px solid var(--teal);border-radius:10px;padding:12px;font:700 1.5rem 'Impact',sans-serif;text-align:center;color:var(--navy);margin:10px 0;letter-spacing:1px}
+.scenario{background:#fff8e1;border:2px solid var(--yellow);border-radius:10px;padding:14px;margin-bottom:12px}
+.sc-lbl{font:800 .65rem 'Arial Black',sans-serif;letter-spacing:2px;color:#b8860b;margin-bottom:5px;text-transform:uppercase}
+.sc-txt{font-size:.95rem;font-weight:700;color:var(--navy);line-height:1.5}
+
+/* CHOICES */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ch{background:#fff;border:2px solid #dde4ed;border-radius:10px;padding:12px 14px;font:700 .95rem 'Segoe UI',sans-serif;color:var(--navy);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:8px;text-align:left}
+.ch:hover:not(:disabled){border-color:var(--teal);background:#e8f7f7;transform:translateY(-2px)}
+.ch.good{background:#d4f7e0;border-color:var(--green);color:#145a32}
+.ch.bad{background:#fde8e8;border-color:var(--red);color:#7b1a1a}
+.ch:disabled{cursor:not-allowed}
+.ltr{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;flex-shrink:0}
+.good .ltr{background:var(--green)}.bad .ltr{background:var(--red)}
+
+/* FEEDBACK */
+.fb{border-radius:8px;padding:10px 14px;margin-top:10px;font-weight:700;font-size:.9rem;display:none;align-items:center;gap:8px}
+.fb.on{display:flex}
+.fb.good{background:#d4f7e0;color:#145a32;border:2px solid var(--green)}
+.fb.bad{background:#fde8e8;color:#7b1a1a;border:2px solid var(--red)}
+
+/* INPUTS */
+.igrp{display:flex;gap:8px;margin-top:10px}
+.inp{flex:1;padding:12px 14px;font:700 1rem 'Segoe UI',sans-serif;border:2px solid #dde4ed;border-radius:10px;outline:none;color:var(--navy)}
+.inp:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(31,166,162,.15)}
+.inp:disabled{background:#f0f0f0;color:#888}
+.btn{padding:12px 20px;background:var(--teal);color:#fff;border:none;border-radius:10px;font:700 .9rem 'Arial Black',sans-serif;cursor:pointer;transition:.15s;letter-spacing:.5px;text-transform:uppercase}
+.btn:hover{background:#179390;transform:translateY(-1px)}
+.btn.next{display:none;width:100%;margin-top:10px;background:linear-gradient(135deg,var(--navy),#2255aa);color:var(--yellow);border:2px solid var(--yellow);font-size:1rem;padding:14px}
+.btn.next.on{display:block}
+
+/* STEP BOXES */
+.step-box{border-radius:10px;padding:12px 14px;margin:12px 0 6px}
+.step1{background:#e8f0f8;border-left:4px solid var(--teal)}
+.step2{background:#e8f7f0;border-left:4px solid var(--green);display:none}
+.step-lbl{font:800 .65rem 'Arial Black',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.step1 .step-lbl{color:var(--teal)}
+.step2 .step-lbl{color:var(--green)}
+.step-hint{font-size:.85rem;font-weight:700;color:#444;margin-bottom:8px}
+
+/* SORT */
+.bank{display:flex;flex-wrap:wrap;gap:7px;background:rgba(255,255,255,.07);border-radius:8px;padding:10px;margin-bottom:12px;min-height:50px}
+.zones{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.zone{background:#fff;border:3px dashed #aaa;border-radius:10px;min-height:130px;padding:10px;transition:.2s}
+.zone.over{border-color:var(--teal);background:#e8f7f7}
+.zone.ok{border:3px solid var(--green);background:#d4f7e0}
+.zone.no{border:3px solid var(--red);background:#fde8e8}
+.zone-lbl{font:800 .85rem 'Arial Black',sans-serif;color:var(--navy);margin-bottom:8px;text-align:center}
+.dc{background:linear-gradient(135deg,#e8f0f8,#d4e4f7);border:2px solid #b8d0eb;border-radius:7px;padding:8px 12px;cursor:grab;font:700 .9rem 'Impact',sans-serif;color:var(--navy);user-select:none;transition:.15s;text-align:center}
+.dc:hover{transform:scale(1.04);box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.dc.ok{background:linear-gradient(135deg,#d4f7e0,#b8f0cc);border-color:var(--green);color:#145a32}
+.dc.no{background:linear-gradient(135deg,#fde8e8,#fac8c8);border-color:var(--red);color:#7b1a1a}
+
+/* ERROR HUNT */
+.steps{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.wstep{background:#fff;border:2px solid #dde4ed;border-radius:8px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:.95rem;font-weight:700;color:var(--navy);transition:.15s}
+.wstep:hover{border-color:var(--yellow);background:#fffbee}
+.wstep.pick{border-color:var(--red);background:#fde8e8}
+.wstep.ok{border-color:var(--green);background:#d4f7e0;cursor:default}
+.wstep.dim{border-color:#b8d0eb;background:#e8f0f8;cursor:default}
+.snum{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;flex-shrink:0}
+
+/* SPEED */
+.speed-info{text-align:center;margin-bottom:10px;font-size:1rem;font-weight:800}
+.timer{color:var(--red);font-size:1.5rem;font-weight:900}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sc2{background:#fff;border:2px solid #dde4ed;border-radius:10px;padding:12px 8px;text-align:center;transition:.15s}
+.sc2:hover{border-color:var(--teal);background:#e8f7f7}
+.sc2.ok{background:#d4f7e0;border-color:var(--green);animation:pop .3s}
+.sc2.bad{background:#fde8e8;border-color:var(--red)}
+.seq{font:700 .95rem 'Impact',sans-serif;color:var(--navy);margin-bottom:6px}
+.schoices{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.sch{padding:4px;background:#f0f4f8;border-radius:5px;font-size:.82rem;font-weight:700;color:var(--navy);cursor:pointer;transition:.12s}
+.sch:hover{background:var(--teal);color:#fff}
+
+/* SCOREBOARD */
+.board{background:#fff;color:var(--navy);border-radius:14px;padding:20px;margin-bottom:14px}
+.btitle{font:900 1.5rem 'Impact',sans-serif;letter-spacing:2px;text-align:center;border-bottom:3px solid var(--teal);padding-bottom:8px;margin-bottom:14px}
+.sgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:0}
+.sbox{background:#f0f4f8;border-radius:8px;padding:10px;text-align:center}
+.sbox-val{font:900 1.8rem 'Impact',sans-serif;color:var(--teal)}
+.sbox-lbl{font-size:.65rem;font-weight:800;letter-spacing:2px;color:#666;text-transform:uppercase}
+.trow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.tname{font-weight:800;font-size:.85rem;min-width:160px}
+.tbar-w{flex:1;background:#e8f0f8;border-radius:20px;height:16px;overflow:hidden}
+.tbar{height:100%;background:linear-gradient(90deg,var(--teal),#2255aa);border-radius:20px;transition:width .4s}
+.tpct{font-weight:800;font-size:.8rem;color:#2255aa;min-width:36px;text-align:right}
+.ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ach{background:#e8f7f7;border:2px solid var(--teal);border-radius:8px;padding:9px;display:flex;align-items:center;gap:7px;font-weight:800;font-size:.85rem;color:var(--navy)}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:200}
+.overlay.on{display:flex}
+.pop{background:var(--navy);border:3px solid var(--yellow);border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center}
+.pop-title{font:900 2rem 'Impact',sans-serif;color:var(--yellow);letter-spacing:3px;margin-bottom:10px}
+.pop-body{font-size:.95rem;color:rgba(255,255,255,.85);margin-bottom:20px;line-height:1.6}
+.pop-btn{padding:12px 28px;background:var(--yellow);color:var(--navy);border:none;border-radius:10px;font:900 1.1rem 'Impact',sans-serif;letter-spacing:2px;cursor:pointer}
+
+/* FLASH */
+.flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font:900 4rem 'Impact',sans-serif;letter-spacing:3px;z-index:300;pointer-events:none;transition:.25s;text-shadow:3px 3px 0 rgba(0,0,0,.4)}
+.flash.on{transform:translate(-50%,-50%) scale(1)}
+.flash.hit{color:var(--yellow)}.flash.out{color:var(--red)}.flash.hr{color:#ff6b35}
+
+/* PROGRESS */
+.prog-w{background:rgba(255,255,255,.1);border-radius:20px;height:6px;margin-bottom:14px;overflow:hidden}
+.prog{height:100%;background:linear-gradient(90deg,var(--teal),var(--yellow));border-radius:20px;transition:width .4s}
+
+/* INNING BAR */
+.ibar{background:rgba(0,0,0,.25);border-radius:10px;padding:8px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(245,197,24,.25)}
+.ibarlbl{font:700 .8rem 'Arial Black',sans-serif;letter-spacing:1px;color:var(--yellow);text-transform:uppercase}
+.topic-pill{background:var(--teal);color:#fff;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media(max-width:560px){.choices,.zones,.sgrid,.sgrid3,.ach-grid{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr 1fr}.tab{font-size:.62rem;padding:5px 8px}}
+</style>
+</head>
+<body>
+
+<div class="flash" id="flash"></div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">⚾ Equation All-Stars</div>
+  <div class="stats">
+    <div class="stat"><div class="stat-lbl">Runs</div><div class="stat-val" id="hRuns">0</div></div>
+    <div class="stat"><div class="stat-lbl">Hits</div><div class="stat-val" id="hHits">0</div></div>
+    <div class="stat" style="min-width:54px"><div class="stat-lbl">Outs</div><div class="outs"><div class="dot" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div></div>
+    <div class="stat"><div class="stat-lbl">Streak</div><div class="stat-val" id="hStreak">0</div></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" onclick="goTab('batting',this)">⚾ Batting</button>
+  <button class="tab" onclick="goTab('sort',this)">🗂 Sort It</button>
+  <button class="tab" onclick="goTab('error',this)">🔍 Error Hunt</button>
+  <button class="tab" onclick="goTab('speed',this)">⚡ Speed</button>
+  <button class="tab" onclick="goTab('world',this)">🏆 World Series</button>
+  <button class="tab" onclick="goTab('board',this)">📊 Scoreboard</button>
+</div>
+
+<div class="wrap">
+
+<!-- BATTING -->
+<div id="p-batting" class="panel on">
+  <div class="ibar"><div class="ibarlbl" id="inningLbl">Inning 1</div><div class="topic-pill" id="topicPill">—</div></div>
+  <div class="prog-w"><div class="prog" id="progBar" style="width:0%"></div></div>
+  <div class="card">
+    <div class="pill" id="pitchLbl">Pitch 1</div>
+    <div class="qtext" id="qtext">Loading…</div>
+    <div class="mathbox" id="mathbox" style="display:none"></div>
+    <div class="choices" id="choicesGrid"></div>
+    <div class="fb" id="qfb"></div>
+  </div>
+  <button class="btn next" id="qnext" onclick="nextQ()">⚾ Next Pitch →</button>
+</div>
+
+<!-- SORT -->
+<div id="p-sort" class="panel">
+  <div class="card">
+    <div class="pill">Sort It Out — Drag &amp; Drop</div>
+    <div class="qtext" id="sortQ"></div>
+    <div class="bank" id="bank"></div>
+    <div class="zones">
+      <div class="zone" id="z0" ondragover="e=>{e.preventDefault();e.currentTarget.classList.add('over')}" ondragleave="e=>e.currentTarget.classList.remove('over')" ondrop="drop(event,0)">
+        <div class="zone-lbl" id="zlbl0"></div>
+      </div>
+      <div class="zone" id="z1" ondragover="e=>{e.preventDefault();e.currentTarget.classList.add('over')}" ondragleave="e=>e.currentTarget.classList.remove('over')" ondrop="drop(event,1)">
+        <div class="zone-lbl" id="zlbl1"></div>
+      </div>
+    </div>
+    <button class="btn" style="margin-top:12px;width:100%" onclick="checkSort()">Check Sort ⚾</button>
+    <div class="fb" id="sortfb"></div>
+  </div>
+  <button class="btn next" id="sortnext" onclick="nextSort()">⚾ Next Sort →</button>
+</div>
+
+<!-- ERROR HUNT -->
+<div id="p-error" class="panel">
+  <div class="card">
+    <div class="pill">Error Hunt — Find the Mistake</div>
+    <div class="qtext">Someone worked this problem. Find the first wrong step.</div>
+    <div class="mathbox" id="errProb"></div>
+    <div class="steps" id="errSteps"></div>
+    <div class="fb" id="errfb"></div>
+  </div>
+  <button class="btn next" id="errnext" onclick="nextErr()">⚾ Next Error Hunt →</button>
+</div>
+
+<!-- SPEED -->
+<div id="p-speed" class="panel">
+  <div class="card" style="text-align:center">
+    <div class="pill">Speed Round ⚡</div>
+    <div class="speed-info">Solve as many as you can! <span class="timer" id="spTimer">60</span>s &nbsp;|&nbsp; Score: <span id="spScore" style="color:var(--teal)">0</span> &nbsp;🔥 <span id="spStreak">0</span></div>
+  </div>
+  <div class="sgrid" id="spGrid"></div>
+  <div style="text-align:center;margin-top:12px">
+    <button class="btn" id="spStart" onclick="startSpeed()" style="padding:14px 32px;font-size:1rem">⚡ Start Speed Round</button>
+  </div>
+</div>
+
+<!-- WORLD SERIES -->
+<div id="p-world" class="panel">
+  <div class="card">
+    <div class="pill">🏆 World Series — Real World Problems</div>
+    <div class="scenario"><div class="sc-lbl">📰 The Situation</div><div class="sc-txt" id="wsTxt"></div></div>
+    <div class="qtext" id="wsQ"></div>
+
+    <div class="step-box step1" id="wsStep1">
+      <div class="step-lbl">Step 1 — Write the Equation</div>
+      <div class="step-hint">Read carefully. Choose a variable for the unknown. Write your equation.</div>
+      <div class="igrp">
+        <input class="inp" id="wsEq" placeholder="e.g.  9h = 63" onkeydown="if(event.key==='Enter')checkEq()">
+        <button class="btn" onclick="checkEq()">Check</button>
+      </div>
+      <div class="fb" id="wsEqFb"></div>
+    </div>
+
+    <div class="step-box step2" id="wsStep2">
+      <div class="step-lbl">Step 2 — Solve for the Variable</div>
+      <div class="step-hint">Your equation: <strong id="wsAccepted" style="font-family:'Impact',sans-serif;font-size:1.1rem;color:var(--navy)"></strong></div>
+      <div class="igrp">
+        <input class="inp" id="wsAns" placeholder="Answer (number only)" onkeydown="if(event.key==='Enter')checkAns()">
+        <button class="btn" onclick="checkAns()">Submit</button>
+      </div>
+      <div class="fb" id="wsAnsFb"></div>
+    </div>
+  </div>
+  <button class="btn next" id="wsnext" onclick="nextWS()">⚾ Next Problem →</button>
+</div>
+
+<!-- SCOREBOARD -->
+<div id="p-board" class="panel">
+  <div class="board">
+    <div class="btitle">📊 Your Stats</div>
+    <div class="sgrid3">
+      <div class="sbox"><div class="sbox-val" id="sbRuns">0</div><div class="sbox-lbl">Runs</div></div>
+      <div class="sbox"><div class="sbox-val" id="sbHits">0</div><div class="sbox-lbl">Hits</div></div>
+      <div class="sbox"><div class="sbox-val" id="sbAvg">—</div><div class="sbox-lbl">Avg</div></div>
+      <div class="sbox"><div class="sbox-val" id="sbCorrect">0</div><div class="sbox-lbl">Correct</div></div>
+      <div class="sbox"><div class="sbox-val" id="sbTotal">0</div><div class="sbox-lbl">Attempted</div></div>
+      <div class="sbox"><div class="sbox-val" id="sbStreak">0</div><div class="sbox-lbl">Best Streak</div></div>
+    </div>
+  </div>
+  <div class="board">
+    <div class="btitle">📈 Topic Mastery</div>
+    <div id="topicBars"></div>
+  </div>
+  <div class="board">
+    <div class="btitle">🏆 Achievements</div>
+    <div class="ach-grid" id="achList"><div style="color:#888;font-style:italic;grid-column:1/-1">Keep playing to earn achievements!</div></div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+
+const TOPICS = {addSub:'Add/Sub',multDiv:'Mult/Div',mixed:'Mixed Ops',trans:'Translating',rational:'Rational',rw:'Real World',ineq:'Inequalities'};
+
+const Qs = [
+  // ADD/SUB
+  {t:'addSub',q:'Solve for x:',m:'x + 7 = 15',ch:['x = 8','x = 22','x = 7','x = 105'],a:0,ex:'Subtract 7 from both sides: x = 15 − 7 = 8'},
+  {t:'addSub',q:'Solve for n:',m:'n − 4 = 11',ch:['n = 7','n = 44','n = 15','n = 3'],a:2,ex:'Add 4 to both sides: n = 11 + 4 = 15'},
+  {t:'addSub',q:'Solve for y:',m:'y + 13 = 30',ch:['y = 17','y = 43','y = 3','y = 390'],a:0,ex:'Subtract 13: y = 30 − 13 = 17'},
+  {t:'addSub',q:'Solve for a:',m:'a − 9 = 0',ch:['a = 0','a = 9','a = −9','a = 1'],a:1,ex:'Add 9 to both sides: a = 9'},
+  {t:'addSub',q:'Solve for k:',m:'k + 25 = 40',ch:['k = 65','k = 15','k = 25','k = 1000'],a:1,ex:'Subtract 25: k = 15'},
+  {t:'addSub',q:'Solve for m:',m:'18 + m = 31',ch:['m = 49','m = 13','m = 18','m = 3'],a:1,ex:'Subtract 18: m = 13'},
+  {t:'addSub',q:'Solve for p:',m:'p − 17 = 8',ch:['p = 9','p = 136','p = 25','p = 17'],a:2,ex:'Add 17: p = 25'},
+  {t:'addSub',q:'Solve for z:',m:'z + 6 = 6',ch:['z = 1','z = 12','z = 0','z = 36'],a:2,ex:'Subtract 6: z = 0'},
+  // MULT/DIV
+  {t:'multDiv',q:'Solve for x:',m:'3x = 18',ch:['x = 6','x = 54','x = 3','x = 15'],a:0,ex:'Divide by 3: x = 6'},
+  {t:'multDiv',q:'Solve for y:',m:'y ÷ 5 = 9',ch:['y = 14','y = 4','y = 45','y = 95'],a:2,ex:'Multiply by 5: y = 45'},
+  {t:'multDiv',q:'Solve for n:',m:'4n = 36',ch:['n = 32','n = 9','n = 144','n = 40'],a:1,ex:'Divide by 4: n = 9'},
+  {t:'multDiv',q:'Solve for a:',m:'a ÷ 8 = 7',ch:['a = 1','a = 15','a = 56','a = 8'],a:2,ex:'Multiply by 8: a = 56'},
+  {t:'multDiv',q:'Solve for t:',m:'7t = 63',ch:['t = 9','t = 56','t = 70','t = 441'],a:0,ex:'Divide by 7: t = 9'},
+  {t:'multDiv',q:'Solve for w:',m:'w ÷ 12 = 4',ch:['w = 3','w = 16','w = 48','w = 8'],a:2,ex:'Multiply by 12: w = 48'},
+  {t:'multDiv',q:'Solve for c:',m:'6c = 54',ch:['c = 48','c = 60','c = 9','c = 324'],a:2,ex:'Divide by 6: c = 9'},
+  {t:'multDiv',q:'Solve for b:',m:'b ÷ 3 = 15',ch:['b = 5','b = 45','b = 18','b = 12'],a:1,ex:'Multiply by 3: b = 45'},
+  // MIXED
+  {t:'mixed',q:'What operation solves this?',m:'x + 9 = 22',ch:['Add 9','Subtract 9','Multiply by 9','Divide by 9'],a:1,ex:'Inverse of addition is subtraction.'},
+  {t:'mixed',q:'What undoes multiplication?',m:'5n = 40',ch:['Add 5','Subtract 5','Multiply by 5','Divide by 5'],a:3,ex:'Inverse of multiplication is division.'},
+  {t:'mixed',q:'Solve for x:',m:'x − 8 = 12',ch:['x = 4','x = 96','x = 20','x = 8'],a:2,ex:'Add 8: x = 20'},
+  {t:'mixed',q:'Solve for y:',m:'2y = 14',ch:['y = 12','y = 7','y = 28','y = 16'],a:1,ex:'Divide by 2: y = 7'},
+  {t:'mixed',q:'Is x = 7 a solution?',m:'3x = 21',ch:['Yes — 3(7)=21 ✓','No — 3+7=10','No — 3(7)=24','Yes but only if x > 0'],a:0,ex:'Check: 3×7 = 21 ✓'},
+  {t:'mixed',q:'Solve for n:',m:'n ÷ 6 = 8',ch:['n = 2','n = 14','n = 48','n = 6'],a:2,ex:'Multiply by 6: n = 48'},
+  // TRANSLATING
+  {t:'trans',q:'A number increased by 5 equals 20. Write and solve:',m:'',ch:['n + 5 = 20; n = 15','n − 5 = 20; n = 25','5n = 20; n = 4','n ÷ 5 = 20; n = 100'],a:0,ex:'"Increased by" = addition. n + 5 = 20 → n = 15'},
+  {t:'trans',q:'Three times a number equals 24. Which equation?',m:'',ch:['n + 3 = 24','n − 3 = 24','3n = 24','n ÷ 3 = 24'],a:2,ex:'"Three times" = multiplication: 3n = 24'},
+  {t:'trans',q:'A number decreased by 8 is 10. Find the number.',m:'n − 8 = 10',ch:['n = 2','n = 80','n = 18','n = 8'],a:2,ex:'"Decreased by" = subtraction. Add 8: n = 18'},
+  {t:'trans',q:'Half of a number is 9. Which equation?',m:'',ch:['n − 2 = 9','2n = 9','n ÷ 2 = 9','n + 9 = 2'],a:2,ex:'"Half of" = divide by 2: n ÷ 2 = 9 → n = 18'},
+  {t:'trans',q:'The sum of a number and 7 is 15. Find the number.',m:'',ch:['n = 8','n = 22','n = 105','n = 7'],a:0,ex:'"Sum" = addition: n + 7 = 15 → n = 8'},
+  {t:'trans',q:'A number divided by 4 equals 6. What is it?',m:'n ÷ 4 = 6',ch:['n = 2','n = 24','n = 10','n = 1.5'],a:1,ex:'Multiply by 4: n = 24'},
+  {t:'trans',q:'The product of 5 and a number is 35. Which equation?',m:'',ch:['5 + n = 35','5 − n = 35','5n = 35','n ÷ 5 = 35'],a:2,ex:'"Product" = multiplication: 5n = 35'},
+  {t:'trans',q:'12 less than a number n is 4. Write the equation.',m:'',ch:['12 − n = 4','n − 12 = 4','n + 12 = 4','n × 12 = 4'],a:1,ex:'"12 less than n" means n − 12. So n − 12 = 4'},
+  // RATIONAL
+  {t:'rational',q:'Solve for x:',m:'x + 1/2 = 3/2',ch:['x = 1','x = 2','x = 1/2','x = 4'],a:0,ex:'Subtract 1/2: x = 3/2 − 1/2 = 1'},
+  {t:'rational',q:'Solve for n:',m:'n − 2/3 = 1/3',ch:['n = 1','n = 3','n = 1/3','n = 2/3'],a:0,ex:'Add 2/3: n = 1/3 + 2/3 = 1'},
+  {t:'rational',q:'Solve for y:',m:'(1/4)y = 3',ch:['y = 3/4','y = 4','y = 12','y = 3'],a:2,ex:'Multiply by 4: y = 12'},
+  {t:'rational',q:'Which fraction makes this true?',m:'x + 1/4 = 3/4',ch:['x = 1/4','x = 1/2','x = 4/4','x = 3/16'],a:1,ex:'3/4 − 1/4 = 2/4 = 1/2'},
+  {t:'rational',q:'Solve for m:',m:'3/5 × m = 6',ch:['m = 10','m = 18/5','m = 2','m = 5'],a:0,ex:'Multiply by 5/3: m = 6 × (5/3) = 10'},
+  {t:'rational',q:'Solve for b:',m:'b + 0.5 = 2.5',ch:['b = 3','b = 1.25','b = 2','b = 1.5'],a:2,ex:'Subtract 0.5: b = 2'},
+  {t:'rational',q:'Solve for n:',m:'n − 0.25 = 1.75',ch:['n = 1.5','n = 2','n = 0.25','n = 7'],a:1,ex:'Add 0.25: n = 2'},
+  // INEQUALITIES
+  {t:'ineq',q:'Which inequality means "a number is greater than 5"?',m:'',ch:['n < 5','n > 5','n = 5','n ≥ 5'],a:1,ex:'"Greater than" uses >'},
+  {t:'ineq',q:'Which value is a solution to x > 8?',m:'',ch:['x = 5','x = 8','x = 11','x = 3'],a:2,ex:'x must be strictly greater than 8. Only x = 11 works.'},
+  {t:'ineq',q:'What does ≤ mean?',m:'',ch:['Greater than','Less than','Less than OR equal to','Greater than OR equal to'],a:2,ex:'≤ = less than or equal to'},
+  {t:'ineq',q:'Which inequality shows "at least 12"?',m:'',ch:['n < 12','n > 12','n ≤ 12','n ≥ 12'],a:3,ex:'"At least 12" means 12 or more: n ≥ 12'},
+  {t:'ineq',q:'Solve:',m:'n + 3 < 10',ch:['n < 7','n < 13','n > 7','n = 7'],a:0,ex:'Subtract 3: n < 7'},
+  {t:'ineq',q:'Which graph shows x ≥ 4?',m:'',ch:['Open circle at 4, arrow left','Open circle at 4, arrow right','Closed circle at 4, arrow right','Closed circle at 4, arrow left'],a:2,ex:'≥ includes 4 → closed circle; greater than → arrow right'},
+  {t:'ineq',q:'Solve:',m:'2n ≤ 16',ch:['n ≤ 8','n ≤ 32','n ≥ 8','n = 8'],a:0,ex:'Divide by 2: n ≤ 8'},
+  {t:'ineq',q:'Which phrase matches n < 6?',m:'',ch:['n is at most 6','n is at least 6','n is less than 6','n is 6'],a:2,ex:'"Less than 6" = n < 6'},
+  // REAL WORLD — no math field shown, student reads words
+  {t:'rw',q:'Marcus earns $8 per hour. He earned $48 this week. How many hours did he work?',m:'',ch:['6 hours','56 hours','40 hours','8 hours'],a:0,ex:'8h = 48 → h = 48÷8 = 6 hours'},
+  {t:'rw',q:'Jaylen had some trading cards. He gave away 15 and had 27 left. How many did he start with?',m:'',ch:['12 cards','405 cards','42 cards','27 cards'],a:2,ex:'c − 15 = 27 → c = 42'},
+  {t:'rw',q:'The temperature rose 9 degrees to reach 72°F. What was the starting temperature?',m:'',ch:['81°F','648°F','63°F','9°F'],a:2,ex:'t + 9 = 72 → t = 63°F'},
+  {t:'rw',q:'Mia saved the same amount each month. After 4 months she saved $60. What is her monthly savings?',m:'',ch:['$240','$56','$15','$64'],a:2,ex:'4m = 60 → m = $15'},
+  {t:'rw',q:'A school store sells pencils for $2 each. Darius spent $18 on pencils. How many did he buy?',m:'',ch:['36 pencils','9 pencils','20 pencils','16 pencils'],a:1,ex:'2p = 18 → p = 9'},
+  {t:'rw',q:'Keisha had some money. After spending $23 she had $14 left. How much did she start with?',m:'',ch:['$9','$322','$37','$23'],a:2,ex:'m − 23 = 14 → m = $37'},
+  {t:'rw',q:'A baker makes the same number of cookies per tray. With 8 trays he baked 96 cookies. How many per tray?',m:'',ch:['12','104','88','768'],a:0,ex:'8t = 96 → t = 12'},
+  {t:'rw',q:"Jordan's older brother is 5 years older than Jordan. His brother is 17. How old is Jordan?",m:'',ch:['22','85','12','5'],a:2,ex:'j + 5 = 17 → j = 12'},
+  {t:'rw',q:'A library fine is $0.25 per day. The total fine is $2.00. How many days late?',m:'',ch:['0.5 days','8 days','50 days','2.25 days'],a:1,ex:'0.25d = 2.00 → d = 8'},
+  {t:'rw',q:'252 students are split equally into 9 classrooms. How many students per classroom?',m:'',ch:['261','243','28','2268'],a:2,ex:'9c = 252 → c = 28'},
+  {t:'rw',q:'A plant grew 4 inches last month and is now 19 inches tall. How tall was it before?',m:'',ch:['23 in','76 in','15 in','4 in'],a:2,ex:'p + 4 = 19 → p = 15'},
+  {t:'rw',q:'Tickets to the school play cost $5 each. The class raised $135. How many tickets sold?',m:'',ch:['675','130','27','140'],a:2,ex:'5t = 135 → t = 27'},
+  {t:'rw',q:'After donating 32 books, the classroom has 18 books left. How many did they start with?',m:'',ch:['14','576','50','32'],a:2,ex:'b − 32 = 18 → b = 50'},
+  {t:'rw',q:'A car travels at a steady speed. After 7 hours it has gone 350 miles. What is its speed?',m:'',ch:['357 mph','2450 mph','50 mph','343 mph'],a:2,ex:'7s = 350 → s = 50 mph'},
+  {t:'rw',q:'Aaliyah needs $95 for a field trip. She earned $60 doing chores. How much more does she need?',m:'',ch:['$155','$5700','$35','$60'],a:2,ex:'60 + m = 95 → m = $35'},
+  {t:'rw',q:'A recipe makes 48 cookies. Each bag holds 6 cookies. How many bags are needed?',m:'',ch:['8','54','42','288'],a:0,ex:'6b = 48 → b = 8'},
+  {t:'rw',q:'Xavier collected 5 times as many cans as his friend. Xavier collected 60 cans. How many did his friend collect?',m:'',ch:['300','65','55','12'],a:3,ex:'5f = 60 → f = 12'},
+  {t:'rw',q:'A pool drains at a steady rate. After 6 hours, 144 gallons have drained. Rate per hour?',m:'',ch:['150 gal/hr','138 gal/hr','24 gal/hr','864 gal/hr'],a:2,ex:'6r = 144 → r = 24 gal/hr'},
+  {t:'rw',q:'After receiving 17 new books, the library has 312 books. How many were there before?',m:'',ch:['329','5304','295','17'],a:2,ex:'b + 17 = 312 → b = 295'},
+  {t:'rw',q:'A store marks up each item by $8. A shirt now costs $31. What was the original price?',m:'',ch:['$39','$248','$23','$8'],a:2,ex:'p + 8 = 31 → p = $23'},
+  {t:'rw',q:'Isaiah needs at least 10,000 steps a day. He has walked 6,750. How many more does he need?',m:'',ch:['At least 3,250','At least 16,750','Exactly 3,250','At most 3,250'],a:0,ex:'6750 + s ≥ 10000 → s ≥ 3,250'},
+  {t:'rw',q:'A plumber charges $65/hr. The bill is $325. How many hours did she work?',m:'',ch:['390 hrs','260 hrs','5 hrs','20 hrs'],a:2,ex:'65h = 325 → h = 5'},
+  {t:'rw',q:'Destiny scored 12 more points than her previous high score of 45. What did she score?',m:'',ch:['33','540','57','12'],a:2,ex:'45 + 12 = 57'},
+  {t:'rw',q:'A parking meter charges $0.50 per 15 minutes. Tomás paid $3.00. How many intervals?',m:'',ch:['1.5','6','3.5','60'],a:1,ex:'0.50 × n = 3.00 → n = 6'},
+  {t:'rw',q:'A dog groomer charges $35 per dog and earned $245 today. How many dogs were groomed?',m:'',ch:['280','210','7','8575'],a:2,ex:'35d = 245 → d = 7'},
+  {t:'rw',q:'Jordan had some points. After losing 8 for a penalty, he had 25. How many did he start with?',m:'',ch:['17','200','33','8'],a:2,ex:'p − 8 = 25 → p = 33'},
+  {t:'rw',q:'A phone plan costs the same each month. After 8 months the total is $240. Monthly cost?',m:'',ch:['$1920','$248','$30','$232'],a:2,ex:'8m = 240 → m = $30'},
+  {t:'rw',q:'Coach splits 72 athletes equally into teams of 9. How many teams?',m:'',ch:['81','63','8','648'],a:2,ex:'9t = 72 → t = 8'},
+];
+
+// SORT ACTIVITIES
+const SORTS = [
+  {q:'Sort each equation — solved by ADDITION or SUBTRACTION?',
+   labels:['➕ Use Addition','➖ Use Subtraction'],
+   cards:[{txt:'x − 5 = 10',z:0},{txt:'n + 7 = 15',z:1},{txt:'y − 3 = 8',z:0},{txt:'a + 12 = 20',z:1},{txt:'m − 9 = 4',z:0},{txt:'b + 6 = 18',z:1}]},
+  {q:'Sort each equation — solved by MULTIPLICATION or DIVISION?',
+   labels:['✖️ Use Multiplication','➗ Use Division'],
+   cards:[{txt:'x ÷ 3 = 7',z:0},{txt:'4n = 28',z:1},{txt:'y ÷ 6 = 5',z:0},{txt:'9m = 45',z:1},{txt:'a ÷ 2 = 12',z:0},{txt:'5b = 40',z:1}]},
+  {q:'Sort each phrase — does it mean ADDITION (+) or MULTIPLICATION (×)?',
+   labels:['➕ Addition','✖️ Multiplication'],
+   cards:[{txt:'increased by 5',z:0},{txt:'triple a number',z:1},{txt:'sum of n and 8',z:0},{txt:'twice as many',z:1},{txt:'7 more than x',z:0},{txt:'product of 4 and n',z:1}]},
+  {q:'Sort each — is it an EQUATION or an INEQUALITY?',
+   labels:['⚖️ Equation','📊 Inequality'],
+   cards:[{txt:'x + 3 = 10',z:0},{txt:'n − 5 > 8',z:1},{txt:'4y = 20',z:0},{txt:'2m ≤ 12',z:1},{txt:'b ÷ 2 = 6',z:0},{txt:'p + 1 ≥ 9',z:1}]},
+];
+
+// ERROR HUNTS
+const ERRORS = [
+  {prob:'Solve: x + 8 = 20',
+   steps:['Start: x + 8 = 20','Add 8 to the right side only: x = 20 + 8 = 28  ❌','Answer: x = 28'],
+   err:1,ex:'Step 2 is wrong! You must SUBTRACT 8 from both sides: x = 20 − 8 = 12'},
+  {prob:'Solve: 5n = 35',
+   steps:['5n = 35','Divide both sides by 5: 35 ÷ 5','n = 5  ❌  (divided wrong — 35 ÷ 5 = 7, not 5)'],
+   err:2,ex:'Step 3 has the error: 35 ÷ 5 = 7, not 5. Answer is n = 7.'},
+  {prob:'Solve: y − 6 = 14',
+   steps:['y − 6 = 14','Subtract 6 from both sides  ❌  (should ADD 6)','y − 12 = 8  →  y = 20'],
+   err:1,ex:'Step 2 is wrong! Inverse of subtraction is ADDITION. Add 6: y = 14 + 6 = 20'},
+  {prob:"Translate & solve: 'A number decreased by 4 equals 9'",
+   steps:['Let n = the unknown','Equation: n + 4 = 9  ❌  (wrong — decreased by = minus)','n = 9 − 4 = 5'],
+   err:1,ex:'Step 2 has the error! "Decreased by 4" means n − 4, not n + 4. Correct: n − 4 = 9 → n = 13'},
+  {prob:'Solve the inequality: n + 5 > 12',
+   steps:['n + 5 > 12','Subtract 5 from left, ADD 5 to right  ❌','n > 17'],
+   err:1,ex:'Step 2 is wrong! Subtract 5 from BOTH sides: n > 12 − 5 = 7'},
+];
+
+// WORLD SERIES PROBLEMS
+const WS = [
+  {sc:'Destiny works at a bakery and earns $9 per hour. Last Saturday she earned $63.',q:'How many hours did Destiny work?',eq:'9h=63',ans:7,ex:'9h = 63 → h = 63÷9 = 7 hours'},
+  {sc:'Marcus had some money. He spent $14 on lunch and had $27 left.',q:'How much money did Marcus start with?',eq:'m-14=27',ans:41,ex:'m − 14 = 27 → m = 27+14 = $41'},
+  {sc:'A school van has 6 rows of seats. It fits 48 students total.',q:'How many students fit in each row?',eq:'6r=48',ans:8,ex:'6r = 48 → r = 8 students per row'},
+  {sc:"Jaylen's height increased by 3 inches over the summer. He is now 62 inches tall.",q:'How tall was Jaylen at the start of the summer?',eq:'h+3=62',ans:59,ex:'h + 3 = 62 → h = 59 inches'},
+  {sc:'A phone plan costs the same amount each month. After 8 months, the total cost is $240.',q:'What is the monthly cost?',eq:'8m=240',ans:30,ex:'8m = 240 → m = $30'},
+  {sc:'Keisha wants to read 120 pages. She has already read 45 pages.',q:'How many more pages does Keisha need to read?',eq:'45+p=120',ans:75,ex:'45 + p = 120 → p = 75'},
+  {sc:'Coach Rivera splits 72 athletes equally into teams. Each team has 9 athletes.',q:'How many teams are there?',eq:'9t=72',ans:8,ex:'9t = 72 → t = 8 teams'},
+  {sc:'The temperature was 58°F this morning. By noon it rose to 74°F.',q:'By how many degrees did the temperature rise?',eq:'58+d=74',ans:16,ex:'58 + d = 74 → d = 16 degrees'},
+  {sc:'A bag of apples weighs 3 pounds. The total weight of several identical bags is 18 pounds.',q:'How many bags are there?',eq:'3b=18',ans:6,ex:'3b = 18 → b = 6 bags'},
+  {sc:'Tomás scored some points in a game. After losing 8 points for a penalty, he had 25 points.',q:'How many points did Tomás have before the penalty?',eq:'p-8=25',ans:33,ex:'p − 8 = 25 → p = 33'},
+  {sc:'A streaming service costs the same each month. Brianna paid $60 for 5 months.',q:'What is the monthly cost?',eq:'5x=60',ans:12,ex:'5x = 60 → x = $12'},
+  {sc:'A parking garage charges the same rate per hour. Nadia parked for 4 hours and paid $28.',q:'What is the hourly rate?',eq:'4r=28',ans:7,ex:'4r = 28 → r = $7 per hour'},
+  {sc:'Lena has a goal to collect 200 cans for the food drive. So far she has 137.',q:'How many more cans does Lena need?',eq:'137+c=200',ans:63,ex:'137 + c = 200 → c = 63'},
+  {sc:'A school fundraiser has a goal of $500. So far $385 has been raised.',q:'How much more is needed?',eq:'385+m=500',ans:115,ex:'385 + m = 500 → m = $115'},
+  {sc:'A dog groomer charges $35 per dog. At the end of the day she earned $245.',q:'How many dogs did she groom?',eq:'35d=245',ans:7,ex:'35d = 245 → d = 7'},
+  {sc:"Jordan's older sister is 7 years older than Jordan. His sister is 19.",q:'How old is Jordan?',eq:'j+7=19',ans:12,ex:'j + 7 = 19 → j = 12'},
+  {sc:'A store sells T-shirts for $15 each. Ms. Thompson spent $90.',q:'How many T-shirts did she buy?',eq:'15t=90',ans:6,ex:'15t = 90 → t = 6'},
+  {sc:'Before the game the snack bar had some water bottles. They sold 48 and had 17 left.',q:'How many bottles did they start with?',eq:'b-48=17',ans:65,ex:'b − 48 = 17 → b = 65'},
+  {sc:'A taxi charges a flat fee plus $2 per mile. For a 9-mile trip the total was $23.',q:'What is the flat fee? (Hint: flat fee + 2×9 = 23, so flat fee + 18 = 23)',eq:'f+18=23',ans:5,ex:'f + 18 = 23 → f = $5'},
+  {sc:'Xavier downloaded 24 songs, which is 1/3 of his total playlist goal.',q:'How many songs does Xavier want in his full playlist?',eq:'p/3=24',ans:72,ex:'p ÷ 3 = 24 → p = 72'},
+  {sc:'A florist made identical bouquets using 56 roses total. Each bouquet uses 8 roses.',q:'How many bouquets did the florist make?',eq:'8b=56',ans:7,ex:'8b = 56 → b = 7'},
+  {sc:'After spending $22 at the school store, Amara had $9 left.',q:'How much money did Amara start with?',eq:'a-22=9',ans:31,ex:'a − 22 = 9 → a = $31'},
+  {sc:'A plumber charges $65 per hour. The bill was $325.',q:'How many hours did she work?',eq:'65h=325',ans:5,ex:'65h = 325 → h = 5'},
+  {sc:'252 students are split equally into 9 classrooms.',q:'How many students are in each classroom?',eq:'9c=252',ans:28,ex:'9c = 252 → c = 28'},
+  {sc:'A car travels at a steady speed. After 7 hours it has gone 350 miles.',q:'What is the car\'s speed in miles per hour?',eq:'7s=350',ans:50,ex:'7s = 350 → s = 50 mph'},
+];
+
+// SPEED QUESTIONS
+const SQ = [
+  {eq:'x + 4 = 9',ans:'5',ch:['5','13','4','45']},
+  {eq:'n − 3 = 7',ans:'10',ch:['4','21','10','7']},
+  {eq:'2y = 14',ans:'7',ch:['12','7','28','16']},
+  {eq:'a ÷ 5 = 4',ans:'20',ch:['9','1','20','45']},
+  {eq:'m + 8 = 20',ans:'12',ch:['160','28','12','8']},
+  {eq:'6b = 42',ans:'7',ch:['7','48','36','252']},
+  {eq:'p − 11 = 4',ans:'15',ch:['7','44','15','11']},
+  {eq:'t ÷ 3 = 9',ans:'27',ch:['3','6','27','12']},
+  {eq:'k + 15 = 30',ans:'15',ch:['45','15','450','2']},
+  {eq:'4w = 32',ans:'8',ch:['28','36','8','128']},
+  {eq:'z − 7 = 0',ans:'7',ch:['0','7','−7','1']},
+  {eq:'c ÷ 8 = 6',ans:'48',ch:['2','14','48','56']},
+  {eq:'3x = 27',ans:'9',ch:['9','81','24','30']},
+  {eq:'y + 9 = 21',ans:'12',ch:['30','189','12','11']},
+  {eq:'n ÷ 4 = 7',ans:'28',ch:['11','3','28','7']},
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────
+const S = {
+  runs:0,hits:0,outs:0,streak:0,bestStreak:0,
+  totalCorrect:0,totalAttempted:0,
+  topicStats:{},achievements:[],
+  qPool:[],qIdx:0,
+  sortIdx:0,errIdx:0,wsIdx:0,wsWrong:0,
+  spScore:0,spStreak:0,spActive:false,spInterval:null,spQIdx:0,
+  zoneData:{0:[],1:[]},
+};
+
+function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b}
+function $(id){return document.getElementById(id)}
+
+// ── HEADER ───────────────────────────────────────────────────────────────
+function updHdr(){
+  $('hRuns').textContent=S.runs;
+  $('hHits').textContent=S.hits;
+  $('hStreak').textContent=S.streak;
+  ['d1','d2','d3'].forEach((id,i)=>$(id).classList.toggle('on',i<S.outs));
+  // scoreboard sync
+  $('sbRuns').textContent=S.runs;
+  $('sbHits').textContent=S.hits;
+  $('sbCorrect').textContent=S.totalCorrect;
+  $('sbTotal').textContent=S.totalAttempted;
+  $('sbStreak').textContent=S.bestStreak;
+  const avg=S.totalAttempted?(S.totalCorrect/S.totalAttempted).toFixed(3).replace(/^0/,''):'—';
+  $('sbAvg').textContent=avg;
+}
+
+function addOut(){
+  S.outs++;S.streak=0;
+  if(S.outs>=3){S.outs=0;}
+  updHdr();
+}
+
+function addHit(){
+  S.hits++;S.streak++;S.runs++;
+  if(S.streak>S.bestStreak)S.bestStreak=S.streak;
+  updHdr();checkAch();
+}
+
+function flash(txt,cls){
+  const el=$('flash');
+  el.textContent=txt;el.className='flash on '+cls;
+  setTimeout(()=>el.className='flash',1000);
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────
+function goTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  $('p-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='board')renderBoard();
+}
+
+// ── BATTING ──────────────────────────────────────────────────────────────
+function loadQ(){
+  if(!S.qPool.length||S.qIdx>=S.qPool.length){S.qPool=shuf([...Qs]);S.qIdx=0;}
+  const q=S.qPool[S.qIdx];
+  $('pitchLbl').textContent='Pitch '+(S.totalAttempted+1);
+  $('topicPill').textContent=TOPICS[q.t]||q.t;
+  $('inningLbl').textContent='Inning '+(1+(S.totalAttempted/6|0));
+  $('qtext').textContent=q.q;
+  const mb=$('mathbox');
+  if(q.m){mb.style.display='block';mb.textContent=q.m;}else mb.style.display='none';
+  const g=$('choicesGrid');g.innerHTML='';
+  const lets=['A','B','C','D'];
+  q.ch.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='ch';
+    b.innerHTML=`<span class="ltr">${lets[i]}</span>${c}`;
+    b.onclick=()=>pickAns(i,q,b,g);
+    g.appendChild(b);
+  });
+  $('qfb').className='fb';
+  $('qnext').className='btn next';
+  $('progBar').style.width=Math.min((S.totalAttempted/30)*100,100)+'%';
+}
+
+function pickAns(i,q,btn,g){
+  g.querySelectorAll('.ch').forEach(b=>b.disabled=true);
+  S.totalAttempted++;
+  const ts=S.topicStats;
+  if(!ts[q.t])ts[q.t]={c:0,t:0};ts[q.t].t++;
+  const ok=i===q.a;
+  if(ok){ts[q.t].c++;btn.classList.add('good');g.querySelectorAll('.ch')[q.a].querySelector('.ltr').style.background='var(--green)';
+    S.totalCorrect++;addHit();
+    flash(S.streak>=5?'HOME RUN! 🏠':S.streak>=3?'TRIPLE! 💥':'HIT! ⚾',S.streak>=5?'hr':'hit');
+  }else{
+    btn.classList.add('bad');g.querySelectorAll('.ch')[q.a].classList.add('good');
+    addOut();flash('OUT! ❌','out');
+  }
+  const fb=$('qfb');fb.className='fb on '+(ok?'good':'bad');
+  fb.innerHTML=(ok?'✅ ':'❌ ')+'<span><strong>'+(ok?'Correct! ':'Not quite. ')+'</strong>'+q.ex+'</span>';
+  $('qnext').className='btn next on';
+  S.qIdx++;
+}
+function nextQ(){loadQ();}
+
+// ── SORT ─────────────────────────────────────────────────────────────────
+let dragCard=null;
+function loadSort(){
+  const s=SORTS[S.sortIdx%SORTS.length];
+  $('sortQ').textContent=s.q;
+  $('zlbl0').textContent=s.labels[0];
+  $('zlbl1').textContent=s.labels[1];
+  S.zoneData={0:[],1:[]};
+  const bank=$('bank');bank.innerHTML='';
+  ['z0','z1'].forEach((id,i)=>{
+    const z=$(id);z.className='zone';z.innerHTML='<div class="zone-lbl">'+s.labels[i]+'</div>';
+  });
+  shuf(s.cards).forEach(card=>{
+    const el=document.createElement('div');
+    el.className='dc';el.textContent=card.txt;
+    el.draggable=true;
+    el.dataset.orig=s.cards.indexOf(card);
+    el.addEventListener('dragstart',e=>{dragCard=el;el.style.opacity='.4';e.dataTransfer.effectAllowed='move';});
+    el.addEventListener('dragend',()=>el.style.opacity='1');
+    // touch
+    el.addEventListener('touchstart',ts=>{dragCard=el;},{ passive:true });
+    bank.appendChild(el);
+  });
+  $('sortfb').className='fb';
+  $('sortnext').className='btn next';
+}
+
+function drop(e,zIdx){
+  e.preventDefault();
+  const z=$('z'+zIdx);z.classList.remove('over');
+  if(!dragCard)return;
+  const orig=parseInt(dragCard.dataset.orig);
+  S.zoneData[zIdx].push(orig);
+  const clone=dragCard.cloneNode(true);clone.draggable=false;
+  z.appendChild(clone);dragCard.remove();dragCard=null;
+}
+
+function checkSort(){
+  const s=SORTS[S.sortIdx%SORTS.length];
+  const total=S.zoneData[0].length+S.zoneData[1].length;
+  const fb=$('sortfb');
+  if(total<s.cards.length){fb.className='fb on bad';fb.innerHTML='⚠️ Place ALL cards before checking!';return;}
+  let ok=true;
+  [0,1].forEach(z=>{
+    S.zoneData[z].forEach(idx=>{if(s.cards[idx].z!==z)ok=false;});
+    const zone=$('z'+z);
+    zone.querySelectorAll('.dc').forEach(el=>{
+      const idx=s.cards.findIndex(c=>c.txt===el.textContent);
+      if(idx>=0)el.classList.add(s.cards[idx].z===z?'ok':'no');
+    });
+    zone.className='zone '+(ok?'ok':'no');
+  });
+  S.totalAttempted++;
+  if(ok){S.totalCorrect++;addHit();flash('PERFECT! ⭐','hit');fb.className='fb on good';fb.innerHTML='⚾ Perfect sort!';}
+  else{addOut();fb.className='fb on bad';fb.innerHTML='❌ Some cards are wrong. Check the highlighted ones.';}
+  updHdr();
+  $('sortnext').className='btn next on';
+}
+function nextSort(){S.sortIdx++;S.zoneData={0:[],1:[]};loadSort();}
+
+// ── ERROR HUNT ───────────────────────────────────────────────────────────
+function loadErr(){
+  const e=ERRORS[S.errIdx%ERRORS.length];
+  $('errProb').textContent=e.prob;
+  const el=$('errSteps');el.innerHTML='';
+  e.steps.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='wstep';
+    d.innerHTML=`<div class="snum">${i+1}</div><div>${s}</div>`;
+    d.onclick=()=>pickStep(i,e,d);
+    el.appendChild(d);
+  });
+  $('errfb').className='fb';
+  $('errnext').className='btn next';
+}
+function pickStep(i,e,el){
+  document.querySelectorAll('.wstep').forEach(s=>s.onclick=null);
+  S.totalAttempted++;
+  const ok=i===e.err;
+  el.classList.add(ok?'ok':'pick');
+  if(!ok){document.querySelectorAll('.wstep')[e.err].classList.add('ok');}
+  const fb=$('errfb');
+  if(ok){S.totalCorrect++;addHit();flash('FOUND IT! 🔍','hit');fb.className='fb on good';fb.innerHTML='⚾ '+e.ex;}
+  else{addOut();flash('OUT! ❌','out');fb.className='fb on bad';fb.innerHTML='❌ Not that step. Correct step highlighted. '+e.ex;}
+  updHdr();
+  $('errnext').className='btn next on';
+}
+function nextErr(){S.errIdx++;loadErr();}
+
+// ── SPEED ────────────────────────────────────────────────────────────────
+function startSpeed(){
+  S.spScore=0;S.spStreak=0;S.spQIdx=0;S.spActive=true;
+  $('spScore').textContent=0;$('spStreak').textContent=0;
+  $('spStart').style.display='none';
+  let t=60;$('spTimer').textContent=t;
+  S.spInterval=setInterval(()=>{t--;$('spTimer').textContent=t;if(t<=0){clearInterval(S.spInterval);endSpeed();}},1000);
+  const pool=shuf([...SQ]);
+  fillSpGrid(pool,0);
+  S._spPool=pool;
+}
+function fillSpGrid(pool,start){
+  const g=$('spGrid');g.innerHTML='';
+  for(let i=0;i<6;i++){
+    const q=pool[(start+i)%pool.length];
+    const el=document.createElement('div');el.className='sc2';
+    el.innerHTML=`<div class="seq">${q.eq}</div><div class="schoices">`+
+      shuf(q.ch).map(c=>`<div class="sch" onclick="spPick(this,'${c}','${q.ans}')">${c}</div>`).join('')+
+      '</div>';
+    g.appendChild(el);
+  }
+}
+function spPick(btn,val,ans){
+  if(!S.spActive)return;
+  const card=btn.closest('.sc2');
+  if(val===ans){card.classList.add('ok');S.spScore++;S.spStreak++;S.totalCorrect++;S.hits++;updHdr();}
+  else{card.classList.add('bad');S.spStreak=0;addOut();}
+  S.totalAttempted++;
+  $('spScore').textContent=S.spScore;
+  $('spStreak').textContent=S.spStreak+(S.spStreak>=3?'🔥':'');
+  S.spQIdx++;
+  setTimeout(()=>{card.remove();if(S.spActive){const q=S._spPool[S.spQIdx%S._spPool.length];const el=document.createElement('div');el.className='sc2';el.innerHTML=`<div class="seq">${q.eq}</div><div class="schoices">`+shuf(q.ch).map(c=>`<div class="sch" onclick="spPick(this,'${c}','${q.ans}')">${c}</div>`).join('')+'</div>';$('spGrid').appendChild(el);}},350);
+}
+function endSpeed(){
+  S.spActive=false;
+  $('spGrid').innerHTML=`<div style="grid-column:1/-1;background:#fff;border-radius:12px;padding:24px;text-align:center;color:var(--navy)"><div style="font:900 2rem Impact;margin-bottom:8px">TIME'S UP! ⚾</div><div style="font-size:1.1rem;font-weight:800">Score: <span style="color:var(--teal);font-size:1.5rem">${S.spScore}</span></div><button class="btn" onclick="startSpeed()" style="margin-top:12px">⚡ Play Again</button></div>`;
+  $('spStart').style.display='none';
+  checkAch();
+}
+
+// ── WORLD SERIES ─────────────────────────────────────────────────────────
+function loadWS(){
+  const p=WS[S.wsIdx%WS.length];
+  $('wsTxt').textContent=p.sc;
+  $('wsQ').textContent=p.q;
+  $('wsStep1').style.display='block';
+  $('wsStep2').style.display='none';
+  $('wsEq').value='';$('wsAns').value='';
+  $('wsEq').disabled=false;$('wsAns').disabled=false;
+  $('wsEqFb').className='fb';$('wsAnsFb').className='fb';
+  $('wsnext').className='btn next';
+  S.wsWrong=0;
+}
+
+function normEq(s){return s.toLowerCase().replace(/\s+/g,'').replace(/×/g,'*').replace(/÷/g,'/').replace(/[×x]/g,'x');}
+
+function eqOk(input,p){
+  const n=normEq(input);
+  const canon=normEq(p.eq);
+  if(n===canon)return true;
+  // flip sides
+  const parts=canon.split('=');
+  if(parts.length===2&&normEq(parts[1]+'='+parts[0])===n)return true;
+  // allow any single variable letter
+  const varLetters='xnmthcbpsdraefjkwvqz'.split('');
+  const origVar=(canon.match(/[a-z]/)||['x'])[0];
+  return varLetters.some(v=>{
+    const swapped=canon.replace(new RegExp(origVar,'g'),v);
+    const flipped=swapped.split('=').reverse().join('=');
+    return n===swapped||n===flipped;
+  });
+}
+
+function checkEq(){
+  const p=WS[S.wsIdx%WS.length];
+  const val=$('wsEq').value.trim();
+  const fb=$('wsEqFb');
+  if(!val){fb.className='fb on bad';fb.innerHTML='⚠️ Type your equation first!';return;}
+  if(!/[a-zA-Z]/.test(val)){fb.className='fb on bad';fb.innerHTML='❌ Your equation needs a <strong>variable</strong> (like n, x, h…).';return;}
+  if(!/[=<>≤≥]/.test(val)){fb.className='fb on bad';fb.innerHTML='❌ Your equation needs an <strong>= sign</strong>.';return;}
+  if(!/\d/.test(val)){fb.className='fb on bad';fb.innerHTML='❌ Your equation needs <strong>numbers</strong>.';return;}
+  if(eqOk(val,p)){
+    fb.className='fb on good';fb.innerHTML='✅ <strong>Correct equation!</strong> Now solve for the variable.';
+    $('wsEq').disabled=true;
+    $('wsAccepted').textContent=val;
+    $('wsStep2').style.display='block';
+    setTimeout(()=>$('wsAns').focus(),100);
+  } else {
+    fb.className='fb on bad';
+    const hasNums=(p.eq.match(/\d+/g)||[]).every(n=>val.includes(n));
+    if(hasNums) fb.innerHTML='❌ The numbers look right but the <strong>operation</strong> is off. Re-read the problem — what\'s happening to the unknown?';
+    else fb.innerHTML='❌ Not quite. Re-read carefully: what is the <strong>unknown</strong>? What operation connects the numbers?';
+  }
+}
+
+function checkAns(){
+  const p=WS[S.wsIdx%WS.length];
+  const val=$('wsAns').value.trim();
+  const fb=$('wsAnsFb');
+  if(!val){fb.className='fb on bad';fb.innerHTML='⚠️ Enter your answer!';return;}
+  S.totalAttempted++;
+  const num=parseFloat(val.replace(/[^0-9.\-]/g,''));
+  if(Math.abs(num-p.ans)<0.01){
+    fb.className='fb on good';fb.innerHTML='🏠 <strong>HOME RUN!</strong> '+p.ex;
+    S.totalCorrect++;addHit();flash('HOME RUN! 🏠','hr');
+    $('wsAns').disabled=true;$('wsnext').className='btn next on';checkAch();
+  } else {
+    S.wsWrong++;addOut();flash('OUT! ❌','out');
+    if(S.wsWrong>=2){
+      fb.className='fb on bad';fb.innerHTML='❌ Hint: '+p.ex;
+      $('wsnext').className='btn next on';
+    } else {
+      fb.className='fb on bad';fb.innerHTML='❌ Not quite — use inverse operations on both sides. Try again!';
+    }
+  }
+  updHdr();
+}
+function nextWS(){S.wsIdx++;S.wsWrong=0;loadWS();}
+
+// ── SCOREBOARD ───────────────────────────────────────────────────────────
+const ACHS=[
+  {id:'h1',ico:'⚾',name:'First Hit!',fn:()=>S.hits>=1},
+  {id:'s3',ico:'🔥',name:'3-Streak!',fn:()=>S.bestStreak>=3},
+  {id:'s5',ico:'💥',name:'5-Streak!',fn:()=>S.bestStreak>=5},
+  {id:'r5',ico:'🏃',name:'5 Runs!',fn:()=>S.runs>=5},
+  {id:'sp',ico:'⚡',name:'Speed Demon (10 in 60s)!',fn:()=>S.spScore>=10},
+  {id:'c20',ico:'🌟',name:'20 Correct!',fn:()=>S.totalCorrect>=20},
+];
+function checkAch(){
+  ACHS.forEach(a=>{if(a.fn()&&!S.achievements.includes(a.id))S.achievements.push(a.id);});
+}
+function renderBoard(){
+  updHdr();
+  const tb=$('topicBars');tb.innerHTML='';
+  Object.entries(TOPICS).forEach(([k,name])=>{
+    const s=S.topicStats[k]||{c:0,t:0};
+    const pct=s.t?Math.round(s.c/s.t*100):0;
+    tb.innerHTML+=`<div class="trow"><div class="tname">${name}</div><div class="tbar-w"><div class="tbar" style="width:${pct}%"></div></div><div class="tpct">${s.t?pct+'%':'—'}</div></div>`;
+  });
+  const al=$('achList');
+  al.innerHTML=S.achievements.length?ACHS.filter(a=>S.achievements.includes(a.id)).map(a=>`<div class="ach"><span style="font-size:1.3rem">${a.ico}</span>${a.name}</div>`).join(''):'<div style="color:#888;font-style:italic;grid-column:1/-1">Keep playing to earn achievements!</div>';
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+loadQ();loadSort();loadErr();loadWS();
+</script>
+</body>
+</html>

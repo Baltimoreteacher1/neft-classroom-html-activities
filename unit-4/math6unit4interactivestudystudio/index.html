@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math 6 Unit 4 Interactive Study Studio</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --panel-2: #eef4fb;
+      --text: #162233;
+      --muted: #5c6b80;
+      --line: #cfd9e6;
+      --line-strong: #1a1a1a;
+      --navy: #12385f;
+      --navy-2: #1d4c7c;
+      --teal: #178b86;
+      --teal-2: #0f706c;
+      --gold: #f3b64a;
+      --cream: #fffaf1;
+      --green: #1d7f52;
+      --green-bg: #eaf8f1;
+      --red: #a83c3c;
+      --red-bg: #fff0f0;
+      --blue-bg: #eef6ff;
+      --shadow: 0 14px 40px rgba(18, 56, 95, 0.12);
+      --radius: 18px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.15;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(23, 139, 134, 0.10), transparent 28%),
+        radial-gradient(circle at top right, rgba(243, 182, 74, 0.11), transparent 22%),
+        linear-gradient(180deg, #f7fafc 0%, #eef4fb 100%);
+    }
+
+    .app-shell {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 45%, var(--teal) 100%);
+      color: #fff;
+      border-radius: 24px;
+      padding: 28px 28px 22px;
+      box-shadow: var(--shadow);
+      border: 2px solid #111;
+    }
+
+    .hero-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 29px;
+      line-height: 1.05;
+      letter-spacing: 0.2px;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 900px;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 13.5px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1.5px solid rgba(255, 255, 255, 0.24);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .hero-score {
+      min-width: 280px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      padding: 16px;
+      backdrop-filter: blur(5px);
+    }
+
+    .hero-score h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .master-progress {
+      margin-top: 8px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ffd36a 0%, #7ef0d6 100%);
+      transition: width 0.35s ease;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .hero-stat .label {
+      display: block;
+      font-size: 11px;
+      color: rgba(255,255,255,0.78);
+      margin-bottom: 3px;
+    }
+
+    .hero-stat .value {
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .tabs-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding-top: 16px;
+      margin-top: 6px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: rgba(244, 247, 251, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 14px;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(16, 47, 83, 0.08);
+      border: 2px solid #111;
+    }
+
+    .tab-btn {
+      border: 2px solid #111;
+      background: #fff;
+      color: var(--navy);
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+    }
+
+    .tab-btn:hover, .tab-btn:focus-visible {
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(18, 56, 95, 0.22);
+    }
+
+    .tab-panel {
+      display: none;
+      margin-top: 18px;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .panel-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      border: 2px solid var(--line-strong);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .section-header h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .section-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 900px;
+    }
+
+    .section-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .button {
+      border: 2px solid #111;
+      background: linear-gradient(135deg, #fff, #f3f8ff);
+      color: var(--navy);
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    }
+
+    .button:hover, .button:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color: #fff;
+    }
+
+    .button.warn {
+      background: linear-gradient(135deg, #fff8f0, #fff1d6);
+      color: #6c4300;
+    }
+
+    .section-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 8px 0 20px;
+    }
+
+    .summary-box {
+      background: linear-gradient(180deg, #fff, #f5f9ff);
+      border: 2px solid #111;
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 88px;
+    }
+
+    .summary-box .label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .summary-box .value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .summary-box .small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .review-card {
+      background: linear-gradient(180deg, #fff, #f8fbff);
+      border: 2px solid #111;
+      border-radius: 18px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .review-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 7px;
+      background: linear-gradient(180deg, var(--teal), var(--gold));
+    }
+
+    .review-card h3 {
+      margin: 0 0 8px;
+      font-size: 19px;
+      padding-left: 10px;
+    }
+
+    .review-card .def {
+      padding-left: 10px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .review-card ul {
+      margin: 10px 0 12px 20px;
+      padding: 0;
+      color: var(--text);
+    }
+
+    .review-card li {
+      margin-bottom: 7px;
+    }
+
+    .note-strip {
+      background: var(--blue-bg);
+      border: 2px solid #111;
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .note-strip strong {
+      color: var(--navy);
+    }
+
+    .review-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding-left: 10px;
+      font-weight: 700;
+    }
+
+    .review-check input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--teal);
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .question-card {
+      background: linear-gradient(180deg, #fff, #f9fbff);
+      border: 2px solid #111;
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .question-card.correct {
+      box-shadow: 0 0 0 4px rgba(29, 127, 82, 0.18);
+    }
+
+    .question-card.incorrect {
+      box-shadow: 0 0 0 4px rgba(168, 60, 60, 0.14);
+    }
+
+    .question-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .q-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mini-badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1.5px solid #111;
+      background: #fff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .mini-badge.level {
+      background: #fff6df;
+      color: #7b5300;
+    }
+
+    .q-number {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .prompt {
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .math {
+      font-family: "Cambria Math", Cambria, Georgia, serif;
+      font-weight: 700;
+      color: #102f53;
+      background: #f1f7ff;
+      padding: 1px 6px;
+      border-radius: 8px;
+      display: inline-block;
+      margin: 1px 0;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      border: 2px solid #111;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+
+    input[type="text"]:focus, select:focus, textarea:focus {
+      outline: 3px solid rgba(23, 139, 134, 0.18);
+      border-color: var(--teal);
+    }
+
+    .option-list, .multi-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 2px solid #111;
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .option-card:hover {
+      transform: translateY(-1px);
+      background: #f7fbff;
+    }
+
+    .option-card input {
+      margin-top: 2px;
+      accent-color: var(--teal);
+    }
+
+    .group-select {
+      display: grid;
+      gap: 12px;
+    }
+
+    .group-block {
+      border: 2px solid #111;
+      border-radius: 16px;
+      padding: 12px;
+      background: #fcfeff;
+    }
+
+    .group-block h4 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--navy);
+    }
+
+    .chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid #111;
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .chip-option input {
+      accent-color: var(--teal);
+    }
+
+    .dual-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field-block label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .feedback {
+      border: 2px solid #111;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 13px;
+      display: none;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.correct {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .feedback.incorrect {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .solution {
+      display: none;
+      border: 2px dashed #111;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #fffcf5;
+      font-size: 13px;
+    }
+
+    .solution.show {
+      display: block;
+    }
+
+    .solution strong {
+      color: var(--navy);
+    }
+
+    .exam-breakdown {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    .breakdown-card {
+      background: linear-gradient(180deg, #fff, #f7fbff);
+      border: 2px solid #111;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    th, td {
+      border: 2px solid #111;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf5ff;
+      color: var(--navy);
+    }
+
+    .small-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 2px solid #111;
+      background: #fffaf0;
+      color: #5b4c1a;
+      font-size: 12px;
+    }
+
+    .review-summary-message {
+      margin-top: 12px;
+      border: 2px solid #111;
+      border-radius: 14px;
+      background: #f2fbf9;
+      padding: 14px;
+      display: none;
+    }
+
+    .review-summary-message.show {
+      display: block;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      border: 2px solid #111;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #fff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media (max-width: 1080px) {
+      .review-grid, .question-grid, .exam-breakdown {
+        grid-template-columns: 1fr;
+      }
+
+      .section-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .dual-fields {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .hero {
+        padding: 22px 18px;
+      }
+
+      .app-shell {
+        padding: 12px;
+      }
+
+      .section-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        padding: 10px;
+      }
+
+      .tab-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>Math 6 Unit 4 Interactive Study Studio</h1>
+          <p>
+            A polished five-tab review and assessment experience built around the Unit 4 strands:
+            evaluating expressions, translating verbal phrases, identifying parts of an expression,
+            simplifying, factoring, application problems, equivalent expressions, and properties.
+          </p>
+          <div class="hero-badges">
+            <span class="badge">Interactive practice + auto-checking</span>
+            <span class="badge">Five-part build with exam analytics</span>
+            <span class="badge">Professional print-safe design</span>
+          </div>
+        </div>
+        <aside class="hero-score">
+          <h2>Mastery Tracker</h2>
+          <div class="master-progress">
+            <div class="progress-track"><div id="masterProgress" class="progress-fill"></div></div>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="label">Completed</span>
+              <span class="value" id="masterCompleted">0</span>
+            </div>
+            <div class="hero-stat">
+              <span class="label">Correct</span>
+              <span class="value" id="masterCorrect">0</span>
+            </div>
+            <div class="hero-stat">
+              <span class="label">Total Tasks</span>
+              <span class="value" id="masterTotal">0</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="tabs-wrap">
+      <nav class="tabs" aria-label="Study tabs">
+        <button class="tab-btn active" data-tab="tab1">Tab 1 • Review Notes</button>
+        <button class="tab-btn" data-tab="tab2">Tab 2 • Core Practice</button>
+        <button class="tab-btn" data-tab="tab3">Tab 3 • Simplify &amp; Factor</button>
+        <button class="tab-btn" data-tab="tab4">Tab 4 • Applications &amp; Properties</button>
+        <button class="tab-btn" data-tab="exam">Tab 5 • Unit Exam</button>
+      </nav>
+    </div>
+
+    <main>
+      <section id="tab1" class="tab-panel active">
+        <div class="panel-card">
+          <div class="section-header">
+            <div>
+              <h2>Part 1 • Review of Concepts</h2>
+              <p>Use this tab as a clean concept review. Read the notes, study the examples, and mark each topic when you have reviewed it carefully.</p>
+            </div>
+            <div class="section-actions">
+              <button class="button primary" id="evaluateReviewBtn">Evaluate Review Completion</button>
+              <button class="button warn" id="clearReviewBtn">Reset Review Checks</button>
+            </div>
+          </div>
+
+          <div class="section-summary">
+            <div class="summary-box">
+              <span class="label">Review Topics</span>
+              <span class="value" id="reviewTotal">0</span>
+              <span class="small">Total concept cards</span>
+            </div>
+            <div class="summary-box">
+              <span class="label">Reviewed</span>
+              <span class="value" id="reviewChecked">0</span>
+              <span class="small">Cards marked complete</span>
+            </div>
+            <div class="summary-box">
+              <span class="label">Still Open</span>
+              <span class="value" id="reviewRemaining">0</span>
+              <span class="small">Cards left to review</span>
+            </div>
+            <div class="summary-box">
+              <span class="label">Status</span>
+              <span class="value" id="reviewStatus">Start</span>
+              <span class="small">Completion indicator</span>
+            </div>
+          </div>
+
+          <div id="reviewGrid" class="review-grid"></div>
+          <div id="reviewSummaryMessage" class="review-summary-message"></div>
+        </div>
+      </section>
+
+      <section id="dynamicSections"></section>
+    </main>
+
+    <div class="footer-note">
+      Best practice: solve first, then click <strong>Check</strong>. Use <strong>Show Solution</strong> only after a real attempt so the feedback still helps you grow.
+    </div>
+  </div>
+
+  <script>
+    const APP_DATA = {"reviewTopics": [{"id": "review1", "title": "Evaluating Expressions", "definition": "Replace each variable with its given value, then use the order of operations to simplify.", "notes": ["Substitute first. Put every replacement value in parentheses, especially negatives.", "Evaluate exponents before multiplication and division, then finish with addition and subtraction.", "A fraction bar acts like grouping, so simplify the numerator and denominator carefully."], "example": "Example from the study guide: 9r + 5 when r = -7 becomes 9(-7) + 5 = -63 + 5 = -58.", "watch": "Most common mistake: forgetting parentheses around a negative value."}, {"id": "review2", "title": "Translating Verbal Phrases into Expressions", "definition": "Turn words into symbols without solving.", "notes": ["sum/add/increased by → addition", "difference/decreased by/fewer than/less than → subtraction, and order matters", "product/of → multiplication; quotient/of → division"], "example": "“a number subtracted from 32” translates to 32 - n, not n - 32.", "watch": "The phrase “less than” usually reverses the order."}, {"id": "review3", "title": "Parts of an Expression", "definition": "Variable terms include letters, coefficients are the numbers multiplying the variables, and constants have no variables.", "notes": ["In 18r - 5 + 16 - 2r, the variable terms are 18r and -2r.", "The coefficients are 18 and -2.", "The constants are -5 and 16."], "example": "Use the sign in front of each term. The coefficient of -2r is negative 2, not 2.", "watch": "Do not mix up terms and coefficients."}, {"id": "review4", "title": "Combining Like Terms", "definition": "Like terms have the same variable part. Only those terms can be combined.", "notes": ["5h and 3h are like terms because both have h.", "2x and 2y are not like terms because the variables are different.", "Constants can combine with other constants."], "example": "5h - 14 + 3h simplifies to 8h - 14.", "watch": "Do not combine unlike variables."}, {"id": "review5", "title": "Distributive Property and Simplifying Completely", "definition": "Multiply the factor outside the parentheses by every term inside, then combine like terms if needed.", "notes": ["a(b + c) = ab + ac", "a(b - c) = ab - ac", "After distributing, check whether more like terms can be combined."], "example": "9(a + 4) - 2a becomes 9a + 36 - 2a, then 7a + 36.", "watch": "A negative outside the parentheses changes the sign of each inside term."}, {"id": "review6", "title": "Factoring with a Greatest Common Factor", "definition": "Pull out the largest factor shared by every term.", "notes": ["Find the GCF of the numbers first.", "If variables are present, only pull out what every term has in common.", "The expression inside the parentheses should no longer have a common factor."], "example": "32a + 20b factors to 4(8a + 5b).", "watch": "3(6x + 10) is equivalent to 18x + 30, but it is not fully factored because 6x + 10 still has a factor of 2."}, {"id": "review7", "title": "Applications and Equivalent Expressions", "definition": "Use the situation to build an expression, then simplify or factor if the problem asks.", "notes": ["Read each sentence piece by piece and write one part at a time.", "Equivalent expressions look different but have the same value for every valid input.", "A simplest-form answer should not have extra like terms left to combine."], "example": "m + (m - 5) + 3(m - 5) simplifies to 5m - 20.", "watch": "Do not stop before simplifying if the directions say simplest form."}, {"id": "review8", "title": "Properties", "definition": "Properties explain why expressions can be rewritten without changing their value.", "notes": ["Commutative: switch order in addition or multiplication", "Associative: regroup addition or multiplication", "Identity: adding 0 or multiplying by 1 keeps the same value", "Inverse: a number plus its opposite equals 0; a number times its reciprocal equals 1", "Distributive: multiply across a sum or difference", "Multiplication Property of Zero: any expression times 0 equals 0"], "example": "7m - 63 can be rewritten as 7(m - 9) using the distributive property in reverse.", "watch": "Commutative changes order; associative changes grouping."}], "sections": [{"id": "tab2", "title": "Part 2 • Core Practice Studio", "subtitle": "Evaluate, translate, and classify expressions.", "questions": [{"id": "t2q1", "type": "numeric", "strand": "Evaluate Expressions", "level": "Core", "prompt": "Evaluate <span class='math'>7p - 4</span> when <span class='math'>p = -3</span>.", "answer": ["-25"], "hint": "Substitute first: 7(-3) - 4.", "solution": "<span class='math'>7(-3) - 4 = -21 - 4 = -25</span>."}, {"id": "t2q2", "type": "numeric", "strand": "Evaluate Expressions", "level": "Strategic", "prompt": "Evaluate <span class='math'>(x + y<sup>2</sup>) ÷ 2</span> when <span class='math'>x = 6</span> and <span class='math'>y = -4</span>.", "answer": ["11"], "hint": "Square y before adding.", "solution": "<span class='math'>y<sup>2</sup> = (-4)<sup>2</sup> = 16</span>, so <span class='math'>(6 + 16) ÷ 2 = 22 ÷ 2 = 11</span>."}, {"id": "t2q3", "type": "numeric", "strand": "Evaluate Expressions", "level": "Challenge", "prompt": "Evaluate <span class='math'> 2/5 + 3/4w </span> when <span class='math'>w = 8/3</span>.", "answer": ["12/5", "2.4"], "hint": "Multiply before adding the fraction terms.", "solution": "<span class='math'>3/4 · 8/3 = 2</span>, so <span class='math'>2/5 + 2 = 2/5 + \\frac{10}{5} = 12/5</span>."}, {"id": "t2q4", "type": "choice", "strand": "Translating Expressions", "level": "Core", "prompt": "Which expression matches the phrase <em>three fewer than the quotient of a number and negative six</em>?", "options": ["n/(-6)-3", "3-n/(-6)", "-6n-3", "(n-3)/(-6)"], "answer": "n/(-6)-3", "hint": "Start with the quotient. Then subtract 3 from that result.", "solution": "The quotient is <span class='math'>n ÷ (-6)</span>. Three fewer than that is <span class='math'>n/(-6) - 3</span>."}, {"id": "t2q5", "type": "expression", "strand": "Translating Expressions", "level": "Strategic", "prompt": "Jordan scored 18 fewer points than Maya. If <span class='math'>m</span> represents Maya’s score, write an expression for Jordan’s score.", "answer": "m-18", "hint": "“18 fewer than Maya” means start with Maya’s score and subtract 18.", "solution": "Jordan’s score is <span class='math'>m - 18</span>."}, {"id": "t2q6", "type": "groupSelect", "strand": "Parts of an Expression", "level": "Challenge", "prompt": "For the expression <span class='math'>9x - 4 + 2y + 11 - 3x</span>, identify each set correctly.", "groups": [{"label": "Variable terms", "options": ["9x", "-4", "2y", "11", "-3x"], "correct": ["9x", "2y", "-3x"]}, {"label": "Coefficients", "options": ["9", "-4", "2", "11", "-3"], "correct": ["9", "2", "-3"]}, {"label": "Constant terms", "options": ["9x", "-4", "2y", "11", "-3x"], "correct": ["-4", "11"]}], "hint": "Variable terms have letters. Coefficients are the numbers attached to those variable terms. Constants have no variables.", "solution": "Variable terms: <span class='math'>9x, 2y, -3x</span>. Coefficients: <span class='math'>9, 2, -3</span>. Constants: <span class='math'>-4, 11</span>."}]}, {"id": "tab3", "title": "Part 3 • Simplify and Factor Lab", "subtitle": "Combine like terms, distribute, simplify completely, and factor fully.", "questions": [{"id": "t3q1", "type": "exact", "strand": "Simplifying Expressions", "level": "Core", "prompt": "Simplify <span class='math'>6h - 9 + 4h</span>.", "answers": ["10h-9", "-9+10h"], "hint": "Combine the like terms with h. The constant stays separate.", "solution": "<span class='math'>6h + 4h = 10h</span>, so the expression simplifies to <span class='math'>10h - 9</span>."}, {"id": "t3q2", "type": "exact", "strand": "Distributive Property", "level": "Core", "prompt": "Use the distributive property to simplify <span class='math'>-5(2n - 3)</span>.", "answers": ["-10n+15", "15-10n"], "hint": "Multiply -5 by both terms inside the parentheses.", "solution": "<span class='math'>-5(2n) + -5(-3) = -10n + 15</span>."}, {"id": "t3q3", "type": "exact", "strand": "Distributive Property", "level": "Strategic", "prompt": "Use the distributive property to simplify <span class='math'> 1/2(14y + 8) </span>.", "answers": ["7y+4", "4+7y"], "hint": "Half of 14y is 7y. Half of 8 is 4.", "solution": "<span class='math'>1/2(14y) + 1/2(8) = 7y + 4</span>."}, {"id": "t3q4", "type": "exact", "strand": "Simplifying Expressions", "level": "Strategic", "prompt": "Simplify completely: <span class='math'>4(a + 6) - 3a + 7</span>.", "answers": ["a+31", "31+a"], "hint": "Distribute first, then combine like terms.", "solution": "<span class='math'>4a + 24 - 3a + 7 = a + 31</span>."}, {"id": "t3q5", "type": "exact", "strand": "Factoring Expressions", "level": "Strategic", "prompt": "Factor completely: <span class='math'>18x + 30</span>.", "answers": ["6(3x+5)", "6(5+3x)", "(3x+5)6", "(5+3x)6"], "hint": "The greatest common factor of 18 and 30 is 6.", "solution": "<span class='math'>18x + 30 = 6(3x + 5)</span>."}, {"id": "t3q6", "type": "multi", "strand": "Equivalent Expressions", "level": "Challenge", "prompt": "Select <strong>all</strong> expressions that are equivalent to <span class='math'>4(3m - 2)</span>.", "options": ["12m - 8", "8m - 6", "6m - 4 + 6m - 4", "2(6m - 4)", "12(m - 2)"], "answers": ["12m - 8", "6m - 4 + 6m - 4", "2(6m - 4)"], "hint": "Distribute the 4 first, then compare each option to <span class='math'>12m - 8</span>.", "solution": "<span class='math'>4(3m - 2) = 12m - 8</span>. Equivalent options are <span class='math'>12m - 8</span>, <span class='math'>6m - 4 + 6m - 4</span>, and <span class='math'>2(6m - 4)</span>."}]}, {"id": "tab4", "title": "Part 4 • Applications and Properties Workshop", "subtitle": "Use expressions in context, compare equivalents, and justify rewrites with properties.", "questions": [{"id": "t4q1", "type": "exact", "strand": "Applications", "level": "Strategic", "prompt": "On Monday, Sam rode <span class='math'>b</span> miles. On Tuesday, Sam rode <span class='math'>b + 6</span> miles. On Wednesday, Sam rode <span class='math'>2(b + 6)</span> miles. Write the total distance in simplest form.", "answers": ["4b+18", "18+4b"], "hint": "Add the three daily expressions, then combine like terms.", "solution": "<span class='math'>b + (b + 6) + 2(b + 6) = b + b + 6 + 2b + 12 = 4b + 18</span>."}, {"id": "t4q2", "type": "exact", "strand": "Applications", "level": "Challenge", "prompt": "A museum charges <span class='math'>$8</span> for each child ticket and <span class='math'>$12</span> for each adult ticket. If a group buys <span class='math'>c</span> child tickets and <span class='math'>a</span> adult tickets, write the total cost in factored form.", "answers": ["4(2c+3a)", "4(3a+2c)", "(2c+3a)4", "(3a+2c)4"], "hint": "First write the total as <span class='math'>8c + 12a</span>. Then factor out the GCF.", "solution": "<span class='math'>8c + 12a = 4(2c + 3a)</span>."}, {"id": "t4q3", "type": "multi", "strand": "Equivalent Expressions", "level": "Strategic", "prompt": "Select <strong>all</strong> expressions that are equivalent to <span class='math'>12a + 18</span>.", "options": ["6(2a + 3)", "3(4a + 6)", "12(a + 18)", "7a + 11", "2(6a + 9)"], "answers": ["6(2a + 3)", "3(4a + 6)", "2(6a + 9)"], "hint": "You can factor 12a + 18 or distribute each option to compare.", "solution": "Equivalent options are <span class='math'>6(2a + 3)</span>, <span class='math'>3(4a + 6)</span>, and <span class='math'>2(6a + 9)</span>."}, {"id": "t4q4", "type": "choice", "strand": "Properties", "level": "Core", "prompt": "Rewrite <span class='math'>5 + (x + 9)</span> using the <strong>Associative Property of Addition</strong>.", "options": ["(5 + x) + 9", "x + 14", "5x + 9", "(5x) + 9"], "answer": "(5 + x) + 9", "hint": "Associative changes grouping, not the order of terms.", "solution": "Associative property lets you regroup: <span class='math'>5 + (x + 9) = (5 + x) + 9</span>."}, {"id": "t4q5", "type": "choice", "strand": "Properties", "level": "Core", "prompt": "Which property justifies the statement <span class='math'>13r + 0 = 13r</span>?", "options": ["Identity Property of Addition", "Commutative Property of Addition", "Inverse Property of Addition", "Distributive Property"], "answer": "Identity Property of Addition", "hint": "Adding zero does not change a value.", "solution": "This is the <strong>Identity Property of Addition</strong>."}, {"id": "t4q6", "type": "dual", "strand": "Properties", "level": "Challenge", "prompt": "Fill in both parts: <span class='math'>___ × 7/5 = 1</span>.", "fields": [{"id": "value", "label": "Missing value", "type": "text", "placeholder": "Example: 5/7"}, {"id": "property", "label": "Property name", "type": "select", "options": ["Inverse Property of Multiplication", "Identity Property of Multiplication", "Multiplication Property of Zero", "Commutative Property of Multiplication"]}], "answers": {"value": ["5/7"], "property": "Inverse Property of Multiplication"}, "hint": "Think reciprocal.", "solution": "The missing value is <span class='math'>5/7</span>. A number times its reciprocal equals 1, so this uses the <strong>Inverse Property of Multiplication</strong>."}]}, {"id": "exam", "title": "Part 5 • Comprehensive Unit Exam", "subtitle": "Mixed mastery check across evaluating, translating, simplifying, factoring, applications, equivalent expressions, and properties.", "questions": [{"id": "ex1", "type": "numeric", "strand": "Evaluate Expressions", "level": "Exam", "prompt": "Evaluate <span class='math'>8r + 3</span> when <span class='math'>r = -5</span>.", "answer": ["-37"], "hint": "Substitute first.", "solution": "<span class='math'>8(-5) + 3 = -40 + 3 = -37</span>."}, {"id": "ex2", "type": "numeric", "strand": "Evaluate Expressions", "level": "Exam", "prompt": "Evaluate <span class='math'> k²/(k - 1) </span> when <span class='math'>k = 4</span>.", "answer": ["16/3", "5.333333333333333"], "hint": "Simplify numerator and denominator separately.", "solution": "<span class='math'>4²/(4 - 1) = 16/3</span>."}, {"id": "ex3", "type": "choice", "strand": "Translating Expressions", "level": "Exam", "prompt": "Which expression matches the phrase <em>the product of 9 and a number, increased by 4</em>?", "options": ["9n + 4", "9(n + 4)", "4n + 9", "9 + 4n"], "answer": "9n + 4", "hint": "Product first, then increase by 4.", "solution": "The correct expression is <span class='math'>9n + 4</span>."}, {"id": "ex4", "type": "expression", "strand": "Translating Expressions", "level": "Exam", "prompt": "A streaming service charges <span class='math'>$12</span> plus <span class='math'>d</span> dollars for downloads. Write an expression for the total cost.", "answer": "12+d", "hint": "Start with the fixed fee, then add the variable cost.", "solution": "The total cost is <span class='math'>12 + d</span>."}, {"id": "ex5", "type": "choice", "strand": "Parts of an Expression", "level": "Exam", "prompt": "In the expression <span class='math'>5x - 7 + 2y - 3x + 9</span>, which list shows the constant terms?", "options": ["5 and -3", "-7 and 9", "5x and 2y", "2 and y"], "answer": "-7 and 9", "hint": "Constants have no variables.", "solution": "The constants are <span class='math'>-7</span> and <span class='math'>9</span>."}, {"id": "ex6", "type": "exact", "strand": "Simplifying Expressions", "level": "Exam", "prompt": "Simplify <span class='math'>7m + 5 - 2m - 8</span>.", "answers": ["5m-3", "-3+5m"], "hint": "Combine like terms and constants separately.", "solution": "<span class='math'>7m - 2m = 5m</span> and <span class='math'>5 - 8 = -3</span>, so the answer is <span class='math'>5m - 3</span>."}, {"id": "ex7", "type": "exact", "strand": "Distributive Property", "level": "Exam", "prompt": "Use the distributive property to simplify <span class='math'>-4(3x - 2)</span>.", "answers": ["-12x+8", "8-12x"], "hint": "Multiply -4 by both terms inside the parentheses.", "solution": "<span class='math'>-4(3x) + -4(-2) = -12x + 8</span>."}, {"id": "ex8", "type": "exact", "strand": "Simplifying Expressions", "level": "Exam", "prompt": "Simplify completely: <span class='math'>3(2a + 5) - 4a + 1</span>.", "answers": ["2a+16", "16+2a"], "hint": "Distribute first, then combine like terms.", "solution": "<span class='math'>6a + 15 - 4a + 1 = 2a + 16</span>."}, {"id": "ex9", "type": "exact", "strand": "Factoring Expressions", "level": "Exam", "prompt": "Factor completely: <span class='math'>24y - 36</span>.", "answers": ["12(2y-3)", "12(-3+2y)", "(2y-3)12", "(-3+2y)12"], "hint": "Use the greatest common factor.", "solution": "The GCF is 12, so <span class='math'>24y - 36 = 12(2y - 3)</span>."}, {"id": "ex10", "type": "exact", "strand": "Applications", "level": "Exam", "prompt": "In a game, Carlos scored <span class='math'>g</span> points in round 1, <span class='math'>g + 4</span> points in round 2, and 50 points in round 3. Write the total in simplest form.", "answers": ["2g+54", "54+2g"], "hint": "Add the three rounds and combine like terms.", "solution": "<span class='math'>g + (g + 4) + 50 = 2g + 54</span>."}, {"id": "ex11", "type": "exact", "strand": "Applications", "level": "Exam", "prompt": "A concert charges <span class='math'>$10</span> for each student ticket and <span class='math'>$15</span> for each adult ticket. If <span class='math'>c</span> is the number of student tickets and <span class='math'>a</span> is the number of adult tickets, write the total cost in factored form.", "answers": ["5(2c+3a)", "5(3a+2c)", "(2c+3a)5", "(3a+2c)5"], "hint": "Write the total first, then factor.", "solution": "<span class='math'>10c + 15a = 5(2c + 3a)</span>."}, {"id": "ex12", "type": "multi", "strand": "Equivalent Expressions", "level": "Exam", "prompt": "Select <strong>all</strong> expressions that are equivalent to <span class='math'>5(2x + 1)</span>.", "options": ["10x + 5", "8x + 5", "2(5x + 2.5)", "6x - 1 + 4x + 6", "(2x + 1)5"], "answers": ["10x + 5", "2(5x + 2.5)", "6x - 1 + 4x + 6", "(2x + 1)5"], "hint": "Distribute the 5 and compare carefully.", "solution": "Distributing gives <span class='math'>5(2x + 1) = 10x + 5</span>. Equivalent expressions are <span class='math'>10x + 5</span>, <span class='math'>2(5x + 2.5)</span>, <span class='math'>6x - 1 + 4x + 6</span>, and <span class='math'>(2x + 1)5</span>."}, {"id": "ex13", "type": "exact", "strand": "Properties", "level": "Exam", "prompt": "Rewrite <span class='math'>18 + 6p</span> using the distributive property.", "answers": ["6(3+p)", "6(p+3)"], "hint": "Factor out the greatest common factor.", "solution": "<span class='math'>18 + 6p = 6(3 + p)</span> or <span class='math'>6(p + 3)</span>."}, {"id": "ex14", "type": "choice", "strand": "Properties", "level": "Exam", "prompt": "Which property justifies <span class='math'>4n + 0 = 4n</span>?", "options": ["Identity Property of Addition", "Inverse Property of Addition", "Commutative Property of Addition", "Distributive Property"], "answer": "Identity Property of Addition", "hint": "Adding zero leaves the value unchanged.", "solution": "This is the <strong>Identity Property of Addition</strong>."}, {"id": "ex15", "type": "dual", "strand": "Properties", "level": "Exam", "prompt": "Complete the statement: <span class='math'>(-11) + 11 = ___</span>, and name the property.", "fields": [{"id": "value", "label": "Value", "type": "text", "placeholder": "Enter the value"}, {"id": "property", "label": "Property name", "type": "select", "options": ["Inverse Property of Addition", "Identity Property of Addition", "Commutative Property of Addition", "Multiplication Property of Zero"]}], "answers": {"value": ["0"], "property": "Inverse Property of Addition"}, "hint": "A number plus its opposite equals zero.", "solution": "<span class='math'>(-11) + 11 = 0</span>. This is the <strong>Inverse Property of Addition</strong>."}, {"id": "ex16", "type": "choice", "strand": "Properties", "level": "Exam", "prompt": "Which property justifies <span class='math'>3(4 + y) = 12 + 3y</span>?", "options": ["Distributive Property", "Commutative Property of Addition", "Associative Property of Multiplication", "Identity Property of Multiplication"], "answer": "Distributive Property", "hint": "One factor is multiplied across a sum.", "solution": "This is the <strong>Distributive Property</strong>."}, {"id": "ex17", "type": "exact", "strand": "Simplifying Expressions", "level": "Exam", "prompt": "Simplify completely: <span class='math'>-6(z + 2) + 3(1 - z)</span>.", "answers": ["-9z-9", "-9-9z"], "hint": "Distribute both terms, then combine like terms.", "solution": "<span class='math'>-6z - 12 + 3 - 3z = -9z - 9</span>."}, {"id": "ex18", "type": "exact", "strand": "Applications", "level": "Exam", "prompt": "A theater sold student tickets for <span class='math'>$6</span> each. It sold adult tickets for <span class='math'>$14</span> each, and the number of adult tickets was <span class='math'>2</span> fewer than the number of student tickets. If <span class='math'>s</span> is the number of student tickets, write the total revenue in simplest form.", "answers": ["20s-28", "-28+20s"], "hint": "Write the number of adult tickets as <span class='math'>s - 2</span>, then build the revenue expression.", "solution": "<span class='math'>6s + 14(s - 2) = 6s + 14s - 28 = 20s - 28</span>."}, {"id": "ex19", "type": "choice", "strand": "Properties", "level": "Exam", "prompt": "Which property justifies <span class='math'>7 + 2a = 2a + 7</span>?", "options": ["Commutative Property of Addition", "Associative Property of Addition", "Inverse Property of Addition", "Distributive Property"], "answer": "Commutative Property of Addition", "hint": "The order changed, but the grouping did not.", "solution": "This is the <strong>Commutative Property of Addition</strong>."}, {"id": "ex20", "type": "choice", "strand": "Equivalent Expressions", "level": "Exam", "prompt": "Which expression is equivalent to <span class='math'>9m - 45</span> in factored form?", "options": ["9(m - 5)", "5(9m - 9)", "3(3m - 15)", "9(m - 45)"], "answer": "9(m - 5)", "hint": "Factor out the greatest common factor completely.", "solution": "The fully factored form is <span class='math'>9(m - 5)</span>. <span class='math'>3(3m - 15)</span> is equivalent but not fully factored."}]}]};
+    const STORAGE_KEY = "math6_unit4_study_studio_v1";
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        return {
+          review: saved.review || {},
+          answers: saved.answers || {},
+          checked: saved.checked || {},
+          correctness: saved.correctness || {}
+        };
+      } catch (error) {
+        return { review: {}, answers: {}, checked: {}, correctness: {} };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      updateAllSummaries();
+    }
+
+    function normalizeExact(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/[−–]/g, "-")
+        .replace(/×/g, "*")
+        .replace(/·/g, "*")
+        .replace(/\*/g, "");
+    }
+
+    function sanitizeExpression(expr) {
+      const cleaned = String(expr || "")
+        .trim()
+        .replace(/[−–]/g, "-")
+        .replace(/×/g, "*")
+        .replace(/·/g, "*")
+        .replace(/÷/g, "/")
+        .replace(/\^/g, "**")
+        .replace(/²/g, "**2")
+        .replace(/³/g, "**3")
+        .replace(/\s+/g, "");
+      if (!cleaned) return "";
+      if (!/^[0-9a-zA-Z_()+\-*/.]*$/.test(cleaned)) return "";
+      return insertImplicitMultiplication(cleaned);
+    }
+
+    function insertImplicitMultiplication(expr) {
+      let out = expr;
+      out = out.replace(/(\d)([a-zA-Z(])/g, "$1*$2");
+      out = out.replace(/([a-zA-Z)])(\d)/g, "$1*$2");
+      out = out.replace(/([a-zA-Z)])([a-zA-Z(])/g, "$1*$2");
+      out = out.replace(/(\))(\()/g, "$1*$2");
+      return out;
+    }
+
+    function detectVariables(expr) {
+      return Array.from(new Set((expr.match(/[a-zA-Z]/g) || [])));
+    }
+
+    function evaluateExpression(expr, values) {
+      const safe = sanitizeExpression(expr);
+      if (!safe) return NaN;
+      const vars = Object.keys(values || {});
+      const args = vars.concat(`return ${safe};`);
+      try {
+        const fn = Function.apply(null, args);
+        return Number(fn(...vars.map(v => values[v])));
+      } catch (error) {
+        return NaN;
+      }
+    }
+
+    function parseNumericInput(value) {
+      const result = evaluateExpression(value, {});
+      return Number.isFinite(result) ? result : NaN;
+    }
+
+    function areNumbersEqual(userValue, acceptedValues) {
+      const user = parseNumericInput(userValue);
+      if (!Number.isFinite(user)) return false;
+      return acceptedValues.some(item => {
+        const candidate = parseNumericInput(item);
+        return Number.isFinite(candidate) && Math.abs(candidate - user) < 1e-9;
+      });
+    }
+
+    function areExpressionsEquivalent(userExpr, targetExpr) {
+      const user = sanitizeExpression(userExpr);
+      const target = sanitizeExpression(targetExpr);
+      if (!user || !target) return false;
+      const vars = Array.from(new Set([...detectVariables(user), ...detectVariables(target)]));
+      const sampleSets = [
+        {a:2,b:-3,c:4,d:5,e:-2,f:3,g:6,h:-4,k:5,m:2,n:-3,p:4,r:-2,s:3,t:5,v:2,w:-1,x:3,y:-2,z:4},
+        {a:-1,b:2,c:3,d:-4,e:5,f:-2,g:7,h:3,k:2,m:-5,n:4,p:-3,r:6,s:-2,t:1,v:-4,w:5,x:-1,y:4,z:-2},
+        {a:3,b:1,c:-2,d:2,e:4,f:6,g:-1,h:5,k:7,m:3,n:2,p:-5,r:1,s:4,t:-3,v:6,w:2,x:5,y:1,z:3},
+        {a:4,b:5,c:2,d:3,e:-1,f:7,g:8,h:-2,k:6,m:1,n:5,p:2,r:-3,s:6,t:4,v:3,w:7,x:2,y:-5,z:1}
+      ];
+      for (const samples of sampleSets) {
+        const values = {};
+        vars.forEach(v => {
+          values[v] = samples[v] ?? 2;
+        });
+        const u = evaluateExpression(user, values);
+        const t = evaluateExpression(target, values);
+        if (!Number.isFinite(u) || !Number.isFinite(t) || Math.abs(u - t) > 1e-9) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function sameSet(selected, correct) {
+      if (selected.length !== correct.length) return false;
+      const a = [...selected].sort();
+      const b = [...correct].sort();
+      return a.every((item, index) => item === b[index]);
+    }
+
+    function renderApp() {
+      renderReview();
+      renderDynamicSections();
+      bindTabs();
+      updateAllSummaries();
+    }
+
+    function renderReview() {
+      const grid = document.getElementById("reviewGrid");
+      grid.innerHTML = "";
+      APP_DATA.reviewTopics.forEach((topic, index) => {
+        const checked = !!state.review[topic.id];
+        const card = document.createElement("article");
+        card.className = "review-card";
+        card.innerHTML = `
+          <h3>${index + 1}. ${topic.title}</h3>
+          <div class="def">${topic.definition}</div>
+          <ul>
+            ${topic.notes.map(note => `<li>${note}</li>`).join("")}
+          </ul>
+          <div class="note-strip"><strong>Example:</strong> ${topic.example}</div>
+          <div class="note-strip"><strong>Watch for:</strong> ${topic.watch}</div>
+          <label class="review-check">
+            <input type="checkbox" data-review-id="${topic.id}" ${checked ? "checked" : ""} />
+            I reviewed this concept carefully.
+          </label>
+        `;
+        grid.appendChild(card);
+      });
+
+      grid.querySelectorAll("[data-review-id]").forEach(input => {
+        input.addEventListener("change", (event) => {
+          const id = event.target.getAttribute("data-review-id");
+          state.review[id] = event.target.checked;
+          saveState();
+        });
+      });
+
+      document.getElementById("evaluateReviewBtn").onclick = evaluateReview;
+      document.getElementById("clearReviewBtn").onclick = () => {
+        APP_DATA.reviewTopics.forEach(topic => {
+          state.review[topic.id] = false;
+        });
+        saveState();
+        renderReview();
+      };
+    }
+
+    function renderDynamicSections() {
+      const root = document.getElementById("dynamicSections");
+      root.innerHTML = "";
+      APP_DATA.sections.forEach(section => {
+        const panel = document.createElement("section");
+        panel.id = section.id;
+        panel.className = "tab-panel";
+        panel.innerHTML = `
+          <div class="panel-card">
+            <div class="section-header">
+              <div>
+                <h2>${section.title}</h2>
+                <p>${section.subtitle}</p>
+              </div>
+              <div class="section-actions">
+                <button class="button primary" data-check-all="${section.id}">Check This Part</button>
+                <button class="button warn" data-reset-section="${section.id}">Reset This Part</button>
+              </div>
+            </div>
+
+            <div class="section-summary" id="${section.id}-summary">
+              <div class="summary-box">
+                <span class="label">Questions</span>
+                <span class="value" id="${section.id}-total">0</span>
+                <span class="small">Tasks in this part</span>
+              </div>
+              <div class="summary-box">
+                <span class="label">Checked</span>
+                <span class="value" id="${section.id}-checked">0</span>
+                <span class="small">Questions evaluated</span>
+              </div>
+              <div class="summary-box">
+                <span class="label">Correct</span>
+                <span class="value" id="${section.id}-correct">0</span>
+                <span class="small">Questions answered correctly</span>
+              </div>
+              <div class="summary-box">
+                <span class="label">Accuracy</span>
+                <span class="value" id="${section.id}-accuracy">0%</span>
+                <span class="small">Based on checked questions</span>
+              </div>
+            </div>
+
+            <div class="question-grid" id="${section.id}-grid"></div>
+            ${section.id === "exam" ? `
+              <div class="exam-breakdown">
+                <div class="breakdown-card">
+                  <h3 style="margin-top:0;">Exam Mastery by Strand</h3>
+                  <div id="examBreakdownTable" class="empty-state">Check exam questions to generate the mastery table.</div>
+                </div>
+                <div class="breakdown-card">
+                  <h3 style="margin-top:0;">Exam Coaching Notes</h3>
+                  <div id="examCoach">
+                    <div class="pill-list">
+                      <span class="pill">Solve first</span>
+                      <span class="pill">Check signs carefully</span>
+                      <span class="pill">Distribute to every term</span>
+                      <span class="pill">Factor completely</span>
+                      <span class="pill">Use property names precisely</span>
+                    </div>
+                    <p class="small-note">After you check the exam, this panel updates with a next-step coaching note based on your results.</p>
+                  </div>
+                </div>
+              </div>` : ``}
+          </div>
+        `;
+        root.appendChild(panel);
+
+        const grid = panel.querySelector(`#${section.id}-grid`);
+        section.questions.forEach((question, index) => {
+          grid.appendChild(renderQuestionCard(section.id, question, index + 1));
+        });
+      });
+
+      document.querySelectorAll("[data-check-all]").forEach(btn => {
+        btn.addEventListener("click", () => checkAllInSection(btn.getAttribute("data-check-all")));
+      });
+      document.querySelectorAll("[data-reset-section]").forEach(btn => {
+        btn.addEventListener("click", () => resetSection(btn.getAttribute("data-reset-section")));
+      });
+    }
+
+    function renderQuestionCard(sectionId, question, index) {
+      const card = document.createElement("article");
+      const checked = !!state.checked[question.id];
+      const correctness = state.correctness[question.id];
+      card.className = "question-card";
+      if (checked && correctness === true) card.classList.add("correct");
+      if (checked && correctness === false) card.classList.add("incorrect");
+      card.id = `card-${question.id}`;
+
+      const body = renderQuestionInput(question);
+      card.innerHTML = `
+        <div class="question-head">
+          <div class="q-badges">
+            <span class="mini-badge">${question.strand}</span>
+            <span class="mini-badge level">${question.level}</span>
+          </div>
+          <div class="q-number">Question ${index}</div>
+        </div>
+        <div class="prompt">${question.prompt}</div>
+        <div class="input-zone">${body}</div>
+        <div class="button-row">
+          <button class="button primary" data-check-question="${question.id}">Check</button>
+          <button class="button" data-show-solution="${question.id}">Show Solution</button>
+        </div>
+        <div class="feedback ${checked ? "show " + (correctness ? "correct" : "incorrect") : ""}" id="feedback-${question.id}"></div>
+        <div class="solution" id="solution-${question.id}"><strong>Model solution:</strong> ${question.solution}</div>
+      `;
+
+      requestAnimationFrame(() => restoreQuestionState(question));
+      return card;
+    }
+
+    function renderQuestionInput(question) {
+      const saved = state.answers[question.id];
+      if (question.type === "numeric" || question.type === "expression" || question.type === "exact") {
+        return `<input type="text" id="input-${question.id}" placeholder="Type your answer here" value="${escapeAttr(saved || "")}" />`;
+      }
+      if (question.type === "choice") {
+        return `<div class="option-list">
+          ${question.options.map((option, index) => `
+            <label class="option-card">
+              <input type="radio" name="input-${question.id}" value="${escapeAttr(option)}" />
+              <span>${option}</span>
+            </label>
+          `).join("")}
+        </div>`;
+      }
+      if (question.type === "multi") {
+        return `<div class="multi-list">
+          ${question.options.map(option => `
+            <label class="option-card">
+              <input type="checkbox" name="input-${question.id}" value="${escapeAttr(option)}" />
+              <span>${option}</span>
+            </label>
+          `).join("")}
+        </div>`;
+      }
+      if (question.type === "groupSelect") {
+        return `<div class="group-select">
+          ${question.groups.map((group, groupIndex) => `
+            <div class="group-block">
+              <h4>${group.label}</h4>
+              <div class="chip-grid">
+                ${group.options.map(option => `
+                  <label class="chip-option">
+                    <input type="checkbox" data-group-question="${question.id}" data-group-index="${groupIndex}" value="${escapeAttr(option)}" />
+                    <span>${option}</span>
+                  </label>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>`;
+      }
+      if (question.type === "dual") {
+        return `<div class="dual-fields">
+          ${question.fields.map(field => `
+            <div class="field-block">
+              <label for="${field.id}-${question.id}">${field.label}</label>
+              ${field.type === "text"
+                ? `<input type="text" id="${field.id}-${question.id}" data-dual-question="${question.id}" data-dual-field="${field.id}" placeholder="${escapeAttr(field.placeholder || "")}" />`
+                : `<select id="${field.id}-${question.id}" data-dual-question="${question.id}" data-dual-field="${field.id}">
+                    <option value="">Choose one</option>
+                    ${field.options.map(option => `<option value="${escapeAttr(option)}">${option}</option>`).join("")}
+                  </select>`
+              }
+            </div>
+          `).join("")}
+        </div>`;
+      }
+      return `<div class="empty-state">Input type not found.</div>`;
+    }
+
+    function restoreQuestionState(question) {
+      const saved = state.answers[question.id];
+      if (question.type === "numeric" || question.type === "expression" || question.type === "exact") {
+        const input = document.getElementById(`input-${question.id}`);
+        if (input) {
+          input.value = saved || "";
+          input.addEventListener("input", () => {
+            state.answers[question.id] = input.value;
+            saveState();
+          });
+        }
+      }
+
+      if (question.type === "choice") {
+        const radios = document.querySelectorAll(`input[name="input-${question.id}"]`);
+        radios.forEach(radio => {
+          if (saved === radio.value) radio.checked = true;
+          radio.addEventListener("change", () => {
+            state.answers[question.id] = radio.value;
+            saveState();
+          });
+        });
+      }
+
+      if (question.type === "multi") {
+        const checks = document.querySelectorAll(`input[name="input-${question.id}"]`);
+        const values = Array.isArray(saved) ? saved : [];
+        checks.forEach(box => {
+          if (values.includes(box.value)) box.checked = true;
+          box.addEventListener("change", () => {
+            const selected = Array.from(checks).filter(item => item.checked).map(item => item.value);
+            state.answers[question.id] = selected;
+            saveState();
+          });
+        });
+      }
+
+      if (question.type === "groupSelect") {
+        const groupInputs = document.querySelectorAll(`[data-group-question="${question.id}"]`);
+        const stored = saved || {};
+        groupInputs.forEach(input => {
+          const groupIndex = input.getAttribute("data-group-index");
+          const chosen = stored[groupIndex] || [];
+          if (chosen.includes(input.value)) input.checked = true;
+          input.addEventListener("change", () => {
+            const next = {};
+            question.groups.forEach((group, idx) => {
+              next[idx] = Array.from(document.querySelectorAll(`[data-group-question="${question.id}"][data-group-index="${idx}"]`))
+                .filter(box => box.checked)
+                .map(box => box.value);
+            });
+            state.answers[question.id] = next;
+            saveState();
+          });
+        });
+      }
+
+      if (question.type === "dual") {
+        const stored = saved || {};
+        question.fields.forEach(field => {
+          const element = document.getElementById(`${field.id}-${question.id}`);
+          if (!element) return;
+          element.value = stored[field.id] || "";
+          element.addEventListener("input", () => {
+            state.answers[question.id] = state.answers[question.id] || {};
+            state.answers[question.id][field.id] = element.value;
+            saveState();
+          });
+          element.addEventListener("change", () => {
+            state.answers[question.id] = state.answers[question.id] || {};
+            state.answers[question.id][field.id] = element.value;
+            saveState();
+          });
+        });
+      }
+
+      const feedback = document.getElementById(`feedback-${question.id}`);
+      if (state.checked[question.id] && feedback) {
+        const correct = !!state.correctness[question.id];
+        feedback.className = `feedback show ${correct ? "correct" : "incorrect"}`;
+        feedback.innerHTML = buildFeedbackMessage(question, correct);
+      }
+    }
+
+    function getQuestionById(questionId) {
+      for (const section of APP_DATA.sections) {
+        const found = section.questions.find(q => q.id === questionId);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function gradeQuestion(question) {
+      const response = state.answers[question.id];
+      if (question.type === "numeric") {
+        return areNumbersEqual(response, question.answer);
+      }
+      if (question.type === "expression") {
+        return areExpressionsEquivalent(response, question.answer);
+      }
+      if (question.type === "exact") {
+        const normalized = normalizeExact(response);
+        return question.answers.some(item => normalizeExact(item) === normalized);
+      }
+      if (question.type === "choice") {
+        return response === question.answer;
+      }
+      if (question.type === "multi") {
+        return sameSet(Array.isArray(response) ? response : [], question.answers);
+      }
+      if (question.type === "groupSelect") {
+        const groups = response || {};
+        return question.groups.every((group, idx) => sameSet(groups[idx] || [], group.correct));
+      }
+      if (question.type === "dual") {
+        const given = response || {};
+        const valueCorrect = (question.answers.value || []).some(item => areNumbersEqual(given.value, [item]) || normalizeExact(given.value) === normalizeExact(item));
+        const propertyCorrect = given.property === question.answers.property;
+        return valueCorrect && propertyCorrect;
+      }
+      return false;
+    }
+
+    function checkQuestion(questionId) {
+      const question = getQuestionById(questionId);
+      if (!question) return;
+      const correct = gradeQuestion(question);
+      state.checked[question.id] = true;
+      state.correctness[question.id] = correct;
+      saveState();
+
+      const card = document.getElementById(`card-${question.id}`);
+      const feedback = document.getElementById(`feedback-${question.id}`);
+      if (card) {
+        card.classList.remove("correct", "incorrect");
+        card.classList.add(correct ? "correct" : "incorrect");
+      }
+      if (feedback) {
+        feedback.className = `feedback show ${correct ? "correct" : "incorrect"}`;
+        feedback.innerHTML = buildFeedbackMessage(question, correct);
+      }
+      if (question.id.startsWith("ex")) updateExamBreakdown();
+    }
+
+    function buildFeedbackMessage(question, correct) {
+      if (correct) {
+        return `<strong>Correct.</strong> Nice work. You can move on or open the model solution to compare your process.`;
+      }
+      return `<strong>Not yet.</strong> Hint: ${question.hint}`;
+    }
+
+    function toggleSolution(questionId) {
+      const box = document.getElementById(`solution-${questionId}`);
+      if (box) box.classList.toggle("show");
+    }
+
+    function checkAllInSection(sectionId) {
+      const section = APP_DATA.sections.find(item => item.id === sectionId);
+      if (!section) return;
+      section.questions.forEach(question => checkQuestion(question.id));
+      if (sectionId === "exam") updateExamBreakdown();
+    }
+
+    function resetSection(sectionId) {
+      const section = APP_DATA.sections.find(item => item.id === sectionId);
+      if (!section) return;
+      const activeTab = document.querySelector(".tab-btn.active")?.getAttribute("data-tab") || "tab1";
+      section.questions.forEach(question => {
+        delete state.answers[question.id];
+        delete state.checked[question.id];
+        delete state.correctness[question.id];
+      });
+      saveState();
+      renderDynamicSections();
+      bindTabs();
+      activateTab(activeTab);
+      if (sectionId === "exam") updateExamBreakdown();
+    }
+
+    function activateTab(target) {
+      document.querySelectorAll(".tab-btn").forEach(button => {
+        button.classList.toggle("active", button.getAttribute("data-tab") === target);
+      });
+      document.querySelectorAll(".tab-panel").forEach(panel => {
+        panel.classList.toggle("active", panel.id === target);
+      });
+    }
+
+    function bindTabs() {
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.onclick = () => {
+          const target = btn.getAttribute("data-tab");
+          activateTab(target);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+      });
+
+      document.querySelectorAll("[data-check-question]").forEach(btn => {
+        btn.onclick = () => checkQuestion(btn.getAttribute("data-check-question"));
+      });
+
+      document.querySelectorAll("[data-show-solution]").forEach(btn => {
+        btn.onclick = () => toggleSolution(btn.getAttribute("data-show-solution"));
+      });
+    }
+
+    function evaluateReview() {
+      const total = APP_DATA.reviewTopics.length;
+      const reviewed = APP_DATA.reviewTopics.filter(topic => !!state.review[topic.id]).length;
+      const remaining = total - reviewed;
+      const box = document.getElementById("reviewSummaryMessage");
+      const status = reviewed === total
+        ? "Review complete. You are ready to move into the practice tabs."
+        : reviewed >= Math.ceil(total * 0.75)
+          ? "Almost there. Finish the remaining concept cards, then move into practice."
+          : "Keep reviewing. Focus especially on the cards you have not marked yet.";
+      box.className = "review-summary-message show";
+      box.innerHTML = `
+        <strong>Review audit:</strong> You marked <strong>${reviewed}</strong> of <strong>${total}</strong> concept cards.
+        <div class="pill-list">
+          <span class="pill">Reviewed: ${reviewed}</span>
+          <span class="pill">Remaining: ${remaining}</span>
+          <span class="pill">${reviewed === total ? "Ready for practice" : "Needs more review"}</span>
+        </div>
+        <div style="margin-top:10px;">${status}</div>
+      `;
+      updateAllSummaries();
+    }
+
+    function updateAllSummaries() {
+      updateReviewSummary();
+      APP_DATA.sections.forEach(section => updateSectionSummary(section.id));
+      updateMasterSummary();
+      updateExamBreakdown();
+    }
+
+    function updateReviewSummary() {
+      const total = APP_DATA.reviewTopics.length;
+      const checked = APP_DATA.reviewTopics.filter(topic => !!state.review[topic.id]).length;
+      const remaining = total - checked;
+      document.getElementById("reviewTotal").textContent = total;
+      document.getElementById("reviewChecked").textContent = checked;
+      document.getElementById("reviewRemaining").textContent = remaining;
+      document.getElementById("reviewStatus").textContent = checked === total ? "Done" : checked > 0 ? "In Progress" : "Start";
+    }
+
+    function updateSectionSummary(sectionId) {
+      const section = APP_DATA.sections.find(item => item.id === sectionId);
+      if (!section) return;
+      const total = section.questions.length;
+      const checked = section.questions.filter(q => !!state.checked[q.id]).length;
+      const correct = section.questions.filter(q => state.correctness[q.id] === true).length;
+      const accuracy = checked ? Math.round((correct / checked) * 100) : 0;
+      const totalEl = document.getElementById(`${sectionId}-total`);
+      const checkedEl = document.getElementById(`${sectionId}-checked`);
+      const correctEl = document.getElementById(`${sectionId}-correct`);
+      const accuracyEl = document.getElementById(`${sectionId}-accuracy`);
+      if (totalEl) totalEl.textContent = total;
+      if (checkedEl) checkedEl.textContent = checked;
+      if (correctEl) correctEl.textContent = correct;
+      if (accuracyEl) accuracyEl.textContent = accuracy + "%";
+    }
+
+    function updateMasterSummary() {
+      const reviewTotal = APP_DATA.reviewTopics.length;
+      const reviewDone = APP_DATA.reviewTopics.filter(topic => !!state.review[topic.id]).length;
+      const questionList = APP_DATA.sections.flatMap(section => section.questions);
+      const checked = questionList.filter(q => !!state.checked[q.id]).length;
+      const correct = questionList.filter(q => state.correctness[q.id] === true).length;
+      const totalTasks = reviewTotal + questionList.length;
+      const completed = reviewDone + checked;
+      const progress = totalTasks ? Math.round((completed / totalTasks) * 100) : 0;
+
+      document.getElementById("masterCompleted").textContent = completed;
+      document.getElementById("masterCorrect").textContent = correct;
+      document.getElementById("masterTotal").textContent = totalTasks;
+      document.getElementById("masterProgress").style.width = progress + "%";
+    }
+
+    function updateExamBreakdown() {
+      const exam = APP_DATA.sections.find(section => section.id === "exam");
+      if (!exam) return;
+      const groups = {};
+      exam.questions.forEach(question => {
+        groups[question.strand] = groups[question.strand] || { total: 0, checked: 0, correct: 0 };
+        groups[question.strand].total += 1;
+        if (state.checked[question.id]) groups[question.strand].checked += 1;
+        if (state.correctness[question.id] === true) groups[question.strand].correct += 1;
+      });
+
+      const breakdown = document.getElementById("examBreakdownTable");
+      if (!breakdown) return;
+
+      const hasData = exam.questions.some(q => !!state.checked[q.id]);
+      if (!hasData) {
+        breakdown.innerHTML = `<div class="empty-state">Check exam questions to generate the mastery table.</div>`;
+        const coach = document.getElementById("examCoach");
+        if (coach) {
+          coach.innerHTML = `
+            <div class="pill-list">
+              <span class="pill">Solve first</span>
+              <span class="pill">Check signs carefully</span>
+              <span class="pill">Distribute to every term</span>
+              <span class="pill">Factor completely</span>
+              <span class="pill">Use property names precisely</span>
+            </div>
+            <p class="small-note">After you check the exam, this panel updates with a next-step coaching note based on your results.</p>
+          `;
+        }
+        return;
+      }
+
+      const rows = Object.entries(groups).map(([strand, data]) => {
+        const accuracy = data.checked ? Math.round((data.correct / data.checked) * 100) : 0;
+        return `<tr>
+          <td>${strand}</td>
+          <td>${data.checked} / ${data.total}</td>
+          <td>${data.correct}</td>
+          <td>${accuracy}%</td>
+        </tr>`;
+      }).join("");
+
+      breakdown.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Strand</th>
+              <th>Checked</th>
+              <th>Correct</th>
+              <th>Accuracy</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+
+      const checked = exam.questions.filter(q => !!state.checked[q.id]).length;
+      const correct = exam.questions.filter(q => state.correctness[q.id] === true).length;
+      const accuracy = checked ? Math.round((correct / checked) * 100) : 0;
+      const weak = Object.entries(groups)
+        .filter(([, data]) => data.checked > 0)
+        .sort((a, b) => (a[1].correct / Math.max(a[1].checked, 1)) - (b[1].correct / Math.max(b[1].checked, 1)))[0];
+
+      const coach = document.getElementById("examCoach");
+      if (coach) {
+        let message = "Keep building accuracy by slowing down on signs, regrouping, and factoring.";
+        if (accuracy >= 90) {
+          message = "Excellent mastery. Do one final pass on any missed items and explain your reasoning out loud to lock in the unit.";
+        } else if (accuracy >= 75) {
+          message = "You are close. Revisit the one or two strands that dropped your score the most, then retake the hardest questions.";
+        } else if (weak) {
+          message = `Priority next step: revisit <strong>${weak[0]}</strong>. That is the best place to earn the biggest score jump.`;
+        }
+        coach.innerHTML = `
+          <div class="pill-list">
+            <span class="pill">Exam checked: ${checked} / ${exam.questions.length}</span>
+            <span class="pill">Correct: ${correct}</span>
+            <span class="pill">Accuracy: ${accuracy}%</span>
+          </div>
+          <p class="small-note" style="margin-top:12px;">${message}</p>
+        `;
+      }
+    }
+
+    function escapeAttr(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    renderApp();
+  </script>
+</body>
+</html>

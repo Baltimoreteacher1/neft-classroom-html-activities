@@ -1,0 +1,2827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Session 1 Interactive Activity | Nets for Square Pyramids</title>\n<!-- v12: fixes missing geometry helpers and includes a static fallback pyramid. -->
+<style>
+  :root{
+    --navy:#123047;
+    --navy2:#0b2235;
+    --teal:#0f9c9a;
+    --teal2:#087a78;
+    --cream:#fff7e8;
+    --paper:#ffffff;
+    --ink:#17212b;
+    --muted:#5f6f7c;
+    --gold:#f3b23c;
+    --green:#2f8f5b;
+    --red:#c53d35;
+    --sky:#e8f6f6;
+    --lav:#eef0ff;
+    --border:#111111;
+    --shadow:0 14px 38px rgba(10, 34, 53, .14);
+    --radius:22px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family: Calibri, "Segoe UI", Arial, sans-serif;
+    background:
+      radial-gradient(circle at 8% 3%, rgba(15,156,154,.18), transparent 27rem),
+      radial-gradient(circle at 94% 6%, rgba(243,178,60,.17), transparent 22rem),
+      linear-gradient(180deg, #f7fbfb 0%, #fff7e8 100%);
+    color:var(--ink);
+    line-height:1.15;
+  }
+
+  button, input, textarea, select{font-family:inherit}
+
+  .app{
+    display:grid;
+    grid-template-columns: 310px minmax(0,1fr);
+    min-height:100vh;
+  }
+
+  aside{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:22px 18px;
+    background:linear-gradient(180deg, var(--navy), var(--navy2));
+    color:white;
+    overflow-y:auto;
+    box-shadow:8px 0 26px rgba(0,0,0,.16);
+    z-index:3;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .logo{
+    width:48px;height:48px;border-radius:16px;
+    display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--teal),#5ad9d4);
+    color:white;font-weight:900;font-size:22px;
+    box-shadow:0 10px 24px rgba(0,0,0,.22);
+  }
+  .brand h1{
+    margin:0;
+    font-size:19px;
+    line-height:1.05;
+    letter-spacing:.2px;
+  }
+  .brand small{
+    display:block;
+    color:#b9d7df;
+    margin-top:4px;
+    font-size:12px;
+  }
+
+  .student-card{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:20px;
+    padding:14px;
+    margin:14px 0;
+  }
+  .student-grid{
+    display:grid;
+    gap:9px;
+  }
+  .field label{
+    display:block;
+    font-size:12px;
+    color:#cce6ea;
+    margin-bottom:4px;
+    font-weight:700;
+  }
+  .field input{
+    width:100%;
+    border:0;
+    border-radius:12px;
+    padding:10px 11px;
+    font-size:14px;
+    background:white;
+    color:var(--ink);
+  }
+
+  .progress-wrap{
+    margin:14px 0 18px;
+  }
+  .progress-top{
+    display:flex;
+    justify-content:space-between;
+    color:#d8f2f3;
+    font-size:12px;
+    margin-bottom:6px;
+  }
+  .progress{
+    height:12px;
+    background:rgba(255,255,255,.16);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--gold),#77e4df);
+    border-radius:999px;
+    transition:width .35s ease;
+  }
+
+  nav{
+    display:grid;
+    gap:8px;
+  }
+  .nav-btn{
+    width:100%;
+    border:0;
+    border-radius:14px;
+    padding:11px 12px;
+    display:grid;
+    grid-template-columns:28px 1fr auto;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.08);
+    color:white;
+    text-align:left;
+    cursor:pointer;
+    transition:.18s ease;
+    font-size:14px;
+  }
+  .nav-btn:hover{background:rgba(255,255,255,.14); transform:translateY(-1px)}
+  .nav-btn.active{
+    background:white;
+    color:var(--navy);
+    box-shadow:0 10px 24px rgba(0,0,0,.18);
+  }
+  .nav-btn .num{
+    width:28px;height:28px;border-radius:10px;
+    display:grid;place-items:center;
+    background:rgba(255,255,255,.15);
+    font-weight:900;
+  }
+  .nav-btn.active .num{background:var(--sky); color:var(--teal2)}
+  .nav-btn .check{font-weight:900;color:#9ff0d0}
+  .nav-btn.active .check{color:var(--green)}
+
+  .side-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:16px;
+  }
+
+  .mini-btn, .primary-btn, .ghost-btn, .danger-btn{
+    border:0;
+    border-radius:14px;
+    padding:10px 12px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.18s ease;
+  }
+  .mini-btn{
+    background:rgba(255,255,255,.12);
+    color:white;
+    border:1px solid rgba(255,255,255,.15);
+  }
+  .mini-btn:hover{background:rgba(255,255,255,.18)}
+  .primary-btn{
+    background:linear-gradient(135deg,var(--teal),var(--teal2));
+    color:white;
+    box-shadow:0 10px 18px rgba(15,156,154,.24);
+  }
+  .primary-btn:hover{transform:translateY(-1px)}
+  .ghost-btn{
+    background:#eff8f8;
+    color:var(--teal2);
+    border:1px solid #c8eaea;
+  }
+  .danger-btn{
+    background:#fff0ee;
+    color:var(--red);
+    border:1px solid #ffd1ca;
+  }
+
+  main{
+    padding:30px clamp(18px, 3vw, 42px) 70px;
+    min-width:0;
+  }
+
+  .top-banner{
+    background:linear-gradient(135deg, rgba(18,48,71,.98), rgba(15,156,154,.96));
+    color:white;
+    border-radius:28px;
+    padding:26px;
+    box-shadow:var(--shadow);
+    margin-bottom:24px;
+    position:relative;
+    overflow:hidden;
+  }
+  .top-banner:after{
+    content:"";
+    position:absolute;
+    right:-80px;top:-80px;
+    width:230px;height:230px;border-radius:50%;
+    background:rgba(255,255,255,.10);
+  }
+  .eyebrow{
+    display:inline-flex;
+    gap:8px;
+    align-items:center;
+    padding:7px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,.16);
+    font-weight:800;
+    font-size:13px;
+    margin-bottom:12px;
+  }
+  .top-banner h2{
+    margin:0;
+    font-size:clamp(28px, 4vw, 46px);
+    letter-spacing:-.9px;
+    line-height:1.02;
+  }
+  .top-banner p{
+    max-width:860px;
+    color:#e4f9f9;
+    font-size:17px;
+    margin:12px 0 0;
+  }
+  .lesson-targets{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+    margin-top:18px;
+    max-width:980px;
+  }
+  .target-card{
+    background:rgba(255,255,255,.13);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:18px;
+    padding:14px;
+    font-weight:800;
+  }
+  .target-card span{
+    display:block;
+    font-size:12px;
+    color:#b9f0ee;
+    margin-bottom:4px;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+  }
+
+  section.panel{
+    display:none;
+    animation:fade .25s ease;
+  }
+  section.panel.active{display:block}
+  @keyframes fade{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+
+  .card{
+    background:rgba(255,255,255,.92);
+    border:2px solid rgba(17,17,17,.13);
+    border-radius:var(--radius);
+    padding:22px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+  .card.no-shadow{box-shadow:none}
+  .card h3{
+    margin:0 0 10px;
+    color:var(--navy);
+    font-size:25px;
+    line-height:1.08;
+  }
+  .card h4{
+    margin:0 0 8px;
+    color:var(--navy);
+    font-size:19px;
+  }
+  .sub{
+    color:var(--muted);
+    margin:0 0 14px;
+    font-size:16px;
+  }
+
+  .grid-2{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+  }
+  .grid-3{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:14px;
+  }
+  .grid-4{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+  }
+
+  .time-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--cream);
+    border:2px solid #111;
+    color:var(--navy);
+    border-radius:999px;
+    padding:7px 12px;
+    font-weight:900;
+    margin-bottom:12px;
+  }
+
+  .support-box{
+    background:#f1fbfb;
+    border-left:6px solid var(--teal);
+    border-radius:16px;
+    padding:14px;
+    margin:14px 0;
+  }
+  .support-box strong{color:var(--navy)}
+  .word-bank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:8px;
+  }
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    border-radius:999px;
+    border:2px solid rgba(17,17,17,.18);
+    background:white;
+    padding:7px 10px;
+    font-weight:800;
+    color:var(--navy);
+  }
+  .chip.es{background:#fff6d8}
+
+  textarea{
+    width:100%;
+    min-height:86px;
+    resize:vertical;
+    border:2px solid rgba(17,17,17,.18);
+    border-radius:16px;
+    padding:12px;
+    font-size:16px;
+    color:var(--ink);
+    background:white;
+  }
+  textarea:focus, input:focus{outline:3px solid rgba(15,156,154,.24); border-color:var(--teal)}
+  .short-input{
+    width:100%;
+    border:2px solid rgba(17,17,17,.18);
+    border-radius:14px;
+    padding:10px;
+    font-size:16px;
+  }
+
+  .choice-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:14px;
+  }
+  .choice{
+    border:2px solid rgba(17,17,17,.18);
+    background:white;
+    border-radius:18px;
+    padding:14px;
+    cursor:pointer;
+    transition:.18s ease;
+  }
+  .choice:hover{transform:translateY(-2px); box-shadow:0 12px 26px rgba(0,0,0,.12)}
+  .choice.selected{
+    border-color:var(--teal);
+    background:#edfbfb;
+    box-shadow:0 0 0 4px rgba(15,156,154,.12);
+  }
+  .choice.correct{border-color:var(--green); background:#ecfff4}
+  .choice.wrong{border-color:var(--red); background:#fff1f0}
+  .choice b{display:block;color:var(--navy);font-size:18px;margin-bottom:6px}
+
+  .feedback{
+    min-height:28px;
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:14px;
+    font-weight:800;
+    display:none;
+  }
+  .feedback.show{display:block}
+  .feedback.good{background:#eafaf1;color:#1d6840;border:1px solid #a4e4c0}
+  .feedback.try{background:#fff5df;color:#8a5a00;border:1px solid #f3c66c}
+  .feedback.bad{background:#fff0ee;color:#9c2820;border:1px solid #ffc3bd}
+
+  .svg-frame{
+    background:linear-gradient(180deg,#ffffff,#f7fbfb);
+    border:2px solid rgba(17,17,17,.15);
+    border-radius:22px;
+    padding:14px;
+    min-height:260px;
+    display:grid;
+    place-items:center;
+  }
+  svg{max-width:100%;height:auto}
+
+  .coins{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:12px;
+    background:#fbfcfd;
+    border-radius:18px;
+    border:2px dashed rgba(18,48,71,.25);
+    min-height:120px;
+    align-content:flex-start;
+  }
+  .coin{
+    width:32px;height:32px;border-radius:50%;
+    background:radial-gradient(circle at 33% 25%,#fff5b8,#e3b649 56%,#bb861b);
+    border:2px solid #966918;
+    display:grid;place-items:center;
+    color:#5e410e;
+    font-size:13px;
+    font-weight:900;
+    box-shadow:inset -2px -3px 4px rgba(0,0,0,.12);
+  }
+
+  .vocab-card{
+    min-height:220px;
+    border:2px solid rgba(17,17,17,.18);
+    border-radius:20px;
+    background:white;
+    padding:16px;
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    gap:10px;
+  }
+  .vocab-card h4{
+    font-size:22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .vocab-card .es{
+    display:block;
+    color:#8d5f00;
+    font-size:14px;
+    margin-top:2px;
+  }
+  .speaker{
+    width:32px;height:32px;border-radius:10px;
+    border:0;background:var(--sky); color:var(--teal2);
+    cursor:pointer;font-weight:900;
+  }
+
+  .match-area{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .draggable, .dropzone{
+    border-radius:16px;
+    padding:12px;
+    min-height:52px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-weight:800;
+  }
+  .draggable{
+    background:#fff6d8;
+    border:2px solid #111;
+    cursor:grab;
+    user-select:none;
+  }
+  .dropzone{
+    background:#f7fbfb;
+    border:2px dashed rgba(17,17,17,.28);
+  }
+  .dropzone.filled{border-style:solid;background:#eefdfc}
+  .dropzone.correct{background:#eafff2;border-color:var(--green)}
+  .dropzone.wrong{background:#fff0ee;border-color:var(--red)}
+
+  .sort-board{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .sort-column{
+    background:#fbfcfd;
+    border:2px dashed rgba(18,48,71,.3);
+    border-radius:20px;
+    padding:14px;
+    min-height:180px;
+  }
+  .sort-column h4{
+    text-align:center;
+    background:var(--navy);
+    color:white;
+    border-radius:14px;
+    padding:9px;
+  }
+  .tile-bank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    min-height:80px;
+    padding:10px;
+    background:#fff;
+    border:2px solid rgba(17,17,17,.12);
+    border-radius:18px;
+  }
+  .shape-tile{
+    width:110px;
+    min-height:86px;
+    background:#fff6d8;
+    border:2px solid #111;
+    border-radius:18px;
+    padding:8px;
+    display:grid;
+    place-items:center;
+    gap:4px;
+    cursor:grab;
+    text-align:center;
+    font-weight:800;
+    user-select:none;
+  }
+
+  .net-lab{
+    display:grid;
+    grid-template-columns:minmax(0, 1.1fr) minmax(260px,.9fr);
+    gap:18px;
+    align-items:start;
+  }
+  .net-canvas{
+    position:relative;
+    height:480px;
+    background:
+      linear-gradient(#dce8ee 1px, transparent 1px),
+      linear-gradient(90deg,#dce8ee 1px, transparent 1px),
+      #fff;
+    background-size:40px 40px;
+    border:3px solid #111;
+    border-radius:22px;
+    overflow:hidden;
+  }
+  .base-square{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:128px;height:128px;
+    transform:translate(-50%,-50%);
+    background:#dff5f5;
+    border:3px solid var(--navy);
+    display:grid;
+    place-items:center;
+    font-weight:900;
+    color:var(--navy);
+    border-radius:10px;
+    z-index:2;
+  }
+  .snap{
+    position:absolute;
+    width:140px;
+    height:116px;
+    border:2px dashed rgba(15,156,154,.55);
+    border-radius:18px;
+    background:rgba(15,156,154,.06);
+    display:grid;
+    place-items:center;
+    color:var(--teal2);
+    font-weight:900;
+    z-index:1;
+  }
+  .snap[data-pos="top"]{left:50%;top:88px;transform:translateX(-50%)}
+  .snap[data-pos="bottom"]{left:50%;bottom:88px;transform:translateX(-50%)}
+  .snap[data-pos="left"]{left:118px;top:50%;transform:translateY(-50%) rotate(-90deg)}
+  .snap[data-pos="right"]{right:118px;top:50%;transform:translateY(-50%) rotate(90deg)}
+  .tri-piece{
+    position:absolute;
+    width:140px;
+    height:116px;
+    touch-action:none;
+    cursor:grab;
+    z-index:5;
+    transition:box-shadow .15s ease;
+  }
+  .tri-piece svg{filter:drop-shadow(0 8px 10px rgba(0,0,0,.12))}
+  .tri-piece:active{cursor:grabbing;box-shadow:0 0 0 5px rgba(15,156,154,.18);border-radius:18px}
+  .tri-piece.locked{cursor:default}
+  .piece-bank{
+    min-height:520px;
+    border:2px solid rgba(17,17,17,.15);
+    border-radius:20px;
+    background:#fbfcfd;
+    position:relative;
+    overflow:visible;
+    padding:8px;
+  }
+
+
+
+  .snap.filled{
+    border-style:solid;
+    background:rgba(15,156,154,.18);
+    color:var(--navy);
+  }
+
+  .base-snap{
+    left:50%;
+    top:50%;
+    width:136px;
+    height:136px;
+    transform:translate(-50%,-50%);
+    border-color:rgba(18,48,71,.65);
+    background:rgba(223,245,245,.48);
+    z-index:2;
+  }
+  .net-piece{
+    position:absolute;
+    touch-action:none;
+    cursor:grab;
+    z-index:5;
+    user-select:none;
+    transition:box-shadow .15s ease, transform .15s ease;
+  }
+  .net-piece.dragging{
+    position:fixed !important;
+    z-index:9999 !important;
+    pointer-events:none;
+    opacity:.96;
+    transform:scale(1.03);
+  }
+  .net-piece.free-placed{
+    z-index:6;
+  }
+  .net-piece:active{cursor:grabbing;box-shadow:0 0 0 5px rgba(15,156,154,.18);border-radius:18px}
+  .net-piece.locked{cursor:default}
+  .square-piece{width:136px;height:136px}
+  .tri-piece{width:140px;height:116px}
+
+  .net-piece.build-choice{
+    position:relative;
+    left:auto !important;
+    top:auto !important;
+    display:block;
+    margin:10px auto;
+    border:0;
+    background:transparent;
+    padding:0;
+    cursor:pointer;
+    text-align:center;
+  }
+  .net-piece.build-choice:hover,
+  .net-piece.build-choice.selected{
+    filter:drop-shadow(0 0 0 rgba(0,0,0,0));
+  }
+  .net-piece.build-choice.selected svg{
+    outline:5px solid rgba(15,156,154,.35);
+    border-radius:18px;
+  }
+  .snap{ cursor:pointer; }
+  .snap.target-ready{
+    border-color:var(--gold);
+    background:rgba(243,178,60,.16);
+    color:var(--navy);
+  }
+  .snap.wrong-target{ animation:netShake .24s ease-in-out 1; }
+  @keyframes netShake{
+    0%,100%{margin-left:0}
+    25%{margin-left:-4px}
+    75%{margin-left:4px}
+  }
+  .placed-svg{
+    position:absolute;
+    z-index:6;
+    pointer-events:none;
+  }
+  .snap .snap-label{
+    position:absolute;
+    inset:auto 8px 8px 8px;
+    font-size:12px;
+    line-height:1.1;
+    opacity:.72;
+    text-align:center;
+  }
+  .build-help-strip{
+    margin-top:10px;
+    padding:10px 12px;
+    border:2px solid rgba(18,48,71,.18);
+    border-radius:14px;
+    background:#fff7e8;
+    font-size:13px;
+    font-weight:800;
+    color:var(--navy);
+  }
+
+  .decor-lab{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 280px;
+    gap:16px;
+    align-items:start;
+  }
+  .decor-board{
+    position:relative;
+    min-height:500px;
+    background:
+      linear-gradient(#dce8ee 1px, transparent 1px),
+      linear-gradient(90deg,#dce8ee 1px, transparent 1px),
+      #fff;
+    background-size:35px 35px;
+    border:3px solid #111;
+    border-radius:22px;
+    overflow:hidden;
+  }
+  .decor-hint{
+    position:absolute;
+    left:18px;top:14px;right:18px;
+    background:rgba(255,247,232,.94);
+    border:2px solid rgba(17,17,17,.18);
+    border-radius:16px;
+    padding:10px 12px;
+    font-weight:800;
+    color:var(--navy);
+    z-index:1;
+  }
+  .decor-panel{display:grid;gap:10px}
+  .decor-piece{
+    position:absolute;
+    display:grid;
+    place-items:center;
+    touch-action:none;
+    cursor:grab;
+    border:3px solid var(--navy);
+    font-weight:900;
+    color:var(--navy);
+    user-select:none;
+    z-index:3;
+    filter:drop-shadow(0 8px 12px rgba(0,0,0,.14));
+  }
+  .decor-square{width:110px;height:110px;border-radius:10px;background:#dff5f5}
+  .decor-triangle{width:130px;height:110px;background:#ffe2a1;clip-path:polygon(50% 0%,100% 100%,0% 100%)}
+  .decor-sticker{font-size:32px;background:white;border:2px solid #111;border-radius:14px;width:60px;height:54px}
+  .color-row{display:flex;gap:9px;flex-wrap:wrap;padding:10px;background:#fbfcfd;border:2px solid rgba(17,17,17,.14);border-radius:16px}
+  .color-dot{width:36px;height:36px;border-radius:50%;border:3px solid #111;cursor:pointer}
+
+  .fold-preview{
+    perspective:800px;
+    height:260px;
+    display:grid;
+    place-items:center;
+    background:#fbfcfd;
+    border:2px solid rgba(17,17,17,.14);
+    border-radius:20px;
+    overflow:hidden;
+  }
+  .pyramid-model{
+    position:relative;
+    width:190px;height:190px;
+    transform-style:preserve-3d;
+    transform:rotateX(62deg) rotateZ(-35deg);
+    animation:spin 8s linear infinite;
+  }
+  @keyframes spin{
+    from{transform:rotateX(62deg) rotateZ(-35deg)}
+    to{transform:rotateX(62deg) rotateZ(325deg)}
+  }
+  .pyramid-face{
+    position:absolute;
+    left:45px;top:26px;
+    width:100px;height:118px;
+    clip-path:polygon(50% 0%, 100% 100%, 0 100%);
+    background:linear-gradient(140deg,#9ce3e0,#0f9c9a);
+    opacity:.88;
+    border:2px solid rgba(0,0,0,.3);
+    transform-origin:50% 100%;
+  }
+  .f1{transform:rotateY(0deg) rotateX(-55deg)}
+  .f2{transform:rotateY(90deg) rotateX(-55deg)}
+  .f3{transform:rotateY(180deg) rotateX(-55deg)}
+  .f4{transform:rotateY(270deg) rotateX(-55deg)}
+  .pyramid-base{
+    position:absolute;
+    left:45px;top:144px;
+    width:100px;height:100px;
+    background:#fff6d8;
+    border:2px solid rgba(0,0,0,.35);
+    transform:translateZ(-4px);
+  }
+
+
+
+  /* Story problem: interactive 3D pyramid preview */
+  .story-3d-shell{
+    min-height:360px;
+    border:3px solid #111;
+    border-radius:22px;
+    background:
+      radial-gradient(circle at 20% 18%, rgba(255,255,255,.9), transparent 7rem),
+      linear-gradient(180deg,#e9fbfb 0%,#fff7e8 62%,#e5bf78 100%);
+    overflow:hidden;
+    position:relative;
+    padding:14px;
+  }
+  .story-3d-toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:rgba(255,255,255,.86);
+    border:2px solid rgba(17,17,17,.16);
+    border-radius:16px;
+    padding:10px 12px;
+    color:var(--navy);
+    font-weight:900;
+    position:relative;
+    z-index:2;
+  }
+  .story-3d-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .story-3d-actions button{padding:8px 10px;border-radius:12px;border:1px solid #c8eaea;background:#eff8f8;color:var(--teal2);font-weight:900;cursor:pointer}
+  .story-3d-stage{
+    height:245px;
+    display:grid;
+    place-items:center;
+    perspective:900px;
+    position:relative;
+  }
+  .story-3d-stage::before{
+    content:"";
+    position:absolute;
+    width:300px;height:64px;border-radius:50%;
+    background:rgba(90,58,20,.18);
+    transform:translateY(82px);
+    filter:blur(2px);
+  }
+  .pyramid-model.story-model{
+    --storyRot:-35deg;
+    width:220px;height:220px;
+    transform:rotateX(62deg) rotateZ(var(--storyRot)) scale(1.08);
+    animation:none;
+  }
+  .pyramid-model.story-model.spinning{animation:storySpin 8s linear infinite}
+  @keyframes storySpin{
+    from{transform:rotateX(62deg) rotateZ(var(--storyRot)) scale(1.08)}
+    to{transform:rotateX(62deg) rotateZ(calc(var(--storyRot) + 360deg)) scale(1.08)}
+  }
+  .story-model .pyramid-face{left:55px;top:20px;width:112px;height:136px;background:linear-gradient(135deg,#ffe2a1,#f3b23c 55%,#0f9c9a);opacity:.92}
+  .story-model .pyramid-base{left:55px;top:156px;width:112px;height:112px;background:linear-gradient(135deg,#fff6d8,#dff5f5)}
+  .story-3d-labels{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    position:relative;
+    z-index:2;
+  }
+  .story-3d-labels span{background:rgba(255,255,255,.9);border:2px solid rgba(17,17,17,.16);border-radius:14px;padding:8px 10px;font-weight:900;color:var(--navy);text-align:center}
+
+  /* Final design studio upgrade */
+  .design-studio-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 310px;
+    gap:16px;
+    align-items:start;
+    margin-bottom:16px;
+  }
+  .creative-stage{
+    position:relative;
+    min-height:420px;
+    border:3px solid #111;
+    border-radius:22px;
+    background:
+      radial-gradient(circle at 24% 16%, rgba(255,255,255,.95), transparent 8rem),
+      linear-gradient(180deg,#e9fbfb 0%,#fff7e8 58%,#d5a35a 100%);
+    overflow:hidden;
+    display:grid;
+    place-items:center;
+    perspective:1000px;
+  }
+  .creative-stage::after{
+    content:"";
+    position:absolute;
+    width:330px;height:70px;border-radius:50%;
+    background:rgba(75,46,18,.18);
+    transform:translateY(134px);
+    filter:blur(3px);
+  }
+  .creative-label{
+    position:absolute;left:16px;top:16px;right:16px;
+    background:rgba(255,255,255,.88);
+    border:2px solid rgba(17,17,17,.14);
+    border-radius:16px;
+    padding:10px 12px;
+    font-weight:900;
+    color:var(--navy);
+    z-index:4;
+  }
+  .creative-pyramid{
+    --faceColor:#f3b23c;
+    --baseColor:#dff5f5;
+    --accentColor:#0f9c9a;
+    --scale:1;
+    --rotX:62deg;
+    --rotZ:-35deg;
+    --heightScale:1;
+    --patternOpacity:.18;
+    position:relative;
+    width:220px;height:220px;
+    transform-style:preserve-3d;
+    transform:translate(var(--moveX, 0px), var(--moveY, 0px)) rotateX(var(--rotX)) rotateZ(var(--rotZ)) scale(var(--scale));
+    z-index:3;
+    transition:transform .18s ease;
+    cursor:grab;
+  }
+  .creative-pyramid:active{cursor:grabbing}
+  .creative-face{
+    position:absolute;
+    left:54px;top:20px;
+    width:112px;height:var(--faceHeight,136px);
+    clip-path:polygon(50% 0%,100% 100%,0 100%);
+    background:
+      linear-gradient(135deg,rgba(255,255,255,.35),transparent 40%),
+      linear-gradient(150deg,var(--faceColor),var(--accentColor));
+    border:2px solid rgba(0,0,0,.36);
+    opacity:.95;
+    transform-origin:50% 100%;
+  }
+  .creative-face::after{
+    content:"";position:absolute;inset:0;opacity:var(--patternOpacity);pointer-events:none;
+    background-image:repeating-linear-gradient(45deg,#111 0 2px,transparent 2px 14px);
+  }
+  .creative-face.front{transform:rotateY(0deg) rotateX(-55deg)}
+  .creative-face.right{transform:rotateY(90deg) rotateX(-55deg)}
+  .creative-face.back{transform:rotateY(180deg) rotateX(-55deg)}
+  .creative-face.left{transform:rotateY(270deg) rotateX(-55deg)}
+  .creative-base{
+    position:absolute;
+    left:54px;top:156px;
+    width:112px;height:112px;
+    background:linear-gradient(135deg,var(--baseColor),#fff6d8);
+    border:2px solid rgba(0,0,0,.36);
+    transform:translateZ(-4px);
+  }
+  .creative-pyramid.smooth .creative-face::after{background-image:none}
+  .creative-pyramid.bricks .creative-face::after{background-image:linear-gradient(#111 1px,transparent 1px),linear-gradient(90deg,#111 1px,transparent 1px);background-size:28px 16px}
+  .creative-pyramid.dots .creative-face::after{background-image:radial-gradient(#111 2px,transparent 2px);background-size:18px 18px}
+  .creative-pyramid.stripes .creative-face::after{background-image:repeating-linear-gradient(90deg,#111 0 2px,transparent 2px 14px)}
+  .control-stack{display:grid;gap:10px;background:#fbfcfd;border:2px solid rgba(17,17,17,.14);border-radius:18px;padding:12px}
+  .control-stack label{display:grid;gap:4px;font-weight:900;color:var(--navy);font-size:14px}
+  .control-stack input[type="range"]{width:100%}
+  .control-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .selected-note{font-size:13px;color:var(--muted);font-weight:800;background:#fff7e8;border:2px dashed rgba(17,17,17,.18);border-radius:14px;padding:8px}
+  .decor-piece.selected{outline:5px solid rgba(15,156,154,.32);box-shadow:0 0 0 2px #0f9c9a,0 10px 18px rgba(0,0,0,.18)}
+  .decor-piece.pattern-stripes{background-image:repeating-linear-gradient(45deg,rgba(18,48,71,.25) 0 5px,transparent 5px 15px)}
+  .decor-piece.pattern-dots{background-image:radial-gradient(rgba(18,48,71,.35) 3px, transparent 3px);background-size:18px 18px}
+  .decor-piece.pattern-bricks{background-image:linear-gradient(rgba(18,48,71,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(18,48,71,.25) 1px,transparent 1px);background-size:26px 17px}
+
+
+  /* Cleaner SVG pyramid renders */
+  .story-pyramid-wrap,
+  .creative-pyramid-shell{
+    position:relative;
+    user-select:none;
+  }
+  .story-pyramid-wrap{
+    width:min(100%, 370px);
+    height:220px;
+    display:grid;
+    place-items:center;
+    z-index:2;
+  }
+  .story-pyramid-svg{
+    width:100%;
+    height:100%;
+    overflow:visible;
+    filter:drop-shadow(0 14px 20px rgba(0,0,0,.12));
+  }
+  .creative-pyramid-shell{
+    width:min(100%, 430px);
+    height:300px;
+    display:grid;
+    place-items:center;
+    z-index:3;
+    cursor:grab;
+    touch-action:none;
+  }
+  .creative-pyramid-shell:active{cursor:grabbing}
+  .creative-pyramid-svg{
+    width:100%;
+    height:100%;
+    overflow:visible;
+    filter:drop-shadow(0 18px 24px rgba(0,0,0,.14));
+  }
+  .build-pyramid-wrap{
+    width:min(100%, 290px);
+    height:220px;
+    display:grid;
+    place-items:center;
+  }
+  .build-pyramid-svg{
+    width:100%;
+    height:100%;
+    overflow:visible;
+    filter:drop-shadow(0 14px 20px rgba(0,0,0,.12));
+  }
+  .story-3d-stage,.creative-stage{
+    overflow:hidden;
+  }
+
+
+  /* Pyramid Creator: stable SVG designer */
+  .pyramid-creator-grid{grid-template-columns:minmax(0,1.15fr) 330px}
+  .pyramid-canvas-card{min-height:470px;align-content:center;padding-top:54px}
+  .pyramid-creator-shell{width:min(100%,520px);height:360px;cursor:crosshair;touch-action:manipulation}
+  .pyramid-creator-svg{width:100%;height:100%;background:rgba(255,255,255,.18);border-radius:18px}
+  .creator-help{position:absolute;left:16px;right:16px;bottom:14px;z-index:4;background:rgba(255,247,232,.94);border:2px solid rgba(17,17,17,.16);border-radius:14px;padding:9px 12px;font-weight:900;color:var(--navy);text-align:center}
+  .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pyramid-tool.selected{background:#fff6d8;color:var(--navy);border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,178,60,.22)}
+  .pyramid-controls input[type="color"]{height:38px;border:2px solid #111;border-radius:10px;background:white;padding:2px}
+  .pyramid-deco{cursor:pointer;filter:drop-shadow(0 3px 3px rgba(0,0,0,.18))}
+
+
+
+  /* v11: simplified 3D square-pyramid decorating studio */
+  .pyramid-only-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 330px;
+    gap:18px;
+    align-items:start;
+  }
+  .pyramid-design-stage{
+    min-height:560px;
+    padding-top:72px;
+    padding-bottom:64px;
+  }
+  .pyramid-main-shell{
+    width:min(100%, 540px);
+    height:390px;
+  }
+  .big-pyramid-svg{
+    width:100%;
+    height:100%;
+    cursor:crosshair;
+    filter:drop-shadow(0 22px 28px rgba(0,0,0,.18));
+  }
+  .pyramid-click-help{
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:16px;
+    z-index:4;
+    background:rgba(255,247,232,.96);
+    border:2px solid rgba(17,17,17,.16);
+    border-radius:16px;
+    padding:10px 12px;
+    font-weight:900;
+    color:var(--navy);
+    text-align:center;
+  }
+  .pyramid-controls-final{position:sticky;top:18px}
+  .pyramid-tool-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .pyramid-tool.selected{
+    background:#fff6d8;
+    color:var(--navy);
+    border-color:#111;
+    box-shadow:0 0 0 4px rgba(243,178,60,.22);
+  }
+  @media (max-width: 980px){
+    .pyramid-only-grid{grid-template-columns:1fr}
+    .pyramid-controls-final{position:relative;top:auto}
+    .pyramid-design-stage{min-height:500px}
+  }
+
+
+  .table-wrap{overflow-x:auto}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    font-size:16px;
+  }
+  th,td{
+    border:2pt solid #000;
+    padding:10px;
+    vertical-align:top;
+  }
+  th{
+    background:var(--navy);
+    color:white;
+    text-align:left;
+  }
+
+  .practice-item{
+    border:2px solid rgba(17,17,17,.16);
+    background:white;
+    border-radius:20px;
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .practice-head{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    margin-bottom:10px;
+  }
+  .badge{
+    background:#fff6d8;
+    border:2px solid #111;
+    color:var(--navy);
+    border-radius:999px;
+    padding:6px 10px;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  .draw-area{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 260px;
+    gap:16px;
+  }
+  .draw-grid{
+    width:100%;
+    height:420px;
+    background:
+      linear-gradient(#dce8ee 1px, transparent 1px),
+      linear-gradient(90deg,#dce8ee 1px, transparent 1px),
+      white;
+    background-size:35px 35px;
+    border:3px solid #111;
+    border-radius:20px;
+    position:relative;
+    overflow:hidden;
+  }
+  .draw-controls{
+    display:grid;
+    gap:10px;
+  }
+  .draw-tool{
+    border:2px solid rgba(17,17,17,.16);
+    background:white;
+    border-radius:16px;
+    padding:12px;
+    cursor:pointer;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .draw-tool.active{background:#edfbfb;border-color:var(--teal)}
+  .placed-shape{
+    position:absolute;
+    pointer-events:none;
+  }
+  .mini-square{
+    width:70px;height:70px;background:#dff5f5;border:3px solid var(--navy);border-radius:8px;
+  }
+  .mini-triangle{
+    width:0;height:0;border-left:42px solid transparent;border-right:42px solid transparent;border-bottom:72px solid #ffe2a1;filter:drop-shadow(0 0 0 #111);
+  }
+
+  .report{
+    background:white;
+    border:3px solid #111;
+    border-radius:22px;
+    padding:22px;
+  }
+  .report h3{margin-top:0}
+  .report-row{
+    border-bottom:1px solid #ddd;
+    padding:10px 0;
+  }
+  .report-row b{color:var(--navy)}
+
+  .video-link-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    margin:10px 0 14px;
+  }
+
+  .toast{
+    position:fixed;
+    right:22px;
+    bottom:22px;
+    background:var(--navy);
+    color:white;
+    border-radius:16px;
+    padding:12px 14px;
+    box-shadow:var(--shadow);
+    transform:translateY(120px);
+    opacity:0;
+    transition:.25s ease;
+    z-index:20;
+    font-weight:800;
+  }
+  .toast.show{transform:none; opacity:1}
+
+  .mobile-nav{
+    display:none;
+    position:sticky;
+    top:0;
+    background:rgba(255,255,255,.96);
+    z-index:4;
+    padding:10px;
+    border-bottom:2px solid rgba(17,17,17,.12);
+  }
+  .mobile-nav select{width:100%; padding:10px; border-radius:12px; border:2px solid #111; font-weight:800}
+
+  .print-only{display:none}
+
+  @media (max-width: 980px){
+    .app{display:block}
+    aside{display:none}
+    .mobile-nav{display:block}
+    main{padding:18px}
+    .lesson-targets,.grid-2,.grid-3,.grid-4,.net-lab,.draw-area,.match-area,.decor-lab,.design-studio-grid{grid-template-columns:1fr}
+    .sort-board{grid-template-columns:1fr}
+    .net-canvas{height:540px}
+    .snap[data-pos="left"]{left:35px}
+    .snap[data-pos="right"]{right:35px}
+  }
+
+  @media print{
+    body{background:white}
+    .app{display:block}
+    aside,.mobile-nav,.top-banner,.no-print,.toast{display:none!important}
+    main{padding:0}
+    section.panel{display:block!important; page-break-after:always}
+    .card{box-shadow:none;border:2pt solid #000}
+    textarea{border:2pt solid #000}
+    .print-only{display:block}
+  }
+</style>
+</head>
+<body>
+<div class="mobile-nav no-print">
+  <select id="mobileSelect" aria-label="Choose activity section"></select>
+</div>
+
+<div class="app">
+  <aside class="no-print">
+    <div class="brand">
+      <div class="logo">3D</div>
+      <div>
+        <h1>Session 1<br/>Pyramid Net Lab</h1>
+        <small>45–60 minute ESOL activity</small>
+      </div>
+    </div>
+
+    <div class="student-card">
+      <div class="student-grid">
+        <div class="field">
+          <label for="studentName">Student Name</label>
+          <input id="studentName" placeholder="Type your name" />
+        </div>
+        <div class="field">
+          <label for="studentPeriod">Period / Class</label>
+          <input id="studentPeriod" placeholder="Example: Period 3" />
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-top"><span>Progress</span><span id="progressText">0%</span></div>
+      <div class="progress"><div class="bar" id="progressBar"></div></div>
+    </div>
+
+    <nav id="sideNav"></nav>
+
+    <div class="side-actions">
+      <button class="mini-btn" onclick="saveWork()">Save</button>
+      <button class="mini-btn" onclick="window.print()">Print</button>
+      <button class="mini-btn" onclick="showReport()">Report</button>
+      <button class="mini-btn" onclick="resetWork()">Reset</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top-banner">
+      <div class="eyebrow">🧩 Math Mission • Nets and Pyramids</div>
+      <h2>How can a flat drawing become a paper pyramid?</h2>
+      <p>You will explore 2D and 3D figures, learn key words, design a square pyramid, and explain how the parts of a pyramid show up in its net.</p>
+      <div class="lesson-targets">
+        <div class="target-card"><span>Learning Target 1</span>I can use a three-dimensional figure to create a two-dimensional net.</div>
+        <div class="target-card"><span>Learning Target 2</span>I can use structure to match a net with a three-dimensional figure.</div>
+      </div>
+    </div>
+
+    <section class="panel active" id="panel-launch" data-title="Notice and Wonder">
+      <div class="card">
+        <div class="time-pill">⏱ 6–8 minutes</div>
+        <h3>Launch: Be Curious</h3>
+        <p class="sub">Look carefully at the pyramid picture. What do you notice? What do you wonder?</p>
+        <div class="grid-2">
+          <div class="svg-frame" aria-label="Pyramid visual">
+            <svg viewBox="0 0 560 330" role="img" aria-labelledby="pyramidTitle">
+              <title id="pyramidTitle">Pyramids on a desert background</title>
+              <defs>
+                <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#fff3cf"/>
+                  <stop offset="1" stop-color="#e8bf6a"/>
+                </linearGradient>
+                <linearGradient id="pyrA" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#f8d88d"/>
+                  <stop offset="1" stop-color="#c6923b"/>
+                </linearGradient>
+              </defs>
+              <rect width="560" height="330" fill="#e8f6f6"/>
+              <circle cx="465" cy="70" r="36" fill="#f3b23c" opacity=".85"/>
+              <rect y="205" width="560" height="125" fill="url(#sand)"/>
+              <polygon points="150,80 42,260 260,260" fill="url(#pyrA)" stroke="#7b561d" stroke-width="3"/>
+              <polygon points="150,80 260,260 182,260" fill="#a97329" opacity=".42"/>
+              <polygon points="328,112 228,260 426,260" fill="#f4ca7a" stroke="#7b561d" stroke-width="3"/>
+              <polygon points="328,112 426,260 352,260" fill="#a97329" opacity=".42"/>
+              <path d="M20 282 C110 260, 190 305, 310 282 S480 260, 550 286" fill="none" stroke="#bf8d34" stroke-width="5" opacity=".45"/>
+            </svg>
+          </div>
+          <div>
+            <label><b>I notice...</b></label>
+            <textarea data-save="notice" placeholder="I notice ___."></textarea>
+            <label><b>I wonder...</b></label>
+            <textarea data-save="wonder" placeholder="I wonder ___."></textarea>
+            <div class="support-box">
+              <strong>Helpful words:</strong>
+              <div class="word-bank">
+                <span class="chip">face</span>
+                <span class="chip">base</span>
+                <span class="chip">triangle</span>
+                <span class="chip">square</span>
+                <span class="chip">paper</span>
+                <span class="chip">fold</span>
+                <span class="chip es">Yo noto...</span>
+                <span class="chip es">Me pregunto...</span>
+              </div>
+            </div>
+            <button class="primary-btn" onclick="completePanel('launch')">Save Notice/Wonder</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-vocab" data-title="Vocabulary">
+      <div class="card">
+        <div class="time-pill">⏱ 10–12 minutes</div>
+        <h3>Vocabulary Builder</h3>
+        <p class="sub">Read each word. Use the picture and the Spanish support to help you explain the word in English.</p>
+        <div class="grid-3" id="vocabCards"></div>
+      </div>
+
+      <div class="card">
+        <h3>Match the Word to the Meaning</h3>
+        <p class="sub">Drag each word to its meaning. Then check your work.</p>
+        <div class="match-area">
+          <div>
+            <h4>Words</h4>
+            <div class="tile-bank" id="matchWords"></div>
+          </div>
+          <div>
+            <h4>Meanings</h4>
+            <div id="matchDefs"></div>
+          </div>
+        </div>
+        <button class="primary-btn" onclick="checkVocabMatch()">Check Vocabulary</button>
+        <div class="feedback" id="vocabFeedback"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-story" data-title="Story Problem">
+      <div class="card">
+        <div class="time-pill">⏱ 7–9 minutes</div>
+        <h3>Yuzuki’s Pyramid Project</h3>
+        <p class="sub">Yuzuki is making a paper replica of the Pyramids of Giza for a social studies project. What can help her make paper pyramids?</p>
+        <div class="grid-2">
+          <div class="story-3d-shell">
+            <div class="story-3d-toolbar">
+              <span>3D Square Pyramid</span>
+              <div class="story-3d-actions">
+                <button type="button" onclick="rotateStoryPyramid(-25)">⟲ Turn</button>
+                <button type="button" onclick="rotateStoryPyramid(25)">Turn ⟳</button>
+                <button type="button" onclick="toggleStorySpin()">Spin/Pause</button>
+              </div>
+            </div>
+            <div class="story-3d-stage" aria-label="Interactive 3D square pyramid model">
+              <div class="story-pyramid-wrap" id="storyPyramidWrap">
+                <svg id="storyPyramidSvg" class="story-pyramid-svg" viewBox="0 0 420 280" aria-label="Interactive 3D square pyramid model"></svg>
+              </div>
+            </div>
+            <div class="story-3d-labels">
+              <span>1 square base</span>
+              <span>4 triangular faces</span>
+            </div>
+          </div>
+          <div>
+            <h4>Think: What does Yuzuki need?</h4>
+            <div class="choice-grid">
+              <div class="choice story-choice" data-correct="false"><b>A list of colors only</b><span>This helps decorate, but not build the shape.</span></div>
+              <div class="choice story-choice" data-correct="true"><b>A net</b><span>A flat 2D pattern she can fold into a 3D pyramid.</span></div>
+              <div class="choice story-choice" data-correct="false"><b>A number line</b><span>This helps with numbers, but not the paper shape.</span></div>
+            </div>
+            <button class="primary-btn" onclick="checkSingleChoice('.story-choice','storyFeedback')">Check</button>
+            <div class="feedback" id="storyFeedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Explain in Your Own Words</h3>
+        <div class="support-box">
+          <strong>Sentence Frames:</strong>
+          <div class="word-bank">
+            <span class="chip">Yuzuki can use a ___ because ___.</span>
+            <span class="chip">A net is helpful because it shows ___.</span>
+            <span class="chip es">Una red ayuda porque muestra ___.</span>
+          </div>
+        </div>
+        <textarea data-save="story_explain" placeholder="Yuzuki can use a ___ because ___."></textarea>
+        <button class="primary-btn" onclick="completePanel('story')">Save Explanation</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-dimensions" data-title="2D or 3D?">
+      <div class="card">
+        <div class="time-pill">⏱ 8–10 minutes</div>
+        <h3>Sort: Two-Dimensional or Three-Dimensional?</h3>
+        <p class="sub">Drag each figure into the correct column. Remember: 2D has length and width. 3D has length, width, and height.</p>
+        <div class="support-box">
+          <strong>Language Help:</strong>
+          <div class="word-bank">
+            <span class="chip">2D = flat</span>
+            <span class="chip">3D = solid</span>
+            <span class="chip">length</span>
+            <span class="chip">width</span>
+            <span class="chip">height</span>
+          </div>
+        </div>
+        <div class="tile-bank" id="shapeBank"></div>
+        <div class="sort-board">
+          <div class="sort-column drop-sort" data-sort="2D"><h4>2D Figures</h4></div>
+          <div class="sort-column drop-sort" data-sort="3D"><h4>3D Figures</h4></div>
+        </div>
+        <button class="primary-btn" onclick="checkSort()">Check Sort</button>
+        <div class="feedback" id="sortFeedback"></div>
+      </div>
+
+      <div class="card">
+        <h3>Quick Write</h3>
+        <p class="sub">How can you determine if a figure is 2D or 3D?</p>
+        <textarea data-save="dimension_explain" placeholder="I can tell because a 2D figure has ___ and a 3D figure has ___."></textarea>
+        <button class="primary-btn" onclick="completePanel('dimensions')">Save Quick Write</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-attributes" data-title="Pyramid Attributes">
+      <div class="card">
+        <div class="time-pill">⏱ 8–10 minutes</div>
+        <h3>Square Pyramid Attributes</h3>
+        <p class="sub">A square pyramid has one square base and four triangular side faces that meet at one vertex.</p>
+        <div class="grid-2">
+          <div class="svg-frame">
+            <svg viewBox="0 0 480 360" aria-label="Square pyramid with labels">
+              <defs>
+                <linearGradient id="faceG" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#8ce0dc"/>
+                  <stop offset="1" stop-color="#0f9c9a"/>
+                </linearGradient>
+              </defs>
+              <rect width="480" height="360" rx="20" fill="#f7fbfb"/>
+              <polygon points="240,50 100,245 380,245" fill="url(#faceG)" stroke="#123047" stroke-width="4"/>
+              <polygon points="240,50 380,245 270,285 100,245" fill="#087a78" opacity=".30" stroke="#123047" stroke-width="4"/>
+              <polygon points="100,245 270,285 380,245 210,208" fill="#fff6d8" stroke="#123047" stroke-width="4"/>
+              <circle cx="240" cy="50" r="8" fill="#c53d35"/>
+              <text x="252" y="44" font-size="18" font-weight="800" fill="#c53d35">vertex</text>
+              <text x="206" y="272" font-size="20" font-weight="900" fill="#123047">square base</text>
+              <text x="125" y="150" font-size="20" font-weight="900" fill="#123047">triangular face</text>
+            </svg>
+          </div>
+          <div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Part</th><th>How many?</th><th>Student note</th></tr></thead>
+                <tbody>
+                  <tr><td>Square base</td><td>1</td><td>bottom polygon</td></tr>
+                  <tr><td>Triangular faces</td><td>4</td><td>one on each side of the square</td></tr>
+                  <tr><td>Total faces</td><td>5</td><td>4 triangles + 1 square</td></tr>
+                  <tr><td>Edges</td><td>8</td><td>where faces meet</td></tr>
+                  <tr><td>Vertices</td><td>5</td><td>corners, including top vertex</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="support-box">
+              <strong>Say it:</strong> “The pyramid has four triangular faces and one square base.”
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Attribute Check</h3>
+        <div class="practice-item">
+          <p><b>1. What shapes are needed in a net for a square pyramid?</b></p>
+          <div class="choice-grid">
+            <div class="choice attr-choice" data-correct="false"><b>6 squares</b></div>
+            <div class="choice attr-choice" data-correct="true"><b>1 square and 4 triangles</b></div>
+            <div class="choice attr-choice" data-correct="false"><b>2 circles and 1 rectangle</b></div>
+          </div>
+          <button class="primary-btn" onclick="checkSingleChoice('.attr-choice','attrFeedback')">Check</button>
+          <div class="feedback" id="attrFeedback"></div>
+        </div>
+        <p><b>2. Why do the triangular faces connect to the square base?</b></p>
+        <textarea data-save="attribute_explain" placeholder="The triangular faces connect to the square base because ___."></textarea>
+        <button class="primary-btn" onclick="completePanel('attributes')">Save Attribute Work</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-practice" data-title="Practice">
+      <div class="card">
+        <div class="time-pill">⏱ 10–12 minutes</div>
+        <h3>Independent Practice: Nets and Pyramids</h3>
+        <p class="sub">Answer each question. Use the word bank and visuals when you need support.</p>
+
+        <div class="practice-item">
+          <div class="practice-head">
+            <p><b>1. Which net could make a square pyramid?</b></p>
+            <span class="badge">Choose 1</span>
+          </div>
+          <div class="choice-grid">
+            <div class="choice practice-choice-1" data-correct="true">
+              <b>Net A</b>
+              <svg viewBox="0 0 160 130">
+                <rect x="55" y="45" width="50" height="50" fill="#dff5f5" stroke="#123047" stroke-width="3"/>
+                <polygon points="55,45 80,10 105,45" fill="#ffe2a1" stroke="#123047" stroke-width="3"/>
+                <polygon points="55,95 80,125 105,95" fill="#ffe2a1" stroke="#123047" stroke-width="3"/>
+                <polygon points="55,45 20,70 55,95" fill="#ffe2a1" stroke="#123047" stroke-width="3"/>
+                <polygon points="105,45 140,70 105,95" fill="#ffe2a1" stroke="#123047" stroke-width="3"/>
+              </svg>
+            </div>
+            <div class="choice practice-choice-1" data-correct="false">
+              <b>Net B</b>
+              <svg viewBox="0 0 160 130">
+                <rect x="30" y="40" width="45" height="45" fill="#dff5f5" stroke="#123047" stroke-width="3"/>
+                <rect x="75" y="40" width="45" height="45" fill="#dff5f5" stroke="#123047" stroke-width="3"/>
+                <rect x="75" y="85" width="45" height="45" fill="#dff5f5" stroke="#123047" stroke-width="3"/>
+                <rect x="75" y="0" width="45" height="45" fill="#dff5f5" stroke="#123047" stroke-width="3"/>
+              </svg>
+            </div>
+            <div class="choice practice-choice-1" data-correct="false">
+              <b>Net C</b>
+              <svg viewBox="0 0 160 130">
+                <rect x="55" y="45" width="50" height="50" fill="#dff5f5" stroke="#123047" stroke-width="3"/>
+                <circle cx="80" cy="20" r="22" fill="#ffe2a1" stroke="#123047" stroke-width="3"/>
+                <circle cx="80" cy="118" r="22" fill="#ffe2a1" stroke="#123047" stroke-width="3"/>
+              </svg>
+            </div>
+          </div>
+          <button class="primary-btn" onclick="checkSingleChoice('.practice-choice-1','practiceFeedback1')">Check #1</button>
+          <div class="feedback" id="practiceFeedback1"></div>
+        </div>
+
+        <div class="practice-item">
+          <p><b>2. Explain why Net A works.</b></p>
+          <textarea data-save="practice_explain_1" placeholder="Net A works because it has ___ square base and ___ triangular faces."></textarea>
+        </div>
+
+        <div class="practice-item">
+          <p><b>3. Complete the table.</b></p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Figure</th><th>Base Shape</th><th>Side Faces</th><th>3D Name</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Square pyramid</td>
+                  <td><input class="short-input" data-save="table_base" aria-label="Base shape"/></td>
+                  <td><input class="short-input" data-save="table_faces" aria-label="Side faces"/></td>
+                  <td><input class="short-input" data-save="table_name" aria-label="3D name"/></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="practice-item">
+          <p><b>4. A pyramid with a rectangle base that is not a square will have what kind of base in its net?</b></p>
+          <div class="choice-grid">
+            <div class="choice practice-choice-4" data-correct="false"><b>A square base</b></div>
+            <div class="choice practice-choice-4" data-correct="true"><b>A rectangle base</b></div>
+            <div class="choice practice-choice-4" data-correct="false"><b>A circle base</b></div>
+          </div>
+          <button class="primary-btn" onclick="checkSingleChoice('.practice-choice-4','practiceFeedback4')">Check #4</button>
+          <div class="feedback" id="practiceFeedback4"></div>
+        </div>
+
+        <button class="primary-btn" onclick="completePanel('practice')">Mark Practice Complete</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-reflect" data-title="Reflect + Exit">
+      <div class="card">
+        <div class="time-pill">⏱ 8–10 minutes</div>
+        <h3>Summarize: Nets Represent 3D Figures</h3>
+        <p class="sub">A net is a two-dimensional representation of a three-dimensional figure. When you unfold a 3D figure, you see its 2D faces.</p>
+        <div class="support-box">
+          <strong>Must-use words:</strong>
+          <div class="word-bank">
+            <span class="chip">net</span>
+            <span class="chip">two-dimensional</span>
+            <span class="chip">three-dimensional</span>
+            <span class="chip">square base</span>
+            <span class="chip">triangular faces</span>
+            <span class="chip">fold</span>
+          </div>
+        </div>
+        <label><b>My summary:</b></label>
+        <textarea data-save="summary" placeholder="A net is ___. A square pyramid net has ___."></textarea>
+      </div>
+
+      <div class="card">
+        <h3>Exit Ticket</h3>
+        <div class="practice-item">
+          <p><b>1. What can help Yuzuki make her paper pyramids?</b></p>
+          <input class="short-input" data-save="exit_1" placeholder="A ___ can help Yuzuki."/>
+        </div>
+        <div class="practice-item">
+          <p><b>2. How many triangular faces are in a net for a square pyramid?</b></p>
+          <div class="choice-grid">
+            <div class="choice exit-choice" data-correct="false"><b>2</b></div>
+            <div class="choice exit-choice" data-correct="true"><b>4</b></div>
+            <div class="choice exit-choice" data-correct="false"><b>6</b></div>
+          </div>
+          <button class="primary-btn" onclick="checkSingleChoice('.exit-choice','exitFeedback')">Check #2</button>
+          <div class="feedback" id="exitFeedback"></div>
+        </div>
+        <div class="practice-item">
+          <p><b>3. Explain how a net and a pyramid are connected.</b></p>
+          <textarea data-save="exit_3" placeholder="A net and a pyramid are connected because ___."></textarea>
+        </div>
+        <button class="primary-btn" onclick="completePanel('reflect')">Finish Activity</button>
+      </div>
+
+      <div class="card">
+        <h3>Student Confidence</h3>
+        <p class="sub">Choose one.</p>
+        <div class="choice-grid">
+          <div class="choice confidence" data-value="I need more help."><b>🌱 I need more help.</b></div>
+          <div class="choice confidence" data-value="I am getting it."><b>🌿 I am getting it.</b></div>
+          <div class="choice confidence" data-value="I can explain it."><b>🌳 I can explain it.</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-decorate" data-title="Design Studio">
+      <div class="card pyramid-designer-card">
+        <div class="time-pill">⏱ 10–14 minutes</div>
+        <h3>Final Tab: 3D Square-Pyramid Decorating Studio</h3>
+        <p class="sub">Design and decorate a <strong>3D square pyramid</strong>. This tab is about decorating the pyramid itself, not building the net.</p>
+        <div class="support-box">
+          <strong>Design challenge:</strong> Make a creative square pyramid. Then explain how the flat net could fold into your 3D pyramid.
+        </div>
+
+        <div class="pyramid-only-grid">
+          <div class="creative-stage pyramid-canvas-card pyramid-design-stage" id="creativeStage" aria-label="Large 3D square pyramid decorator">
+            <div class="creative-label pyramid-stage-title">3D Square Pyramid — decorate this pyramid</div>
+            <div class="creative-pyramid-shell pyramid-creator-shell pyramid-main-shell" id="creativePyramid">
+              <svg id="creativePyramidSvg" class="creative-pyramid-svg pyramid-creator-svg big-pyramid-svg" viewBox="0 0 520 380" aria-label="3D square pyramid students can decorate">
+                <defs>
+                  <linearGradient id="fallbackBase" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#dff5f5"></stop>
+                    <stop offset="1" stop-color="#fff6d8"></stop>
+                  </linearGradient>
+                </defs>
+                <ellipse cx="260" cy="315" rx="170" ry="36" fill="rgba(61,43,17,.18)"></ellipse>
+                <polygon points="155,255 260,295 365,255 260,215" fill="url(#fallbackBase)" stroke="#123047" stroke-width="5"></polygon>
+                <polygon points="260,70 155,255 260,215" fill="#f7c45f" stroke="#123047" stroke-width="5"></polygon>
+                <polygon points="260,70 260,215 365,255" fill="#e9a735" stroke="#123047" stroke-width="5"></polygon>
+                <polygon points="260,70 365,255 260,295" fill="#f3b23c" fill-opacity=".92" stroke="#123047" stroke-width="5"></polygon>
+                <polygon points="260,70 260,295 155,255" fill="#ffd783" fill-opacity=".9" stroke="#123047" stroke-width="5"></polygon>
+                <circle cx="260" cy="70" r="8" fill="#0f9c9a"></circle>
+                <text x="260" y="350" text-anchor="middle" font-size="18" font-weight="900" fill="#123047">Click the pyramid to decorate the triangular faces and square base.</text>
+              </svg>
+            </div>
+            <div class="creator-help pyramid-click-help" id="creatorHelp">Selected decoration: ⭐ Star. Click on the pyramid to place it.</div>
+          </div>
+
+          <div class="control-stack pyramid-controls-final">
+            <h4 style="margin:0;color:var(--navy)">Pyramid Design Tools</h4>
+            <label>Triangle Face Color <input type="color" id="faceColorInput" value="#f3b23c" oninput="updateCreativePyramid()"></label>
+            <label>Square Base Color <input type="color" id="baseColorInput" value="#dff5f5" oninput="updateCreativePyramid()"></label>
+            <label>Edge / Line Color <input type="color" id="accentColorInput" value="#0f9c9a" oninput="updateCreativePyramid()"></label>
+            <label>Size <input type="range" id="pyramidSizeInput" min="70" max="145" value="110" oninput="updateCreativePyramid()"></label>
+            <label>Height <input type="range" id="pyramidHeightInput" min="75" max="145" value="115" oninput="updateCreativePyramid()"></label>
+            <label>Turn <input type="range" id="pyramidRotateInput" min="-170" max="170" value="-35" oninput="updateCreativePyramid()"></label>
+            <label>Face Pattern
+              <select id="pyramidPatternInput" onchange="updateCreativePyramid()">
+                <option value="smooth">Smooth</option>
+                <option value="stripes">Stripes</option>
+                <option value="dots">Dots</option>
+                <option value="bricks">Block/Stone</option>
+              </select>
+            </label>
+            <div class="pyramid-tool-grid" aria-label="Decoration tools">
+              <button class="ghost-btn pyramid-tool selected" data-tool="star" onclick="setPyramidTool('star')">⭐ Star</button>
+              <button class="ghost-btn pyramid-tool" data-tool="gem" onclick="setPyramidTool('gem')">◆ Gem</button>
+              <button class="ghost-btn pyramid-tool" data-tool="sun" onclick="setPyramidTool('sun')">☀️ Sun</button>
+              <button class="ghost-btn pyramid-tool" data-tool="door" onclick="setPyramidTool('door')">Door</button>
+              <button class="ghost-btn pyramid-tool" data-tool="flag" onclick="setPyramidTool('flag')">⚑ Flag</button>
+              <button class="ghost-btn pyramid-tool" data-tool="label" onclick="setPyramidTool('label')">Label</button>
+            </div>
+            <div class="control-row">
+              <button class="ghost-btn" onclick="randomizePyramidDesign()">Surprise</button>
+              <button class="danger-btn" onclick="resetPyramidDesign()">Reset</button>
+            </div>
+            <button class="danger-btn" onclick="clearPyramidDecorations()">Clear Decorations</button>
+            <div class="selected-note">Tip: choose a decoration tool, then click directly on the 3D pyramid.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Explain Your Design</h3>
+        <div class="support-box">
+          <strong>Sentence Frames:</strong>
+          <div class="word-bank">
+            <span class="chip">My pyramid has ___.</span>
+            <span class="chip">The flat net would fold because ___.</span>
+            <span class="chip">The square is the ___ and the triangles are ___.</span>
+            <span class="chip es">La base es ___.</span>
+            <span class="chip es">Los triángulos son ___.</span>
+          </div>
+        </div>
+        <textarea data-save="decor_reflection" placeholder="My 3D square pyramid has ___. The flat net would fold because ___."></textarea>
+        <button class="primary-btn" onclick="completePanel('decorate')">Save Design Reflection</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-video" data-title="Build a Pyramid Video">
+      <div class="card">
+        <div class="time-pill">⏱ 8–12 minutes</div>
+        <h3>Build a Real Square Pyramid</h3>
+        <p class="sub">After designing your pyramid, use this video to build a paper pyramid. Open the link, watch the steps, and build carefully.</p>
+        <div class="support-box">
+          <strong>Build goal:</strong>
+          <div class="word-bank">
+            <span class="chip">fold</span>
+            <span class="chip">square base</span>
+            <span class="chip">triangular faces</span>
+            <span class="chip">paper pyramid</span>
+            <span class="chip es">doblar</span>
+            <span class="chip es">pirámide de papel</span>
+          </div>
+        </div>
+      <button class="primary-btn video-link-btn" type="button" disabled>Teacher-Assigned Build Video</button>
+        <div class="practice-item">
+          <p><b>After watching/building:</b> What step helped you the most?</p>
+          <textarea data-save="video_reflection" placeholder="The step that helped me most was ___ because ___."></textarea>
+        </div>
+        <button class="primary-btn" onclick="completePanel('video')">Mark Video Build Complete</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-report" data-title="Report">
+      <div class="report" id="reportBox">
+        <h3>Student Work Report</h3>
+        <p>Use this report to review, print, or submit student work.</p>
+        <div id="reportContent"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast">Saved.</div>
+
+<script>
+const panels = [
+  {id:'launch', label:'Notice/Wonder'},
+  {id:'vocab', label:'Vocabulary'},
+  {id:'story', label:'Story Problem'},
+  {id:'dimensions', label:'2D or 3D?'},
+  {id:'attributes', label:'Pyramid Attributes'},
+  {id:'practice', label:'Practice'},
+  {id:'reflect', label:'Reflect + Exit'},
+  {id:'decorate', label:'Design Studio'},
+  {id:'video', label:'Build Video'},
+  {id:'report', label:'Report'}
+];
+
+const STORAGE_KEY = 'session1_pyramid_net_esol_activity_v3';
+let state = {
+  complete:{},
+  responses:{},
+  selected:{},
+  confidence:'',
+  netLocked:{},
+  drawing:{square:0, triangle:0}
+};
+
+function loadState(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved) state = {...state, ...JSON.parse(saved)};
+  }catch(e){ console.warn('Could not load saved work.', e); }
+}
+
+function persist(){
+  document.querySelectorAll('[data-save]').forEach(el=>{
+    state.responses[el.dataset.save] = el.value || '';
+  });
+  state.responses.studentName = document.getElementById('studentName')?.value || state.responses.studentName || '';
+  state.responses.studentPeriod = document.getElementById('studentPeriod')?.value || state.responses.studentPeriod || '';
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateProgress();
+}
+
+function saveWork(){
+  persist();
+  toast('Saved work on this device.');
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+function resetWork(){
+  if(!confirm('Reset this activity on this device?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+function initNav(){
+  const nav = document.getElementById('sideNav');
+  const mobile = document.getElementById('mobileSelect');
+  nav.innerHTML = '';
+  mobile.innerHTML = '';
+  panels.forEach((p,idx)=>{
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn' + (idx===0 ? ' active':'');
+    btn.id = `nav-${p.id}`;
+    btn.innerHTML = `<span class="num">${idx+1}</span><span>${p.label}</span><span class="check" id="check-${p.id}">${state.complete[p.id]?'✓':''}</span>`;
+    btn.onclick = ()=>showPanel(p.id);
+    nav.appendChild(btn);
+
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${idx+1}. ${p.label}`;
+    mobile.appendChild(opt);
+  });
+  mobile.addEventListener('change', e=>showPanel(e.target.value));
+}
+
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(s=>s.classList.remove('active'));
+  document.getElementById(`panel-${id}`).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const nav = document.getElementById(`nav-${id}`);
+  if(nav) nav.classList.add('active');
+  document.getElementById('mobileSelect').value = id;
+  if(id === 'report') buildReport();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function completePanel(id){
+  persist();
+  state.complete[id] = true;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const check = document.getElementById(`check-${id}`);
+  if(check) check.textContent = '✓';
+  updateProgress();
+  toast('Section marked complete.');
+}
+
+function updateProgress(){
+  const countable = panels.filter(p=>p.id !== 'report').length;
+  const done = Object.entries(state.complete).filter(([k,v])=>v && k !== 'report').length;
+  const pct = Math.round((done/countable)*100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = pct + '%';
+}
+
+function restoreInputs(){
+  document.querySelectorAll('[data-save]').forEach(el=>{
+    const val = state.responses[el.dataset.save];
+    if(val !== undefined) el.value = val;
+    el.addEventListener('input', persist);
+  });
+  const name = document.getElementById('studentName');
+  const period = document.getElementById('studentPeriod');
+  name.value = state.responses.studentName || '';
+  period.value = state.responses.studentPeriod || '';
+  name.addEventListener('input', persist);
+  period.addEventListener('input', persist);
+}
+
+function makeCoins(){ /* removed: no coin warm-up in v2 */ }
+function coin(text){ return document.createElement('div'); }
+
+function bindChoices(){
+  document.querySelectorAll('.choice').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      const classes = [...ch.classList].filter(c=>c.includes('choice') || c === 'confidence' || c === 'coin-choice');
+      const group = classes.find(c=>c !== 'choice') || 'generic';
+      document.querySelectorAll('.' + group).forEach(x=>x.classList.remove('selected'));
+      ch.classList.add('selected');
+      if(ch.classList.contains('confidence')){
+        state.confidence = ch.dataset.value;
+        persist();
+      }
+      if(ch.classList.contains('coin-choice')){
+        state.selected.coin = ch.dataset.choice;
+        persist();
+      }
+    });
+  });
+}
+
+function checkSingleChoice(selector, feedbackId){
+  const choices = [...document.querySelectorAll(selector)];
+  const selected = choices.find(c=>c.classList.contains('selected'));
+  const fb = document.getElementById(feedbackId);
+  choices.forEach(c=>c.classList.remove('correct','wrong'));
+  fb.className = 'feedback show';
+  if(!selected){
+    fb.classList.add('try');
+    fb.textContent = 'Choose an answer first.';
+    return;
+  }
+  if(selected.dataset.correct === 'true'){
+    selected.classList.add('correct');
+    fb.classList.add('good');
+    fb.textContent = 'Correct. Your answer matches the structure of the figure.';
+  }else{
+    selected.classList.add('wrong');
+    fb.classList.add('try');
+    fb.textContent = 'Try again. Look at the shapes and how they connect.';
+  }
+  persist();
+}
+
+const vocab = [
+  {word:'net', es:'red / patrón plano', def:'a flat 2D pattern that can fold into a 3D figure', icon:'net'},
+  {word:'two-dimensional', es:'bidimensional / plano', def:'flat; has length and width', icon:'2d'},
+  {word:'three-dimensional', es:'tridimensional / sólido', def:'solid; has length, width, and height', icon:'3d'},
+  {word:'face', es:'cara', def:'a flat surface on a 3D figure', icon:'face'},
+  {word:'base', es:'base', def:'the bottom polygon of a figure', icon:'base'},
+  {word:'vertex', es:'vértice', def:'a corner point where edges meet', icon:'vertex'}
+];
+
+function vocabSvg(type){
+  if(type==='net') return `<svg viewBox="0 0 180 110"><rect x="65" y="35" width="50" height="50" fill="#dff5f5" stroke="#123047" stroke-width="3"/><polygon points="65,35 90,5 115,35" fill="#ffe2a1" stroke="#123047" stroke-width="3"/><polygon points="65,85 90,108 115,85" fill="#ffe2a1" stroke="#123047" stroke-width="3"/><polygon points="65,35 35,60 65,85" fill="#ffe2a1" stroke="#123047" stroke-width="3"/><polygon points="115,35 145,60 115,85" fill="#ffe2a1" stroke="#123047" stroke-width="3"/></svg>`;
+  if(type==='2d') return `<svg viewBox="0 0 180 110"><rect x="45" y="25" width="90" height="60" fill="#dff5f5" stroke="#123047" stroke-width="4"/><text x="90" y="101" text-anchor="middle" font-size="18" font-weight="800" fill="#123047">flat</text></svg>`;
+  if(type==='3d') return `<svg viewBox="0 0 180 110"><polygon points="55,35 95,15 135,35 95,55" fill="#9ce3e0" stroke="#123047" stroke-width="3"/><polygon points="55,35 95,55 95,95 55,75" fill="#6fcac7" stroke="#123047" stroke-width="3"/><polygon points="135,35 95,55 95,95 135,75" fill="#0f9c9a" stroke="#123047" stroke-width="3"/></svg>`;
+  if(type==='face') return `<svg viewBox="0 0 180 110"><polygon points="90,8 40,90 140,90" fill="#ffe2a1" stroke="#123047" stroke-width="4"/><text x="90" y="68" text-anchor="middle" font-size="20" font-weight="900" fill="#123047">face</text></svg>`;
+  if(type==='base') return `<svg viewBox="0 0 180 110"><polygon points="90,8 35,85 145,85" fill="#bfecea" stroke="#123047" stroke-width="4"/><rect x="52" y="78" width="76" height="18" fill="#fff6d8" stroke="#123047" stroke-width="3"/><text x="90" y="102" text-anchor="middle" font-size="16" font-weight="900" fill="#123047">base</text></svg>`;
+  return `<svg viewBox="0 0 180 110"><polygon points="90,10 40,92 140,92" fill="#dff5f5" stroke="#123047" stroke-width="4"/><circle cx="90" cy="10" r="8" fill="#c53d35"/><text x="104" y="18" font-size="18" font-weight="900" fill="#c53d35">vertex</text></svg>`;
+}
+
+function initVocab(){
+  const wrap = document.getElementById('vocabCards');
+  wrap.innerHTML = vocab.map(v=>`
+    <div class="vocab-card">
+      <h4>${v.word}<button class="speaker" aria-label="Read ${v.word}" onclick="speak('${v.word}. ${v.def.replaceAll("'","")}')">🔊</button><span class="es">${v.es}</span></h4>
+      <div>${vocabSvg(v.icon)}</div>
+      <p>${v.def}</p>
+    </div>
+  `).join('');
+
+  const words = document.getElementById('matchWords');
+  const defs = document.getElementById('matchDefs');
+  words.innerHTML = '';
+  defs.innerHTML = '';
+  shuffle([...vocab]).forEach(v=>{
+    const d = document.createElement('div');
+    d.className = 'draggable';
+    d.draggable = true;
+    d.dataset.word = v.word;
+    d.textContent = v.word;
+    d.addEventListener('dragstart', dragStart);
+    words.appendChild(d);
+  });
+  shuffle([...vocab]).forEach(v=>{
+    const z = document.createElement('div');
+    z.className = 'dropzone';
+    z.dataset.accept = v.word;
+    z.textContent = v.def;
+    z.addEventListener('dragover', dragOver);
+    z.addEventListener('drop', dropMatch);
+    defs.appendChild(z);
+  });
+}
+
+function speak(text){
+  if(!('speechSynthesis' in window)){ toast('Read aloud is not available in this browser.'); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = .85;
+  speechSynthesis.speak(u);
+}
+
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-.5);
+}
+
+let dragged = null;
+function dragStart(e){
+  dragged = e.currentTarget;
+  e.dataTransfer.setData('text/plain', dragged.dataset.word || dragged.dataset.sort || dragged.id || '');
+}
+function dragOver(e){ e.preventDefault(); }
+
+function dropMatch(e){
+  e.preventDefault();
+  if(!dragged || !dragged.classList.contains('draggable')) return;
+  e.currentTarget.appendChild(dragged);
+  e.currentTarget.classList.add('filled');
+}
+
+function checkVocabMatch(){
+  let correct = 0;
+  document.querySelectorAll('#matchDefs .dropzone').forEach(z=>{
+    z.classList.remove('correct','wrong');
+    const child = z.querySelector('.draggable');
+    if(child && child.dataset.word === z.dataset.accept){ z.classList.add('correct'); correct++; }
+    else z.classList.add('wrong');
+  });
+  const fb = document.getElementById('vocabFeedback');
+  fb.className = 'feedback show ' + (correct === vocab.length ? 'good' : 'try');
+  fb.textContent = correct === vocab.length
+    ? 'Excellent. All vocabulary matches are correct.'
+    : `${correct} out of ${vocab.length} are correct. Move the words and try again.`;
+  if(correct === vocab.length) completePanel('vocab');
+}
+
+const shapes = [
+  {id:'tile-square', label:'square', sort:'2D', svg:'<svg viewBox="0 0 80 60"><rect x="18" y="8" width="45" height="45" fill="#dff5f5" stroke="#123047" stroke-width="4"/></svg>'},
+  {id:'tile-triangle', label:'triangle', sort:'2D', svg:'<svg viewBox="0 0 80 60"><polygon points="40,7 12,53 68,53" fill="#ffe2a1" stroke="#123047" stroke-width="4"/></svg>'},
+  {id:'tile-cube', label:'cube', sort:'3D', svg:'<svg viewBox="0 0 80 60"><polygon points="20,18 42,6 64,18 42,30" fill="#9ce3e0" stroke="#123047" stroke-width="3"/><polygon points="20,18 42,30 42,53 20,41" fill="#6fcac7" stroke="#123047" stroke-width="3"/><polygon points="64,18 42,30 42,53 64,41" fill="#0f9c9a" stroke="#123047" stroke-width="3"/></svg>'},
+  {id:'tile-pyramid', label:'pyramid', sort:'3D', svg:'<svg viewBox="0 0 80 60"><polygon points="40,5 13,48 67,48" fill="#ffe2a1" stroke="#123047" stroke-width="3"/><polygon points="40,5 67,48 46,55 13,48" fill="#0f9c9a" opacity=".55" stroke="#123047" stroke-width="3"/></svg>'},
+];
+
+function initSort(){
+  const bank = document.getElementById('shapeBank');
+  bank.innerHTML = '';
+  shapes.forEach(s=>{
+    const div = document.createElement('div');
+    div.className = 'shape-tile';
+    div.id = s.id;
+    div.draggable = true;
+    div.dataset.sort = s.sort;
+    div.innerHTML = `${s.svg}<span>${s.label}</span>`;
+    div.addEventListener('dragstart', dragStart);
+    bank.appendChild(div);
+  });
+  document.querySelectorAll('.drop-sort, #shapeBank').forEach(zone=>{
+    zone.addEventListener('dragover', dragOver);
+    zone.addEventListener('drop', e=>{
+      e.preventDefault();
+      if(dragged && dragged.classList.contains('shape-tile')) e.currentTarget.appendChild(dragged);
+    });
+  });
+}
+
+function checkSort(){
+  let total = 0, correct = 0;
+  document.querySelectorAll('.drop-sort').forEach(zone=>{
+    zone.querySelectorAll('.shape-tile').forEach(tile=>{
+      total++;
+      if(tile.dataset.sort === zone.dataset.sort) correct++;
+    });
+  });
+  const fb = document.getElementById('sortFeedback');
+  fb.className = 'feedback show ' + (correct === shapes.length ? 'good':'try');
+  if(correct === shapes.length){
+    fb.textContent = 'Correct. 2D figures are flat. 3D figures have height too.';
+    completePanel('dimensions');
+  } else {
+    fb.textContent = `${correct} out of ${shapes.length} are correct. Check: does it have height?`;
+  }
+}
+
+function trianglePieceSvg(n){
+  return `<svg viewBox="0 0 140 116" width="140" height="116" aria-hidden="true"><polygon points="70,8 10,108 130,108" fill="#ffe2a1" stroke="#123047" stroke-width="4"/><text x="70" y="82" text-anchor="middle" font-size="18" font-weight="900" fill="#123047">face ${n}</text></svg>`;
+}
+
+function squarePieceSvg(){
+  return `<svg viewBox="0 0 136 136" width="136" height="136" aria-hidden="true"><rect x="6" y="6" width="124" height="124" rx="10" fill="#dff5f5" stroke="#123047" stroke-width="5"/><text x="68" y="64" text-anchor="middle" font-size="18" font-weight="900" fill="#123047">square</text><text x="68" y="88" text-anchor="middle" font-size="18" font-weight="900" fill="#123047">base</text></svg>`;
+}
+
+let selectedNetPieceId = null;
+const netPieces = [
+  {id:'square-base-piece', kind:'base', label:'Square Base', svg: squarePieceSvg},
+  {id:'tri-1', kind:'triangle', label:'Triangle Face 1', svg: () => trianglePieceSvg(1)},
+  {id:'tri-2', kind:'triangle', label:'Triangle Face 2', svg: () => trianglePieceSvg(2)},
+  {id:'tri-3', kind:'triangle', label:'Triangle Face 3', svg: () => trianglePieceSvg(3)},
+  {id:'tri-4', kind:'triangle', label:'Triangle Face 4', svg: () => trianglePieceSvg(4)}
+];
+
+function initNet(){
+  const bank = document.getElementById('pieceBank');
+  const canvas = document.getElementById('netCanvas');
+  if(!bank || !canvas) return;
+  renderBuildPyramid();
+  selectedNetPieceId = null;
+
+  bank.innerHTML = '';
+  canvas.querySelectorAll('.placed-svg').forEach(p=>p.remove());
+  document.querySelectorAll('#netCanvas .snap').forEach(s=>{
+    delete s.dataset.filled;
+    delete s.dataset.kind;
+    s.classList.remove('filled','target-ready','wrong-target');
+    s.innerHTML = `<span class="snap-label">${s.dataset.pos === 'base' ? 'square base' : 'triangle face'}</span>`;
+    s.onclick = () => placeSelectedPieceOnSnap(s);
+    s.setAttribute('role','button');
+    s.setAttribute('tabindex','0');
+    s.onkeydown = ev => {
+      if(ev.key === 'Enter' || ev.key === ' '){
+        ev.preventDefault();
+        placeSelectedPieceOnSnap(s);
+      }
+    };
+  });
+
+  netPieces.forEach(pieceInfo=>{
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `net-piece build-choice ${pieceInfo.kind === 'base' ? 'square-piece' : 'tri-piece'}`;
+    btn.id = pieceInfo.id;
+    btn.dataset.kind = pieceInfo.kind;
+    btn.dataset.pieceId = pieceInfo.id;
+    btn.setAttribute('aria-label', `Choose ${pieceInfo.label}`);
+    btn.innerHTML = pieceInfo.svg();
+    btn.onclick = () => selectNetPiece(pieceInfo.id);
+    bank.appendChild(btn);
+  });
+
+  updateNetFeedback('Choose a piece. Then choose the matching space on the mat.');
+  updateBuildHelp('Choose a piece. Then choose the matching space.');
+}
+
+function selectNetPiece(pieceId){
+  const piece = document.getElementById(pieceId);
+  if(!piece || piece.disabled) return;
+  selectedNetPieceId = pieceId;
+  document.querySelectorAll('#pieceBank .net-piece').forEach(p=>p.classList.remove('selected'));
+  piece.classList.add('selected');
+  document.querySelectorAll('#netCanvas .snap').forEach(s=>{
+    s.classList.remove('target-ready','wrong-target');
+    const kind = piece.dataset.kind;
+    const correctTargetType = (kind === 'base' && s.dataset.pos === 'base') || (kind === 'triangle' && s.dataset.pos !== 'base');
+    if(correctTargetType && !s.dataset.filled) s.classList.add('target-ready');
+  });
+  updateBuildHelp(piece.dataset.kind === 'base'
+    ? 'Now click the center square-base space.'
+    : 'Now click any empty triangle-face space around the square.');
+}
+
+function placeSelectedPieceOnSnap(snap){
+  if(!selectedNetPieceId){
+    updateNetFeedback('First choose a piece from the Build Pieces box.');
+    snap.classList.add('wrong-target');
+    setTimeout(()=>snap.classList.remove('wrong-target'), 260);
+    return;
+  }
+  if(snap.dataset.filled){
+    updateNetFeedback('That space is already filled. Use Reset Net to start over, or choose another empty space.');
+    snap.classList.add('wrong-target');
+    setTimeout(()=>snap.classList.remove('wrong-target'), 260);
+    return;
+  }
+
+  const piece = document.getElementById(selectedNetPieceId);
+  if(!piece) return;
+  const kind = piece.dataset.kind;
+  const correctTargetType = (kind === 'base' && snap.dataset.pos === 'base') || (kind === 'triangle' && snap.dataset.pos !== 'base');
+  if(!correctTargetType){
+    updateNetFeedback(kind === 'base' ? 'The square base belongs in the center.' : 'Triangle faces belong around the sides of the square.');
+    snap.classList.add('wrong-target');
+    setTimeout(()=>snap.classList.remove('wrong-target'), 260);
+    return;
+  }
+
+  snap.dataset.filled = selectedNetPieceId;
+  snap.dataset.kind = kind;
+  snap.classList.add('filled');
+  snap.classList.remove('target-ready');
+  drawPlacedPiece(snap, piece, selectedNetPieceId);
+  piece.disabled = true;
+  piece.style.opacity = '.35';
+  piece.classList.remove('selected');
+  selectedNetPieceId = null;
+  document.querySelectorAll('#netCanvas .snap').forEach(z=>z.classList.remove('target-ready','wrong-target'));
+  updateNetFeedback();
+  updateBuildHelp('Nice. Choose the next piece.');
+}
+
+function drawPlacedPiece(snap, sourcePiece, pieceId){
+  const canvas = document.getElementById('netCanvas');
+  const canvasRect = canvas.getBoundingClientRect();
+  const r = snap.getBoundingClientRect();
+  const placed = document.createElement('div');
+  placed.className = `placed-svg ${sourcePiece.dataset.kind === 'base' ? 'square-piece' : 'tri-piece'}`;
+  placed.dataset.pieceId = pieceId;
+  placed.style.left = (r.left - canvasRect.left) + 'px';
+  placed.style.top = (r.top - canvasRect.top) + 'px';
+  placed.innerHTML = sourcePiece.innerHTML;
+  if(snap.dataset.pos === 'left') placed.style.transform = 'rotate(-90deg)';
+  if(snap.dataset.pos === 'right') placed.style.transform = 'rotate(90deg)';
+  if(snap.dataset.pos === 'bottom') placed.style.transform = 'rotate(180deg)';
+  if(snap.dataset.pos === 'top') placed.style.transform = 'rotate(0deg)';
+  canvas.appendChild(placed);
+}
+
+function updateBuildHelp(message){
+  const strip = document.getElementById('buildHelpStrip');
+  if(strip) strip.textContent = message;
+}
+
+function updateNetFeedback(message){
+  const fb = document.getElementById('netFeedback');
+  if(!fb) return;
+
+  if(message){
+    fb.className = 'feedback show try';
+    fb.textContent = message;
+    return;
+  }
+
+  const filled = [...document.querySelectorAll('#netCanvas .snap')].filter(s=>s.dataset.filled).length;
+  const hasBase = !!document.querySelector('#netCanvas .snap[data-pos="base"][data-filled]');
+  const triangleCount = [...document.querySelectorAll('#netCanvas .snap:not(.base-snap)')].filter(s=>s.dataset.filled).length;
+
+  if(filled === 5 && hasBase && triangleCount === 4){
+    fb.className = 'feedback show good';
+    fb.textContent = 'All 5 pieces are placed. You built the net: 1 square base + 4 triangle faces.';
+  } else {
+    fb.className = 'feedback show try';
+    fb.textContent = `${filled}/5 pieces placed. Goal: center square base plus four triangle faces around it.`;
+  }
+}
+
+function checkNet(){
+  const filled = [...document.querySelectorAll('#netCanvas .snap')].filter(s=>s.dataset.filled).length;
+  const hasBase = !!document.querySelector('#netCanvas .snap[data-pos="base"][data-filled]');
+  const triangleCount = [...document.querySelectorAll('#netCanvas .snap:not(.base-snap)')].filter(s=>s.dataset.filled).length;
+  const fb = document.getElementById('netFeedback');
+  fb.className = 'feedback show ' + (filled===5 && hasBase && triangleCount===4?'good':'try');
+  if(filled === 5 && hasBase && triangleCount === 4){
+    fb.textContent = 'Correct. Your net has one square base and four triangular faces connected to the sides.';
+    completePanel('build');
+  } else {
+    fb.textContent = `Keep going. You placed ${filled}/5 pieces. Goal: 1 square base and 4 triangle faces.`;
+  }
+}
+
+function resetNet(){
+  const fb = document.getElementById('netFeedback');
+  if(fb){
+    fb.className='feedback show try';
+    fb.textContent='Choose a piece. Then choose the matching space on the mat.';
+  }
+}
+
+function hexToRgb(hex){
+  const clean = String(hex || '#000000').replace('#','').trim();
+  const full = clean.length===3 ? clean.split('').map(c=>c+c).join('') : clean.padEnd(6,'0').slice(0,6);
+  const num = parseInt(full,16);
+  return {r:(num>>16)&255, g:(num>>8)&255, b:num&255};
+}
+function rgbToHex(r,g,b){
+  return '#' + [r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+}
+function shadeColor(hex, percent){
+  const {r,g,b} = hexToRgb(hex);
+  const amt = percent / 100;
+  const adjust = v => amt >= 0 ? v + (255-v)*amt : v*(1+amt);
+  return rgbToHex(adjust(r), adjust(g), adjust(b));
+}
+function ptStr(p){ return `${Number(p.x).toFixed(1)},${Number(p.y).toFixed(1)}`; }
+function pointsStr(arr){ return arr.map(ptStr).join(' '); }
+
+function buildPyramidModel({cx, cy, side, height, angle, faceColor, baseColor, accentColor='#123047', pattern='smooth', viewBox='0 0 420 280'}){
+  const rad = angle * Math.PI / 180;
+  const half = side / 2;
+  const depthScale = 0.42;
+  const corners3 = [
+    {x:-half, z:-half},
+    {x: half, z:-half},
+    {x: half, z: half},
+    {x:-half, z: half}
+  ];
+  const basePts = corners3.map((p, idx) => {
+    const xr = p.x * Math.cos(rad) - p.z * Math.sin(rad);
+    const zr = p.x * Math.sin(rad) + p.z * Math.cos(rad);
+    return {x: cx + xr, y: cy + zr * depthScale, z: zr, idx};
+  });
+  const apex = {x:cx, y:cy - height, z:0};
+  const faces = basePts.map((p, i) => {
+    const p2 = basePts[(i+1)%4];
+    return {p1:p, p2, avgZ:(p.z+p2.z)/2, idx:i};
+  }).sort((a,b)=>a.avgZ-b.avgZ);
+  const patternDefs = `
+    <defs>
+      <linearGradient id="grad-base" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${shadeColor(baseColor, 10)}"></stop>
+        <stop offset="1" stop-color="${shadeColor(baseColor, -8)}"></stop>
+      </linearGradient>
+      <pattern id="pat-stripes" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(45)">
+        <rect width="14" height="14" fill="transparent"></rect>
+        <rect x="0" y="0" width="4" height="14" fill="rgba(18,48,71,.22)"></rect>
+      </pattern>
+      <pattern id="pat-dots" patternUnits="userSpaceOnUse" width="18" height="18">
+        <circle cx="5" cy="5" r="2.4" fill="rgba(18,48,71,.24)"></circle>
+        <circle cx="14" cy="14" r="2.4" fill="rgba(18,48,71,.24)"></circle>
+      </pattern>
+      <pattern id="pat-bricks" patternUnits="userSpaceOnUse" width="28" height="18">
+        <path d="M0 0H28M0 9H28M0 18H28M0 0V9M14 9V18M28 0V9" stroke="rgba(18,48,71,.24)" stroke-width="1.6" fill="none"></path>
+      </pattern>
+    </defs>`;
+  const basePoly = `<polygon points="${pointsStr(basePts)}" fill="url(#grad-base)" stroke="${accentColor}" stroke-width="3"></polygon>`;
+  const facePolys = faces.map((face, order) => {
+    const depthPct = (face.avgZ / half) * 18;
+    const fill = shadeColor(faceColor, depthPct - 6 + order*2);
+    const opacity = face.avgZ < 0 ? 0.84 : 0.96;
+    const pts = pointsStr([apex, face.p1, face.p2]);
+    const pat = pattern !== 'smooth' ? `<polygon points="${pts}" fill="url(#pat-${pattern})" opacity="0.35"></polygon>` : '';
+    return `<g><polygon points="${pts}" fill="${fill}" fill-opacity="${opacity}" stroke="${accentColor}" stroke-width="3"></polygon>${pat}</g>`;
+  }).join('');
+  const baseEdges = basePts.map((p,i)=>{
+    const next = basePts[(i+1)%4];
+    const dashed = (p.z + next.z) / 2 < 0 ? '6 6' : '';
+    return `<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${next.x.toFixed(1)}" y2="${next.y.toFixed(1)}" stroke="${accentColor}" stroke-width="2.4" ${dashed ? `stroke-dasharray="${dashed}" opacity="0.7"` : ''}></line>`;
+  }).join('');
+  const sideEdges = basePts.map(p=>{
+    const dashed = p.z < 0 ? '6 6' : '';
+    return `<line x1="${apex.x.toFixed(1)}" y1="${apex.y.toFixed(1)}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="${accentColor}" stroke-width="2.4" ${dashed ? `stroke-dasharray="${dashed}" opacity="0.7"` : ''}></line>`;
+  }).join('');
+  const shadow = `<ellipse cx="${cx}" cy="${cy + 46}" rx="${side * 0.72}" ry="${side * 0.16}" fill="rgba(61,43,17,.16)"></ellipse>`;
+  const labels = '';
+  return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">${patternDefs}${shadow}${basePoly}${facePolys}<g>${baseEdges}${sideEdges}</g><circle cx="${apex.x}" cy="${apex.y}" r="5.5" fill="${accentColor}"></circle>${labels}</svg>`;
+}
+function renderStoryPyramid(){
+  const svg = document.getElementById('storyPyramidSvg');
+  if(!svg) return;
+  svg.outerHTML = buildPyramidModel({
+    cx:210, cy:198, side:140, height:132, angle:storyRot,
+    faceColor:'#f3b23c', baseColor:'#dff5f5', accentColor:'#123047', pattern:'smooth', viewBox:'0 0 420 280'
+  }).replace('<svg ', '<svg id="storyPyramidSvg" class="story-pyramid-svg" ');
+}
+function renderBuildPyramid(){
+  const svg = document.getElementById('buildPyramidSvg');
+  if(!svg) return;
+  svg.outerHTML = buildPyramidModel({
+    cx:180, cy:185, side:122, height:118, angle:-35,
+    faceColor:'#f3b23c', baseColor:'#dff5f5', accentColor:'#123047', pattern:'smooth', viewBox:'0 0 360 260'
+  }).replace('<svg ', '<svg id="buildPyramidSvg" class="build-pyramid-svg" ');
+}
+function rotateStoryPyramid(delta){
+  storyRot += delta;
+  if(storySpinTimer){ clearInterval(storySpinTimer); storySpinTimer = null; }
+  renderStoryPyramid();
+}
+function toggleStorySpin(){
+  if(storySpinTimer){
+    clearInterval(storySpinTimer);
+    storySpinTimer = null;
+  } else {
+    storySpinTimer = setInterval(()=>{ storyRot += 6; renderStoryPyramid(); }, 120);
+  }
+}
+
+let currentDecorColor = '#ffe2a1';
+let decorCount = 0;
+let selectedDecorPiece = null;
+let decorZ = 10;
+let creativeMove = {x:0, y:0};
+
+function initDecor(){
+  const board = document.getElementById('decorBoard');
+  if(board && !board.querySelector('.decor-piece')) addDecorNet();
+  initCreativeDesigner();
+  renderStoryPyramid();
+  renderBuildPyramid();
+  updateCreativePyramid();
+}
+
+let activePyramidTool = 'star';
+let pyramidDecorations = [];
+let creativeDesignerReady = false;
+
+function getPyramidParams(){
+  return {
+    face: document.getElementById('faceColorInput')?.value || '#f3b23c',
+    base: document.getElementById('baseColorInput')?.value || '#dff5f5',
+    accent: document.getElementById('accentColorInput')?.value || '#0f9c9a',
+    size: Number(document.getElementById('pyramidSizeInput')?.value || 100),
+    heightPct: Number(document.getElementById('pyramidHeightInput')?.value || 100),
+    rot: Number(document.getElementById('pyramidRotateInput')?.value || -35),
+    pattern: document.getElementById('pyramidPatternInput')?.value || 'smooth'
+  };
+}
+
+function creativeSvgPoint(evt){
+  const svg = document.getElementById('creativePyramidSvg');
+  const pt = svg.createSVGPoint();
+  pt.x = evt.clientX;
+  pt.y = evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function setPyramidTool(tool){
+  activePyramidTool = tool;
+  document.querySelectorAll('.pyramid-tool').forEach(btn=>{
+    btn.classList.toggle('selected', btn.dataset.tool === tool);
+  });
+  const names = {star:'⭐ Star', gem:'◆ Gem', sun:'☀️ Sun', door:'Door', label:'Label', flag:'⚑ Flag'};
+  const help = document.getElementById('creatorHelp');
+  if(help) help.textContent = `Selected tool: ${names[tool] || tool}. Click the pyramid to add it.`;
+}
+
+function initCreativeDesigner(){
+  const svg = document.getElementById('creativePyramidSvg');
+  if(!svg || creativeDesignerReady) return;
+  creativeDesignerReady = true;
+  svg.addEventListener('click', e=>{
+    const p = creativeSvgPoint(e);
+    const params = getPyramidParams();
+    let deco = {tool:activePyramidTool, x:p.x, y:p.y, color:params.accent, faceColor:params.face, size:1};
+    if(activePyramidTool === 'label'){
+      const text = prompt('Type a short label, like base, face, fold, or my pyramid:');
+      if(!text) return;
+      deco.text = text.slice(0,18);
+    }
+    pyramidDecorations.push(deco);
+    updateCreativePyramid();
+  });
+  setPyramidTool(activePyramidTool);
+}
+
+function pyramidGeometry(params){
+  const cx = 260, cy = 250;
+  const side = 150 * (params.size/100);
+  const height = 155 * (params.heightPct/100);
+  const half = side / 2;
+  const depthScale = 0.42;
+  const rad = params.rot * Math.PI / 180;
+  const corners3 = [
+    {x:-half, z:-half},
+    {x: half, z:-half},
+    {x: half, z: half},
+    {x:-half, z: half}
+  ];
+  const basePts = corners3.map(p=>{
+    const xr = p.x * Math.cos(rad) - p.z * Math.sin(rad);
+    const zr = p.x * Math.sin(rad) + p.z * Math.cos(rad);
+    return {x: cx + xr, y: cy + zr * depthScale, z: zr};
+  });
+  const apex = {x:cx, y:cy-height, z:0};
+  const faces = basePts.map((p,i)=>({p1:p,p2:basePts[(i+1)%4],avgZ:(p.z+basePts[(i+1)%4].z)/2,idx:i})).sort((a,b)=>a.avgZ-b.avgZ);
+  return {cx, cy, side, height, half, basePts, apex, faces};
+}
+
+function creativeDecorationMarkup(d, i){
+  const x = Number(d.x || 260), y = Number(d.y || 190);
+  const color = d.color || '#123047';
+  const faceColor = d.faceColor || '#f3b23c';
+  const s = Number(d.size || 1);
+  if(d.tool === 'star') return `<text class="pyramid-deco" x="${x}" y="${y}" text-anchor="middle" font-size="${34*s}" font-weight="900">⭐</text>`;
+  if(d.tool === 'sun') return `<text class="pyramid-deco" x="${x}" y="${y}" text-anchor="middle" font-size="${32*s}" font-weight="900">☀️</text>`;
+  if(d.tool === 'flag') return `<g class="pyramid-deco"><line x1="${x}" y1="${y+8}" x2="${x}" y2="${y-28}" stroke="${color}" stroke-width="4"/><path d="M${x} ${y-28} L${x+36*s} ${y-18} L${x} ${y-8} Z" fill="${shadeColor(faceColor,20)}" stroke="${color}" stroke-width="2"/></g>`;
+  if(d.tool === 'gem') return `<polygon class="pyramid-deco" points="${x},${y-18*s} ${x+18*s},${y} ${x},${y+18*s} ${x-18*s},${y}" fill="${shadeColor(faceColor,18)}" stroke="${color}" stroke-width="3"/>`;
+  if(d.tool === 'door') return `<path class="pyramid-deco" d="M${x-20*s} ${y+28*s} L${x-20*s} ${y-8*s} Q${x} ${y-32*s} ${x+20*s} ${y-8*s} L${x+20*s} ${y+28*s} Z" fill="${shadeColor(color,-10)}" stroke="#111" stroke-width="3"/>`;
+  if(d.tool === 'label') return `<g class="pyramid-deco"><rect x="${x-64*s}" y="${y-18*s}" width="${128*s}" height="${32*s}" rx="10" fill="rgba(255,255,255,.92)" stroke="${color}" stroke-width="2"/><text x="${x}" y="${y+4*s}" text-anchor="middle" font-size="${14*s}" font-weight="900" fill="#123047">${String(d.text || 'label').replace(/[<&>]/g,'')}</text></g>`;
+  return '';
+}
+
+function updateCreativePyramid(){
+  const svg = document.getElementById('creativePyramidSvg');
+  if(!svg) return;
+  const params = getPyramidParams();
+  const g = pyramidGeometry(params);
+  const faceColor = params.face;
+  const baseColor = params.base;
+  const accent = params.accent;
+  const pattern = params.pattern;
+  const patternOverlay = (pts) => pattern === 'smooth' ? '' : `<polygon points="${pts}" fill="url(#creator-${pattern})" opacity="0.32"></polygon>`;
+  const defs = `
+    <defs>
+      <linearGradient id="creator-base" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${shadeColor(baseColor, 16)}"></stop>
+        <stop offset="1" stop-color="${shadeColor(baseColor, -10)}"></stop>
+      </linearGradient>
+      <pattern id="creator-stripes" patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(45)">
+        <rect width="14" height="14" fill="transparent"></rect>
+        <rect x="0" y="0" width="4" height="14" fill="rgba(18,48,71,.24)"></rect>
+      </pattern>
+      <pattern id="creator-dots" patternUnits="userSpaceOnUse" width="18" height="18">
+        <circle cx="5" cy="5" r="2.5" fill="rgba(18,48,71,.26)"></circle>
+        <circle cx="14" cy="14" r="2.5" fill="rgba(18,48,71,.26)"></circle>
+      </pattern>
+      <pattern id="creator-bricks" patternUnits="userSpaceOnUse" width="30" height="18">
+        <path d="M0 0H30M0 9H30M0 18H30M0 0V9M15 9V18M30 0V9" stroke="rgba(18,48,71,.25)" stroke-width="1.7" fill="none"></path>
+      </pattern>
+    </defs>`;
+  const shadow = `<ellipse cx="${g.cx}" cy="${g.cy + 48}" rx="${g.side*.72}" ry="${g.side*.17}" fill="rgba(61,43,17,.18)"></ellipse>`;
+  const base = `<polygon points="${pointsStr(g.basePts)}" fill="url(#creator-base)" stroke="${accent}" stroke-width="4"></polygon>`;
+  const faces = g.faces.map((face, order)=>{
+    const depthPct = (face.avgZ/g.half)*18;
+    const fill = shadeColor(faceColor, depthPct - 5 + order*2);
+    const opacity = face.avgZ < 0 ? 0.84 : 0.97;
+    const pts = pointsStr([g.apex, face.p1, face.p2]);
+    return `<g><polygon points="${pts}" fill="${fill}" fill-opacity="${opacity}" stroke="${accent}" stroke-width="4"></polygon>${patternOverlay(pts)}</g>`;
+  }).join('');
+  const baseEdges = g.basePts.map((p,i)=>{
+    const next = g.basePts[(i+1)%4];
+    const dashed = (p.z+next.z)/2 < 0 ? 'stroke-dasharray="7 6" opacity="0.7"' : '';
+    return `<line x1="${p.x}" y1="${p.y}" x2="${next.x}" y2="${next.y}" stroke="${accent}" stroke-width="3" ${dashed}></line>`;
+  }).join('');
+  const sideEdges = g.basePts.map(p=>{
+    const dashed = p.z < 0 ? 'stroke-dasharray="7 6" opacity="0.7"' : '';
+    return `<line x1="${g.apex.x}" y1="${g.apex.y}" x2="${p.x}" y2="${p.y}" stroke="${accent}" stroke-width="3" ${dashed}></line>`;
+  }).join('');
+  const labels = `<g opacity=".92"><rect x="26" y="300" width="220" height="40" rx="14" fill="rgba(255,255,255,.86)" stroke="rgba(17,17,17,.16)"/><text x="136" y="325" text-anchor="middle" font-size="16" font-weight="900" fill="#123047">1 square base + 4 triangle faces</text></g>`;
+  const decos = pyramidDecorations.map(creativeDecorationMarkup).join('');
+  svg.innerHTML = defs + shadow + base + faces + `<g>${baseEdges}${sideEdges}</g>` + `<circle cx="${g.apex.x}" cy="${g.apex.y}" r="6" fill="${accent}"></circle>` + decos + labels;
+}
+
+function randomizePyramidDesign(){
+  const colors = ['#f3b23c','#ffe2a1','#0f9c9a','#b6e3ff','#ffd0d0','#c7f7c9','#eadcff','#fff6d8'];
+  const patterns = ['smooth','stripes','dots','bricks'];
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+  document.getElementById('faceColorInput').value = pick(colors);
+  document.getElementById('baseColorInput').value = pick(colors);
+  document.getElementById('accentColorInput').value = pick(colors);
+  document.getElementById('pyramidSizeInput').value = String(85 + Math.floor(Math.random()*45));
+  document.getElementById('pyramidHeightInput').value = String(85 + Math.floor(Math.random()*45));
+  document.getElementById('pyramidRotateInput').value = String(-130 + Math.floor(Math.random()*260));
+  document.getElementById('pyramidPatternInput').value = pick(patterns);
+  pyramidDecorations = [
+    {tool:'star', x:210, y:145, color:document.getElementById('accentColorInput').value, faceColor:document.getElementById('faceColorInput').value, size:1},
+    {tool:'gem', x:305, y:190, color:document.getElementById('accentColorInput').value, faceColor:document.getElementById('faceColorInput').value, size:1}
+  ];
+  updateCreativePyramid();
+}
+
+function resetPyramidDesign(){
+  document.getElementById('faceColorInput').value = '#f3b23c';
+  document.getElementById('baseColorInput').value = '#dff5f5';
+  document.getElementById('accentColorInput').value = '#0f9c9a';
+  document.getElementById('pyramidSizeInput').value = '100';
+  document.getElementById('pyramidHeightInput').value = '100';
+  document.getElementById('pyramidRotateInput').value = '-35';
+  document.getElementById('pyramidPatternInput').value = 'smooth';
+  pyramidDecorations = [];
+  setPyramidTool('star');
+  updateCreativePyramid();
+}
+
+function clearPyramidDecorations(){
+  pyramidDecorations = [];
+  updateCreativePyramid();
+}
+
+function setDecorColor(color){
+  currentDecorColor = color;
+  if(selectedDecorPiece && !selectedDecorPiece.classList.contains('decor-sticker')){
+    selectedDecorPiece.style.background = color;
+  }
+  toast('Color selected. Click a piece to decorate it.');
+}
+
+function createDecorPiece(spec){
+  const board = document.getElementById('decorBoard');
+  if(!board) return null;
+  const el = document.createElement('div');
+  const kind = spec.kind || 'triangle';
+  el.className = 'decor-piece ' + (kind === 'square' ? 'decor-square' : kind === 'sticker' ? 'decor-sticker' : 'decor-triangle');
+  el.textContent = spec.label || (kind === 'square' ? 'base' : kind === 'sticker' ? '⭐' : 'face');
+  el.dataset.kind = kind;
+  el.dataset.rotation = String(spec.rot || 0);
+  el.dataset.scale = String(spec.scale || 1);
+  el.style.left = (spec.x || 80) + 'px';
+  el.style.top = (spec.y || 120) + 'px';
+  el.style.zIndex = String(++decorZ);
+  if(spec.background) el.style.background = spec.background;
+  applyDecorTransform(el);
+  el.addEventListener('click', e=>{
+    e.stopPropagation();
+    selectDecorPiece(el);
+    if(kind !== 'sticker') el.style.background = currentDecorColor;
+  });
+  el.addEventListener('dblclick', e=>{
+    e.stopPropagation();
+    rotateSelectedPiece(90);
+  });
+  makeFreeDraggable(el, board);
+  board.appendChild(el);
+  return el;
+}
+
+function addDecorNet(){
+  const board = document.getElementById('decorBoard');
+  if(!board) return;
+  const startX = 190 + (decorCount%2)*230;
+  const startY = 120 + Math.floor(decorCount/2)*170;
+  const pieces = [
+    {kind:'square', label:'base', x:startX, y:startY+95, background:'#dff5f5'},
+    {kind:'triangle', label:'face', x:startX-10, y:startY-20, rot:0, background:'#ffe2a1'},
+    {kind:'triangle', label:'face', x:startX-10, y:startY+205, rot:180, background:'#ffe2a1'},
+    {kind:'triangle', label:'face', x:startX-125, y:startY+95, rot:-90, background:'#ffe2a1'},
+    {kind:'triangle', label:'face', x:startX+105, y:startY+95, rot:90, background:'#ffe2a1'}
+  ];
+  pieces.forEach(createDecorPiece);
+  decorCount++;
+}
+
+function addDecorPiece(kind){
+  const board = document.getElementById('decorBoard');
+  if(!board) return;
+  const x = 85 + Math.random()*170;
+  const y = 95 + Math.random()*190;
+  createDecorPiece({kind, label:kind==='square'?'base':'face', x, y, background:currentDecorColor});
+}
+
+function addSticker(symbol){
+  const x = 70 + Math.random()*140;
+  const y = 90 + Math.random()*160;
+  createDecorPiece({kind:'sticker', label:symbol, x, y, rot:0, scale:1});
+}
+
+function addTextLabel(){
+  const text = prompt('Type a short label, like base, face, fold, or my pyramid:');
+  if(!text) return;
+  createDecorPiece({kind:'sticker', label:text.slice(0,24), x:90, y:100, scale:1.15});
+}
+
+function selectDecorPiece(el){
+  if(selectedDecorPiece) selectedDecorPiece.classList.remove('selected');
+  selectedDecorPiece = el;
+  selectedDecorPiece.classList.add('selected');
+  selectedDecorPiece.style.zIndex = String(++decorZ);
+  const sizeInput = document.getElementById('pieceSizeInput');
+  if(sizeInput) sizeInput.value = String(Math.round(Number(el.dataset.scale || 1)*100));
+  const patternInput = document.getElementById('piecePatternInput');
+  if(patternInput){
+    const cls = [...el.classList].find(c=>c.startsWith('pattern-'));
+    patternInput.value = cls ? cls.replace('pattern-','') : 'plain';
+  }
+  const note = document.getElementById('selectedPieceNote');
+  if(note) note.textContent = 'Selected: ' + (el.dataset.kind || 'piece') + ' — move, resize, rotate, color, pattern, duplicate, or delete.';
+}
+
+function applyDecorTransform(el){
+  const rot = Number(el.dataset.rotation || 0);
+  const scale = Number(el.dataset.scale || 1);
+  el.style.transform = "rotate(" + rot + "deg) scale(" + scale + ")";
+}
+
+function resizeSelectedPiece(value){
+  if(!selectedDecorPiece) return toast('Click a piece first.');
+  selectedDecorPiece.dataset.scale = String(Number(value)/100);
+  applyDecorTransform(selectedDecorPiece);
+}
+
+function rotateSelectedPiece(delta){
+  if(!selectedDecorPiece) return toast('Click a piece first.');
+  const current = Number(selectedDecorPiece.dataset.rotation || 0);
+  selectedDecorPiece.dataset.rotation = String(current + delta);
+  applyDecorTransform(selectedDecorPiece);
+}
+
+function setSelectedPattern(pattern){
+  if(!selectedDecorPiece) return toast('Click a piece first.');
+  selectedDecorPiece.classList.remove('pattern-stripes','pattern-dots','pattern-bricks');
+  if(pattern !== 'plain') selectedDecorPiece.classList.add('pattern-' + pattern);
+}
+
+function duplicateSelectedPiece(){
+  if(!selectedDecorPiece) return toast('Click a piece first.');
+  const copy = selectedDecorPiece.cloneNode(true);
+  copy.classList.remove('selected');
+  copy.style.left = (parseFloat(selectedDecorPiece.style.left || 0) + 24) + 'px';
+  copy.style.top = (parseFloat(selectedDecorPiece.style.top || 0) + 24) + 'px';
+  copy.style.zIndex = String(++decorZ);
+  copy.addEventListener('click', e=>{
+    e.stopPropagation();
+    selectDecorPiece(copy);
+    if(!copy.classList.contains('decor-sticker')) copy.style.background = currentDecorColor;
+  });
+  copy.addEventListener('dblclick', e=>{ e.stopPropagation(); rotateSelectedPiece(90); });
+  makeFreeDraggable(copy, document.getElementById('decorBoard'));
+  document.getElementById('decorBoard').appendChild(copy);
+  selectDecorPiece(copy);
+}
+
+function deleteSelectedPiece(){
+  if(!selectedDecorPiece) return toast('Click a piece first.');
+  selectedDecorPiece.remove();
+  selectedDecorPiece = null;
+  const note = document.getElementById('selectedPieceNote');
+  if(note) note.textContent = 'Click a net piece to select it.';
+}
+
+function makeFreeDraggable(el, board){
+  let offsetX=0, offsetY=0, dragging=false;
+  el.addEventListener('pointerdown', e=>{
+    dragging=true;
+    selectDecorPiece(el);
+    el.setPointerCapture(e.pointerId);
+    const r = el.getBoundingClientRect();
+    offsetX = e.clientX-r.left;
+    offsetY = e.clientY-r.top;
+  });
+  el.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const br = board.getBoundingClientRect();
+    const x = Math.max(0, Math.min(br.width - el.offsetWidth, e.clientX - br.left - offsetX));
+    const y = Math.max(0, Math.min(br.height - el.offsetHeight, e.clientY - br.top - offsetY));
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+  });
+  el.addEventListener('pointerup', ()=>{ dragging=false; });
+}
+
+function clearDecorBoard(){
+  const board = document.getElementById('decorBoard');
+  if(!board) return;
+  board.querySelectorAll('.decor-piece').forEach(p=>p.remove());
+  decorCount = 0;
+  selectedDecorPiece = null;
+  const note = document.getElementById('selectedPieceNote');
+  if(note) note.textContent = 'Click a net piece to select it.';
+}
+
+function buildReport(){
+  persist();
+  const c = document.getElementById('reportContent');
+  const r = state.responses;
+  const items = [
+    ['Student', `${r.studentName || ''} ${r.studentPeriod ? '• '+r.studentPeriod : ''}`],
+    ['Notice', r.notice],
+    ['Wonder', r.wonder],
+    ['Yuzuki explanation', r.story_explain],
+    ['2D/3D explanation', r.dimension_explain],
+    ['Pyramid attributes explanation', r.attribute_explain],
+    ['Practice explanation', r.practice_explain_1],
+    ['Summary', r.summary],
+    ['Exit Ticket #1', r.exit_1],
+    ['Exit Ticket #3', r.exit_3],
+    ['Confidence', state.confidence],
+    ['Design explanation', r.design_explain],
+    ['Build video reflection', r.video_reflection]
+  ];
+  c.innerHTML = items.map(([label,val])=>`<div class="report-row"><b>${label}:</b><br>${escapeHtml(val || '—')}</div>`).join('');
+}
+
+function showReport(){
+  buildReport();
+  showPanel('report');
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s]));
+}
+
+function initAutosave(){
+  setInterval(persist, 12000);
+  window.addEventListener('beforeunload', persist);
+}
+
+function init(){
+  loadState();
+  initNav();
+  restoreInputs();
+  bindChoices();
+  initVocab();
+  initSort();
+  initDecor();
+  initAutosave();
+  updateCreativePyramid();
+  setPyramidTool('star');
+  updateProgress();
+  Object.keys(state.complete || {}).forEach(id=>{
+    const check = document.getElementById(`check-${id}`);
+    if(check && state.complete[id]) check.textContent = '✓';
+  });
+}
+
+init();
+</script>
+</body>
+</html>

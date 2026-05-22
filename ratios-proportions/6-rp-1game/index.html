@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<title>Ratio Rangers — 6.RP.A.1 Adventure</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+  :root{--pink:#f5576c;--purple:#8e44ad;--orange:#e67e22;--teal:#11998e;--gold:#f39c12;--dark:#1a0a2e;--panel:#2d1b4e;--accent:#4a2080;}
+  body{font-family:'Nunito',Arial,sans-serif;background:var(--dark);color:#fff;min-height:100vh;overflow-x:hidden;}
+
+  .screen{display:none;min-height:100vh;}
+  .screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+
+  /* ── TITLE ── */
+  #titleScreen{background:radial-gradient(ellipse at top,#2d0a4e 0%,#0a0015 70%);position:relative;overflow:hidden;}
+  .bubbles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+  .bubble{position:absolute;border-radius:50%;opacity:.15;animation:float 8s infinite ease-in-out;}
+  @keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}}
+  .game-title{font-family:'Bangers',cursive;font-size:clamp(40px,8vw,80px);text-align:center;
+    background:linear-gradient(135deg,#f093fb,#f5576c,#f39c12);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:4px;line-height:1.1;margin-bottom:6px;filter:drop-shadow(0 4px 8px rgba(240,147,251,.4));}
+  .game-sub{font-size:15px;color:#cc88ff;text-align:center;margin-bottom:4px;font-weight:700;}
+  .game-std{font-size:13px;color:#9966cc;text-align:center;margin-bottom:28px;}
+  .ranger-row{display:flex;gap:16px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+  .ranger-card{background:var(--panel);border-radius:18px;padding:16px 18px;text-align:center;cursor:pointer;
+    border:3px solid transparent;transition:all .25s;width:120px;}
+  .ranger-card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 8px 28px rgba(243,156,18,.5);}
+  .ranger-card.selected{border-color:var(--gold);background:#2a1040;box-shadow:0 0 24px rgba(243,156,18,.6);}
+  .ranger-emoji{font-size:44px;display:block;margin-bottom:6px;}
+  .ranger-name{font-size:13px;font-weight:900;color:#fff;}
+  .ranger-power{font-size:11px;color:#cc88ff;margin-top:4px;}
+  .launch-btn{padding:16px 52px;font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;
+    background:linear-gradient(135deg,#f093fb,#f5576c);border:none;border-radius:32px;color:#fff;
+    cursor:pointer;transition:all .25s;box-shadow:0 6px 24px rgba(240,147,251,.5);}
+  .launch-btn:hover{transform:scale(1.07);box-shadow:0 12px 32px rgba(240,147,251,.7);}
+  .launch-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+
+  /* ── HUD ── */
+  .hud{position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(45,27,78,.96);backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 18px;border-bottom:2px solid var(--accent);flex-wrap:wrap;gap:8px;}
+  .hud-ranger{font-size:26px;}
+  .hud-name{font-size:13px;font-weight:900;color:#f093fb;}
+  .hud-lv{font-size:11px;color:#cc88ff;}
+  .sbar{display:flex;align-items:center;gap:5px;}
+  .sbar-lbl{font-size:10px;color:#aaa;width:28px;}
+  .bwrap{width:80px;height:9px;background:#333;border-radius:9px;overflow:hidden;}
+  .bfill{height:100%;border-radius:9px;transition:width .4s;}
+  .hp-f{background:linear-gradient(90deg,#f5576c,#f093fb);}
+  .xp-f{background:linear-gradient(90deg,#8e44ad,#f093fb);}
+  .hud-pts{font-family:'Bangers',cursive;font-size:20px;color:var(--gold);letter-spacing:1px;}
+  .hud-streak{font-size:13px;color:#f093fb;font-weight:800;}
+  .pip-row{display:flex;gap:4px;}
+  .pip{width:11px;height:11px;border-radius:50%;background:#444;}
+  .pip.used{background:var(--pink);}
+
+  /* ── GAME SCREEN ── */
+  #gameScreen{padding-top:80px;background:radial-gradient(ellipse at center,#2d0a4e 0%,#0a0015 100%);}
+
+  /* mission track */
+  .mission-track{display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;}
+  .mission-node{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:18px;border:3px solid transparent;transition:all .2s;}
+  .mission-node.done{background:#8e44ad;border-color:#4a0080;}
+  .mission-node.now{background:var(--gold);border-color:#7a5000;animation:mpulse 1.5s infinite;}
+  .mission-node.lock{background:#333;border-color:#555;opacity:.4;}
+  @keyframes mpulse{0%,100%{box-shadow:0 0 0 0 rgba(243,156,18,.7)}70%{box-shadow:0 0 0 10px rgba(243,156,18,0)}}
+
+  .mission-header{text-align:center;margin-bottom:14px;}
+  .mission-title{font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;color:#f093fb;}
+  .mission-desc{font-size:13px;color:#cc88ff;margin-top:3px;}
+
+  /* question card */
+  .q-card{background:var(--panel);border-radius:22px;padding:26px;max-width:700px;width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);border:1px solid var(--accent);position:relative;overflow:hidden;}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,#f093fb,#f5576c,#f39c12,#8e44ad);}
+
+  .q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .q-badge{background:var(--accent);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:#cc88ff;}
+  .q-badge span{color:var(--gold);}
+  .q-num{font-size:11px;color:#666;margin-bottom:6px;}
+
+  .q-scene{background:rgba(255,255,255,.05);border-left:4px solid #f093fb;border-radius:10px;
+    padding:13px 15px;margin-bottom:14px;font-size:14px;line-height:1.7;}
+  .q-scene .fw{background:rgba(245,87,108,.25);color:#f093fb;border-radius:6px;padding:2px 7px;
+    font-weight:900;border-bottom:2px solid var(--pink);}
+
+  .q-ask{font-size:16px;font-weight:800;margin-bottom:16px;line-height:1.5;}
+  .q-ask .hl{color:var(--gold);}
+
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .cbtn{padding:13px 14px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);
+    border-radius:14px;color:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;
+    cursor:pointer;transition:all .2s;text-align:left;line-height:1.4;}
+  .cbtn:hover:not(:disabled){background:rgba(240,147,251,.15);border-color:#f093fb;transform:translateX(4px);}
+  .cbtn.correct{background:rgba(142,68,173,.3)!important;border-color:#8e44ad!important;color:#f093fb!important;animation:cpop .4s;}
+  .cbtn.wrong{background:rgba(245,87,108,.2)!important;border-color:var(--pink)!important;color:#f5576c!important;animation:shake .4s;}
+  .cbtn.reveal{background:rgba(142,68,173,.15)!important;border-color:#8e44ad!important;}
+  @keyframes cpop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+  /* drag */
+  .drag-pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:10px;
+    background:rgba(255,255,255,.04);border-radius:12px;margin-bottom:10px;min-height:48px;}
+  .dz-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;}
+  .dzone{border-radius:14px;padding:12px;min-height:110px;border:2.5px dashed;}
+  .dzone.za{background:rgba(240,147,251,.08);border-color:#f093fb;}
+  .dzone.zb{background:rgba(243,156,18,.08);border-color:var(--gold);}
+  .dzone h4{font-size:12px;font-weight:900;margin-bottom:6px;text-align:center;}
+  .dzone.za h4{color:#f093fb;}.dzone.zb h4{color:var(--gold);}
+  .dzone.over{background:rgba(255,255,255,.1)!important;}
+  .dchip{background:linear-gradient(135deg,#8e44ad,#f093fb);color:#fff;border-radius:10px;
+    padding:8px 13px;font-size:13px;font-weight:700;cursor:grab;user-select:none;transition:transform .15s;line-height:1.4;}
+  .dchip:hover{transform:scale(1.04);}
+  .dchip.ok{background:linear-gradient(135deg,#27ae60,#2ecc71)!important;cursor:default;}
+  .dchip.bad{background:linear-gradient(135deg,#e74c3c,#c0392b)!important;animation:shake .4s;}
+
+  /* hint retry */
+  .hint-panel{display:none;margin-top:14px;background:rgba(243,156,18,.1);border:2px solid var(--gold);
+    border-radius:16px;padding:15px 17px;}
+  .hint-panel.show{display:block;}
+  .hint-title{font-size:14px;font-weight:900;color:var(--gold);margin-bottom:5px;}
+  .hint-text{font-size:13px;color:#e0c070;line-height:1.6;margin-bottom:10px;}
+  .retry-btn{padding:8px 22px;background:linear-gradient(135deg,var(--gold),#e67e22);
+    border:none;border-radius:18px;color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;}
+  .retry-btn:hover{filter:brightness(1.15);transform:scale(1.04);}
+
+  /* result panel */
+  .rpanel{display:none;margin-top:13px;padding:13px 16px;border-radius:13px;font-size:14px;font-weight:700;}
+  .rpanel.show{display:block;}
+  .rpanel.ok{background:rgba(142,68,173,.2);border:2px solid #8e44ad;color:#f093fb;}
+  .rpanel .explain{font-size:13px;font-weight:400;color:#ccc;margin-top:5px;line-height:1.5;}
+
+  .nxt-btn{margin-top:13px;padding:11px 30px;background:linear-gradient(135deg,#f093fb,var(--pink));
+    border:none;border-radius:22px;color:#fff;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;
+    cursor:pointer;transition:all .2s;display:none;}
+  .nxt-btn.show{display:inline-block;}
+  .nxt-btn:hover{transform:scale(1.05);filter:brightness(1.15);}
+
+  /* xp popup */
+  .xp-pop{position:fixed;top:96px;right:18px;background:rgba(142,68,173,.92);color:#fff;
+    border-radius:12px;padding:9px 16px;font-weight:900;font-size:13px;z-index:200;
+    animation:slideUp .5s ease-out;pointer-events:none;display:none;}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+  /* level up */
+  .lvl-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;
+    display:none;align-items:center;justify-content:center;flex-direction:column;}
+  .lvl-overlay.show{display:flex;}
+  .lvl-box{background:var(--panel);border-radius:24px;padding:38px;text-align:center;
+    border:3px solid var(--gold);max-width:400px;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275);}
+  @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+  .lvl-title{font-family:'Bangers',cursive;font-size:32px;letter-spacing:3px;
+    background:linear-gradient(135deg,var(--gold),#f093fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .lvl-emoji{font-size:62px;display:block;margin-bottom:10px;}
+
+  /* end */
+  #endScreen{background:radial-gradient(ellipse at top,#2d0a4e,#0a0015);}
+  .end-score{font-family:'Bangers',cursive;font-size:clamp(40px,9vw,90px);letter-spacing:3px;
+    background:linear-gradient(135deg,var(--gold),#f093fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .end-rank{font-size:22px;font-weight:700;margin:8px 0;}
+  .end-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0;max-width:400px;}
+  .ecard{background:var(--panel);border-radius:14px;padding:13px;text-align:center;border:1px solid var(--accent);}
+  .ecard .val{font-size:24px;font-weight:900;color:var(--gold);}
+  .ecard .lab{font-size:11px;color:#aaa;margin-top:3px;}
+  .replay-btn{padding:14px 42px;background:linear-gradient(135deg,var(--gold),#f093fb);border:none;
+    border-radius:30px;color:#fff;font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;
+    cursor:pointer;margin-top:18px;transition:all .25s;}
+  .replay-btn:hover{transform:scale(1.07);}
+</style>
+</head>
+<body>
+
+<div class="xp-pop" id="xpPop"></div>
+
+<div class="lvl-overlay" id="lvlOverlay">
+  <div class="lvl-box">
+    <span class="lvl-emoji" id="lvlEmoji">⭐</span>
+    <div class="lvl-title" id="lvlTitle">MISSION UNLOCKED!</div>
+    <p id="lvlMsg" style="color:#cc88ff;font-size:14px;margin:10px 0 20px"></p>
+    <button class="launch-btn" style="font-size:16px;padding:10px 30px" onclick="closeLvl()">Continue ▶</button>
+  </div>
+</div>
+
+<!-- TITLE -->
+<div class="screen active" id="titleScreen">
+  <div class="bubbles" id="bubblesEl"></div>
+  <div style="position:relative;z-index:1;text-align:center;max-width:580px">
+    <div style="font-size:60px;margin-bottom:8px">🎯 ⚖️ 🏹</div>
+    <div class="game-title">RATIO RANGERS</div>
+    <div class="game-sub">Ratio Adventure — Standard 6.RP.A.1</div>
+    <div class="game-std">Understand ratios &amp; use ratio language</div>
+    <p style="color:#9966cc;font-size:13px;margin-bottom:14px">Pick your Ranger:</p>
+    <div class="ranger-row">
+      <div class="ranger-card" onclick="pickRanger(this,'🦸‍♀️','Ranger Nova','Ratio master')"><span class="ranger-emoji">🦸‍♀️</span><div class="ranger-name">Nova</div><div class="ranger-power">Ratio master</div></div>
+      <div class="ranger-card" onclick="pickRanger(this,'🧝','Ranger Kai','Sharp eyes')"><span class="ranger-emoji">🧝</span><div class="ranger-name">Kai</div><div class="ranger-power">Sharp eyes</div></div>
+      <div class="ranger-card" onclick="pickRanger(this,'🤠','Ranger Tex','Quick draw')"><span class="ranger-emoji">🤠</span><div class="ranger-name">Tex</div><div class="ranger-power">Quick draw</div></div>
+      <div class="ranger-card" onclick="pickRanger(this,'🧜','Ranger Mira','Sees patterns')"><span class="ranger-emoji">🧜</span><div class="ranger-name">Mira</div><div class="ranger-power">Sees patterns</div></div>
+    </div>
+    <button class="launch-btn" id="launchBtn" onclick="startGame()" disabled>🎯 START MISSION</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="gameScreen">
+  <div class="hud">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="hud-ranger" id="hudRanger">🦸‍♀️</div>
+      <div><div class="hud-name" id="hudName">Nova</div><div class="hud-lv" id="hudLv">Lv 1</div></div>
+      <div>
+        <div class="sbar"><span class="sbar-lbl">HP</span><div class="bwrap"><div class="bfill hp-f" id="hpBar" style="width:100%"></div></div><span style="font-size:10px;color:#aaa" id="hpTxt">100</span></div>
+        <div class="sbar"><span class="sbar-lbl">XP</span><div class="bwrap"><div class="bfill xp-f" id="xpBar" style="width:0%"></div></div><span style="font-size:10px;color:#aaa" id="xpTxt">0</span></div>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <div class="hud-pts">🎯 <span id="ptsEl">0</span></div>
+      <div class="hud-streak" id="streakEl"></div>
+    </div>
+    <div style="font-size:12px;color:#aaa;text-align:right">
+      Mission <span id="msnEl" style="color:var(--gold);font-weight:900">1</span>/4<br>
+      Q <span id="qEl">1</span>/<span id="qtEl">5</span>
+    </div>
+  </div>
+
+  <div style="max-width:700px;width:100%">
+    <div class="mission-track" id="msnTrack"></div>
+    <div class="mission-header">
+      <div class="mission-title" id="msnTitle">MISSION 1</div>
+      <div class="mission-desc"  id="msnDesc"></div>
+    </div>
+    <div class="q-card">
+      <div class="q-top">
+        <div class="q-badge">🎯 <span id="qBadge">Mission 1</span></div>
+        <div class="pip-row" id="pipRow"></div>
+      </div>
+      <div class="q-num"   id="qNum">Question 1 of 5</div>
+      <div class="q-scene" id="qScene" style="display:none"></div>
+      <div class="q-ask"   id="qAsk"></div>
+      <div id="qContent"></div>
+      <div class="hint-panel" id="hintPanel">
+        <div class="hint-title">💡 Hint — Try Again!</div>
+        <div class="hint-text" id="hintTxt"></div>
+        <button class="retry-btn" onclick="retryQ()">🔄 Try Again</button>
+      </div>
+      <div class="rpanel" id="rPanel"></div>
+      <button class="nxt-btn" id="nxtBtn" onclick="nextQ()">Next ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- END -->
+<div class="screen" id="endScreen">
+  <div style="text-align:center;max-width:460px">
+    <div style="font-size:70px;margin-bottom:10px" id="endEmoji">🏆</div>
+    <div class="end-score" id="endScore">1000</div>
+    <div class="end-rank"  id="endRank">MISSION COMPLETE!</div>
+    <p style="color:#cc88ff;font-size:13px;margin:6px 0 14px" id="endMsg"></p>
+    <div class="end-grid">
+      <div class="ecard"><div class="val" id="eC">0</div><div class="lab">Correct</div></div>
+      <div class="ecard"><div class="val" id="eS">0</div><div class="lab">Best Streak</div></div>
+      <div class="ecard"><div class="val" id="eL">1</div><div class="lab">Final Level</div></div>
+    </div>
+    <button class="replay-btn" onclick="location.reload()">🎯 PLAY AGAIN</button>
+  </div>
+</div>
+
+<script>
+// BUBBLES
+(function(){
+  var el=document.getElementById('bubblesEl');
+  var colors=['#f093fb','#f5576c','#8e44ad','#f39c12','#11998e'];
+  for(var i=0;i<12;i++){
+    var b=document.createElement('div'); b.className='bubble';
+    var sz=Math.random()*120+40;
+    b.style.width=sz+'px'; b.style.height=sz+'px';
+    b.style.left=Math.random()*100+'%'; b.style.top=Math.random()*100+'%';
+    b.style.background=colors[Math.floor(Math.random()*colors.length)];
+    b.style.animationDelay=Math.random()*6+'s'; b.style.animationDuration=(6+Math.random()*6)+'s';
+    el.appendChild(b);
+  }
+})();
+
+var ranger={name:'Nova',emoji:'🦸‍♀️',hp:100,maxHp:100,xp:0,lv:1,pts:0,streak:0,best:0,correct:0,total:0};
+var cMsn=0,cQ=0,attempts=0,maxAtt=3,answered=false,gDrag=null,gDropped=0,dragAns=[];
+
+var missions=[
+  {title:'MISSION 1: RATIO BASICS',emoji:'🎯',desc:'What is a ratio and how do we write it?',questions:[
+    {type:'mc',scene:'🐦 A birdhouse has 6 wings and 3 beaks.',ask:'What is the <span class="hl">ratio of wings to beaks</span>?',
+     choices:['6:3','3:6','6:9','9:6'],answer:0,hint:'Put wings first, beaks second. Count: 6 wings, 3 beaks → ?',
+     explain:'6 wings to 3 beaks → ratio is 6:3. Order matters — wings first, then beaks!'},
+    {type:'mc',scene:'🍎 A fruit bowl has 4 apples and 6 oranges.',ask:'What is the <span class="hl">ratio of oranges to apples</span>?',
+     choices:['4:6','6:4','10:4','4:10'],answer:1,hint:'Oranges come FIRST in this question. Count oranges: 6. Count apples: 4.',
+     explain:'Oranges to apples means oranges first → 6:4. Notice this is the REVERSE of apples to oranges!'},
+    {type:'mc',scene:'⚽ A team has 3 boys and 5 girls.',ask:'Which shows the ratio of <span class="hl">boys to total players</span> (part-to-whole)?',
+     choices:['3:5','5:8','3:8','8:3'],answer:2,hint:'Part-to-whole means boys compared to EVERYONE. Add: 3 + 5 = 8 total.',
+     explain:'Boys = 3. Total players = 3 + 5 = 8. Part-to-whole ratio → 3:8.'},
+    {type:'mc',scene:'🎨 An art class has 2 red brushes, 7 blue brushes, and 3 green brushes.',ask:'What is the <span class="hl">ratio of red to all brushes</span>?',
+     choices:['2:7','2:10','2:12','7:12'],answer:2,hint:'Total brushes = 2 + 7 + 3 = ? Then write red:total.',
+     explain:'Total = 2+7+3 = 12. Red to all brushes = 2:12.'},
+    {type:'mc',scene:'🍬 A bag has 5 red, 3 blue, and 2 green candies.',ask:'The ratio of <span class="hl">blue to red</span> in this bag is:',
+     choices:['5:3','3:5','3:10','5:10'],answer:1,hint:'Blue comes FIRST in this question. Blue = 3, Red = 5.',
+     explain:'Blue to red → blue first: 3:5. (Not 5:3 — that would be red to blue!)'}
+  ]},
+  {title:'MISSION 2: RATIO FORMS',emoji:'✍️',desc:'Three ways to write any ratio',questions:[
+    {type:'mc',scene:'📝 The ratio of cats to dogs is 4 to 7.',ask:'Which shows the SAME ratio in <span class="hl">colon form</span>?',
+     choices:['7:4','4:7','4/7','7 to 4'],answer:1,hint:'Colon form uses ":" between the two numbers. Keep the same order: 4 to 7 → 4 ? 7.',
+     explain:'4 to 7 in colon form → 4:7. Same order, different symbol.'},
+    {type:'mc',scene:'📝 The ratio of wins to losses is 8:3.',ask:'Which shows the SAME ratio in <span class="hl">word form</span>?',
+     choices:['3 to 8','8 to 3','8/3','3/8'],answer:1,hint:'Word form uses "to" between the numbers. Keep the SAME order: 8:3 → 8 ? 3.',
+     explain:'8:3 in word form → "8 to 3". Order stays the same!'},
+    {type:'mc',scene:'📝 The ratio of sunny to rainy days is 5 to 2.',ask:'Which shows the SAME ratio in <span class="hl">fraction form</span>?',
+     choices:['2/5','5/2','5:2','5 to 2'],answer:1,hint:'Fraction form uses "/" between numbers. First number goes on top: 5 to 2 → 5 ? 2.',
+     explain:'5 to 2 in fraction form → 5/2. The first number is always in the numerator!'},
+    {type:'drag',scene:'🔄 Two ratios shown below — classify each by its FORM.',
+     ask:'Drag each into the correct notation box.',items:['6 to 9 (word form)','6/9 (fraction form)'],
+     answers:['word','frac'],hint:'Look at the symbol between the numbers. "/" means fraction form. "to" means word form.',
+     explain:'"6 to 9" uses words. "6/9" uses a fraction bar. Both represent the same ratio!'},
+    {type:'mc',scene:'🔁 The ratio 10:4 is given.',ask:'Which of the following is <span class="hl">NOT</span> an equivalent way to write 10:4?',
+     choices:['10 to 4','10/4','4:10','All are equivalent'],answer:2,hint:'10:4 and 4:10 are DIFFERENT ratios. One is ten-to-four, the other is four-to-ten. Flipping changes the meaning!',
+     explain:'4:10 is the REVERSE ratio — it means something different. The other two are just different notations for the same 10:4.'}
+  ]},
+  {title:'MISSION 3: RATIO LANGUAGE',emoji:'🗣️',desc:'Describe ratios with precise language',questions:[
+    {type:'mc',scene:'🗳️ "For every vote Candidate A received, Candidate C received nearly <strong>three</strong> votes."',
+     ask:'This sentence describes a ratio of A to C that is closest to:',
+     choices:['3:1','1:3','1:1','3:3'],answer:1,hint:'Candidate A gets 1 vote. For every 1 vote A gets, C gets 3. So A:C = 1:3.',
+     explain:'"For every 1 vote A got, C got 3" → A:C = 1:3. (Note: if it were C to A it would be 3:1.)'},
+    {type:'mc',scene:'🐦 "The ratio of wings to beaks was 2:1, because for every 2 wings there was 1 beak."',
+     ask:'If there are 8 wings total, how many <span class="hl">beaks</span> are there?',
+     choices:['2','4','8','16'],answer:1,hint:'The ratio 2:1 means 2 wings per 1 beak. If there are 8 wings, how many groups of 2 is that? Then multiply by 1 beak per group.',
+     explain:'8 wings ÷ 2 = 4 groups. Each group has 1 beak → 4 beaks. Ratio 2:1 stays constant!'},
+    {type:'mc',scene:'🔴🔵 "For every 5 red marbles, there are 2 blue marbles."',
+     ask:'This describes the ratio of <span class="hl">red to blue</span> as:',
+     choices:['2:5','5:2','5:7','2:7'],answer:1,hint:'Red comes first in "for every 5 RED there are 2 blue." Red:Blue = 5:?',
+     explain:'For every 5 red : 2 blue → Red to Blue = 5:2.'},
+    {type:'mc',scene:'🍕 A recipe uses 3 cups of sauce for every 5 cups of cheese.',
+     ask:'If you use 15 cups of cheese, how many cups of <span class="hl">sauce</span> do you need?',
+     choices:['5','9','25','3'],answer:1,hint:'Ratio of sauce:cheese = 3:5. If cheese = 15, how many groups of 5? Then multiply sauce by same number.',
+     explain:'15 cups of cheese ÷ 5 = 3 groups. 3 groups × 3 cups sauce = 9 cups sauce. Ratio stays 3:5 = 9:15 ✅'},
+    {type:'mc',scene:'📊 "There are 4 out of every 10 students who walk to school."',
+     ask:'This is a <span class="hl">part-to-whole</span> ratio that can be written as:',
+     choices:['4:6','6:4','4:10','10:4'],answer:2,hint:'"Out of" language = part-to-whole. 4 out of every 10 → 4:10.',
+     explain:'"4 out of every 10" is part-to-whole → 4:10. The 10 is the whole group!'}
+  ]},
+  {title:'MISSION 4: RANGER FINAL TEST',emoji:'⚡',desc:'Show everything you know — hardest challenges!',questions:[
+    {type:'mc',scene:'🏆 CHALLENGE! A class has 8 boys and 12 girls.',
+     ask:'A student says "the ratio of girls to total students is 12:8." Is this <span class="hl">correct or incorrect</span>?',
+     choices:['Correct — there are 12 girls and 8 boys','Incorrect — total students = 8+12=20, so it should be 12:20','Incorrect — it should be 8:12','Correct — order doesn\'t matter'],
+     answer:1,hint:'Part-to-whole ratio needs the TOTAL in second position. Total = 8 + 12 = ? Then write girls:total.',
+     explain:'Total students = 8+12 = 20. Ratio of girls to total = 12:20. The student wrote 12:8 which is girls to BOYS — a part-to-part ratio!'},
+    {type:'mc',scene:'⚡ A jar has 3 red, 5 blue, and 2 yellow marbles.',
+     ask:'What is the ratio of <span class="hl">yellow to (red + blue)</span>?',
+     choices:['2:3','2:8','2:10','2:5'],answer:1,hint:'Yellow = 2. Red + blue = 3 + 5 = ? Write yellow : (that number).',
+     explain:'Yellow = 2. Red + blue = 3+5 = 8. Ratio = 2:8.'},
+    {type:'drag',scene:'🔥 Classify each ratio as part-to-part OR part-to-whole.',
+     ask:'Drag each card to the correct category.',items:['🐦 Wings to beaks → 6:3','🍎 Apples out of all fruit → 4:10'],
+     answers:['pp','pw'],hint:'Part-to-PART = comparing two separate groups. Part-to-WHOLE = comparing one group to the total.',
+     explain:'Wings:beaks = two separate parts → part-to-part. Apples:all fruit = one group vs. the total → part-to-whole.'},
+    {type:'mc',scene:'⚡ "For every 3 cats there are 4 dogs" in a shelter. There are 12 cats.',
+     ask:'How many <span class="hl">dogs</span> are there?',
+     choices:['9','16','12','48'],answer:1,hint:'Ratio cats:dogs = 3:4. If there are 12 cats, how many groups of 3? Multiply dogs by the same number.',
+     explain:'12 cats ÷ 3 = 4 groups. 4 groups × 4 dogs = 16 dogs. Ratio 3:4 = 12:16 ✅'},
+    {type:'mc',scene:'🏆 FINAL! A ratio written as 15/25 in fraction form.',
+     ask:'Which statement about this ratio is <span class="hl">TRUE</span>?',
+     choices:['It equals 15:25 and "15 to 25" — all three forms mean the same thing',
+              'Fraction form is different from ratio notation',
+              'The ratio reversed is also 15/25',
+              '15/25 means 25 divided by 15'],
+     answer:0,hint:'Remember: 3 ways to write the same ratio — colon form, word form, and fraction form. All represent the same comparison.',
+     explain:'15/25 = 15:25 = "15 to 25" — all three notations represent identical ratios. Only the symbol between numbers changes!'}
+  ]}
+];
+
+function pickRanger(card,emoji,name){
+  document.querySelectorAll('.ranger-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected'); ranger.emoji=emoji; ranger.name=name;
+  document.getElementById('launchBtn').disabled=false;
+}
+
+function startGame(){
+  document.getElementById('titleScreen').classList.remove('active');
+  document.getElementById('gameScreen').classList.add('active');
+  document.getElementById('hudRanger').textContent=ranger.emoji;
+  document.getElementById('hudName').textContent=ranger.name;
+  buildTrack(); loadQ();
+}
+
+function buildTrack(){
+  var t=document.getElementById('msnTrack'); t.innerHTML='';
+  missions.forEach(function(m,i){
+    var n=document.createElement('div'); n.className='mission-node';
+    n.textContent=m.emoji;
+    if(i<cMsn) n.classList.add('done');
+    else if(i===cMsn) n.classList.add('now');
+    else n.classList.add('lock');
+    t.appendChild(n);
+  });
+}
+
+function buildPips(){
+  var c=document.getElementById('pipRow'); c.innerHTML='';
+  for(var i=0;i<maxAtt;i++){var p=document.createElement('div');p.className='pip'+(i<attempts?' used':'');c.appendChild(p);}
+}
+
+function loadQ(){
+  answered=false; attempts=0; gDropped=0;
+  var m=missions[cMsn], q=m.questions[cQ];
+  document.getElementById('msnTitle').textContent=m.title;
+  document.getElementById('msnDesc').textContent=m.desc;
+  document.getElementById('qBadge').textContent='Mission '+(cMsn+1)+' '+m.emoji;
+  document.getElementById('msnEl').textContent=cMsn+1;
+  document.getElementById('qEl').textContent=cQ+1;
+  document.getElementById('qtEl').textContent=m.questions.length;
+  document.getElementById('qNum').textContent='Question '+(cQ+1)+' of '+m.questions.length;
+  document.getElementById('qAsk').innerHTML=q.ask;
+  if(q.scene){document.getElementById('qScene').style.display='block';document.getElementById('qScene').innerHTML=q.scene;}
+  else document.getElementById('qScene').style.display='none';
+  document.getElementById('hintPanel').classList.remove('show');
+  var rp=document.getElementById('rPanel'); rp.className='rpanel'; rp.innerHTML='';
+  document.getElementById('nxtBtn').className='nxt-btn';
+  buildPips(); renderQ(q);
+}
+
+function renderQ(q){
+  var c=document.getElementById('qContent');
+  if(q.type==='mc'){
+    c.innerHTML='<div class="choices">'+q.choices.map(function(ch,i){
+      return '<button class="cbtn" id="cb'+i+'" onclick="checkMC('+i+')">'+String.fromCharCode(65+i)+'. '+ch+'</button>';
+    }).join('')+'</div>';
+  } else {
+    dragAns=q.answers;
+    var chips=q.items.map(function(it,i){return '<div class="dchip" id="dc'+i+'" draggable="true" ondragstart="dStart(event)">'+it+'</div>';}).join('');
+    var h0=q.answers[0]==='pp'?'🔴 Part-to-Part':q.answers[0]==='word'?'📝 Word Form':'✅ First Category';
+    var h1=q.answers[1]==='pw'?'🟣 Part-to-Whole':q.answers[1]==='frac'?'➗ Fraction Form':'⭐ Second Category';
+    c.innerHTML='<div class="drag-pool" id="dPool">'+chips+'</div><div class="dz-row">'+
+      '<div class="dzone za" id="dz0" ondragover="dAllow(event)" ondrop="dDrop(event,0)"><h4>'+h0+'</h4></div>'+
+      '<div class="dzone zb" id="dz1" ondragover="dAllow(event)" ondrop="dDrop(event,1)"><h4>'+h1+'</h4></div></div>';
+  }
+}
+
+function checkMC(idx){
+  if(answered) return;
+  var q=missions[cMsn].questions[cQ];
+  var btns=document.querySelectorAll('.cbtn');
+  if(idx===q.answer){
+    btns[idx].classList.add('correct'); btns.forEach(b=>b.disabled=true);
+    answered=true; ranger.total++; doCorrect(q);
+    showSuccess(q); document.getElementById('nxtBtn').className='nxt-btn show';
+    document.getElementById('hintPanel').classList.remove('show');
+  } else {
+    btns[idx].classList.add('wrong'); attempts++; buildPips();
+    btns[idx].disabled=true;
+    setTimeout(()=>{btns[idx].classList.remove('wrong');btns[idx].disabled=false;},600);
+    if(attempts>=maxAtt){
+      btns.forEach(b=>b.disabled=true); btns[q.answer].classList.add('reveal');
+      answered=true; ranger.total++; ranger.streak=0; ranger.hp=Math.max(0,ranger.hp-20); updateHUD();
+      document.getElementById('hintPanel').classList.remove('show');
+      var rp=document.getElementById('rPanel');
+      rp.innerHTML='❌ Out of attempts! <div class="explain">'+q.explain+'</div>';
+      rp.className='rpanel show ok'; rp.style.borderColor='var(--pink)'; rp.style.color='#f5576c';
+      document.getElementById('nxtBtn').className='nxt-btn show';
+    } else { showHint(q); }
+  }
+}
+
+function showHint(q){document.getElementById('hintTxt').textContent=q.hint;document.getElementById('hintPanel').classList.add('show');}
+function retryQ(){document.getElementById('hintPanel').classList.remove('show');}
+
+function dStart(e){gDrag=e.target.id;}
+function dAllow(e){e.preventDefault();e.currentTarget.classList.add('over');}
+document.addEventListener('dragend',function(){document.querySelectorAll('.dchip').forEach(d=>d.classList.remove('dragging'));document.querySelectorAll('.dzone').forEach(z=>z.classList.remove('over'));});
+function dDrop(e,bIdx){
+  e.preventDefault();e.currentTarget.classList.remove('over');
+  if(!gDrag)return;
+  var el=document.getElementById(gDrag);
+  var ci=parseInt(gDrag.replace('dc',''));
+  var q=missions[cMsn].questions[cQ];
+  var need=dragAns[ci], thisB=(bIdx===0)?dragAns[0]:dragAns[1];
+  if(need===thisB){
+    el.classList.add('ok');el.setAttribute('draggable','false');e.currentTarget.appendChild(el);gDropped++;
+    document.getElementById('hintPanel').classList.remove('show');
+    if(gDropped===q.items.length){answered=true;ranger.total++;doCorrect(q);showSuccess(q);document.getElementById('nxtBtn').className='nxt-btn show';}
+  } else {
+    el.classList.add('bad'); attempts++; buildPips();
+    setTimeout(()=>el.classList.remove('bad'),600);
+    showHint(q);
+  }
+  gDrag=null;
+}
+
+function doCorrect(q){
+  ranger.correct++; ranger.streak++; if(ranger.streak>ranger.best)ranger.best=ranger.streak;
+  var pts=100+(attempts===0?25:0)+(ranger.streak>=3?50:0); ranger.pts+=pts;
+  ranger.xp+=50; if(ranger.xp>=100){ranger.xp-=100;ranger.lv++;showLvl(false);}
+  updateHUD(); showXpPop('+'+pts+(ranger.streak>=3?' 🔥×'+ranger.streak:''));
+}
+
+function showSuccess(q){
+  var rp=document.getElementById('rPanel');
+  rp.style.borderColor='';rp.style.color='';
+  rp.innerHTML='✅ Correct! <div class="explain">'+q.explain+'</div>';
+  rp.className='rpanel show ok';
+}
+
+function updateHUD(){
+  document.getElementById('hpBar').style.width=(ranger.hp/ranger.maxHp*100)+'%';
+  document.getElementById('hpTxt').textContent=ranger.hp;
+  document.getElementById('xpBar').style.width=ranger.xp+'%';
+  document.getElementById('xpTxt').textContent=ranger.xp;
+  document.getElementById('hudLv').textContent='Lv '+ranger.lv;
+  document.getElementById('ptsEl').textContent=ranger.pts.toLocaleString();
+  document.getElementById('streakEl').textContent=ranger.streak>=3?'🔥 ×'+ranger.streak:'';
+}
+
+function showXpPop(msg){var p=document.getElementById('xpPop');p.textContent=msg;p.style.display='block';setTimeout(()=>p.style.display='none',1400);}
+
+function showLvl(isM){
+  var o=document.getElementById('lvlOverlay');
+  if(isM){var m=missions[cMsn];document.getElementById('lvlEmoji').textContent=m.emoji;document.getElementById('lvlTitle').textContent='MISSION '+(cMsn+1)+' UNLOCKED!';document.getElementById('lvlMsg').textContent=m.title+' — '+m.desc;}
+  else{document.getElementById('lvlEmoji').textContent='⭐';document.getElementById('lvlTitle').textContent='LEVEL '+ranger.lv+'!';document.getElementById('lvlMsg').textContent='Your ratio skills are growing!';}
+  o.classList.add('show');
+}
+function closeLvl(){document.getElementById('lvlOverlay').classList.remove('show');loadQ();}
+
+function nextQ(){
+  cQ++;
+  if(cQ>=missions[cMsn].questions.length){
+    cMsn++;cQ=0;buildTrack();
+    if(cMsn>=missions.length){endGame();return;}
+    showLvl(true);
+  } else loadQ();
+}
+
+function endGame(){
+  document.getElementById('gameScreen').classList.remove('active');
+  document.getElementById('endScreen').classList.add('active');
+  var pct=ranger.total>0?Math.round(ranger.correct/ranger.total*100):0;
+  document.getElementById('endScore').textContent=ranger.pts.toLocaleString();
+  document.getElementById('eC').textContent=ranger.correct+'/'+ranger.total;
+  document.getElementById('eS').textContent=ranger.best;
+  document.getElementById('eL').textContent=ranger.lv;
+  var rank,emoji,msg;
+  if(pct>=90){rank='S RANK — RATIO LEGEND!';emoji='👑';msg='Perfect mastery of 6.RP.A.1! Incredible!';}
+  else if(pct>=80){rank='A RANK — EXCELLENT!';emoji='🏆';msg='Great work! You really understand ratios!';}
+  else if(pct>=70){rank='B RANK — NICE JOB!';emoji='⭐';msg='Solid! Review part-to-whole vs part-to-part.';}
+  else if(pct>=60){rank='C RANK — GOOD TRY!';emoji='💪';msg='Keep going! Practice writing ratios 3 ways.';}
+  else{rank='KEEP TRAINING!';emoji='📚';msg='Review the definitions and try again!';}
+  document.getElementById('endEmoji').textContent=emoji;
+  document.getElementById('endRank').textContent=rank;
+  document.getElementById('endMsg').textContent=msg;
+}
+</script>
+</body>
+</html>

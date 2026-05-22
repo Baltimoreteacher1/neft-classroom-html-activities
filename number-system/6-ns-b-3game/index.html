@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<title>Integer Wizards – Battle Arena</title>
+<style>
+:root{
+  --bg:#06090f;
+  --panel:#0d1527;
+  --card:#131f3e;
+  --card2:#1a2a52;
+  --accent:#38bdf8;
+  --gold:#fbbf24;
+  --green:#4ade80;
+  --red:#f87171;
+  --purple:#c084fc;
+  --fire:#fb923c;
+  --ice:#7dd3fc;
+  --storm:#a78bfa;
+  --plant:#86efac;
+  --water:#60a5fa;
+  --text:#e5e7eb;
+  --shadow:rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  background:var(--bg);
+  font-family:'Inter',system-ui;
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  min-height:100vh;
+  padding:16px;
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% 0%, #1a2a6c33 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, #38bdf822 0%, transparent 50%);
+}
+
+#game{
+  width:960px;
+  max-width:100%;
+}
+
+/* ===== TITLE ===== */
+#title{
+  text-align:center;
+  padding:10px 0 4px;
+  font-family:'Cinzel',serif;
+  font-size:1.8rem;
+  background:linear-gradient(135deg,#fbbf24,#38bdf8,#c084fc);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:2px;
+  text-shadow:none;
+}
+#subtitle{font-size:.75rem;text-align:center;color:#6b7280;margin-bottom:14px;letter-spacing:1px}
+
+/* ===== LAYOUT ===== */
+#arena{
+  display:grid;
+  grid-template-columns:220px 1fr 220px;
+  gap:14px;
+  margin-bottom:14px;
+}
+
+/* ===== PANELS ===== */
+.panel{
+  background:var(--panel);
+  border-radius:16px;
+  padding:14px;
+  border:1px solid #1f2d54;
+}
+
+/* ===== PLAYER PANEL ===== */
+#playerPanel{}
+.wizard-avatar{
+  font-size:52px;
+  text-align:center;
+  margin-bottom:6px;
+  filter:drop-shadow(0 0 12px var(--accent));
+}
+.player-name{
+  text-align:center;
+  font-family:'Cinzel',serif;
+  font-size:.9rem;
+  color:var(--gold);
+  margin-bottom:8px;
+}
+.stat-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:.75rem;
+  margin-bottom:5px;
+  color:#9ca3af;
+}
+.stat-val{color:var(--text);font-weight:700}
+
+.bar-label{font-size:.7rem;color:#6b7280;margin-bottom:2px}
+.bar{height:9px;background:#1a2240;border-radius:6px;overflow:hidden;margin-bottom:8px}
+.bar-fill{height:100%;border-radius:6px;transition:width .4s ease}
+#hpFill{background:linear-gradient(90deg,#22c55e,#16a34a)}
+#xpFill{background:linear-gradient(90deg,#818cf8,#6366f1)}
+#energyFill{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
+
+.pet-section{
+  margin-top:10px;
+  text-align:center;
+}
+.pet-section h4{font-size:.7rem;color:#6b7280;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
+#petSprite{font-size:28px}
+#petName{font-size:.7rem;color:var(--purple);margin-top:2px}
+
+/* ===== BATTLE CENTER ===== */
+#battleCenter{}
+
+/* enemy zone */
+#enemyZone{
+  text-align:center;
+  padding:14px 0;
+  position:relative;
+  min-height:180px;
+  background:radial-gradient(ellipse 70% 60% at 50% 60%, #0d1d4422 0%, transparent 70%);
+  border-radius:12px;
+  margin-bottom:12px;
+}
+#enemySprite{
+  font-size:80px;
+  display:inline-block;
+  transition:.15s;
+  filter:drop-shadow(0 0 20px #f87171aa);
+}
+#enemySprite.shake{animation:shake .3s}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px) rotate(-5deg)}
+  60%{transform:translateX(8px) rotate(5deg)}
+}
+#enemySprite.hit{transform:scale(.75);filter:drop-shadow(0 0 30px #ef4444)}
+#enemyName{font-family:'Cinzel',serif;font-size:1rem;color:var(--red);margin:6px 0 2px}
+#enemyLevelTag{font-size:.7rem;color:#6b7280}
+#enemyElement{font-size:.8rem;margin-bottom:6px}
+
+.enemy-bar-wrap{padding:0 20px}
+#enemyHPtext{font-size:.7rem;color:#9ca3af;margin-bottom:2px}
+#enemyHPfill{background:linear-gradient(90deg,#ef4444,#f97316)}
+
+/* battle status */
+#battleStatus{
+  text-align:center;
+  min-height:24px;
+  font-size:.85rem;
+  color:#9ca3af;
+  margin-bottom:8px;
+}
+#battleStatus.correct{color:var(--green)}
+#battleStatus.wrong{color:var(--red)}
+#battleStatus.boss{color:var(--gold)}
+
+/* problem area */
+#problemBox{
+  background:var(--card);
+  border-radius:14px;
+  padding:18px 14px 14px;
+  border:1px solid #1f2d54;
+  position:relative;
+}
+#problemLabel{font-size:.65rem;color:#6b7280;text-align:center;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+#problem{
+  font-size:2.8rem;
+  text-align:center;
+  font-weight:900;
+  font-family:'Cinzel',serif;
+  background:linear-gradient(135deg,#fff,#38bdf8);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:10px;
+}
+
+/* number line */
+#numberLine{
+  height:44px;
+  background:#0a1020;
+  border-radius:8px;
+  position:relative;
+  margin-bottom:12px;
+  overflow:hidden;
+}
+.nl-dot{
+  position:absolute;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:2;
+}
+.nl-dot.a{background:#38bdf8;box-shadow:0 0 8px #38bdf8}
+.nl-dot.b{background:#fbbf24;box-shadow:0 0 8px #fbbf24}
+.nl-arrow{
+  position:absolute;
+  height:2px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:1;
+}
+.nl-zero{
+  position:absolute;
+  height:100%;
+  width:1px;
+  background:#ffffff22;
+  top:0;
+}
+.nl-label{
+  position:absolute;
+  font-size:.55rem;
+  color:#6b7280;
+  top:4px;
+  transform:translateX(-50%);
+}
+
+/* input & buttons */
+#answerInput{
+  width:100%;
+  padding:13px;
+  font-size:1.3rem;
+  border-radius:10px;
+  border:2px solid #2a3a6a;
+  background:#0a1020;
+  color:white;
+  text-align:center;
+  font-weight:700;
+  margin-bottom:10px;
+  transition:border-color .2s;
+}
+#answerInput:focus{outline:none;border-color:var(--accent)}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+.btn{
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  font-weight:700;
+  font-size:.9rem;
+  cursor:pointer;
+  transition:transform .1s,box-shadow .1s;
+  font-family:'Inter',system-ui;
+}
+.btn:active{transform:scale(.96)}
+
+#attackBtn{
+  grid-column:1/-1;
+  background:linear-gradient(135deg,#38bdf8,#818cf8);
+  color:white;
+  font-size:1rem;
+  box-shadow:0 4px 20px #38bdf833;
+}
+#attackBtn:hover{box-shadow:0 4px 28px #38bdf866}
+
+#spellBtn{
+  background:linear-gradient(135deg,#c084fc,#ec4899);
+  color:white;
+  box-shadow:0 4px 14px #c084fc33;
+}
+#healBtn{
+  background:linear-gradient(135deg,#4ade80,#16a34a);
+  color:white;
+  box-shadow:0 4px 14px #4ade8033;
+}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ===== RIGHT PANEL ===== */
+#rightPanel{}
+#rightPanel h4{font-size:.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+
+/* spell cards */
+#spellCards{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-bottom:14px;
+}
+.spell-card{
+  background:var(--card2);
+  border-radius:10px;
+  padding:8px 6px;
+  text-align:center;
+  border:1px solid #2a3a6a;
+  cursor:pointer;
+  transition:.15s;
+  position:relative;
+  overflow:hidden;
+}
+.spell-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.spell-card.selected{border-color:var(--gold);box-shadow:0 0 12px var(--gold)44}
+.spell-card.charged .charge-bar-fill{background:var(--gold)}
+.spell-card .spell-icon{font-size:22px;margin-bottom:2px}
+.spell-card .spell-name{font-size:.6rem;font-weight:700;color:var(--text)}
+.spell-card .spell-elem{font-size:.55rem;color:#6b7280}
+.charge-bar{height:3px;background:#1a2240;border-radius:2px;margin-top:4px}
+.charge-bar-fill{height:100%;border-radius:2px;background:#4b5563;transition:width .3s}
+
+/* inventory / loot */
+#lootList{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-bottom:12px;
+  min-height:30px;
+}
+.loot-item{
+  background:var(--card2);
+  border-radius:7px;
+  padding:4px 8px;
+  font-size:.7rem;
+  border:1px solid #2a3a6a;
+  cursor:default;
+}
+.loot-item.rare{border-color:var(--purple);color:var(--purple)}
+.loot-item.epic{border-color:var(--gold);color:var(--gold)}
+
+/* zone / quest */
+#zoneBox{
+  background:var(--card);
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:10px;
+  border:1px solid #1f2d54;
+}
+#zoneName{font-size:.8rem;font-weight:700;color:var(--accent)}
+#questText{font-size:.7rem;color:#6b7280;margin-top:4px}
+#questProgress{
+  height:4px;
+  background:#1a2240;
+  border-radius:3px;
+  margin-top:6px;
+  overflow:hidden;
+}
+#questProgressFill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:3px;transition:width .4s}
+
+/* ===== BOTTOM HUD ===== */
+#bottomHud{
+  background:var(--panel);
+  border-radius:16px;
+  padding:12px 16px;
+  border:1px solid #1f2d54;
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:8px;
+}
+.hud-tile{
+  background:var(--card);
+  padding:8px;
+  border-radius:10px;
+  text-align:center;
+}
+.hud-tile .hud-label{font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.5px}
+.hud-tile .hud-val{font-size:1rem;font-weight:700;color:var(--text);margin-top:2px}
+.hud-tile.combo-tile .hud-val{color:var(--gold)}
+.hud-tile.streak-tile .hud-val{color:var(--fire)}
+
+/* ===== FLOATING EFFECTS ===== */
+.float-text{
+  position:fixed;
+  font-weight:900;
+  font-size:1.2rem;
+  pointer-events:none;
+  z-index:999;
+  animation:floatUp .9s ease-out forwards;
+}
+@keyframes floatUp{
+  0%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-70px) scale(.8)}
+}
+
+/* ===== MODAL ===== */
+#modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000000cc;
+  z-index:100;
+  justify-content:center;
+  align-items:center;
+}
+#modal.show{display:flex}
+#modalBox{
+  background:var(--panel);
+  border-radius:20px;
+  padding:36px;
+  text-align:center;
+  border:1px solid #2a3a6a;
+  min-width:320px;
+  animation:popIn .3s ease-out;
+}
+@keyframes popIn{
+  from{transform:scale(.7);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+#modalTitle{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold);margin-bottom:10px}
+#modalBody{color:#9ca3af;font-size:.9rem;margin-bottom:20px;line-height:1.6}
+#modalBtn{
+  background:linear-gradient(135deg,#38bdf8,#818cf8);
+  color:white;
+  padding:12px 32px;
+  border-radius:10px;
+  border:none;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ===== BATTLE LOG ===== */
+#battleLog{
+  background:var(--card);
+  border-radius:10px;
+  padding:8px 12px;
+  margin-bottom:10px;
+  height:64px;
+  overflow:hidden;
+  border:1px solid #1f2d54;
+}
+.log-entry{font-size:.7rem;color:#6b7280;line-height:1.6}
+.log-entry.good{color:var(--green)}
+.log-entry.bad{color:var(--red)}
+.log-entry.special{color:var(--gold)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:700px){
+  #arena{grid-template-columns:1fr}
+  #bottomHud{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+<div id="game">
+
+  <div id="title">✨ Integer Wizards</div>
+  <div id="subtitle">Battle Arena · Integer Magic · Elemental Spells</div>
+
+  <div id="arena">
+
+    <!-- LEFT: Player -->
+    <div class="panel" id="playerPanel">
+      <div class="wizard-avatar" id="wizardAvatar">🧙</div>
+      <div class="player-name" id="wizardName">Arithmancer</div>
+
+      <div class="stat-row"><span>HP</span><span class="stat-val"><span id="hpVal">100</span>/<span id="hpMax">100</span></span></div>
+      <div class="bar"><div id="hpFill" class="bar-fill" style="width:100%"></div></div>
+
+      <div class="stat-row"><span>Energy</span><span class="stat-val"><span id="energyVal">3</span>/5</span></div>
+      <div class="bar"><div id="energyFill" class="bar-fill" style="width:60%"></div></div>
+
+      <div class="stat-row"><span>XP</span><span class="stat-val" id="xpStat">0/100</span></div>
+      <div class="bar"><div id="xpFill" class="bar-fill" style="width:0%"></div></div>
+
+      <div class="stat-row"><span>Power</span><span class="stat-val" id="powerStat">18</span></div>
+      <div class="stat-row"><span>Defense</span><span class="stat-val" id="defenseStat">5</span></div>
+      <div class="stat-row"><span>Streak</span><span class="stat-val" id="streakStat">0🔥</span></div>
+
+      <div class="pet-section">
+        <h4>Companion</h4>
+        <div id="petSprite">🦊</div>
+        <div id="petName">Ember Fox</div>
+        <div id="petHP" style="font-size:.65rem;color:#6b7280;margin-top:2px">Pet HP: 40/40</div>
+      </div>
+    </div>
+
+    <!-- CENTER: Battle -->
+    <div class="panel" id="battleCenter">
+
+      <div id="enemyZone">
+        <div id="enemySprite">👾</div>
+        <div id="enemyName">Goblin Scout</div>
+        <div id="enemyLevelTag">Lv.1 · Common</div>
+        <div id="enemyElement">🔥 Fire</div>
+        <div class="enemy-bar-wrap">
+          <div id="enemyHPtext">HP: 80/80</div>
+          <div class="bar"><div id="enemyHPfill" class="bar-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+
+      <div id="battleStatus">Solve the equation to cast your spell!</div>
+
+      <div id="problemBox">
+        <div id="problemLabel">⚡ Integer Challenge</div>
+        <div id="problem">? + ? = ?</div>
+        <div id="numberLine"></div>
+        <input id="answerInput" type="number" placeholder="Your answer…" autocomplete="off">
+        <div class="btn-row">
+          <button class="btn" id="attackBtn" onclick="submitAnswer('attack')">⚔️ Attack</button>
+          <button class="btn" id="spellBtn" onclick="submitAnswer('spell')">✨ Spell</button>
+          <button class="btn" id="healBtn" onclick="submitAnswer('heal')">💚 Heal</button>
+        </div>
+      </div>
+
+      <br>
+      <div id="battleLog"></div>
+
+    </div>
+
+    <!-- RIGHT: Spells & Loot -->
+    <div class="panel" id="rightPanel">
+
+      <div id="zoneBox">
+        <div id="zoneName">🌋 Ember Wastes</div>
+        <div id="questText">Quest: Defeat 3 enemies</div>
+        <div id="questProgress"><div id="questProgressFill" style="width:0%"></div></div>
+      </div>
+
+      <h4>Spell Cards</h4>
+      <div id="spellCards"></div>
+
+      <h4>Inventory</h4>
+      <div id="lootList"><span style="font-size:.7rem;color:#4b5563">No items yet…</span></div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM HUD -->
+  <div id="bottomHud">
+    <div class="hud-tile"><div class="hud-label">Score</div><div class="hud-val" id="scoreVal">0</div></div>
+    <div class="hud-tile"><div class="hud-label">Level</div><div class="hud-val" id="levelVal">1</div></div>
+    <div class="hud-tile"><div class="hud-label">Zone</div><div class="hud-val" id="zoneVal">1</div></div>
+    <div class="hud-tile"><div class="hud-label">Room</div><div class="hud-val" id="roomVal">1</div></div>
+    <div class="hud-tile combo-tile"><div class="hud-label">Combo</div><div class="hud-val" id="comboVal">0</div></div>
+    <div class="hud-tile streak-tile"><div class="hud-label">Streak</div><div class="hud-val" id="streakVal">0</div></div>
+    <div class="hud-tile"><div class="hud-label">Gold</div><div class="hud-val" id="goldVal">0💰</div></div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div id="modalBox">
+    <div id="modalTitle">Victory!</div>
+    <div id="modalBody">You defeated the enemy!</div>
+    <button id="modalBtn" onclick="closeModal()">Continue ➜</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   INTEGER WIZARDS – BATTLE ARENA  (Prodigy-Level Edition)
+   ============================================================ */
+
+// ── CONSTANTS ──────────────────────────────────────────────
+const ZONES = [
+  { name:"🌋 Ember Wastes",   element:"fire",  quest:"Defeat 3 enemies",  goal:3 },
+  { name:"❄️ Frost Caverns",  element:"ice",   quest:"Defeat 4 enemies",  goal:4 },
+  { name:"🌿 Thorn Forest",   element:"plant", quest:"Defeat 4 enemies",  goal:4 },
+  { name:"⚡ Storm Peaks",    element:"storm", quest:"Defeat 5 enemies",  goal:5 },
+  { name:"🌊 Abyssal Deep",   element:"water", quest:"Defeat 6 enemies",  goal:6 },
+];
+
+const ELEMENTS = {
+  fire:  { icon:"🔥", color:"#fb923c", strong:"plant",  weak:"water"  },
+  ice:   { icon:"❄️", color:"#7dd3fc", strong:"water",  weak:"fire"   },
+  plant: { icon:"🌿", color:"#86efac", strong:"water",  weak:"fire"   },
+  storm: { icon:"⚡", color:"#a78bfa", strong:"ice",    weak:"plant"  },
+  water: { icon:"🌊", color:"#60a5fa", strong:"fire",   weak:"storm"  },
+};
+
+const SPELLS = [
+  { name:"Fireball",    icon:"🔥", elem:"fire",  dmgMult:1.4, energyCost:2, type:"attack", charge:0 },
+  { name:"Blizzard",    icon:"❄️", elem:"ice",   dmgMult:1.3, energyCost:2, type:"attack", charge:0 },
+  { name:"Vine Wrap",   icon:"🌿", elem:"plant", dmgMult:1.0, energyCost:1, type:"attack", charge:0, effect:"slow" },
+  { name:"Thunderbolt", icon:"⚡", elem:"storm", dmgMult:1.6, energyCost:3, type:"attack", charge:0 },
+  { name:"Tidal Wave",  icon:"🌊", elem:"water", dmgMult:1.2, energyCost:2, type:"attack", charge:0, effect:"aoe" },
+  { name:"Rejuvenate",  icon:"💚", elem:"plant", energyCost:2, type:"heal",   healAmt:25,   charge:0 },
+  { name:"Ember Fang",  icon:"🦊", elem:"fire",  dmgMult:1.8, energyCost:4, type:"attack", charge:0, petSpell:true },
+];
+
+const ENEMY_TYPES = [
+  { sprite:"👾", name:"Goblin Scout",  elem:"fire",  rarity:"Common",    hpBase:70,  reward:80,  xpReward:20 },
+  { sprite:"🧟", name:"Zombie Mage",   elem:"plant", rarity:"Common",    hpBase:85,  reward:100, xpReward:25 },
+  { sprite:"🐺", name:"Frost Wolf",    elem:"ice",   rarity:"Uncommon",  hpBase:110, reward:130, xpReward:35 },
+  { sprite:"👻", name:"Storm Wraith",  elem:"storm", rarity:"Rare",      hpBase:140, reward:180, xpReward:50 },
+  { sprite:"🧊", name:"Ice Titan",     elem:"ice",   rarity:"Rare",      hpBase:160, reward:220, xpReward:65 },
+  { sprite:"🐉", name:"Lava Dragon",   elem:"fire",  rarity:"Epic",      hpBase:220, reward:350, xpReward:100, boss:true },
+  { sprite:"🌑", name:"Shadow Lord",   elem:"storm", rarity:"Legendary", hpBase:300, reward:500, xpReward:150, boss:true },
+];
+
+const LOOT_TABLE = [
+  { name:"Power Gem",    icon:"💎", rarity:"rare",  effect:"power", val:5  },
+  { name:"Iron Shield",  icon:"🛡️", rarity:"rare",  effect:"def",   val:5  },
+  { name:"Spell Scroll", icon:"📜", rarity:"epic",  effect:"spell", val:0  },
+  { name:"Gold Coin",    icon:"🪙", rarity:"common",effect:"gold",  val:20 },
+  { name:"XP Crystal",   icon:"🔮", rarity:"rare",  effect:"xp",    val:50 },
+  { name:"Dragon Shard", icon:"🐉", rarity:"epic",  effect:"power", val:12 },
+];
+
+const WIZARD_CLASSES = [
+  { name:"Arithmancer",  avatar:"🧙", power:18, defense:5  },
+  { name:"Mathemagus",   avatar:"🔮", power:22, defense:4  },
+  { name:"Numerilock",   avatar:"⚡", power:16, defense:8  },
+];
+
+const PETS = [
+  { name:"Ember Fox",   sprite:"🦊", hp:40 },
+  { name:"Frost Bunny", sprite:"🐰", hp:45 },
+  { name:"Storm Eagle", sprite:"🦅", hp:35 },
+];
+
+// ── STATE ──────────────────────────────────────────────────
+let state = {
+  score:0, level:1, zone:0, room:1,
+  combo:0, streak:0, gold:0,
+  hp:100, hpMax:100,
+  energy:3, energyMax:5,
+  xp:0, xpNext:100,
+  power:18, defense:5,
+  questKills:0,
+  selectedSpell:0,
+  mode:"attack",       // attack | spell | heal
+  inputLocked:false,
+  enemyHP:0, enemyMaxHP:0, enemyData:null,
+  a:0, b:0, op:"+", correct:0,
+  loot:[],
+  petHP:40, petMaxHP:40,
+  wizardClass:0,
+  petIdx:0,
+  spells: JSON.parse(JSON.stringify(SPELLS)),
+};
+
+const $=id=>document.getElementById(id);
+
+// ── INIT ───────────────────────────────────────────────────
+function init(){
+  renderSpellCards();
+  spawnEnemy();
+  generate();
+  updateUI();
+}
+
+// ── ENEMY ──────────────────────────────────────────────────
+function spawnEnemy(){
+  const zone=ZONES[state.zone % ZONES.length];
+  // prefer zone element, sometimes random boss at room 5
+  let pool=ENEMY_TYPES.filter(e=>!e.boss);
+  if(state.room % 5 === 0) pool=ENEMY_TYPES.filter(e=>e.boss);
+  const e=pool[rand(0,pool.length-1)];
+  state.enemyData=e;
+  state.enemyMaxHP = Math.floor(e.hpBase * (1 + (state.level-1)*.18));
+  state.enemyHP = state.enemyMaxHP;
+
+  $('enemySprite').innerText = e.sprite;
+  $('enemyName').innerText   = e.name;
+  $('enemyLevelTag').innerText = `Lv.${state.level} · ${e.rarity}`;
+  const el=ELEMENTS[e.elem];
+  $('enemyElement').innerText = `${el.icon} ${cap(e.elem)}`;
+  $('enemyElement').style.color = el.color;
+
+  updateEnemyBar();
+  if(e.boss) showBossWarning(e);
+}
+
+function updateEnemyBar(){
+  const pct = state.enemyHP / state.enemyMaxHP * 100;
+  $('enemyHPfill').style.width = pct + "%";
+  $('enemyHPtext').innerText = `HP: ${Math.max(0,state.enemyHP)}/${state.enemyMaxHP}`;
+}
+
+function showBossWarning(e){
+  showModal(`⚠️ BOSS BATTLE`, `${e.sprite} <b style="color:#fbbf24">${e.name}</b> appears!<br>Prepare yourself, wizard…`, "Fight!");
+}
+
+// ── MATH GENERATION ───────────────────────────────────────
+function generate(){
+  const ops=["+","-","*"];
+  const range = 5 + state.level * 2;
+  state.op = ops[rand(0, ops.length-1)];
+  state.a  = rand(-range, range);
+  state.b  = rand(-range, range);
+
+  // avoid division/zero weirdness for *
+  if(state.op==="*"){
+    state.a = rand(-6,6);
+    state.b = rand(-5,5);
+  }
+
+  if(state.op==="*") state.correct = state.a * state.b;
+  else if(state.op==="+") state.correct = state.a + state.b;
+  else state.correct = state.a - state.b;
+
+  $('problem').innerText = `${state.a} ${state.op} ${state.b}`;
+  renderNumberLine();
+  $('answerInput').value = "";
+  state.inputLocked = false;
+}
+
+function renderNumberLine(){
+  const line = $('numberLine');
+  line.innerHTML = "";
+  if(state.op==="*"){ line.innerHTML='<div style="font-size:.65rem;color:#4b5563;text-align:center;line-height:44px">× shown on grid</div>'; return; }
+
+  const min=-22, max=22;
+  const pos=v=>((v-min)/(max-min))*100;
+
+  // zero line
+  const z=document.createElement("div");
+  z.className="nl-zero"; z.style.left=pos(0)+"%"; line.appendChild(z);
+
+  // arrow from a to b
+  const x1=pos(state.a), x2=pos(state.b);
+  const arr=document.createElement("div");
+  arr.className="nl-arrow";
+  arr.style.left=Math.min(x1,x2)+"%";
+  arr.style.width=Math.abs(x2-x1)+"%";
+  arr.style.background=state.op==="-"?"#f87171":"#38bdf8";
+  arr.style.opacity=".5";
+  line.appendChild(arr);
+
+  // dots
+  [["a",state.a],["b",state.b]].forEach(([cls,v])=>{
+    const d=document.createElement("div");
+    d.className=`nl-dot ${cls}`; d.style.left=pos(v)+"%";
+    const lbl=document.createElement("div");
+    lbl.className="nl-label"; lbl.style.left=pos(v)+"%";
+    lbl.innerText=v;
+    line.appendChild(d); line.appendChild(lbl);
+  });
+}
+
+// ── ANSWER SUBMISSION ─────────────────────────────────────
+function submitAnswer(mode){
+  if(state.inputLocked) return;
+  const val=parseInt($('answerInput').value);
+  if(isNaN(val)){ shakeProblem(); return; }
+  state.mode=mode;
+  state.inputLocked=true;
+
+  if(val===state.correct){
+    onCorrect();
+  } else {
+    onWrong(val);
+  }
+}
+
+function onCorrect(){
+  state.combo++;
+  state.streak++;
+  const sp=state.spells[state.selectedSpell];
+
+  if(state.mode==="heal"){
+    const healAmt=Math.floor(sp.healAmt||20 * (1+state.level*.1));
+    state.hp=Math.min(state.hpMax, state.hp+healAmt);
+    floatText("+"+healAmt+"❤️","#4ade80");
+    log(`🌿 ${sp.name} healed you for ${healAmt} HP!`,"good");
+    setBattleStatus("✨ Healing complete!","correct");
+    state.energy=Math.max(0,state.energy-(sp.energyCost||1));
+  } else {
+    // damage calc
+    let dmg=Math.floor(state.power * (sp.dmgMult||1) * (1+(state.combo-1)*.15));
+    // elemental advantage
+    const enemyEl = state.enemyData.elem;
+    const spellEl = sp.elem;
+    const elData  = ELEMENTS[spellEl];
+    if(elData.strong===enemyEl) { dmg=Math.floor(dmg*1.5); floatText("⚡ SUPER EFFECTIVE!","#fbbf24"); }
+    if(elData.weak===enemyEl)   { dmg=Math.floor(dmg*0.6); floatText("🧊 Not very effective","#7dd3fc"); }
+
+    // crit
+    const crit = Math.random()<(0.05+state.streak*.01);
+    if(crit){ dmg=Math.floor(dmg*2); floatText("💥 CRITICAL HIT!","#f87171"); }
+
+    state.enemyHP -= dmg;
+    state.score   += 100 * state.combo;
+    state.energy   = Math.max(0, state.energy-(sp.energyCost||1));
+
+    floatText("-"+dmg+"⚔️","#f87171");
+    animateEnemy();
+    log(`${sp.icon} ${sp.name} dealt ${dmg} dmg!${crit?" CRIT!":""}${elData.strong===enemyEl?" Super Effective!":""}`,"good");
+    setBattleStatus(`${sp.icon} Hit for ${dmg}!`,"correct");
+  }
+
+  // charge energy slowly
+  state.energy=Math.min(state.energyMax, state.energy+1);
+
+  // gain XP
+  state.xp += 12 + state.level*3;
+  checkLevelUp();
+
+  // charge spells over correct answers
+  state.spells.forEach(s=>{ s.charge=Math.min(100, s.charge+20); });
+
+  if(state.enemyHP<=0){
+    setTimeout(onEnemyDead,400);
+  } else {
+    setTimeout(()=>{ generate(); updateUI(); }, 700);
+  }
+
+  updateUI();
+}
+
+function onWrong(val){
+  state.combo=0;
+  state.streak=0;
+  const rawDmg = 8 + state.level*4;
+  const dmg    = Math.max(0, rawDmg - state.defense);
+  state.hp -= dmg;
+
+  floatText("-"+dmg+"💔","#f87171");
+  flashScreen("#f8717122");
+  log(`❌ Wrong (you said ${val}, answer was ${state.correct}). Took ${dmg} dmg.`,"bad");
+  setBattleStatus(`Enemy hit you for ${dmg}!`,"wrong");
+
+  if(state.hp<=0){ setTimeout(onGameOver,400); return; }
+
+  setTimeout(()=>{ generate(); updateUI(); }, 800);
+  updateUI();
+}
+
+// ── ENEMY DEAD ─────────────────────────────────────────────
+function onEnemyDead(){
+  const e=state.enemyData;
+  state.score += e.reward * state.level;
+  state.xp    += e.xpReward;
+  state.gold  += rand(5,15) + (e.boss?30:0);
+  state.room++;
+  state.questKills++;
+  checkLevelUp();
+
+  // loot drop
+  let drops=[];
+  if(Math.random()<.55){
+    const item=LOOT_TABLE[rand(0,LOOT_TABLE.length-1)];
+    drops.push(item);
+    state.loot.push(item);
+    applyLoot(item);
+  }
+
+  // quest check
+  const zone=ZONES[state.zone % ZONES.length];
+  const questDone = state.questKills >= zone.goal;
+  if(questDone){ state.questKills=0; state.zone++; }
+
+  const dropTxt=drops.length?`<br>🎁 Dropped: ${drops.map(d=>d.icon+d.name).join(", ")}`:"";
+  showModal(
+    e.boss?"🏆 BOSS DEFEATED!":"⚔️ Victory!",
+    `You defeated <b style="color:${ELEMENTS[e.elem].color}">${e.sprite} ${e.name}</b>!<br>
+     +${e.reward * state.level} score · +${e.xpReward} XP${dropTxt}
+     ${questDone?'<br>🌟 Quest Complete! New zone unlocked!':''}`,
+    "Next Battle ➜"
+  );
+
+  updateUI();
+  renderLoot();
+}
+
+function applyLoot(item){
+  if(item.effect==="power")  state.power  += item.val;
+  if(item.effect==="def")    state.defense+= item.val;
+  if(item.effect==="xp")   { state.xp     += item.val; checkLevelUp(); }
+  if(item.effect==="gold")   state.gold   += item.val;
+}
+
+// ── LEVEL UP ───────────────────────────────────────────────
+function checkLevelUp(){
+  while(state.xp >= state.xpNext){
+    state.xp     -= state.xpNext;
+    state.level++;
+    state.xpNext  = Math.floor(state.xpNext * 1.35);
+    state.hpMax  += 15;
+    state.hp      = state.hpMax;
+    state.power  += 3;
+    state.defense+= 1;
+    floatText("⬆️ LEVEL UP!","#fbbf24");
+    log(`⬆️ Level Up! Now Lv.${state.level}. HP restored!`,"special");
+  }
+}
+
+// ── MODAL ──────────────────────────────────────────────────
+let modalCallback=null;
+function showModal(title,body,btnTxt,cb){
+  $('modalTitle').innerHTML=title;
+  $('modalBody').innerHTML=body;
+  $('modalBtn').innerText=btnTxt||"Continue";
+  modalCallback=cb||null;
+  $('modal').classList.add("show");
+}
+function closeModal(){
+  $('modal').classList.remove("show");
+  if(modalCallback){ modalCallback(); return; }
+  spawnEnemy(); generate(); updateUI();
+}
+
+// ── GAME OVER ──────────────────────────────────────────────
+function onGameOver(){
+  showModal(
+    "💀 Defeated",
+    `You were bested in battle!<br>Final Score: <b>${state.score}</b><br>Level reached: <b>${state.level}</b>`,
+    "Try Again 🔄",
+    ()=>location.reload()
+  );
+}
+
+// ── UI UPDATE ──────────────────────────────────────────────
+function updateUI(){
+  // player stats
+  $('hpVal').innerText     = Math.max(0,state.hp);
+  $('hpMax').innerText     = state.hpMax;
+  $('hpFill').style.width  = (state.hp/state.hpMax*100)+"%";
+  $('energyVal').innerText = state.energy;
+  $('energyFill').style.width = (state.energy/state.energyMax*100)+"%";
+  $('xpStat').innerText    = `${state.xp}/${state.xpNext}`;
+  $('xpFill').style.width  = (state.xp/state.xpNext*100)+"%";
+  $('powerStat').innerText = state.power;
+  $('defenseStat').innerText=state.defense;
+  $('streakStat').innerText= state.streak+"🔥";
+
+  // pet
+  const pet=PETS[state.petIdx];
+  $('petSprite').innerText=pet.sprite;
+  $('petName').innerText=pet.name;
+  $('petHP').innerText=`Pet HP: ${state.petHP}/${state.petMaxHP}`;
+
+  // bottom hud
+  $('scoreVal').innerText  = state.score;
+  $('levelVal').innerText  = state.level;
+  $('zoneVal').innerText   = (state.zone%ZONES.length)+1;
+  $('roomVal').innerText   = state.room;
+  $('comboVal').innerText  = state.combo;
+  $('streakVal').innerText = state.streak;
+  $('goldVal').innerText   = state.gold+"💰";
+
+  // zone/quest
+  const zoneData=ZONES[state.zone%ZONES.length];
+  $('zoneName').innerText  = zoneData.name;
+  $('questText').innerText = `Quest: ${zoneData.quest}`;
+  $('questProgressFill').style.width=(state.questKills/zoneData.goal*100)+"%";
+
+  // enemy bar
+  updateEnemyBar();
+
+  // buttons
+  $('healBtn').disabled = state.energy<(state.spells.find(s=>s.type==="heal")?.energyCost||2);
+  $('spellBtn').disabled= state.energy<(state.spells[state.selectedSpell]?.energyCost||1);
+
+  renderSpellCards();
+}
+
+// ── SPELL CARDS ────────────────────────────────────────────
+function renderSpellCards(){
+  const container=$('spellCards');
+  container.innerHTML="";
+  state.spells.forEach((sp,i)=>{
+    const div=document.createElement("div");
+    div.className="spell-card"+(i===state.selectedSpell?" selected":"")+(sp.charge>=100?" charged":"");
+    div.innerHTML=`
+      <div class="spell-icon">${sp.icon}</div>
+      <div class="spell-name">${sp.name}</div>
+      <div class="spell-elem">${cap(sp.elem)} · ${sp.type==="heal"?"Heal":"Atk"}</div>
+      <div class="spell-elem" style="color:#6b7280">⚡${sp.energyCost}</div>
+      <div class="charge-bar"><div class="charge-bar-fill" style="width:${sp.charge}%"></div></div>
+    `;
+    div.onclick=()=>{ state.selectedSpell=i; renderSpellCards(); };
+    container.appendChild(div);
+  });
+}
+
+// ── LOOT RENDER ────────────────────────────────────────────
+function renderLoot(){
+  const container=$('lootList');
+  if(!state.loot.length){ container.innerHTML='<span style="font-size:.7rem;color:#4b5563">No items yet…</span>'; return; }
+  container.innerHTML="";
+  state.loot.slice(-8).forEach(item=>{
+    const d=document.createElement("div");
+    d.className=`loot-item ${item.rarity}`;
+    d.innerText=`${item.icon} ${item.name}`;
+    d.title=`${item.effect}+${item.val||""}`;
+    container.appendChild(d);
+  });
+}
+
+// ── BATTLE LOG ─────────────────────────────────────────────
+function log(msg,type=""){
+  const el=document.createElement("div");
+  el.className=`log-entry ${type}`;
+  el.innerText=msg;
+  const box=$('battleLog');
+  box.insertBefore(el,box.firstChild);
+  while(box.children.length>6) box.removeChild(box.lastChild);
+}
+
+// ── HELPERS ────────────────────────────────────────────────
+function setBattleStatus(msg,cls){
+  const el=$('battleStatus');
+  el.innerText=msg;
+  el.className=cls||"";
+}
+
+function animateEnemy(){
+  const sp=$('enemySprite');
+  sp.classList.add("hit","shake");
+  setTimeout(()=>sp.classList.remove("hit","shake"),300);
+}
+
+function shakeProblem(){
+  const pb=$('problemBox');
+  pb.style.animation="none";
+  pb.style.border="2px solid #f87171";
+  setTimeout(()=>pb.style.border="1px solid #1f2d54",600);
+}
+
+function floatText(text,color){
+  const el=document.createElement("div");
+  el.className="float-text";
+  el.innerText=text;
+  el.style.color=color;
+  el.style.left=(30+Math.random()*40)+"%";
+  el.style.top ="35%";
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),950);
+}
+
+function flashScreen(color){
+  const fl=document.createElement("div");
+  fl.style.cssText=`position:fixed;inset:0;background:${color};pointer-events:none;z-index:50;animation:floatUp .4s forwards`;
+  document.body.appendChild(fl);
+  setTimeout(()=>fl.remove(),400);
+}
+
+function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function cap(s){ return s[0].toUpperCase()+s.slice(1); }
+
+// ── KEYBOARD SUPPORT ───────────────────────────────────────
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter") submitAnswer(state.mode);
+  if(e.key==="1") submitAnswer("attack");
+  if(e.key==="2") submitAnswer("spell");
+  if(e.key==="3") submitAnswer("heal");
+  if(e.key>="4"&&e.key<="9"){
+    const idx=parseInt(e.key)-4;
+    if(idx<state.spells.length){ state.selectedSpell=idx; renderSpellCards(); }
+  }
+});
+
+// ── BOOT ───────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

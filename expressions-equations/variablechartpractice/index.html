@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HELIX-PREDICT · Graphs &amp; Relationships</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════════ */
+:root {
+  --navy:    #263238;
+  --navy-lt: #37474F;
+  --teal:    #009688;
+  --teal-dk: #00796B;
+  --coral:   #FF7043;
+  --coral-dk:#E64A19;
+  --paper:   #FAFAF8;
+  --sand:    #EFEFEB;
+  --white:   #FFFFFF;
+  --gray-lt: #F5F5F3;
+  --gray:    #9E9E9E;
+  --gray-dk: #616161;
+  --success: #43A047;
+  --text:    #263238;
+  --text2:   #546E7A;
+  --border:  #DDE2E6;
+  --font:    'Montserrat', system-ui, sans-serif;
+  --hud:     60px;
+  --r:       12px;
+  --r-sm:    8px;
+  --fast:    .16s;
+  --med:     .28s;
+  --shadow:  0 2px 14px rgba(0,0,0,.07);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.13);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family: var(--font);
+  background: var(--paper);
+  background-image: radial-gradient(var(--border) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+  color: var(--text);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   BOOT SCREEN
+═══════════════════════════════════════════════════ */
+#boot {
+  position: fixed; inset: 0; z-index: 5000;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--white);
+  transition: opacity .45s ease;
+}
+.boot-logo {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 800; color: var(--teal);
+  letter-spacing: -.02em; margin-bottom: .4rem;
+}
+.boot-sub {
+  font-size: .95rem; color: var(--gray);
+  font-weight: 500; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 3rem;
+}
+.mode-row {
+  display: flex; gap: 1.5rem;
+  flex-wrap: wrap; justify-content: center;
+}
+.mode-card {
+  background: rgba(255,255,255,.055);
+  border: 2px solid rgba(255,255,255,.1);
+  border-radius: var(--r);
+  padding: 2rem 2.25rem; width: 256px;
+  text-align: center; cursor: pointer;
+  transition: background var(--med), border-color var(--med), transform var(--med), box-shadow var(--med);
+  outline: none;
+}
+.mode-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 4px; }
+.mode-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: .6rem; }
+.mode-card p  { font-size: .86rem; color: var(--gray); line-height: 1.55; }
+
+.mode-card.solo:hover,
+.mode-card.solo:focus-visible {
+  background: var(--teal); border-color: var(--teal);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(0,150,136,.38);
+}
+.mode-card.coop { border-color: rgba(255,112,67,.4); }
+.mode-card.coop h3 { color: var(--coral); }
+.mode-card.coop:hover,
+.mode-card.coop:focus-visible {
+  background: var(--coral); border-color: var(--coral);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(255,112,67,.38);
+}
+.mode-card.coop:hover h3,
+.mode-card.coop:focus-visible h3 { color: var(--white); }
+
+/* ═══════════════════════════════════════════════════
+   CO-OP GATE MODAL
+═══════════════════════════════════════════════════ */
+#coop-modal {
+  position: fixed; inset: 0; z-index: 6000;
+  background: rgba(38,50,56,.85);
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(5px);
+}
+.modal-box {
+  background: var(--white); border-radius: var(--r);
+  padding: 2.5rem; max-width: 420px; width: calc(100% - 2rem);
+  box-shadow: var(--shadow-lg); text-align: center;
+  animation: popIn .25s cubic-bezier(.22,1,.36,1);
+}
+@keyframes popIn {
+  from { transform: scale(.94); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.modal-box h2 { color: var(--coral); margin-bottom: .65rem; font-size: 1.3rem; }
+.modal-box p  {
+  color: var(--text2); margin-bottom: 2rem;
+  font-size: .97rem; line-height: 1.55;
+}
+.modal-actions { display: flex; gap: .85rem; justify-content: center; }
+
+/* ═══════════════════════════════════════════════════
+   HUD
+═══════════════════════════════════════════════════ */
+#hud {
+  position: fixed; top: 0; left: 0; width: 100%;
+  height: var(--hud); z-index: 1000;
+  background: var(--navy); color: var(--white);
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.2);
+}
+.hud-left {
+  display: flex; align-items: center; gap: .55rem;
+}
+.hud-left svg { opacity: .6; flex-shrink: 0; }
+#hud-protocol { font-size: .82rem; font-weight: 700; color: rgba(255,255,255,.55); }
+.hud-right { display: flex; align-items: center; gap: 1.5rem; }
+.hud-stat { display: flex; flex-direction: column; align-items: center; }
+.hud-lbl  {
+  font-size: .62rem; text-transform: uppercase;
+  letter-spacing: .09em; color: rgba(255,255,255,.42);
+  line-height: 1;
+}
+.hud-val  { font-size: 1.05rem; font-weight: 700; line-height: 1.25; }
+.hud-val.phase  { color: var(--teal); }
+.hud-val.streak { color: #FFB74D; }
+.hud-sep  { width: 1px; height: 26px; background: rgba(255,255,255,.12); }
+.streak-glow { text-shadow: 0 0 12px rgba(255,183,77,.7); }
+
+/* ═══════════════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════════════ */
+#app {
+  margin-top: calc(var(--hud) + 2.25rem);
+  padding: 0 1.25rem 3.5rem;
+  flex: 1;
+  display: flex; justify-content: center; align-items: flex-start;
+}
+
+/* ═══════════════════════════════════════════════════
+   PHASE CARDS
+═══════════════════════════════════════════════════ */
+.phase {
+  background: var(--white);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  width: 100%; max-width: 1060px;
+  padding: 2.75rem 3rem;
+  display: none;
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .36s ease, transform .36s ease;
+}
+.phase.active { display: block; opacity: 1; transform: translateY(0); }
+
+.phase-eyebrow {
+  font-size: .68rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: .45rem;
+}
+.phase-title {
+  font-size: 1.85rem; font-weight: 800;
+  color: var(--navy); letter-spacing: -.02em;
+  margin-bottom: .55rem; line-height: 1.12;
+}
+.phase-desc {
+  font-size: .96rem; color: var(--text2);
+  line-height: 1.62; max-width: 66ch;
+  margin-bottom: 2rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center;
+  justify-content: center; gap: 7px;
+  padding: 12px 24px; border-radius: var(--r-sm); border: none;
+  font-family: var(--font); font-size: .93rem; font-weight: 700;
+  cursor: pointer;
+  transition: background var(--fast), transform var(--fast),
+              box-shadow var(--fast), opacity var(--fast), border-color var(--fast);
+}
+.btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+.btn:hover:not(:disabled)  { transform: translateY(-2px); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: .42; cursor: not-allowed; transform: none !important; }
+
+.btn-teal {
+  background: var(--teal); color: var(--white);
+}
+.btn-teal:hover:not(:disabled) {
+  background: var(--teal-dk);
+  box-shadow: 0 4px 18px rgba(0,150,136,.3);
+}
+.btn-coral {
+  background: var(--coral); color: var(--white);
+}
+.btn-coral:hover:not(:disabled) {
+  background: var(--coral-dk);
+  box-shadow: 0 4px 18px rgba(255,112,67,.3);
+}
+.btn-ghost {
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--text2);
+}
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--teal); color: var(--teal);
+}
+
+/* ═══════════════════════════════════════════════════
+   PHASE 1 — VOCABULARY MATCH
+═══════════════════════════════════════════════════ */
+.term-bank {
+  display: flex; flex-wrap: wrap; gap: .85rem;
+  background: var(--gray-lt); border-radius: var(--r);
+  padding: 1.25rem; margin-bottom: 1.75rem;
+  justify-content: center;
+}
+.term-btn {
+  background: var(--white);
+  border: 2px solid var(--border);
+  color: var(--text2);
+  padding: 9px 22px; border-radius: 30px;
+  font-family: var(--font); font-size: .94rem; font-weight: 700;
+  cursor: pointer;
+  transition: background var(--fast), color var(--fast),
+              border-color var(--fast), transform var(--fast);
+}
+.term-btn:hover { border-color: var(--teal); color: var(--teal); }
+.term-btn.active {
+  background: var(--coral); border-color: var(--coral);
+  color: var(--white); transform: scale(1.04);
+}
+.term-btn:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+.def-list { display: flex; flex-direction: column; gap: .7rem; }
+.def-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center; gap: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--paper);
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  transition: border-color var(--fast);
+}
+.def-row:hover { border-color: rgba(0,150,136,.25); }
+.def-text {
+  font-size: .97rem; line-height: 1.62; color: var(--text);
+}
+.def-slot {
+  width: 210px; min-height: 44px;
+  border: 2px dashed var(--gray);
+  border-radius: 6px; background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .9rem; color: var(--gray);
+  cursor: pointer; text-align: center; padding: .4rem .7rem;
+  transition: border-color var(--fast), background var(--fast), color var(--fast);
+}
+.def-slot:hover { border-color: var(--teal); background: rgba(0,150,136,.05); }
+.def-slot.filled {
+  border: 2px solid var(--teal);
+  background: rgba(0,150,136,.07);
+  color: var(--navy);
+}
+.def-slot:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+/* ═══════════════════════════════════════════════════
+   PHASE 2 — GRAPH IT
+═══════════════════════════════════════════════════ */
+.p2-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr);
+  gap: 2rem;
+}
+.data-panel {
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.data-card {
+  background: var(--gray-lt);
+  border-radius: var(--r); padding: 1.4rem;
+}
+.data-card h3 {
+  font-size: .92rem; font-weight: 700;
+  color: var(--navy); margin-bottom: .95rem;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.data-tbl { width: 100%; border-collapse: collapse; }
+.data-tbl th {
+  background: var(--navy); color: var(--white);
+  padding: 10px 14px; text-align: center;
+  font-size: .82rem; font-weight: 700; letter-spacing: .04em;
+}
+.data-tbl th:first-child { border-radius: var(--r-sm) 0 0 0; }
+.data-tbl th:last-child  { border-radius: 0 var(--r-sm) 0 0; }
+.data-tbl td {
+  border: 1px solid var(--border);
+  padding: 10px 14px; text-align: center;
+  font-weight: 700; font-size: .97rem;
+}
+.data-tbl tbody tr:hover td { background: rgba(0,150,136,.05); }
+.graph-hint {
+  background: rgba(0,150,136,.07);
+  border-left: 4px solid var(--teal);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: .9rem 1rem;
+  font-size: .86rem; color: var(--text2); line-height: 1.55;
+}
+.graph-hint strong { color: var(--navy); }
+.plot-count {
+  font-size: .82rem; font-weight: 700;
+  color: var(--text2); text-align: center;
+  padding: .5rem;
+}
+.plot-count span { color: var(--teal); font-size: 1.05rem; }
+
+.svg-wrap {
+  background: var(--white);
+  border: 2px solid var(--sand);
+  border-radius: var(--r); overflow: hidden;
+}
+.svg-wrap svg { display: block; width: 100%; height: auto; cursor: crosshair; }
+.coord-bar {
+  background: var(--navy); color: var(--white);
+  font-size: .78rem; font-weight: 700;
+  padding: 6px 14px; text-align: center;
+  border-radius: 0 0 calc(var(--r) - 2px) calc(var(--r) - 2px);
+  min-height: 30px; display: flex;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,.55);
+  transition: color .12s;
+}
+.coord-bar.active { color: var(--teal); }
+
+/* SVG element classes */
+.gl   { stroke: var(--sand); stroke-width: 1; }
+.gl-m { stroke: rgba(0,150,136,.15); stroke-width: 1; } /* major grid */
+.ax   { stroke: var(--navy); stroke-width: 2; }
+.ax-t { font-family: var(--font); font-size: 12px; font-weight: 700; fill: var(--navy); }
+.gl-l { font-family: var(--font); font-size: 10px; fill: var(--gray); }
+.pt-c { fill: var(--coral); stroke: var(--white); stroke-width: 2.5; cursor: pointer; }
+.pt-l { font-family: var(--font); font-size: 10px; font-weight: 700; fill: var(--navy); pointer-events: none; }
+.gh-c { fill: rgba(255,112,67,.4); pointer-events: none; }
+.gh-b { fill: var(--white); stroke: var(--border); stroke-width: 1; pointer-events: none; }
+.gh-t { font-family: var(--font); font-size: 11px; font-weight: 700; fill: var(--navy); pointer-events: none; text-anchor: middle; }
+
+/* ═══════════════════════════════════════════════════
+   PHASE 3 — SOLVE & DISCUSS
+═══════════════════════════════════════════════════ */
+.p3-grid {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1.1fr);
+  gap: 1.75rem; margin-bottom: 1.75rem;
+}
+
+/* Scenario card */
+.scenario-card {
+  background: var(--navy); color: var(--white);
+  border-radius: var(--r); padding: 1.75rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.sc-eyebrow {
+  font-size: .66rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--teal);
+}
+.sc-rate-line {
+  font-size: 1.7rem; font-weight: 800;
+  line-height: 1.15; color: var(--white);
+}
+.sc-rate-line em { color: var(--teal); font-style: normal; }
+.sc-tasks {
+  display: flex; flex-direction: column; gap: .65rem;
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding-top: 1rem;
+}
+.sc-task {
+  display: flex; gap: .65rem; align-items: flex-start;
+  font-size: .9rem; line-height: 1.45; color: rgba(255,255,255,.7);
+}
+.sc-task-n {
+  background: rgba(255,255,255,.1);
+  border-radius: 50%; width: 22px; height: 22px;
+  display: grid; place-items: center;
+  font-size: .72rem; font-weight: 800; flex-shrink: 0;
+  color: var(--teal);
+}
+.sc-task strong { color: var(--white); }
+
+/* Answer card */
+.answer-card {
+  background: var(--paper);
+  border: 2px solid var(--border); border-radius: var(--r);
+  padding: 1.5rem;
+}
+.answer-card-head {
+  font-size: .66rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gray-dk); margin-bottom: 1.1rem;
+}
+.answer-row {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 1rem;
+  padding: .95rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.answer-row:last-of-type { border-bottom: none; padding-bottom: 0; }
+.answer-row:first-of-type { padding-top: 0; }
+.ans-lbl {
+  font-size: .93rem; font-weight: 600;
+  color: var(--text); flex: 1; line-height: 1.35;
+}
+.ans-lbl .hint {
+  display: block; font-size: .78rem; font-weight: 500;
+  color: var(--text2); margin-top: .18rem;
+}
+.ans-inp-group { display: flex; align-items: center; gap: .32rem; flex-shrink: 0; }
+.ans-pre  { font-size: .9rem; font-weight: 700; color: var(--text2); }
+.ans-suf  { font-size: .82rem; font-weight: 600; color: var(--text2); }
+.ans-input {
+  width: 88px; text-align: center;
+  border: 2px solid var(--border); border-radius: 6px;
+  background: var(--white);
+  padding: 8px 10px;
+  font-family: var(--font); font-size: 1rem; font-weight: 800;
+  color: var(--coral);
+  transition: border-color var(--fast), box-shadow var(--fast), color var(--fast);
+}
+.ans-input:focus {
+  outline: none; border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,150,136,.12);
+}
+.ans-input.correct {
+  border-color: var(--success); color: var(--success); pointer-events: none;
+}
+.ans-select {
+  border: 2px solid var(--border); border-radius: 6px;
+  background: var(--white); padding: 8px 10px;
+  font-family: var(--font); font-size: .88rem; font-weight: 700;
+  color: var(--teal); cursor: pointer; min-width: 180px;
+  transition: border-color var(--fast), box-shadow var(--fast);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239E9E9E' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+.ans-select:focus {
+  outline: none; border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,150,136,.12);
+}
+.ans-select.correct {
+  border-color: var(--success); color: var(--success); pointer-events: none;
+}
+
+.p3-footer {
+  display: flex; justify-content: flex-end;
+  align-items: center; gap: 1rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   DEBRIEF PANEL
+═══════════════════════════════════════════════════ */
+#debrief {
+  display: none; margin-top: 1.75rem;
+  border: 2px solid var(--border); border-radius: var(--r);
+  overflow: hidden;
+  animation: slideIn .38s cubic-bezier(.22,1,.36,1);
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.debrief-header {
+  background: var(--navy); color: var(--white);
+  padding: 1rem 1.5rem;
+  display: flex; align-items: center; gap: .85rem;
+}
+.debrief-header svg { color: var(--teal); flex-shrink: 0; }
+.debrief-header-text { font-size: 1rem; font-weight: 700; }
+.debrief-header-sub  {
+  font-size: .75rem; color: rgba(255,255,255,.45);
+  font-weight: 500; margin-left: auto;
+}
+
+/* Verified answers grid */
+.verified-box {
+  background: rgba(0,150,136,.05);
+  border-bottom: 2px solid rgba(0,150,136,.18);
+  padding: 1.25rem 1.5rem;
+}
+.verified-label {
+  font-size: .66rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: .85rem;
+  display: flex; align-items: center; gap: .45rem;
+}
+.v-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: .65rem;
+}
+.v-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: .65rem .85rem;
+}
+.v-lbl {
+  font-size: .68rem; font-weight: 700; color: var(--gray-dk);
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.v-val {
+  font-size: 1rem; font-weight: 800; color: var(--navy);
+  margin-top: .18rem;
+}
+
+/* Discussion questions */
+.disc-body { background: var(--white); padding: 1.25rem 1.5rem; }
+.disc-q {
+  display: flex; flex-direction: column; gap: .7rem;
+  padding: 1rem 1.1rem;
+  background: var(--paper);
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  margin-bottom: .85rem;
+}
+.disc-q:last-of-type { margin-bottom: 0; }
+.disc-q-tag {
+  font-size: .66rem; font-weight: 800;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--coral);
+}
+.disc-q-txt {
+  font-size: .97rem; font-weight: 500;
+  color: var(--text); line-height: 1.6;
+}
+.disc-check {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1rem; border-radius: 6px;
+  border: 1.5px solid var(--border); background: var(--white);
+  cursor: pointer;
+  transition: border-color var(--fast), background var(--fast);
+  margin-top: .2rem;
+}
+.disc-check:hover { border-color: var(--teal); background: rgba(0,150,136,.03); }
+.disc-check input[type="checkbox"] {
+  width: 19px; height: 19px;
+  accent-color: var(--teal); cursor: pointer; flex-shrink: 0;
+}
+.disc-check label {
+  cursor: pointer; font-size: .9rem;
+  font-weight: 600; color: var(--text2); flex: 1; line-height: 1.4;
+}
+
+.debrief-footer {
+  padding: 1.1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--gray-lt);
+  display: flex; justify-content: flex-end;
+}
+
+/* ═══════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════ */
+#toast {
+  position: fixed; bottom: 26px; left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  padding: 13px 28px; border-radius: 30px;
+  color: var(--white); font-weight: 700; font-size: .93rem;
+  box-shadow: 0 4px 22px rgba(0,0,0,.18);
+  transition: transform .3s cubic-bezier(.175,.885,.32,1.275);
+  z-index: 2000; pointer-events: none;
+  max-width: 82vw; text-align: center;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+.t-ok  { background: var(--success); }
+.t-err { background: var(--coral); }
+
+/* ═══════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════ */
+.footer {
+  text-align: center; color: var(--gray);
+  font-size: .8rem; padding: .75rem 0 1.75rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  #hud { padding: 0 1.1rem; }
+  .phase { padding: 1.6rem 1.4rem; }
+  .p2-grid, .p3-grid { grid-template-columns: 1fr; }
+  .def-row { grid-template-columns: 1fr; gap: .55rem; }
+  .def-slot { width: 100%; }
+  .v-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .hud-lbl { display: none; }
+  .hud-right { gap: .95rem; }
+  .mode-row { flex-direction: column; align-items: center; }
+  .mode-card { width: 100%; max-width: 300px; }
+  .v-grid { grid-template-columns: 1fr; }
+  .debrief-header-sub { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ BOOT ══════════════════════════════════════ -->
+<section id="boot" role="dialog" aria-modal="true" aria-labelledby="boot-logo">
+  <h1 class="boot-logo" id="boot-logo">HELIX-PREDICT</h1>
+  <p class="boot-sub">Graphs &amp; Relationships · Grade 6 Advanced</p>
+  <div class="mode-row">
+    <div class="mode-card solo" role="button" tabindex="0" data-mode="solo"
+         aria-label="Individual mode — work independently">
+      <h3>Individual</h3>
+      <p>Complete all three activities on your own.</p>
+    </div>
+    <div class="mode-card coop" role="button" tabindex="0" data-mode="coop"
+         aria-label="Partner mode — includes discussion prompts">
+      <h3>Partner Mode</h3>
+      <p>Work with a partner. Includes a confirmation step and discussion questions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CO-OP MODAL ════════════════════════════════ -->
+<div id="coop-modal" role="dialog" aria-modal="true"
+     aria-labelledby="cm-title" aria-describedby="cm-desc">
+  <div class="modal-box">
+    <h2 id="cm-title">Before you check…</h2>
+    <p id="cm-desc">Did both partners explain their reasoning — not just share an answer?</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" data-coop="back">Go back first</button>
+      <button type="button" class="btn btn-coral"  data-coop="go">Yes, check it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HUD ═══════════════════════════════════════ -->
+<header id="hud" aria-label="Session status">
+  <div class="hud-left">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+    </svg>
+    <span id="hud-protocol">Loading…</span>
+  </div>
+  <div class="hud-right">
+    <div class="hud-stat">
+      <span class="hud-lbl">Activity</span>
+      <span class="hud-val phase" id="hud-phase">—</span>
+    </div>
+    <div class="hud-sep"></div>
+    <div class="hud-stat">
+      <span class="hud-lbl">Streak</span>
+      <span class="hud-val streak" id="hud-streak">0</span>
+    </div>
+    <div class="hud-sep"></div>
+    <div class="hud-stat">
+      <span class="hud-lbl">XP</span>
+      <span class="hud-val" id="hud-xp">0</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══ MAIN ═══════════════════════════════════════ -->
+<main id="app">
+
+  <!-- ── PHASE 1: VOCABULARY MATCH ──────────────── -->
+  <section id="phase-1" class="phase" aria-label="Activity 1: Vocabulary Match">
+    <div class="phase-eyebrow">Activity 1 of 3</div>
+    <h2 class="phase-title">Vocabulary Match</h2>
+    <p class="phase-desc">
+      Click a term in the bank to select it, then click the correct definition to place it.
+      Click a filled slot to remove a term and try again.
+    </p>
+    <div class="term-bank" id="term-bank" role="listbox" aria-label="Term bank"></div>
+    <div class="def-list" id="def-list" aria-label="Definitions"></div>
+    <div style="margin-top:2rem;text-align:right;">
+      <button type="button" class="btn btn-teal" id="btn-p1">Check Matches</button>
+    </div>
+  </section>
+
+  <!-- ── PHASE 2: GRAPH IT ──────────────────────── -->
+  <section id="phase-2" class="phase" aria-label="Activity 2: Graph It">
+    <div class="phase-eyebrow">Activity 2 of 3</div>
+    <h2 class="phase-title">Graph It</h2>
+    <p class="phase-desc">
+      Plot all 4 ordered pairs from the table on the coordinate plane.
+      Hover to preview a point — click to plot it. Click any plotted point to remove it.
+    </p>
+    <div class="p2-grid">
+
+      <div class="data-panel">
+        <div class="data-card">
+          <h3>Research Drone: Distance Over Time</h3>
+          <table class="data-tbl" id="p2-table" aria-label="Drone data table">
+            <thead>
+              <tr><th>Time (min)</th><th>Distance (ft)</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="graph-hint">
+          <strong>Check your work:</strong> Are all 4 points plotted from the table?
+          Does the pattern suggest a constant rate?
+          Would the line pass through the origin if extended?
+        </div>
+        <div class="plot-count" id="plot-count">Points plotted: <span id="plot-n">0</span> / 4</div>
+      </div>
+
+      <div>
+        <div class="svg-wrap" id="svg-wrap" aria-label="Interactive coordinate plane"></div>
+        <div class="coord-bar" id="coord-bar">Hover over the graph to preview a point</div>
+      </div>
+
+    </div>
+    <div style="margin-top:2rem;text-align:right;">
+      <button type="button" class="btn btn-teal" id="btn-p2">Check Graph</button>
+    </div>
+  </section>
+
+  <!-- ── PHASE 3: SOLVE & DISCUSS ───────────────── -->
+  <section id="phase-3" class="phase" aria-label="Activity 3: Solve and Discuss">
+    <div class="phase-eyebrow">Activity 3 of 3</div>
+    <h2 class="phase-title">Solve &amp; Discuss</h2>
+    <p class="phase-desc">
+      Read the scenario on the left, then fill in all four answers on the right.
+      After checking, complete the partner discussion to unlock the next problem.
+    </p>
+
+    <div class="p3-grid">
+
+      <!-- Scenario -->
+      <div class="scenario-card" id="p3-scenario">
+        <!-- injected by JS -->
+      </div>
+
+      <!-- Answer inputs -->
+      <div class="answer-card">
+        <div class="answer-card-head">Your Answers</div>
+        <div id="p3-inputs"><!-- injected by JS --></div>
+      </div>
+
+    </div>
+
+    <!-- Check button row -->
+    <div class="p3-footer" id="p3-footer">
+      <button type="button" class="btn btn-coral" id="btn-p3">Check Answers</button>
+    </div>
+
+    <!-- ── DEBRIEF ───────────────────────────────── -->
+    <div id="debrief" aria-label="Partner discussion">
+
+      <div class="debrief-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round"
+             stroke-linejoin="round" aria-hidden="true">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span class="debrief-header-text">Partner Discussion</span>
+        <span class="debrief-header-sub">Complete both questions to continue</span>
+      </div>
+
+      <div class="verified-box">
+        <div class="verified-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="var(--teal)" stroke-width="3" stroke-linecap="round"
+               stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Verified Answers
+        </div>
+        <div class="v-grid" id="v-grid"><!-- injected by JS --></div>
+      </div>
+
+      <div class="disc-body">
+        <div class="disc-q">
+          <div class="disc-q-tag">Discussion Question 1</div>
+          <div class="disc-q-txt" id="dq1"></div>
+          <div class="disc-check">
+            <input type="checkbox" class="d-cb" id="dc1"/>
+            <label for="dc1">We discussed this question together.</label>
+          </div>
+        </div>
+        <div class="disc-q">
+          <div class="disc-q-tag">Discussion Question 2</div>
+          <div class="disc-q-txt" id="dq2"></div>
+          <div class="disc-check">
+            <input type="checkbox" class="d-cb" id="dc2"/>
+            <label for="dc2">We discussed this question together.</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="debrief-footer">
+        <button type="button" class="btn btn-teal" id="btn-next" disabled>
+          Next Problem →
+        </button>
+      </div>
+
+    </div><!-- /debrief -->
+
+  </section>
+
+</main>
+
+<footer class="footer">Neft.Alba · Flagship Grade 6 Math · Advanced Track</footer>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── UTILS ────────────────────────────────────────── */
+const $  = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+function n(v) { return typeof v === 'number' ? v.toLocaleString() : v; }
+function fv(t, v) {
+  return t.unit === '$' ? `$${n(v)}` : `${n(v)} ${t.unit}`;
+}
+
+/* ── STATE ────────────────────────────────────────── */
+const G = {
+  mode: 'solo', xp: 0, streak: 0, phase: 1,
+  pendingCB: null,
+
+  p1: {
+    selected: null,
+    pairs: [
+      { id:'iv', text:'Independent Variable',
+        def: 'The input quantity you choose or control. It does not depend on the other variable.' },
+      { id:'dv', text:'Dependent Variable',
+        def: 'The output quantity whose value is determined by the input.' },
+      { id:'xa', text:'x-axis',
+        def: 'The horizontal number line on the coordinate plane — used for input values.' },
+      { id:'ya', text:'y-axis',
+        def: 'The vertical number line on the coordinate plane — used for output values.' },
+    ]
+  },
+
+  p2: {
+    data: [{x:2,y:2700},{x:4,y:5400},{x:7,y:9450},{x:11,y:14850}],
+    plotted: [],
+    /* yStep:12 means 12 divisions × 1350 each = 16200 — every data point lands on a gridline */
+    cfg: { W:580, H:400, pad:60, xMax:12, yMax:16200, xStep:12, yStep:12, snap:1350 }
+  },
+
+  p3: { cur: {} }
+};
+
+/* ── HUD ──────────────────────────────────────────── */
+function updateHUD() {
+  const labels = { 1:'Vocabulary Match', 2:'Graph It', 3:'Solve & Discuss' };
+  $('#hud-phase').textContent = `${G.phase} · ${labels[G.phase]}`;
+  const el = $('#hud-streak');
+  el.textContent = G.streak + (G.streak >= 3 ? ' 🔥' : '');
+  el.classList.toggle('streak-glow', G.streak >= 3);
+  $('#hud-xp').textContent = G.xp;
+}
+
+/* ── TOAST ────────────────────────────────────────── */
+let _tt;
+function toast(msg, ok) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.className = (ok ? 't-ok' : 't-err') + ' show';
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+/* ── PHASE SWITCH ─────────────────────────────────── */
+function switchPhase(n) {
+  $$('.phase').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  G.phase = n;
+  const t = $(`#phase-${n}`);
+  if (!t) return;
+  t.style.display = 'block';
+  void t.offsetWidth; // reflow for animation
+  t.classList.add('active');
+  updateHUD();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── AWARD XP ─────────────────────────────────────── */
+function award(xp, ok) {
+  G.xp += xp;
+  G.streak = ok ? G.streak + 1 : 0;
+  updateHUD();
+}
+
+/* ── CO-OP GATE ───────────────────────────────────── */
+function withCheck(cb) {
+  if (G.mode === 'coop') {
+    G.pendingCB = cb;
+    $('#coop-modal').style.display = 'flex';
+  } else {
+    cb();
+  }
+}
+function closeModal(proceed) {
+  $('#coop-modal').style.display = 'none';
+  if (proceed && G.pendingCB) G.pendingCB();
+  G.pendingCB = null;
+}
+
+/* ════════════════════════════════════════════════════
+   PHASE 1 — VOCABULARY MATCH
+════════════════════════════════════════════════════ */
+function initP1() {
+  const bank = $('#term-bank');
+  const list = $('#def-list');
+  bank.innerHTML = list.innerHTML = '';
+  G.p1.selected = null;
+
+  G.p1.pairs.forEach(p => {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'term-btn';
+    btn.textContent = p.text; btn.dataset.id = p.id;
+    btn.addEventListener('click', () => pickTerm(p.id));
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickTerm(p.id); }
+    });
+    bank.appendChild(btn);
+  });
+
+  [...G.p1.pairs].sort(() => Math.random() - .5).forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'def-row';
+    row.innerHTML = `
+      <div class="def-text">${p.def}</div>
+      <div class="def-slot" tabindex="0" role="button" aria-label="Term slot"
+           data-match="${p.id}">Drop term here</div>`;
+    const slot = row.querySelector('.def-slot');
+    slot.addEventListener('click', () => fillSlot(slot));
+    slot.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fillSlot(slot); }
+    });
+    list.appendChild(row);
+  });
+}
+
+function pickTerm(id) {
+  $$('.term-btn').forEach(b => b.classList.remove('active'));
+  const btn = $(`.term-btn[data-id="${id}"]`);
+  if (!btn || btn.hidden) return;
+  btn.classList.add('active');
+  G.p1.selected = { id, text: btn.textContent, el: btn };
+}
+
+function fillSlot(slot) {
+  const sel = G.p1.selected;
+  if (sel && !slot.dataset.filled) {
+    slot.textContent = sel.text;
+    slot.dataset.filled = sel.id;
+    slot.classList.add('filled');
+    sel.el.hidden = true;
+    G.p1.selected = null;
+    $$('.term-btn').forEach(b => b.classList.remove('active'));
+  } else if (slot.dataset.filled) {
+    const oldId = slot.dataset.filled;
+    const origBtn = $(`.term-btn[data-id="${oldId}"]`);
+    if (origBtn) origBtn.hidden = false;
+    slot.textContent = 'Drop term here';
+    slot.dataset.filled = '';
+    slot.classList.remove('filled');
+  }
+}
+
+function checkP1() {
+  withCheck(() => {
+    const slots = $$('.def-slot');
+    const correct = [...slots].filter(s => s.dataset.match === s.dataset.filled).length;
+    if (correct === G.p1.pairs.length) {
+      award(120, true);
+      toast('All terms matched correctly! ✓', true);
+      setTimeout(() => { switchPhase(2); initP2(); }, 1300);
+    } else {
+      award(0, false);
+      toast(`${correct} of ${G.p1.pairs.length} correct — check your answers.`, false);
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   PHASE 2 — GRAPH IT
+════════════════════════════════════════════════════ */
+function initP2() {
+  const tbody = $('#p2-table tbody');
+  tbody.innerHTML = '';
+  G.p2.plotted = [];
+  G.p2.data.forEach(pt => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${pt.x}</td><td>${n(pt.y)}</td>`;
+    tbody.appendChild(tr);
+  });
+  renderSVG();
+}
+
+/* Map a data value to SVG viewBox pixel */
+function toSx(val, c) {
+  return c.pad + (val / c.xMax) * (c.W - c.pad * 2);
+}
+function toSy(val, c) {
+  return c.H - c.pad - (val / c.yMax) * (c.H - c.pad * 2);
+}
+/* Map a SVG pixel to data value */
+function toDx(px, c) { return (px - c.pad) / (c.W - c.pad * 2) * c.xMax; }
+function toDy(py, c) { return (c.H - c.pad - py) / (c.H - c.pad * 2) * c.yMax; }
+
+function renderSVG() {
+  const c = G.p2.cfg;
+  const gW = c.W - c.pad * 2, gH = c.H - c.pad * 2;
+  const total = G.p2.data.length;
+  let s = `<svg id="svg-el" viewBox="0 0 ${c.W} ${c.H}"
+    role="application" tabindex="0"
+    aria-label="Coordinate plane — plot time vs distance">`;
+
+  /* ── grid lines ── */
+  for (let i = 0; i <= c.yStep; i++) {
+    const y = c.H - c.pad - i * (gH / c.yStep);
+    const val = i * (c.yMax / c.yStep);
+    /* highlight gridlines that match data y-values */
+    const isData = G.p2.data.some(d => d.y === val);
+    s += `<line class="${isData ? 'gl-m' : 'gl'}" x1="${c.pad}" y1="${y}" x2="${c.W - c.pad}" y2="${y}"/>`;
+    /* label every other line to avoid crowding */
+    if (i % 2 === 0 && i > 0) {
+      s += `<text class="gl-l" text-anchor="end" x="${c.pad - 7}" y="${y + 4}">${n(val)}</text>`;
+    }
+  }
+  for (let i = 0; i <= c.xStep; i++) {
+    const x = c.pad + i * (gW / c.xStep);
+    const val = i;
+    s += `<line class="gl" x1="${x}" y1="${c.pad}" x2="${x}" y2="${c.H - c.pad}"/>`;
+    s += `<text class="gl-l" text-anchor="middle" x="${x}" y="${c.H - c.pad + 17}">${val}</text>`;
+  }
+
+  /* ── axes ── */
+  s += `<line class="ax" x1="${c.pad}" y1="${c.pad}" x2="${c.pad}" y2="${c.H - c.pad}"/>`;
+  s += `<line class="ax" x1="${c.pad}" y1="${c.H - c.pad}" x2="${c.W - c.pad}" y2="${c.H - c.pad}"/>`;
+
+  /* ── axis titles ── */
+  s += `<text class="ax-t" text-anchor="middle" x="${c.W / 2}" y="${c.H - 5}">Time (minutes)</text>`;
+  s += `<text class="ax-t" text-anchor="middle" x="16" y="${c.H / 2}"
+    transform="rotate(-90 16 ${c.H / 2})">Distance (ft)</text>`;
+
+  /* ── plotted points ── */
+  G.p2.plotted.forEach((pt, idx) => {
+    const sx = toSx(pt.x, c), sy = toSy(pt.y, c);
+    s += `<circle class="pt-c" cx="${sx}" cy="${sy}" r="7" tabindex="0"
+      data-idx="${idx}" aria-label="Point (${pt.x}, ${n(pt.y)}) — press Delete to remove"/>`;
+    /* label offset: push right if near left edge */
+    const lx = sx < c.pad + 40 ? sx + 12 : sx + 10;
+    s += `<text class="pt-l" x="${lx}" y="${sy - 8}">(${pt.x}, ${n(pt.y)})</text>`;
+  });
+
+  /* ── ghost elements (hidden by default) ── */
+  s += `<circle id="gh-c" class="gh-c" r="9" style="display:none" data-dx="" data-dy=""/>
+        <rect   id="gh-b" class="gh-b" style="display:none" rx="4"/>
+        <text   id="gh-t" class="gh-t" style="display:none"/>`;
+
+  s += `</svg>`;
+
+  const wrap = $('#svg-wrap');
+  wrap.innerHTML = s;
+
+  const svg = $('#svg-el');
+  svg.addEventListener('mousemove', onMove);
+  svg.addEventListener('click', onClick);
+  svg.addEventListener('mouseleave', clearGhost);
+  svg.addEventListener('keydown', e => {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (document.activeElement?.classList.contains('pt-c')) {
+        e.preventDefault();
+        const idx = +document.activeElement.dataset.idx;
+        if (!isNaN(idx)) { G.p2.plotted.splice(idx, 1); renderSVG(); }
+      }
+    }
+  });
+
+  updatePlotCount();
+}
+
+function getSVGCoords(e) {
+  const c = G.p2.cfg;
+  const rect = $('#svg-el').getBoundingClientRect();
+  /* Scale rendered pixels → viewBox pixels */
+  const scaleX = c.W / rect.width, scaleY = c.H / rect.height;
+  const px = (e.clientX - rect.left) * scaleX;
+  const py = (e.clientY - rect.top)  * scaleY;
+  return { px, py };
+}
+
+function onMove(e) {
+  const c = G.p2.cfg;
+  const { px, py } = getSVGCoords(e);
+  const inGraph = px >= c.pad && px <= c.W - c.pad && py >= c.pad && py <= c.H - c.pad;
+
+  if (!inGraph) { clearGhost(); return; }
+
+  const dx = Math.round(toDx(px, c));
+  const dy = Math.round(toDy(py, c) / c.snap) * c.snap;
+
+  if (dx < 0 || dx > c.xMax || dy < 0 || dy > c.yMax) { clearGhost(); return; }
+
+  const sx = toSx(dx, c), sy = toSy(dy, c);
+  const lbl = `(${dx}, ${n(dy)})`;
+  const bw = lbl.length * 7.2 + 12;
+  /* keep tooltip below the point if near top edge */
+  const tipY = sy < 40 ? sy + 30 : sy - 14;
+  const tipAnchorY = sy < 40 ? sy + 44 : sy - 1;
+
+  const gh = $('#gh-c');
+  gh.setAttribute('cx', sx); gh.setAttribute('cy', sy);
+  gh.dataset.dx = dx; gh.dataset.dy = dy;
+  gh.style.display = 'block';
+
+  const gb = $('#gh-b');
+  gb.setAttribute('x', sx - bw / 2); gb.setAttribute('y', tipY - 14);
+  gb.setAttribute('width', bw); gb.setAttribute('height', 20);
+  gb.style.display = 'block';
+
+  const gt = $('#gh-t');
+  gt.setAttribute('x', sx); gt.setAttribute('y', tipY);
+  gt.textContent = lbl;
+  gt.style.display = 'block';
+
+  const cb = $('#coord-bar');
+  cb.textContent = `Preview: (${dx}, ${n(dy)}) — click to plot`;
+  cb.classList.add('active');
+}
+
+function clearGhost() {
+  ['#gh-c','#gh-b','#gh-t'].forEach(id => {
+    const el = $(id); if (el) el.style.display = 'none';
+  });
+  const cb = $('#coord-bar');
+  if (cb) { cb.textContent = 'Hover over the graph to preview a point'; cb.classList.remove('active'); }
+}
+
+function onClick(e) {
+  const target = e.target;
+  /* Remove existing point */
+  if (target.classList.contains('pt-c')) {
+    const idx = +target.dataset.idx;
+    if (!isNaN(idx)) { G.p2.plotted.splice(idx, 1); renderSVG(); }
+    return;
+  }
+  /* Plot from ghost */
+  const gh = $('#gh-c');
+  if (!gh || gh.style.display !== 'block') return;
+  const dx = parseInt(gh.dataset.dx, 10);
+  const dy = parseInt(gh.dataset.dy, 10);
+  if (G.p2.plotted.some(p => p.x === dx && p.y === dy)) return;
+  if (G.p2.plotted.length >= G.p2.data.length) {
+    toast('Remove a point before adding another.', false);
+    return;
+  }
+  G.p2.plotted.push({ x: dx, y: dy });
+  renderSVG();
+}
+
+function updatePlotCount() {
+  const el = $('#plot-n');
+  if (el) el.textContent = G.p2.plotted.length;
+}
+
+function checkP2() {
+  withCheck(() => {
+    if (G.p2.plotted.length !== G.p2.data.length) {
+      toast(`Plot all ${G.p2.data.length} points from the table first.`, false);
+      return;
+    }
+    const correct = G.p2.plotted.filter(p =>
+      G.p2.data.some(d => d.x === p.x && d.y === p.y)
+    ).length;
+    if (correct === G.p2.data.length) {
+      award(300, true);
+      toast('All 4 points correct! ✓', true);
+      setTimeout(() => { switchPhase(3); initP3(); }, 1300);
+    } else {
+      award(0, false);
+      toast(`${correct} of ${G.p2.data.length} points match the table.`, false);
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   PHASE 3 — SOLVE & DISCUSS
+════════════════════════════════════════════════════ */
+const SCENARIOS = [
+  {
+    ctx: 'Science Museum Tickets',
+    item: 'ticket', items: 'tickets', verb: 'costs',
+    depLabel: 'Total Cost', indLabel: 'Number of tickets',
+    unit: '$', min: 18, max: 32
+  },
+  {
+    ctx: 'Robotics Club Savings',
+    item: 'week', items: 'weeks', verb: 'adds',
+    depLabel: 'Total Savings', indLabel: 'Number of weeks',
+    unit: '$', min: 24, max: 48
+  },
+  {
+    ctx: 'Research Drone Travel',
+    item: 'minute', items: 'minutes', verb: 'covers',
+    depLabel: 'Total Distance', indLabel: 'Number of minutes',
+    unit: 'ft', min: 720, max: 1440
+  }
+];
+
+function initP3() {
+  $('#debrief').style.display = 'none';
+  $('#p3-footer').style.display = 'flex';
+  $$('.d-cb').forEach(cb => { cb.checked = false; });
+  checkDebriefReady();
+  generateScenario();
+}
+
+function generateScenario() {
+  const t = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+  const rate    = Math.floor(Math.random() * (t.max - t.min + 1)) + t.min;
+  const qN      = Math.floor(Math.random() * 5) + 5;   /* 5–9 */
+  const total   = rate * qN;
+  const limitN  = qN - 2;
+  const limitTotal = rate * limitN;
+  const nextTotal  = rate * (limitN + 1);
+
+  G.p3.cur = { t, rate, qN, total, limitN, limitTotal, nextTotal };
+
+  renderScenario();
+  renderInputs();
+  renderDiscQs();
+  $('#v-grid').innerHTML = '';
+  $('#debrief').style.display = 'none';
+  $('#p3-footer').style.display = 'flex';
+  $$('.d-cb').forEach(cb => { cb.checked = false; });
+  checkDebriefReady();
+}
+
+function renderScenario() {
+  const { t, rate, qN, limitTotal } = G.p3.cur;
+  const rateStr  = fv(t, rate);
+  const limitStr = fv(t, limitTotal);
+  $('#p3-scenario').innerHTML = `
+    <div class="sc-eyebrow">${t.ctx}</div>
+    <div class="sc-rate-line">Each ${t.item} ${t.verb} <em>${rateStr}</em></div>
+    <div class="sc-tasks">
+      <div class="sc-task">
+        <div class="sc-task-n">1</div>
+        <div>What is the total for <strong>${qN} ${t.items}</strong>?</div>
+      </div>
+      <div class="sc-task">
+        <div class="sc-task-n">2</div>
+        <div>What is the maximum number of ${t.items} within <strong>${limitStr}</strong>?</div>
+      </div>
+      <div class="sc-task">
+        <div class="sc-task-n">3</div>
+        <div>Which quantity is the <strong>dependent variable</strong>?</div>
+      </div>
+    </div>`;
+}
+
+function renderInputs() {
+  const { t, rate, qN, limitTotal } = G.p3.cur;
+  const pre = t.unit === '$' ? '$' : '';
+  const suf = t.unit !== '$' ? ` ${t.unit}` : '';
+  const limitStr = fv(t, limitTotal);
+
+  $('#p3-inputs').innerHTML = `
+    <div class="answer-row">
+      <div class="ans-lbl">
+        Rate per ${t.item}
+        <span class="hint">How much does 1 ${t.item} ${t.verb}?</span>
+      </div>
+      <div class="ans-inp-group">
+        <span class="ans-pre">${pre}</span>
+        <input type="number" id="in-rate" class="ans-input"
+               aria-label="Rate per ${t.item}" placeholder="0" min="0"/>
+        <span class="ans-suf">${suf}</span>
+      </div>
+    </div>
+    <div class="answer-row">
+      <div class="ans-lbl">
+        Total for ${qN} ${t.items}
+        <span class="hint">Multiply: rate × ${qN}</span>
+      </div>
+      <div class="ans-inp-group">
+        <span class="ans-pre">${pre}</span>
+        <input type="number" id="in-total" class="ans-input"
+               aria-label="Total for ${qN} ${t.items}" placeholder="0" min="0"/>
+        <span class="ans-suf">${suf}</span>
+      </div>
+    </div>
+    <div class="answer-row">
+      <div class="ans-lbl">
+        Max ${t.items} within ${limitStr}
+        <span class="hint">How many fit without going over?</span>
+      </div>
+      <div class="ans-inp-group">
+        <input type="number" id="in-max" class="ans-input" style="width:70px"
+               aria-label="Maximum ${t.items}" placeholder="0" min="0"/>
+        <span class="ans-suf"> ${t.items}</span>
+      </div>
+    </div>
+    <div class="answer-row">
+      <div class="ans-lbl">
+        Dependent variable
+        <span class="hint">Which quantity changes because of the other?</span>
+      </div>
+      <div class="ans-inp-group">
+        <select id="in-dep" class="ans-select" aria-label="Select the dependent variable">
+          <option value="">— Choose —</option>
+          <option value="dep">${t.depLabel}</option>
+          <option value="ind">${t.indLabel}</option>
+        </select>
+      </div>
+    </div>`;
+}
+
+function renderDiscQs() {
+  const { t, rate, qN, total, limitN, limitTotal, nextTotal } = G.p3.cur;
+
+  $('#dq1').textContent =
+    `Partner A explains: Why is "${t.depLabel}" the dependent variable? ` +
+    `What does it depend on, and how do you know?`;
+
+  $('#dq2').textContent =
+    `Partner B explains: You said the maximum is ${limitN} ${t.items}. ` +
+    `What would ${limitN + 1} ${t.items} ${t.verb === 'costs' ? 'cost' : 'total'} ` +
+    `(${fv(t, nextTotal)})? Why does that break the limit of ${fv(t, limitTotal)}?`;
+}
+
+function checkP3() {
+  withCheck(() => {
+    const { t, rate, total, limitN } = G.p3.cur;
+    const r   = +($('#in-rate')?.value ?? NaN);
+    const tot = +($('#in-total')?.value ?? NaN);
+    const mx  = +($('#in-max')?.value  ?? NaN);
+    const dep = $('#in-dep')?.value;
+
+    const allCorrect = r === rate && tot === total && mx === limitN && dep === 'dep';
+
+    if (allCorrect) {
+      award(550, true);
+      toast('All answers correct! ✓', true);
+
+      /* Lock inputs */
+      ['#in-rate','#in-total','#in-max'].forEach(id => {
+        const el = $(id); if (el) el.classList.add('correct');
+      });
+      const sel = $('#in-dep'); if (sel) sel.classList.add('correct');
+
+      /* Build verified answers grid */
+      const { qN, limitTotal } = G.p3.cur;
+      $('#v-grid').innerHTML = `
+        <div class="v-item">
+          <div class="v-lbl">Rate per ${t.item}</div>
+          <div class="v-val">${fv(t, rate)}</div>
+        </div>
+        <div class="v-item">
+          <div class="v-lbl">Total (${qN} ${t.items})</div>
+          <div class="v-val">${fv(t, total)}</div>
+        </div>
+        <div class="v-item">
+          <div class="v-lbl">Max within ${fv(t, limitTotal)}</div>
+          <div class="v-val">${limitN} ${t.items}</div>
+        </div>
+        <div class="v-item">
+          <div class="v-lbl">Dependent variable</div>
+          <div class="v-val">${t.depLabel}</div>
+        </div>`;
+
+      $('#p3-footer').style.display = 'none';
+      setTimeout(() => {
+        $('#debrief').style.display = 'block';
+        $('#debrief').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 350);
+    } else {
+      award(0, false);
+      const errs = [];
+      if (r !== rate)     errs.push('rate');
+      if (tot !== total)  errs.push('total');
+      if (mx !== limitN)  errs.push('maximum');
+      if (dep !== 'dep')  errs.push('dependent variable');
+      toast(`Check: ${errs.join(', ')}.`, false);
+    }
+  });
+}
+
+function checkDebriefReady() {
+  const both = $('#dc1')?.checked && $('#dc2')?.checked;
+  const btn = $('#btn-next');
+  if (!btn) return;
+  btn.disabled = !both;
+  btn.className = both ? 'btn btn-coral' : 'btn btn-teal';
+}
+
+/* ════════════════════════════════════════════════════
+   EVENTS
+════════════════════════════════════════════════════ */
+function bindEvents() {
+
+  /* Boot: mode cards */
+  $$('[data-mode]').forEach(card => {
+    const start = () => {
+      G.mode = card.dataset.mode;
+      $('#hud-protocol').textContent = G.mode === 'coop' ? 'Partner Mode' : 'Individual';
+      const boot = $('#boot');
+      boot.style.opacity = '0';
+      setTimeout(() => {
+        boot.style.display = 'none';
+        initP1();
+        switchPhase(1);
+      }, 460);
+    };
+    card.addEventListener('click', start);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); start(); }
+    });
+  });
+
+  /* Co-op modal */
+  $$('[data-coop]').forEach(btn => {
+    btn.addEventListener('click', () => closeModal(btn.dataset.coop === 'go'));
+  });
+
+  /* Phase check buttons */
+  $('#btn-p1').addEventListener('click', checkP1);
+  $('#btn-p2').addEventListener('click', checkP2);
+  $('#btn-p3').addEventListener('click', checkP3);
+
+  /* Debrief checkboxes */
+  $$('.d-cb').forEach(cb => {
+    cb.addEventListener('change', checkDebriefReady);
+  });
+  /* Clicking the whole disc-check row (not the input or label) */
+  $$('.disc-check').forEach(wrap => {
+    wrap.addEventListener('click', e => {
+      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+        const cb = wrap.querySelector('.d-cb');
+        if (cb) { cb.checked = !cb.checked; checkDebriefReady(); }
+      }
+    });
+  });
+
+  /* Next problem */
+  $('#btn-next').addEventListener('click', initP3);
+}
+
+/* ════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  bindEvents();
+  updateHUD();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equation Quest - 6.EE.9 Mastery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00ff88;
+            --secondary: #ff006e;
+            --tertiary: #00d4ff;
+            --dark-bg: #0a0e27;
+            --card-bg: #1a1f3a;
+            --text: #ffffff;
+            --correct: #00ff88;
+            --incorrect: #ff4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0f2e 100%);
+            color: var(--text);
+            overflow-x: hidden;
+            font-size: 16px;
+        }
+
+        body.high-contrast {
+            --dark-bg: #000000;
+            --card-bg: #1a1a1a;
+            --text: #ffff00;
+            --primary: #ffff00;
+            --secondary: #ffffff;
+            --tertiary: #00ffff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--secondary);
+            color: var(--text);
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.7);
+        }
+
+        button.small {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid var(--tertiary);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Level Grid */
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .level-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text);
+            text-align: center;
+            position: relative;
+        }
+
+        .level-btn:hover:not(:disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
+            border-color: var(--primary);
+        }
+
+        .level-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .level-num {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .level-desc {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        .level-stars {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 0.9em;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        .equation-display {
+            background: var(--card-bg);
+            border: 3px solid var(--primary);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .equation-text {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .progress-info {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        /* Solving Interface */
+        .solving-interface {
+            background: var(--card-bg);
+            border: 2px solid var(--tertiary);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .solve-method {
+            margin-bottom: 20px;
+        }
+
+        .solve-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .input-row input {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px;
+            border: 2px solid var(--tertiary);
+            background: var(--dark-bg);
+            color: var(--primary);
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .input-row input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-hint {
+            background: var(--tertiary);
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: var(--dark-bg);
+            flex: 1;
+            min-width: 100px;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.7);
+        }
+
+        /* Feedback */
+        .feedback {
+            background: var(--card-bg);
+            border: 2px solid var(--tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .feedback.correct {
+            border-color: var(--correct);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .feedback.incorrect {
+            border-color: var(--incorrect);
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .feedback.correct .feedback-title {
+            color: var(--correct);
+        }
+
+        .feedback.incorrect .feedback-title {
+            color: var(--incorrect);
+        }
+
+        .hint-text {
+            opacity: 0.8;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid var(--primary);
+            max-width: 500px;
+            text-align: center;
+            animation: popIn 0.4s ease-out;
+        }
+
+        .modal-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+
+        .modal-stats {
+            text-align: left;
+            margin: 20px 0;
+            opacity: 0.8;
+        }
+
+        .modal-stats div {
+            margin: 10px 0;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.8); }
+        }
+
+        .pulse {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        @keyframes particle {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            animation: particle 0.8s ease-out forwards;
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            padding: 8px 12px;
+            font-size: 12px;
+            background: var(--card-bg);
+            border: 2px solid var(--tertiary);
+        }
+
+        .lang-btn.active {
+            background: var(--primary);
+            color: var(--dark-bg);
+            border-color: var(--primary);
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid var(--tertiary);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: var(--tertiary);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .step-content {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 600px) {
+            .title {
+                font-size: 1.8em;
+            }
+
+            .equation-text {
+                font-size: 1.5em;
+            }
+
+            .level-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">⚡ Equation Quest</h1>
+            <div class="controls">
+                <div class="language-toggle">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="es">ES</button>
+                </div>
+                <button class="small" id="audioToggle">🔊 Sound</button>
+                <button class="small" id="contrastToggle">◐ Contrast</button>
+                <button class="small" id="resetBtn">↺ Reset</button>
+            </div>
+        </div>
+
+        <!-- Level Select Screen -->
+        <div id="levelSelect" class="active">
+            <!-- Stats -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-label">Total Score</div>
+                    <div class="stat-value" id="totalScore">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="streakCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Levels Complete</div>
+                    <div class="stat-value" id="levelsComplete">0/6</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Accuracy</div>
+                    <div class="stat-value" id="accuracy">--</div>
+                </div>
+            </div>
+
+            <!-- Level Grid -->
+            <div class="level-grid" id="levelGrid"></div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="game-screen">
+            <!-- Back Button -->
+            <div style="margin-bottom: 20px;">
+                <button id="backBtn" style="background: var(--tertiary);">← Back to Levels</button>
+            </div>
+
+            <!-- Equation Display -->
+            <div class="equation-display">
+                <div id="levelTitle" style="font-size: 1.2em; opacity: 0.8; margin-bottom: 15px;"></div>
+                <div class="equation-text" id="equationText"></div>
+                <div class="progress-info">
+                    <span id="progressText"></span>
+                </div>
+            </div>
+
+            <!-- Solving Interface -->
+            <div class="solving-interface">
+                <div id="hintBox" class="step-indicator" style="display: none;">
+                    <div class="step-title" id="hintTitle"></div>
+                    <div class="step-content" id="hintContent"></div>
+                </div>
+
+                <div id="inputArea"></div>
+
+                <div class="action-buttons">
+                    <button class="btn-hint" id="hintBtn">💡 Hint</button>
+                    <button class="btn-submit" id="submitBtn">Check Answer</button>
+                </div>
+            </div>
+
+            <!-- Feedback -->
+            <div id="feedback" class="feedback"></div>
+
+            <!-- Next/Continue -->
+            <div id="nextContainer" style="display: none;">
+                <button id="nextBtn" style="width: 100%; background: var(--primary); color: var(--dark-bg);">Next Equation →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="levelCompleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">Level Complete!</div>
+            <div class="stars" id="modalStars"></div>
+            <div class="modal-stats" id="modalStats"></div>
+            <button id="modalBtn" style="width: 100%; margin-top: 20px;">Continue</button>
+        </div>
+    </div>
+
+    <!-- Canvas for particles -->
+    <canvas id="particleCanvas" style="position: fixed; top: 0; left: 0; pointer-events: none;"></canvas>
+
+    <script>
+        // ========== DATA & CONFIG ==========
+        const LEVELS = [
+            {
+                id: 1,
+                title: 'One-Step: Add/Subtract',
+                desc: 'x + 3 = 8',
+                equations: [
+                    { eq: 'x + 3 = 8', answer: 5, hints: ['Subtract 3 from both sides', 'x = 8 - 3', 'x = 5'] },
+                    { eq: 'x - 2 = 7', answer: 9, hints: ['Add 2 to both sides', 'x = 7 + 2', 'x = 9'] },
+                    { eq: '5 = x + 1', answer: 4, hints: ['Subtract 1 from both sides', 'x = 5 - 1', 'x = 4'] },
+                    { eq: 'x - 4 = 6', answer: 10, hints: ['Add 4 to both sides', 'x = 6 + 4', 'x = 10'] },
+                ]
+            },
+            {
+                id: 2,
+                title: 'One-Step: Multiply/Divide',
+                desc: '2x = 10',
+                equations: [
+                    { eq: '2x = 10', answer: 5, hints: ['Divide both sides by 2', 'x = 10 ÷ 2', 'x = 5'] },
+                    { eq: '3x = 15', answer: 5, hints: ['Divide both sides by 3', 'x = 15 ÷ 3', 'x = 5'] },
+                    { eq: 'x ÷ 4 = 2', answer: 8, hints: ['Multiply both sides by 4', 'x = 2 × 4', 'x = 8'] },
+                    { eq: '5x = 25', answer: 5, hints: ['Divide both sides by 5', 'x = 25 ÷ 5', 'x = 5'] },
+                ]
+            },
+            {
+                id: 3,
+                title: 'Two-Step Equations',
+                desc: '2x + 3 = 11',
+                equations: [
+                    { eq: '2x + 3 = 11', answer: 4, hints: ['Subtract 3 from both sides: 2x = 8', 'Divide by 2: x = 4', 'x = 4'] },
+                    { eq: '3x - 2 = 10', answer: 4, hints: ['Add 2 to both sides: 3x = 12', 'Divide by 3: x = 4', 'x = 4'] },
+                    { eq: '4x + 5 = 21', answer: 4, hints: ['Subtract 5: 4x = 16', 'Divide by 4: x = 4', 'x = 4'] },
+                    { eq: '5x - 7 = 3', answer: 2, hints: ['Add 7: 5x = 10', 'Divide by 5: x = 2', 'x = 2'] },
+                ]
+            },
+            {
+                id: 4,
+                title: 'Variables Both Sides',
+                desc: '2x + 3 = x + 8',
+                equations: [
+                    { eq: '2x + 3 = x + 8', answer: 5, hints: ['Get x terms on left: 2x - x + 3 = 8', 'Simplify: x + 3 = 8', 'Subtract 3: x = 5'] },
+                    { eq: '3x - 2 = x + 6', answer: 4, hints: ['Subtract x from both sides: 2x - 2 = 6', 'Add 2: 2x = 8', 'Divide by 2: x = 4'] },
+                    { eq: '5x + 1 = 3x + 9', answer: 4, hints: ['Subtract 3x: 2x + 1 = 9', 'Subtract 1: 2x = 8', 'Divide by 2: x = 4'] },
+                    { eq: '4x - 5 = 2x + 3', answer: 4, hints: ['Subtract 2x: 2x - 5 = 3', 'Add 5: 2x = 8', 'Divide by 2: x = 4'] },
+                ]
+            },
+            {
+                id: 5,
+                title: 'Mixed: Distributive & Fractions',
+                desc: '2(x + 1) = 10',
+                equations: [
+                    { eq: '2(x + 1) = 10', answer: 4, hints: ['Distribute: 2x + 2 = 10', 'Subtract 2: 2x = 8', 'Divide by 2: x = 4'] },
+                    { eq: '3(x - 2) = 9', answer: 5, hints: ['Distribute: 3x - 6 = 9', 'Add 6: 3x = 15', 'Divide by 3: x = 5'] },
+                    { eq: '2x + 3(x - 1) = 12', answer: 3, hints: ['Distribute: 2x + 3x - 3 = 12', 'Combine: 5x - 3 = 12', 'Add 3: 5x = 15, x = 3'] },
+                    { eq: '4(x + 2) - 3 = 21', answer: 4, hints: ['Distribute: 4x + 8 - 3 = 21', 'Simplify: 4x + 5 = 21', 'Subtract 5: 4x = 16, x = 4'] },
+                ]
+            },
+            {
+                id: 6,
+                title: 'Real-World Applications',
+                desc: 'Solve word problems',
+                equations: [
+                    { eq: 'Maria has x books. After buying 5 more, she has 23. How many did she start with?', problem: 'x + 5 = 23', answer: 18, hints: ['Set up: x + 5 = 23', 'Subtract 5 from both sides', 'x = 18'] },
+                    { eq: 'A shirt costs $15. With tax, it\'s 1.5 times the price. What\'s the tax coefficient?', problem: '1.5x = 15', answer: 10, hints: ['Solve 1.5x = 15', 'Divide by 1.5', 'x = 10'] },
+                    { eq: 'Tony has twice as many coins as Sofia. Together they have 30. Sofia has x.', problem: '2x + x = 30', answer: 10, hints: ['Set up: 2x + x = 30', 'Combine: 3x = 30', 'Divide by 3: x = 10'] },
+                    { eq: 'Length is 3 more than width. Perimeter is 26. Width is x.', problem: '2x + 2(x + 3) = 26', answer: 5, hints: ['Expand: 2x + 2x + 6 = 26', 'Combine: 4x + 6 = 26', 'Solve: x = 5'] },
+                ]
+            }
+        ];
+
+        const TRANSLATIONS = {
+            en: {
+                hint: '💡 Hint',
+                submit: 'Check Answer',
+                next: 'Next Equation →',
+                correct: '✓ Correct!',
+                incorrect: '✗ Try Again',
+                levelTitle: (num) => `Level ${num}`,
+                complete: 'Level Complete!',
+                streak: 'Streak',
+                accuracy: 'Accuracy',
+                score: 'Score',
+                equation_label: 'Solve for x:'
+            },
+            es: {
+                hint: '💡 Pista',
+                submit: 'Verificar Respuesta',
+                next: 'Siguiente Ecuación →',
+                correct: '✓ ¡Correcto!',
+                incorrect: '✗ Intenta de Nuevo',
+                levelTitle: (num) => `Nivel ${num}`,
+                complete: '¡Nivel Completado!',
+                streak: 'Racha',
+                accuracy: 'Precisión',
+                score: 'Puntuación',
+                equation_label: 'Resuelve para x:'
+            }
+        };
+
+        // ========== STATE ==========
+        const state = {
+            currentLevel: null,
+            currentEquationIndex: 0,
+            levelProgress: {},
+            totalScore: 0,
+            streak: 0,
+            maxStreak: 0,
+            totalAttempts: 0,
+            correctAnswers: 0,
+            hints: [],
+            attemptsOnQuestion: 0,
+            language: 'en',
+            audioEnabled: true,
+            highContrast: false
+        };
+
+        // Load from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('equationQuestState');
+            if (saved) {
+                Object.assign(state, JSON.parse(saved));
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('equationQuestState', JSON.stringify(state));
+        }
+
+        // ========== AUDIO ==========
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!state.audioEnabled) return;
+
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            if (type === 'correct') {
+                osc.frequency.setValueAtTime(523, now);
+                osc.frequency.setValueAtTime(659, now + 0.1);
+                osc.frequency.setValueAtTime(784, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'incorrect') {
+                osc.frequency.setValueAtTime(200, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        // ========== PARTICLES ==========
+        function createParticles(x, y, count = 8) {
+            const canvas = document.getElementById('particleCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            for (let i = 0; i < count; i++) {
+                const angle = (Math.PI * 2 * i) / count;
+                const velocity = 3 + Math.random() * 2;
+                const tx = Math.cos(angle) * velocity * 100;
+                const ty = Math.sin(angle) * velocity * 100;
+
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.innerHTML = '★';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.color = '#00ff88';
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                document.body.appendChild(particle);
+
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        // ========== RENDER LEVEL SELECT ==========
+        function renderLevelSelect() {
+            const grid = document.getElementById('levelGrid');
+            grid.innerHTML = '';
+
+            LEVELS.forEach(level => {
+                const progress = state.levelProgress[level.id] || { completed: false, stars: 0, score: 0 };
+                const btn = document.createElement('button');
+                btn.className = 'level-btn';
+                btn.innerHTML = `
+                    <div class="level-stars">${'★'.repeat(progress.stars)}${'☆'.repeat(3 - progress.stars)}</div>
+                    <div class="level-num">L${level.id}</div>
+                    <div class="level-desc">${level.desc}</div>
+                `;
+                btn.onclick = () => startLevel(level.id);
+                grid.appendChild(btn);
+            });
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const completed = Object.values(state.levelProgress).filter(p => p.completed).length;
+            const accuracy = state.totalAttempts > 0
+                ? Math.round((state.correctAnswers / state.totalAttempts) * 100)
+                : 0;
+
+            document.getElementById('totalScore').textContent = state.totalScore;
+            document.getElementById('streakCount').textContent = state.streak;
+            document.getElementById('levelsComplete').textContent = `${completed}/6`;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        // ========== START LEVEL ==========
+        function startLevel(levelId) {
+            state.currentLevel = levelId;
+            state.currentEquationIndex = 0;
+            state.hints = [];
+            state.attemptsOnQuestion = 0;
+            document.getElementById('levelSelect').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            showEquation();
+        }
+
+        // ========== SHOW EQUATION ==========
+        function showEquation() {
+            const level = LEVELS[state.currentLevel - 1];
+            const equation = level.equations[state.currentEquationIndex];
+
+            const levelTitle = document.getElementById('levelTitle');
+            levelTitle.textContent = level.title;
+
+            const equationText = document.getElementById('equationText');
+            if (equation.problem) {
+                equationText.textContent = `"${equation.eq}"`;
+            } else {
+                equationText.textContent = equation.eq;
+            }
+
+            document.getElementById('progressText').textContent =
+                `Equation ${state.currentEquationIndex + 1} of ${level.equations.length}`;
+
+            state.hints = equation.hints || [];
+            state.attemptsOnQuestion = 0;
+
+            renderInputArea();
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('nextContainer').style.display = 'none';
+            document.getElementById('hintBox').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('hintBtn').disabled = false;
+        }
+
+        function renderInputArea() {
+            const inputArea = document.getElementById('inputArea');
+            inputArea.innerHTML = `
+                <div class="solve-method">
+                    <div class="solve-label">Answer: x = </div>
+                    <div class="input-row">
+                        <input type="number" id="answerInput" placeholder="Type your answer" step="any">
+                    </div>
+                </div>
+            `;
+            document.getElementById('answerInput').focus();
+            document.getElementById('answerInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkAnswer();
+            });
+        }
+
+        // ========== HINT SYSTEM ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('hintBtn').addEventListener('click', () => {
+                if (state.hints.length > 0 && state.hints.length > state.attemptsOnQuestion) {
+                    const hint = state.hints[state.attemptsOnQuestion];
+                    const hintBox = document.getElementById('hintBox');
+                    document.getElementById('hintTitle').textContent = `Hint ${state.attemptsOnQuestion + 1}:`;
+                    document.getElementById('hintContent').textContent = hint;
+                    hintBox.style.display = 'block';
+                    state.attemptsOnQuestion++;
+                }
+            });
+        });
+
+        // ========== CHECK ANSWER ==========
+        function checkAnswer() {
+            const level = LEVELS[state.currentLevel - 1];
+            const equation = level.equations[state.currentEquationIndex];
+            const input = document.getElementById('answerInput');
+            const userAnswer = parseFloat(input.value);
+
+            if (isNaN(userAnswer)) {
+                alert('Please enter a number');
+                return;
+            }
+
+            state.totalAttempts++;
+            const isCorrect = Math.abs(userAnswer - equation.answer) < 0.0001;
+
+            const feedback = document.getElementById('feedback');
+            feedback.classList.add('show');
+
+            if (isCorrect) {
+                playSound('correct');
+                state.correctAnswers++;
+                state.streak++;
+                state.totalScore += (10 - state.attemptsOnQuestion);
+                state.maxStreak = Math.max(state.maxStreak, state.streak);
+                createParticles(window.innerWidth / 2, window.innerHeight / 2);
+
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+                feedback.innerHTML = `
+                    <div class="feedback-title">${TRANSLATIONS[state.language].correct}</div>
+                    <div class="hint-text">Great work! You earned ${10 - state.attemptsOnQuestion} points!</div>
+                `;
+
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('nextContainer').style.display = 'block';
+            } else {
+                playSound('incorrect');
+                state.streak = 0;
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+
+                const misconception = identifyMisconception(userAnswer, equation.answer);
+                feedback.innerHTML = `
+                    <div class="feedback-title">${TRANSLATIONS[state.language].incorrect}</div>
+                    <div class="hint-text">${misconception}</div>
+                `;
+                input.value = '';
+                input.focus();
+            }
+
+            document.getElementById('hintBtn').disabled = state.attemptsOnQuestion >= state.hints.length;
+            saveState();
+        }
+
+        function identifyMisconception(userAnswer, correctAnswer) {
+            const diff = userAnswer - correctAnswer;
+            if (Math.abs(diff) === 1) return 'Check: Did you forget to add or subtract one more step?';
+            if (userAnswer === -correctAnswer) return 'Check: Remember, we\'re solving for x, not its opposite!';
+            if (userAnswer === correctAnswer * 2) return 'Check: Did you forget to divide?';
+            if (userAnswer === correctAnswer / 2) return 'Check: Did you forget to multiply?';
+            return 'Not quite. Try using a hint or working through the steps carefully.';
+        }
+
+        // ========== NEXT EQUATION ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                const level = LEVELS[state.currentLevel - 1];
+                state.currentEquationIndex++;
+
+                if (state.currentEquationIndex < level.equations.length) {
+                    showEquation();
+                } else {
+                    completeLevel();
+                }
+            });
+        });
+
+        // ========== COMPLETE LEVEL ==========
+        function completeLevel() {
+            const accuracy = Math.round((state.correctAnswers / state.totalAttempts) * 100);
+            let stars = 0;
+            if (accuracy >= 90) stars = 3;
+            else if (accuracy >= 70) stars = 2;
+            else if (accuracy >= 50) stars = 1;
+
+            state.levelProgress[state.currentLevel] = {
+                completed: true,
+                stars: stars,
+                score: state.totalScore
+            };
+
+            saveState();
+
+            document.getElementById('modalTitle').textContent = TRANSLATIONS[state.language].complete;
+            document.getElementById('modalStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+            document.getElementById('modalStats').innerHTML = `
+                <div>Accuracy: ${accuracy}%</div>
+                <div>Points Earned: ${state.totalScore}</div>
+                <div>Current Streak: ${state.streak}</div>
+            `;
+
+            document.getElementById('levelCompleteModal').classList.add('active');
+            document.getElementById('modalBtn').onclick = () => {
+                document.getElementById('levelCompleteModal').classList.remove('active');
+                document.getElementById('gameScreen').classList.remove('active');
+                document.getElementById('levelSelect').classList.add('active');
+                renderLevelSelect();
+            };
+        }
+
+        // ========== CONTROLS ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('backBtn').addEventListener('click', () => {
+                document.getElementById('gameScreen').classList.remove('active');
+                document.getElementById('levelSelect').classList.add('active');
+                renderLevelSelect();
+            });
+
+            document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+
+            document.getElementById('audioToggle').addEventListener('click', function() {
+                state.audioEnabled = !state.audioEnabled;
+                this.textContent = state.audioEnabled ? '🔊 Sound' : '🔇 Sound';
+                saveState();
+            });
+
+            document.getElementById('contrastToggle').addEventListener('click', function() {
+                state.highContrast = !state.highContrast;
+                document.body.classList.toggle('high-contrast');
+                saveState();
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                if (confirm('Reset all progress? This cannot be undone.')) {
+                    localStorage.removeItem('equationQuestState');
+                    location.reload();
+                }
+            });
+
+            // Language toggle
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    state.language = e.target.dataset.lang;
+                    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    saveState();
+                    if (state.currentLevel) {
+                        showEquation();
+                    } else {
+                        renderLevelSelect();
+                    }
+                });
+            });
+        });
+
+        // ========== INIT ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderLevelSelect();
+
+            // Restore language selection
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.dataset.lang === state.language) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Restore audio/contrast toggles
+            if (!state.audioEnabled) {
+                document.getElementById('audioToggle').textContent = '🔇 Sound';
+            }
+            if (state.highContrast) {
+                document.body.classList.add('high-contrast');
+                document.getElementById('contrastToggle').classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

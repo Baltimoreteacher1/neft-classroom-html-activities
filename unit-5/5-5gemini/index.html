@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Module: Volume of Rectangular Prisms</title>
+    <style>
+        /* ==========================================================================
+           1. CONFIGURATION & DESIGN TOKENS
+           ========================================================================== */
+        :root {
+            --color-bg: #f8f9fa;
+            --color-surface: #ffffff;
+            --color-text: #202124;
+            --color-text-muted: #5f6368;
+            --color-primary: #1a73e8;
+            --color-primary-light: #e8f0fe;
+            --color-success: #1e8e3e;
+            --color-success-bg: #e6f4ea;
+            --color-border: #dadce0;
+            --color-cube-top: #aecbfa;
+            --color-cube-left: #8ab4f8;
+            --color-cube-right: #669df6;
+            --color-cube-stroke: #174ea6;
+            --shadow-elevation-1: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+            --font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --transition-speed: 200ms;
+        }
+
+        [data-theme="dark"] {
+            --color-bg: #202124;
+            --color-surface: #292a2d;
+            --color-text: #e8eaed;
+            --color-text-muted: #9aa0a6;
+            --color-primary: #8ab4f8;
+            --color-primary-light: #3c4043;
+            --color-success: #81c995;
+            --color-success-bg: #1e8e3e20;
+            --color-border: #5f6368;
+            --color-cube-top: #8ab4f8;
+            --color-cube-left: #669df6;
+            --color-cube-right: #4285f4;
+            --color-cube-stroke: #202124;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                /* Auto-apply dark theme logic matching above */
+            }
+        }
+
+        /* ==========================================================================
+           2. BASE STYLES & LAYOUT
+           ========================================================================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .enterprise-container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--color-surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow-elevation-1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ==========================================================================
+           3. HUD & CONTROLS
+           ========================================================================== */
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+            background: var(--color-surface);
+        }
+
+        .hud-group { display: flex; gap: 1rem; align-items: center; }
+
+        .btn {
+            appearance: none;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn:hover:not(:disabled) { background: var(--color-primary-light); color: var(--color-primary); border-color: var(--color-primary); }
+        .btn.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .metric { font-size: 0.875rem; font-weight: 600; color: var(--color-text-muted); }
+        .metric-val { color: var(--color-primary); margin-left: 0.25rem; font-variant-numeric: tabular-nums;}
+
+        /* ==========================================================================
+           4. WORKSPACE ARCHITECTURE
+           ========================================================================== */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+
+        @media (max-width: 900px) { .workspace { grid-template-columns: 1fr; } }
+
+        /* Left Panel: Logic & Input */
+        .panel-logic {
+            padding: 2rem;
+            border-right: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .lesson-objective {
+            background: var(--color-primary-light);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .lesson-objective h2 { font-size: 1.125rem; margin-bottom: 0.5rem; color: var(--color-primary); }
+
+        /* Step Machine */
+        .step-block {
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: var(--color-surface);
+            transition: opacity var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .step-block.locked {
+            opacity: 0.4;
+            pointer-events: none;
+            background: var(--color-bg);
+            filter: grayscale(100%);
+        }
+
+        .step-block.completed { border-color: var(--color-success); }
+        .step-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            width: 120px;
+            padding: 0.5rem;
+            border: 2px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 1rem;
+            text-align: center;
+            background: var(--color-surface);
+            color: var(--color-text);
+            font-family: var(--font-sans);
+            transition: border-color var(--transition-speed);
+        }
+
+        input:focus { outline: none; border-color: var(--color-primary); }
+        input.success { border-color: var(--color-success); background: var(--color-success-bg); }
+        input.error { border-color: var(--color-error); }
+
+        /* EN Scaffold Layer */
+        .scaffold-en { display: none; }
+        [data-mode="EN"] .scaffold-en { display: block; }
+        [data-mode="R"] .scaffold-r { display: block; }
+        [data-mode="EN"] .scaffold-r { display: none; }
+
+        .sentence-frame {
+            background: var(--color-bg);
+            padding: 1rem;
+            border-radius: 6px;
+            font-style: italic;
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+            border: 1px dashed var(--color-border);
+        }
+
+        /* Right Panel: Render Target */
+        .panel-visual {
+            background: var(--color-bg);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        #canvas-svg { width: 100%; height: 100%; max-height: 500px; overflow: visible; }
+
+        .interactive-overlay {
+            position: absolute;
+            bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+    </style>
+</head>
+<body data-theme="light" data-mode="EN">
+
+<div class="enterprise-container">
+    <header class="hud-header">
+        <div class="hud-group">
+            <button class="btn" id="toggle-theme" onclick="UIController.toggleTheme()">Dark Mode</button>
+            <button class="btn" onclick="CoreEngine.reset()">Reset Lesson</button>
+        </div>
+        <div class="hud-group">
+            <button class="btn active" id="btn-en" onclick="CoreEngine.setMode('EN')">EN Mode</button>
+            <button class="btn" id="btn-r" onclick="CoreEngine.setMode('R')">R Mode</button>
+        </div>
+        <div class="hud-group">
+            <span class="metric">Mastery <span class="metric-val" id="hud-acc">100%</span></span>
+            <span class="metric">Streak <span class="metric-val" id="hud-streak">0</span></span>
+        </div>
+    </header>
+
+    <main class="workspace">
+        <div class="panel-logic">
+            <div class="lesson-objective">
+                <h2>Determining Volume</h2>
+                <p>The rectangular prism is constructed using ½-inch unit cubes.</p>
+                <div class="scaffold-en" style="margin-top: 0.5rem; font-size: 0.875rem;">
+                    <strong>Goal:</strong> Find the total volume by analyzing the unit cubes, then mapping it to the formula $V = l \times w \times h$.
+                </div>
+            </div>
+
+            <div class="step-block active" id="step-1">
+                <div class="step-title">1. Analyze the Unit Cube</div>
+                <div class="scaffold-en">
+                    <div class="sentence-frame">"Each unit cube has side lengths of ½ inch. To find its volume, I multiply ½ × ½ × ½."</div>
+                </div>
+                <div class="input-row">
+                    <label>Volume of one unit cube =</label>
+                    <input type="text" id="in-unit-vol" placeholder="e.g. 1/8" autocomplete="off" onblur="CoreEngine.validate('in-unit-vol', '1/8')">
+                    <span>in³</span>
+                </div>
+            </div>
+
+            <div class="step-block locked" id="step-2">
+                <div class="step-title">2. Pack the Prism</div>
+                <div class="scaffold-en">
+                    <div class="sentence-frame">"The prism has 3 layers. Each layer holds 10 unit cubes. I need to find the total number of cubes."</div>
+                </div>
+                <div class="input-row">
+                    <label>Total unit cubes =</label>
+                    <input type="text" id="in-total-cubes" placeholder="30" autocomplete="off" onblur="CoreEngine.validate('in-total-cubes', '30')">
+                    <span>cubes</span>
+                </div>
+                <div class="input-row">
+                    <label>Total Volume =</label>
+                    <input type="text" id="in-total-vol" placeholder="e.g. 3 3/4" autocomplete="off" onblur="CoreEngine.validate('in-total-vol', '3 3/4')">
+                    <span>in³</span>
+                </div>
+            </div>
+
+            <div class="step-block locked" id="step-3">
+                <div class="step-title">3. Apply the Formula</div>
+                <p style="margin-bottom: 1rem;">Use the dimensions of the unit cube to find the prism's dimensions.</p>
+                <div class="scaffold-en">
+                    <div class="sentence-frame">"Length is 5 cubes. 5 × ½ = 2 ½ in. Width is 2 cubes..."</div>
+                </div>
+                <div class="scaffold-r" style="margin-bottom: 1rem; color: var(--color-text-muted);">
+                    Apply $V = l \times w \times h$ directly to the entire structure.
+                </div>
+
+                <div class="input-row">
+                    <label>Length (in) =</label>
+                    <input type="text" id="in-dim-l" placeholder="2 1/2" autocomplete="off" onblur="CoreEngine.validate('in-dim-l', '2 1/2')">
+                </div>
+                <div class="input-row">
+                    <label>Width (in) =</label>
+                    <input type="text" id="in-dim-w" placeholder="1" autocomplete="off" onblur="CoreEngine.validate('in-dim-w', '1')">
+                </div>
+                <div class="input-row">
+                    <label>Height (in) =</label>
+                    <input type="text" id="in-dim-h" placeholder="1 1/2" autocomplete="off" onblur="CoreEngine.validate('in-dim-h', '1 1/2')">
+                </div>
+                <div class="input-row" style="margin-top: 1rem; border-top: 1px dashed var(--color-border); padding-top: 1rem;">
+                    <label><strong>Final V =</strong></label>
+                    <input type="text" id="in-final-v" placeholder="3 3/4" autocomplete="off" onblur="CoreEngine.validate('in-final-v', '3 3/4')">
+                    <span><strong>in³</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-visual">
+            <svg id="canvas-svg" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet"></svg>
+
+            <div class="interactive-overlay" id="visual-controls" style="display: none; opacity: 0; transition: opacity 200ms;">
+                <button class="btn" id="btn-add-layer" onclick="VisualEngine.addLayer()">Click to Pack Layer</button>
+                <button class="btn" id="btn-reset-layer" onclick="VisualEngine.resetLayers()">Reset Layers</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+/**
+ * ==========================================================================
+ * ENTERPRISE MODULE ARCHITECTURE
+ * Layered Design: Config -> State -> Visuals -> UI Controller -> Core Engine
+ * ==========================================================================
+ */
+
+const CONFIG = {
+    PRISM: { l: 5, w: 2, h: 3 }, // Measured in cubes
+    ANSWERS: {
+        'in-unit-vol': ['1/8', '0.125'],
+        'in-total-cubes': ['30'],
+        'in-total-vol': ['3 3/4', '15/4', '3.75'],
+        'in-dim-l': ['2 1/2', '5/2', '2.5'],
+        'in-dim-w': ['1', '1.0'],
+        'in-dim-h': ['1 1/2', '3/2', '1.5'],
+        'in-final-v': ['3 3/4', '15/4', '3.75']
+    }
+};
+
+const State = {
+    mode: 'EN', // 'EN' or 'R'
+    currentStep: 1,
+    layersPacked: 0,
+    metrics: { attempts: 0, hits: 0, streak: 0 }
+};
+
+/**
+ * REPOSITORY: Visual Engine (Deterministic Isometric Rendering)
+ */
+const VisualEngine = {
+    svg: null,
+    init() {
+        this.svg = document.getElementById('canvas-svg');
+        this.render();
+    },
+
+    addLayer() {
+        if (State.layersPacked < CONFIG.PRISM.h) {
+            State.layersPacked++;
+            this.render();
+        }
+        if (State.layersPacked === CONFIG.PRISM.h) {
+            document.getElementById('in-total-cubes').focus();
+        }
+    },
+
+    resetLayers() {
+        State.layersPacked = 0;
+        this.render();
+    },
+
+    render() {
+        this.svg.innerHTML = ''; // Clear canvas
+
+        const cx = 250, cy = 350; // Origin
+        const scale = 25; // Base cube size
+        const angle = Math.PI / 6; // 30 degrees for isometric
+
+        // Direction vectors
+        const dxW = -Math.cos(angle) * scale;
+        const dyW = -Math.sin(angle) * scale;
+        const dxL = Math.cos(angle) * scale;
+        const dyL = -Math.sin(angle) * scale;
+        const dyH = -scale; // Straight up
+
+        // State variables
+        const L = CONFIG.PRISM.l;
+        const W = CONFIG.PRISM.w;
+        const H = CONFIG.PRISM.h;
+        const activeLayers = State.layersPacked;
+
+        // 1. Draw Target Outline (Ghost) if in Step 2 or 3
+        if (State.currentStep >= 2) {
+            const pFront = { x: cx, y: cy };
+            const pLeft = { x: cx + dxW * W, y: cy + dyW * W };
+            const pRight = { x: cx + dxL * L, y: cy + dyL * L };
+            const pTop = { x: cx + dxW * W + dxL * L, y: cy + dyW * W + dyL * L };
+
+            const drawGhostWireframe = (hLimit) => {
+                const shiftY = dyH * hLimit;
+                const path = `M ${pLeft.x},${pLeft.y + shiftY} L ${pFront.x},${pFront.y + shiftY} L ${pRight.x},${pRight.y + shiftY}`;
+                const poly = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                poly.setAttribute("d", path);
+                poly.setAttribute("fill", "none");
+                poly.setAttribute("stroke", "var(--color-border)");
+                poly.setAttribute("stroke-width", "2");
+                poly.setAttribute("stroke-dasharray", "4 4");
+                this.svg.appendChild(poly);
+            };
+            drawGhostWireframe(H); // Top outline
+        }
+
+        // 2. Draw Cubes (Painter's Algorithm: Back to Front, Bottom to Top)
+        const drawCube = (x, y, z) => {
+            const bx = cx + (x * dxL) + (y * dxW);
+            const by = cy + (x * dyL) + (y * dyW) + (z * dyH);
+
+            const p0 = {x: bx, y: by};
+            const p1 = {x: bx + dxW, y: by + dyW}; // Left
+            const p2 = {x: bx + dxL, y: by + dyL}; // Right
+            const p3 = {x: bx + dxW + dxL, y: by + dyW + dyL}; // Back
+            const p4 = {x: p0.x, y: p0.y + dyH}; // Top Front
+            const p5 = {x: p1.x, y: p1.y + dyH}; // Top Left
+            const p6 = {x: p2.x, y: p2.y + dyH}; // Top Right
+            const p7 = {x: p3.x, y: p3.y + dyH}; // Top Back
+
+            const createFace = (pts, fill) => {
+                const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                poly.setAttribute("points", pts.map(p => `${p.x},${p.y}`).join(" "));
+                poly.setAttribute("fill", fill);
+                poly.setAttribute("stroke", "var(--color-cube-stroke)");
+                poly.setAttribute("stroke-width", "1");
+                poly.setAttribute("stroke-linejoin", "round");
+                this.svg.appendChild(poly);
+            };
+
+            // Only draw visible faces based on position to optimize DOM
+            if (x === L - 1) createFace([p1, p0, p4, p5], "var(--color-cube-left)");   // Left face
+            if (y === 0) createFace([p0, p2, p6, p4], "var(--color-cube-right)");      // Right face
+            if (z === activeLayers - 1 || (State.currentStep === 1 && z===0)) createFace([p5, p4, p6, p7], "var(--color-cube-top)"); // Top face
+        };
+
+        // Render Logic based on state
+        if (State.currentStep === 1) {
+            // Draw single reference cube
+            drawCube(0, 0, 0);
+
+            // Add dimension labels for single cube
+            this.addLabel(cx + dxW/2 - 10, cy + dyW/2 + 10, "1/2 in");
+            this.addLabel(cx + dxL/2 + 10, cy + dyL/2 + 10, "1/2 in");
+            this.addLabel(cx + 25, cy + dyH/2, "1/2 in");
+        } else {
+            // Draw packed layers
+            for (let z = 0; z < activeLayers; z++) {
+                for (let y = W - 1; y >= 0; y--) {
+                    for (let x = 0; x < L; x++) {
+                        drawCube(x, y, z);
+                    }
+                }
+            }
+
+            // Add macro dimension labels in Step 3
+            if (State.currentStep === 3 && activeLayers === H) {
+                const midX_L = cx + (L/2 * dxL);
+                const midY_L = cy + (L/2 * dyL);
+                this.addLabel(midX_L + 25, midY_L + 25, "L = 2 1/2 in", true);
+
+                const midX_W = cx + (W/2 * dxW);
+                const midY_W = cy + (W/2 * dyW);
+                this.addLabel(midX_W - 25, midY_W + 25, "W = 1 in", true);
+
+                const midY_H = cy + (H/2 * dyH);
+                this.addLabel(cx + (L*dxL) + 30, midY_H + (L*dyL), "H = 1 1/2 in", true);
+            }
+        }
+    },
+
+    addLabel(x, y, text, highlight = false) {
+        const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txt.setAttribute("x", x);
+        txt.setAttribute("y", y);
+        txt.setAttribute("text-anchor", "middle");
+        txt.setAttribute("fill", highlight ? "var(--color-primary)" : "var(--color-text)");
+        txt.setAttribute("font-family", "var(--font-sans)");
+        txt.setAttribute("font-size", highlight ? "16px" : "14px");
+        txt.setAttribute("font-weight", "600");
+        txt.textContent = text;
+        this.svg.appendChild(txt);
+    }
+};
+
+/**
+ * UI LAYER: Controller
+ */
+const UIController = {
+    init() {
+        document.body.setAttribute('data-theme', 'light');
+    },
+
+    toggleTheme() {
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        document.getElementById('toggle-theme').textContent = isDark ? 'Dark Mode' : 'Light Mode';
+        VisualEngine.render(); // Re-render SVG to pick up CSS var changes
+    },
+
+    updateHUD() {
+        const acc = State.metrics.attempts === 0 ? 100 : Math.round((State.metrics.hits / State.metrics.attempts) * 100);
+        document.getElementById('hud-acc').textContent = `${acc}%`;
+        document.getElementById('hud-streak').textContent = State.metrics.streak;
+    },
+
+    unlockStep(stepNum) {
+        document.getElementById(`step-${stepNum}`).classList.remove('locked');
+
+        // Show interactive controls for Step 2
+        const controls = document.getElementById('visual-controls');
+        if (stepNum === 2) {
+            controls.style.display = 'flex';
+            setTimeout(() => controls.style.opacity = '1', 50);
+        } else if (stepNum === 3) {
+            controls.style.display = 'none';
+        }
+    },
+
+    markStepComplete(stepNum) {
+        document.getElementById(`step-${stepNum}`).classList.add('completed');
+    }
+};
+
+/**
+ * SERVICE LAYER: Logic & Validation Engine
+ */
+const CoreEngine = {
+    init() {
+        UIController.init();
+        VisualEngine.init();
+    },
+
+    setMode(mode) {
+        State.mode = mode;
+        document.body.setAttribute('data-mode', mode);
+        document.getElementById('btn-en').classList.toggle('active', mode === 'EN');
+        document.getElementById('btn-r').classList.toggle('active', mode === 'R');
+    },
+
+    validate(inputId, expectedKey) {
+        const input = document.getElementById(inputId);
+        const val = input.value.trim().toLowerCase();
+
+        if (!val) return; // Ignore empty blurs
+
+        State.metrics.attempts++;
+        const validAnswers = CONFIG.ANSWERS[inputId];
+        const isCorrect = validAnswers.includes(val);
+
+        if (isCorrect) {
+            input.classList.add('success');
+            input.classList.remove('error');
+            input.disabled = true;
+            State.metrics.hits++;
+            State.metrics.streak++;
+            this.evaluateState();
+        } else {
+            input.classList.add('error');
+            State.metrics.streak = 0;
+            // Provide click-to-place fallback clear on error
+            setTimeout(() => input.value = '', 1000);
+        }
+        UIController.updateHUD();
+    },
+
+    evaluateState() {
+        // State Machine Transitions
+        if (State.currentStep === 1) {
+            const s1 = document.getElementById('in-unit-vol').disabled;
+            if (s1) {
+                State.currentStep = 2;
+                UIController.markStepComplete(1);
+                UIController.unlockStep(2);
+                VisualEngine.render();
+            }
+        }
+
+        if (State.currentStep === 2) {
+            const s2a = document.getElementById('in-total-cubes').disabled;
+            const s2b = document.getElementById('in-total-vol').disabled;
+            if (s2a && s2b) {
+                State.currentStep = 3;
+                UIController.markStepComplete(2);
+                UIController.unlockStep(3);
+                // Auto-fill layers for step 3 if they bypassed clicking
+                State.layersPacked = CONFIG.PRISM.h;
+                VisualEngine.render();
+            }
+        }
+
+        if (State.currentStep === 3) {
+            const reqs = ['in-dim-l', 'in-dim-w', 'in-dim-h', 'in-final-v'];
+            const allComplete = reqs.every(id => document.getElementById(id).disabled);
+            if (allComplete) {
+                UIController.markStepComplete(3);
+            }
+        }
+    },
+
+    reset() {
+        // Reset State
+        State.currentStep = 1;
+        State.layersPacked = 0;
+        State.metrics = { attempts: 0, hits: 0, streak: 0 };
+
+        // Reset UI
+        document.querySelectorAll('input').forEach(i => {
+            i.value = '';
+            i.disabled = false;
+            i.classList.remove('success', 'error');
+        });
+
+        document.querySelectorAll('.step-block').forEach((el, idx) => {
+            el.classList.remove('completed');
+            if (idx > 0) el.classList.add('locked');
+        });
+
+        document.getElementById('visual-controls').style.display = 'none';
+
+        UIController.updateHUD();
+        VisualEngine.render();
+    }
+};
+
+// Boot Sequence
+document.addEventListener('DOMContentLoaded', () => CoreEngine.init());
+
+</script>
+</body>
+</html>
