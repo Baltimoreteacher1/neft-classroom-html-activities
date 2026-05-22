@@ -1,6 +1,6 @@
-# Mr. Neft's Classroom Activity Hub
+# ESOL, Reading, Writing, and Math
 
-`neft-classroom-html-activities` is a plain static HTML collection for Mr. Neft's math, ESOL, AI PD, and classroom activities. It is designed for Cloudflare Pages and does not use Vite, React, npm, or any build system.
+`neft-classroom-html-activities` is a plain static HTML collection for Mr. Neft's ESOL, reading, writing, and math classroom activities. It is designed for Cloudflare Pages and does not use Vite, React, npm, or any build system.
 
 Folder structure:
 
