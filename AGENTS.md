@@ -1,6 +1,6 @@
 # Repository Instructions For Future Codex Work
 
-This is `neft-classroom-html-activities`, a plain static HTML repository for Mr. Neft's classroom activity hub.
+This is `neft-classroom-html-activities`, a plain static HTML repository for Mr. Neft's ESOL, Reading, Writing, and Math activity hub.
 
 ## Core Rules
 
