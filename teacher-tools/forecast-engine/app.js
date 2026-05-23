@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'nfe_gold_state_v4';
+  const STORAGE_KEY = 'nfe_gold_state_v5';
   const PROFILE_PREFIX = 'nfe_profile_';
   const PHASES = ['IDLE', 'CONFIGURING', 'VALIDATING', 'COMPUTING', 'SUCCESS', 'ERROR'];
 
@@ -122,8 +122,6 @@
   function render() {
     document.documentElement.dataset.theme = State.current.theme || 'light';
     $('#phaseBadge').textContent = State.current.phase || 'IDLE';
-    $('#pasteBox').value = $('#pasteBox').value || TEMPLATE;
-    $('#className').value = State.current.class.name || ''; $('#gradeCourse').value = State.current.class.grade || ''; $('#profileName').value = State.current.profile || '';
     renderHome(); renderSetupTables(); renderSelectors(); renderQuality(); renderEvidenceTable(); renderDiagnostics(); computeForecastsAsync();
   }
 
@@ -206,7 +204,7 @@
     $('#saveClassBtn').onclick = () => { State.current.class.name = $('#className').value || State.current.class.name; State.current.class.grade = $('#gradeCourse').value || State.current.class.grade; transition('CONFIGURING', 'Class saved'); render(); };
     $('#addStudentBtn').onclick = () => { const id = $('#studentId').value.trim(); if (!id) return alert('Add a Student ID.'); if (State.current.students.some((student) => student.id === id)) return alert('Duplicate Student ID.'); State.current.students.push({ id, name: $('#studentName').value || `Student ${id}`, tags: $('#studentTags').value || '' }); transition('CONFIGURING', 'Student added'); render(); };
     $('#addStandardBtn').onclick = () => { const code = $('#standardCode').value.trim(); if (!code) return alert('Add a standard code.'); if (State.current.standards.some((standard) => standard.code === code)) return alert('Duplicate standard.'); State.current.standards.push({ code, desc: $('#standardDesc').value || 'Teacher-added standard' }); transition('CONFIGURING', 'Standard added'); render(); };
-    $('#addEvidenceBtn').onclick = () => { const score = Number($('#manualScore').value), max = Number($('#manualMax').value); if (!Number.isFinite(score) || !Number.isFinite(max) || max <= 0) return alert('Enter a valid score and max.'); State.current.evidence.push(makeEvidence($('#manualStudent').value, $('#manualStandard').value, score, max, today(), $('#manualAssessment').value || 'Manual Evidence')); transition('SUCCESS', 'Evidence added'); render(); };
+    $('#addEvidenceBtn').onclick = () => { const score = Number($('#manualScore').value), max = Number($('#manualMax').value || 10); if (!Number.isFinite(score) || !Number.isFinite(max) || max <= 0) return alert('Enter a valid score and max.'); State.current.evidence.push(makeEvidence($('#manualStudent').value, $('#manualStandard').value, score, max, today(), $('#manualAssessment').value || 'Manual Evidence')); transition('SUCCESS', 'Evidence added'); render(); };
     $('#importPasteBtn').onclick = () => importRows(parseDelimitedRows($('#pasteBox').value));
     $('#importFileBtn').onclick = () => { const file = $('#fileInput').files[0]; if (!file) return alert('Choose a file.'); const reader = new FileReader(); reader.onload = () => importRows(parseHtmlTableRows(String(reader.result))); reader.readAsText(file); };
     $('#downloadCsvBtn').onclick = () => downloadFile('forecast-template.csv', TEMPLATE, 'text/csv');
@@ -231,6 +229,5 @@
   State.current = loadState();
   bootWorker();
   wireEvents();
-  $('#pasteBox').value = TEMPLATE;
   render();
 })();
