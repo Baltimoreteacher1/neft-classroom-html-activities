@@ -26,7 +26,7 @@
         <button data-tab="settings" type="button">Settings</button>
       </nav>
       <div class="sidebar-foot" id="diagnosticHotspot" title="Triple-click for diagnostics">
-        v3.0 · triple-click diagnostics
+        v3.1 · triple-click diagnostics
       </div>
     </aside>
 
@@ -48,12 +48,27 @@
           <div class="hero">
             <span class="badge info">Recommended workflow</span>
             <h2>Make the next instructional move clear.</h2>
-            <p>This tool is organized around a teacher’s actual decision flow. Add or import class data, review data quality, then use forecasts to plan flexible support groups. Forecasts are planning estimates, not labels.</p>
+            <p>This tool is organized around a teacher’s actual decision flow. Download the spreadsheet template, enter class evidence, review data quality, then use forecasts to plan flexible support groups. Forecasts are planning estimates, not labels.</p>
             <div class="button-row">
-              <button class="btn primary" data-go="setup" type="button">1. Setup Class</button>
-              <button class="btn" data-go="import" type="button">2. Import Data</button>
-              <button class="btn" data-go="quality" type="button">3. Review Data</button>
+              <a class="btn primary" href="./forecast-template.xls" download>Download Example .xls</a>
+              <button class="btn" data-go="setup" type="button">Manual Setup</button>
+              <button class="btn" data-go="import" type="button">Upload or Paste Data</button>
+              <button class="btn" data-go="quality" type="button">Review Data</button>
             </div>
+          </div>
+
+          <div class="grid g2">
+            <article class="card">
+              <h3>Fastest way to use this</h3>
+              <div class="step"><span class="num">1</span><p><strong>Download the Excel template</strong> and fill in class, students, standards, and evidence.</p></div>
+              <div class="step"><span class="num">2</span><p><strong>Upload it on Import Data</strong> or paste rows from a spreadsheet.</p></div>
+              <div class="step"><span class="num">3</span><p><strong>Review Data</strong> before using forecasts or group suggestions.</p></div>
+            </article>
+            <article class="card">
+              <h3>Template included</h3>
+              <p class="muted">The downloadable .xls file includes the required columns and example rows. It opens in Excel and Google Sheets.</p>
+              <a class="btn primary" href="./forecast-template.xls" download>Download Example .xls</a>
+            </article>
           </div>
 
           <div class="grid g4" id="metrics"></div>
@@ -74,8 +89,8 @@
           <div class="grid g2">
             <article class="card">
               <h3>Class Information</h3>
-              <label class="field">Class name<input id="className" autocomplete="off"></label>
-              <label class="field">Grade / course<input id="gradeCourse" autocomplete="off"></label>
+              <label class="field">Class name<input id="className" placeholder="Period 1 Math" autocomplete="off"></label>
+              <label class="field">Grade / course<input id="gradeCourse" placeholder="Grade 6 Math" autocomplete="off"></label>
               <button class="btn primary" id="saveClassBtn" type="button">Save Class</button>
             </article>
             <article class="card">
@@ -100,7 +115,7 @@
               <label class="field">Standard<select id="manualStandard"></select></label>
               <div class="grid g2 no-margin">
                 <label class="field">Score<input id="manualScore" type="number" min="0" inputmode="decimal"></label>
-                <label class="field">Max score<input id="manualMax" type="number" min="1" value="10" inputmode="decimal"></label>
+                <label class="field">Max score<input id="manualMax" type="number" min="1" placeholder="10" inputmode="decimal"></label>
               </div>
               <label class="field">Assessment<input id="manualAssessment" placeholder="Exit Ticket" autocomplete="off"></label>
               <button class="btn primary" id="addEvidenceBtn" type="button">Add Evidence</button>
@@ -138,7 +153,7 @@
           <div class="grid g2">
             <article class="card">
               <h3>Paste Rows</h3>
-              <label class="field">Rows<textarea id="pasteBox" spellcheck="false"></textarea></label>
+              <label class="field">Rows<textarea id="pasteBox" placeholder="Paste rows from the template here. Leave this blank if you upload the .xls file." spellcheck="false"></textarea></label>
               <button class="btn primary" id="importPasteBtn" type="button">Import Pasted Rows</button>
             </article>
             <article class="card">
