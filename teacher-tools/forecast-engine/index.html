@@ -3,69 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Launch page for the Neft Learning Forecast Engine teacher decision-support app.">
+  <meta name="description" content="Neft Learning Forecast Engine: a local-first teacher decision-support app for evidence review, readiness forecasting, small-group planning, and intervention simulation.">
   <title>Neft Learning Forecast Engine</title>
-  <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    :root{
+      --navy:#0b1726;--navy2:#13243a;--teal:#0f766e;--teal2:#115e59;--cream:#f7fafc;--paper:#ffffff;
+      --line:#d9e2ec;--muted:#65758b;--text:#172033;--soft:#eef6f4;--amber:#b45309;--red:#b91c1c;--green:#047857;--blue:#0369a1;
+      --shadow:0 18px 45px rgba(15,23,42,.12);--shadow2:0 8px 24px rgba(15,23,42,.08);--radius:22px;--radius2:14px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at top left,rgba(15,118,110,.13),transparent 34rem),linear-gradient(135deg,#f7fafc,#edf3f7);color:var(--text);line-height:1.5}
+    button,input,select,textarea{font:inherit} button{cursor:pointer} button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid rgba(15,118,110,.25);outline-offset:2px}
+    .shell{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}.side{position:sticky;top:0;height:100vh;overflow:auto;background:linear-gradient(180deg,rgba(19,36,58,.92),rgba(11,23,38,.98));color:#dce7f4;padding:24px 16px;border-right:1px solid rgba(255,255,255,.1)}
+    .brand{border-bottom:1px solid rgba(255,255,255,.12);padding:0 8px 20px;margin-bottom:18px}.kicker{display:inline-flex;align-items:center;border:1px solid rgba(169,222,215,.32);background:rgba(15,118,110,.18);color:#b9f3ea;padding:4px 9px;border-radius:999px;font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.brand h1{font-size:1.28rem;letter-spacing:-.04em;line-height:1.05;margin:12px 0 6px;color:#fff}.brand p{margin:0;color:#b8c5d6;font-size:.82rem}.nav{display:grid;gap:8px}.nav button{width:100%;text-align:left;background:transparent;color:#b8c5d6;border:1px solid transparent;border-radius:14px;padding:12px 13px;font-weight:800;display:flex;gap:10px;align-items:center}.nav button:hover{background:rgba(255,255,255,.07);color:#fff}.nav button.active{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;box-shadow:0 10px 24px rgba(4,47,46,.32)}
+    .main{min-width:0}.top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 30px;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.top h2{margin:0;font-size:1.35rem;letter-spacing:-.04em}.top p{margin:2px 0 0;color:var(--muted);font-size:.85rem;font-weight:650}.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #a9ded7;background:#e8f7f4;color:#115e59;border-radius:999px;padding:7px 11px;font-size:.78rem;font-weight:900;white-space:nowrap}.body{padding:30px}.hero{position:relative;overflow:hidden;background:radial-gradient(circle at top right,rgba(180,83,9,.12),transparent 22rem),linear-gradient(135deg,#fff,rgba(232,247,244,.78));border:1px solid rgba(15,118,110,.18);border-radius:28px;padding:32px;box-shadow:var(--shadow2);margin-bottom:24px}.hero h2{font-size:clamp(2rem,4vw,3.25rem);line-height:.98;margin:0;letter-spacing:-.06em}.hero p{max-width:880px;color:#42526a;font-weight:650}.grid{display:grid;gap:18px}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.auto{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 1px 2px rgba(15,23,42,.05)}.card h3{margin:0 0 12px;font-size:1.05rem;letter-spacing:-.02em}.muted{color:var(--muted)}.metric{font-size:2.2rem;font-weight:950;letter-spacing:-.06em;line-height:1}.label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:900;margin-top:6px}.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;border:1px solid var(--line);padding:4px 9px;font-size:.75rem;font-weight:900}.success{background:#ecfdf5;color:var(--green);border-color:#a7f3d0}.warn{background:#fffbeb;color:var(--amber);border-color:#fcd34d}.danger{background:#fef2f2;color:var(--red);border-color:#fecaca}.info{background:#eff6ff;color:var(--blue);border-color:#bfdbfe}.btn{border:1px solid transparent;border-radius:12px;min-height:42px;padding:10px 15px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}.primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff}.secondary{background:#fff;border-color:var(--line);color:var(--text)}.dangerBtn{background:#fef2f2;border-color:#fecaca;color:var(--red)}.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.tabscreen{display:none}.tabscreen.active{display:block}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:#fff}.table{width:100%;border-collapse:collapse;font-size:.88rem}.table th{background:#f8fafc;text-align:left;color:#42526a;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}.table th,.table td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}.table tr:last-child td{border-bottom:none}.field{display:grid;gap:6px;margin-bottom:12px}.field label{font-size:.78rem;font-weight:900;color:#42526a}.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:#fff;color:var(--text);width:100%}.field textarea{min-height:140px;resize:vertical}.notice{border:1px solid #fcd34d;background:#fffbeb;color:#713f12;border-radius:18px;padding:16px;margin-bottom:20px}.bar{height:10px;border-radius:999px;background:#e5edf3;overflow:hidden;border:1px solid var(--line)}.bar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--teal),#c7792d)}.report{white-space:pre-wrap;background:#0b1726;color:#e5edf7;border-radius:18px;padding:18px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82rem;overflow:auto}.hidden{display:none!important}
+    @media(max-width:980px){.shell{grid-template-columns:1fr}.side{position:relative;height:auto}.nav{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.top{position:relative;align-items:flex-start;flex-direction:column;padding:18px}.body{padding:18px}.grid3,.grid2{grid-template-columns:1fr}.hero{padding:24px}}
+    @media print{.side,.top,.btnrow,.no-print{display:none!important}.shell{display:block}.body{padding:0}.card,.hero{box-shadow:none;break-inside:avoid}.tabscreen{display:block!important;margin-bottom:20px}}
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/teacher-tools/">Teacher Tools</a><span>/</span><span>Forecast Engine</span></nav>
-
-    <section class="hero compact-hero">
-      <p class="eyebrow">Teacher tool</p>
-      <h1>Neft Learning Forecast Engine</h1>
-      <p class="hero-copy">A local-first teacher decision-support engine for Grade 6 math evidence review, readiness forecasting, small-group planning, and intervention simulation.</p>
-    </section>
-
-    <section class="section-block" aria-labelledby="open-tool">
-      <div class="activity-grid">
-        <a class="activity-card" href="https://github.com/Baltimoreteacher1/neft-forecast-engine" target="_blank" rel="noopener noreferrer">
-          <span class="card-kicker">Source app</span>
-          <h3>Open Forecast Engine Repository</h3>
-          <p>The production app code has been upgraded and merged into the Forecast Engine repository. Use this link to inspect the source, deployment settings, and latest main-branch version.</p>
-          <span class="button-link">Open repository</span>
-        </a>
-        <div class="activity-card">
-          <span class="card-kicker">Deployment note</span>
-          <h3>Cloudflare connection</h3>
-          <p>This page now connects the Forecast Engine to the same Teacher Tools area that houses your other classroom resources. If Cloudflare Pages is watching this hub repo's main branch, this launcher will publish with the rest of the hub.</p>
-          <span class="button-link">Ready in Teacher Tools</span>
-        </div>
+  <div class="shell">
+    <aside class="side no-print">
+      <div class="brand"><span class="kicker">Local-first</span><h1>Neft Learning Forecast Engine</h1><p>Forecast needs. Do not label students.</p></div>
+      <nav class="nav" aria-label="Forecast Engine sections">
+        <button class="active" data-tab="dashboard">📊 Command Center</button><button data-tab="roster">👤 Roster</button><button data-tab="intake">📥 Data Intake</button><button data-tab="forecast">🔮 Forecasts</button><button data-tab="groups">👥 Groups</button><button data-tab="simulator">⚡ Simulator</button><button data-tab="reports">📝 Reports</button><button data-tab="settings">⚙️ Settings</button>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="top no-print"><div><h2 id="pageTitle">Command Center</h2><p id="pageSub">Evidence readiness, privacy status, and next instructional moves.</p></div><span class="pill">🔒 Browser-only storage</span></header>
+      <div class="body">
+        <section id="dashboard" class="tabscreen active">
+          <div class="hero"><span class="kicker">Teacher decision support</span><h2>Plan from evidence without lowering expectations.</h2><p>Use classroom evidence to estimate readiness ranges, choose targeted reteach groups, and simulate support cycles. This tool is for instructional planning only, not grading, tracking, or labeling students.</p><div class="btnrow"><button class="btn primary" data-tabgo="forecast">Build Forecast</button><button class="btn secondary" data-tabgo="intake">Import Evidence</button><button class="btn secondary" data-tabgo="groups">Create Groups</button></div></div>
+          <div class="grid grid3" id="metrics"></div>
+          <div class="grid grid2" style="margin-top:18px"><div class="card"><h3>Readiness by Standard</h3><div id="standardBars"></div></div><div class="card"><h3>Action Queue</h3><div id="actionQueue"></div></div></div>
+        </section>
+        <section id="roster" class="tabscreen"><div class="grid grid2"><div class="card"><h3>Add Student</h3><div class="field"><label>Student ID</label><input id="studentId" placeholder="S011"></div><div class="field"><label>Display Name</label><input id="studentName" placeholder="Student 11"></div><div class="field"><label>Class Section</label><input id="studentSection" placeholder="Period 1"></div><button class="btn primary" id="addStudent">Add student</button></div><div class="card"><h3>Roster Safeguard</h3><p class="muted">Use initials, IDs, or de-identified names when possible. This page stores data only in this browser.</p><div class="btnrow"><button class="btn secondary" id="loadSample">Reload sample data</button><button class="btn dangerBtn" id="clearAll">Clear local data</button></div></div></div><div class="card" style="margin-top:18px"><h3>Roster</h3><div class="tablewrap"><table class="table" id="rosterTable"></table></div></div></section>
+        <section id="intake" class="tabscreen"><div class="notice"><strong>Paste evidence from a spreadsheet.</strong> Accepted columns: studentId, standard, score, maxScore, date, assessment. Comma, tab, or pipe-separated rows work.</div><div class="grid grid2"><div class="card"><h3>Paste Evidence</h3><div class="field"><label>Spreadsheet rows</label><textarea id="pasteData" spellcheck="false">studentId,standard,score,maxScore,date,assessment
+S001,6.G.A.1,8,10,2026-05-18,Exit Ticket
+S002,6.G.A.1,6,10,2026-05-18,Exit Ticket</textarea></div><button class="btn primary" id="importEvidence">Import evidence</button></div><div class="card"><h3>Import Result</h3><div id="importResult" class="muted">No import run yet.</div></div></div><div class="card" style="margin-top:18px"><h3>Evidence Records</h3><div class="tablewrap"><table class="table" id="evidenceTable"></table></div></div></section>
+        <section id="forecast" class="tabscreen"><div class="grid grid2"><div class="card"><h3>Forecast Settings</h3><div class="field"><label>Student</label><select id="forecastStudent"></select></div><div class="field"><label>Standard</label><select id="forecastStandard"></select></div><button class="btn primary" id="runForecast">Run forecast</button></div><div class="card"><h3>Forecast Result</h3><div id="forecastResult" class="muted">Choose a student and standard, then run a forecast.</div></div></div><div class="card" style="margin-top:18px"><h3>Class Forecast Grid</h3><div class="tablewrap"><table class="table" id="forecastTable"></table></div></div></section>
+        <section id="groups" class="tabscreen"><div class="card"><h3>Small Group Builder</h3><p class="muted">Groups are based on teachable needs by standard. Names avoid deficit labels.</p><button class="btn primary" id="buildGroups">Build groups</button></div><div id="groupsOut" class="grid auto" style="margin-top:18px"></div></section>
+        <section id="simulator" class="tabscreen"><div class="grid grid2"><div class="card"><h3>Intervention Simulator</h3><div class="field"><label>Focus Standard</label><select id="simStandard"></select></div><div class="field"><label>Support Move</label><select id="supportMove"><option value="6">10-minute reteach + worked example</option><option value="8">Small group practice cycle</option><option value="10">Visual model + error analysis</option><option value="12">Two-day targeted intervention</option></select></div><button class="btn primary" id="runSim">Simulate impact</button></div><div class="card"><h3>Simulation Result</h3><div id="simOut" class="muted">Choose a standard and support move.</div></div></div></section>
+        <section id="reports" class="tabscreen"><div class="card"><h3>Teacher Report</h3><div class="btnrow"><button class="btn primary" id="generateReport">Generate report</button><button class="btn secondary" id="downloadCsv">Download evidence CSV</button><button class="btn secondary" onclick="window.print()">Print</button></div><div id="reportOut" class="report" style="margin-top:16px">Report not generated yet.</div></div></section>
+        <section id="settings" class="tabscreen"><div class="grid grid2"><div class="card"><h3>Privacy and Use</h3><p class="muted">This standalone hub version uses localStorage in your browser. No network API is needed after the page loads. Forecasts are estimates for planning and should not be used as grades or formal evaluations.</p></div><div class="card"><h3>Data Controls</h3><div class="btnrow"><button class="btn secondary" id="exportJson">Export backup JSON</button><button class="btn dangerBtn" id="resetData">Reset to sample data</button></div></div></div></section>
       </div>
-    </section>
-
-    <section class="section-block" aria-labelledby="what-it-does">
-      <div class="section-heading">
-        <p class="eyebrow">Purpose</p>
-        <h2 id="what-it-does">What this tool is for</h2>
-      </div>
-      <div class="folder-index">
-        <div class="folder-index-group">
-          <h3>Instructional planning</h3>
-          <div class="folder-links">
-            <span>Review classroom evidence</span>
-            <span>Estimate readiness ranges</span>
-            <span>Plan targeted reteach groups</span>
-            <span>Simulate intervention next steps</span>
-          </div>
-        </div>
-        <div class="folder-index-group">
-          <h3>Safety model</h3>
-          <div class="folder-links">
-            <span>Local-first storage</span>
-            <span>De-identification by default</span>
-            <span>Forecast needs, never label students</span>
-            <span>Teacher judgment remains central</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="site-footer">
-      <span>Neft Learning Forecast Engine</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready teacher tools</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
+    </main>
+  </div>
+<script>
+(() => {
+  const KEY = 'neft_forecast_engine_static_v1';
+  const standards = {'6.G.A.1':'Area of polygons','6.G.A.2':'Volume of rectangular prisms','6.G.A.4':'Surface area and nets','6.SP.A.1':'Statistical questions','6.SP.B.5':'Summarizing data','6.EE.C.9':'Variables and relationships'};
+  const seed = () => ({students:[
+    {id:'S001',name:'Student Alpha',section:'Period 1'},{id:'S002',name:'Student Bravo',section:'Period 1'},{id:'S003',name:'Student Charlie',section:'Period 1'},{id:'S004',name:'Student Delta',section:'Period 2'},{id:'S005',name:'Student Echo',section:'Period 2'},{id:'S006',name:'Student Foxtrot',section:'Period 2'}],
+    evidence:[
+      e('S001','6.G.A.1',82,'Exit Ticket','2026-05-18'),e('S001','6.G.A.4',76,'Quiz','2026-05-20'),e('S002','6.G.A.1',61,'Exit Ticket','2026-05-18'),e('S002','6.G.A.4',58,'Quiz','2026-05-20'),e('S003','6.G.A.1',73,'Exit Ticket','2026-05-18'),e('S003','6.SP.A.1',86,'Classwork','2026-05-19'),e('S004','6.G.A.2',54,'Quiz','2026-05-19'),e('S004','6.G.A.4',63,'Quiz','2026-05-20'),e('S005','6.G.A.2',91,'Quiz','2026-05-19'),e('S005','6.SP.B.5',88,'Classwork','2026-05-21'),e('S006','6.EE.C.9',67,'Exit Ticket','2026-05-21'),e('S006','6.SP.A.1',72,'Classwork','2026-05-19')]
+  });
+  function e(studentId,standard,percent,assessment,date){return {id:cryptoId(),studentId,standard,score:percent,maxScore:100,percent,assessment,date};}
+  function cryptoId(){return 'r_'+Math.random().toString(36).slice(2,10)+'_'+Date.now().toString(36)}
+  let state = load();
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))||seed()}catch{return seed()}}
+  function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+  const $ = s => document.querySelector(s); const $$ = s => Array.from(document.querySelectorAll(s));
+  const tabCopy = {dashboard:['Command Center','Evidence readiness, privacy status, and next instructional moves.'],roster:['Roster','Maintain a local roster with de-identified display names.'],intake:['Data Intake','Paste classroom evidence and validate it before forecasting.'],forecast:['Forecasts','Generate bounded planning estimates by student and standard.'],groups:['Groups','Cluster students by teachable needs, not labels.'],simulator:['Simulator','Preview likely effects of support cycles.'],reports:['Reports','Create teacher-facing planning summaries.'],settings:['Settings','Privacy notes and local data controls.']};
+  function setTab(id){$$('.tabscreen').forEach(x=>x.classList.toggle('active',x.id===id));$$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));$('#pageTitle').textContent=tabCopy[id][0];$('#pageSub').textContent=tabCopy[id][1];renderAll()}
+  document.addEventListener('click',ev=>{const t=ev.target.closest('[data-tab],[data-tabgo]'); if(t) setTab(t.dataset.tab||t.dataset.tabgo)});
+  function pct(n){return Math.max(0,Math.min(100,Math.round(n||0)))}
+  function readiness(p){p=pct(p); if(p>=80)return ['Strong','success']; if(p>=70)return ['Likely Ready','info']; if(p>=60)return ['Approaching','warn']; return ['Needs reteach','danger']}
+  function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0}
+  function evidenceFor(studentId,standard){return state.evidence.filter(x=>(!studentId||x.studentId===studentId)&&(!standard||x.standard===standard))}
+  function forecast(studentId,standard){const rows=evidenceFor(studentId,standard).sort((a,b)=>String(b.date).localeCompare(String(a.date))); if(!rows.length)return {score:0,band:'Not enough evidence',cls:'warn',confidence:'Very Low',n:0,low:0,high:0,missing:['Add at least one recent score for this standard.']}; const weights=rows.map((_,i)=>1/(i+1)); const score=rows.reduce((sum,r,i)=>sum+r.percent*weights[i],0)/weights.reduce((a,b)=>a+b,0); const band=readiness(score); const spread=rows.length>=3?8:14; return {score:pct(score),band:band[0],cls:band[1],confidence:rows.length>=3?'High':rows.length===2?'Medium':'Low',n:rows.length,low:pct(score-spread),high:pct(score+spread),missing:rows.length<3?['More evidence would improve confidence.']:[]}}
+  function renderMetrics(){const stds=[...new Set(state.evidence.map(x=>x.standard))]; const mean=avg(state.evidence.map(x=>x.percent)); $('#metrics').innerHTML = `<div class="card"><h3>Students</h3><div class="metric">${state.students.length}</div><div class="label">local roster</div></div><div class="card"><h3>Evidence</h3><div class="metric">${state.evidence.length}</div><div class="label">score records</div></div><div class="card"><h3>Class Average</h3><div class="metric">${pct(mean)}%</div><div class="label">current evidence</div></div>`; $('#standardBars').innerHTML = Object.keys(standards).map(s=>{const m=avg(evidenceFor(null,s).map(x=>x.percent)); const r=readiness(m); return `<div style="margin:12px 0"><strong>${s}</strong> <span class="badge ${r[1]}">${r[0]}</span><div class="bar"><span style="width:${pct(m)}%"></span></div><small class="muted">${standards[s]} • ${pct(m)}%</small></div>`}).join(''); $('#actionQueue').innerHTML = stds.map(s=>[s,avg(evidenceFor(null,s).map(x=>x.percent))]).sort((a,b)=>a[1]-b[1]).slice(0,4).map(([s,m])=>`<p><strong>${s}</strong>: ${standards[s]} — prioritize students below 70%. Current average: <strong>${pct(m)}%</strong>.</p>`).join('') || '<p class="muted">Add evidence to generate next steps.</p>'}
+  function renderRoster(){ $('#rosterTable').innerHTML = '<tr><th>ID</th><th>Name</th><th>Section</th><th>Evidence</th><th>Average</th></tr>'+state.students.map(s=>{const ev=evidenceFor(s.id,null);return `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.section||''}</td><td>${ev.length}</td><td>${pct(avg(ev.map(x=>x.percent)))}%</td></tr>`}).join('') }
+  function renderEvidence(){ $('#evidenceTable').innerHTML='<tr><th>Date</th><th>Student</th><th>Standard</th><th>Assessment</th><th>Score</th><th>Readiness</th></tr>'+state.evidence.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(r=>{const band=readiness(r.percent);return `<tr><td>${r.date}</td><td>${r.studentId}</td><td>${r.standard}</td><td>${r.assessment}</td><td>${pct(r.percent)}%</td><td><span class="badge ${band[1]}">${band[0]}</span></td></tr>`}).join('') }
+  function renderSelects(){ const opts=state.students.map(s=>`<option value="${s.id}">${s.name} (${s.id})</option>`).join(''); const sopts=Object.entries(standards).map(([k,v])=>`<option value="${k}">${k} — ${v}</option>`).join(''); ['#forecastStudent'].forEach(id=>$(id).innerHTML=opts); ['#forecastStandard','#simStandard'].forEach(id=>$(id).innerHTML=sopts)}
+  function renderForecastGrid(){ $('#forecastTable').innerHTML='<tr><th>Student</th>'+Object.keys(standards).map(s=>`<th>${s}</th>`).join('')+'</tr>'+state.students.map(st=>`<tr><td>${st.name}</td>${Object.keys(standards).map(s=>{const f=forecast(st.id,s);return `<td><span class="badge ${f.cls}">${f.n?f.score+'%':'No data'}</span><br><small>${f.band}</small></td>`}).join('')}</tr>`).join('')}
+  function renderAll(){renderMetrics();renderRoster();renderEvidence();renderSelects();renderForecastGrid()}
+  $('#addStudent').onclick=()=>{const id=$('#studentId').value.trim(); if(!id)return alert('Add a Student ID.'); if(state.students.some(s=>s.id===id))return alert('That Student ID already exists.'); state.students.push({id,name:$('#studentName').value.trim()||`Student ${id}`,section:$('#studentSection').value.trim()||'General Math'}); save(); $('#studentId').value='';$('#studentName').value='';$('#studentSection').value=''};
+  $('#importEvidence').onclick=()=>{const text=$('#pasteData').value.trim(); if(!text)return; const lines=text.split(/\r?\n/).filter(Boolean); const delim=lines[0].includes('\t')?'\t':lines[0].includes('|')?'|':','; const headers=lines.shift().split(delim).map(h=>h.trim().toLowerCase()); let added=0, warnings=[]; lines.forEach((line,i)=>{const vals=line.split(delim).map(v=>v.trim()); const row={}; headers.forEach((h,idx)=>row[h]=vals[idx]||''); const studentId=row.studentid||row.student||row.id; const standard=row.standard||row.skill; const score=parseFloat(row.score||row.rawscore); const max=parseFloat(row.maxscore||row.max||100); const date=row.date||new Date().toISOString().slice(0,10); if(!studentId||!standard||!Number.isFinite(score)||!Number.isFinite(max)||max<=0){warnings.push(`Row ${i+2}: missing studentId, standard, score, or maxScore.`);return} if(!state.students.some(s=>s.id===studentId)) state.students.push({id:studentId,name:`Student ${studentId}`,section:'Imported'}); state.evidence.push({id:cryptoId(),studentId,standard,score,maxScore:max,percent:pct(score/max*100),assessment:row.assessment||row.title||'Imported Evidence',date}); added++}); save(); $('#importResult').innerHTML=`<p><strong>${added}</strong> evidence rows imported.</p>${warnings.map(w=>`<p class="muted">${w}</p>`).join('')}`};
+  $('#runForecast').onclick=()=>{const studentId=$('#forecastStudent').value, standard=$('#forecastStandard').value, st=state.students.find(s=>s.id===studentId); const f=forecast(studentId,standard); $('#forecastResult').innerHTML=f.n?`<div class="metric">${f.low}–${f.high}%</div><p><span class="badge ${f.cls}">${f.band}</span> <span class="badge info">${f.confidence} confidence</span></p><p><strong>${st.name}</strong> has ${f.n} evidence point(s) for <strong>${standard}</strong>. Estimated center: <strong>${f.score}%</strong>.</p><p class="muted">${f.missing.join(' ')||'Evidence is sufficient for a planning estimate.'}</p>`:'<p class="muted">Not enough evidence for this student and standard.</p>'};
+  $('#buildGroups').onclick=()=>{const groups=Object.keys(standards).map(s=>{const kids=state.students.map(st=>({st,f:forecast(st.id,s)})).filter(x=>x.f.n&&x.f.score<70).sort((a,b)=>a.f.score-b.f.score); return {s,kids}}).filter(g=>g.kids.length); $('#groupsOut').innerHTML=groups.length?groups.map(g=>`<div class="card"><h3>${g.s}: ${standards[g.s]}</h3><p><span class="badge warn">Targeted reteach group</span></p><p>${g.kids.map(x=>`${x.st.name} (${x.f.score}%)`).join('<br>')}</p><p class="muted">Suggested move: model one worked example, use visual representation, then run a 3-question exit check.</p></div>`).join(''):'<div class="card"><h3>No reteach groups detected</h3><p class="muted">Current evidence does not show students below 70% by standard, or more evidence is needed.</p></div>'};
+  $('#runSim').onclick=()=>{const s=$('#simStandard').value, boost=parseFloat($('#supportMove').value); const before=avg(evidenceFor(null,s).map(x=>x.percent)); const after=pct(before+boost); $('#simOut').innerHTML=`<div class="metric">${pct(before)}% → ${after}%</div><p><span class="badge info">Estimated class shift</span></p><div class="bar"><span style="width:${after}%"></span></div><p class="muted">Use this as a planning estimate only. Recheck with a short exit ticket after the support cycle.</p>`};
+  function report(){const weakest=Object.keys(standards).map(s=>[s,avg(evidenceFor(null,s).map(x=>x.percent))]).sort((a,b)=>a[1]-b[1])[0]; return `NEFT LEARNING FORECAST ENGINE REPORT\nGenerated: ${new Date().toLocaleString()}\n\nRoster: ${state.students.length} students\nEvidence records: ${state.evidence.length}\nClass average: ${pct(avg(state.evidence.map(x=>x.percent)))}%\n\nPriority standard: ${weakest?weakest[0]+' — '+standards[weakest[0]]+' ('+pct(weakest[1])+'%)':'Not enough evidence'}\n\nRecommended next move:\n1. Review Data Quality and add any missing recent evidence.\n2. Use Small Group Builder for students below 70% on the priority standard.\n3. Teach a focused worked example and visual model.\n4. Reassess with a short exit ticket.\n\nSafety note: Forecast needs. Do not label students. Use teacher judgment.`}
+  $('#generateReport').onclick=()=>$('#reportOut').textContent=report(); $('#downloadCsv').onclick=()=>download('forecast-evidence.csv','studentId,standard,percent,date,assessment\n'+state.evidence.map(r=>`${r.studentId},${r.standard},${r.percent},${r.date},${r.assessment}`).join('\n')); $('#exportJson').onclick=()=>download('neft-forecast-backup.json',JSON.stringify(state,null,2)); function download(name,text){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+  $('#loadSample').onclick=()=>{state=seed();save()}; $('#resetData').onclick=$('#loadSample').onclick; $('#clearAll').onclick=()=>{if(confirm('Clear all local Forecast Engine data in this browser?')){state={students:[],evidence:[]};save()}};
+  renderAll();
+})();
+</script>
 </body>
 </html>
