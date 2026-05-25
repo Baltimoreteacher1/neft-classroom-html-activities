@@ -1,0 +1,16 @@
+name = "noam-school-cron"
+main = "noam-school-cron.js"
+compatibility_date = "2026-05-25"
+
+# Background sync times are UTC.
+# Adjust these after confirming Noam's preferred check times.
+[triggers]
+crons = ["0 12 * * 1-5", "0 21 * * 1-5"]
+
+[[kv_namespaces]]
+binding = "NOAM_SCHOOL_KV"
+id = "<NOAM_SCHOOL_KV_NAMESPACE_ID>"
+
+# Set these with `wrangler secret put`, not in this file:
+# GOOGLE_CLIENT_ID
+# GOOGLE_CLIENT_SECRET
