@@ -1,126 +1,734 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Neft Hub is a personal and professional launch dashboard for teacher tools, classroom activities, reading resources, Hebrew practice, data dashboards, and recurring workflows.">
-  <title>Neft Hub | Personal and Professional Dashboard</title>
-  <link rel="stylesheet" href="/assets/shared.css">
-  <link rel="stylesheet" href="/assets/hub.css">
-</head>
-<body>
-  <main class="page-shell">
-    <section class="hero hub-hero" aria-labelledby="hub-title">
-      <div>
-        <p class="eyebrow">Personal + Professional Launch Dashboard</p>
-        <h1 id="hub-title">Neft Hub</h1>
-        <p class="hero-copy">One clean front door for professional teacher work and personal learning routines.</p>
-        <p>Use the Professional lane for classroom tools, lesson workflows, data dashboards, and curriculum resources. Use the Personal lane for Hebrew practice, reading practice, and family routines.</p>
-        <div class="hub-actions" aria-label="Jump to hub sections">
-          <a href="#professional">Professional</a>
-          <a href="#personal">Personal</a>
-          <a href="#reading-library">Reading Library</a>
-          <a href="/teacher-tools/neftos-command-center/">Command Center</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neft Teacher | Classroom Hub</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #f5f7fa;
+        --surface: #ffffff;
+        --text: #1a1a2e;
+        --muted: #64748b;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --border: #e2e8f0;
+        --radius: 12px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+        --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+
+      header p {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .section-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin: 2rem 0 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--accent);
+        display: inline-block;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 0.875rem;
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.125rem;
+        text-decoration: none;
+        color: var(--text);
+        box-shadow: var(--shadow);
+        transition:
+          box-shadow 0.15s,
+          transform 0.15s;
+      }
+
+      .card:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-2px);
+      }
+
+      .card h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .card p {
+        font-size: 0.8rem;
+        color: var(--muted);
+        flex: 1;
+      }
+
+      .card .tag {
+        display: inline-block;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        margin-bottom: 0.35rem;
+      }
+
+      .chapter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.5rem;
+      }
+
+      .chapter-row a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.8rem;
+        font-weight: 600;
+        box-shadow: var(--shadow);
+        transition:
+          background 0.12s,
+          color 0.12s;
+      }
+
+      .chapter-row a:hover {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      .unit-card {
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.125rem;
+        box-shadow: var(--shadow);
+      }
+
+      .unit-card .tag {
+        display: inline-block;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        margin-bottom: 0.25rem;
+      }
+
+      .unit-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.15rem;
+      }
+
+      .unit-card > p {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 0.6rem;
+      }
+
+      .unit-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: auto;
+      }
+
+      .unit-links a {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        color: var(--text);
+        text-decoration: none;
+        transition:
+          background 0.12s,
+          color 0.12s;
+      }
+
+      .unit-links a:hover {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      .unit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 0.875rem;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      @media (max-width: 600px) {
+        header h1 {
+          font-size: 1.5rem;
+        }
+        .grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 0.625rem;
+        }
+        .card {
+          padding: 0.75rem;
+        }
+        .card h3 {
+          font-size: 0.85rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Neft Teacher</h1>
+        <p>
+          Mr. Neft's Classroom Hub &mdash; Activities, Tools &amp; Resources
+        </p>
+      </header>
+
+      <!-- MATH — ALL UNITS WITH STANDARDS INTEGRATED -->
+      <h2 class="section-title">Grade 6 Math</h2>
+      <div class="unit-grid">
+        <div class="unit-card">
+          <span class="tag">Unit 1</span>
+          <h3>Foundations</h3>
+          <p>Area, factors, number sense basics</p>
+          <div class="unit-links">
+            <a href="/math/unit-1/">Unit Lessons</a>
+            <a href="/unit-1/">Activities</a>
+            <a href="/unit-1/grade6unit1/">Grade 6 Unit 1 Game</a>
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <span class="tag">Unit 2 &middot; 6.NS</span>
+          <h3>Number System</h3>
+          <p>
+            Division, decimals, computation fluency &mdash; 16 standards
+            activities
+          </p>
+          <div class="unit-links">
+            <a href="/math/unit-2/">Unit Lessons</a>
+            <a href="/number-system/">All 6.NS Activities</a>
+            <a href="/number-system/6-ns-a-1game/">6.NS.A.1 Game</a>
+            <a href="/number-system/6-ns-b-2game/">6.NS.B.2 Game</a>
+            <a href="/number-system/6-ns-b-3game/">6.NS.B.3 Game</a>
+            <a href="/number-system/6-ns-b-4game/">6.NS.B.4 Game</a>
+            <a href="/number-system/6-ns-c-5game/">6.NS.C.5 Game</a>
+            <a href="/number-system/6-ns-c-6game/">6.NS.C.6 Game</a>
+            <a href="/number-system/6-ns-c-8game/">6.NS.C.8 Game</a>
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <span class="tag">Unit 3 &middot; 6.NS</span>
+          <h3>Fractions</h3>
+          <p>Fraction operations and reasoning</p>
+          <div class="unit-links">
+            <a href="/math/unit-3/">Unit Lessons</a>
+            <a href="/number-system/6-ns-3practice/">6.NS.3 Practice</a>
+            <a href="/number-system/6-ns-b-3review/">6.NS.B.3 Review</a>
+            <a href="/number-system/6-ns-b-4review/">6.NS.B.4 Review</a>
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <span class="tag">Unit 4 &middot; 6.RP</span>
+          <h3>Ratios &amp; Proportions</h3>
+          <p>
+            Ratio reasoning, unit rates, percent &mdash; 6 standards activities
+          </p>
+          <div class="unit-links">
+            <a href="/math/unit-4/">Unit Lessons</a>
+            <a href="/ratios-proportions/">All 6.RP Activities</a>
+            <a href="/unit-4/">Unit 4 Practice</a>
+            <a href="/ratios-proportions/6-rp-1game/">6.RP.1 Game</a>
+            <a href="/ratios-proportions/6-rp-a-2game/">6.RP.A.2 Game</a>
+            <a href="/ratios-proportions/6-rp-a-3game/">6.RP.A.3 Game</a>
+            <a href="/unit-4/decimaloperationsreview/">Decimal Ops Review</a>
+            <a href="/unit-4/longdivisionmcapreview/">Long Division Review</a>
+            <a href="/unit-4/math6unit4interactivestudystudio/">Study Studio</a>
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <span class="tag">Unit 5 &middot; 6.G</span>
+          <h3>Geometry &amp; Measurement</h3>
+          <p>
+            Area, volume, surface area, nets &mdash; 18 standards activities
+          </p>
+          <div class="unit-links">
+            <a href="/math/unit-5/">Unit Lessons</a>
+            <a href="/unit-5/">All Unit 5 Activities</a>
+            <a href="/unit-5-practice/">Extra Practice</a>
+            <a href="/geometry-prep/">Geometry Prep</a>
+            <a href="/surface-area-review/">Surface Area Review</a>
+            <a href="/unit-5/interactiveareamission/">Area Mission</a>
+            <a href="/unit-5/5-1-5-3practice/">5.1-5.3 Practice</a>
+            <a href="/unit-5/5-3rvtrapezoid/">Trapezoid Activity</a>
+            <a href="/unit-5/5-5squaretriangle/">Square &amp; Triangle</a>
+            <a href="/unit-5/5-8interactivehtml/">5.8 Interactive</a>
+            <a href="/unit-5/volumeofrectangularprism/">Volume of Prism</a>
+            <a href="/unit-5/rectangularprismstory/">Prism Story</a>
+            <a href="/unit-5/parallelogramandrhombusgame/"
+              >Parallelogram Game</a
+            >
+            <a href="/unit-5/unit5worldarchitectureprojet/"
+              >World Architecture</a
+            >
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <span class="tag">Units 6-8 &middot; 6.EE</span>
+          <h3>Expressions, Equations &amp; Functions</h3>
+          <p>
+            Variables, equations, inequalities, functions &mdash; 25+ standards
+            activities
+          </p>
+          <div class="unit-links">
+            <a href="/math/unit-6/">Unit 6 Lessons</a>
+            <a href="/math/unit-7/">Unit 7 Lessons</a>
+            <a href="/math/unit-8/">Unit 8 Lessons</a>
+            <a href="/expressions-equations/">All 6.EE Activities</a>
+            <a href="/expressions-equations/6-ee-9/">6.EE.9 Intro</a>
+            <a href="/expressions-equations/6-ee-c-9game/">6.EE.C.9 Game</a>
+            <a href="/expressions-equations/functionforge6-ee-9/"
+              >Function Forge</a
+            >
+            <a href="/expressions-equations/6-ee-c-9variablevelocitygame/"
+              >Variable Velocity</a
+            >
+            <a href="/expressions-equations/6-ee-c-9martiangame/"
+              >Martian Game</a
+            >
+            <a href="/expressions-equations/variableexplorer1/"
+              >Variable Explorer</a
+            >
+            <a href="/expressions-equations/variablecomparisongame/"
+              >Variable Comparison</a
+            >
+            <a href="/expressions-equations/ind-dep-variables/"
+              >Ind/Dep Variables</a
+            >
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <span class="tag">Unit 9 &middot; 6.SP</span>
+          <h3>Statistics &amp; Data</h3>
+          <p>
+            Mean, median, mode, histograms, data analysis &mdash; 15 standards
+            activities
+          </p>
+          <div class="unit-links">
+            <a href="/math/unit-9/">Unit Lessons</a>
+            <a href="/statistics-data/">All 6.SP Activities</a>
+            <a href="/statistics-data/mean-median-mode-game/"
+              >Mean/Median/Mode Game</a
+            >
+            <a href="/statistics-data/histogramhero/">Histogram Hero</a>
+            <a href="/statistics-data/6-sp-a-1game/">6.SP.A.1 Game</a>
+            <a href="/statistics-data/6-sp-b-5-data-detective-game/"
+              >Data Detective</a
+            >
+            <a href="/statistics-data/mean-median-modegallerywalk/"
+              >Gallery Walk</a
+            >
+            <a href="/statistics-data/meanmedianmodesoccerandbracelets/"
+              >Soccer &amp; Bracelets</a
+            >
+            <a href="/statistics-data/data-studio/">Data Studio</a>
+          </div>
+        </div>
+
+        <div class="unit-card">
+          <span class="tag">Unit 10 &middot; Review</span>
+          <h3>Review &amp; Test Prep</h3>
+          <p>End of year review, MCAP prep, and enrichment</p>
+          <div class="unit-links">
+            <a href="/math/unit-10/">Unit Lessons</a>
+            <a href="/mcap-review/">MCAP Review</a>
+            <a href="/mcap-review/mcapreview/">MCAP Practice</a>
+            <a href="/mcap-review/homework/">Review Homework</a>
+            <a href="/world-architect-math-project/">World Architect Project</a>
+          </div>
         </div>
       </div>
-      <aside class="hub-summary" aria-labelledby="hub-summary-title">
-        <p class="eyebrow">Best use</p>
-        <h2 id="hub-summary-title">Start with the lane that matches your goal</h2>
-        <ol>
-          <li><strong>Professional:</strong> planning, teaching, data, classroom activities, and deployment.</li>
-          <li><strong>Personal:</strong> Hebrew practice, reading review, family learning, and routines.</li>
-          <li><strong>Reading library:</strong> chapter collections and student-facing literature tools.</li>
-          <li><strong>Command Center:</strong> capture tasks and decide the next best move.</li>
-        </ol>
-      </aside>
-    </section>
 
-    <section class="section-block" aria-labelledby="finder-title">
-      <div class="section-heading">
-        <p class="eyebrow">Find fast</p>
-        <h2 id="finder-title">Search Neft Hub routes</h2>
-        <p>Use search or a lane filter to jump straight to the right professional or personal route.</p>
+      <!-- ESOL & READING -->
+      <h2 class="section-title">ESOL &amp; Reading</h2>
+      <div class="grid">
+        <a class="card" href="/esol/">
+          <span class="tag">ESOL</span>
+          <h3>ESOL Section</h3>
+          <p>Language supports and newcomer activities</p>
+        </a>
+        <a class="card" href="/esol-reading-writing/">
+          <span class="tag">ESOL</span>
+          <h3>Reading &amp; Writing</h3>
+          <p>ESOL reading, writing, and math-writing activities</p>
+        </a>
+        <a class="card" href="/esol-reading-writing/esolreading/">
+          <span class="tag">Reading</span>
+          <h3>ESOL Reading Practice</h3>
+          <p>Guided reading for English learners</p>
+        </a>
+        <a class="card" href="/esol-reading-writing/refugeebookreview/">
+          <span class="tag">Reading</span>
+          <h3>Refugee Book Review</h3>
+          <p>Interactive book review activity</p>
+        </a>
+        <a class="card" href="/esol-reading-writing/flushbooksummary/">
+          <span class="tag">Reading</span>
+          <h3>Flush Book Summary</h3>
+          <p>Interactive book summary activity</p>
+        </a>
+        <a class="card" href="/esol-reading-writing/goodfriendhtml/">
+          <span class="tag">Reading</span>
+          <h3>Good Friend</h3>
+          <p>Character and friendship reading activity</p>
+        </a>
       </div>
-      <div class="hub-filter-panel" role="search" aria-label="Search and filter Neft Hub routes">
-        <label for="hubSearch">Search Neft Hub
-          <input id="hubSearch" data-hub-search type="search" placeholder="Search math, Hebrew, Blood on the River, data, ESOL, command…" autocomplete="off">
-        </label>
-        <div class="hub-filter-chips" aria-label="Filter route family">
-          <button type="button" data-hub-filter="all" aria-pressed="true">All</button>
-          <button type="button" data-hub-filter="professional" aria-pressed="false">Professional</button>
-          <button type="button" data-hub-filter="personal" aria-pressed="false">Personal</button>
-          <button type="button" data-hub-filter="reading" aria-pressed="false">Reading</button>
-        </div>
+
+      <!-- BLOOD ON THE RIVER -->
+      <h2 class="section-title">
+        Blood on the River &mdash; Interactive Chapters
+      </h2>
+      <div style="margin-bottom: 0.5rem">
+        <a
+          class="card"
+          href="/blood-on-the-river/"
+          style="display: inline-flex; max-width: 320px"
+        >
+          <span class="tag">Literature</span>
+          <h3>Full Collection</h3>
+          <p>
+            All 27 chapters with vocabulary, scenes, quotes, and comprehension
+            checks
+          </p>
+        </a>
       </div>
-      <p class="hub-result-status" data-hub-status aria-live="polite"></p>
-      <div class="hub-empty-state" data-hub-empty hidden>No matching routes yet. Try a broader search such as “data,” “Hebrew,” “math,” “reading,” or “command.”</div>
-    </section>
-
-    <section class="section-block" aria-labelledby="lanes-title">
-      <div class="section-heading"><p class="eyebrow">Main hub structure</p><h2 id="lanes-title">Choose your lane</h2></div>
-      <div class="hub-grid">
-        <article class="hub-card professional" id="professional" aria-labelledby="professional-title" data-hub-card="professional teacher classroom tools planning data math esol command" data-hub-family="professional">
-          <span class="hub-label">Professional</span>
-          <h3 id="professional-title">Teacher Work + Classroom Tools</h3>
-          <p>Planning, instruction, classroom data, student-facing activities, professional development, and GitHub/Cloudflare deployment.</p>
-          <div class="hub-actions"><a class="primary-link" href="/teacher-tools/">Open Professional Hub</a><a class="secondary-link" href="/teacher-tools/neftos-command-center/">Open Command Center</a></div>
-          <div class="mini-grid" aria-label="Professional quick links">
-            <a href="/teacher-tools/forecast-engine/" data-hub-card="forecast engine evidence intervention" data-hub-family="professional"><strong>Forecast Engine</strong><span>Evidence review, readiness forecasting, and intervention planning.</span></a>
-            <a href="/statistics-data/data-studio/" data-hub-card="data studio charts statistics dashboard" data-hub-family="professional"><strong>Data Studio</strong><span>Charts, grouping, summaries, and classroom data analysis.</span></a>
-            <a href="/math/" data-hub-card="math section grade 6 units" data-hub-family="professional"><strong>Math Section</strong><span>Grade 6 unit folders, math resources, and classroom activities.</span></a>
-            <a href="/esol/" data-hub-card="esol language supports newcomer reading writing" data-hub-family="professional"><strong>ESOL Section</strong><span>Language supports, newcomer access, reading, and writing tools.</span></a>
-            <a href="/blood-on-the-river/" data-hub-card="blood on the river reading chapters literature" data-hub-family="professional reading"><strong>Blood on the River</strong><span>Full interactive chapter collection with vocabulary, scenes, quotes, and checks.</span></a>
-            <a href="/teacher-tools/neftos-command-center/" data-hub-card="neftos command center workflow qa prompts" data-hub-family="professional personal"><strong>NeftOS</strong><span>Daily workflow, QA checks, prompt generators, and task capture.</span></a>
-          </div>
-        </article>
-
-        <article class="hub-card personal" id="personal" aria-labelledby="personal-title" data-hub-card="personal practice family learning hebrew reading routines" data-hub-family="personal">
-          <span class="hub-label">Personal</span>
-          <h3 id="personal-title">Personal Practice + Family Learning</h3>
-          <p>Practice spaces and routines that should be easy to find without mixing them into the professional teaching dashboard.</p>
-          <div class="hub-actions"><a class="primary-link" href="/practice/hebrew-reading/">Open Hebrew Reading Practice</a><a class="secondary-link" href="/teacher-tools/neftos-command-center/">Plan Personal Routines</a></div>
-          <div class="mini-grid" aria-label="Personal quick links">
-            <a href="/practice/hebrew-reading/" data-hub-card="hebrew reading practice personal routine confidence" data-hub-family="personal"><strong>Hebrew Reading Practice</strong><span>Short routines, reading review, confidence checks, and practice focus areas.</span></a>
-            <a href="/hebrew" data-hub-card="hebrew review vocabulary decoding word reading" data-hub-family="personal"><strong>Hebrew Review</strong><span>Existing review page for vocabulary, decoding, and word reading practice.</span></a>
-            <a href="/blood-on-the-river/chapter-1/" data-hub-card="reading practice blood on the river chapter 1" data-hub-family="personal reading"><strong>Reading Practice</strong><span>Chapter-based reading support with vocabulary and checks.</span></a>
-            <a href="/teacher-tools/neftos-command-center/" data-hub-card="personal planning routines command center" data-hub-family="personal professional"><strong>Personal Planning</strong><span>Use the command center for family learning routines and personal admin.</span></a>
-          </div>
-        </article>
+      <div class="chapter-row">
+        <a href="/blood-on-the-river/chapter-1/">1</a>
+        <a href="/blood-on-the-river/chapter-2/">2</a>
+        <a href="/blood-on-the-river/chapter-3/">3</a>
+        <a href="/blood-on-the-river/chapter-4/">4</a>
+        <a href="/blood-on-the-river/chapter-5/">5</a>
+        <a href="/blood-on-the-river/chapter-6/">6</a>
+        <a href="/blood-on-the-river/chapter-7/">7</a>
+        <a href="/blood-on-the-river/chapter-8/">8</a>
+        <a href="/blood-on-the-river/chapter-9/">9</a>
+        <a href="/blood-on-the-river/chapter-10/">10</a>
+        <a href="/blood-on-the-river/chapter-11/">11</a>
+        <a href="/blood-on-the-river/chapter-12/">12</a>
+        <a href="/blood-on-the-river/chapter-13/">13</a>
+        <a href="/blood-on-the-river/chapter-14/">14</a>
+        <a href="/blood-on-the-river/chapter-15/">15</a>
+        <a href="/blood-on-the-river/chapter-16/">16</a>
+        <a href="/blood-on-the-river/chapter-17/">17</a>
+        <a href="/blood-on-the-river/chapter-18/">18</a>
+        <a href="/blood-on-the-river/chapter-19/">19</a>
+        <a href="/blood-on-the-river/chapter-20/">20</a>
+        <a href="/blood-on-the-river/chapter-21/">21</a>
+        <a href="/blood-on-the-river/chapter-22/">22</a>
+        <a href="/blood-on-the-river/chapter-23/">23</a>
+        <a href="/blood-on-the-river/chapter-24/">24</a>
+        <a href="/blood-on-the-river/chapter-25/">25</a>
+        <a href="/blood-on-the-river/chapter-26/">26</a>
+        <a href="/blood-on-the-river/chapter-27/">27</a>
       </div>
-    </section>
 
-    <section class="section-block" id="reading-library" aria-labelledby="reading-library-title" data-hub-card="reading library blood on the river chapters literature" data-hub-family="reading professional personal">
-      <div class="section-heading"><p class="eyebrow">Reading library</p><h2 id="reading-library-title">Blood on the River Interactive Chapters</h2><p>This is a first-class Neft Hub section for literature review, vocabulary, quote explanations, scene-based comprehension, and student checks.</p></div>
-      <div class="feature-panel">
-        <article class="feature-card"><span class="hub-label">Featured collection</span><h3>Blood on the River</h3><p>Open the full interactive chapter collection with visual vocabulary, passage-based scenes, quote explanations, why-it-matters notes, and short student checks.</p><div class="hub-actions"><a class="primary-link" href="/blood-on-the-river/">Open full collection</a><a class="secondary-link" href="/blood-on-the-river/chapter-1/">Start Chapter 1</a></div></article>
-        <article class="chapter-panel" aria-labelledby="chapter-grid-title"><h3 id="chapter-grid-title">Jump to a chapter</h3><div class="chapter-grid" aria-label="Blood on the River chapter links"><a href="/blood-on-the-river/chapter-1/">1</a><a href="/blood-on-the-river/chapter-2/">2</a><a href="/blood-on-the-river/chapter-3/">3</a><a href="/blood-on-the-river/chapter-4/">4</a><a href="/blood-on-the-river/chapter-5/">5</a><a href="/blood-on-the-river/chapter-6/">6</a><a href="/blood-on-the-river/chapter-7/">7</a><a href="/blood-on-the-river/chapter-8/">8</a><a href="/blood-on-the-river/chapter-9/">9</a><a href="/blood-on-the-river/chapter-10/">10</a><a href="/blood-on-the-river/chapter-11/">11</a><a href="/blood-on-the-river/chapter-12/">12</a><a href="/blood-on-the-river/chapter-13/">13</a><a href="/blood-on-the-river/chapter-14/">14</a><a href="/blood-on-the-river/chapter-15/">15</a><a href="/blood-on-the-river/chapter-16/">16</a><a href="/blood-on-the-river/chapter-17/">17</a><a href="/blood-on-the-river/chapter-18/">18</a><a href="/blood-on-the-river/chapter-19/">19</a><a href="/blood-on-the-river/chapter-20/">20</a><a href="/blood-on-the-river/chapter-21/">21</a><a href="/blood-on-the-river/chapter-22/">22</a><a href="/blood-on-the-river/chapter-23/">23</a><a href="/blood-on-the-river/chapter-24/">24</a><a href="/blood-on-the-river/chapter-25/">25</a><a href="/blood-on-the-river/chapter-26/">26</a><a href="/blood-on-the-river/chapter-27/">27</a></div></article>
+      <!-- PERSONAL PRACTICE -->
+      <h2 class="section-title">Personal &amp; Family Practice</h2>
+      <div class="grid">
+        <a class="card" href="/practice/hebrew-reading/">
+          <span class="tag">Hebrew</span>
+          <h3>Hebrew Reading Practice</h3>
+          <p>Reading routines and confidence checks</p>
+        </a>
+        <a class="card" href="/esol-reading-writing/hebrewquizreview/">
+          <span class="tag">Hebrew</span>
+          <h3>Hebrew Quiz Review</h3>
+          <p>Quiz-style Hebrew review</p>
+        </a>
+        <a class="card" href="/esol-reading-writing/hebrewreviewnoam/">
+          <span class="tag">Hebrew</span>
+          <h3>Hebrew Review (Noam)</h3>
+          <p>Personalized Hebrew practice</p>
+        </a>
+        <a class="card" href="/esol-reading-writing/noamhebrewreview/">
+          <span class="tag">Hebrew</span>
+          <h3>Noam Hebrew Review</h3>
+          <p>Additional Hebrew practice set</p>
+        </a>
       </div>
-    </section>
 
-    <section class="section-block" aria-labelledby="quick-title">
-      <div class="section-heading"><p class="eyebrow">Quick launch</p><h2 id="quick-title">Main routes</h2></div>
-      <div class="activity-grid">
-        <a class="activity-card" href="/teacher-tools/" data-hub-card="professional hub teacher tools" data-hub-family="professional"><span class="card-kicker">Professional</span><h3>Professional Hub</h3><p>Planning, data, classroom workflow, and deployment tools.</p><span class="button-link">Open Professional Hub</span></a>
-        <a class="activity-card" href="/practice/hebrew-reading/" data-hub-card="hebrew reading practice personal" data-hub-family="personal"><span class="card-kicker">Personal</span><h3>Hebrew Reading Practice</h3><p>Short routines, review links, and confidence-building practice supports.</p><span class="button-link">Open practice page</span></a>
-        <a class="activity-card" href="/teacher-tools/neftos-command-center/" data-hub-card="neftos command center" data-hub-family="professional personal"><span class="card-kicker">Command</span><h3>NeftOS Command Center</h3><p>Daily priorities, reusable prompts, QA checks, and project planning.</p><span class="button-link">Open command center</span></a>
-        <a class="activity-card" href="/blood-on-the-river/" data-hub-card="blood on the river reading" data-hub-family="reading professional"><span class="card-kicker">Reading</span><h3>Blood on the River</h3><p>Complete chapter-by-chapter interactive reading collection.</p><span class="button-link">Open reading collection</span></a>
-        <a class="activity-card" href="/math/" data-hub-card="math section" data-hub-family="professional"><span class="card-kicker">Math</span><h3>Math Section</h3><p>Grade 6 math units and instructional resources.</p><span class="button-link">Browse math</span></a>
-        <a class="activity-card" href="/esol/" data-hub-card="esol language supports" data-hub-family="professional"><span class="card-kicker">ESOL</span><h3>ESOL Section</h3><p>Language supports, newcomer access, reading, and writing activities.</p><span class="button-link">Browse ESOL</span></a>
+      <!-- SPECIAL PROJECTS (standalone repos) -->
+      <h2 class="section-title">Special Projects</h2>
+      <div class="grid">
+        <a
+          class="card"
+          href="https://fix-it-design-challenge.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Project</span>
+          <h3>Fix-It Design Challenge</h3>
+          <p>Engineering design challenge activity</p>
+        </a>
+        <a
+          class="card"
+          href="https://baltimoreteacher1.github.io/CorrelationPlayground/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Data</span>
+          <h3>Correlation Playground</h3>
+          <p>Interactive scatter plots and correlation exploration</p>
+        </a>
+        <a
+          class="card"
+          href="https://baltimoreteacher1.github.io/EcologyNoam/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Science</span>
+          <h3>Ecology (Noam)</h3>
+          <p>Ecology and environmental science activity</p>
+        </a>
+        <a
+          class="card"
+          href="https://widaaccess25-26.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Assessment</span>
+          <h3>WIDA ACCESS 25-26</h3>
+          <p>WIDA ACCESS test prep and review</p>
+        </a>
+        <a
+          class="card"
+          href="https://baltimoreteacher1.github.io/Shaifractionssoccer/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Game</span>
+          <h3>Fraction Soccer (Shai)</h3>
+          <p>Soccer-themed fraction practice game</p>
+        </a>
+        <a
+          class="card"
+          href="https://baltimoreteacher1.github.io/Leiaslpengine/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Tool</span>
+          <h3>Leia SLP Engine</h3>
+          <p>Speech-language pathology practice tool</p>
+        </a>
+        <a
+          class="card"
+          href="https://baltimoreteacher1.github.io/student-practice-engine/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Tool</span>
+          <h3>Student Practice Engine</h3>
+          <p>Adaptive student practice platform</p>
+        </a>
       </div>
-    </section>
 
-    <section class="section-block" aria-labelledby="archive-title">
-      <div class="section-heading"><p class="eyebrow">Route archive</p><h2 id="archive-title">Existing links kept intact</h2><p>Older folders remain available so current Cloudflare links continue to work.</p></div>
-      <div class="folder-index">
-        <div class="folder-index-group"><h3>Professional math collections</h3><div class="folder-links"><a href="/unit-1/">Unit 1 Foundations</a><a href="/unit-4/">Unit 4 Decimal Operations</a><a href="/unit-5/">Unit 5 Geometry and Measurement</a><a href="/unit-5-practice/">Unit 5 Practice</a><a href="/statistics-data/">Statistics and Data</a><a href="/geometry-prep/">Geometry Prep</a><a href="/surface-area-review/">Surface Area Review</a><a href="/expressions-equations/">Expressions, Equations, and Variables</a><a href="/number-system/">Number System</a><a href="/ratios-proportions/">Ratios and Proportions</a><a href="/mcap-review/">MCAP and General Review</a><a href="/world-architect-math-project/">World Architect Math Project</a></div></div>
-        <div class="folder-index-group"><h3>Reading, ESOL, and personal learning</h3><div class="folder-links"><a href="/practice/hebrew-reading/">Hebrew Reading Practice</a><a href="/hebrew">Hebrew Review</a><a href="/blood-on-the-river/">Blood on the River Interactive Chapters</a><a href="/blood-on-the-river/chapter-1/">Blood on the River Chapter 1</a><a href="/esol/">ESOL Section</a><a href="/esol-reading-writing/">ESOL, Reading, Writing, and Math</a></div></div>
-        <div class="folder-index-group"><h3>Professional tools</h3><div class="folder-links"><a href="/teacher-tools/">Professional Hub</a><a href="/teacher-tools/neftos-command-center/">NeftOS Command Center</a><a href="/teacher-tools/forecast-engine/">Neft Learning Forecast Engine</a><a href="/forecast-engine/">Forecast Engine Shortcut</a><a href="/statistics-data/data-studio/">Data Studio</a></div></div>
+      <!-- TEACHER TOOLS & DASHBOARDS -->
+      <h2 class="section-title">Teacher Tools &amp; Dashboards</h2>
+      <div class="grid">
+        <a class="card" href="/teacher-tools/">
+          <span class="tag">Hub</span>
+          <h3>Professional Hub</h3>
+          <p>Planning, data, and deployment tools</p>
+        </a>
+        <a class="card" href="/teacher-tools/forecast-engine/">
+          <span class="tag">Tool</span>
+          <h3>Forecast Engine</h3>
+          <p>Evidence review, readiness forecasting, intervention planning</p>
+        </a>
+        <a class="card" href="/statistics-data/data-studio/">
+          <span class="tag">Tool</span>
+          <h3>Data Studio</h3>
+          <p>Charts, grouping, and classroom data analysis</p>
+        </a>
+        <a class="card" href="/teacher-tools/neftos-command-center/">
+          <span class="tag">Tool</span>
+          <h3>NeftOS Command Center</h3>
+          <p>Daily workflow, QA checks, and task capture</p>
+        </a>
+        <a
+          class="card"
+          href="https://baltimoreteacher1.github.io/Teacherdatadashboard/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Dashboard</span>
+          <h3>Teacher Data Dashboard</h3>
+          <p>Classroom data visualization and tracking</p>
+        </a>
+        <a
+          class="card"
+          href="https://data-studio-3cb.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Dashboard</span>
+          <h3>Data Studio (Cloudflare)</h3>
+          <p>Cloudflare-hosted data studio instance</p>
+        </a>
+        <a
+          class="card"
+          href="https://eduwonderlab.vercel.app"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Pipeline</span>
+          <h3>Neft Teacher Pipeline</h3>
+          <p>Lesson plan and notebook generation pipeline</p>
+        </a>
       </div>
-    </section>
 
-    <footer class="site-footer"><span>Neft Hub</span><span>Personal + Professional · <span data-current-year></span></span></footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
-  <script src="/assets/hub.js" defer></script>
-</body>
+      <!-- OTHER CLOUDFLARE SITES -->
+      <h2 class="section-title">All Cloudflare Sites</h2>
+      <div class="grid">
+        <a
+          class="card"
+          href="https://neft-classroom-html-activities.pages.dev/"
+        >
+          <span class="tag">Main</span>
+          <h3>This Hub</h3>
+          <p>neft-classroom-html-activities.pages.dev</p>
+        </a>
+        <a
+          class="card"
+          href="https://neft-teacher-app-library.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Site</span>
+          <h3>App Library</h3>
+          <p>neft-teacher-app-library.pages.dev</p>
+        </a>
+        <a
+          class="card"
+          href="https://eduwonderlab-site.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Site</span>
+          <h3>EduWonderLab Site</h3>
+          <p>eduwonderlab-site.pages.dev (eduwonderlab.com)</p>
+        </a>
+        <a
+          class="card"
+          href="https://data-studio-3cb.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Site</span>
+          <h3>Data Studio</h3>
+          <p>data-studio-3cb.pages.dev</p>
+        </a>
+        <a
+          class="card"
+          href="https://unit5worldarchitectureprojet.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Site</span>
+          <h3>World Architecture Project</h3>
+          <p>unit5worldarchitectureprojet.pages.dev</p>
+        </a>
+        <a
+          class="card"
+          href="https://fix-it-design-challenge.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Site</span>
+          <h3>Fix-It Design Challenge</h3>
+          <p>fix-it-design-challenge.pages.dev</p>
+        </a>
+        <a
+          class="card"
+          href="https://widaaccess25-26.pages.dev/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="tag">Site</span>
+          <h3>WIDA ACCESS</h3>
+          <p>widaaccess25-26.pages.dev</p>
+        </a>
+      </div>
+
+      <footer>Neft Teacher &mdash; Classroom Hub &mdash; 2025</footer>
+    </div>
+  </body>
 </html>
