@@ -1,198 +1,83 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Noam School | Student Dugout</title>
-    <meta name="description" content="Noam School student organization command center: assignments, classes, reminders, focus timer, and teacher email coach." />
-    <style>
-      :root {
-        --bg: #f3f0ea;
-        --surface: #ffffff;
-        --surface-2: #f8f6f1;
-        --ink: #1a1a1a;
-        --muted: #64748b;
-        --border: #e2ddd6;
-        --navy: #1c2f45;
-        --navy-2: #253b56;
-        --teal: #1d8a84;
-        --amber: #e8a020;
-        --green: #27ae60;
-        --red: #c0392b;
-        --radius: 18px;
-        --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background:
-          radial-gradient(circle at top left, rgba(29, 138, 132, 0.18), transparent 36rem),
-          radial-gradient(circle at bottom right, rgba(232, 160, 32, 0.16), transparent 28rem),
-          var(--bg);
-        color: var(--ink);
-      }
-      a { color: inherit; }
-      .shell { max-width: 1180px; margin: 0 auto; padding: 28px 18px 44px; }
-      .topbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 18px; }
-      .brand { display: flex; gap: 12px; align-items: center; }
-      .mark {
-        width: 46px; height: 46px; border-radius: 15px; background: linear-gradient(135deg, var(--teal), #0f6c67);
-        display: grid; place-items: center; color: #fff; font-weight: 900; box-shadow: 0 8px 24px rgba(29, 138, 132, 0.25);
-      }
-      .brand h1 { font-size: 1.15rem; margin: 0; color: var(--navy); line-height: 1.1; }
-      .brand p { margin: 2px 0 0; color: var(--muted); font-size: 0.82rem; }
-      .back { text-decoration: none; color: var(--navy); border: 1px solid var(--border); background: rgba(255,255,255,.72); padding: 9px 13px; border-radius: 999px; font-size: .85rem; font-weight: 700; }
-      .hero {
-        background: linear-gradient(135deg, var(--navy), var(--navy-2) 55%, #143d5e);
-        color: white;
-        border-radius: 28px;
-        overflow: hidden;
-        box-shadow: var(--shadow);
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 24px;
-        padding: 34px;
-        position: relative;
-      }
-      .hero:before { content: ""; position: absolute; right: -90px; top: -100px; width: 300px; height: 300px; border-radius: 50%; background: rgba(29,138,132,.33); filter: blur(4px); }
-      .hero:after { content: ""; position: absolute; left: -80px; bottom: -120px; width: 260px; height: 260px; border-radius: 50%; background: rgba(232,160,32,.17); }
-      .hero > * { position: relative; z-index: 1; }
-      .eyebrow { display: inline-flex; gap: 7px; align-items: center; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.11); border: 1px solid rgba(255,255,255,.16); font-weight: 800; font-size: .75rem; color: #dff7f5; }
-      .hero h2 { margin: 16px 0 10px; font-size: clamp(2.1rem, 5vw, 4.1rem); line-height: .94; letter-spacing: -.055em; }
-      .hero h2 span { color: #f2bf61; }
-      .hero p { color: rgba(255,255,255,.72); line-height: 1.58; max-width: 62ch; margin: 0; }
-      .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
-      .button { border: 0; border-radius: 13px; padding: 12px 16px; font-weight: 850; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
-      .button.primary { background: var(--amber); color: white; box-shadow: 0 10px 22px rgba(232,160,32,.22); }
-      .button.secondary { background: rgba(255,255,255,.11); color: white; border: 1px solid rgba(255,255,255,.16); }
-      .panel { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.13); border-radius: 22px; padding: 18px; backdrop-filter: blur(12px); }
-      .panel h3 { margin: 0 0 10px; font-size: 1rem; }
-      .routine { display: grid; gap: 8px; }
-      .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.10); border-radius: 13px; padding: 10px 12px; font-size: .88rem; }
-      .tag { font-size: .72rem; font-weight: 900; color: #10243a; background: #dff7f5; border-radius: 999px; padding: 4px 8px; white-space: nowrap; }
-      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
-      .card { background: rgba(255,255,255,.88); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06); }
-      .card h3 { margin: 0 0 6px; color: var(--navy); font-size: 1rem; }
-      .card p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.48; }
-      .app { display: grid; grid-template-columns: 270px 1fr; gap: 14px; margin-top: 16px; }
-      .sidebar, .workspace { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06); }
-      .sidebar { padding: 14px; }
-      .nav-btn { width: 100%; text-align: left; border: 0; border-radius: 12px; padding: 12px; margin-bottom: 6px; background: transparent; color: var(--navy); font-weight: 850; cursor: pointer; }
-      .nav-btn.active, .nav-btn:hover { background: #e6f4f3; color: #12615d; }
-      .workspace { padding: 18px; min-height: 420px; }
-      .workspace h2 { margin: 0 0 4px; color: var(--navy); font-size: 1.6rem; }
-      .sub { margin: 0 0 16px; color: var(--muted); }
-      .tool-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
-      .task { border: 1px solid var(--border); border-left: 5px solid var(--teal); border-radius: 14px; padding: 13px; background: var(--surface-2); margin-bottom: 10px; }
-      .task.late { border-left-color: var(--red); }
-      .task.today { border-left-color: var(--amber); }
-      .task h4 { margin: 0 0 3px; color: var(--navy); }
-      .task p { margin: 0 0 8px; color: var(--muted); font-size: .86rem; }
-      .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; font-size: .72rem; font-weight: 900; background: #e6f4f3; color: #12615d; margin-right: 4px; }
-      .pill.red { background: #fdecea; color: var(--red); }
-      .pill.amber { background: #fef3dc; color: #9a620e; }
-      input, textarea, select { width: 100%; border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 11px; font: inherit; background: white; }
-      label { display: grid; gap: 5px; color: var(--navy); font-weight: 800; font-size: .78rem; }
-      .form { display: grid; gap: 10px; }
-      .timer { display: grid; place-items: center; min-height: 230px; text-align: center; background: var(--surface-2); border: 1px solid var(--border); border-radius: 18px; }
-      .time { font-size: 4rem; font-weight: 950; color: var(--navy); letter-spacing: -.06em; }
-      .small { font-size: .78rem; color: var(--muted); line-height: 1.45; }
-      .notice { margin-top: 14px; border: 1px dashed #b7ccc9; background: #edf8f7; color: #164e4a; border-radius: 16px; padding: 14px; font-size: .9rem; line-height: 1.5; }
-      @media (max-width: 860px) { .hero, .app { grid-template-columns: 1fr; } .grid, .tool-grid { grid-template-columns: 1fr; } .topbar { align-items: flex-start; flex-direction: column; } }
-    </style>
-  </head>
-  <body>
-    <main class="shell">
-      <header class="topbar">
-        <div class="brand"><div class="mark">N</div><div><h1>Noam School</h1><p>Student Dugout command center</p></div></div>
-        <a class="back" href="/">← Back to Neft Teacher Hub</a>
-      </header>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Noam School | Student Dugout v4</title>
+<meta name='description' content='Noam School dynamic student command center with calendar, Gmail, reminders, weekly checklist, assignments, classes, focus timer, and editable settings.'>
+<style>
+:root{--bg:#f3f0ea;--paper:#fff;--paper2:#f8f6f1;--ink:#172033;--muted:#64748b;--line:#e2ddd6;--navy:#1c2f45;--teal:#1d8a84;--teal2:#156e69;--amber:#e8a020;--red:#c0392b;--green:#27ae60;--blue:#2563eb;--purple:#6c3fc7;--softTeal:#e6f4f3;--softAmber:#fef3dc;--softRed:#fdecea;--softGreen:#e8f8ef;--shadow:0 16px 38px rgba(15,23,42,.10);--r:18px}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top left,rgba(29,138,132,.14),transparent 32rem),linear-gradient(180deg,#faf8f4,var(--bg));color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit}.wrap{max-width:1220px;margin:0 auto;padding:20px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,var(--teal),#0e6f69);display:grid;place-items:center;color:#fff;font-weight:950;box-shadow:0 8px 24px rgba(29,138,132,.25)}h1{font-size:1.15rem;margin:0;color:var(--navy)}.brand p{margin:2px 0 0;color:var(--muted);font-size:.82rem}.topActions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px 13px;font-weight:800;font-size:.86rem;color:var(--ink);display:inline-flex;align-items:center;gap:7px;text-decoration:none}.btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(15,23,42,.08)}.primary{background:var(--teal);border-color:var(--teal);color:#fff}.amber{background:var(--amber);border-color:var(--amber);color:#fff}.danger{background:var(--softRed);border-color:#f0c3bd;color:var(--red)}.hero{background:linear-gradient(135deg,var(--navy),#263d58 55%,#123d5d);color:#fff;border-radius:28px;padding:28px;box-shadow:var(--shadow);overflow:hidden;position:relative}.hero:before{content:'';position:absolute;right:-70px;top:-90px;width:260px;height:260px;border-radius:50%;background:rgba(29,138,132,.34)}.hero>*{position:relative}.heroGrid{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;align-items:stretch}.eyebrow{display:inline-flex;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.1);border-radius:999px;padding:6px 10px;color:#dff7f5;font-weight:900;font-size:.75rem}.hero h2{font-size:clamp(2rem,4.4vw,4rem);line-height:.95;margin:14px 0 10px;letter-spacing:-.055em}.hero h2 span{color:#f2bf61}.hero p{color:rgba(255,255,255,.72);line-height:1.55;margin:0;max-width:68ch}.quickStats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.13);border-radius:18px;padding:15px}.stat b{font-size:2rem;line-height:1}.stat span{display:block;color:rgba(255,255,255,.66);font-size:.78rem;margin-top:3px}.tabs{display:flex;gap:8px;overflow:auto;padding:14px 2px 4px}.tab{white-space:nowrap;border:1px solid var(--line);background:rgba(255,255,255,.76);border-radius:999px;padding:9px 13px;font-weight:850;color:var(--muted)}.tab.active{background:var(--navy);border-color:var(--navy);color:#fff}.grid{display:grid;gap:14px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.mainGrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:14px;margin-top:14px}.card{background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:var(--r);padding:17px;box-shadow:0 6px 24px rgba(15,23,42,.05)}.card h3{margin:0 0 4px;color:var(--navy);font-size:1.03rem}.sub{margin:0 0 12px;color:var(--muted);font-size:.86rem;line-height:1.45}.sectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 8px;font-size:.72rem;font-weight:900;background:var(--softTeal);color:var(--teal2);margin:2px}.pill.red{background:var(--softRed);color:var(--red)}.pill.amber{background:var(--softAmber);color:#9a620e}.pill.green{background:var(--softGreen);color:#17703e}.item{border:1px solid var(--line);background:var(--paper2);border-radius:15px;padding:12px;margin-bottom:9px}.itemTop{display:flex;justify-content:space-between;gap:10px}.item h4{margin:0;color:var(--navy);font-size:.95rem}.item p{margin:5px 0 0;color:var(--muted);font-size:.82rem;line-height:1.42}.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.field{display:grid;gap:5px;margin-bottom:10px}.field label{font-size:.75rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}input,select,textarea{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px;color:var(--ink)}textarea{min-height:86px;resize:vertical}.small{font-size:.78rem;color:var(--muted);line-height:1.45}.calendarBox{min-height:320px;border:1px dashed #c9c2ba;border-radius:16px;overflow:hidden;background:var(--paper2);display:grid;place-items:center;text-align:center;padding:16px}.calendarBox iframe{width:100%;height:430px;border:0;background:#fff}.week{display:grid;grid-template-columns:repeat(7,1fr);gap:9px}.day{background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px;min-height:150px}.day h4{margin:0 0 8px;color:var(--navy);font-size:.82rem}.check{display:flex;gap:8px;align-items:flex-start;border-bottom:1px solid #eee8df;padding:7px 0;font-size:.82rem}.check:last-child{border-bottom:0}.check input{width:16px;height:16px;accent-color:var(--teal);margin-top:2px}.check.done span{text-decoration:line-through;color:#94a3b8}.miniInput{display:flex;gap:5px;margin-top:8px}.miniInput input{padding:7px;font-size:.78rem}.miniInput button{padding:7px 8px;border-radius:9px}.hidden{display:none!important}.modalBack{position:fixed;inset:0;background:rgba(15,25,40,.48);display:none;place-items:center;padding:18px;z-index:50}.modalBack.open{display:grid}.modal{width:min(680px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:24px;padding:20px;box-shadow:0 25px 80px rgba(0,0,0,.22)}.modalHead{display:flex;justify-content:space-between;gap:10px;margin-bottom:14px}.modal h2{margin:0;color:var(--navy)}.toast{position:fixed;right:18px;bottom:18px;background:var(--navy);color:#fff;border-radius:14px;padding:12px 15px;font-weight:850;box-shadow:var(--shadow);transform:translateY(70px);opacity:0;transition:.22s;z-index:60}.toast.show{transform:translateY(0);opacity:1}.timerDisplay{font-size:4.5rem;letter-spacing:-.07em;font-weight:950;color:var(--navy);text-align:center}.mailPreview{white-space:pre-wrap;background:var(--paper2);border:1px solid var(--line);border-radius:14px;padding:14px;min-height:170px;font-size:.9rem;line-height:1.55}.note{background:#fff9e8;border:1px solid #f3d58c;color:#704c0a;border-radius:14px;padding:12px;font-size:.84rem;line-height:1.45}@media(max-width:900px){.heroGrid,.mainGrid,.g2,.g3{grid-template-columns:1fr}.week{grid-template-columns:1fr 1fr}.top{align-items:flex-start;flex-direction:column}}@media(max-width:560px){.wrap{padding:12px}.week{grid-template-columns:1fr}.hero{padding:20px}.quickStats{grid-template-columns:1fr 1fr}.timerDisplay{font-size:3.2rem}}
+</style>
+</head>
+<body>
+<div class='wrap'>
+  <header class='top'>
+    <div class='brand'><div class='logo'>N</div><div><h1 id='brandTitle'>Noam School</h1><p id='brandSub'>Student Dugout · dynamic school command center</p></div></div>
+    <div class='topActions'><a class='btn' href='/'>← Hub</a><button class='btn' data-view='settings'>⚙️ Settings</button><button class='btn primary' data-open='assignment'>＋ Assignment</button></div>
+  </header>
 
-      <section class="hero">
-        <div>
-          <span class="eyebrow">🏟️ Student Dugout · Schoolwork HQ</span>
-          <h2>One place to track <span>classes, assignments, focus time, and teacher emails.</span></h2>
-          <p>This Noam School page is designed as a simple student-facing organization tool: quick to open, easy to update, and focused on helping him know what to do next without a cluttered layout.</p>
-          <div class="actions">
-            <a class="button primary" href="#app">Open command center</a>
-            <button class="button secondary" id="resetDemo">Reset sample data</button>
-          </div>
-        </div>
-        <aside class="panel">
-          <h3>Today’s win plan</h3>
-          <div class="routine">
-            <div class="row"><span>Check assignments and due dates</span><span class="tag">2 min</span></div>
-            <div class="row"><span>Pick one “do first” task</span><span class="tag">1 min</span></div>
-            <div class="row"><span>Run a 10-minute focus sprint</span><span class="tag">10 min</span></div>
-            <div class="row"><span>Email teacher if stuck</span><span class="tag">as needed</span></div>
-          </div>
-        </aside>
-      </section>
+  <section class='hero'>
+    <div class='heroGrid'>
+      <div><span class='eyebrow' id='todayLabel'>Today</span><h2>Start with the <span>next clear move.</span></h2><p id='coachText'>Loading coach suggestion...</p><div class='row' style='margin-top:18px'><button class='btn amber' data-view='focus'>⏱ Start Focus</button><button class='btn' data-view='reminders'>☑ Reminders</button><a class='btn' id='gmailHero' href='#'>✉️ Gmail</a></div></div>
+      <div class='quickStats'><div class='stat'><b id='statOpen'>0</b><span>Open tasks</span></div><div class='stat'><b id='statToday'>0</b><span>Due today</span></div><div class='stat'><b id='statRem'>0</b><span>Reminders</span></div><div class='stat'><b id='statWeek'>0</b><span>Weekly checks</span></div></div>
+    </div>
+  </section>
 
-      <section class="grid" aria-label="Feature overview">
-        <div class="card"><h3>✅ Assignment tracker</h3><p>Sort work by class, due date, status, and priority so the next move is clear.</p></div>
-        <div class="card"><h3>⏱️ Focus timer</h3><p>Short work sprints with break reminders help reduce overwhelm and build momentum.</p></div>
-        <div class="card"><h3>✉️ Email coach</h3><p>Simple sentence frames help him ask teachers for help respectfully and clearly.</p></div>
-      </section>
+  <nav class='tabs' aria-label='Noam School navigation'>
+    <button class='tab active' data-view='home'>Home</button><button class='tab' data-view='reminders'>Reminders + Week</button><button class='tab' data-view='assignments'>Assignments</button><button class='tab' data-view='classes'>Classes</button><button class='tab' data-view='focus'>Focus</button><button class='tab' data-view='email'>Email</button><button class='tab' data-view='settings'>Settings</button>
+  </nav>
 
-      <section class="app" id="app">
-        <nav class="sidebar" aria-label="Noam School tools">
-          <button class="nav-btn active" data-view="dashboard">🏟️ Dashboard</button>
-          <button class="nav-btn" data-view="assignments">✅ Assignments</button>
-          <button class="nav-btn" data-view="classes">📚 Classes</button>
-          <button class="nav-btn" data-view="focus">⏱️ Focus Timer</button>
-          <button class="nav-btn" data-view="email">✉️ Email Coach</button>
-        </nav>
-        <div class="workspace" id="workspace"></div>
-      </section>
-
-      <p class="notice"><strong>Deployment note:</strong> This page is installed inside the main Cloudflare Pages repository under the URL-safe folder <code>noam-school</code>. The full uploaded Student Dugout source file is preserved as the source artifact for the route.</p>
-    </main>
-
-    <script>
-      const KEY = 'noam-school-command-center-v1';
-      const seed = () => ({
-        classes: [
-          { name: 'Math', teacher: 'Math Teacher', email: '', room: '204' },
-          { name: 'Science', teacher: 'Science Teacher', email: '', room: 'Lab' },
-          { name: 'English / ELA', teacher: 'ELA Teacher', email: '', room: '118' },
-          { name: 'Hebrew / Judaics', teacher: 'Hebrew Teacher', email: '', room: 'Beit Midrash' }
-        ],
-        assignments: [
-          { title: 'Ratios practice set', cls: 'Math', due: 'Today', priority: 'High', status: 'Started', note: 'Finish selected problems and check answers.' },
-          { title: 'Reading response paragraph', cls: 'English / ELA', due: 'Tomorrow', priority: 'Medium', status: 'Not Started', note: 'Use one quote from the chapter.' },
-          { title: 'Lab reflection', cls: 'Science', due: 'This week', priority: 'Medium', status: 'Need Help', note: 'Write claim, evidence, and reasoning.' },
-          { title: 'Practice reading passage', cls: 'Hebrew / Judaics', due: 'This week', priority: 'Low', status: 'Not Started', note: 'Read aloud twice and mark tricky words.' }
-        ]
-      });
-      let state = JSON.parse(localStorage.getItem(KEY) || 'null') || seed();
-      const save = () => localStorage.setItem(KEY, JSON.stringify(state));
-      const $ = s => document.querySelector(s);
-      const taskCard = (a, i) => `<article class="task ${a.due === 'Today' ? 'today' : ''} ${a.status === 'Need Help' ? 'late' : ''}"><h4>${a.title}</h4><p>${a.note}</p><span class="pill">${a.cls}</span><span class="pill ${a.priority === 'High' ? 'red' : a.due === 'Today' ? 'amber' : ''}">${a.priority}</span><span class="pill">${a.due}</span><span class="pill">${a.status}</span></article>`;
-      function render(view='dashboard') {
-        const open = state.assignments.filter(a => a.status !== 'Turned In');
-        const urgent = open.filter(a => a.due === 'Today' || a.priority === 'High' || a.status === 'Need Help');
-        const pages = {
-          dashboard: `<h2>Dashboard</h2><p class="sub">Start here: see what matters most, then run one focus sprint.</p><div class="tool-grid"><div>${urgent.map(taskCard).join('')}</div><div class="card"><h3>Coach suggestion</h3><p>Pick the first task with a red or amber badge. Work for 10 minutes, then either check off progress or draft a teacher email.</p><br><button class="button primary" onclick="setView('focus')">Start focus sprint</button></div></div>`,
-          assignments: `<h2>Assignments</h2><p class="sub">Add, review, and prioritize schoolwork.</p><div class="form card"><label>Assignment title<input id="newTitle" placeholder="Example: Finish math review"></label><label>Class<select id="newClass">${state.classes.map(c => `<option>${c.name}</option>`).join('')}</select></label><button class="button primary" onclick="addAssignment()">Add assignment</button></div><br>${state.assignments.map(taskCard).join('')}`,
-          classes: `<h2>Classes</h2><p class="sub">Keep teacher contact information in one place.</p><div class="tool-grid">${state.classes.map(c => `<div class="card"><h3>${c.name}</h3><p><strong>Teacher:</strong> ${c.teacher}<br><strong>Email:</strong> ${c.email || 'Add teacher email'}<br><strong>Room:</strong> ${c.room}</p></div>`).join('')}</div>`,
-          focus: `<h2>Focus Timer</h2><p class="sub">Use a short sprint first. The goal is to start, not to finish everything at once.</p><div class="timer"><div><div class="time" id="time">10:00</div><p class="small">10-minute work sprint · 3-minute break after</p><button class="button primary" onclick="startTimer()">Start / Resume</button> <button class="button secondary" style="background:#1c2f45;color:white" onclick="stopTimer()">Pause</button></div></div>`,
-          email: `<h2>Email Coach</h2><p class="sub">Copy, personalize, and send with parent review when needed.</p><div class="form"><label>Teacher name<input id="teacher" placeholder="Teacher name"></label><label>What do you need help with?<textarea id="need" placeholder="I am stuck on..."></textarea></label><button class="button primary" onclick="draftEmail()">Create draft</button><textarea id="draft" rows="9" readonly></textarea></div>`
-        };
-        $('#workspace').innerHTML = pages[view] || pages.dashboard;
-      }
-      function setView(view) { document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view)); render(view); }
-      function addAssignment() { const title = $('#newTitle').value.trim(); if(!title) return; state.assignments.unshift({ title, cls: $('#newClass').value, due: 'No due date', priority: 'Medium', status: 'Not Started', note: 'Added from Noam School page.' }); save(); render('assignments'); }
-      let seconds = 600, timer;
-      function drawTime() { const m = String(Math.floor(seconds/60)).padStart(2,'0'), s = String(seconds%60).padStart(2,'0'); const el = $('#time'); if(el) el.textContent = `${m}:${s}`; }
-      function startTimer() { clearInterval(timer); timer = setInterval(() => { seconds = Math.max(0, seconds - 1); drawTime(); if(seconds === 0) clearInterval(timer); }, 1000); }
-      function stopTimer() { clearInterval(timer); }
-      function draftEmail() { const teacher = $('#teacher').value.trim() || 'Teacher'; const need = $('#need').value.trim() || 'the assignment'; $('#draft').value = `Subject: Quick question about my assignment\n\nHi ${teacher},\n\nI am working on my assignment and I need help with ${need}. I already tried to look back at my notes and start the work, but I am still confused.\n\nCould you please help me understand what I should do next?\n\nThank you,\nNoam`; }
-      $('#resetDemo').addEventListener('click', () => { state = seed(); save(); render('dashboard'); });
-      document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
-      save(); render('dashboard');
-    </script>
-  </body>
+  <main id='app'></main>
+</div>
+<div class='modalBack' id='modalBack'><div class='modal'><div class='modalHead'><h2 id='modalTitle'>Edit</h2><button class='btn danger' data-close='modal'>✕</button></div><div id='modalBody'></div></div></div>
+<div class='toast' id='toast'>Saved</div>
+<script>
+(function(){
+const KEY='noam-school-v4';
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const $=(s,c=document)=>c.querySelector(s); const $$=(s,c=document)=>Array.from(c.querySelectorAll(s));
+const uid=p=>p+'_'+Math.random().toString(36).slice(2,8)+'_'+Date.now().toString(36);
+const iso=(off=0)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+off);return d.toISOString().slice(0,10)};
+const esc=v=>String(v??'').replace(/[&<>']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;'}[c]));
+function dateObj(v){const d=new Date((v||iso())+'T12:00:00');return isNaN(d)?new Date():d} function daysUntil(v){return Math.round((dateObj(v)-dateObj(iso()))/86400000)}
+function dueLabel(v){if(!v)return 'No due date';const n=daysUntil(v);if(n<0)return Math.abs(n)+'d late';if(n===0)return 'Today';if(n===1)return 'Tomorrow';if(n<7)return 'In '+n+' days';return dateObj(v).toLocaleDateString(undefined,{month:'short',day:'numeric'})}
+function weekKey(){const d=dateObj(iso());const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)}
+function seed(){const m=uid('class'),s=uid('class'),e=uid('class'),h=uid('class');return{settings:{studentName:'Noam',schoolName:'Krieger Schechter Day School',gmail:'',calendarEmbed:'',calendarLink:'',lastDailyReset:'',lastWeeklyReset:''},classes:[{id:m,name:'Math',teacher:'Math Teacher',email:'',room:'',color:'#1d8a84'},{id:s,name:'Science',teacher:'Science Teacher',email:'',room:'',color:'#27ae60'},{id:e,name:'English / ELA',teacher:'ELA Teacher',email:'',room:'',color:'#c0392b'},{id:h,name:'Hebrew / Judaics',teacher:'Hebrew Teacher',email:'',room:'',color:'#2563eb'}],assignments:[{id:uid('a'),title:'Ratios practice set',classId:m,due:iso(),priority:'High',status:'Started',notes:'Finish selected problems and check answers.'},{id:uid('a'),title:'Reading response paragraph',classId:e,due:iso(1),priority:'Medium',status:'Not Started',notes:'Use one quote from the chapter.'}],reminders:[{id:uid('r'),text:'Check Google Classroom / planner',repeat:'Daily',day:'',done:false},{id:uid('r'),text:'Charge Chromebook',repeat:'Daily',day:'',done:false},{id:uid('r'),text:'Pack bag for tomorrow',repeat:'Weekdays',day:'',done:false}],weekly:{Monday:[{id:uid('w'),text:'Check every class page',done:false},{id:uid('w'),text:'Write this week due dates',done:false}],Tuesday:[{id:uid('w'),text:'Update assignment statuses',done:false}],Wednesday:[{id:uid('w'),text:'Midweek backpack cleanout',done:false}],Thursday:[{id:uid('w'),text:'Ask for help before Friday',done:false}],Friday:[{id:uid('w'),text:'Turn in missing work',done:false}],Saturday:[{id:uid('w'),text:'10-minute school reset',done:false}],Sunday:[{id:uid('w'),text:'Pack Chromebook and materials',done:false},{id:uid('w'),text:'Preview Monday schedule',done:false}]},sessions:[]}}
+let state=load();let view='home';let timer={sec:600,run:false,id:null};
+function normalize(x){const b=seed();x=x||b;return{settings:{...b.settings,...(x.settings||{}),...(x.profile?{studentName:x.profile.studentName,schoolName:x.profile.schoolName}:{} )},classes:Array.isArray(x.classes)?x.classes:b.classes,assignments:Array.isArray(x.assignments)?x.assignments.map(a=>({id:a.id||uid('a'),title:a.title||'Assignment',classId:a.classId||'',due:a.due||a.dueDate||'',priority:a.priority||'Medium',status:a.status||'Not Started',notes:a.notes||a.description||''})):b.assignments,reminders:Array.isArray(x.reminders)?x.reminders.map(r=>({id:r.id||uid('r'),text:r.text||r.title||'Reminder',repeat:r.repeat||'Daily',day:r.day||'',done:!!r.done||!!r.completed})):b.reminders,weekly:x.weekly||b.weekly,sessions:Array.isArray(x.sessions)?x.sessions:[]}}
+function load(){try{return normalize(JSON.parse(localStorage.getItem(KEY)))}catch{return seed()}} function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function maintenance(){let changed=false;if(state.settings.lastDailyReset!==iso()){state.reminders.forEach(r=>{if(r.repeat==='Daily'||r.repeat==='Weekdays')r.done=false});state.settings.lastDailyReset=iso();changed=true}const wk=weekKey();if(state.settings.lastWeeklyReset!==wk){DAYS.forEach(d=>(state.weekly[d]||[]).forEach(i=>i.done=false));state.settings.lastWeeklyReset=wk;changed=true}if(changed)save()}
+function cls(id){return state.classes.find(c=>c.id===id)||{name:'Class',color:'#1d8a84',teacher:'',email:''}} function openTasks(){return state.assignments.filter(a=>a.status!=='Turned In').sort((a,b)=>daysUntil(a.due)-daysUntil(b.due))}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el.t);el.t=setTimeout(()=>el.classList.remove('show'),2200)}
+function setView(v){view=v;$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));render()}
+function updateShell(){const d=new Date();$('#todayLabel').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});$('#brandTitle').textContent=(state.settings.studentName||'Noam')+' School';$('#brandSub').textContent=(state.settings.schoolName||'Student Dugout')+' · dynamic command center';const open=openTasks(),today=open.filter(a=>daysUntil(a.due)===0),rem=state.reminders.filter(r=>!r.done),weekDone=DAYS.flatMap(d=>state.weekly[d]||[]).filter(i=>i.done).length;$('#statOpen').textContent=open.length;$('#statToday').textContent=today.length;$('#statRem').textContent=rem.length;$('#statWeek').textContent=weekDone;const next=open[0];$('#coachText').innerHTML=next?`Best first move: <strong>${esc(next.title)}</strong> for ${esc(cls(next.classId).name)} is ${esc(dueLabel(next.due))}. Start a short sprint or update the task if it is already done.`:'You are caught up. Check the calendar, review reminders, or add the next assignment.';const g=state.settings.gmail;$('#gmailHero').href=g?`mailto:${encodeURIComponent(g)}`:'https://mail.google.com/';$('#gmailHero').textContent=g?'✉️ Email '+g:'✉️ Open Gmail'}
+function render(){maintenance();updateShell();const pages={home,reminders,assignments,classes,focus,email,settings};$('#app').innerHTML=(pages[view]||home)();bindPage()}
+function cardTask(a){const c=cls(a.classId);const late=daysUntil(a.due)<0;return `<div class='item'><div class='itemTop'><div><h4>${esc(a.title)}</h4><p>${esc(a.notes||'No notes')}</p></div><div><span class='pill ${late?'red':daysUntil(a.due)===0?'amber':''}'>${esc(dueLabel(a.due))}</span></div></div><div class='row' style='margin-top:9px'><span class='pill' style='background:${c.color}22;color:${c.color}'>${esc(c.name)}</span><span class='pill'>${esc(a.priority)}</span><span class='pill'>${esc(a.status)}</span><button class='btn' data-edit='assignment' data-id='${a.id}'>Edit</button><button class='btn amber' data-start='${a.id}'>Focus</button><button class='btn danger' data-del='assignment' data-id='${a.id}'>Delete</button></div></div>`}
+function home(){const open=openTasks(),today=open.filter(a=>daysUntil(a.due)===0),rem=state.reminders.filter(r=>!r.done),todayName=new Date().toLocaleDateString(undefined,{weekday:'long'});return `<div class='mainGrid'><section class='card'><div class='sectionHead'><div><h3>Today homepage</h3><p class='sub'>Calendar, do-first work, and daily reminders in one place.</p></div><button class='btn primary' data-open='assignment'>＋ Add</button></div>${today.length?today.map(cardTask).join(''):`<div class='note'>No assignments due today. Use this time to check the calendar and clear daily reminders.</div>`}</section><aside class='card'><div class='sectionHead'><div><h3>School Google Calendar</h3><p class='sub'>Editable in Settings. Public embed links update automatically from Google.</p></div><button class='btn' data-view='settings'>Edit</button></div>${calendarHtml()}</aside></div><section class='card' style='margin-top:14px'><div class='sectionHead'><div><h3>Reminders</h3><p class='sub'>Quick daily reminders. Full Monday–Sunday checklist is below.</p></div><button class='btn primary' data-open='reminder'>＋ Reminder</button></div>${rem.slice(0,5).map(reminderRow).join('')||`<div class='note'>All reminders checked off for today.</div>`}</section><section class='card' style='margin-top:14px'><div class='sectionHead'><div><h3>${todayName} checklist</h3><p class='sub'>Part of the Monday–Sunday weekly checklist.</p></div><button class='btn' data-view='reminders'>Open full week</button></div>${(state.weekly[todayName]||[]).map(w=>weekRow(w,todayName)).join('')||`<div class='note'>No checklist items for ${todayName}. Add one in the weekly checklist.</div>`}</section>`}
+function calendarHtml(){const src=extractCal(state.settings.calendarEmbed);if(src)return `<div class='calendarBox' style='padding:0'><iframe src='${esc(src)}' loading='lazy'></iframe></div>`;return `<div class='calendarBox'><div><h3>No calendar connected yet</h3><p class='sub'>Paste a public Google Calendar embed URL or iframe code in Settings. You can also save a normal calendar link as a backup button.</p>${state.settings.calendarLink?`<a class='btn primary' href='${esc(state.settings.calendarLink)}' target='_blank' rel='noopener'>Open saved calendar</a>`:`<button class='btn primary' data-view='settings'>Add calendar</button>`}</div></div>`}
+function extractCal(v){v=(v||'').trim();if(!v)return '';const m=v.match(/src=['"]([^'"]+)['"]/i);return m?m[1]:v}
+function reminders(){return `<section class='card'><div class='sectionHead'><div><h3>Reminders</h3><p class='sub'>Add, edit, delete, and check off daily reminders.</p></div><button class='btn primary' data-open='reminder'>＋ Add reminder</button></div>${state.reminders.map(reminderRow).join('')||`<div class='note'>No reminders yet.</div>`}</section><section class='card' style='margin-top:14px'><div class='sectionHead'><div><h3>Monday–Sunday checklist</h3><p class='sub'>Build routines for each day. It resets automatically every Monday.</p></div><span class='pill'>Week of ${weekKey()}</span></div><div class='week'>${DAYS.map(d=>`<div class='day'><h4>${d}</h4>${(state.weekly[d]||[]).map(w=>weekRow(w,d)).join('')||`<p class='small'>No items.</p>`}<div class='miniInput'><input placeholder='Add item' data-week-input='${d}'><button class='btn primary' data-week-add='${d}'>＋</button></div></div>`).join('')}</div></section>`}
+function reminderRow(r){return `<label class='check ${r.done?'done':''}'><input type='checkbox' data-rem-check='${r.id}' ${r.done?'checked':''}><span>${esc(r.text)} <span class='pill'>${esc(r.repeat)}</span></span><button type='button' class='btn' data-edit='reminder' data-id='${r.id}'>Edit</button><button type='button' class='btn danger' data-del='reminder' data-id='${r.id}'>Delete</button></label>`}
+function weekRow(w,d){return `<label class='check ${w.done?'done':''}'><input type='checkbox' data-week-check='${d}|${w.id}' ${w.done?'checked':''}><span>${esc(w.text)}</span><button type='button' class='btn danger' data-week-del='${d}|${w.id}'>×</button></label>`}
+function assignments(){return `<section class='card'><div class='sectionHead'><div><h3>Assignments</h3><p class='sub'>Simple list with add, edit, delete, status, due date, and focus sprint.</p></div><button class='btn primary' data-open='assignment'>＋ Add assignment</button></div>${openTasks().map(cardTask).join('')||`<div class='note'>No open assignments.</div>`}<hr style='border:0;border-top:1px solid var(--line);margin:16px 0'><h3>Turned in</h3>${state.assignments.filter(a=>a.status==='Turned In').map(cardTask).join('')||`<p class='sub'>Nothing marked turned in yet.</p>`}</section>`}
+function classes(){return `<section class='card'><div class='sectionHead'><div><h3>Classes</h3><p class='sub'>Save teacher emails so the Email Coach can use them.</p></div><button class='btn primary' data-open='class'>＋ Add class</button></div><div class='grid g3'>${state.classes.map(c=>`<div class='item'><h4>${esc(c.name)}</h4><p>${esc(c.teacher||'Teacher')} · ${esc(c.email||'No email saved')}</p><div class='row' style='margin-top:10px'><span class='pill' style='background:${c.color}22;color:${c.color}'>${esc(c.room||'Room not set')}</span><button class='btn' data-edit='class' data-id='${c.id}'>Edit</button><button class='btn' data-email-class='${c.id}'>Email</button><button class='btn danger' data-del='class' data-id='${c.id}'>Delete</button></div></div>`).join('')}</div></section>`}
+function focus(){const sel=timer.id?state.assignments.find(a=>a.id===timer.id):openTasks()[0];if(sel&&!timer.id)timer.id=sel.id;return `<section class='card'><div class='sectionHead'><div><h3>Focus sprint</h3><p class='sub'>Default is 10 minutes. Pick one task and start.</p></div></div><div class='timerDisplay' id='timerDisplay'>${fmt(timer.sec)}</div><div class='field'><label>Focus assignment</label><select id='timerTask'>${openTasks().map(a=>`<option value='${a.id}' ${timer.id===a.id?'selected':''}>${esc(a.title)} — ${esc(cls(a.classId).name)}</option>`).join('')}</select></div><div class='row'><button class='btn primary' id='timerStart'>${timer.run?'Pause':'Start'}</button><button class='btn' id='timerReset'>Reset 10:00</button></div></section>`}
+function email(){const opts=state.classes.map(c=>`<option value='${c.id}'>${esc(c.name)} — ${esc(c.teacher||'Teacher')}</option>`).join('');return `<section class='card'><div class='sectionHead'><div><h3>Email Coach</h3><p class='sub'>Creates a clear teacher email. You can edit before sending.</p></div></div><div class='grid g2'><div><div class='field'><label>Class / teacher</label><select id='mailClass'>${opts}</select></div><div class='field'><label>What do you need?</label><textarea id='mailNeed' placeholder='I am stuck on...'></textarea></div><button class='btn primary' id='makeMail'>Create email</button> <button class='btn' id='openMail'>Open mail app</button></div><div><div class='mailPreview' id='mailPreview'>Your draft will appear here.</div></div></div></section>`}
+function settings(){return `<section class='card'><div class='sectionHead'><div><h3>Settings</h3><p class='sub'>Update student info, Gmail, calendar links, and backup data.</p></div></div><div class='grid g2'><div><div class='field'><label>Student name</label><input id='setName' value='${esc(state.settings.studentName)}'></div><div class='field'><label>School</label><input id='setSchool' value='${esc(state.settings.schoolName)}'></div><div class='field'><label>School Gmail address</label><input id='setGmail' value='${esc(state.settings.gmail)}' placeholder='student@gmail.com'></div><div class='field'><label>Google Calendar embed URL or iframe</label><textarea id='setCalEmbed' placeholder='Paste Google Calendar embed URL or iframe code'>${esc(state.settings.calendarEmbed)}</textarea></div><div class='field'><label>Calendar normal link optional</label><input id='setCalLink' value='${esc(state.settings.calendarLink)}' placeholder='https://calendar.google.com/...'></div><button class='btn primary' id='saveSettings'>Save settings</button></div><div><div class='note'><strong>How daily updating works:</strong> this static Cloudflare page recalculates dates every time it opens. Daily reminders reset once per day, and the Monday–Sunday checklist resets each new Monday. Google Calendar embeds update from Google if the calendar is public/shared.</div><div class='row' style='margin-top:12px'><button class='btn' id='exportData'>Export backup</button><label class='btn'>Import backup<input type='file' id='importData' accept='application/json' style='display:none'></label><button class='btn danger' id='resetAll'>Reset demo</button></div></div></div></section>`}
+function openModal(title,body){$('#modalTitle').textContent=title;$('#modalBody').innerHTML=body;$('#modalBack').classList.add('open')}
+function closeModal(){$('#modalBack').classList.remove('open');$('#modalBody').innerHTML=''}
+function assignmentForm(a={}){return `<div class='field'><label>Title</label><input id='fTitle' value='${esc(a.title||'')}'></div><div class='grid g2'><div class='field'><label>Class</label><select id='fClass'>${state.classes.map(c=>`<option value='${c.id}' ${a.classId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class='field'><label>Due date</label><input type='date' id='fDue' value='${esc(a.due||iso())}'></div><div class='field'><label>Priority</label><select id='fPri'>${['High','Medium','Low'].map(p=>`<option ${a.priority===p?'selected':''}>${p}</option>`).join('')}</select></div><div class='field'><label>Status</label><select id='fStatus'>${['Not Started','Started','Need Help','Almost Done','Turned In'].map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}</select></div></div><div class='field'><label>Notes</label><textarea id='fNotes'>${esc(a.notes||'')}</textarea></div><button class='btn primary' id='saveAssignment' data-id='${a.id||''}'>Save assignment</button>`}
+function reminderForm(r={}){return `<div class='field'><label>Reminder</label><input id='rText' value='${esc(r.text||'')}'></div><div class='grid g2'><div class='field'><label>Repeat</label><select id='rRepeat'>${['Daily','Weekdays','Weekly','One-time'].map(x=>`<option ${r.repeat===x?'selected':''}>${x}</option>`).join('')}</select></div><div class='field'><label>Day for weekly</label><select id='rDay'><option value=''>Any</option>${DAYS.map(d=>`<option ${r.day===d?'selected':''}>${d}</option>`).join('')}</select></div></div><button class='btn primary' id='saveReminder' data-id='${r.id||''}'>Save reminder</button>`}
+function classForm(c={}){return `<div class='field'><label>Class name</label><input id='cName' value='${esc(c.name||'')}'></div><div class='grid g2'><div class='field'><label>Teacher</label><input id='cTeacher' value='${esc(c.teacher||'')}'></div><div class='field'><label>Email</label><input id='cEmail' value='${esc(c.email||'')}'></div><div class='field'><label>Room</label><input id='cRoom' value='${esc(c.room||'')}'></div><div class='field'><label>Color</label><input type='color' id='cColor' value='${esc(c.color||'#1d8a84')}'></div></div><button class='btn primary' id='saveClass' data-id='${c.id||''}'>Save class</button>`}
+function bindPage(){ $$('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view)); $$('[data-open]').forEach(b=>b.onclick=()=>{const t=b.dataset.open;if(t==='assignment')openModal('Assignment',assignmentForm());if(t==='reminder')openModal('Reminder',reminderForm());if(t==='class')openModal('Class',classForm())}); $$('[data-edit]').forEach(b=>b.onclick=()=>{const t=b.dataset.edit,id=b.dataset.id;if(t==='assignment')openModal('Edit assignment',assignmentForm(state.assignments.find(x=>x.id===id)));if(t==='reminder')openModal('Edit reminder',reminderForm(state.reminders.find(x=>x.id===id)));if(t==='class')openModal('Edit class',classForm(state.classes.find(x=>x.id===id)))}); $$('[data-del]').forEach(b=>b.onclick=()=>{const t=b.dataset.del,id=b.dataset.id;if(!confirm('Delete this?'))return;state[t+'s']=state[t+'s'].filter(x=>x.id!==id);save();toast('Deleted');render()}); $$('[data-rem-check]').forEach(x=>x.onchange=()=>{const r=state.reminders.find(r=>r.id===x.dataset.remCheck);if(r){r.done=x.checked;save();render()}}); $$('[data-week-check]').forEach(x=>x.onchange=()=>{const [d,id]=x.dataset.weekCheck.split('|');const w=state.weekly[d].find(i=>i.id===id);if(w){w.done=x.checked;save();render()}}); $$('[data-week-add]').forEach(b=>b.onclick=()=>{const d=b.dataset.weekAdd;const inp=$(`[data-week-input='${d}']`);const text=inp.value.trim();if(!text)return;state.weekly[d].push({id:uid('w'),text,done:false});save();toast('Added to '+d);render()}); $$('[data-week-del]').forEach(b=>b.onclick=()=>{const [d,id]=b.dataset.weekDel.split('|');state.weekly[d]=state.weekly[d].filter(i=>i.id!==id);save();render()}); $$('[data-start]').forEach(b=>b.onclick=()=>{timer.id=b.dataset.start;setView('focus');startTimer()}); const tt=$('#timerTask');if(tt)tt.onchange=()=>{timer.id=tt.value}; const st=$('#timerStart');if(st)st.onclick=()=>startTimer(); const tr=$('#timerReset');if(tr)tr.onclick=()=>{stopTimer();timer.sec=600;render()}; const sm=$('#saveSettings');if(sm)sm.onclick=saveSettings; const mm=$('#makeMail');if(mm)mm.onclick=makeMail; const om=$('#openMail');if(om)om.onclick=openMail; const ex=$('#exportData');if(ex)ex.onclick=exportData; const im=$('#importData');if(im)im.onchange=e=>importData(e.target.files[0]); const rs=$('#resetAll');if(rs)rs.onclick=()=>{if(confirm('Reset demo data?')){state=seed();save();render();toast('Reset')}}}
+document.addEventListener('click',e=>{if(e.target.matches('[data-close]'))closeModal()});document.addEventListener('click',e=>{if(e.target.id==='saveAssignment'){const id=e.target.dataset.id;const obj={id:id||uid('a'),title:$('#fTitle').value.trim()||'Assignment',classId:$('#fClass').value,due:$('#fDue').value,priority:$('#fPri').value,status:$('#fStatus').value,notes:$('#fNotes').value.trim()};if(id)state.assignments=state.assignments.map(a=>a.id===id?obj:a);else state.assignments.push(obj);save();closeModal();render();toast('Assignment saved')} if(e.target.id==='saveReminder'){const id=e.target.dataset.id;const obj={id:id||uid('r'),text:$('#rText').value.trim()||'Reminder',repeat:$('#rRepeat').value,day:$('#rDay').value,done:false};if(id)state.reminders=state.reminders.map(r=>r.id===id?{...r,...obj,done:r.done}:r);else state.reminders.push(obj);save();closeModal();render();toast('Reminder saved')} if(e.target.id==='saveClass'){const id=e.target.dataset.id;const obj={id:id||uid('class'),name:$('#cName').value.trim()||'Class',teacher:$('#cTeacher').value.trim(),email:$('#cEmail').value.trim(),room:$('#cRoom').value.trim(),color:$('#cColor').value};if(id)state.classes=state.classes.map(c=>c.id===id?obj:c);else state.classes.push(obj);save();closeModal();render();toast('Class saved')}})
+function saveSettings(){state.settings.studentName=$('#setName').value.trim()||'Noam';state.settings.schoolName=$('#setSchool').value.trim();state.settings.gmail=$('#setGmail').value.trim();state.settings.calendarEmbed=$('#setCalEmbed').value.trim();state.settings.calendarLink=$('#setCalLink').value.trim();save();render();toast('Settings saved')}
+function makeMail(){const c=cls($('#mailClass').value);const need=$('#mailNeed').value.trim()||'the assignment';const text=`Subject: Quick question about class\n\nHi ${c.teacher||'Teacher'},\n\nI am working on my schoolwork and I need help with ${need}. I already tried checking my notes and getting started, but I am still confused.\n\nCould you please help me understand what I should do next?\n\nThank you,\n${state.settings.studentName||'Noam'}`;$('#mailPreview').textContent=text;window.lastMail={to:c.email||'',body:text}}
+function openMail(){if(!window.lastMail)makeMail();const m=window.lastMail||{};location.href=`mailto:${encodeURIComponent(m.to||state.settings.gmail||'')}?subject=${encodeURIComponent('Quick question about class')}&body=${encodeURIComponent(m.body||'')}`}
+function startTimer(){timer.run=!timer.run;if(timer.run){timer._int=setInterval(()=>{timer.sec--;if(timer.sec<=0){stopTimer();timer.sec=0;state.sessions.push({id:uid('s'),assignmentId:timer.id,minutes:10,date:iso()});save();toast('Sprint complete')}const d=$('#timerDisplay');if(d)d.textContent=fmt(timer.sec)},1000)}else stopTimer();render()}function stopTimer(){timer.run=false;clearInterval(timer._int)}function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='noam-school-backup-'+iso()+'.json';a.click();URL.revokeObjectURL(a.href)}function importData(file){if(!file)return;const r=new FileReader();r.onload=()=>{try{state=normalize(JSON.parse(r.result));save();render();toast('Backup imported')}catch{toast('Could not import file')}};r.readAsText(file)}
+setInterval(()=>{updateShell()},60000);maintenance();save();render();
+})();
+</script>
+</body>
 </html>
