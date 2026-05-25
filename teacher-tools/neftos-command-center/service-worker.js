@@ -1,9 +1,10 @@
-const CACHE_NAME = 'neftos-command-center-v1';
+const CACHE_NAME = 'neftos-command-center-v2';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './workflow-copy.js',
   './manifest.json',
   '/assets/shared.css',
   '/assets/app.js'
