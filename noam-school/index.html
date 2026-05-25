@@ -1,39 +1,3518 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Noam School v14</title><style>
-:root{--navy:#16324a;--teal:#147c78;--amber:#d99028;--red:#b84234;--green:#248a55;--bg:#eef3f1;--paper:#fffdf8;--line:#dbe5df;--ink:#142033;--muted:#667085;--soft:#f7faf7;--shadow:0 18px 45px rgba(21,35,52,.12)}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(180deg,#f8fbf8,var(--bg));color:var(--ink)}button,input,select,textarea{font:inherit}.wrap{max-width:1180px;margin:auto;padding:20px}.row,.top{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.top{justify-content:space-between;margin-bottom:14px}.logo{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--teal),var(--navy));color:white;display:grid;place-items:center;font-weight:950}.brand{display:flex;gap:12px;align-items:center}.brand h1{margin:0;color:var(--navy);font-size:1.2rem}.brand p{margin:2px 0 0;color:var(--muted);font-size:.86rem}.btn{border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:10px 13px;font-weight:850;color:var(--ink);text-decoration:none;display:inline-flex;gap:7px;align-items:center;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--teal);border-color:var(--teal);color:white}.navy{background:var(--navy);border-color:var(--navy);color:white}.danger{background:#fde8e4;border-color:#efc4be;color:var(--red)}.hero{border-radius:28px;background:linear-gradient(135deg,var(--navy),#214866 60%,#0e4b59);color:white;padding:26px;box-shadow:var(--shadow)}.heroGrid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.hero h2{font-size:clamp(2rem,4vw,3.5rem);line-height:.98;margin:10px 0}.hero p{color:rgba(255,255,255,.78);line-height:1.55}.gold{color:#ffd17a}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:rgba(255,255,255,.11);border-radius:18px;padding:14px}.stat b{font-size:1.8rem}.stat small{display:block;color:rgba(255,255,255,.72)}.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0}.tab{border:1px solid var(--line);border-radius:999px;background:var(--paper);padding:9px 13px;font-weight:900;color:var(--muted);white-space:nowrap;cursor:pointer}.tab.active{background:var(--navy);border-color:var(--navy);color:white}.grid{display:grid;gap:14px}.g2{grid-template-columns:1fr 1fr}.homeGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:rgba(255,253,248,.96);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 8px 24px rgba(21,35,52,.07)}.homeCard{cursor:grab}.homeCard:active{cursor:grabbing}.homeCard.dragging{opacity:.5;outline:2px dashed var(--teal)}.dropTarget{outline:2px solid var(--amber)}.head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.card h3,.head h3{margin:0 0 4px;color:var(--navy)}.sub{margin:0 0 12px;color:var(--muted);font-size:.86rem;line-height:1.45}.item{border:1px solid var(--line);background:var(--soft);border-radius:15px;padding:12px;margin:9px 0}.item.done{opacity:.65}.item.done h4{text-decoration:line-through}.item h4{margin:0;color:var(--navy)}.item p{margin:5px 0 0;color:var(--muted);font-size:.84rem}.pill{display:inline-flex;border-radius:999px;padding:4px 8px;background:#e2f4f2;color:#0d6863;font-weight:900;font-size:.73rem;margin:2px}.red{background:#fde8e4;color:var(--red)}.amber{background:#fff0d5;color:#935f0d}.blue{background:#e9efff;color:#2f65d5}.green{background:#e7f6ed;color:#17703e}.field{display:grid;gap:5px;margin-bottom:10px}.field label{font-size:.74rem;font-weight:950;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}input,select,textarea{width:100%;border:1.5px solid var(--line);background:white;border-radius:12px;padding:10px;color:var(--ink)}input[type=checkbox]{width:auto;accent-color:var(--teal)}textarea{min-height:120px;resize:vertical}.note{background:#fff8e0;border:1px solid #f2d186;border-radius:14px;padding:12px;color:#704c0a;line-height:1.45;font-size:.86rem}.preview{white-space:pre-wrap;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:130px}.calBox{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--soft);min-height:280px}.calBox iframe{width:100%;height:430px;border:0;background:white}.modalBack{position:fixed;inset:0;background:rgba(15,25,40,.5);display:none;place-items:center;padding:18px;z-index:99}.modalBack.open{display:grid}.modal{width:min(720px,100%);max-height:88vh;overflow:auto;background:white;border-radius:24px;padding:20px;box-shadow:0 25px 80px rgba(0,0,0,.22)}.toast{position:fixed;right:18px;bottom:18px;background:var(--navy);color:white;border-radius:14px;padding:12px 15px;font-weight:900;opacity:0;transform:translateY(70px);transition:.2s;z-index:120}.toast.show{opacity:1;transform:translateY(0)}@media(max-width:850px){.heroGrid,.homeGrid,.g2{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.head{display:block}.head .row{margin-top:8px}}
-</style></head><body><div class="wrap"><header class="top"><div class="brand"><div class="logo">N</div><div><h1>Noam School</h1><p>Daily Dugout v14 · assignments card, drag cards, calendar, checklist, Gmail, optional AI</p></div></div><div class="row"><a class="btn" href="/">← Hub</a><a class="btn navy" id="gmailTop" target="_blank">✉️ Open Gmail</a><button class="btn primary" data-open="assignment">＋ Assignment</button></div></header><section class="hero"><div class="heroGrid"><div><span class="pill">Today</span><h2>One calm place for <span class="gold">school work.</span></h2><p id="coachText">Loading...</p><div class="row"><button class="btn primary" data-open="assignment">＋ Assignment</button><button class="btn" data-view="assignments">Assignments</button><button class="btn" data-view="calendar">🗓 Calendar</button><button class="btn" data-view="customize">🎛 Customize</button></div></div><div class="stats"><div class="stat"><b id="statOpen">0</b><small>Open assignments</small></div><div class="stat"><b id="statToday">0</b><small>Due today</small></div><div class="stat"><b id="statChecklist">0</b><small>Checklist left</small></div><div class="stat"><b id="statClasses">0</b><small>Classes</small></div></div></div></section><nav class="tabs"><button class="tab active" data-view="home">Home</button><button class="tab" data-view="checklist">Daily Checklist</button><button class="tab" data-view="calendar">Calendar</button><button class="tab" data-view="import">Paste Classroom</button><button class="tab" data-view="assignments">Assignments</button><button class="tab" data-view="classes">Classes</button><button class="tab" data-view="email">Gmail Helper</button><button class="tab" data-view="ai">AI Updates</button><button class="tab" data-view="customize">Customize</button></nav><main id="app"></main></div><div class="modalBack" id="modalBack"><div class="modal"><div class="head"><h2 id="modalTitle">Edit</h2><button class="btn danger" id="closeModal">✕</button></div><div id="modalBody"></div></div></div><div class="toast" id="toast">Saved</div>
-<script>
-(()=>{const KEY='noam-school-v14',OLD=['noam-school-v13','noam-school-v12','noam-school-v11','noam-school-v10'],DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],BUILTINS=[['launch','Daily Launch'],['assignmentsCard','Assignments'],['checklist','Daily Checklist'],['calendar','Calendar'],['import','Paste Classroom'],['today','Today Work'],['soon','Coming Up'],['classes','Classes'],['email','Gmail Helper'],['ai','AI Coach'],['wins','Wins']],$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],uid=p=>p+'_'+Math.random().toString(36).slice(2,8),esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function iso(o=0){let d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+o);return d.toISOString().slice(0,10)}function todayName(){return new Date().toLocaleDateString(undefined,{weekday:'long'})}function days(v){let d=new Date((v||iso())+'T12:00:00'),t=new Date(iso()+'T12:00:00');return Math.round((d-t)/86400000)}function due(v){if(!v)return'No due date';let n=days(v);return n<0?Math.abs(n)+'d late':n===0?'Today':n===1?'Tomorrow':n<7?'In '+n+' days':new Date(v+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}function builtKeys(){return BUILTINS.map(x=>x[0])}function customKey(id){return'custom:'+id}
-function seed(){let m=uid('c'),e=uid('c'),s=uid('c');return{settings:{studentName:'Noam',gmail:'',calendarEmbed:'',calendarLink:'',homeOrder:[...builtKeys()],hiddenCards:[],aiEnabled:false,aiTone:'calm',aiFocus:'short checklist'},daily:{goal:'',lastAi:''},classes:[{id:m,name:'Math',teacher:'',email:'',color:'#147c78'},{id:e,name:'English / ELA',teacher:'',email:'',color:'#b84234'},{id:s,name:'Science',teacher:'',email:'',color:'#248a55'}],assignments:[],checklist:[{id:uid('r'),text:'Check Google Classroom / planner',frequency:'Daily',day:'',time:'',lastDone:''},{id:uid('r'),text:'Charge Chromebook',frequency:'Daily',day:'',time:'20:30',lastDone:''},{id:uid('r'),text:'Pack bag for tomorrow',frequency:'Weekdays',day:'',time:'20:45',lastDone:''}],customCards:[],wins:[]}}
-function loadRaw(){let raw=localStorage.getItem(KEY);if(raw)return raw;for(let k of OLD){raw=localStorage.getItem(k);if(raw)return raw}return null}
-function norm(x){let b=seed();x=x||b;let customCards=Array.isArray(x.customCards)?x.customCards:[];let allowed=[...builtKeys(),...customCards.map(c=>customKey(c.id))];let oldOrder=x.settings?.homeOrder||b.settings.homeOrder;let order=[...oldOrder.filter(k=>allowed.includes(k)),...builtKeys().filter(k=>!oldOrder.includes(k)),...customCards.map(c=>customKey(c.id)).filter(k=>!oldOrder.includes(k))];let checklist=Array.isArray(x.checklist)?x.checklist:(Array.isArray(x.reminders)?x.reminders.map(r=>({id:r.id||uid('r'),text:r.text||r.title||'Reminder',frequency:r.repeat==='Weekly'?'Weekly':r.repeat==='Weekdays'?'Weekdays':'Daily',day:r.day||'',time:r.time||'',lastDone:r.done?iso():''})):b.checklist);return{...b,...x,settings:{...b.settings,...(x.settings||{}),calendarEmbed:x.settings?.calendarEmbed||'',calendarLink:x.settings?.calendarLink||'',homeOrder:order,hiddenCards:(x.settings?.hiddenCards||[]).filter(k=>allowed.includes(k))},checklist:checklist.map(r=>({id:r.id||uid('r'),text:r.text||'Reminder',frequency:r.frequency||'Daily',day:r.day||'',time:r.time||'',lastDone:r.lastDone||'',done:!!r.done})),customCards:customCards.map(c=>({id:c.id||uid('card'),title:c.title||'Custom Card',body:c.body||'',link:c.link||'',linkLabel:c.linkLabel||'Open'}))}}
-let state=norm(JSON.parse(loadRaw()||'null')),view='home',parsed=[],dragKey='';function save(){localStorage.setItem(KEY,JSON.stringify(state))}function cls(id){return state.classes.find(c=>c.id===id)||state.classes[0]||{name:'Class',color:'#147c78'}}function openTasks(){return state.assignments.filter(a=>a.status!=='Turned In').sort((a,b)=>days(a.due)-days(b.due))}function gmailInbox(){return'https://mail.google.com/mail/u/0/#inbox'}function gmailCompose(to='',su='',body=''){let q=new URLSearchParams({view:'cm',fs:'1',to,su,body});return'https://mail.google.com/mail/?'+q.toString()}function toast(t){let el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el.t);el.t=setTimeout(()=>el.classList.remove('show'),1800)}
-function isActiveReminder(r){let day=todayName();if(r.frequency==='Sometimes')return true;if(r.frequency==='Weekly')return (r.day||day)===day;if(r.frequency==='Weekdays')return !['Saturday','Sunday'].includes(day);return true}function isDone(r){return r.frequency==='Sometimes'?!!r.done:r.lastDone===iso()}function activeChecklist(){return state.checklist.filter(isActiveReminder).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'))}function remainingChecklist(){return activeChecklist().filter(r=>!isDone(r))}function timeLabel(t){if(!t)return'Anytime';let [h,m]=t.split(':').map(Number),d=new Date();d.setHours(h||0,m||0,0,0);return d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}function cleanCalendarUrl(v){v=(v||'').trim();let m=v.match(/src=["']([^"']+)/i);if(m)v=m[1];return v.replace(/&amp;/g,'&')}function validUrl(v){try{return !!new URL(v)}catch{return false}}
-function shell(){let o=openTasks(),td=o.filter(a=>days(a.due)===0),rem=remainingChecklist();$('#statOpen').textContent=o.length;$('#statToday').textContent=td.length;$('#statChecklist').textContent=rem.length;$('#statClasses').textContent=state.classes.length;$('#gmailTop').href=gmailInbox();$('#coachText').innerHTML=rem[0]?`Checklist first: <b>${esc(rem[0].text)}</b>${rem[0].time?' at '+esc(timeLabel(rem[0].time)):''}.`:td[0]?`Start with <b>${esc(td[0].title)}</b> for ${esc(cls(td[0].classId).name)}. It is due ${esc(due(td[0].due))}.`:o[0]?`Nothing due today. Next up: <b>${esc(o[0].title)}</b> for ${esc(cls(o[0].classId).name)}.`:'No open assignments. Paste Classroom or add the next task.'}
-function setView(v){view=v;render()}function render(){shell();$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));let pages={home,checklist,calendar,import:importPage,assignments,classes,email,ai,customize};$('#app').innerHTML=(pages[view]||home)();bind()}function card(k,t,s,b){let i=state.settings.homeOrder.indexOf(k);return`<section class="card homeCard" draggable="true" data-card="${k}" title="Drag this card to reorder the homepage"><div class="head"><div><h3>${t}</h3><p class="sub">${s}</p></div><div class="row"><span class="pill blue">Drag</span><button class="btn" data-move="${k}|up" ${i===0?'disabled':''}>↑</button><button class="btn" data-move="${k}|down" ${i===state.settings.homeOrder.length-1?'disabled':''}>↓</button><button class="btn danger" data-hide="${k}">Hide</button></div></div>${b}</section>`}
-function task(a){let c=cls(a.classId),late=days(a.due)<0;return`<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p>${esc(a.notes||'')}</p></div><span class="pill ${late?'red':days(a.due)===0?'amber':''}">${esc(due(a.due))}</span></div><div class="row"><span class="pill" style="background:${c.color}22;color:${c.color}">${esc(c.name)}</span><span class="pill">${esc(a.priority||'Medium')}</span><span class="pill">${esc(a.status||'Not Started')}</span>${a.source?`<span class="pill blue">${esc(a.source)}</span>`:''}<button class="btn" data-edit-a="${a.id}">Edit</button><button class="btn danger" data-del-a="${a.id}">Delete</button></div></div>`}
-function reminderRow(r,compact=false){let done=isDone(r);return`<div class="item ${done?'done':''}"><div class="head"><div><h4>${esc(r.text)}</h4><p>${esc(r.frequency)}${r.frequency==='Weekly'&&r.day?' · '+esc(r.day):''}${r.time?' · '+esc(timeLabel(r.time)):''}</p></div><div class="row"><label class="btn"><input type="checkbox" data-check="${r.id}" ${done?'checked':''}> Done</label>${compact?'':`<button class="btn" data-edit-r="${r.id}">Edit</button><button class="btn danger" data-del-r="${r.id}">Delete</button>`}</div></div></div>`}
-function assignmentCard(){let o=openTasks();return (o.length?o.slice(0,5).map(task).join(''):'<div class="note">No open assignments yet.</div>')+`<div class="row"><button class="btn primary" data-open="assignment">＋ Assignment</button><button class="btn" data-view="assignments">Open all assignments</button></div>`}
-function calendarMini(){let src=cleanCalendarUrl(state.settings.calendarEmbed);return src?`<div class="calBox"><iframe src="${esc(src)}" loading="lazy"></iframe></div><div class="row" style="margin-top:10px"><button class="btn primary" data-view="calendar">Open calendar</button>${state.settings.calendarLink?`<a class="btn" target="_blank" href="${esc(state.settings.calendarLink)}">Open full calendar</a>`:''}</div>`:`<div class="note">Calendar is ready. Add a Google Calendar embed link in the Calendar tab or Customize tab.</div><button class="btn primary" data-view="calendar">Set up calendar</button>`}
-function customCardHtml(c){let k=customKey(c.id);return card(k,c.title||'Custom Card','Custom homepage card.',`<p style="white-space:pre-wrap">${esc(c.body||'')}</p>${c.link?`<a class="btn navy" target="_blank" href="${esc(c.link)}">${esc(c.linkLabel||'Open')}</a>`:''}<div class="row" style="margin-top:10px"><button class="btn" data-edit-card="${c.id}">Edit card</button><button class="btn danger" data-del-card="${c.id}">Delete card</button></div>`)}
-function home(){let o=openTasks(),td=o.filter(a=>days(a.due)===0),soon=o.filter(a=>days(a.due)>0&&days(a.due)<=7),rem=activeChecklist(),left=remainingChecklist();let map={launch:card('launch','Daily Launch','A fast start-of-day check.',`<div class="field"><label>Top goal today</label><input id="goal" value="${esc(state.daily.goal)}"></div><button class="btn primary" id="saveGoal">Save goal</button>`),assignmentsCard:card('assignmentsCard','Assignments','Add assignments and see open work right here.',assignmentCard()),checklist:card('checklist','Daily Checklist','Daily, weekly, and sometimes reminders.',(rem.length?rem.slice(0,6).map(r=>reminderRow(r,true)).join(''):'<div class="note">No checklist items active today.</div>')+`<div class="row"><button class="btn primary" data-view="checklist">Open checklist</button><button class="btn" data-open="reminder">＋ Add reminder</button><span class="pill ${left.length?'amber':'green'}">${left.length} left</span></div>`),calendar:card('calendar','Calendar','School events, due dates, and schedule links.',calendarMini()),import:card('import','Paste Classroom','Works when school blocks Google sync.',`<div class="note">Open Google Classroom → To-do/Assigned → copy visible work → paste here.</div><button class="btn primary" data-view="import">Open importer</button>`),today:card('today','Today Work','Assignments due today.',td.length?td.map(task).join(''):'<div class="note">No assignments due today.</div>'),soon:card('soon','Coming Up','Work due soon.',soon.length?soon.map(task).join(''):'<div class="note">Nothing due in the next week.</div>'),classes:card('classes','Classes','Teacher emails and class colors.',state.classes.map(c=>`<div class="item"><h4>${esc(c.name)}</h4><p>${esc(c.teacher||'No teacher saved')} ${c.email?'· '+esc(c.email):''}</p></div>`).join('')),email:card('email','Gmail Helper','Opens Gmail in the browser, not Apple Mail.',`<a class="btn navy" target="_blank" href="${gmailInbox()}">Open Gmail inbox</a><button class="btn" data-view="email">Write teacher email</button>`),ai:card('ai','AI Coach','Optional ChatGPT API daily update.',`<p class="sub">${state.settings.aiEnabled?'AI buttons are enabled. Configure OPENAI_API_KEY in Cloudflare.':'AI is off until enabled.'}</p><button class="btn primary" id="aiCard">Generate update</button><div class="note">${esc(state.daily.lastAi||'No AI update yet.')}</div>`),wins:card('wins','Wins','Small wins build the habit.',`<div class="field"><label>Add win</label><input id="win" placeholder="I turned in math."></div><button class="btn primary" id="addWin">Add win</button>${state.wins.slice(-4).reverse().map(w=>`<div class="item"><h4>${esc(w.text)}</h4><p>${esc(w.date)}</p></div>`).join('')}`)};state.customCards.forEach(c=>map[customKey(c.id)]=customCardHtml(c));return`<div class="note" style="margin-bottom:14px">Drag any homepage box to reorder it. The order saves automatically.</div><div class="homeGrid">${state.settings.homeOrder.filter(k=>!state.settings.hiddenCards.includes(k)).map(k=>map[k]||'').join('')}</div>`}
-function checklist(){let active=activeChecklist(),all=state.checklist;return`<div class="grid g2"><section class="card"><div class="head"><div><h3>Today’s Checklist</h3><p class="sub">Things to remember today. Daily/weekday items reset automatically each day. Weekly items show on their chosen day.</p></div><button class="btn primary" data-open="reminder">＋ Add reminder</button></div>${active.length?active.map(r=>reminderRow(r)).join(''):'<div class="note">No checklist items active today.</div>'}</section><section class="card"><h3>Add Checklist Reminder</h3>${reminderForm()}</section><section class="card"><h3>All Checklist Items</h3>${all.map(r=>reminderRow(r)).join('')||'<div class="note">No reminders yet.</div>'}</section><section class="card"><h3>Quick reset</h3><button class="btn" id="resetToday">Uncheck today’s recurring items</button> <button class="btn danger" id="clearChecklist">Clear all checklist items</button></section></div>`}
-function reminderForm(r={}){return`<div class="field"><label>Reminder / checklist item</label><input id="rText" value="${esc(r.text||'')}"></div><div class="field"><label>How often?</label><select id="rFreq"><option ${r.frequency==='Daily'?'selected':''}>Daily</option><option ${r.frequency==='Weekdays'?'selected':''}>Weekdays</option><option ${r.frequency==='Weekly'?'selected':''}>Weekly</option><option ${r.frequency==='Sometimes'?'selected':''}>Sometimes</option></select></div><div class="field"><label>Weekly day</label><select id="rDay">${DAYS.map(d=>`<option ${r.day===d?'selected':''}>${d}</option>`).join('')}</select></div><div class="field"><label>Optional time</label><input type="time" id="rTime" value="${esc(r.time||'')}"></div><button class="btn primary" id="saveReminder" data-id="${esc(r.id||'')}">Save reminder</button>`}
-function calendar(){let src=cleanCalendarUrl(state.settings.calendarEmbed);return`<div class="grid g2"><section class="card"><div class="head"><div><h3>Calendar</h3><p class="sub">Paste a Google Calendar embed URL or iframe code.</p></div>${state.settings.calendarLink?`<a class="btn navy" target="_blank" href="${esc(state.settings.calendarLink)}">Open full calendar</a>`:''}</div>${src?`<div class="calBox"><iframe src="${esc(src)}" loading="lazy"></iframe></div>`:'<div class="note">No calendar saved yet. Paste a Google Calendar embed link on the right.</div>'}</section><section class="card"><h3>Calendar Settings</h3><div class="field"><label>Google Calendar embed URL or iframe code</label><textarea id="calEmbed">${esc(state.settings.calendarEmbed)}</textarea></div><div class="field"><label>Optional full calendar link</label><input id="calLink" value="${esc(state.settings.calendarLink)}"></div><button class="btn primary" id="saveCalendar">Save calendar</button><button class="btn danger" id="clearCalendar">Clear calendar</button></section></div>`}
-function importPage(){return`<div class="grid g2"><section class="card"><h3>Paste from Google Classroom</h3><p class="sub">No OAuth. No school admin approval. Paste what Noam can already see.</p><textarea id="paste" placeholder="Math\nRatios worksheet\nDue May 27\nEnglish\nReading response\nDue Tomorrow"></textarea><div class="row"><button class="btn primary" id="parse">Preview import</button><button class="btn" id="clearPaste">Clear</button></div></section><section class="card"><h3>Import Preview</h3><div id="preview" class="note">Nothing parsed yet.</div></section></div>`}
-function parseDue(line){let t=line.replace(/^due[:\s]*/i,'').toLowerCase();if(t.includes('tomorrow'))return iso(1);if(t.includes('today'))return iso(0);let m=t.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})/i);if(m){let y=new Date().getFullYear(),d=new Date(`${m[1]} ${m[2]}, ${y} 12:00:00`);return d.toISOString().slice(0,10)}return''}function parseText(text){let lines=text.split(/\n+/).map(x=>x.trim()).filter(Boolean),cur=state.classes[0]?.id||'',out=[];for(let i=0;i<lines.length;i++){let l=lines[i],low=l.toLowerCase(),hit=state.classes.find(c=>low===c.name.toLowerCase()||low.includes(c.name.toLowerCase()));if(hit&&l.length<55){cur=hit.id;continue}if(/^due\b/i.test(l)&&out.length){out[out.length-1].due=parseDue(l);continue}if(/^(assigned|missing|done|to-do|to do)$/i.test(l))continue;out.push({id:uid('a'),title:l.replace(/^[-•]\s*/,''),classId:cur,due:/^due\b/i.test(lines[i+1]||'')?parseDue(lines[i+1]):'',priority:/missing/i.test(text)?'High':'Medium',status:'Not Started',notes:'Imported from pasted Google Classroom text.',source:'Classroom Paste',created:iso()})}return out.filter(a=>a.title.length>2&&!/^due\b/i.test(a.title)).slice(0,40)}
-function assignments(){return`<section class="card"><div class="head"><div><h3>Assignments</h3><p class="sub">Manual assignments and Classroom Paste imports.</p></div><button class="btn primary" data-open="assignment">＋ Assignment</button></div>${openTasks().map(task).join('')||'<div class="note">No open assignments.</div>'}</section>`}
-function classes(){return`<div class="grid g2"><section class="card"><h3>Classes</h3>${state.classes.map(c=>`<div class="item"><h4>${esc(c.name)}</h4><p>${esc(c.teacher||'')} ${c.email?'· '+esc(c.email):''}</p><div class="row"><button class="btn" data-edit-c="${c.id}">Edit</button>${c.email?`<a class="btn navy" target="_blank" href="${gmailCompose(c.email,'Question about class','Hi,\n\nI had a question about...\n\nThank you,\nNoam')}">Email in Gmail</a>`:''}</div></div>`).join('')}</section><section class="card"><h3>Add class</h3>${classForm()}</section></div>`}
-function classForm(c={}){return`<div class="field"><label>Class</label><input id="cName" value="${esc(c.name||'')}"></div><div class="field"><label>Teacher</label><input id="cTeacher" value="${esc(c.teacher||'')}"></div><div class="field"><label>Email</label><input id="cEmail" value="${esc(c.email||'')}"></div><button class="btn primary" id="saveClass" data-id="${esc(c.id||'')}">Save class</button>`}
-function email(){return`<div class="grid g2"><section class="card"><h3>Gmail Helper</h3><p class="sub">Uses Gmail compose URLs, so it opens Gmail in the browser.</p><div class="field"><label>Teacher</label><select id="eClass">${state.classes.map(c=>`<option value="${c.id}">${esc(c.name)} ${c.teacher?'— '+esc(c.teacher):''}</option>`).join('')}</select></div><div class="field"><label>Subject</label><input id="eSub" value="Question about class"></div><div class="field"><label>Message</label><textarea id="eBody">Hi,\n\nI had a question about the assignment. Can you please help me understand what I should do next?\n\nThank you,\nNoam</textarea></div><button class="btn navy" id="compose">Open in Gmail</button> <a class="btn" target="_blank" href="${gmailInbox()}">Open Gmail inbox</a></section><section class="card"><h3>Email checklist</h3><div class="note">Say the class, assignment, what is confusing, and what help you need.</div></section></div>`}
-function ai(){return`<div class="grid g2"><section class="card"><h3>AI Daily Updates</h3><div class="note">Store the API key as a Cloudflare secret named <b>OPENAI_API_KEY</b>.</div><label class="row"><input type="checkbox" id="aiOn" ${state.settings.aiEnabled?'checked':''}> Enable AI buttons</label><div class="field"><label>Tone</label><input id="aiTone" value="${esc(state.settings.aiTone)}"></div><div class="field"><label>Focus</label><input id="aiFocus" value="${esc(state.settings.aiFocus)}"></div><button class="btn primary" id="saveAi">Save AI settings</button> <button class="btn" id="genAi">Generate update</button></section><section class="card"><h3>Latest update</h3><div class="preview">${esc(state.daily.lastAi||'No AI update generated yet.')}</div></section></div>`}
-function cardForm(c={}){return`<div class="field"><label>Card title</label><input id="cardTitle" value="${esc(c.title||'')}"></div><div class="field"><label>Card text</label><textarea id="cardBody">${esc(c.body||'')}</textarea></div><div class="field"><label>Optional link</label><input id="cardLink" value="${esc(c.link||'')}"></div><div class="field"><label>Link button label</label><input id="cardLinkLabel" value="${esc(c.linkLabel||'Open')}"></div><button class="btn primary" id="saveCard" data-id="${esc(c.id||'')}">Save custom card</button>`}
-function customize(){let built=BUILTINS.map(([k,label])=>{let h=state.settings.hiddenCards.includes(k);return`<div class="item"><div class="head"><div><h4>${esc(label)}</h4><p>${h?'Hidden from homepage':'Visible on homepage'}</p></div><div class="row"><button class="btn" data-move="${k}|up">↑</button><button class="btn" data-move="${k}|down">↓</button><button class="btn ${h?'primary':'danger'}" data-toggle="${k}">${h?'Show':'Remove from homepage'}</button></div></div></div>`}).join('');let customs=state.customCards.map(c=>{let k=customKey(c.id),h=state.settings.hiddenCards.includes(k);return`<div class="item"><div class="head"><div><h4>${esc(c.title)}</h4><p>${h?'Hidden custom card':'Visible custom card'}</p></div><div class="row"><button class="btn" data-move="${k}|up">↑</button><button class="btn" data-move="${k}|down">↓</button><button class="btn" data-edit-card="${c.id}">Edit</button><button class="btn ${h?'primary':'danger'}" data-toggle="${k}">${h?'Show':'Hide'}</button><button class="btn danger" data-del-card="${c.id}">Delete</button></div></div></div>`}).join('')||'<div class="note">No custom cards yet.</div>';return`<div class="grid g2"><section class="card"><h3>Customize Homepage</h3><p class="sub">Drag boxes on the Home page, remove built-in cards, or add custom cards.</p>${built}<button class="btn" id="resetCards">Reset homepage cards</button></section><section class="card"><h3>Add Custom Card</h3>${cardForm()}</section><section class="card"><h3>Custom Cards</h3>${customs}</section><section class="card"><h3>Basic + Calendar Settings</h3><div class="field"><label>Student name</label><input id="sName" value="${esc(state.settings.studentName)}"></div><div class="field"><label>Gmail address optional</label><input id="sGmail" value="${esc(state.settings.gmail)}"></div><div class="field"><label>Calendar embed URL or iframe code</label><textarea id="sCalEmbed">${esc(state.settings.calendarEmbed)}</textarea></div><div class="field"><label>Optional full calendar link</label><input id="sCalLink" value="${esc(state.settings.calendarLink)}"></div><button class="btn primary" id="saveSettings">Save settings</button></section></div>`}
-function move(k,dir){let allowed=[...builtKeys(),...state.customCards.map(c=>customKey(c.id))];state.settings.homeOrder=state.settings.homeOrder.filter(x=>allowed.includes(x));let a=state.settings.homeOrder,i=a.indexOf(k),j=dir==='up'?i-1:i+1;if(i<0||j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];save();render()}function reorderCards(from,to){if(!from||!to||from===to)return;let order=state.settings.homeOrder,fromIdx=order.indexOf(from),toIdx=order.indexOf(to);if(fromIdx<0||toIdx<0)return;order.splice(fromIdx,1);toIdx=order.indexOf(to);order.splice(toIdx,0,from);save();render();toast('Homepage order saved')}
-function openA(a={}){$('#modalTitle').textContent=a.id?'Edit assignment':'Add assignment';$('#modalBody').innerHTML=`<div class="field"><label>Title</label><input id="aTitle" value="${esc(a.title||'')}"></div><div class="field"><label>Class</label><select id="aClass">${state.classes.map(c=>`<option value="${c.id}" ${a.classId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="field"><label>Due</label><input type="date" id="aDue" value="${esc(a.due||'')}"></div><div class="field"><label>Priority</label><select id="aPri"><option>Low</option><option selected>Medium</option><option>High</option></select></div><div class="field"><label>Status</label><select id="aStatus"><option>Not Started</option><option>Started</option><option>Almost Done</option><option>Turned In</option></select></div><div class="field"><label>Notes</label><textarea id="aNotes">${esc(a.notes||'')}</textarea></div><button class="btn primary" id="saveA">Save assignment</button>`;$('#modalBack').classList.add('open');$('#saveA').onclick=()=>{let obj=a.id?state.assignments.find(x=>x.id===a.id):{id:uid('a'),created:iso(),source:'Manual'};Object.assign(obj,{title:$('#aTitle').value||'Assignment',classId:$('#aClass').value,due:$('#aDue').value,priority:$('#aPri').value,status:$('#aStatus').value,notes:$('#aNotes').value});if(!a.id)state.assignments.push(obj);save();$('#modalBack').classList.remove('open');render()}}
-function openReminder(r={}){$('#modalTitle').textContent=r.id?'Edit checklist reminder':'Add checklist reminder';$('#modalBody').innerHTML=reminderForm(r);$('#modalBack').classList.add('open');bind()}function openCustomCard(c={}){$('#modalTitle').textContent=c.id?'Edit custom card':'Add custom card';$('#modalBody').innerHTML=cardForm(c);$('#modalBack').classList.add('open');bind()}async function genAi(){if(!state.settings.aiEnabled){setView('ai');toast('Turn on AI first');return}try{toast('Generating...');let res=await fetch('/api/ai/daily-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({settings:state.settings,classes:state.classes,assignments:openTasks().slice(0,12),checklist:remainingChecklist().slice(0,10),goal:state.daily.goal})}),data=await res.json();if(!res.ok)throw Error(data.error||'AI unavailable');state.daily.lastAi=data.update;save();render();toast('AI update ready')}catch(e){toast(e.message)}}
-function saveReminder(){let id=$('#saveReminder').dataset.id,r=id?state.checklist.find(x=>x.id===id):{id:uid('r'),lastDone:'',done:false};Object.assign(r,{text:$('#rText').value||'Reminder',frequency:$('#rFreq').value,day:$('#rDay').value,time:$('#rTime').value});if(!id)state.checklist.push(r);save();$('#modalBack').classList.remove('open');render()}function saveCard(){let id=$('#saveCard').dataset.id,c=id?state.customCards.find(x=>x.id===id):{id:uid('card')};Object.assign(c,{title:$('#cardTitle').value||'Custom Card',body:$('#cardBody').value||'',link:$('#cardLink').value||'',linkLabel:$('#cardLinkLabel').value||'Open'});if(!id){state.customCards.push(c);state.settings.homeOrder.push(customKey(c.id))}save();$('#modalBack').classList.remove('open');render()}function saveCalendar(embedSelector='#calEmbed',linkSelector='#calLink'){let embedEl=$(embedSelector)||$('#sCalEmbed'),linkEl=$(linkSelector)||$('#sCalLink');let embed=embedEl?embedEl.value.trim():'',link=linkEl?linkEl.value.trim():'';let cleaned=cleanCalendarUrl(embed);if(cleaned&&!validUrl(cleaned)){toast('Calendar link does not look valid');return}state.settings.calendarEmbed=embed;state.settings.calendarLink=link;save();render();toast('Calendar saved')}
-function bindDrag(){if(view!=='home')return;$$('.homeCard').forEach(card=>{card.addEventListener('dragstart',e=>{if(e.target.closest('button,a,input,textarea,select,label')){e.preventDefault();return}dragKey=card.dataset.card;card.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragKey)});card.addEventListener('dragend',()=>{$$('.homeCard').forEach(c=>c.classList.remove('dragging','dropTarget'))});card.addEventListener('dragover',e=>{e.preventDefault();if(card.dataset.card!==dragKey)card.classList.add('dropTarget')});card.addEventListener('dragleave',()=>card.classList.remove('dropTarget'));card.addEventListener('drop',e=>{e.preventDefault();let from=e.dataTransfer.getData('text/plain')||dragKey,to=card.dataset.card;reorderCards(from,to)})})}
-function bind(){$$('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));$$('[data-open="assignment"]').forEach(b=>b.onclick=()=>openA());$$('[data-open="reminder"]').forEach(b=>b.onclick=()=>openReminder());$$('[data-move]').forEach(b=>b.onclick=()=>move(...b.dataset.move.split('|')));$$('[data-hide]').forEach(b=>b.onclick=()=>{state.settings.hiddenCards=[...new Set([...state.settings.hiddenCards,b.dataset.hide])];save();render()});$$('[data-toggle]').forEach(b=>b.onclick=()=>{let k=b.dataset.toggle;state.settings.hiddenCards=state.settings.hiddenCards.includes(k)?state.settings.hiddenCards.filter(x=>x!==k):[...state.settings.hiddenCards,k];save();render()});$$('[data-del-a]').forEach(b=>b.onclick=()=>{state.assignments=state.assignments.filter(a=>a.id!==b.dataset.delA);save();render()});$$('[data-edit-a]').forEach(b=>b.onclick=()=>openA(state.assignments.find(a=>a.id===b.dataset.editA)));$$('[data-del-r]').forEach(b=>b.onclick=()=>{state.checklist=state.checklist.filter(r=>r.id!==b.dataset.delR);save();render()});$$('[data-edit-r]').forEach(b=>b.onclick=()=>openReminder(state.checklist.find(r=>r.id===b.dataset.editR)));$$('[data-edit-card]').forEach(b=>b.onclick=()=>openCustomCard(state.customCards.find(c=>c.id===b.dataset.editCard)));$$('[data-del-card]').forEach(b=>b.onclick=()=>{let k=customKey(b.dataset.delCard);state.customCards=state.customCards.filter(c=>c.id!==b.dataset.delCard);state.settings.homeOrder=state.settings.homeOrder.filter(x=>x!==k);state.settings.hiddenCards=state.settings.hiddenCards.filter(x=>x!==k);save();render()});$$('[data-check]').forEach(ch=>ch.onchange=()=>{let r=state.checklist.find(x=>x.id===ch.dataset.check);if(!r)return;if(r.frequency==='Sometimes')r.done=ch.checked;else r.lastDone=ch.checked?iso():'';save();render()});$$('[data-edit-c]').forEach(b=>b.onclick=()=>{$('#modalTitle').textContent='Edit class';$('#modalBody').innerHTML=classForm(state.classes.find(c=>c.id===b.dataset.editC));$('#modalBack').classList.add('open');bind()});$('#closeModal')?.addEventListener('click',()=>$('#modalBack').classList.remove('open'));$('#saveGoal')?.addEventListener('click',()=>{state.daily.goal=$('#goal').value;save();render()});$('#addWin')?.addEventListener('click',()=>{let v=$('#win').value.trim();if(v){state.wins.push({text:v,date:new Date().toLocaleString()});save();render()}});$('#parse')?.addEventListener('click',()=>{parsed=parseText($('#paste').value);$('#preview').innerHTML=parsed.length?parsed.map(a=>`<div class="item"><h4>${esc(a.title)}</h4><p>${esc(cls(a.classId).name)} · ${esc(due(a.due))}</p></div>`).join('')+`<button class="btn primary" id="addParsed">Add ${parsed.length} assignments</button>`:'No assignments found.';$('#addParsed')?.addEventListener('click',()=>{state.assignments=[...state.assignments,...parsed];save();setView('assignments')})});$('#clearPaste')?.addEventListener('click',()=>{$('#paste').value='';$('#preview').textContent='Nothing parsed yet.'});$('#saveClass')?.addEventListener('click',()=>{let id=$('#saveClass').dataset.id,c=id?state.classes.find(x=>x.id===id):{id:uid('c'),color:'#147c78'};c.name=$('#cName').value||'Class';c.teacher=$('#cTeacher').value;c.email=$('#cEmail').value;if(!id)state.classes.push(c);save();$('#modalBack').classList.remove('open');render()});$('#saveReminder')?.addEventListener('click',saveReminder);$('#saveCard')?.addEventListener('click',saveCard);$('#saveCalendar')?.addEventListener('click',()=>saveCalendar('#calEmbed','#calLink'));$('#clearCalendar')?.addEventListener('click',()=>{state.settings.calendarEmbed='';state.settings.calendarLink='';save();render();toast('Calendar cleared')});$('#resetToday')?.addEventListener('click',()=>{state.checklist.forEach(r=>{if(r.frequency!=='Sometimes')r.lastDone=''});save();render()});$('#clearChecklist')?.addEventListener('click',()=>{state.checklist=[];save();render()});$('#compose')?.addEventListener('click',()=>{let c=cls($('#eClass').value);window.open(gmailCompose(c.email,$('#eSub').value,$('#eBody').value),'_blank')});$('#saveAi')?.addEventListener('click',()=>{state.settings.aiEnabled=$('#aiOn').checked;state.settings.aiTone=$('#aiTone').value;state.settings.aiFocus=$('#aiFocus').value;save();render()});$('#genAi')?.addEventListener('click',genAi);$('#aiDailyBtn')?.addEventListener('click',genAi);$('#aiCard')?.addEventListener('click',genAi);$('#saveSettings')?.addEventListener('click',()=>{state.settings.studentName=$('#sName').value;state.settings.gmail=$('#sGmail').value;state.settings.calendarEmbed=$('#sCalEmbed')?.value||state.settings.calendarEmbed;state.settings.calendarLink=$('#sCalLink')?.value||state.settings.calendarLink;save();render();toast('Settings saved')});$('#resetCards')?.addEventListener('click',()=>{state.settings.homeOrder=[...builtKeys(),...state.customCards.map(c=>customKey(c.id))];state.settings.hiddenCards=[];save();render()});bindDrag()}
-save();render();})();
-</script></body></html>
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Noam School | Daily Dugout v9</title>
+    <meta
+      name="description"
+      content="Noam School Daily Dugout v9: enterprise-grade student command center with Google Classroom sync, smart scheduling, focus timer, keyboard shortcuts, dark mode, notifications, and analytics."
+    />
+    <meta name="theme-color" content="#16324a" />
+    <link
+      rel="manifest"
+      href='data:application/json,{"name":"Noam School","short_name":"Noam","start_url":".","display":"standalone","theme_color":"#16324a","background_color":"#eef3f1"}'
+    />
+    <style>
+      :root {
+        --bg: #eef3f1;
+        --bg2: #f7f2e8;
+        --paper: #fffdf8;
+        --paper2: #f8faf7;
+        --ink: #142033;
+        --muted: #667085;
+        --line: #dce5df;
+        --navy: #16324a;
+        --navy2: #214866;
+        --teal: #147c78;
+        --amber: #d99028;
+        --red: #b84234;
+        --green: #248a55;
+        --blue: #2f65d5;
+        --softT: #e2f4f2;
+        --softA: #fff0d5;
+        --softR: #fde8e4;
+        --softG: #e7f6ed;
+        --softB: #e9efff;
+        --shadow: 0 18px 45px rgba(21, 35, 52, 0.12);
+        --shadow2: 0 7px 20px rgba(21, 35, 52, 0.07);
+        --r: 18px;
+        --r2: 30px;
+        --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --focus-ring: 0 0 0 3px rgba(20, 124, 120, 0.35);
+      }
+      [data-theme="dark"] {
+        --bg: #0f1419;
+        --bg2: #1a2332;
+        --paper: #1e2a3a;
+        --paper2: #243447;
+        --ink: #e8edf2;
+        --muted: #8899aa;
+        --line: #2d3f52;
+        --navy: #e8edf2;
+        --navy2: #b8c8d8;
+        --softT: #0d2a28;
+        --softA: #2a2010;
+        --softR: #2a1410;
+        --softG: #0d2a18;
+        --softB: #101a2a;
+        --shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
+        --shadow2: 0 7px 20px rgba(0, 0, 0, 0.25);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        min-height: 100vh;
+        color: var(--ink);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        transition:
+          background var(--transition),
+          color var(--transition);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      [data-theme="light"] body {
+        background:
+          radial-gradient(
+            circle at 8% 10%,
+            rgba(20, 124, 120, 0.12),
+            transparent 26rem
+          ),
+          radial-gradient(
+            circle at 95% 5%,
+            rgba(217, 144, 40, 0.12),
+            transparent 30rem
+          ),
+          linear-gradient(180deg, #f7fbf8 0%, var(--bg) 48%, var(--bg2) 100%);
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      ::selection {
+        background: rgba(20, 124, 120, 0.2);
+      }
+      :focus-visible {
+        outline: none;
+        box-shadow: var(--focus-ring);
+      }
+
+      .wrap {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+
+      /* Header */
+      .top {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--teal), var(--navy));
+        display: grid;
+        place-items: center;
+        color: white;
+        font-weight: 950;
+        font-size: 1.2rem;
+        box-shadow: 0 8px 24px rgba(20, 124, 120, 0.2);
+        transition: transform var(--transition);
+      }
+      .logo:hover {
+        transform: scale(1.05);
+      }
+      .brand h1 {
+        font-size: 1.1rem;
+        color: var(--navy);
+        letter-spacing: -0.02em;
+      }
+      .brand p {
+        color: var(--muted);
+        font-size: 0.78rem;
+        margin-top: 1px;
+      }
+      .topActions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      /* Buttons */
+      .btn {
+        border: 1px solid var(--line);
+        background: var(--paper);
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all var(--transition);
+        white-space: nowrap;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow2);
+      }
+      .btn:active {
+        transform: translateY(0);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .primary {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: white;
+      }
+      .primary:hover {
+        background: #119490;
+      }
+      .amber {
+        background: var(--amber);
+        border-color: var(--amber);
+        color: white;
+      }
+      .danger {
+        background: var(--softR);
+        border-color: #efc4be;
+        color: var(--red);
+      }
+      .navy-btn {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: white;
+      }
+      .ghost {
+        background: transparent;
+        border-color: transparent;
+      }
+      .ghost:hover {
+        background: var(--paper2);
+      }
+      .icon-btn {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 10px;
+      }
+
+      /* Hero */
+      .hero {
+        background: linear-gradient(135deg, #16324a, #214866 58%, #0e4b59);
+        color: white;
+        border-radius: var(--r2);
+        padding: 28px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: -100px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(20, 124, 120, 0.45),
+          transparent 64%
+        );
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        left: -80px;
+        bottom: -110px;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(217, 144, 40, 0.2),
+          transparent 70%
+        );
+      }
+      .hero > * {
+        position: relative;
+      }
+      .heroGrid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 20px;
+        align-items: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        padding: 5px 10px;
+        color: #dff7f5;
+        font-weight: 900;
+        font-size: 0.72rem;
+        letter-spacing: 0.03em;
+      }
+      .hero h2 {
+        font-size: clamp(1.9rem, 4vw, 3.6rem);
+        line-height: 0.94;
+        margin: 12px 0 8px;
+        letter-spacing: -0.05em;
+        font-weight: 950;
+      }
+      .hero h2 span {
+        color: #ffd17a;
+      }
+      .hero p {
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.5;
+        max-width: 60ch;
+        font-size: 0.9rem;
+      }
+      .quickStats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .stat {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        padding: 12px;
+        transition: background var(--transition);
+      }
+      .stat:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .stat b {
+        font-size: 1.8rem;
+        display: block;
+      }
+      .stat span {
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      /* Command palette */
+      .cmd-trigger {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--paper2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 14px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: all var(--transition);
+        min-width: 200px;
+      }
+      .cmd-trigger:hover {
+        border-color: var(--teal);
+        box-shadow: var(--focus-ring);
+      }
+      .cmd-trigger kbd {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 2px 5px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-left: auto;
+      }
+      .cmd-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 25, 40, 0.55);
+        backdrop-filter: blur(4px);
+        display: none;
+        place-items: start center;
+        padding: clamp(60px, 12vh, 140px) 20px 20px;
+        z-index: 100;
+      }
+      .cmd-overlay.open {
+        display: grid;
+      }
+      .cmd-box {
+        width: min(600px, 100%);
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+      }
+      .cmd-input {
+        width: 100%;
+        padding: 16px 20px;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+      .cmd-results {
+        max-height: 320px;
+        overflow: auto;
+        border-top: 1px solid var(--line);
+      }
+      .cmd-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      .cmd-item:hover,
+      .cmd-item.active {
+        background: var(--softT);
+      }
+      .cmd-item span {
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .cmd-item small {
+        color: var(--muted);
+        font-size: 0.75rem;
+        margin-left: auto;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 12px 0 6px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+      .tab {
+        white-space: nowrap;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        color: var(--muted);
+        transition: all var(--transition);
+      }
+      .tab:hover {
+        color: var(--ink);
+        border-color: var(--teal);
+      }
+      .tab.active {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: white;
+      }
+
+      /* Cards */
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 16px;
+        box-shadow: var(--shadow2);
+        transition: all var(--transition);
+      }
+      .card:hover {
+        box-shadow: var(--shadow);
+      }
+      .card h3 {
+        color: var(--navy);
+        font-size: 1rem;
+        margin-bottom: 2px;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.4;
+      }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+
+      /* Pills */
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 0.7rem;
+        font-weight: 900;
+        background: var(--softT);
+        color: #0d6863;
+      }
+      .pill.red {
+        background: var(--softR);
+        color: var(--red);
+      }
+      .pill.amber {
+        background: var(--softA);
+        color: #935f0d;
+      }
+      .pill.green {
+        background: var(--softG);
+        color: #17703e;
+      }
+      .pill.blue {
+        background: var(--softB);
+        color: var(--blue);
+      }
+
+      /* Items */
+      .item {
+        border: 1px solid var(--line);
+        background: var(--paper2);
+        border-radius: 14px;
+        padding: 11px;
+        margin-bottom: 8px;
+        transition: all var(--transition);
+      }
+      .item:hover {
+        border-color: var(--teal);
+        transform: translateY(-1px);
+      }
+      .item.current {
+        border-color: #9fd6cd;
+        background: var(--softT);
+      }
+      .item.next {
+        border-color: #f1d49c;
+        background: var(--softA);
+      }
+      .item h4 {
+        color: var(--navy);
+        font-size: 0.92rem;
+      }
+      .item p {
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: 3px;
+        line-height: 1.4;
+      }
+      .itemTop {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: flex-start;
+      }
+
+      /* Forms */
+      .field {
+        display: grid;
+        gap: 4px;
+        margin-bottom: 10px;
+      }
+      .field label {
+        font-size: 0.72rem;
+        font-weight: 900;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1.5px solid var(--line);
+        background: var(--paper);
+        border-radius: 11px;
+        padding: 9px 12px;
+        color: var(--ink);
+        transition: border-color var(--transition);
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--teal);
+        outline: none;
+        box-shadow: var(--focus-ring);
+      }
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      /* Grid layouts */
+      .grid {
+        display: grid;
+        gap: 12px;
+      }
+      .g2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .g3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .homeGrid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      /* Calendar */
+      .calendarBox {
+        min-height: 300px;
+        border: 1px dashed var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--paper2);
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 14px;
+      }
+      .calendarBox iframe {
+        width: 100%;
+        height: 400px;
+        border: 0;
+        border-radius: 10px;
+      }
+
+      /* Week grid */
+      .week {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+      }
+      .day {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 10px;
+        min-height: 140px;
+      }
+      .day h4 {
+        color: var(--navy);
+        font-size: 0.78rem;
+        margin-bottom: 6px;
+      }
+      .check {
+        display: flex;
+        gap: 7px;
+        align-items: flex-start;
+        border-bottom: 1px solid var(--line);
+        padding: 6px 0;
+        font-size: 0.8rem;
+      }
+      .check:last-child {
+        border-bottom: 0;
+      }
+      .check input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--teal);
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+      .check.done .mainText {
+        text-decoration: line-through;
+        color: var(--muted);
+      }
+
+      /* Timer */
+      .timerDisplay {
+        font-size: 4.4rem;
+        letter-spacing: -0.07em;
+        font-weight: 950;
+        color: var(--navy);
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .timerMode {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .timerRing {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 16px;
+        position: relative;
+      }
+      .timerRing svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+      .timerRing circle {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+      }
+      .timerRing .track {
+        stroke: var(--line);
+      }
+      .timerRing .progress {
+        stroke: var(--teal);
+        transition: stroke-dashoffset 0.5s linear;
+      }
+
+      /* Email */
+      .mailPreview {
+        white-space: pre-wrap;
+        background: var(--paper2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        min-height: 150px;
+        font-size: 0.86rem;
+        line-height: 1.5;
+      }
+
+      /* Notes */
+      .note {
+        background: #fff8e0;
+        border: 1px solid #f2d186;
+        color: #704c0a;
+        border-radius: 12px;
+        padding: 10px;
+        font-size: 0.82rem;
+        line-height: 1.4;
+      }
+      [data-theme="dark"] .note {
+        background: #2a2410;
+        border-color: #5a4820;
+        color: #d4a840;
+      }
+
+      /* Sync box */
+      .syncBox {
+        background: var(--softT);
+        border: 1px solid #c9e8e4;
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .connected {
+        background: var(--softG);
+        border-color: #bfe7cd;
+        color: #14532d;
+      }
+      [data-theme="dark"] .connected {
+        color: #7dd3a0;
+      }
+
+      /* Progress bar */
+      .progress {
+        height: 7px;
+        background: var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        border-radius: 999px;
+        transition: width 0.4s ease;
+      }
+
+      /* Modal */
+      .modalBack {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 25, 40, 0.5);
+        backdrop-filter: blur(3px);
+        display: none;
+        place-items: center;
+        padding: 16px;
+        z-index: 60;
+        animation: fadeIn 0.15s ease;
+      }
+      .modalBack.open {
+        display: grid;
+      }
+      .modal {
+        width: min(720px, 100%);
+        max-height: 86vh;
+        overflow: auto;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 20px;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.22);
+        animation: slideUp 0.2s ease;
+      }
+      .modalHead {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .modal h2 {
+        color: var(--navy);
+        font-size: 1.1rem;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        background: var(--navy);
+        color: white;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-weight: 800;
+        font-size: 0.84rem;
+        box-shadow: var(--shadow);
+        transform: translateY(60px);
+        opacity: 0;
+        transition: 0.2s;
+        z-index: 70;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast.error {
+        background: var(--red);
+      }
+      .toast.success {
+        background: var(--green);
+      }
+
+      /* Notifications badge */
+      .notif-badge {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        width: 8px;
+        height: 8px;
+        background: var(--red);
+        border-radius: 50%;
+        border: 2px solid var(--paper);
+      }
+
+      /* Keyboard shortcut hints */
+      .kbd-hint {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        color: var(--muted);
+        font-size: 0.68rem;
+        margin-left: 6px;
+      }
+      .kbd-hint kbd {
+        background: var(--paper2);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 1px 4px;
+        font-size: 0.65rem;
+        font-weight: 700;
+      }
+
+      /* Onboarding */
+      .onboard-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 25, 40, 0.6);
+        backdrop-filter: blur(6px);
+        display: grid;
+        place-items: center;
+        z-index: 200;
+        padding: 20px;
+      }
+      .onboard-card {
+        width: min(500px, 100%);
+        background: var(--paper);
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25);
+        text-align: center;
+      }
+      .onboard-card h2 {
+        font-size: 1.4rem;
+        color: var(--navy);
+        margin-bottom: 8px;
+      }
+      .onboard-card p {
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
+      .onboard-steps {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .onboard-step {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--line);
+      }
+      .onboard-step.active {
+        background: var(--teal);
+        width: 24px;
+        border-radius: 4px;
+      }
+
+      /* Drag */
+      .homeCard.dragging {
+        opacity: 0.5;
+        outline: 2px dashed var(--teal);
+      }
+      .homeCard {
+        transition: transform 0.15s ease;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+      .syncing {
+        animation: pulse 1.5s infinite;
+      }
+
+      /* Search highlight */
+      .highlight {
+        background: rgba(20, 124, 120, 0.2);
+        border-radius: 3px;
+        padding: 0 2px;
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .heroGrid,
+        .homeGrid,
+        .g2,
+        .g3 {
+          grid-template-columns: 1fr;
+        }
+        .week {
+          grid-template-columns: 1fr 1fr;
+        }
+        .top {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+      @media (max-width: 560px) {
+        .wrap {
+          padding: 10px;
+        }
+        .week {
+          grid-template-columns: 1fr;
+        }
+        .hero {
+          padding: 18px;
+        }
+        .quickStats {
+          grid-template-columns: 1fr 1fr;
+        }
+        .timerDisplay {
+          font-size: 3rem;
+        }
+        .head {
+          flex-direction: column;
+        }
+        .cmd-trigger {
+          min-width: auto;
+        }
+      }
+      @media print {
+        .top,
+        .tabs,
+        .topActions,
+        .hero::before,
+        .hero::after {
+          display: none;
+        }
+        .hero {
+          background: #16324a !important;
+          -webkit-print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">N</div>
+          <div>
+            <h1 id="brandTitle">Noam School</h1>
+            <p id="brandSub">Daily Dugout · student command center</p>
+          </div>
+        </div>
+        <div class="topActions">
+          <div
+            class="cmd-trigger"
+            id="cmdTrigger"
+            role="button"
+            tabindex="0"
+            aria-label="Open command palette"
+          >
+            <svg
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="6" cy="6" r="5" />
+              <path d="M10 10l3 3" />
+            </svg>
+            Search…
+            <kbd>⌘K</kbd>
+          </div>
+          <button
+            class="btn ghost icon-btn"
+            id="themeToggle"
+            aria-label="Toggle dark mode"
+            title="Toggle dark mode (Alt+D)"
+          >
+            🌙
+          </button>
+          <button
+            class="btn ghost icon-btn"
+            id="notifToggle"
+            aria-label="Enable notifications"
+            title="Enable notifications"
+          >
+            🔔
+          </button>
+          <a class="btn" href="/">← Hub</a>
+          <button class="btn" data-view="settings">⚙️</button>
+          <button class="btn primary" data-open="assignment">
+            ＋ Assignment
+          </button>
+        </div>
+      </header>
+
+      <section class="hero" role="banner">
+        <div class="heroGrid">
+          <div>
+            <span class="eyebrow" id="todayLabel">Today</span>
+            <h2>Win the day with one <span>clear plan.</span></h2>
+            <p id="coachText">Loading...</p>
+            <div class="row" style="margin-top: 14px">
+              <button class="btn amber" data-view="focus">⏱ Focus</button>
+              <button class="btn" data-view="schedule">🗓️ Schedule</button>
+              <button class="btn" data-open="quickPlan">☀️ Launch</button>
+              <button class="btn" data-view="reminders">☑ Reminders</button>
+              <a class="btn" id="gmailHero" href="#">✉️ Gmail</a>
+            </div>
+          </div>
+          <div class="quickStats" role="group" aria-label="Daily statistics">
+            <div class="stat">
+              <b id="statOpen">0</b><span>Open tasks</span>
+            </div>
+            <div class="stat">
+              <b id="statToday">0</b><span>Due today</span>
+            </div>
+            <div class="stat"><b id="statRem">0</b><span>Reminders</span></div>
+            <div class="stat"><b id="statSched">0</b><span>Schedule</span></div>
+          </div>
+        </div>
+      </section>
+
+      <nav class="tabs" role="tablist" aria-label="Main navigation">
+        <button class="tab active" data-view="home" role="tab">Home</button>
+        <button class="tab" data-view="today" role="tab">Today</button>
+        <button class="tab" data-view="schedule" role="tab">Schedule</button>
+        <button class="tab" data-view="reminders" role="tab">Reminders</button>
+        <button class="tab" data-view="assignments" role="tab">
+          Assignments
+        </button>
+        <button class="tab" data-view="classes" role="tab">Classes</button>
+        <button class="tab" data-view="focus" role="tab">Focus</button>
+        <button class="tab" data-view="email" role="tab">Email</button>
+        <button class="tab" data-view="sync" role="tab">Google Sync</button>
+        <button class="tab" data-view="analytics" role="tab">Analytics</button>
+        <button class="tab" data-view="settings" role="tab">Settings</button>
+      </nav>
+
+      <main id="app" role="main"></main>
+    </div>
+
+    <!-- Command Palette -->
+    <div class="cmd-overlay" id="cmdOverlay">
+      <div class="cmd-box">
+        <input
+          class="cmd-input"
+          id="cmdInput"
+          placeholder="Search assignments, classes, actions…"
+          autocomplete="off"
+          aria-label="Command palette search"
+        />
+        <div class="cmd-results" id="cmdResults" role="listbox"></div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
+      <div class="modal">
+        <div class="modalHead">
+          <h2 id="modalTitle">Edit</h2>
+          <button class="btn danger" data-close="modal" aria-label="Close">
+            ✕
+          </button>
+        </div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast" role="status" aria-live="polite">Saved</div>
+
+    <!-- Onboarding (shown on first visit) -->
+    <div class="onboard-overlay" id="onboardOverlay" style="display: none">
+      <div class="onboard-card">
+        <div class="onboard-steps" id="onboardSteps"></div>
+        <div id="onboardContent"></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ═══════════════════════════════════════════════════════════════
+        // SERVICE LAYER — Enterprise Architecture
+        // ═══════════════════════════════════════════════════════════════
+
+        const VERSION = 9;
+        const STORAGE_KEY = "noam-school-v9";
+        const LEGACY_KEYS = [
+          "noam-school-v8",
+          "noam-school-v7",
+          "noam-school-v6",
+          "noam-school-v5",
+        ];
+        const DAYS = [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ];
+        const HOME_ORDER = [
+          "launch",
+          "schedule",
+          "today",
+          "calendar",
+          "reminders",
+          "week",
+          "google",
+          "onDeck",
+          "wins",
+          "analytics",
+        ];
+        const UNDO_LIMIT = 30;
+
+        // ── Event Bus ──
+        const EventBus = {
+          _listeners: {},
+          on(event, fn) {
+            (this._listeners[event] ||= []).push(fn);
+          },
+          off(event, fn) {
+            const a = this._listeners[event];
+            if (a) this._listeners[event] = a.filter((f) => f !== fn);
+          },
+          emit(event, data) {
+            (this._listeners[event] || []).forEach((fn) => {
+              try {
+                fn(data);
+              } catch (e) {
+                console.error("[EventBus]", event, e);
+              }
+            });
+          },
+        };
+
+        // ── Utilities ──
+        const $ = (s, c = document) => c.querySelector(s);
+        const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+        const uid = (p) => p + "_" + crypto.randomUUID().slice(0, 8);
+        const esc = (v) =>
+          String(v ?? "").replace(
+            /[&<>"]/g,
+            (c) =>
+              ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+          );
+        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+        const debounce = (fn, ms) => {
+          let t;
+          return (...a) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn(...a), ms);
+          };
+        };
+
+        function iso(off = 0) {
+          const d = new Date();
+          d.setHours(12, 0, 0, 0);
+          d.setDate(d.getDate() + off);
+          return d.toISOString().slice(0, 10);
+        }
+        function todayName() {
+          return new Date().toLocaleDateString(undefined, { weekday: "long" });
+        }
+        function dObj(v) {
+          const d = new Date((v || iso()) + "T12:00:00");
+          return isNaN(d) ? new Date() : d;
+        }
+        function daysDiff(v) {
+          return Math.round((dObj(v) - dObj(iso())) / 86400000);
+        }
+        function dueLabel(v) {
+          if (!v) return "No date";
+          const n = daysDiff(v);
+          if (n < 0) return Math.abs(n) + "d late";
+          if (n === 0) return "Today";
+          if (n === 1) return "Tomorrow";
+          if (n < 7) return "In " + n + " days";
+          return dObj(v).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+          });
+        }
+        function timeLabel(t) {
+          if (!t) return "Any time";
+          const [h, m] = t.split(":").map(Number);
+          const d = new Date();
+          d.setHours(h || 0, m || 0, 0, 0);
+          return d.toLocaleTimeString(undefined, {
+            hour: "numeric",
+            minute: "2-digit",
+          });
+        }
+        function timeSort(t) {
+          return t ? Number(t.replace(":", "")) : 9999;
+        }
+        function minNow(t) {
+          if (!t) return 99999;
+          const [h, m] = t.split(":").map(Number);
+          const now = new Date(),
+            d = new Date();
+          d.setHours(h || 0, m || 0, 0, 0);
+          return Math.round((d - now) / 60000);
+        }
+        function weekKey() {
+          const d = dObj(iso()),
+            day = (d.getDay() + 6) % 7;
+          d.setDate(d.getDate() - day);
+          return d.toISOString().slice(0, 10);
+        }
+        function fmtDate(v) {
+          if (!v) return "No date";
+          const d = new Date(v);
+          return isNaN(d)
+            ? v
+            : d.toLocaleString(undefined, {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+              });
+        }
+        function extractCal(v) {
+          v = (v || "").trim();
+          const m = v.match(/src=['"]([^'"]+)['"]/i);
+          return m ? m[1] : v;
+        }
+
+        // ── Validation Service ──
+        const Validator = {
+          assignment(obj) {
+            return {
+              ...obj,
+              title: (obj.title || "").trim().slice(0, 200) || "Assignment",
+              due: obj.due || "",
+              priority: ["High", "Medium", "Low"].includes(obj.priority)
+                ? obj.priority
+                : "Medium",
+              status: [
+                "Not Started",
+                "Started",
+                "Need Help",
+                "Almost Done",
+                "Turned In",
+              ].includes(obj.status)
+                ? obj.status
+                : "Not Started",
+              notes: (obj.notes || "").slice(0, 2000),
+            };
+          },
+          reminder(obj) {
+            return {
+              ...obj,
+              text: (obj.text || "").trim().slice(0, 200) || "Reminder",
+              time: /^\d{2}:\d{2}$/.test(obj.time) ? obj.time : "",
+              repeat: ["Daily", "Weekdays", "Weekly", "One-time"].includes(
+                obj.repeat,
+              )
+                ? obj.repeat
+                : "Daily",
+            };
+          },
+          classItem(obj) {
+            return {
+              ...obj,
+              name: (obj.name || "").trim().slice(0, 100) || "Class",
+              teacher: (obj.teacher || "").slice(0, 100),
+              email: (obj.email || "").slice(0, 200),
+            };
+          },
+        };
+
+        // ── State Manager with Undo/Redo ──
+        const StateManager = {
+          _undoStack: [],
+          _redoStack: [],
+
+          snapshot() {
+            this._undoStack.push(JSON.stringify(state));
+            if (this._undoStack.length > UNDO_LIMIT) this._undoStack.shift();
+            this._redoStack = [];
+          },
+          undo() {
+            if (!this._undoStack.length) return false;
+            this._redoStack.push(JSON.stringify(state));
+            state = normalize(JSON.parse(this._undoStack.pop()));
+            save();
+            EventBus.emit("stateChange");
+            return true;
+          },
+          redo() {
+            if (!this._redoStack.length) return false;
+            this._undoStack.push(JSON.stringify(state));
+            state = normalize(JSON.parse(this._redoStack.pop()));
+            save();
+            EventBus.emit("stateChange");
+            return true;
+          },
+          canUndo() {
+            return this._undoStack.length > 0;
+          },
+          canRedo() {
+            return this._redoStack.length > 0;
+          },
+        };
+
+        // ── Notification Service ──
+        const NotifService = {
+          _permitted: false,
+          _timers: [],
+
+          async requestPermission() {
+            if (!("Notification" in window)) return false;
+            if (Notification.permission === "granted") {
+              this._permitted = true;
+              return true;
+            }
+            const r = await Notification.requestPermission();
+            this._permitted = r === "granted";
+            return this._permitted;
+          },
+
+          schedule(reminders) {
+            this._timers.forEach(clearTimeout);
+            this._timers = [];
+            if (!this._permitted) return;
+            reminders
+              .filter((r) => !r.done && r.time && this._isActiveToday(r))
+              .forEach((r) => {
+                const min = minNow(r.time);
+                if (min > 0 && min <= 60) {
+                  this._timers.push(
+                    setTimeout(() => {
+                      new Notification("Noam School Reminder", {
+                        body: r.text,
+                        icon: "📋",
+                        tag: r.id,
+                      });
+                    }, min * 60000),
+                  );
+                }
+              });
+          },
+
+          _isActiveToday(r) {
+            const d = todayName();
+            if (r.repeat === "Weekly") return !r.day || r.day === d;
+            if (r.repeat === "Weekdays")
+              return !["Saturday", "Sunday"].includes(d);
+            return true;
+          },
+        };
+
+        // ── Google Sync Service ──
+        const GoogleSync = {
+          _syncing: false,
+
+          get isSyncing() {
+            return this._syncing;
+          },
+
+          async checkStatus() {
+            try {
+              const r = await fetch("/api/google/status");
+              if (!r.ok) throw new Error("Status check failed");
+              const data = await r.json();
+              StateManager.snapshot();
+              state.google = { ...state.google, ...data };
+              save();
+              EventBus.emit("stateChange");
+              EventBus.emit("syncComplete", { type: "status", success: true });
+              return data;
+            } catch (e) {
+              EventBus.emit("syncComplete", {
+                type: "status",
+                success: false,
+                error: e.message,
+              });
+              return null;
+            }
+          },
+
+          async syncCalendar() {
+            if (this._syncing) return;
+            this._syncing = true;
+            EventBus.emit("syncStart", { type: "calendar" });
+            try {
+              const r = await fetch("/api/google/calendar");
+              if (!r.ok) {
+                const d = await r.json().catch(() => ({}));
+                throw new Error(d.error || "Calendar sync failed");
+              }
+              const data = await r.json();
+              StateManager.snapshot();
+              state.google.events = data.events || [];
+              state.google.lastSync = new Date().toISOString();
+              save();
+              EventBus.emit("stateChange");
+              EventBus.emit("syncComplete", {
+                type: "calendar",
+                success: true,
+                count: (data.events || []).length,
+              });
+            } catch (e) {
+              EventBus.emit("syncComplete", {
+                type: "calendar",
+                success: false,
+                error: e.message,
+              });
+            } finally {
+              this._syncing = false;
+            }
+          },
+
+          async syncClassroom() {
+            if (this._syncing) return;
+            this._syncing = true;
+            EventBus.emit("syncStart", { type: "classroom" });
+            try {
+              const r = await fetch("/api/google/classroom");
+              if (!r.ok) {
+                const d = await r.json().catch(() => ({}));
+                throw new Error(d.error || "Classroom sync failed");
+              }
+              const data = await r.json();
+              StateManager.snapshot();
+              state.google.classroomAssignments = data.assignments || [];
+              state.google.lastSync = new Date().toISOString();
+              this._mergeCourses(data.courses || []);
+              save();
+              EventBus.emit("stateChange");
+              EventBus.emit("syncComplete", {
+                type: "classroom",
+                success: true,
+                courses: (data.courses || []).length,
+                assignments: (data.assignments || []).length,
+              });
+            } catch (e) {
+              EventBus.emit("syncComplete", {
+                type: "classroom",
+                success: false,
+                error: e.message,
+              });
+            } finally {
+              this._syncing = false;
+            }
+          },
+
+          async autoSync() {
+            if (!state.google.connected) return;
+            const last = state.google.lastSync
+              ? new Date(state.google.lastSync)
+              : null;
+            const stale = !last || Date.now() - last.getTime() > 15 * 60000;
+            if (stale) {
+              await this.syncCalendar();
+              await this.syncClassroom();
+            }
+          },
+
+          importWork(id) {
+            const w = (state.google.classroomAssignments || []).find(
+              (x) => x.id === id,
+            );
+            if (!w) return;
+            const existing = state.assignments.find((a) => a.googleId === id);
+            if (existing) {
+              toast("Already imported", "amber");
+              return;
+            }
+            let c = state.classes.find(
+              (x) => x.googleId === w.courseId || x.name === w.courseName,
+            );
+            if (!c) {
+              c = {
+                id: uid("class"),
+                googleId: w.courseId,
+                name: w.courseName || "Google Classroom",
+                teacher: "",
+                email: "",
+                room: "",
+                color: "#2f65d5",
+                source: "Google Classroom",
+              };
+              state.classes.push(c);
+            }
+            StateManager.snapshot();
+            state.assignments.push({
+              id: uid("a"),
+              googleId: id,
+              title: w.title,
+              classId: c.id,
+              due: w.due ? String(w.due).slice(0, 10) : "",
+              priority: "Medium",
+              status: "Not Started",
+              notes: w.description || "",
+              link: w.link || "",
+              created: iso(),
+            });
+            save();
+            EventBus.emit("stateChange");
+          },
+
+          _mergeCourses(courses) {
+            const colors = [
+              "#147c78",
+              "#248a55",
+              "#b84234",
+              "#2f65d5",
+              "#d99028",
+            ];
+            courses.forEach((course, i) => {
+              let c = state.classes.find(
+                (x) => x.googleId === course.id || x.name === course.name,
+              );
+              if (c) {
+                Object.assign(c, {
+                  googleId: course.id,
+                  name: course.name,
+                  room: course.room || c.room,
+                  link: course.link || c.link,
+                  source: "Google Classroom",
+                });
+              } else {
+                state.classes.push({
+                  id: uid("class"),
+                  googleId: course.id,
+                  name: course.name,
+                  teacher: course.teacher || "",
+                  email: "",
+                  room: course.room || course.section || "",
+                  link: course.link || "",
+                  color: colors[i % 5],
+                  source: "Google Classroom",
+                });
+              }
+            });
+          },
+        };
+
+        // ── Analytics Service ──
+        const Analytics = {
+          getWeekSummary() {
+            const now = new Date(),
+              weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            const ws = weekStart.toISOString().slice(0, 10);
+            const sessions = state.sessions.filter((s) => s.date >= ws);
+            const completedThisWeek = state.assignments.filter(
+              (a) => a.status === "Turned In" && a.completed >= ws,
+            );
+            const totalMinutes = sessions.reduce(
+              (sum, s) => sum + (s.minutes || 0),
+              0,
+            );
+            return {
+              sessions: sessions.length,
+              totalMinutes,
+              completed: completedThisWeek.length,
+              streak: this._calcStreak(),
+            };
+          },
+
+          _calcStreak() {
+            let streak = 0,
+              d = new Date();
+            for (let i = 0; i < 60; i++) {
+              const dateStr = d.toISOString().slice(0, 10);
+              const hasActivity =
+                state.sessions.some((s) => s.date === dateStr) ||
+                state.wins.some((w) => w.date === dateStr);
+              if (hasActivity) streak++;
+              else if (i > 0) break;
+              d.setDate(d.getDate() - 1);
+            }
+            return streak;
+          },
+
+          getSubjectBreakdown() {
+            const map = {};
+            state.sessions.forEach((s) => {
+              const a = state.assignments.find((x) => x.id === s.assignmentId);
+              const cls = a ? getClass(a.classId) : { name: "General" };
+              map[cls.name] = (map[cls.name] || 0) + (s.minutes || 0);
+            });
+            return Object.entries(map).sort((a, b) => b[1] - a[1]);
+          },
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // DATA LAYER
+        // ═══════════════════════════════════════════════════════════════
+
+        function defaultState() {
+          const m = uid("class"),
+            s = uid("class"),
+            e = uid("class"),
+            h = uid("class");
+          return {
+            version: VERSION,
+            settings: {
+              studentName: "Noam",
+              schoolName: "Krieger Schechter Day School",
+              gmail: "",
+              calendarEmbed: "",
+              calendarLink: "",
+              lastDailyReset: "",
+              lastWeeklyReset: "",
+              lastOpened: "",
+              homeOrder: [...HOME_ORDER],
+              focusMinutes: 10,
+              breakMinutes: 3,
+              theme: "light",
+              notificationsEnabled: false,
+              onboardingDone: false,
+            },
+            daily: {
+              date: iso(),
+              launchDone: false,
+              topGoal: "",
+              packed: false,
+              checkedClassroom: false,
+              selectedTask: "",
+            },
+            google: {
+              configured: false,
+              connected: false,
+              profile: null,
+              events: [],
+              classroomAssignments: [],
+              lastSync: "",
+            },
+            classes: [
+              {
+                id: m,
+                name: "Math",
+                teacher: "Math Teacher",
+                email: "",
+                room: "",
+                color: "#147c78",
+                source: "Manual",
+              },
+              {
+                id: s,
+                name: "Science",
+                teacher: "Science Teacher",
+                email: "",
+                room: "",
+                color: "#248a55",
+                source: "Manual",
+              },
+              {
+                id: e,
+                name: "English / ELA",
+                teacher: "ELA Teacher",
+                email: "",
+                room: "",
+                color: "#b84234",
+                source: "Manual",
+              },
+              {
+                id: h,
+                name: "Hebrew / Judaics",
+                teacher: "Hebrew Teacher",
+                email: "",
+                room: "",
+                color: "#2f65d5",
+                source: "Manual",
+              },
+            ],
+            schedule: {
+              Monday: [
+                {
+                  id: uid("sch"),
+                  start: "08:15",
+                  end: "09:00",
+                  title: "Homeroom / Advisory",
+                  location: "",
+                  classId: "",
+                  notes: "",
+                },
+                {
+                  id: uid("sch"),
+                  start: "09:00",
+                  end: "09:45",
+                  title: "Math",
+                  location: "",
+                  classId: m,
+                  notes: "",
+                },
+                {
+                  id: uid("sch"),
+                  start: "09:50",
+                  end: "10:35",
+                  title: "Science",
+                  location: "",
+                  classId: s,
+                  notes: "",
+                },
+              ],
+              Tuesday: [],
+              Wednesday: [],
+              Thursday: [],
+              Friday: [],
+              Saturday: [],
+              Sunday: [],
+            },
+            assignments: [
+              {
+                id: uid("a"),
+                title: "Ratios practice set",
+                classId: m,
+                due: iso(),
+                priority: "High",
+                status: "Started",
+                notes: "Finish selected problems and check answers.",
+                created: iso(),
+              },
+              {
+                id: uid("a"),
+                title: "Reading response paragraph",
+                classId: e,
+                due: iso(1),
+                priority: "Medium",
+                status: "Not Started",
+                notes: "Use one quote from the chapter.",
+                created: iso(),
+              },
+            ],
+            reminders: [
+              {
+                id: uid("r"),
+                text: "Check Google Classroom / planner",
+                time: "16:00",
+                repeat: "Daily",
+                day: "",
+                done: false,
+              },
+              {
+                id: uid("r"),
+                text: "Charge Chromebook",
+                time: "20:30",
+                repeat: "Daily",
+                day: "",
+                done: false,
+              },
+              {
+                id: uid("r"),
+                text: "Pack bag for tomorrow",
+                time: "20:45",
+                repeat: "Weekdays",
+                day: "",
+                done: false,
+              },
+            ],
+            weekly: {
+              Monday: [
+                { id: uid("w"), text: "Check every class page", done: false },
+                {
+                  id: uid("w"),
+                  text: "Write this week due dates",
+                  done: false,
+                },
+              ],
+              Tuesday: [
+                {
+                  id: uid("w"),
+                  text: "Update assignment statuses",
+                  done: false,
+                },
+              ],
+              Wednesday: [
+                {
+                  id: uid("w"),
+                  text: "Midweek backpack cleanout",
+                  done: false,
+                },
+              ],
+              Thursday: [
+                {
+                  id: uid("w"),
+                  text: "Ask for help before Friday",
+                  done: false,
+                },
+              ],
+              Friday: [
+                { id: uid("w"), text: "Turn in missing work", done: false },
+              ],
+              Saturday: [
+                { id: uid("w"), text: "10-minute school reset", done: false },
+              ],
+              Sunday: [
+                {
+                  id: uid("w"),
+                  text: "Pack Chromebook and materials",
+                  done: false,
+                },
+                { id: uid("w"), text: "Preview Monday schedule", done: false },
+              ],
+            },
+            sessions: [],
+            wins: [],
+          };
+        }
+
+        function normalize(x) {
+          const b = defaultState();
+          x = x || b;
+          let order = x.settings?.homeOrder || HOME_ORDER;
+          order = [
+            ...order.filter((k) => HOME_ORDER.includes(k)),
+            ...HOME_ORDER.filter((k) => !order.includes(k)),
+          ];
+          const sched = x.schedule || b.schedule;
+          DAYS.forEach((d) => {
+            if (!Array.isArray(sched[d])) sched[d] = [];
+          });
+          return {
+            version: VERSION,
+            settings: {
+              ...b.settings,
+              ...(x.settings || {}),
+              homeOrder: order,
+              focusMinutes: clamp(
+                Number(x.settings?.focusMinutes || 10),
+                1,
+                180,
+              ),
+              breakMinutes: clamp(Number(x.settings?.breakMinutes || 3), 1, 90),
+            },
+            daily: { ...b.daily, ...(x.daily || {}) },
+            google: { ...b.google, ...(x.google || {}) },
+            classes: Array.isArray(x.classes) ? x.classes : b.classes,
+            schedule: sched,
+            assignments: Array.isArray(x.assignments)
+              ? x.assignments.map((a) => ({
+                  id: a.id || uid("a"),
+                  title: a.title || "Assignment",
+                  classId: a.classId || "",
+                  due: a.due || a.dueDate || "",
+                  priority: a.priority || "Medium",
+                  status: a.status || "Not Started",
+                  notes: a.notes || a.description || "",
+                  link: a.link || "",
+                  googleId: a.googleId || "",
+                  created: a.created || iso(),
+                  completed: a.completed || "",
+                }))
+              : b.assignments,
+            reminders: Array.isArray(x.reminders)
+              ? x.reminders.map((r) => ({
+                  id: r.id || uid("r"),
+                  text: r.text || r.title || "Reminder",
+                  time: r.time || "",
+                  repeat: r.repeat || "Daily",
+                  day: r.day || "",
+                  done: !!r.done,
+                }))
+              : b.reminders,
+            weekly: x.weekly || b.weekly,
+            sessions: Array.isArray(x.sessions) ? x.sessions : [],
+            wins: Array.isArray(x.wins) ? x.wins : [],
+          };
+        }
+
+        function loadState() {
+          try {
+            let raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+              for (const k of LEGACY_KEYS) {
+                raw = localStorage.getItem(k);
+                if (raw) break;
+              }
+            }
+            return normalize(JSON.parse(raw));
+          } catch {
+            return defaultState();
+          }
+        }
+
+        let state = loadState();
+        const save = debounce(() => {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          EventBus.emit("saved");
+        }, 150);
+        function saveNow() {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // UI STATE
+        // ═══════════════════════════════════════════════════════════════
+
+        let view = "home";
+        let timer = {
+          sec: (state.settings.focusMinutes || 10) * 60,
+          run: false,
+          _int: null,
+          mode: "Work",
+          taskId: null,
+        };
+        let searchQuery = "";
+
+        // ═══════════════════════════════════════════════════════════════
+        // MAINTENANCE
+        // ═══════════════════════════════════════════════════════════════
+
+        function runMaintenance() {
+          let changed = false;
+          if (state.settings.lastDailyReset !== iso()) {
+            state.reminders.forEach((r) => {
+              if (r.repeat === "Daily" || r.repeat === "Weekdays")
+                r.done = false;
+            });
+            state.daily = {
+              ...state.daily,
+              date: iso(),
+              launchDone: false,
+              packed: false,
+              checkedClassroom: false,
+              selectedTask: "",
+            };
+            state.settings.lastDailyReset = iso();
+            changed = true;
+          }
+          const wk = weekKey();
+          if (state.settings.lastWeeklyReset !== wk) {
+            DAYS.forEach((d) =>
+              (state.weekly[d] || []).forEach((i) => (i.done = false)),
+            );
+            state.settings.lastWeeklyReset = wk;
+            changed = true;
+          }
+          if (state.settings.lastOpened !== iso()) {
+            state.settings.lastOpened = iso();
+            changed = true;
+          }
+          if (changed) saveNow();
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // HELPERS
+        // ═══════════════════════════════════════════════════════════════
+
+        function getClass(id) {
+          return (
+            state.classes.find((c) => c.id === id) || {
+              name: "Class",
+              color: "#147c78",
+              teacher: "",
+              email: "",
+            }
+          );
+        }
+        function openTasks() {
+          return state.assignments
+            .filter((a) => a.status !== "Turned In")
+            .sort((a, b) => daysDiff(a.due) - daysDiff(b.due));
+        }
+        function activeReminders() {
+          return state.reminders
+            .filter((r) => !r.done && isReminderActiveToday(r))
+            .sort((a, b) => timeSort(a.time) - timeSort(b.time));
+        }
+        function isReminderActiveToday(r) {
+          const d = todayName();
+          if (r.repeat === "Weekly") return !r.day || r.day === d;
+          if (r.repeat === "Weekdays")
+            return !["Saturday", "Sunday"].includes(d);
+          return true;
+        }
+        function todaySchedule() {
+          return (state.schedule[todayName()] || [])
+            .slice()
+            .sort((a, b) => timeSort(a.start) - timeSort(b.start));
+        }
+        function currentSchedule() {
+          const list = todaySchedule(),
+            now = new Date(),
+            nowMin = now.getHours() * 60 + now.getMinutes();
+          let cur = null,
+            next = null;
+          for (const s of list) {
+            const [sh, sm] = (s.start || "00:00").split(":").map(Number);
+            const [eh, em] = (s.end || s.start || "00:00")
+              .split(":")
+              .map(Number);
+            const st = sh * 60 + sm,
+              en = eh * 60 + em;
+            if (nowMin >= st && nowMin < en) cur = s;
+            if (nowMin < st && !next) next = s;
+          }
+          return { cur, next };
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // TOAST / MODAL
+        // ═══════════════════════════════════════════════════════════════
+
+        function toast(msg, type = "") {
+          const el = $("#toast");
+          el.textContent = msg;
+          el.className = "toast show" + (type ? " " + type : "");
+          clearTimeout(el._t);
+          el._t = setTimeout(() => el.classList.remove("show"), 2400);
+        }
+
+        function openModal(title, body) {
+          $("#modalTitle").textContent = title;
+          $("#modalBody").innerHTML = body;
+          $("#modalBack").classList.add("open");
+          setTimeout(() => {
+            const firstInput = $(
+              "#modalBody input, #modalBody select, #modalBody textarea",
+            );
+            if (firstInput) firstInput.focus();
+          }, 50);
+        }
+        function closeModal() {
+          $("#modalBack").classList.remove("open");
+          $("#modalBody").innerHTML = "";
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // COMMAND PALETTE
+        // ═══════════════════════════════════════════════════════════════
+
+        function openCmd() {
+          $("#cmdOverlay").classList.add("open");
+          $("#cmdInput").value = "";
+          $("#cmdInput").focus();
+          renderCmdResults("");
+        }
+        function closeCmd() {
+          $("#cmdOverlay").classList.remove("open");
+        }
+
+        function getCmdItems() {
+          const items = [];
+          items.push({
+            label: "Add assignment",
+            action: () => openModal("Assignment", assignmentForm()),
+            type: "action",
+          });
+          items.push({
+            label: "Add reminder",
+            action: () => openModal("Timed reminder", reminderForm()),
+            type: "action",
+          });
+          items.push({
+            label: "Daily Launch",
+            action: () => openModal("Daily Launch", quickPlanForm()),
+            type: "action",
+          });
+          items.push({
+            label: "Toggle dark mode",
+            action: toggleTheme,
+            type: "action",
+          });
+          items.push({
+            label: "Undo",
+            action: () => {
+              if (StateManager.undo()) {
+                toast("Undone");
+                render();
+              }
+            },
+            type: "action",
+          });
+          items.push({
+            label: "Redo",
+            action: () => {
+              if (StateManager.redo()) {
+                toast("Redone");
+                render();
+              }
+            },
+            type: "action",
+          });
+          items.push({
+            label: "Sync Google Classroom",
+            action: () => GoogleSync.syncClassroom(),
+            type: "action",
+          });
+          [
+            "home",
+            "today",
+            "schedule",
+            "reminders",
+            "assignments",
+            "classes",
+            "focus",
+            "email",
+            "sync",
+            "analytics",
+            "settings",
+          ].forEach((v) => {
+            items.push({
+              label: "Go to " + v.charAt(0).toUpperCase() + v.slice(1),
+              action: () => setView(v),
+              type: "nav",
+            });
+          });
+          state.assignments.forEach((a) =>
+            items.push({
+              label: a.title,
+              sub: getClass(a.classId).name + " · " + dueLabel(a.due),
+              action: () => {
+                openModal("Edit assignment", assignmentForm(a));
+                closeCmd();
+              },
+              type: "assignment",
+            }),
+          );
+          state.classes.forEach((c) =>
+            items.push({
+              label: c.name,
+              sub: c.teacher,
+              action: () => {
+                openModal("Edit class", classForm(c));
+                closeCmd();
+              },
+              type: "class",
+            }),
+          );
+          return items;
+        }
+
+        function renderCmdResults(query) {
+          const items = getCmdItems();
+          const q = query.toLowerCase().trim();
+          const filtered = q
+            ? items.filter(
+                (i) =>
+                  i.label.toLowerCase().includes(q) ||
+                  (i.sub || "").toLowerCase().includes(q),
+              )
+            : items.slice(0, 8);
+          $("#cmdResults").innerHTML =
+            filtered
+              .slice(0, 10)
+              .map(
+                (item, i) =>
+                  `<div class='cmd-item ${i === 0 ? "active" : ""}' data-cmd-idx='${i}' role='option'><span>${esc(item.label)}</span><small>${esc(item.sub || item.type)}</small></div>`,
+              )
+              .join("") ||
+            `<div class='cmd-item'><span>No results</span></div>`;
+          $("#cmdResults")._items = filtered.slice(0, 10);
+          $("#cmdResults")._active = 0;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // THEME
+        // ═══════════════════════════════════════════════════════════════
+
+        function applyTheme(theme) {
+          document.documentElement.dataset.theme = theme;
+          state.settings.theme = theme;
+          save();
+          const btn = $("#themeToggle");
+          if (btn) btn.textContent = theme === "dark" ? "☀️" : "🌙";
+        }
+
+        function toggleTheme() {
+          applyTheme(state.settings.theme === "dark" ? "light" : "dark");
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // RENDERING
+        // ═══════════════════════════════════════════════════════════════
+
+        function setView(v) {
+          view = v;
+          $$(".tab").forEach((t) =>
+            t.classList.toggle("active", t.dataset.view === v),
+          );
+          render();
+          closeCmd();
+        }
+
+        function shell() {
+          const d = new Date();
+          $("#todayLabel").textContent = d.toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+          });
+          $("#brandTitle").textContent =
+            (state.settings.studentName || "Noam") + " School";
+          $("#brandSub").textContent =
+            (state.settings.schoolName || "Daily Dugout") + " · command center";
+          const open = openTasks(),
+            today = open.filter((a) => daysDiff(a.due) === 0),
+            rem = activeReminders(),
+            sch = todaySchedule().length;
+          $("#statOpen").textContent = open.length;
+          $("#statToday").textContent = today.length;
+          $("#statRem").textContent = rem.length;
+          $("#statSched").textContent = sch;
+          const { cur, next } = currentSchedule(),
+            task = open[0],
+            nextRem = rem[0];
+          let coach = "";
+          if (cur)
+            coach = `Right now: <strong>${esc(cur.title)}</strong>${cur.location ? " in " + esc(cur.location) : ""}. ${next ? "Next: " + esc(next.title) + " at " + esc(timeLabel(next.start)) : "Last block for today."}`;
+          else if (state.daily.topGoal)
+            coach = `Today's goal: <strong>${esc(state.daily.topGoal)}</strong>. Check your schedule to see what's next.`;
+          else if (task)
+            coach = `Best first task: <strong>${esc(task.title)}</strong> for ${esc(getClass(task.classId).name)} — ${esc(dueLabel(task.due))}.`;
+          else if (nextRem)
+            coach = `Next reminder: <strong>${esc(nextRem.text)}</strong> at ${esc(timeLabel(nextRem.time))}.`;
+          else
+            coach =
+              "All caught up! Check the schedule or add a new assignment.";
+          $("#coachText").innerHTML = coach;
+          const g = state.settings.gmail;
+          const gh = $("#gmailHero");
+          gh.href = g
+            ? `mailto:${encodeURIComponent(g)}`
+            : "https://mail.google.com/";
+          gh.textContent = g ? "✉️ Email " + g : "✉️ Open Gmail";
+        }
+
+        function render() {
+          runMaintenance();
+          shell();
+          const pages = {
+            home,
+            today,
+            schedule,
+            reminders,
+            assignments,
+            classes,
+            focus,
+            email,
+            sync,
+            analytics,
+            settings,
+          };
+          $("#app").innerHTML = (pages[view] || home)();
+          bindEvents();
+          NotifService.schedule(state.reminders);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // PAGE RENDERERS
+        // ═══════════════════════════════════════════════════════════════
+
+        function card(key, title, sub, body) {
+          const order = state.settings.homeOrder,
+            i = order.indexOf(key);
+          return `<section class='card homeCard' draggable='true' data-card='${key}'><div class='head'><div><h3>${title}</h3><p class='sub'>${sub}</p></div><div class='row'><button class='btn icon-btn' data-move='${key}|up' ${i === 0 ? "disabled" : ""} aria-label='Move up'>↑</button><button class='btn icon-btn' data-move='${key}|down' ${i === order.length - 1 ? "disabled" : ""} aria-label='Move down'>↓</button></div></div>${body}</section>`;
+        }
+
+        function taskCard(a) {
+          const c = getClass(a.classId),
+            late = daysDiff(a.due) < 0;
+          return `<div class='item'><div class='itemTop'><div><h4>${esc(a.title)}</h4><p>${esc(a.notes || "No notes")}</p>${a.link ? `<a href='${esc(a.link)}' target='_blank' rel='noopener' class='btn' style='margin-top:4px'>Open in Classroom ↗</a>` : ""}</div><span class='pill ${late ? "red" : daysDiff(a.due) === 0 ? "amber" : ""}'>${esc(dueLabel(a.due))}</span></div><div class='row' style='margin-top:8px'><span class='pill' style='background:${c.color}22;color:${c.color}'>${esc(c.name)}</span><span class='pill'>${esc(a.priority)}</span><span class='pill'>${esc(a.status)}</span><button class='btn' data-edit='assignment' data-id='${a.id}'>Edit</button><button class='btn amber' data-start='${a.id}'>Focus</button>${a.status !== "Turned In" ? `<button class='btn primary' data-turnin='${a.id}'>✓ Done</button>` : ""}<button class='btn danger' data-del='assignment' data-id='${a.id}'>Del</button></div></div>`;
+        }
+
+        function schedItem(s, showDay = false) {
+          const { cur, next } = currentSchedule(),
+            isCur = cur && cur.id === s.id,
+            isNext = next && next.id === s.id,
+            c = getClass(s.classId);
+          return `<div class='item ${isCur ? "current" : isNext ? "next" : ""}'><div class='itemTop'><div><h4>${esc(s.title)}</h4><p><strong>${esc(timeLabel(s.start))}</strong>${s.end ? "–" + esc(timeLabel(s.end)) : ""}${s.location ? " · " + esc(s.location) : ""}${showDay ? " · " + esc(s.day || "") : ""}</p>${s.notes ? `<p>${esc(s.notes)}</p>` : ""}</div><span class='pill ${isCur ? "green" : isNext ? "amber" : ""}'>${isCur ? "▶ Now" : isNext ? "→ Next" : esc(c.name)}</span></div><div class='row' style='margin-top:6px'><button class='btn' data-edit='schedule' data-id='${s.id}' data-day='${s.day || todayName()}'>Edit</button><button class='btn danger' data-del='schedule' data-id='${s.id}' data-day='${s.day || todayName()}'>Del</button></div></div>`;
+        }
+
+        function remRow(r) {
+          const min = minNow(r.time),
+            urgent = !r.done && r.time && min <= 30 && min >= 0,
+            late = !r.done && r.time && min < 0;
+          return `<label class='check ${r.done ? "done" : ""}'><input type='checkbox' data-rem-check='${r.id}' ${r.done ? "checked" : ""}><span class='mainText' style='flex:1'><strong>${esc(timeLabel(r.time))}</strong> — ${esc(r.text)} <span class='pill ${urgent ? "amber" : late ? "red" : "blue"}'>${late ? "Past" : urgent ? "Soon" : esc(r.repeat)}</span></span><button type='button' class='btn' data-edit='reminder' data-id='${r.id}'>Edit</button><button type='button' class='btn danger' data-del='reminder' data-id='${r.id}'>Del</button></label>`;
+        }
+
+        function weekRow(w, d) {
+          return `<label class='check ${w.done ? "done" : ""}'><input type='checkbox' data-week-check='${d}|${w.id}' ${w.done ? "checked" : ""}><span class='mainText' style='flex:1'>${esc(w.text)}</span><button type='button' class='btn danger' data-week-del='${d}|${w.id}'>×</button></label>`;
+        }
+
+        // ── Home ──
+        function home() {
+          const open = openTasks(),
+            dueToday = open.filter((a) => daysDiff(a.due) === 0),
+            soon = open.filter(
+              (a) => daysDiff(a.due) > 0 && daysDiff(a.due) <= 7,
+            ),
+            rem = activeReminders(),
+            tn = todayName(),
+            sch = todaySchedule().map((s) => ({ ...s, day: tn }));
+          const map = {
+            launch: card(
+              "launch",
+              "Daily Launch",
+              "Set the day in under one minute.",
+              dailyLaunchMini(),
+            ),
+            schedule: card(
+              "schedule",
+              "Today Schedule",
+              "Current and upcoming blocks.",
+              (sch.length
+                ? sch.slice(0, 4).map(schedItem).join("")
+                : `<div class='note'>No schedule for ${tn}.</div>`) +
+                `<div class='row' style='margin-top:8px'><button class='btn primary' data-open='schedule'>＋ Block</button><button class='btn' data-view='schedule'>Full view</button></div>`,
+            ),
+            today: card(
+              "today",
+              "Today Work",
+              "Due today — knock these out first.",
+              dueToday.length
+                ? dueToday.map(taskCard).join("")
+                : `<div class='note'>Nothing due today!</div><div class='row' style='margin-top:8px'><button class='btn primary' data-open='assignment'>＋ Assignment</button></div>`,
+            ),
+            calendar: card(
+              "calendar",
+              "Calendar",
+              "Embedded or from Google Sync.",
+              calendarHtml(),
+            ),
+            reminders: card(
+              "reminders",
+              "Reminders",
+              "Sorted by time, reset daily.",
+              (rem.slice(0, 5).map(remRow).join("") ||
+                `<div class='note'>All done!</div>`) +
+                `<div class='row' style='margin-top:8px'><button class='btn primary' data-open='reminder'>＋ Reminder</button><button class='btn' data-view='reminders'>All</button></div>`,
+            ),
+            week: card(
+              "week",
+              tn + " Checklist",
+              "Weekly routine items.",
+              ((state.weekly[tn] || []).map((w) => weekRow(w, tn)).join("") ||
+                `<div class='note'>No items for ${tn}.</div>`) +
+                `<div class='row' style='margin-top:8px'><button class='btn' data-view='reminders'>Full week</button></div>`,
+            ),
+            google: card(
+              "google",
+              "Google Classroom",
+              "Sync courses and coursework.",
+              googleMini(),
+            ),
+            onDeck: card(
+              "onDeck",
+              "On Deck",
+              "Coming up this week.",
+              soon.length
+                ? soon.slice(0, 4).map(taskCard).join("")
+                : `<div class='note'>Nothing due in the next 7 days.</div>`,
+            ),
+            wins: card("wins", "Wins + Streak", "Track momentum.", winsMini()),
+            analytics: card(
+              "analytics",
+              "Quick Stats",
+              "Focus time and completion rate.",
+              analyticsMini(),
+            ),
+          };
+          return `<div class='homeGrid'>${state.settings.homeOrder.map((k) => `<div>${map[k] || ""}</div>`).join("")}</div>`;
+        }
+
+        function dailyLaunchMini() {
+          const pct =
+            ([
+              state.daily.launchDone,
+              state.daily.checkedClassroom,
+              state.daily.packed,
+              Boolean(state.daily.topGoal),
+            ].filter(Boolean).length /
+              4) *
+            100;
+          return `<div class='progress'><span style='width:${pct}%'></span></div><div class='row' style='margin-top:10px'><span class='pill ${state.daily.launchDone ? "green" : "amber"}'>${state.daily.launchDone ? "✓ Launched" : "Not launched"}</span><span class='pill ${state.daily.checkedClassroom ? "green" : ""}'>${state.daily.checkedClassroom ? "✓" : "○"} Classroom</span><span class='pill ${state.daily.packed ? "green" : ""}'>${state.daily.packed ? "✓" : "○"} Packed</span></div><p class='sub' style='margin-top:8px'>${state.daily.topGoal ? "Goal: " + esc(state.daily.topGoal) : "No goal set."}</p><div class='row' style='margin-top:6px'><button class='btn primary' data-open='quickPlan'>☀️ Launch</button><button class='btn' data-view='today'>Full plan</button></div>`;
+        }
+
+        function winsMini() {
+          const todayWins = state.wins.filter((w) => w.date === iso()).length;
+          const streak = Analytics._calcStreak();
+          return `<div class='grid g2'><div class='item'><h4>${todayWins}</h4><p>wins today</p></div><div class='item'><h4>${streak}</h4><p>day streak 🔥</p></div></div><div class='row' style='margin-top:6px'><button class='btn primary' data-open='win'>＋ Log win</button></div>`;
+        }
+
+        function analyticsMini() {
+          const s = Analytics.getWeekSummary();
+          return `<div class='grid g2'><div class='item'><h4>${s.sessions}</h4><p>focus sprints</p></div><div class='item'><h4>${s.totalMinutes}m</h4><p>total focus</p></div></div><button class='btn' data-view='analytics' style='margin-top:6px'>Full analytics</button>`;
+        }
+
+        function googleMini() {
+          const syncing = GoogleSync.isSyncing;
+          return state.google.connected
+            ? `<div class='syncBox connected'><strong>✓ Connected${state.google.profile?.email ? " as " + esc(state.google.profile.email) : ""}</strong><p class='sub'>Last sync: ${state.google.lastSync ? fmtDate(state.google.lastSync) : "never"}</p><div class='row' style='margin-top:6px'><button class='btn primary ${syncing ? "syncing" : ""}' id='homeSync'>${syncing ? "⟳ Syncing…" : "🔄 Sync now"}</button><button class='btn' data-view='sync'>Open sync</button></div></div>`
+            : `<div class='syncBox'><strong>Not connected</strong><p class='sub'>Connect Google to sync Classroom courses and Calendar events.</p><button class='btn primary' data-view='sync'>Set up sync</button></div>`;
+        }
+
+        function calendarHtml() {
+          const src = extractCal(state.settings.calendarEmbed);
+          if (src)
+            return `<div class='calendarBox' style='padding:0'><iframe src='${esc(src)}' loading='lazy' title='Calendar'></iframe></div>`;
+          if (state.google.events?.length)
+            return state.google.events
+              .slice(0, 5)
+              .map(
+                (e) =>
+                  `<div class='item'><h4>${esc(e.title)}</h4><p>${esc(fmtDate(e.start))}</p>${e.link ? `<a class='btn' target='_blank' rel='noopener' href='${esc(e.link)}'>Open</a>` : ""}</div>`,
+              )
+              .join("");
+          return `<div class='calendarBox'><div><h3>No calendar yet</h3><p class='sub'>Paste an embed URL in Settings or connect Google Sync.</p><button class='btn primary' data-view='settings'>Settings</button></div></div>`;
+        }
+
+        // ── Today ──
+        function today() {
+          const open = openTasks(),
+            rem = activeReminders(),
+            sch = todaySchedule().map((s) => ({ ...s, day: todayName() }));
+          return `<section class='card'><div class='head'><div><h3>Today Plan</h3><p class='sub'>Daily routine: launch, check schedule, complete tasks.</p></div><button class='btn primary' data-open='quickPlan'>☀️ Quick Launch</button></div><div class='grid g2'><div><div class='field'><label>Top goal today</label><input id='goalInput' value='${esc(state.daily.topGoal)}' placeholder='e.g., finish math and pack bag'></div><label class='check'><input type='checkbox' id='launchDone' ${state.daily.launchDone ? "checked" : ""}><span class='mainText'>Daily launch done</span></label><label class='check'><input type='checkbox' id='checkedClassroom' ${state.daily.checkedClassroom ? "checked" : ""}><span class='mainText'>Checked Classroom</span></label><label class='check'><input type='checkbox' id='packed' ${state.daily.packed ? "checked" : ""}><span class='mainText'>Bag / Chromebook ready</span></label><button class='btn primary' id='saveToday'>Save Plan</button></div><div><h3 style='margin-bottom:8px'>Today's schedule</h3>${sch.slice(0, 4).map(schedItem).join("") || `<div class='note'>No schedule today.</div>`}<h3 style='margin:12px 0 8px'>Next up</h3>${open.slice(0, 2).map(taskCard).join("") || `<div class='note'>No open tasks.</div>`}</div></div></section>`;
+        }
+
+        // ── Schedule ──
+        function schedule() {
+          return `<section class='card'><div class='head'><div><h3>Daily Schedule</h3><p class='sub'>Weekly recurring schedule. Today (${todayName()}) highlighted.</p></div><button class='btn primary' data-open='schedule'>＋ Block</button></div><div class='grid g2' style='margin-top:10px'>${DAYS.map(
+            (day) =>
+              `<div class='card' style='${day === todayName() ? "border-color:var(--teal);box-shadow:inset 0 0 0 1px var(--teal)" : ""}'><div class='head'><div><h3>${day}${day === todayName() ? " ←" : ""}</h3><p class='sub'>${(state.schedule[day] || []).length} blocks</p></div><button class='btn icon-btn' data-open='schedule' data-day='${day}'>＋</button></div>${
+                (state.schedule[day] || [])
+                  .slice()
+                  .sort((a, b) => timeSort(a.start) - timeSort(b.start))
+                  .map((s) => schedItem({ ...s, day }, true))
+                  .join("") || `<p class='sub'>Empty</p>`
+              }</div>`,
+          ).join("")}</div></section>`;
+        }
+
+        // ── Reminders ──
+        function reminders() {
+          return `<section class='card'><div class='head'><div><h3>Timed Reminders</h3><p class='sub'>Sorted by time. Repeating items reset daily.</p></div><button class='btn primary' data-open='reminder'>＋ Reminder</button></div>${
+            state.reminders
+              .slice()
+              .sort((a, b) => timeSort(a.time) - timeSort(b.time))
+              .map(remRow)
+              .join("") || `<div class='note'>No reminders.</div>`
+          }</section><section class='card' style='margin-top:12px'><div class='head'><div><h3>Weekly Checklist</h3><p class='sub'>Resets each Monday. Week of ${weekKey()}.</p></div></div><div class='week'>${DAYS.map((d) => `<div class='day'><h4>${d}</h4>${(state.weekly[d] || []).map((w) => weekRow(w, d)).join("") || `<p class='sub'>—</p>`}<div class='row' style='margin-top:6px'><input placeholder='Add…' data-week-input='${d}' style='padding:6px;font-size:.78rem'><button class='btn primary icon-btn' data-week-add='${d}'>＋</button></div></div>`).join("")}</div></section>`;
+        }
+
+        // ── Assignments ──
+        function assignments() {
+          const open = openTasks(),
+            done = state.assignments.filter((a) => a.status === "Turned In");
+          return `<section class='card'><div class='head'><div><h3>Assignments</h3><p class='sub'>${open.length} open · ${done.length} completed</p></div><div class='row'><input id='assignSearch' placeholder='Filter…' style='width:160px;padding:7px;font-size:.8rem' value='${esc(searchQuery)}'><button class='btn primary' data-open='assignment'>＋ Add</button></div></div>${filterAssignments(open).map(taskCard).join("") || `<div class='note'>No matching assignments.</div>`}${done.length ? `<details style='margin-top:14px'><summary style='cursor:pointer;font-weight:800;color:var(--muted);font-size:.85rem'>Turned in (${done.length})</summary><div style='margin-top:8px'>${done.map(taskCard).join("")}</div></details>` : ""}</section>`;
+        }
+
+        function filterAssignments(list) {
+          if (!searchQuery) return list;
+          const q = searchQuery.toLowerCase();
+          return list.filter(
+            (a) =>
+              a.title.toLowerCase().includes(q) ||
+              getClass(a.classId).name.toLowerCase().includes(q),
+          );
+        }
+
+        // ── Classes ──
+        function classes() {
+          return `<section class='card'><div class='head'><div><h3>Classes</h3><p class='sub'>Manual and Google Classroom synced courses.</p></div><div class='row'><button class='btn primary' id='syncClassroomClasses'>🔄 Sync Classroom</button><button class='btn' data-open='class'>＋ Add</button></div></div><div class='grid g3' style='margin-top:10px'>${state.classes.map((c) => `<div class='item'><h4>${esc(c.name)}</h4><p>${esc(c.teacher || "No teacher")} · ${esc(c.room || c.email || "No details")}</p><div class='row' style='margin-top:8px'><span class='pill' style='background:${c.color}22;color:${c.color}'>${esc(c.source || "Manual")}</span>${c.link ? `<a class='btn' target='_blank' rel='noopener' href='${esc(c.link)}'>Open ↗</a>` : ""}<button class='btn' data-edit='class' data-id='${c.id}'>Edit</button><button class='btn danger' data-del='class' data-id='${c.id}'>Del</button></div></div>`).join("")}</div></section>`;
+        }
+
+        // ── Focus ──
+        function focus() {
+          const open = openTasks();
+          const circumference = 2 * Math.PI * 88;
+          const totalSec =
+            timer.mode === "Work"
+              ? (state.settings.focusMinutes || 10) * 60
+              : (state.settings.breakMinutes || 3) * 60;
+          const pct = totalSec > 0 ? timer.sec / totalSec : 0;
+          const offset = circumference * (1 - pct);
+          return `<section class='card'><div class='head'><div><h3>Focus Timer</h3><p class='sub'>Custom work/break sprints with visual progress.</p></div></div><div class='timerMode'>${esc(timer.mode)} ${timer.run ? "· Running" : "· Paused"}</div><div class='timerRing'><svg viewBox='0 0 200 200'><circle class='track' cx='100' cy='100' r='88'/><circle class='progress' cx='100' cy='100' r='88' stroke-dasharray='${circumference}' stroke-dashoffset='${offset}'/></svg><div style='position:absolute;inset:0;display:grid;place-items:center'><div class='timerDisplay' id='timerDisplay'>${fmt(timer.sec)}</div></div></div><div class='grid g2'><div class='field'><label>Work (min)</label><input type='number' id='focusMinutes' min='1' max='180' value='${timer.mode === "Work" ? Math.max(1, Math.round(timer.sec / 60)) : state.settings.focusMinutes}'></div><div class='field'><label>Break (min)</label><input type='number' id='breakMinutes' min='1' max='90' value='${state.settings.breakMinutes}'></div></div><div class='field'><label>Task</label><select id='timerTask'>${open.map((a) => `<option value='${a.id}' ${timer.taskId === a.id ? "selected" : ""}>${esc(a.title)} — ${esc(getClass(a.classId).name)}</option>`).join("")}${!open.length ? "<option>No open tasks</option>" : ""}</select></div><div class='row'><button class='btn primary' id='applyTimer'>Set</button><button class='btn amber' id='timerStart'>${timer.run ? "⏸ Pause" : "▶ Start"}</button><button class='btn' id='timerReset'>Reset</button><button class='btn' data-preset='5'>5m</button><button class='btn' data-preset='10'>10m</button><button class='btn' data-preset='15'>15m</button><button class='btn' data-preset='25'>25m</button><button class='btn' data-preset='45'>45m</button></div></section>`;
+        }
+
+        // ── Email Coach ──
+        function email() {
+          const opts = state.classes
+            .map(
+              (c) =>
+                `<option value='${c.id}'>${esc(c.name)} — ${esc(c.teacher || "Teacher")}</option>`,
+            )
+            .join("");
+          return `<section class='card'><div class='head'><div><h3>Email Coach</h3><p class='sub'>Helps write clear teacher emails. Edit before sending.</p></div></div><div class='grid g2'><div><div class='field'><label>Class / Teacher</label><select id='mailClass'>${opts}</select></div><div class='field'><label>What do you need help with?</label><textarea id='mailNeed' placeholder='I am stuck on…'></textarea></div><div class='row'><button class='btn primary' id='makeMail'>Create draft</button><button class='btn' id='openMail'>Open mail app</button></div></div><div><div class='mailPreview' id='mailPreview'>Your draft will appear here.</div></div></div></section>`;
+        }
+
+        // ── Google Sync ──
+        function sync() {
+          const syncing = GoogleSync.isSyncing;
+          return `<section class='card'><div class='head'><div><h3>Google Sync</h3><p class='sub'>Calendar + Classroom sync via Cloudflare Pages Functions.</p></div><button class='btn' id='checkGoogle'>Check status</button></div><div class='syncBox ${state.google.connected ? "connected" : ""}' style='margin-bottom:12px'>${state.google.connected ? `<strong>✓ Connected${state.google.profile?.email ? " as " + esc(state.google.profile.email) : ""}</strong><p class='sub'>Last sync: ${state.google.lastSync ? fmtDate(state.google.lastSync) : "never"}</p>` : '<strong>Not connected</strong><p class="sub">After Cloudflare OAuth/KV setup, connect Google here.</p>'}</div><div class='row'><a class='btn primary' href='/api/google/login'>Connect Google</a><button class='btn ${syncing ? "syncing" : ""}' id='syncCalendar'>${syncing ? "⟳" : "📅"} Sync Calendar</button><button class='btn primary ${syncing ? "syncing" : ""}' id='syncClassroom'>${syncing ? "⟳" : "📚"} Sync Classroom</button><a class='btn danger' href='/api/google/logout'>Disconnect</a></div><div class='grid g2' style='margin-top:14px'><div class='card'><h3>Calendar Events (${(state.google.events || []).length})</h3>${
+            (state.google.events || [])
+              .slice(0, 8)
+              .map(
+                (e) =>
+                  `<div class='item'><h4>${esc(e.title)}</h4><p>${esc(fmtDate(e.start))}</p></div>`,
+              )
+              .join("") || `<p class='sub'>No synced events.</p>`
+          }</div><div class='card'><h3>Classroom Coursework (${(state.google.classroomAssignments || []).length})</h3>${
+            (state.google.classroomAssignments || [])
+              .slice(0, 10)
+              .map(
+                (a) =>
+                  `<div class='item'><div class='itemTop'><div><h4>${esc(a.title)}</h4><p>${esc(a.courseName || "Class")} · ${esc(fmtDate(a.due))}</p></div>${state.assignments.some((x) => x.googleId === a.id) ? `<span class='pill green'>Imported</span>` : `<button class='btn primary' data-import-work='${esc(a.id)}'>Import</button>`}</div></div>`,
+              )
+              .join("") || `<p class='sub'>No synced items.</p>`
+          }</div></div></section>`;
+        }
+
+        // ── Analytics ──
+        function analytics() {
+          const summary = Analytics.getWeekSummary();
+          const breakdown = Analytics.getSubjectBreakdown();
+          const maxMin = breakdown.length ? breakdown[0][1] : 1;
+          return `<section class='card'><div class='head'><div><h3>Analytics</h3><p class='sub'>Focus time, completions, and streaks.</p></div></div><div class='grid g2' style='margin-bottom:14px'><div class='item'><h4>${summary.sessions}</h4><p>Focus sprints this week</p></div><div class='item'><h4>${summary.totalMinutes}m</h4><p>Total focus time</p></div><div class='item'><h4>${summary.completed}</h4><p>Assignments completed</p></div><div class='item'><h4>${summary.streak} 🔥</h4><p>Day streak</p></div></div><h3 style='margin-bottom:8px'>Time by Subject</h3>${breakdown.length ? breakdown.map(([name, mins]) => `<div style='margin-bottom:8px'><div class='row' style='justify-content:space-between'><span style='font-weight:700;font-size:.85rem'>${esc(name)}</span><span style='font-size:.8rem;color:var(--muted)'>${mins}m</span></div><div class='progress'><span style='width:${(mins / maxMin) * 100}%'></span></div></div>`).join("") : `<div class='note'>Complete focus sprints to see data here.</div>`}<h3 style='margin:16px 0 8px'>Recent Wins</h3>${
+            state.wins
+              .slice(-10)
+              .reverse()
+              .map(
+                (w) =>
+                  `<div class='item'><div class='itemTop'><span>${esc(w.text)}</span><span class='pill'>${esc(w.date)}</span></div></div>`,
+              )
+              .join("") ||
+            `<div class='note'>Log wins from the home page.</div>`
+          }</section>`;
+        }
+
+        // ── Settings ──
+        function settings() {
+          return `<section class='card'><div class='head'><div><h3>Settings</h3><p class='sub'>Student info, preferences, backup, and configuration.</p></div></div><div class='grid g2'><div><div class='field'><label>Student name</label><input id='setName' value='${esc(state.settings.studentName)}'></div><div class='field'><label>School</label><input id='setSchool' value='${esc(state.settings.schoolName)}'></div><div class='field'><label>School Gmail</label><input id='setGmail' value='${esc(state.settings.gmail)}' type='email'></div><div class='grid g2'><div class='field'><label>Focus (min)</label><input type='number' id='setFocus' min='1' max='180' value='${state.settings.focusMinutes}'></div><div class='field'><label>Break (min)</label><input type='number' id='setBreak' min='1' max='90' value='${state.settings.breakMinutes}'></div></div><div class='field'><label>Calendar embed URL or iframe</label><textarea id='setCalEmbed'>${esc(state.settings.calendarEmbed)}</textarea></div><div class='field'><label>Calendar link (optional)</label><input id='setCalLink' value='${esc(state.settings.calendarLink)}'></div><button class='btn primary' id='saveSettings'>Save settings</button></div><div><div class='note' style='margin-bottom:12px'><strong>Keyboard shortcuts:</strong><br>⌘K / Ctrl+K — Command palette<br>Alt+D — Toggle dark mode<br>⌘Z / Ctrl+Z — Undo<br>⌘⇧Z / Ctrl+Y — Redo<br>1–9 — Switch tabs</div><div class='note' style='margin-bottom:12px'><strong>Auto behaviors:</strong> Reminders reset daily. Weekly checklist resets Monday. Google Classroom auto-syncs every 15 min when connected. Notifications fire 30 min before timed reminders (if enabled).</div><div class='row' style='gap:6px'><button class='btn' id='resetHome'>Reset layout</button><button class='btn' id='exportData'>Export</button><label class='btn'>Import<input type='file' id='importData' accept='application/json' style='display:none'></label><button class='btn danger' id='resetAll'>Reset all</button></div></div></div></section>`;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // FORMS
+        // ═══════════════════════════════════════════════════════════════
+
+        function assignmentForm(a = {}) {
+          return `<div class='field'><label>Title</label><input id='fTitle' value='${esc(a.title || "")}' required></div><div class='grid g2'><div class='field'><label>Class</label><select id='fClass'>${state.classes.map((c) => `<option value='${c.id}' ${a.classId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div><div class='field'><label>Due date</label><input type='date' id='fDue' value='${esc(a.due || iso())}'></div><div class='field'><label>Priority</label><select id='fPri'>${["High", "Medium", "Low"].map((p) => `<option ${a.priority === p ? "selected" : ""}>${p}</option>`).join("")}</select></div><div class='field'><label>Status</label><select id='fStatus'>${["Not Started", "Started", "Need Help", "Almost Done", "Turned In"].map((s) => `<option ${a.status === s ? "selected" : ""}>${s}</option>`).join("")}</select></div></div><div class='field'><label>Notes</label><textarea id='fNotes'>${esc(a.notes || "")}</textarea></div><button class='btn primary' id='saveAssignment' data-id='${a.id || ""}'>Save</button>`;
+        }
+
+        function reminderForm(r = {}) {
+          return `<div class='field'><label>Reminder text</label><input id='rText' value='${esc(r.text || "")}' required></div><div class='grid g2'><div class='field'><label>Time</label><input type='time' id='rTime' value='${esc(r.time || "")}'></div><div class='field'><label>Repeat</label><select id='rRepeat'>${["Daily", "Weekdays", "Weekly", "One-time"].map((x) => `<option ${r.repeat === x ? "selected" : ""}>${x}</option>`).join("")}</select></div><div class='field'><label>Day (for weekly)</label><select id='rDay'><option value=''>Any</option>${DAYS.map((d) => `<option ${r.day === d ? "selected" : ""}>${d}</option>`).join("")}</select></div></div><button class='btn primary' id='saveReminder' data-id='${r.id || ""}'>Save</button>`;
+        }
+
+        function classForm(c = {}) {
+          return `<div class='field'><label>Class name</label><input id='cName' value='${esc(c.name || "")}' required></div><div class='grid g2'><div class='field'><label>Teacher</label><input id='cTeacher' value='${esc(c.teacher || "")}'></div><div class='field'><label>Email</label><input id='cEmail' value='${esc(c.email || "")}' type='email'></div><div class='field'><label>Room</label><input id='cRoom' value='${esc(c.room || "")}'></div><div class='field'><label>Color</label><input type='color' id='cColor' value='${esc(c.color || "#147c78")}'></div></div><button class='btn primary' id='saveClass' data-id='${c.id || ""}'>Save</button>`;
+        }
+
+        function scheduleForm(s = {}, day = todayName()) {
+          return `<div class='grid g2'><div class='field'><label>Day</label><select id='sDay'>${DAYS.map((d) => `<option ${day === d ? "selected" : ""}>${d}</option>`).join("")}</select></div><div class='field'><label>Class (optional)</label><select id='sClass'><option value=''>None</option>${state.classes.map((c) => `<option value='${c.id}' ${s.classId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div><div class='field'><label>Start</label><input type='time' id='sStart' value='${esc(s.start || "08:00")}'></div><div class='field'><label>End</label><input type='time' id='sEnd' value='${esc(s.end || "08:45")}'></div></div><div class='field'><label>Title</label><input id='sTitle' value='${esc(s.title || "")}' placeholder='Math, Lunch, Advisory…' required></div><div class='grid g2'><div class='field'><label>Location</label><input id='sLocation' value='${esc(s.location || "")}'></div><div class='field'><label>Notes</label><input id='sNotes' value='${esc(s.notes || "")}'></div></div><button class='btn primary' id='saveSchedule' data-id='${s.id || ""}' data-original-day='${day}'>Save</button>`;
+        }
+
+        function quickPlanForm() {
+          return `<div class='field'><label>Top goal today</label><input id='qpGoal' value='${esc(state.daily.topGoal)}' placeholder='e.g., finish math and pack bag'></div><div class='field'><label>First task</label><select id='qpTask'><option value=''>None</option>${openTasks()
+            .map(
+              (a) =>
+                `<option value='${a.id}' ${state.daily.selectedTask === a.id ? "selected" : ""}>${esc(a.title)}</option>`,
+            )
+            .join(
+              "",
+            )}</select></div><label class='check'><input type='checkbox' id='qpClassroom' ${state.daily.checkedClassroom ? "checked" : ""}><span class='mainText'>Checked Google Classroom</span></label><label class='check'><input type='checkbox' id='qpPacked' ${state.daily.packed ? "checked" : ""}><span class='mainText'>Bag / Chromebook ready</span></label><button class='btn primary' id='saveQuickPlan'>Save Launch ☀️</button>`;
+        }
+
+        function winForm() {
+          return `<div class='field'><label>What went well?</label><input id='winText' placeholder='e.g., finished math sprint' required></div><button class='btn primary' id='saveWin'>Log Win 🎉</button>`;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // EVENT BINDING
+        // ═══════════════════════════════════════════════════════════════
+
+        function bindEvents() {
+          // Tab navigation
+          $$("[data-view]").forEach(
+            (b) => (b.onclick = () => setView(b.dataset.view)),
+          );
+
+          // Open modals
+          $$("[data-open]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const t = b.dataset.open;
+                if (t === "assignment")
+                  openModal("Assignment", assignmentForm());
+                if (t === "reminder")
+                  openModal("Timed reminder", reminderForm());
+                if (t === "class") openModal("Class", classForm());
+                if (t === "schedule")
+                  openModal(
+                    "Schedule block",
+                    scheduleForm({}, b.dataset.day || todayName()),
+                  );
+                if (t === "quickPlan")
+                  openModal("Daily Launch", quickPlanForm());
+                if (t === "win") openModal("Log a Win", winForm());
+              }),
+          );
+
+          // Edit modals
+          $$("[data-edit]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const t = b.dataset.edit,
+                  id = b.dataset.id;
+                if (t === "assignment")
+                  openModal(
+                    "Edit Assignment",
+                    assignmentForm(state.assignments.find((x) => x.id === id)),
+                  );
+                if (t === "reminder")
+                  openModal(
+                    "Edit Reminder",
+                    reminderForm(state.reminders.find((x) => x.id === id)),
+                  );
+                if (t === "class")
+                  openModal(
+                    "Edit Class",
+                    classForm(state.classes.find((x) => x.id === id)),
+                  );
+                if (t === "schedule") {
+                  const day = b.dataset.day;
+                  const s = (state.schedule[day] || []).find(
+                    (x) => x.id === id,
+                  );
+                  openModal("Edit Schedule", scheduleForm(s, day));
+                }
+              }),
+          );
+
+          // Delete
+          $$("[data-del]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                if (!confirm("Delete this?")) return;
+                StateManager.snapshot();
+                const t = b.dataset.del,
+                  id = b.dataset.id;
+                if (t === "schedule") {
+                  const d = b.dataset.day;
+                  state.schedule[d] = state.schedule[d].filter(
+                    (x) => x.id !== id,
+                  );
+                } else
+                  state[t + "s"] = state[t + "s"].filter((x) => x.id !== id);
+                save();
+                toast("Deleted");
+                render();
+              }),
+          );
+
+          // Turn in assignment quickly
+          $$("[data-turnin]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                StateManager.snapshot();
+                const a = state.assignments.find(
+                  (x) => x.id === b.dataset.turnin,
+                );
+                if (a) {
+                  a.status = "Turned In";
+                  a.completed = iso();
+                  save();
+                  toast("Marked done!", "success");
+                  render();
+                }
+              }),
+          );
+
+          // Reminder checkboxes
+          $$("[data-rem-check]").forEach(
+            (x) =>
+              (x.onchange = () => {
+                const r = state.reminders.find(
+                  (r) => r.id === x.dataset.remCheck,
+                );
+                if (r) {
+                  r.done = x.checked;
+                  save();
+                  render();
+                }
+              }),
+          );
+
+          // Weekly checklist
+          $$("[data-week-check]").forEach(
+            (x) =>
+              (x.onchange = () => {
+                const [d, id] = x.dataset.weekCheck.split("|");
+                const w = (state.weekly[d] || []).find((i) => i.id === id);
+                if (w) {
+                  w.done = x.checked;
+                  save();
+                  render();
+                }
+              }),
+          );
+
+          $$("[data-week-add]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const d = b.dataset.weekAdd,
+                  inp = $(`[data-week-input='${d}']`),
+                  text = (inp.value || "").trim();
+                if (!text) return;
+                state.weekly[d].push({ id: uid("w"), text, done: false });
+                save();
+                render();
+              }),
+          );
+
+          $$("[data-week-del]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const [d, id] = b.dataset.weekDel.split("|");
+                state.weekly[d] = state.weekly[d].filter((i) => i.id !== id);
+                save();
+                render();
+              }),
+          );
+
+          // Focus start from assignment
+          $$("[data-start]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                timer.taskId = b.dataset.start;
+                setView("focus");
+              }),
+          );
+
+          // Move cards
+          $$("[data-move]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const [k, dir] = b.dataset.move.split("|");
+                const a = state.settings.homeOrder,
+                  i = a.indexOf(k),
+                  j = dir === "up" ? i - 1 : i + 1;
+                if (i < 0 || j < 0 || j >= a.length) return;
+                [a[i], a[j]] = [a[j], a[i]];
+                save();
+                render();
+              }),
+          );
+
+          // Import Google work
+          $$("[data-import-work]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                GoogleSync.importWork(b.dataset.importWork);
+                render();
+              }),
+          );
+
+          // Timer presets
+          $$("[data-preset]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const mins = Number(b.dataset.preset);
+                timer.mode = "Work";
+                timer.sec = mins * 60;
+                state.settings.focusMinutes = mins;
+                save();
+                render();
+              }),
+          );
+
+          // Timer controls
+          const tt = $("#timerTask");
+          if (tt) tt.onchange = () => (timer.taskId = tt.value);
+          const ap = $("#applyTimer");
+          if (ap)
+            ap.onclick = () => {
+              const mins = clamp(
+                Number($("#focusMinutes").value) || 10,
+                1,
+                180,
+              );
+              const br = clamp(Number($("#breakMinutes").value) || 3, 1, 90);
+              state.settings.focusMinutes = mins;
+              state.settings.breakMinutes = br;
+              timer.mode = "Work";
+              timer.sec = mins * 60;
+              save();
+              render();
+              toast("Timer set");
+            };
+          const st = $("#timerStart");
+          if (st) st.onclick = startTimer;
+          const tr = $("#timerReset");
+          if (tr)
+            tr.onclick = () => {
+              stopTimer();
+              timer.mode = "Work";
+              timer.sec = (state.settings.focusMinutes || 10) * 60;
+              render();
+            };
+
+          // Today plan save
+          const saveT = $("#saveToday");
+          if (saveT)
+            saveT.onclick = () => {
+              StateManager.snapshot();
+              state.daily.topGoal = ($("#goalInput").value || "").trim();
+              state.daily.launchDone = $("#launchDone").checked;
+              state.daily.checkedClassroom = $("#checkedClassroom").checked;
+              state.daily.packed = $("#packed").checked;
+              save();
+              render();
+              toast("Saved");
+            };
+
+          // Settings save
+          const sm = $("#saveSettings");
+          if (sm)
+            sm.onclick = () => {
+              StateManager.snapshot();
+              state.settings.studentName =
+                ($("#setName").value || "").trim() || "Noam";
+              state.settings.schoolName = ($("#setSchool").value || "").trim();
+              state.settings.gmail = ($("#setGmail").value || "").trim();
+              state.settings.focusMinutes = clamp(
+                Number($("#setFocus").value) || 10,
+                1,
+                180,
+              );
+              state.settings.breakMinutes = clamp(
+                Number($("#setBreak").value) || 3,
+                1,
+                90,
+              );
+              state.settings.calendarEmbed = (
+                $("#setCalEmbed").value || ""
+              ).trim();
+              state.settings.calendarLink = (
+                $("#setCalLink").value || ""
+              ).trim();
+              timer.mode = "Work";
+              timer.sec = state.settings.focusMinutes * 60;
+              save();
+              render();
+              toast("Settings saved", "success");
+            };
+
+          // Email coach
+          const mm = $("#makeMail");
+          if (mm) mm.onclick = makeMail;
+          const om = $("#openMail");
+          if (om) om.onclick = openMail;
+
+          // Export/import/reset
+          const ex = $("#exportData");
+          if (ex) ex.onclick = exportData;
+          const im = $("#importData");
+          if (im) im.onchange = (e) => importData(e.target.files[0]);
+          const rs = $("#resetAll");
+          if (rs)
+            rs.onclick = () => {
+              if (confirm("Reset all data to defaults?")) {
+                state = defaultState();
+                saveNow();
+                render();
+                toast("Reset complete");
+              }
+            };
+          const rh = $("#resetHome");
+          if (rh)
+            rh.onclick = () => {
+              state.settings.homeOrder = [...HOME_ORDER];
+              save();
+              render();
+              toast("Layout reset");
+            };
+
+          // Google sync buttons
+          const cg = $("#checkGoogle");
+          if (cg) cg.onclick = () => GoogleSync.checkStatus();
+          const sc = $("#syncCalendar");
+          if (sc) sc.onclick = () => GoogleSync.syncCalendar();
+          const scc = $("#syncClassroom");
+          if (scc) scc.onclick = () => GoogleSync.syncClassroom();
+          const scc2 = $("#syncClassroomClasses");
+          if (scc2) scc2.onclick = () => GoogleSync.syncClassroom();
+          const hs = $("#homeSync");
+          if (hs)
+            hs.onclick = () => {
+              GoogleSync.syncCalendar();
+              GoogleSync.syncClassroom();
+            };
+
+          // Assignment search
+          const as = $("#assignSearch");
+          if (as)
+            as.oninput = () => {
+              searchQuery = as.value;
+              render();
+            };
+
+          // Drag and drop for home cards
+          setupDragDrop();
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // DRAG AND DROP
+        // ═══════════════════════════════════════════════════════════════
+
+        function setupDragDrop() {
+          let dragged = null;
+          $$(".homeCard").forEach((c) => {
+            c.ondragstart = (e) => {
+              dragged = c.dataset.card;
+              c.classList.add("dragging");
+              e.dataTransfer.effectAllowed = "move";
+            };
+            c.ondragend = () => {
+              c.classList.remove("dragging");
+              dragged = null;
+            };
+            c.ondragover = (e) => e.preventDefault();
+            c.ondrop = (e) => {
+              e.preventDefault();
+              if (!dragged || dragged === c.dataset.card) return;
+              const arr = state.settings.homeOrder.filter((x) => x !== dragged);
+              const idx = arr.indexOf(c.dataset.card);
+              arr.splice(idx, 0, dragged);
+              state.settings.homeOrder = arr;
+              save();
+              render();
+            };
+          });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // TIMER ENGINE
+        // ═══════════════════════════════════════════════════════════════
+
+        function startTimer() {
+          if (timer.run) {
+            stopTimer();
+            render();
+            return;
+          }
+          timer.run = true;
+          timer._int = setInterval(() => {
+            timer.sec = Math.max(0, timer.sec - 1);
+            const d = $("#timerDisplay");
+            if (d) d.textContent = fmt(timer.sec);
+            // Update ring
+            const circumference = 2 * Math.PI * 88;
+            const totalSec =
+              timer.mode === "Work"
+                ? (state.settings.focusMinutes || 10) * 60
+                : (state.settings.breakMinutes || 3) * 60;
+            const pct = totalSec > 0 ? timer.sec / totalSec : 0;
+            const ring = $(".timerRing .progress");
+            if (ring) ring.style.strokeDashoffset = circumference * (1 - pct);
+
+            if (timer.sec <= 0) {
+              if (timer.mode === "Work") {
+                state.sessions.push({
+                  id: uid("s"),
+                  assignmentId: timer.taskId,
+                  minutes: state.settings.focusMinutes,
+                  date: iso(),
+                });
+                timer.mode = "Break";
+                timer.sec = (state.settings.breakMinutes || 3) * 60;
+                save();
+                toast("Sprint done! Take a break.", "success");
+                if (NotifService._permitted)
+                  new Notification("Focus Sprint Complete!", {
+                    body: "Time for a break.",
+                  });
+              } else {
+                stopTimer();
+                timer.mode = "Work";
+                timer.sec = (state.settings.focusMinutes || 10) * 60;
+                toast("Break over — ready for another sprint?");
+              }
+              render();
+            }
+          }, 1000);
+          render();
+        }
+
+        function stopTimer() {
+          timer.run = false;
+          clearInterval(timer._int);
+        }
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // EMAIL COACH
+        // ═══════════════════════════════════════════════════════════════
+
+        function makeMail() {
+          const c = getClass($("#mailClass").value);
+          const need = ($("#mailNeed").value || "").trim() || "the assignment";
+          const text = `Subject: Quick question about class\n\nHi ${c.teacher || "Teacher"},\n\nI am working on my schoolwork and I need help with ${need}. I already tried checking my notes and getting started, but I am still confused.\n\nCould you please help me understand what I should do next?\n\nThank you,\n${state.settings.studentName || "Noam"}`;
+          $("#mailPreview").textContent = text;
+          window._lastMail = { to: c.email || "", body: text };
+        }
+
+        function openMail() {
+          if (!window._lastMail) makeMail();
+          const m = window._lastMail || {};
+          location.href = `mailto:${encodeURIComponent(m.to || state.settings.gmail || "")}?subject=${encodeURIComponent("Quick question about class")}&body=${encodeURIComponent(m.body || "")}`;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // EXPORT / IMPORT
+        // ═══════════════════════════════════════════════════════════════
+
+        function exportData() {
+          const blob = new Blob([JSON.stringify(state, null, 2)], {
+            type: "application/json",
+          });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "noam-school-backup-" + iso() + ".json";
+          a.click();
+          URL.revokeObjectURL(a.href);
+          toast("Backup exported");
+        }
+
+        function importData(file) {
+          if (!file) return;
+          const r = new FileReader();
+          r.onload = () => {
+            try {
+              state = normalize(JSON.parse(r.result));
+              saveNow();
+              render();
+              toast("Imported!", "success");
+            } catch {
+              toast("Could not import", "error");
+            }
+          };
+          r.readAsText(file);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // MODAL SAVE HANDLERS (delegated)
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener("click", (e) => {
+          if (e.target.matches("[data-close]")) closeModal();
+
+          if (e.target.id === "saveAssignment") {
+            const id = e.target.dataset.id;
+            const obj = Validator.assignment({
+              id: id || uid("a"),
+              title: $("#fTitle").value,
+              classId: $("#fClass").value,
+              due: $("#fDue").value,
+              priority: $("#fPri").value,
+              status: $("#fStatus").value,
+              notes: $("#fNotes").value,
+              created: iso(),
+            });
+            if (obj.status === "Turned In") obj.completed = iso();
+            StateManager.snapshot();
+            if (id)
+              state.assignments = state.assignments.map((a) =>
+                a.id === id ? { ...a, ...obj } : a,
+              );
+            else state.assignments.push(obj);
+            save();
+            closeModal();
+            render();
+            toast("Assignment saved", "success");
+          }
+
+          if (e.target.id === "saveReminder") {
+            const id = e.target.dataset.id;
+            const obj = Validator.reminder({
+              id: id || uid("r"),
+              text: $("#rText").value,
+              time: $("#rTime").value,
+              repeat: $("#rRepeat").value,
+              day: $("#rDay").value,
+              done: false,
+            });
+            StateManager.snapshot();
+            if (id)
+              state.reminders = state.reminders.map((r) =>
+                r.id === id ? { ...r, ...obj, done: r.done } : r,
+              );
+            else state.reminders.push(obj);
+            save();
+            closeModal();
+            render();
+            toast("Reminder saved", "success");
+          }
+
+          if (e.target.id === "saveClass") {
+            const id = e.target.dataset.id;
+            const obj = Validator.classItem({
+              id: id || uid("class"),
+              name: $("#cName").value,
+              teacher: $("#cTeacher").value,
+              email: $("#cEmail").value,
+              room: $("#cRoom").value,
+              color: $("#cColor").value,
+              source: id
+                ? state.classes.find((c) => c.id === id)?.source || "Manual"
+                : "Manual",
+            });
+            StateManager.snapshot();
+            if (id)
+              state.classes = state.classes.map((c) =>
+                c.id === id ? { ...c, ...obj } : c,
+              );
+            else state.classes.push(obj);
+            save();
+            closeModal();
+            render();
+            toast("Class saved", "success");
+          }
+
+          if (e.target.id === "saveSchedule") {
+            const orig = e.target.dataset.originalDay,
+              day = $("#sDay").value,
+              id = e.target.dataset.id;
+            const obj = {
+              id: id || uid("sch"),
+              start: $("#sStart").value,
+              end: $("#sEnd").value,
+              title: ($("#sTitle").value || "").trim() || "Block",
+              location: ($("#sLocation").value || "").trim(),
+              classId: $("#sClass").value,
+              notes: ($("#sNotes").value || "").trim(),
+            };
+            StateManager.snapshot();
+            if (id) {
+              state.schedule[orig] = (state.schedule[orig] || []).filter(
+                (s) => s.id !== id,
+              );
+              state.schedule[day].push(obj);
+            } else state.schedule[day].push(obj);
+            save();
+            closeModal();
+            render();
+            toast("Schedule saved", "success");
+          }
+
+          if (e.target.id === "saveQuickPlan") {
+            StateManager.snapshot();
+            state.daily.topGoal = ($("#qpGoal").value || "").trim();
+            state.daily.selectedTask = $("#qpTask").value;
+            state.daily.checkedClassroom = $("#qpClassroom").checked;
+            state.daily.packed = $("#qpPacked").checked;
+            state.daily.launchDone = true;
+            save();
+            closeModal();
+            render();
+            toast("Daily Launch saved!", "success");
+          }
+
+          if (e.target.id === "saveWin") {
+            const text = ($("#winText").value || "").trim();
+            if (!text) return;
+            state.wins.push({ id: uid("win"), date: iso(), text });
+            save();
+            closeModal();
+            render();
+            toast("Win logged! 🎉", "success");
+          }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // KEYBOARD SHORTCUTS
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener("keydown", (e) => {
+          // Command palette
+          if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+            e.preventDefault();
+            openCmd();
+          }
+          if (e.key === "Escape") {
+            if ($("#cmdOverlay").classList.contains("open")) {
+              closeCmd();
+              return;
+            }
+            if ($("#modalBack").classList.contains("open")) {
+              closeModal();
+              return;
+            }
+          }
+
+          // Undo/Redo
+          if ((e.metaKey || e.ctrlKey) && e.key === "z" && !e.shiftKey) {
+            e.preventDefault();
+            if (StateManager.undo()) {
+              toast("Undone");
+              render();
+            }
+          }
+          if (
+            (e.metaKey || e.ctrlKey) &&
+            (e.key === "y" || (e.key === "z" && e.shiftKey))
+          ) {
+            e.preventDefault();
+            if (StateManager.redo()) {
+              toast("Redone");
+              render();
+            }
+          }
+
+          // Dark mode
+          if (e.altKey && e.key === "d") {
+            e.preventDefault();
+            toggleTheme();
+          }
+
+          // Number keys for tabs (when not in input)
+          if (
+            !e.metaKey &&
+            !e.ctrlKey &&
+            !e.altKey &&
+            e.target.tagName !== "INPUT" &&
+            e.target.tagName !== "TEXTAREA" &&
+            e.target.tagName !== "SELECT"
+          ) {
+            const views = [
+              "home",
+              "today",
+              "schedule",
+              "reminders",
+              "assignments",
+              "classes",
+              "focus",
+              "email",
+              "sync",
+              "analytics",
+              "settings",
+            ];
+            const n = parseInt(e.key);
+            if (n >= 1 && n <= views.length) {
+              setView(views[n - 1]);
+              e.preventDefault();
+            }
+          }
+
+          // Command palette navigation
+          if ($("#cmdOverlay").classList.contains("open")) {
+            const results = $("#cmdResults");
+            if (!results._items) return;
+            let active = results._active || 0;
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              active = Math.min(active + 1, results._items.length - 1);
+            }
+            if (e.key === "ArrowUp") {
+              e.preventDefault();
+              active = Math.max(active - 1, 0);
+            }
+            if (e.key === "Enter" && results._items[active]) {
+              e.preventDefault();
+              results._items[active].action();
+              closeCmd();
+              return;
+            }
+            results._active = active;
+            $$(".cmd-item", results).forEach((el, i) =>
+              el.classList.toggle("active", i === active),
+            );
+          }
+        });
+
+        // Command palette input
+        $("#cmdInput").addEventListener("input", (e) =>
+          renderCmdResults(e.target.value),
+        );
+        $("#cmdOverlay").addEventListener("click", (e) => {
+          if (e.target === $("#cmdOverlay")) closeCmd();
+        });
+        $("#cmdTrigger").addEventListener("click", openCmd);
+        $("#cmdResults").addEventListener("click", (e) => {
+          const item = e.target.closest(".cmd-item");
+          if (!item) return;
+          const idx = Number(item.dataset.cmdIdx);
+          const results = $("#cmdResults");
+          if (results._items && results._items[idx]) {
+            results._items[idx].action();
+            closeCmd();
+          }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // THEME & NOTIFICATION TOGGLES
+        // ═══════════════════════════════════════════════════════════════
+
+        $("#themeToggle").addEventListener("click", toggleTheme);
+        $("#notifToggle").addEventListener("click", async () => {
+          const granted = await NotifService.requestPermission();
+          if (granted) {
+            state.settings.notificationsEnabled = true;
+            save();
+            toast("Notifications enabled", "success");
+            NotifService.schedule(state.reminders);
+          } else toast("Notifications not available", "error");
+        });
+
+        // Modal backdrop close
+        $("#modalBack").addEventListener("click", (e) => {
+          if (e.target === $("#modalBack")) closeModal();
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // EVENT BUS LISTENERS
+        // ═══════════════════════════════════════════════════════════════
+
+        EventBus.on("stateChange", () => render());
+        EventBus.on("syncStart", ({ type }) => toast(`Syncing ${type}…`));
+        EventBus.on("syncComplete", ({ type, success, error }) => {
+          if (success)
+            toast(
+              `${type.charAt(0).toUpperCase() + type.slice(1)} synced!`,
+              "success",
+            );
+          else toast(error || `${type} sync failed`, "error");
+          render();
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // ONBOARDING
+        // ═══════════════════════════════════════════════════════════════
+
+        function showOnboarding() {
+          if (state.settings.onboardingDone) return;
+          const overlay = $("#onboardOverlay");
+          overlay.style.display = "grid";
+
+          const steps = [
+            {
+              title: "Welcome to Noam School! 👋",
+              body: `<p>Your daily command center for staying organized.</p><div class='field' style='margin-top:16px;text-align:left'><label>Your name</label><input id='obName' value='${esc(state.settings.studentName)}' placeholder='Your name'></div><div class='field' style='text-align:left'><label>School</label><input id='obSchool' value='${esc(state.settings.schoolName)}' placeholder='School name'></div>`,
+            },
+            {
+              title: "How it works",
+              body: `<p style='text-align:left;margin-bottom:12px'>Your daily flow:</p><div style='text-align:left;font-size:.9rem'><p>1. <strong>Daily Launch</strong> — set your goal and check readiness</p><p>2. <strong>Schedule</strong> — see where you need to be</p><p>3. <strong>Focus Timer</strong> — work in sprints</p><p>4. <strong>Reminders</strong> — never forget evening routines</p></div>`,
+            },
+            {
+              title: "Keyboard shortcuts ⌨️",
+              body: `<div style='text-align:left;font-size:.9rem'><p><kbd style='background:var(--paper2);border:1px solid var(--line);padding:2px 6px;border-radius:4px'>⌘K</kbd> — Search anything</p><p><kbd style='background:var(--paper2);border:1px solid var(--line);padding:2px 6px;border-radius:4px'>Alt+D</kbd> — Dark mode</p><p><kbd style='background:var(--paper2);border:1px solid var(--line);padding:2px 6px;border-radius:4px'>⌘Z</kbd> — Undo</p><p><kbd style='background:var(--paper2);border:1px solid var(--line);padding:2px 6px;border-radius:4px'>1-9</kbd> — Switch tabs</p></div>`,
+            },
+          ];
+
+          let step = 0;
+          function renderStep() {
+            $("#onboardSteps").innerHTML = steps
+              .map(
+                (_, i) =>
+                  `<div class='onboard-step ${i === step ? "active" : ""}'></div>`,
+              )
+              .join("");
+            $("#onboardContent").innerHTML =
+              `<h2>${steps[step].title}</h2>${steps[step].body}<div class='row' style='justify-content:center;margin-top:20px'>${step > 0 ? `<button class='btn' id='obPrev'>← Back</button>` : ""}<button class='btn primary' id='obNext'>${step === steps.length - 1 ? "Get started →" : "Next →"}</button></div>`;
+            const prev = $("#obPrev");
+            if (prev)
+              prev.onclick = () => {
+                step--;
+                renderStep();
+              };
+            const next = $("#obNext");
+            next.onclick = () => {
+              if (step === 0) {
+                const name = $("#obName");
+                if (name)
+                  state.settings.studentName = name.value.trim() || "Noam";
+                const school = $("#obSchool");
+                if (school) state.settings.schoolName = school.value.trim();
+              }
+              if (step >= steps.length - 1) {
+                state.settings.onboardingDone = true;
+                saveNow();
+                overlay.style.display = "none";
+                render();
+              } else {
+                step++;
+                renderStep();
+              }
+            };
+          }
+          renderStep();
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════════
+
+        applyTheme(state.settings.theme || "light");
+        runMaintenance();
+        saveNow();
+        render();
+        showOnboarding();
+
+        // Auto-sync on load
+        setTimeout(() => GoogleSync.checkStatus(), 1000);
+        setTimeout(() => GoogleSync.autoSync(), 3000);
+
+        // Periodic refresh
+        setInterval(shell, 60000);
+        setInterval(() => {
+          if (state.google.connected) GoogleSync.autoSync();
+        }, 15 * 60000);
+
+        // Notification scheduling
+        if (
+          state.settings.notificationsEnabled &&
+          Notification.permission === "granted"
+        ) {
+          NotifService._permitted = true;
+          NotifService.schedule(state.reminders);
+        }
+      })();
+    </script>
+  </body>
+</html>
