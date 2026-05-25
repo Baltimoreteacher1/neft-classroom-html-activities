@@ -3,100 +3,324 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Neft Teacher activity hub organized into Math, ESOL, Reading, and Teacher Tools sections.">
-  <title>Neft Teacher Activity Hub</title>
+  <meta name="description" content="Neft Hub is a personal and professional launch dashboard for teacher tools, classroom activities, data dashboards, Hebrew review, reading resources, and recurring workflows.">
+  <title>Neft Hub | Personal and Professional Dashboard</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    .hub-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      gap: clamp(18px, 4vw, 34px);
+      align-items: stretch;
+    }
+
+    .hub-summary {
+      padding: 22px;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(238, 244, 243, .96), rgba(255, 250, 240, .96));
+      box-shadow: 0 16px 38px rgba(23, 32, 42, .08);
+    }
+
+    .hub-summary h2 {
+      margin: 0 0 12px;
+      color: #17202a;
+      font-size: clamp(1.25rem, 3vw, 1.65rem);
+    }
+
+    .hub-summary ol {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding-left: 1.15rem;
+      color: #53616f;
+      line-height: 1.55;
+    }
+
+    .hub-jump-row,
+    .hub-action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .hub-jump-row a,
+    .hub-action-row a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .hub-jump-row a:first-child,
+    .hub-action-row .primary-link {
+      color: #fff;
+      background: #0f766e;
+      box-shadow: 0 10px 24px rgba(15, 118, 110, .22);
+    }
+
+    .hub-jump-row a:not(:first-child),
+    .hub-action-row .secondary-link {
+      color: #115e59;
+      background: #eef4f3;
+      border: 1px solid rgba(15, 118, 110, .18);
+    }
+
+    .hub-lane-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .hub-lane {
+      display: grid;
+      gap: 14px;
+      padding: 20px;
+      border: 1px solid #d8dfdc;
+      border-radius: 20px;
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 14px 34px rgba(23, 32, 42, .08);
+    }
+
+    .hub-lane.professional {
+      border-top: 8px solid #0f766e;
+    }
+
+    .hub-lane.personal {
+      border-top: 8px solid #b7791f;
+    }
+
+    .hub-lane h3 {
+      margin: 0;
+      color: #17202a;
+      font-size: clamp(1.35rem, 3vw, 1.8rem);
+    }
+
+    .hub-lane p {
+      margin: 0;
+      color: #53616f;
+      line-height: 1.6;
+    }
+
+    .mini-link-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .mini-link-grid a {
+      display: grid;
+      gap: 4px;
+      min-height: 104px;
+      padding: 14px;
+      border: 1px solid #d8dfdc;
+      border-radius: 15px;
+      background: #fff;
+      color: inherit;
+      text-decoration: none;
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .mini-link-grid a:hover,
+    .mini-link-grid a:focus-visible {
+      transform: translateY(-2px);
+      border-color: #0f766e;
+      box-shadow: 0 12px 26px rgba(23, 32, 42, .09);
+      outline: none;
+    }
+
+    .mini-link-grid strong {
+      color: #17202a;
+    }
+
+    .mini-link-grid span {
+      color: #53616f;
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .hub-divider-label {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 8px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #eef4f3;
+      color: #115e59;
+      font-size: .76rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 960px) {
+      .hub-hero,
+      .hub-lane-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .mini-link-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
   <main class="page-shell">
-    <section class="hero">
-      <p class="eyebrow">Neft Teacher Static Activity Collection</p>
-      <h1>Neft Teacher Activity Hub</h1>
-      <p class="hero-copy">A cleaner launch dashboard organized into Math, ESOL, Reading, and Teacher Tools. Existing activity links remain available so old Cloudflare links do not break.</p>
+    <section class="hero hub-hero" aria-labelledby="hub-title">
+      <div>
+        <p class="eyebrow">Personal + Professional Launch Dashboard</p>
+        <h1 id="hub-title">Neft Hub</h1>
+        <p class="hero-copy">One clean front door for professional teacher work and personal learning routines.</p>
+        <p>Use the Professional side for classroom tools, lesson workflows, data dashboards, and curriculum resources. Use the Personal side for family learning, Hebrew review, reading practice, and personal routines.</p>
+        <div class="hub-jump-row" aria-label="Jump to hub sections">
+          <a href="#professional">Professional</a>
+          <a href="#personal">Personal</a>
+          <a href="/teacher-tools/neftos-command-center/">Command Center</a>
+        </div>
+      </div>
+      <aside class="hub-summary" aria-labelledby="hub-summary-title">
+        <p class="eyebrow">Best use</p>
+        <h2 id="hub-summary-title">Start with the lane that matches your goal</h2>
+        <ol>
+          <li><strong>Professional:</strong> planning, teaching, data, classroom activities, and deployment.</li>
+          <li><strong>Personal:</strong> family learning, Hebrew review, reading supports, and study routines.</li>
+          <li><strong>Command Center:</strong> capture tasks and decide the next best move.</li>
+        </ol>
+      </aside>
     </section>
 
-    <section class="section-block" aria-labelledby="main-sections">
+    <section class="section-block" aria-labelledby="lanes-title">
       <div class="section-heading">
-        <p class="eyebrow">Main sections</p>
-        <h2 id="main-sections">Choose a section</h2>
+        <p class="eyebrow">Main hub structure</p>
+        <h2 id="lanes-title">Choose your lane</h2>
+      </div>
+      <div class="hub-lane-grid">
+        <article class="hub-lane professional" id="professional" aria-labelledby="professional-title">
+          <span class="hub-divider-label">Professional</span>
+          <h3 id="professional-title">Teacher Work + Classroom Tools</h3>
+          <p>Everything connected to teaching, planning, instruction, classroom data, student-facing activities, professional development, and GitHub/Cloudflare deployment.</p>
+          <div class="hub-action-row">
+            <a class="primary-link" href="/teacher-tools/">Open Professional Hub</a>
+            <a class="secondary-link" href="/teacher-tools/neftos-command-center/">Open Command Center</a>
+          </div>
+          <div class="mini-link-grid" aria-label="Professional quick links">
+            <a href="/teacher-tools/forecast-engine/"><strong>Forecast Engine</strong><span>Evidence review, readiness forecasting, and intervention planning.</span></a>
+            <a href="/statistics-data/data-studio/"><strong>Data Studio</strong><span>Charts, grouping, summaries, and classroom data analysis.</span></a>
+            <a href="/math/"><strong>Math Section</strong><span>Grade 6 unit folders, math resources, and classroom activities.</span></a>
+            <a href="/esol/"><strong>ESOL Section</strong><span>Language supports, newcomer access, reading, and writing tools.</span></a>
+            <a href="/blood-on-the-river/"><strong>Reading Activities</strong><span>Interactive reading resources and chapter-based activities.</span></a>
+            <a href="/teacher-tools/neftos-command-center/"><strong>NeftOS</strong><span>Daily workflow, QA checks, prompt generators, and task capture.</span></a>
+          </div>
+        </article>
+
+        <article class="hub-lane personal" id="personal" aria-labelledby="personal-title">
+          <span class="hub-divider-label">Personal</span>
+          <h3 id="personal-title">Family Learning + Personal Routines</h3>
+          <p>Personal learning spaces and routines that should be easy to find without mixing them into the professional teaching dashboard.</p>
+          <div class="hub-action-row">
+            <a class="primary-link" href="/hebrew">Open Hebrew Review</a>
+            <a class="secondary-link" href="/teacher-tools/neftos-command-center/">Plan Personal Routines</a>
+          </div>
+          <div class="mini-link-grid" aria-label="Personal quick links">
+            <a href="/hebrew"><strong>Hebrew Review</strong><span>Reading review, vocabulary, and confidence-building practice.</span></a>
+            <a href="/noam-hebrew"><strong>Hebrew Shortcut</strong><span>A clean short route to the existing Hebrew review page.</span></a>
+            <a href="/blood-on-the-river/chapter-1/"><strong>Reading Practice</strong><span>Chapter-based reading support with vocabulary and checks.</span></a>
+            <a href="/teacher-tools/neftos-command-center/"><strong>Personal Planning</strong><span>Use the command center for family learning routines and personal admin.</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-block" aria-labelledby="professional-quick-launch">
+      <div class="section-heading">
+        <p class="eyebrow">Professional quick launch</p>
+        <h2 id="professional-quick-launch">Teacher tools and classroom resources</h2>
       </div>
       <div class="activity-grid">
-        <a class="activity-card" href="/math/">
-          <span class="card-kicker">Units 1–10</span>
-          <h3>Math Section</h3>
-          <p>Open the Grade 6 math section organized by Unit 1 through Unit 10, with prepared folders even when a unit is empty.</p>
-          <span class="button-link">Open Math</span>
-        </a>
-        <a class="activity-card" href="/esol/">
-          <span class="card-kicker">Language supports</span>
-          <h3>ESOL Section</h3>
-          <p>Open ESOL, reading, writing, newcomer-friendly, and math-language support activities.</p>
-          <span class="button-link">Open ESOL</span>
-        </a>
-        <a class="activity-card" href="/blood-on-the-river/">
-          <span class="card-kicker">Reading</span>
-          <h3>Blood on the River</h3>
-          <p>Open the interactive graphic-novel-style chapter collection with vocabulary, quote explanations, scene reviews, and student checks.</p>
-          <span class="button-link">Open Reading</span>
-        </a>
         <a class="activity-card" href="/teacher-tools/">
-          <span class="card-kicker">Teacher tools</span>
-          <h3>Teacher Tools Section</h3>
-          <p>Open teacher-facing dashboards, planning tools, data tools, and the Neft Learning Forecast Engine.</p>
-          <span class="button-link">Open Teacher Tools</span>
+          <span class="card-kicker">Professional hub</span>
+          <h3>Professional Hub</h3>
+          <p>Open the teacher-facing dashboard for planning, data, classroom workflow, and deployment tools.</p>
+          <span class="button-link">Open Professional Hub</span>
         </a>
-      </div>
-    </section>
-
-    <section class="section-block" aria-labelledby="quick-launch">
-      <div class="section-heading">
-        <p class="eyebrow">Quick launch</p>
-        <h2 id="quick-launch">Frequently used tools and activities</h2>
-      </div>
-      <div class="activity-grid">
         <a class="activity-card" href="/teacher-tools/neftos-command-center/">
           <span class="card-kicker">Command center</span>
           <h3>NeftOS Command Center</h3>
-          <p>Launch the local-first professional and personal operating dashboard for Ready lesson plans, student notebooks, PD, app builds, GitHub/Cloudflare checks, and Noam/family routines.</p>
+          <p>Launch the local-first dashboard for daily priorities, reusable prompts, QA checks, and project planning.</p>
           <span class="button-link">Open command center</span>
-        </a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-1/">
-          <span class="card-kicker">Reading</span>
-          <h3>Blood on the River · Chapter 1</h3>
-          <p>Launch the Chapter 1 interactive review with vocabulary, passage scenes, quote popups, why-it-matters notes, and easy student checks.</p>
-          <span class="button-link">Open chapter</span>
         </a>
         <a class="activity-card" href="/teacher-tools/forecast-engine/">
           <span class="card-kicker">Teacher tool</span>
           <h3>Neft Learning Forecast Engine</h3>
           <p>Evidence review, readiness forecasting, small groups, and intervention planning.</p>
-          <span class="button-link">Open tool</span>
+          <span class="button-link">Review learning evidence</span>
         </a>
         <a class="activity-card" href="/statistics-data/data-studio/">
           <span class="card-kicker">Data tool</span>
           <h3>Data Studio</h3>
           <p>Charts, spreadsheets, grouping, predictions, and plain-language analysis.</p>
-          <span class="button-link">Open activity</span>
+          <span class="button-link">Open Data Studio</span>
         </a>
-        <a class="activity-card" href="/math/unit-5/">
-          <span class="card-kicker">Math</span>
-          <h3>Unit 5 Geometry</h3>
-          <p>Area, volume, surface area, geometry projects, and measurement practice.</p>
-          <span class="button-link">Open unit</span>
+        <a class="activity-card" href="/math/">
+          <span class="card-kicker">Curriculum</span>
+          <h3>Math Section</h3>
+          <p>Open the Grade 6 math section organized by units and instructional resources.</p>
+          <span class="button-link">Browse math</span>
         </a>
         <a class="activity-card" href="/esol/">
-          <span class="card-kicker">ESOL</span>
-          <h3>ESOL Activities</h3>
-          <p>Reading, writing, and language-support activities.</p>
-          <span class="button-link">Open section</span>
+          <span class="card-kicker">Language supports</span>
+          <h3>ESOL Section</h3>
+          <p>Open ESOL, reading, writing, newcomer-friendly, and math-language support activities.</p>
+          <span class="button-link">Browse ESOL</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-block" aria-labelledby="personal-quick-launch">
+      <div class="section-heading">
+        <p class="eyebrow">Personal quick launch</p>
+        <h2 id="personal-quick-launch">Family learning and personal practice</h2>
+      </div>
+      <div class="activity-grid">
+        <a class="activity-card" href="/hebrew">
+          <span class="card-kicker">Hebrew</span>
+          <h3>Hebrew Review</h3>
+          <p>Open the existing Hebrew review space through a simple short route.</p>
+          <span class="button-link">Open Hebrew Review</span>
+        </a>
+        <a class="activity-card" href="/noam-hebrew">
+          <span class="card-kicker">Shortcut</span>
+          <h3>Hebrew Practice Shortcut</h3>
+          <p>Use the short route for quick access to the Hebrew review page.</p>
+          <span class="button-link">Open shortcut</span>
+        </a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-1/">
+          <span class="card-kicker">Reading</span>
+          <h3>Reading Practice · Chapter 1</h3>
+          <p>Launch the chapter review with vocabulary, passage scenes, quote popups, and easy student checks.</p>
+          <span class="button-link">Open reading practice</span>
+        </a>
+        <a class="activity-card" href="/teacher-tools/neftos-command-center/">
+          <span class="card-kicker">Planning</span>
+          <h3>Personal Planning in NeftOS</h3>
+          <p>Use the command center to capture family learning routines, personal admin, and next actions.</p>
+          <span class="button-link">Plan routines</span>
         </a>
       </div>
     </section>
 
     <section class="section-block" aria-labelledby="math-units">
       <div class="section-heading">
-        <p class="eyebrow">Math units</p>
-        <h2 id="math-units">Unit folders</h2>
+        <p class="eyebrow">Professional archive</p>
+        <h2 id="math-units">Math unit folders</h2>
       </div>
       <div class="collection-grid">
         <a class="activity-card compact" href="/math/unit-1/"><span class="card-kicker">Unit 1</span><h3>Unit 1</h3><p>Foundations and beginning-of-year practice.</p><span class="button-link">Open</span></a>
@@ -114,13 +338,13 @@
 
     <section class="section-block" aria-labelledby="legacy-index">
       <div class="section-heading">
-        <p class="eyebrow">Legacy collections</p>
+        <p class="eyebrow">Route archive</p>
         <h2 id="legacy-index">Existing links kept intact</h2>
-        <p>These are the existing folders from the earlier hub structure. They remain available so current links continue to work.</p>
+        <p>Older folders remain available so current Cloudflare links continue to work.</p>
       </div>
       <div class="folder-index">
         <div class="folder-index-group">
-          <h3>Math collections</h3>
+          <h3>Professional math collections</h3>
           <div class="folder-links">
             <a href="/unit-1/">Unit 1 Foundations</a>
             <a href="/unit-4/">Unit 4 Decimal Operations</a>
@@ -137,18 +361,18 @@
           </div>
         </div>
         <div class="folder-index-group">
-          <h3>ESOL and reading/writing</h3>
+          <h3>Reading, ESOL, and personal learning</h3>
           <div class="folder-links">
             <a href="/esol/">ESOL Section</a>
             <a href="/esol-reading-writing/">ESOL, Reading, Writing, and Math</a>
-            <a href="/esol-reading-writing/noamhebrewreview/">Noam Hebrew Review</a>
+            <a href="/hebrew">Hebrew Review</a>
             <a href="/blood-on-the-river/">Blood on the River Interactive Chapters</a>
           </div>
         </div>
         <div class="folder-index-group">
-          <h3>Teacher tools</h3>
+          <h3>Professional tools</h3>
           <div class="folder-links">
-            <a href="/teacher-tools/">Teacher Tools</a>
+            <a href="/teacher-tools/">Professional Hub</a>
             <a href="/teacher-tools/neftos-command-center/">NeftOS Command Center</a>
             <a href="/teacher-tools/forecast-engine/">Neft Learning Forecast Engine</a>
             <a href="/forecast-engine/">Forecast Engine Shortcut</a>
@@ -159,8 +383,8 @@
     </section>
 
     <footer class="site-footer">
-      <span>Neft Teacher Activity Hub</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
+      <span>Neft Hub</span>
+      <span>Personal + Professional · <span data-current-year></span></span>
     </footer>
   </main>
   <script src="/assets/app.js" defer></script>
