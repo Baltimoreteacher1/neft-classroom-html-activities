@@ -94,6 +94,10 @@
       border-top: 8px solid #b7791f;
     }
 
+    .hub-lane.reading {
+      border-top: 8px solid #8b5e34;
+    }
+
     .hub-lane h3 {
       margin: 0;
       color: #17202a;
@@ -127,7 +131,9 @@
     }
 
     .mini-link-grid a:hover,
-    .mini-link-grid a:focus-visible {
+    .mini-link-grid a:focus-visible,
+    .chapter-grid a:hover,
+    .chapter-grid a:focus-visible {
       transform: translateY(-2px);
       border-color: #0f766e;
       box-shadow: 0 12px 26px rgba(23, 32, 42, .09);
@@ -158,16 +164,91 @@
       text-transform: uppercase;
     }
 
+    .feature-panel {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .feature-card {
+      display: grid;
+      gap: 12px;
+      padding: 22px;
+      border-radius: 20px;
+      border: 1px solid #d8dfdc;
+      background: linear-gradient(145deg, #fffaf0, #eef4f3);
+      box-shadow: 0 14px 34px rgba(23, 32, 42, .08);
+    }
+
+    .feature-card h3 {
+      margin: 0;
+      color: #17202a;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: #53616f;
+      line-height: 1.6;
+    }
+
+    .chapter-panel {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid #d8dfdc;
+      border-radius: 20px;
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 14px 34px rgba(23, 32, 42, .08);
+    }
+
+    .chapter-panel h3 {
+      margin: 0;
+      color: #17202a;
+    }
+
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .chapter-grid a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid #d8dfdc;
+      background: #fff;
+      color: #115e59;
+      font-weight: 900;
+      text-decoration: none;
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
     @media (max-width: 960px) {
       .hub-hero,
-      .hub-lane-grid {
+      .hub-lane-grid,
+      .feature-panel {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .chapter-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
       }
     }
 
     @media (max-width: 680px) {
       .mini-link-grid {
         grid-template-columns: 1fr;
+      }
+
+      .chapter-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
   </style>
@@ -183,6 +264,7 @@
         <div class="hub-jump-row" aria-label="Jump to hub sections">
           <a href="#professional">Professional</a>
           <a href="#personal">Personal</a>
+          <a href="#reading-library">Reading Library</a>
           <a href="/teacher-tools/neftos-command-center/">Command Center</a>
         </div>
       </div>
@@ -191,6 +273,7 @@
         <h2 id="hub-summary-title">Start with the lane that matches your goal</h2>
         <ol>
           <li><strong>Professional:</strong> planning, teaching, data, classroom activities, and deployment.</li>
+          <li><strong>Reading library:</strong> chapter collections and student-facing literature tools.</li>
           <li><strong>Personal:</strong> family learning, Hebrew review, reading supports, and study routines.</li>
           <li><strong>Command Center:</strong> capture tasks and decide the next best move.</li>
         </ol>
@@ -216,7 +299,7 @@
             <a href="/statistics-data/data-studio/"><strong>Data Studio</strong><span>Charts, grouping, summaries, and classroom data analysis.</span></a>
             <a href="/math/"><strong>Math Section</strong><span>Grade 6 unit folders, math resources, and classroom activities.</span></a>
             <a href="/esol/"><strong>ESOL Section</strong><span>Language supports, newcomer access, reading, and writing tools.</span></a>
-            <a href="/blood-on-the-river/"><strong>Reading Activities</strong><span>Interactive reading resources and chapter-based activities.</span></a>
+            <a href="/blood-on-the-river/"><strong>Blood on the River</strong><span>Full interactive chapter collection with vocabulary, scenes, quotes, and checks.</span></a>
             <a href="/teacher-tools/neftos-command-center/"><strong>NeftOS</strong><span>Daily workflow, QA checks, prompt generators, and task capture.</span></a>
           </div>
         </article>
@@ -234,6 +317,57 @@
             <a href="/noam-hebrew"><strong>Hebrew Shortcut</strong><span>A clean short route to the existing Hebrew review page.</span></a>
             <a href="/blood-on-the-river/chapter-1/"><strong>Reading Practice</strong><span>Chapter-based reading support with vocabulary and checks.</span></a>
             <a href="/teacher-tools/neftos-command-center/"><strong>Personal Planning</strong><span>Use the command center for family learning routines and personal admin.</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-block" id="reading-library" aria-labelledby="reading-library-title">
+      <div class="section-heading">
+        <p class="eyebrow">Reading library</p>
+        <h2 id="reading-library-title">Blood on the River Interactive Chapters</h2>
+        <p>This is now a first-class Neft Hub section, not a hidden archive link. Use it for literature review, vocabulary, quote explanations, scene-based comprehension, and student checks.</p>
+      </div>
+      <div class="feature-panel">
+        <article class="feature-card">
+          <span class="hub-divider-label">Featured collection</span>
+          <h3>Blood on the River</h3>
+          <p>Open the full interactive chapter collection with visual vocabulary, passage-based scenes, quote explanations, why-it-matters notes, and short student checks.</p>
+          <div class="hub-action-row">
+            <a class="primary-link" href="/blood-on-the-river/">Open full collection</a>
+            <a class="secondary-link" href="/blood-on-the-river/chapter-1/">Start Chapter 1</a>
+          </div>
+        </article>
+        <article class="chapter-panel" aria-labelledby="chapter-grid-title">
+          <h3 id="chapter-grid-title">Jump to a chapter</h3>
+          <div class="chapter-grid" aria-label="Blood on the River chapter links">
+            <a href="/blood-on-the-river/chapter-1/">1</a>
+            <a href="/blood-on-the-river/chapter-2/">2</a>
+            <a href="/blood-on-the-river/chapter-3/">3</a>
+            <a href="/blood-on-the-river/chapter-4/">4</a>
+            <a href="/blood-on-the-river/chapter-5/">5</a>
+            <a href="/blood-on-the-river/chapter-6/">6</a>
+            <a href="/blood-on-the-river/chapter-7/">7</a>
+            <a href="/blood-on-the-river/chapter-8/">8</a>
+            <a href="/blood-on-the-river/chapter-9/">9</a>
+            <a href="/blood-on-the-river/chapter-10/">10</a>
+            <a href="/blood-on-the-river/chapter-11/">11</a>
+            <a href="/blood-on-the-river/chapter-12/">12</a>
+            <a href="/blood-on-the-river/chapter-13/">13</a>
+            <a href="/blood-on-the-river/chapter-14/">14</a>
+            <a href="/blood-on-the-river/chapter-15/">15</a>
+            <a href="/blood-on-the-river/chapter-16/">16</a>
+            <a href="/blood-on-the-river/chapter-17/">17</a>
+            <a href="/blood-on-the-river/chapter-18/">18</a>
+            <a href="/blood-on-the-river/chapter-19/">19</a>
+            <a href="/blood-on-the-river/chapter-20/">20</a>
+            <a href="/blood-on-the-river/chapter-21/">21</a>
+            <a href="/blood-on-the-river/chapter-22/">22</a>
+            <a href="/blood-on-the-river/chapter-23/">23</a>
+            <a href="/blood-on-the-river/chapter-24/">24</a>
+            <a href="/blood-on-the-river/chapter-25/">25</a>
+            <a href="/blood-on-the-river/chapter-26/">26</a>
+            <a href="/blood-on-the-river/chapter-27/">27</a>
           </div>
         </article>
       </div>
@@ -268,6 +402,12 @@
           <h3>Data Studio</h3>
           <p>Charts, spreadsheets, grouping, predictions, and plain-language analysis.</p>
           <span class="button-link">Open Data Studio</span>
+        </a>
+        <a class="activity-card" href="/blood-on-the-river/">
+          <span class="card-kicker">Reading</span>
+          <h3>Blood on the River</h3>
+          <p>Open the complete chapter-by-chapter interactive reading collection.</p>
+          <span class="button-link">Open reading collection</span>
         </a>
         <a class="activity-card" href="/math/">
           <span class="card-kicker">Curriculum</span>
@@ -363,10 +503,11 @@
         <div class="folder-index-group">
           <h3>Reading, ESOL, and personal learning</h3>
           <div class="folder-links">
+            <a href="/blood-on-the-river/">Blood on the River Interactive Chapters</a>
+            <a href="/blood-on-the-river/chapter-1/">Blood on the River Chapter 1</a>
             <a href="/esol/">ESOL Section</a>
             <a href="/esol-reading-writing/">ESOL, Reading, Writing, and Math</a>
             <a href="/hebrew">Hebrew Review</a>
-            <a href="/blood-on-the-river/">Blood on the River Interactive Chapters</a>
           </div>
         </div>
         <div class="folder-index-group">
