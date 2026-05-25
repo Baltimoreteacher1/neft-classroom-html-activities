@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 9 Study Guide — Relationships Between Variables | Neft Teacher
+    </title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f6f7f2;
+        color: #17202a;
+        line-height: 1.6;
+      }
+      .shell {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      .breadcrumb {
+        color: #5b6773;
+        font-size: 0.9rem;
+        margin-bottom: 18px;
+      }
+      .breadcrumb a {
+        color: #0f766e;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 6px;
+      }
+      .subtitle {
+        color: #5b6773;
+        margin-bottom: 28px;
+        font-size: 1.05rem;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #d8dfdc;
+        padding-bottom: 8px;
+      }
+      .tab {
+        padding: 8px 16px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px 8px 0 0;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #5b6773;
+        transition: all 0.15s;
+      }
+      .tab.active {
+        background: #0f766e;
+        color: #fff;
+        border-color: #0f766e;
+      }
+      .tab:hover:not(.active) {
+        background: #eef4f3;
+      }
+      .lesson {
+        display: none;
+        animation: fadeIn 0.3s;
+      }
+      .lesson.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .lesson-header {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-top: 4px solid #0f766e;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px rgba(23, 32, 42, 0.08);
+      }
+      .lesson-header h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .lesson-header p {
+        color: #5b6773;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .card h3 {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+        color: #0f766e;
+      }
+      .example {
+        background: #eef4f3;
+        border-left: 4px solid #b7791f;
+        padding: 14px 18px;
+        border-radius: 0 8px 8px 0;
+        margin: 12px 0;
+        font-size: 1rem;
+      }
+      .example strong {
+        color: #b7791f;
+      }
+      .number-line {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 12px 0;
+        text-align: center;
+        font-family: monospace;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+      }
+      .quiz h3 {
+        margin-bottom: 12px;
+      }
+      .question {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 14px;
+      }
+      .question p {
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .opt {
+        padding: 10px 14px;
+        border: 2px solid #d8dfdc;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.15s;
+        background: #fff;
+      }
+      .opt:hover {
+        border-color: #0f766e;
+        background: #eef4f3;
+      }
+      .opt.correct {
+        border-color: #16a34a;
+        background: #dcfce7;
+        pointer-events: none;
+      }
+      .opt.wrong {
+        border-color: #dc2626;
+        background: #fef2f2;
+        pointer-events: none;
+      }
+      .feedback {
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .feedback.wrong {
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .score-bar {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-top: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .score-bar .label {
+        font-weight: 700;
+        color: #0f766e;
+      }
+      .score-fill {
+        flex: 1;
+        height: 10px;
+        background: #d8dfdc;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .score-fill span {
+        display: block;
+        height: 100%;
+        background: #0f766e;
+        border-radius: 99px;
+        transition: width 0.4s;
+      }
+      .score-text {
+        font-weight: 700;
+        min-width: 50px;
+        text-align: right;
+      }
+      .vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .vocab-card {
+        background: #eef4f3;
+        border: 1px solid rgba(15, 118, 110, 0.18);
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .vocab-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.1);
+      }
+      .vocab-card .term {
+        font-weight: 800;
+        color: #0f766e;
+        font-size: 0.95rem;
+      }
+      .vocab-card .def {
+        color: #5b6773;
+        font-size: 0.85rem;
+        margin-top: 4px;
+        display: none;
+      }
+      .vocab-card.flipped .def {
+        display: block;
+      }
+      .vocab-card.flipped {
+        background: #fff;
+      }
+      .coord-grid {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 12px 0;
+      }
+      .coord-grid svg {
+        display: block;
+      }
+      .io-table {
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 1rem;
+      }
+      .io-table th,
+      .io-table td {
+        border: 1px solid #d8dfdc;
+        padding: 8px 16px;
+        text-align: center;
+      }
+      .io-table th {
+        background: #0f766e;
+        color: #fff;
+        font-weight: 700;
+      }
+      .io-table td {
+        background: #fff;
+      }
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 28px;
+      }
+      .nav-btn {
+        padding: 10px 20px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f766e;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .nav-btn:hover {
+        background: #0f766e;
+        color: #fff;
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      @media (max-width: 600px) {
+        .tabs {
+          gap: 4px;
+        }
+        .tab {
+          padding: 6px 10px;
+          font-size: 0.8rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-9/">Unit 9</a> / Study Guide
+      </nav>
+      <h1>Relationships Between Variables</h1>
+      <p class="subtitle">
+        Interactive study guide — Reveal Math Unit 9 · Standard 6.EE.C.9
+      </p>
+
+      <div class="tabs" id="tabs"></div>
+
+      <!-- LESSON 1 -->
+      <div class="lesson" data-lesson="1">
+        <div class="lesson-header">
+          <h2>9.1 — Independent &amp; Dependent Variables</h2>
+          <p>
+            Identify which variable depends on the other and write equations
+            using two variables. The independent variable is the input; the
+            dependent variable is the output.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            The <strong>independent variable</strong> is the value you choose
+            (the input). The <strong>dependent variable</strong> changes based
+            on it (the output).
+          </p>
+          <p>
+            To write an equation, figure out how the output depends on the input
+            and express that relationship with a formula.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> You earn $12 per hour.<br />
+            Independent variable: hours worked (h)<br />
+            Dependent variable: money earned (m)<br />
+            Equation: m = 12h
+          </div>
+          <div class="example">
+            <strong>Tip:</strong> Ask yourself — "Which quantity do I control?"
+            That is the independent variable. "Which quantity changes as a
+            result?" That is the dependent variable.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>
+              A plant grows 3 cm each week. Which is the independent variable?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">Height of the plant</div>
+              <div class="opt" data-idx="1">Number of weeks</div>
+              <div class="opt" data-idx="2">3 cm</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>
+              In the equation y = 5x, which variable is the dependent variable?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">y</div>
+              <div class="opt" data-idx="1">x</div>
+              <div class="opt" data-idx="2">5</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>
+              A taxi charges $2 per mile. Which equation shows the total cost
+              (c) for m miles?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">m = 2c</div>
+              <div class="opt" data-idx="1">c = m + 2</div>
+              <div class="opt" data-idx="2">c = 2m</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 2 -->
+      <div class="lesson" data-lesson="2">
+        <div class="lesson-header">
+          <h2>9.2 — Equations &amp; Tables</h2>
+          <p>
+            Represent relationships with equations and input-output tables. Find
+            patterns in the table to write or verify the equation.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            An <strong>input-output table</strong> shows pairs of values that
+            follow a rule. The rule is the equation.
+          </p>
+          <p>
+            Substitute each input (x) into the equation to find the
+            corresponding output (y).
+          </p>
+          <div class="example"><strong>Example:</strong> y = 3x</div>
+          <table class="io-table">
+            <tr>
+              <th>x (Input)</th>
+              <th>y (Output)</th>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>9</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>12</td>
+            </tr>
+          </table>
+          <div class="example">
+            <strong>Finding the pattern:</strong> Each time x increases by 1, y
+            increases by 3. The rule is "multiply by 3," so y = 3x.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="2">
+            <p>Using the equation y = 4x, what is y when x = 7?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">11</div>
+              <div class="opt" data-idx="1">24</div>
+              <div class="opt" data-idx="2">28</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>
+              A table shows: x = 2 &rarr; y = 10, x = 3 &rarr; y = 15, x = 4
+              &rarr; y = 20. What is the equation?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">y = x + 8</div>
+              <div class="opt" data-idx="1">y = 5x</div>
+              <div class="opt" data-idx="2">y = 2x + 6</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>For y = x + 6, what is the output when the input is 9?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">15</div>
+              <div class="opt" data-idx="1">54</div>
+              <div class="opt" data-idx="2">3</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 3 -->
+      <div class="lesson" data-lesson="3">
+        <div class="lesson-header">
+          <h2>9.3 — Graphs of Relationships</h2>
+          <p>
+            Plot equations on a coordinate plane, analyze relationship graphs,
+            and connect tables to graphs.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            Each row of an input-output table becomes an
+            <strong>ordered pair</strong> (x, y) that you plot on the coordinate
+            plane.
+          </p>
+          <p>
+            If the points form a straight line, the relationship is
+            <strong>linear</strong>.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> y = 2x + 1<br />
+            x = 0 &rarr; y = 1 &rarr; plot (0, 1)<br />
+            x = 1 &rarr; y = 3 &rarr; plot (1, 3)<br />
+            x = 2 &rarr; y = 5 &rarr; plot (2, 5)<br />
+            x = 3 &rarr; y = 7 &rarr; plot (3, 7)<br />
+            These points lie on a straight line.
+          </div>
+          <div class="example">
+            <strong>Reading a graph:</strong> Pick a point on the line. Its
+            x-coordinate is the input and its y-coordinate is the output.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="0">
+            <p>For y = 2x + 1, what ordered pair do you get when x = 4?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">(4, 9)</div>
+              <div class="opt" data-idx="1">(4, 7)</div>
+              <div class="opt" data-idx="2">(4, 8)</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>
+              A graph shows a straight line passing through (0, 0) and (3, 12).
+              What is the equation?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">y = 3x</div>
+              <div class="opt" data-idx="1">y = x + 4</div>
+              <div class="opt" data-idx="2">y = 4x</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>Which point is NOT on the graph of y = 3x?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">(2, 6)</div>
+              <div class="opt" data-idx="1">(4, 15)</div>
+              <div class="opt" data-idx="2">(5, 15)</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 4 -->
+      <div class="lesson" data-lesson="4">
+        <div class="lesson-header">
+          <h2>9.4 — Real-World Modeling</h2>
+          <p>
+            Use equations, tables, and graphs together to model and solve
+            real-world problems.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            Real-world situations can be described with an
+            <strong>equation</strong>, organized in a <strong>table</strong>,
+            and visualized with a <strong>graph</strong>. All three
+            representations show the same relationship.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> A car travels at 60 mph.<br />
+            Equation: d = 60t (distance = 60 &times; time)<br />
+            Independent variable: time (t) in hours<br />
+            Dependent variable: distance (d) in miles
+          </div>
+          <table class="io-table">
+            <tr>
+              <th>t (hours)</th>
+              <th>d (miles)</th>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>60</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>120</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>180</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>240</td>
+            </tr>
+          </table>
+          <div class="example">
+            <strong>Using the model:</strong> To find how far the car travels in
+            5 hours, substitute t = 5: d = 60(5) = 300 miles.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>
+              A pool fills at 15 gallons per minute. How many gallons after 8
+              minutes?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">80 gallons</div>
+              <div class="opt" data-idx="1">120 gallons</div>
+              <div class="opt" data-idx="2">150 gallons</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>
+              A store sells notebooks for $4 each. Which equation gives the
+              total cost (c) for n notebooks?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">c = 4n</div>
+              <div class="opt" data-idx="1">c = n + 4</div>
+              <div class="opt" data-idx="2">c = n / 4</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>
+              Using d = 50t, how many hours does it take to travel 250 miles?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">3 hours</div>
+              <div class="opt" data-idx="1">4 hours</div>
+              <div class="opt" data-idx="2">5 hours</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="lesson" data-lesson="vocab">
+        <div class="lesson-header">
+          <h2>Vocabulary</h2>
+          <p>Tap a card to reveal the definition.</p>
+        </div>
+        <div class="vocab">
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Independent Variable</div>
+            <div class="def">
+              The variable you choose or control; the input of a relationship.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Dependent Variable</div>
+            <div class="def">
+              The variable that changes in response to the independent variable;
+              the output.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Input</div>
+            <div class="def">
+              The value substituted into an equation or function; the
+              independent variable's value.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Output</div>
+            <div class="def">
+              The result after applying the rule or equation to the input; the
+              dependent variable's value.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Equation</div>
+            <div class="def">
+              A mathematical sentence with an equal sign showing two expressions
+              have the same value. Example: y = 3x.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Table</div>
+            <div class="def">
+              An organized display of input-output pairs that shows the pattern
+              in a relationship.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Coordinate Plane</div>
+            <div class="def">
+              A grid formed by a horizontal x-axis and vertical y-axis used to
+              plot ordered pairs.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Ordered Pair</div>
+            <div class="def">
+              A pair of numbers (x, y) that identifies a point on the coordinate
+              plane.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Relationship</div>
+            <div class="def">
+              A connection between two variables where a change in one causes a
+              predictable change in the other.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Function</div>
+            <div class="def">
+              A rule that assigns exactly one output to each input.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Rate of Change</div>
+            <div class="def">
+              How much the dependent variable changes for each unit increase in
+              the independent variable.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Linear</div>
+            <div class="def">
+              A relationship whose graph is a straight line. The rate of change
+              is constant.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn" disabled>← Previous</button>
+        <button class="nav-btn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const lessons = document.querySelectorAll(".lesson");
+        const tabsEl = document.getElementById("tabs");
+        const names = [
+          "9.1 Variables",
+          "9.2 Tables",
+          "9.3 Graphs",
+          "9.4 Modeling",
+          "Vocabulary",
+        ];
+        let current = 0;
+
+        names.forEach((n, i) => {
+          const t = document.createElement("div");
+          t.className = "tab" + (i === 0 ? " active" : "");
+          t.textContent = n;
+          t.onclick = () => show(i);
+          tabsEl.appendChild(t);
+        });
+
+        function show(idx) {
+          current = idx;
+          lessons.forEach((l, i) => l.classList.toggle("active", i === idx));
+          tabsEl
+            .querySelectorAll(".tab")
+            .forEach((t, i) => t.classList.toggle("active", i === idx));
+          document.getElementById("prevBtn").disabled = idx === 0;
+          document.getElementById("nextBtn").disabled =
+            idx === lessons.length - 1;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.getElementById("prevBtn").onclick = () => {
+          if (current > 0) show(current - 1);
+        };
+        document.getElementById("nextBtn").onclick = () => {
+          if (current < lessons.length - 1) show(current + 1);
+        };
+
+        document.querySelectorAll(".question").forEach((q) => {
+          const correct = parseInt(q.dataset.correct);
+          const fb = q.querySelector(".feedback");
+          q.querySelectorAll(".opt").forEach((opt) => {
+            opt.onclick = () => {
+              const idx = parseInt(opt.dataset.idx);
+              q.querySelectorAll(".opt").forEach(
+                (o) => (o.style.pointerEvents = "none"),
+              );
+              if (idx === correct) {
+                opt.classList.add("correct");
+                fb.textContent = "Correct!";
+                fb.className = "feedback show correct";
+              } else {
+                opt.classList.add("wrong");
+                q.querySelectorAll(".opt")[correct].classList.add("correct");
+                fb.textContent = "Not quite — check the correct answer above.";
+                fb.className = "feedback show wrong";
+              }
+              updateScore(q.closest(".lesson"));
+            };
+          });
+        });
+
+        function updateScore(lesson) {
+          const qs = lesson.querySelectorAll(".question");
+          const answered = lesson.querySelectorAll(".opt.correct").length;
+          const bar = lesson.querySelector(".score-bar");
+          if (!bar) return;
+          const pct = Math.round((answered / qs.length) * 100);
+          bar.querySelector(".score-fill span").style.width = pct + "%";
+          bar.querySelector(".score-text").textContent =
+            answered + "/" + qs.length;
+        }
+
+        show(0);
+      })();
+    </script>
+  </body>
+</html>
