@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="NeftOS Command Center: a local-first personal and professional operating dashboard for lesson plans, notebooks, PD, classroom apps, GitHub/Cloudflare deployment, and family planning." />
+  <meta name="theme-color" content="#0f766e" />
+  <title>NeftOS Command Center | Teacher Tools</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="/assets/shared.css" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <main id="main" class="page-shell neftos-shell">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/teacher-tools/">Teacher Tools</a><span>/</span><span>NeftOS Command Center</span></nav>
+
+    <section class="hero neftos-hero" aria-labelledby="page-title">
+      <div class="hero-text">
+        <p class="eyebrow">NeftOS · Professional + Personal Operating System</p>
+        <h1 id="page-title">Command Center</h1>
+        <p class="hero-copy">A local-first dashboard for turning scattered work into clear next actions: lesson plans, student notebooks, PD, classroom apps, GitHub/Cloudflare deployment, Noam/family prep, and recurring system upgrades.</p>
+        <div class="hero-actions" role="group" aria-label="Primary actions">
+          <button class="primary-action" data-action="generateBrief">Generate today’s command brief</button>
+          <button class="secondary-action" data-action="openCapture">Quick capture</button>
+          <button class="secondary-action" data-action="exportMarkdown">Export briefing</button>
+        </div>
+      </div>
+      <aside class="status-console" aria-labelledby="status-heading">
+        <p class="eyebrow">Today</p>
+        <h2 id="status-heading" data-today-title>Loading date…</h2>
+        <dl class="metric-grid compact-metrics">
+          <div><dt>Open tasks</dt><dd data-open-count>0</dd></div>
+          <div><dt>High leverage</dt><dd data-high-count>0</dd></div>
+          <div><dt>Blocked</dt><dd data-blocked-count>0</dd></div>
+          <div><dt>Completed</dt><dd data-done-count>0</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="control-strip" aria-label="Command controls">
+      <label class="search-box">Search command center
+        <input id="globalSearch" type="search" placeholder="Search tasks, workflows, prompts, links…" autocomplete="off" />
+      </label>
+      <label>Mode
+        <select id="modeFilter">
+          <option value="all">All work</option>
+          <option value="school">School</option>
+          <option value="personal">Personal/family</option>
+          <option value="technical">Technical/deploy</option>
+        </select>
+      </label>
+      <label>Priority
+        <select id="priorityFilter">
+          <option value="all">All priorities</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </label>
+      <button class="ghost-button" data-action="toggleHighContrast" aria-pressed="false">High contrast</button>
+      <button class="ghost-button" data-action="toggleCompact" aria-pressed="false">Compact view</button>
+    </section>
+
+    <section class="section-block command-brief" aria-labelledby="brief-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Daily operating brief</p>
+          <h2 id="brief-title">Next best actions</h2>
+          <p>The dashboard scores tasks by impact, urgency, effort, and blocked status. It is intentionally local-first: no student, family, or school data leaves this browser.</p>
+        </div>
+        <button class="secondary-action" data-action="resetDemo">Reset sample system</button>
+      </div>
+      <div class="brief-layout">
+        <article class="brief-card" aria-labelledby="mission-title">
+          <h3 id="mission-title">Mission for today</h3>
+          <textarea id="missionInput" rows="4" placeholder="Example: Finish Monday lesson plan, clean up PD packet links, and do 15 minutes of Noam Hebrew reading practice."></textarea>
+          <div class="micro-actions">
+            <button data-action="saveMission">Save mission</button>
+            <button data-action="missionToTasks">Turn mission into tasks</button>
+          </div>
+        </article>
+        <article class="brief-card ranked-card" aria-labelledby="ranked-title">
+          <h3 id="ranked-title">Top 5 right now</h3>
+          <ol class="ranked-list" data-ranked-list></ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-block" aria-labelledby="taskboard-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Execution board</p>
+          <h2 id="taskboard-title">Workstreams and tasks</h2>
+        </div>
+        <button class="primary-action small" data-action="showTaskForm">Add task</button>
+      </div>
+      <div class="task-layout">
+        <form class="task-form" data-task-form hidden>
+          <div class="form-grid">
+            <label>Task title<input id="taskTitle" type="text" placeholder="Example: Ready 5.28 lesson plan" /></label>
+            <label>Workstream<select id="taskStream"></select></label>
+            <label>Mode<select id="taskMode"><option value="school">School</option><option value="personal">Personal/family</option><option value="technical">Technical/deploy</option></select></label>
+            <label>Priority<select id="taskPriority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></label>
+            <label>Impact<select id="taskImpact"><option value="5">5 · Huge</option><option value="4" selected>4 · Strong</option><option value="3">3 · Useful</option><option value="2">2 · Small</option><option value="1">1 · Tiny</option></select></label>
+            <label>Effort<select id="taskEffort"><option value="1">1 · Quick</option><option value="2" selected>2 · Moderate</option><option value="3">3 · Heavy</option><option value="4">4 · Deep work</option></select></label>
+            <label>Due date<input id="taskDue" type="date" /></label>
+            <label>Status<select id="taskStatus"><option value="todo">To do</option><option value="doing">Doing</option><option value="blocked">Blocked</option><option value="done">Done</option></select></label>
+          </div>
+          <label>Notes<textarea id="taskNotes" rows="3" placeholder="Add source file, repo, branch, exact next step, or constraint."></textarea></label>
+          <div class="micro-actions">
+            <button type="submit">Save task</button>
+            <button type="button" data-action="cancelTaskForm">Cancel</button>
+          </div>
+        </form>
+        <div class="kanban" data-kanban aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="section-block" aria-labelledby="workflow-title">
+      <div class="section-heading">
+        <p class="eyebrow">Reusable production workflows</p>
+        <h2 id="workflow-title">Prompt and command generators</h2>
+        <p>Paste-ready commands for your recurring work: Ready lesson plans, Student Notebook, Apps Script audits, HTML app upgrades, and deployment checks.</p>
+      </div>
+      <div class="workflow-grid" data-workflow-grid></div>
+    </section>
+
+    <section class="section-block qa-section" aria-labelledby="qa-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Quality gate</p>
+          <h2 id="qa-title">EduWonderLab QA Harness</h2>
+          <p>Use this before calling any artifact “done.” It turns your locked standards into a visible pass/fail gate.</p>
+        </div>
+        <div class="score-badge" aria-live="polite"><span data-qa-score>0%</span><small>ready score</small></div>
+      </div>
+      <div class="qa-grid" data-qa-grid></div>
+      <div class="micro-actions qa-actions">
+        <button data-action="copyQaReport">Copy QA report</button>
+        <button data-action="clearQa">Clear checks</button>
+      </div>
+    </section>
+
+    <section class="section-block" aria-labelledby="links-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Launchpad</p>
+          <h2 id="links-title">Fast links</h2>
+          <p>One-click routes to the tools and hubs you keep returning to.</p>
+        </div>
+        <button class="primary-action small" data-action="showLinkForm">Add link</button>
+      </div>
+      <form class="link-form" data-link-form hidden>
+        <div class="form-grid three">
+          <label>Label<input id="linkLabel" type="text" placeholder="Example: Student Notebooks Site" /></label>
+          <label>URL<input id="linkUrl" type="url" placeholder="https://… or /teacher-tools/…" /></label>
+          <label>Category<input id="linkCategory" type="text" placeholder="School, Deploy, Noam, Shop…" /></label>
+        </div>
+        <div class="micro-actions"><button type="submit">Save link</button><button type="button" data-action="cancelLinkForm">Cancel</button></div>
+      </form>
+      <div class="launch-grid" data-launch-grid></div>
+    </section>
+
+    <section class="section-block" aria-labelledby="capture-title">
+      <div class="section-heading">
+        <p class="eyebrow">Quick capture</p>
+        <h2 id="capture-title">Brain dump to action list</h2>
+        <p>Paste messy thoughts, logs, or “I need to…” notes. Each line becomes an actionable task you can score and move.</p>
+      </div>
+      <div class="capture-panel">
+        <textarea id="captureInput" rows="7" placeholder="Paste one idea per line. Example:
+Ready 5.28 lesson plan from stats PPTX
+Fix Data Studio heat map color guide
+Noam Hebrew reading practice 15 minutes
+Update Cloudflare hub link card"></textarea>
+        <div class="micro-actions">
+          <button data-action="captureTasks">Convert lines to tasks</button>
+          <button data-action="clearCapture">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-block" aria-labelledby="data-title">
+      <div class="section-heading">
+        <p class="eyebrow">Portability</p>
+        <h2 id="data-title">Backup, restore, and privacy</h2>
+        <p>Everything is saved in this browser’s local storage. Export a JSON backup before switching devices or clearing browser data.</p>
+      </div>
+      <div class="data-actions">
+        <button data-action="exportJson">Download JSON backup</button>
+        <label class="import-label">Import JSON backup<input id="importFile" type="file" accept="application/json" /></label>
+        <button class="danger-button" data-action="clearAllData">Clear local data</button>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <span>NeftOS Command Center</span>
+      <span>Local-first · GitHub/Cloudflare ready · <span data-current-year></span></span>
+    </footer>
+  </main>
+
+  <template id="workflowTemplate">
+    <article class="workflow-card">
+      <div class="workflow-head">
+        <span class="card-kicker"></span>
+        <button class="copy-button">Copy</button>
+      </div>
+      <h3></h3>
+      <p></p>
+      <label class="workflow-input-label">Context
+        <textarea rows="3"></textarea>
+      </label>
+      <pre tabindex="0"><code></code></pre>
+    </article>
+  </template>
+
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
+</body>
+</html>
