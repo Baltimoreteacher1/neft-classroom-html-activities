@@ -1075,7 +1075,7 @@
           >
             🔔
           </button>
-          <a class="btn" href="/">← Hub</a>
+          <button class="btn" data-view="customize">🎨</button>
           <button class="btn" data-view="settings">⚙️</button>
           <button class="btn primary" data-open="assignment">
             ＋ Assignment
@@ -1119,6 +1119,7 @@
           Assignments
         </button>
         <button class="tab" data-view="classes" role="tab">Classes</button>
+        <button class="tab" data-view="calendar" role="tab">Calendar</button>
         <button class="tab" data-view="focus" role="tab">Focus</button>
         <button class="tab" data-view="email" role="tab">Email</button>
         <button class="tab" data-view="sync" role="tab">Google Sync</button>
@@ -2325,6 +2326,8 @@
             reminders,
             assignments,
             classes,
+            calendar: calendarTab,
+            customize: homeCustomizePanel,
             focus,
             email,
             sync,
@@ -2449,7 +2452,11 @@
               analyticsMini(),
             ),
           };
-          return `<div class='homeGrid'>${state.settings.homeOrder.map((k) => `<div>${map[k] || ""}</div>`).join("")}</div>`;
+          const hidden = state.settings.hiddenCards || [];
+          const visibleOrder = state.settings.homeOrder.filter(
+            (k) => !hidden.includes(k),
+          );
+          return `<div class='row' style='margin-top:12px;margin-bottom:4px'><button class='btn' data-view='customize'>🎨 Customize cards</button></div><div class='homeGrid'>${visibleOrder.map((k) => `<div>${map[k] || ""}</div>`).join("")}</div>`;
         }
 
         function dailyLaunchMini() {
@@ -2580,7 +2587,43 @@
         // ── Google Sync ──
         function sync() {
           const syncing = GoogleSync.isSyncing;
-          return `<section class='card'><div class='head'><div><h3>Google Sync</h3><p class='sub'>Calendar + Classroom sync via Cloudflare Pages Functions.</p></div><button class='btn' id='checkGoogle'>Check status</button></div><div class='syncBox ${state.google.connected ? "connected" : ""}' style='margin-bottom:12px'>${state.google.connected ? `<strong>✓ Connected${state.google.profile?.email ? " as " + esc(state.google.profile.email) : ""}</strong><p class='sub'>Last sync: ${state.google.lastSync ? fmtDate(state.google.lastSync) : "never"}</p>` : '<strong>Not connected</strong><p class="sub">After Cloudflare OAuth/KV setup, connect Google here.</p>'}</div><div class='row'><a class='btn primary' href='/api/google/login'>Connect Google</a><button class='btn ${syncing ? "syncing" : ""}' id='syncCalendar'>${syncing ? "⟳" : "📅"} Sync Calendar</button><button class='btn primary ${syncing ? "syncing" : ""}' id='syncClassroom'>${syncing ? "⟳" : "📚"} Sync Classroom</button><a class='btn danger' href='/api/google/logout'>Disconnect</a></div><div class='grid g2' style='margin-top:14px'><div class='card'><h3>Calendar Events (${(state.google.events || []).length})</h3>${
+          const bookmarklet = `javascript:void(function(){try{var items=[];document.querySelectorAll('[data-course-id],.JwPp0e,.asQXV').forEach(function(el){var title=el.querySelector('.YVvGBb,.onkcGd,.EhRlC');var due=el.querySelector('.CJk6Gc,.lTLBPd');var course=el.querySelector('.YVvGBb,.asQXV')?.closest('[data-course-id]')?.querySelector('.YVvGBb');if(title){items.push({t:title.textContent.trim(),d:due?due.textContent.trim():'',c:course?course.textContent.trim():''})}});if(!items.length){document.querySelectorAll('.asQXV,.JwPp0e').forEach(function(el){items.push({t:el.textContent.trim().slice(0,80),d:'',c:''})});}var data=encodeURIComponent(JSON.stringify(items));window.open('${location.origin}/noam-school/?import='+data,'_blank')}catch(e){alert('Bookmarklet error: '+e.message)}})()`;
+
+          return `<section class='card'><div class='head'><div><h3>Google Sync</h3><p class='sub'>Multiple ways to sync — works even without school admin permission.</p></div><button class='btn' id='checkGoogle'>Check status</button></div>
+
+          <div class='note' style='margin-bottom:14px'><strong>How syncing works:</strong> Choose any method below. The bookmarklet works without any school permission — just drag it to your bookmarks bar and click it while on Google Classroom.</div>
+
+          <div class='grid g2' style='margin-bottom:14px'>
+            <div class='card'>
+              <h3>Method 1: Bookmarklet (No Permission Needed)</h3>
+              <p class='sub' style='margin-bottom:10px'>Works on any school Chromebook. Drag this button to your bookmarks bar, then click it while viewing Google Classroom:</p>
+              <a class='btn primary' href='${esc(bookmarklet)}' onclick='event.preventDefault();alert("Drag this to your bookmarks bar, don\\'t click it!")' style='font-size:.9rem;padding:12px 16px'>📚 Grab Classroom</a>
+              <p class='sub' style='margin-top:8px'>After clicking the bookmarklet on classroom.google.com, it will open this page with your assignments ready to import.</p>
+            </div>
+            <div class='card'>
+              <h3>Method 2: Paste Import</h3>
+              <p class='sub' style='margin-bottom:10px'>Copy assignment info from Google Classroom and paste it here:</p>
+              <textarea id='pasteImport' placeholder='Paste assignments here — one per line, or paste a list from Classroom. Format: Title | Class | Due date' style='min-height:100px'></textarea>
+              <button class='btn primary' id='parsePaste' style='margin-top:8px'>Import from paste</button>
+            </div>
+          </div>
+
+          <div class='card' style='margin-bottom:14px'>
+            <h3>Method 3: Google Calendar Embed (Shows Classroom Assignments)</h3>
+            <p class='sub' style='margin-bottom:8px'>Google Classroom automatically adds assignments to your Google Calendar. Embedding your calendar here shows all assignments without needing API access.</p>
+            <div class='field'><label>Your Google Calendar embed URL</label><input id='quickCalEmbed' value='${esc(state.settings.calendarEmbed)}' placeholder='Paste iframe src or full embed code from Google Calendar → Settings → Integrate'></div>
+            <button class='btn primary' id='saveQuickCal'>Save Calendar Embed</button>
+            <p class='sub' style='margin-top:6px'>How to get it: Google Calendar → Settings ⚙️ → your calendar → "Integrate calendar" → copy the embed URL.</p>
+          </div>
+
+          <div class='card' style='margin-bottom:14px'>
+            <h3>Method 4: API Sync (Requires Setup)</h3>
+            <p class='sub' style='margin-bottom:8px'>Full automated sync via Cloudflare Pages Functions. Requires OAuth configuration.</p>
+            <div class='syncBox ${state.google.connected ? "connected" : ""}' style='margin-bottom:10px'>${state.google.connected ? `<strong>✓ Connected${state.google.profile?.email ? " as " + esc(state.google.profile.email) : ""}</strong><p class='sub'>Last sync: ${state.google.lastSync ? fmtDate(state.google.lastSync) : "never"}</p>` : '<strong>Not connected</strong><p class="sub">Requires Cloudflare OAuth/KV setup.</p>'}</div>
+            <div class='row'><a class='btn primary' href='/api/google/login'>Connect Google</a><button class='btn ${syncing ? "syncing" : ""}' id='syncCalendar'>${syncing ? "⟳" : "📅"} Sync Calendar</button><button class='btn primary ${syncing ? "syncing" : ""}' id='syncClassroom'>${syncing ? "⟳" : "📚"} Sync Classroom</button><a class='btn danger' href='/api/google/logout'>Disconnect</a></div>
+          </div>
+
+          <div class='grid g2'><div class='card'><h3>Calendar Events (${(state.google.events || []).length})</h3>${
             (state.google.events || [])
               .slice(0, 8)
               .map(
@@ -2615,6 +2658,114 @@
               .join("") ||
             `<div class='note'>Log wins from the home page.</div>`
           }</section>`;
+        }
+
+        // ── Calendar Tab ──
+        function calendarTab() {
+          const src = extractCal(state.settings.calendarEmbed);
+          const events = state.google.events || [];
+          const assignmentsDue = state.assignments.filter(
+            (a) => a.status !== "Turned In" && a.due,
+          );
+
+          // Build mini month calendar
+          const now = new Date();
+          const year = now.getFullYear(),
+            month = now.getMonth();
+          const firstDay = new Date(year, month, 1).getDay();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          const monthName = now.toLocaleDateString(undefined, {
+            month: "long",
+            year: "numeric",
+          });
+
+          let calGrid = `<div style='display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:.78rem'>`;
+          ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].forEach(
+            (d) =>
+              (calGrid += `<div style='font-weight:900;color:var(--muted);padding:4px'>${d}</div>`),
+          );
+          for (let i = 0; i < firstDay; i++) calGrid += `<div></div>`;
+          for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+            const isToday = dateStr === iso();
+            const hasDue = assignmentsDue.some((a) => a.due === dateStr);
+            const hasEvent = events.some(
+              (e) => (e.start || "").slice(0, 10) === dateStr,
+            );
+            let style = "padding:6px;border-radius:8px;cursor:default;";
+            if (isToday)
+              style += "background:var(--teal);color:white;font-weight:900;";
+            else if (hasDue)
+              style +=
+                "background:var(--softR);color:var(--red);font-weight:800;";
+            else if (hasEvent)
+              style +=
+                "background:var(--softB);color:var(--blue);font-weight:700;";
+            calGrid += `<div style='${style}' title='${hasDue ? "Assignment due" : hasEvent ? "Event" : ""}'>${d}${hasDue ? '<div style="width:5px;height:5px;background:var(--red);border-radius:50%;margin:2px auto 0"></div>' : ""}</div>`;
+          }
+          calGrid += `</div>`;
+
+          // Upcoming items list
+          const upcoming = [
+            ...assignmentsDue.map((a) => ({
+              title: a.title,
+              date: a.due,
+              type: "assignment",
+              classId: a.classId,
+            })),
+            ...events.map((e) => ({
+              title: e.title,
+              date: (e.start || "").slice(0, 10),
+              type: "event",
+              link: e.link,
+            })),
+          ]
+            .filter((x) => x.date >= iso())
+            .sort((a, b) => a.date.localeCompare(b.date))
+            .slice(0, 15);
+
+          return `<section class='card'><div class='head'><div><h3>Calendar</h3><p class='sub'>${monthName} — assignments and events at a glance.</p></div><div class='row'><button class='btn' id='syncCalTab'>🔄 Sync</button><button class='btn' data-view='settings'>⚙️ Embed</button></div></div>
+          <div class='grid g2' style='margin-top:12px'>
+            <div>
+              <div class='card' style='padding:14px'>${calGrid}</div>
+              <div style='margin-top:10px;display:flex;gap:12px;font-size:.75rem;color:var(--muted)'><span><span style='display:inline-block;width:10px;height:10px;background:var(--teal);border-radius:50%;vertical-align:middle'></span> Today</span><span><span style='display:inline-block;width:10px;height:10px;background:var(--softR);border-radius:50%;vertical-align:middle'></span> Due</span><span><span style='display:inline-block;width:10px;height:10px;background:var(--softB);border-radius:50%;vertical-align:middle'></span> Event</span></div>
+            </div>
+            <div>
+              <h3 style='margin-bottom:8px'>Upcoming</h3>
+              ${upcoming.length ? upcoming.map((x) => `<div class='item'><div class='itemTop'><div><h4>${esc(x.title)}</h4><p>${esc(dueLabel(x.date))} · <span class='pill ${x.type === "assignment" ? "red" : "blue"}'>${x.type === "assignment" ? "Due" : "Event"}</span>${x.classId ? ` · ${esc(getClass(x.classId).name)}` : ""}</p></div></div></div>`).join("") : `<div class='note'>No upcoming items. Add assignments or sync Google Calendar.</div>`}
+            </div>
+          </div>
+          ${src ? `<div style='margin-top:14px'><h3 style='margin-bottom:8px'>Embedded Calendar</h3><div class='calendarBox' style='padding:0'><iframe src='${esc(src)}' loading='lazy' title='Google Calendar' style='height:450px'></iframe></div></div>` : `<div class='note' style='margin-top:14px'>Paste a Google Calendar embed URL in Settings to see the full calendar here, or use the Classroom Sync bookmarklet below.</div>`}
+          </section>`;
+        }
+
+        // ── Home Customization ──
+        function homeCustomizePanel() {
+          const allCards = {
+            launch: "Daily Launch",
+            schedule: "Today Schedule",
+            today: "Today Work",
+            calendar: "Calendar",
+            reminders: "Reminders",
+            week: "Weekly Checklist",
+            google: "Google Classroom",
+            onDeck: "On Deck",
+            wins: "Wins + Streak",
+            analytics: "Quick Stats",
+          };
+          const visible = state.settings.homeOrder || HOME_ORDER;
+          const hidden = state.settings.hiddenCards || [];
+          return `<section class='card' style='margin-bottom:12px'><div class='head'><div><h3>Customize Home</h3><p class='sub'>Show, hide, or reorder cards on your home page.</p></div><button class='btn' id='closeCustomize' data-view='home'>Done</button></div>
+          <div class='grid g2'>
+            <div><h4 style='margin-bottom:8px;color:var(--navy)'>Visible Cards</h4>${visible
+              .filter((k) => !hidden.includes(k))
+              .map(
+                (k) =>
+                  `<div class='item' style='display:flex;justify-content:space-between;align-items:center'><span style='font-weight:700'>${allCards[k] || k}</span><div class='row'><button class='btn icon-btn' data-card-up='${k}'>↑</button><button class='btn icon-btn' data-card-down='${k}'>↓</button><button class='btn danger' data-card-hide='${k}'>Hide</button></div></div>`,
+              )
+              .join("")}</div>
+            <div><h4 style='margin-bottom:8px;color:var(--navy)'>Hidden Cards</h4>${hidden.length ? hidden.map((k) => `<div class='item' style='display:flex;justify-content:space-between;align-items:center'><span style='font-weight:700'>${allCards[k] || k}</span><button class='btn primary' data-card-show='${k}'>Show</button></div>`).join("") : `<div class='note'>All cards are visible.</div>`}</div>
+          </div></section>`;
         }
 
         // ── Settings ──
@@ -2987,6 +3138,139 @@
               render();
             };
 
+          // Home customization card controls
+          $$("[data-card-hide]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                StateManager.snapshot();
+                if (!state.settings.hiddenCards)
+                  state.settings.hiddenCards = [];
+                const k = b.dataset.cardHide;
+                if (!state.settings.hiddenCards.includes(k))
+                  state.settings.hiddenCards.push(k);
+                save();
+                render();
+                toast("Card hidden");
+              }),
+          );
+          $$("[data-card-show]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                StateManager.snapshot();
+                state.settings.hiddenCards = (
+                  state.settings.hiddenCards || []
+                ).filter((x) => x !== b.dataset.cardShow);
+                save();
+                render();
+                toast("Card shown");
+              }),
+          );
+          $$("[data-card-up]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const k = b.dataset.cardUp;
+                const arr = state.settings.homeOrder.filter(
+                  (x) => !(state.settings.hiddenCards || []).includes(x),
+                );
+                const i = arr.indexOf(k);
+                if (i > 0) {
+                  [arr[i], arr[i - 1]] = [arr[i - 1], arr[i]];
+                  state.settings.homeOrder = arr;
+                  save();
+                  render();
+                }
+              }),
+          );
+          $$("[data-card-down]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                const k = b.dataset.cardDown;
+                const arr = state.settings.homeOrder.filter(
+                  (x) => !(state.settings.hiddenCards || []).includes(x),
+                );
+                const i = arr.indexOf(k);
+                if (i < arr.length - 1) {
+                  [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+                  state.settings.homeOrder = arr;
+                  save();
+                  render();
+                }
+              }),
+          );
+
+          // Calendar tab sync button
+          const calSync = $("#syncCalTab");
+          if (calSync)
+            calSync.onclick = () => {
+              GoogleSync.syncCalendar();
+              GoogleSync.syncClassroom();
+            };
+
+          // Paste import for Google Classroom
+          const parsePaste = $("#parsePaste");
+          if (parsePaste)
+            parsePaste.onclick = () => {
+              const text = ($("#pasteImport").value || "").trim();
+              if (!text) {
+                toast("Paste some assignments first", "error");
+                return;
+              }
+              StateManager.snapshot();
+              const lines = text.split("\n").filter((l) => l.trim());
+              let imported = 0;
+              lines.forEach((line) => {
+                const parts = line.split(/[|,\t]/).map((s) => s.trim());
+                const title = parts[0];
+                if (!title || title.length < 2) return;
+                const className = parts[1] || "";
+                const dueText = parts[2] || "";
+                let classId = "";
+                if (className) {
+                  const match = state.classes.find((c) =>
+                    c.name.toLowerCase().includes(className.toLowerCase()),
+                  );
+                  if (match) classId = match.id;
+                }
+                let due = "";
+                if (dueText) {
+                  const parsed = new Date(dueText);
+                  if (!isNaN(parsed)) due = parsed.toISOString().slice(0, 10);
+                }
+                state.assignments.push({
+                  id: uid("a"),
+                  title,
+                  classId,
+                  due,
+                  priority: "Medium",
+                  status: "Not Started",
+                  notes: "Imported from paste",
+                  link: "",
+                  googleId: "",
+                  created: iso(),
+                  completed: "",
+                });
+                imported++;
+              });
+              if (imported) {
+                save();
+                render();
+                toast(imported + " assignment(s) imported!", "success");
+              } else toast("Could not parse assignments", "error");
+            };
+
+          // Quick calendar embed save
+          const saveQC = $("#saveQuickCal");
+          if (saveQC)
+            saveQC.onclick = () => {
+              StateManager.snapshot();
+              state.settings.calendarEmbed = (
+                $("#quickCalEmbed").value || ""
+              ).trim();
+              save();
+              render();
+              toast("Calendar saved", "success");
+            };
+
           // Drag and drop for home cards
           setupDragDrop();
         }
@@ -3327,6 +3611,7 @@
               "reminders",
               "assignments",
               "classes",
+              "calendar",
               "focus",
               "email",
               "sync",
@@ -3493,6 +3778,79 @@
         saveNow();
         render();
         showOnboarding();
+
+        // Handle bookmarklet import via URL parameter
+        (function handleBookmarkletImport() {
+          const params = new URLSearchParams(location.search);
+          const importData = params.get("import");
+          if (!importData) return;
+          try {
+            const items = JSON.parse(decodeURIComponent(importData));
+            if (!Array.isArray(items) || !items.length) return;
+            StateManager.snapshot();
+            let count = 0;
+            items.forEach((item) => {
+              const title = (item.t || "").trim();
+              if (!title || title.length < 2) return;
+              const className = (item.c || "").trim();
+              const dueText = (item.d || "").trim();
+              let classId = "";
+              if (className) {
+                const match = state.classes.find((c) =>
+                  c.name.toLowerCase().includes(className.toLowerCase()),
+                );
+                if (match) classId = match.id;
+                else {
+                  const newClass = {
+                    id: uid("class"),
+                    name: className,
+                    teacher: "",
+                    email: "",
+                    room: "",
+                    color: [
+                      "#147c78",
+                      "#248a55",
+                      "#b84234",
+                      "#2f65d5",
+                      "#d99028",
+                    ][state.classes.length % 5],
+                    source: "Bookmarklet",
+                  };
+                  state.classes.push(newClass);
+                  classId = newClass.id;
+                }
+              }
+              let due = "";
+              if (dueText) {
+                const parsed = new Date(dueText);
+                if (!isNaN(parsed)) due = parsed.toISOString().slice(0, 10);
+              }
+              state.assignments.push({
+                id: uid("a"),
+                title,
+                classId,
+                due,
+                priority: "Medium",
+                status: "Not Started",
+                notes: "Imported from Google Classroom bookmarklet",
+                link: "",
+                googleId: "",
+                created: iso(),
+                completed: "",
+              });
+              count++;
+            });
+            if (count) {
+              saveNow();
+              render();
+              toast(count + " assignments imported from Classroom!", "success");
+            }
+            // Clean URL
+            history.replaceState(null, "", location.pathname);
+          } catch (e) {
+            console.error("Bookmarklet import error:", e);
+          }
+        })();
 
         // Auto-sync on load
         setTimeout(() => GoogleSync.checkStatus(), 1000);
