@@ -3,254 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Neft Hub is a personal and professional launch dashboard for teacher tools, classroom activities, data dashboards, Hebrew review, reading resources, and recurring workflows.">
+  <meta name="description" content="Neft Hub is a personal and professional launch dashboard for teacher tools, classroom activities, reading resources, Hebrew practice, data dashboards, and recurring workflows.">
   <title>Neft Hub | Personal and Professional Dashboard</title>
   <link rel="stylesheet" href="/assets/shared.css">
   <style>
-    .hub-hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
-      gap: clamp(18px, 4vw, 34px);
-      align-items: stretch;
-    }
-
-    .hub-summary {
-      padding: 22px;
-      border: 1px solid rgba(15, 118, 110, 0.18);
-      border-radius: 18px;
-      background: linear-gradient(145deg, rgba(238, 244, 243, .96), rgba(255, 250, 240, .96));
-      box-shadow: 0 16px 38px rgba(23, 32, 42, .08);
-    }
-
-    .hub-summary h2 {
-      margin: 0 0 12px;
-      color: #17202a;
-      font-size: clamp(1.25rem, 3vw, 1.65rem);
-    }
-
-    .hub-summary ol {
-      display: grid;
-      gap: 9px;
-      margin: 0;
-      padding-left: 1.15rem;
-      color: #53616f;
-      line-height: 1.55;
-    }
-
-    .hub-jump-row,
-    .hub-action-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .hub-jump-row a,
-    .hub-action-row a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 850;
-      text-decoration: none;
-    }
-
-    .hub-jump-row a:first-child,
-    .hub-action-row .primary-link {
-      color: #fff;
-      background: #0f766e;
-      box-shadow: 0 10px 24px rgba(15, 118, 110, .22);
-    }
-
-    .hub-jump-row a:not(:first-child),
-    .hub-action-row .secondary-link {
-      color: #115e59;
-      background: #eef4f3;
-      border: 1px solid rgba(15, 118, 110, .18);
-    }
-
-    .hub-lane-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .hub-lane {
-      display: grid;
-      gap: 14px;
-      padding: 20px;
-      border: 1px solid #d8dfdc;
-      border-radius: 20px;
-      background: rgba(255,255,255,.88);
-      box-shadow: 0 14px 34px rgba(23, 32, 42, .08);
-    }
-
-    .hub-lane.professional {
-      border-top: 8px solid #0f766e;
-    }
-
-    .hub-lane.personal {
-      border-top: 8px solid #b7791f;
-    }
-
-    .hub-lane.reading {
-      border-top: 8px solid #8b5e34;
-    }
-
-    .hub-lane h3 {
-      margin: 0;
-      color: #17202a;
-      font-size: clamp(1.35rem, 3vw, 1.8rem);
-    }
-
-    .hub-lane p {
-      margin: 0;
-      color: #53616f;
-      line-height: 1.6;
-    }
-
-    .mini-link-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .mini-link-grid a {
-      display: grid;
-      gap: 4px;
-      min-height: 104px;
-      padding: 14px;
-      border: 1px solid #d8dfdc;
-      border-radius: 15px;
-      background: #fff;
-      color: inherit;
-      text-decoration: none;
-      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
-    }
-
-    .mini-link-grid a:hover,
-    .mini-link-grid a:focus-visible,
-    .chapter-grid a:hover,
-    .chapter-grid a:focus-visible {
-      transform: translateY(-2px);
-      border-color: #0f766e;
-      box-shadow: 0 12px 26px rgba(23, 32, 42, .09);
-      outline: none;
-    }
-
-    .mini-link-grid strong {
-      color: #17202a;
-    }
-
-    .mini-link-grid span {
-      color: #53616f;
-      font-size: .9rem;
-      line-height: 1.45;
-    }
-
-    .hub-divider-label {
-      display: inline-flex;
-      width: fit-content;
-      margin-bottom: 8px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      background: #eef4f3;
-      color: #115e59;
-      font-size: .76rem;
-      font-weight: 900;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-    }
-
-    .feature-panel {
-      display: grid;
-      grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .feature-card {
-      display: grid;
-      gap: 12px;
-      padding: 22px;
-      border-radius: 20px;
-      border: 1px solid #d8dfdc;
-      background: linear-gradient(145deg, #fffaf0, #eef4f3);
-      box-shadow: 0 14px 34px rgba(23, 32, 42, .08);
-    }
-
-    .feature-card h3 {
-      margin: 0;
-      color: #17202a;
-      font-size: clamp(1.5rem, 3vw, 2rem);
-    }
-
-    .feature-card p {
-      margin: 0;
-      color: #53616f;
-      line-height: 1.6;
-    }
-
-    .chapter-panel {
-      display: grid;
-      gap: 12px;
-      padding: 18px;
-      border: 1px solid #d8dfdc;
-      border-radius: 20px;
-      background: rgba(255,255,255,.88);
-      box-shadow: 0 14px 34px rgba(23, 32, 42, .08);
-    }
-
-    .chapter-panel h3 {
-      margin: 0;
-      color: #17202a;
-    }
-
-    .chapter-grid {
-      display: grid;
-      grid-template-columns: repeat(9, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .chapter-grid a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      border-radius: 12px;
-      border: 1px solid #d8dfdc;
-      background: #fff;
-      color: #115e59;
-      font-weight: 900;
-      text-decoration: none;
-      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
-    }
-
-    @media (max-width: 960px) {
-      .hub-hero,
-      .hub-lane-grid,
-      .feature-panel {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 780px) {
-      .chapter-grid {
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 680px) {
-      .mini-link-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .chapter-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
+    .hub-hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:clamp(18px,4vw,34px);align-items:stretch}.hub-summary,.hub-card,.feature-card,.chapter-panel{padding:22px;border:1px solid #d8dfdc;border-radius:20px;background:rgba(255,255,255,.9);box-shadow:0 14px 34px rgba(23,32,42,.08)}.hub-summary{background:linear-gradient(145deg,rgba(238,244,243,.96),rgba(255,250,240,.96))}.hub-summary h2,.hub-card h3,.feature-card h3,.chapter-panel h3{margin:0;color:#17202a}.hub-summary ol{display:grid;gap:9px;margin:0;padding-left:1.15rem;color:#53616f;line-height:1.55}.hub-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.hub-actions a{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:10px 14px;font-weight:850;text-decoration:none}.hub-actions a:first-child,.primary-link{color:#fff!important;background:#0f766e;box-shadow:0 10px 24px rgba(15,118,110,.22)}.hub-actions a:not(:first-child),.secondary-link{color:#115e59!important;background:#eef4f3;border:1px solid rgba(15,118,110,.18)}.hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.hub-card{display:grid;gap:14px}.hub-card.professional{border-top:8px solid #0f766e}.hub-card.personal{border-top:8px solid #b7791f}.hub-card.reading{border-top:8px solid #8b5e34}.hub-card p,.feature-card p{margin:0;color:#53616f;line-height:1.6}.hub-card h3{font-size:clamp(1.35rem,3vw,1.8rem)}.hub-label{display:inline-flex;width:fit-content;padding:5px 9px;border-radius:999px;background:#eef4f3;color:#115e59;font-size:.76rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase}.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mini-grid a,.chapter-grid a{border:1px solid #d8dfdc;background:#fff;color:inherit;text-decoration:none;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}.mini-grid a{display:grid;gap:4px;min-height:104px;padding:14px;border-radius:15px}.mini-grid a:hover,.mini-grid a:focus-visible,.chapter-grid a:hover,.chapter-grid a:focus-visible{transform:translateY(-2px);border-color:#0f766e;box-shadow:0 12px 26px rgba(23,32,42,.09);outline:none}.mini-grid strong{color:#17202a}.mini-grid span{color:#53616f;font-size:.9rem;line-height:1.45}.feature-panel{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:18px}.feature-card{display:grid;gap:12px;background:linear-gradient(145deg,#fffaf0,#eef4f3)}.chapter-panel{display:grid;gap:12px}.chapter-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:8px}.chapter-grid a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border-radius:12px;color:#115e59;font-weight:900}.archive-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}@media(max-width:960px){.hub-hero,.hub-grid,.feature-panel,.archive-grid{grid-template-columns:1fr}}@media(max-width:780px){.chapter-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}@media(max-width:680px){.mini-grid{grid-template-columns:1fr}.chapter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
   </style>
 </head>
 <body>
@@ -260,8 +17,8 @@
         <p class="eyebrow">Personal + Professional Launch Dashboard</p>
         <h1 id="hub-title">Neft Hub</h1>
         <p class="hero-copy">One clean front door for professional teacher work and personal learning routines.</p>
-        <p>Use the Professional side for classroom tools, lesson workflows, data dashboards, and curriculum resources. Use the Personal side for family learning, Hebrew review, reading practice, and personal routines.</p>
-        <div class="hub-jump-row" aria-label="Jump to hub sections">
+        <p>Use the Professional lane for classroom tools, lesson workflows, data dashboards, and curriculum resources. Use the Personal lane for Hebrew practice, reading practice, and family routines.</p>
+        <div class="hub-actions" aria-label="Jump to hub sections">
           <a href="#professional">Professional</a>
           <a href="#personal">Personal</a>
           <a href="#reading-library">Reading Library</a>
@@ -273,8 +30,8 @@
         <h2 id="hub-summary-title">Start with the lane that matches your goal</h2>
         <ol>
           <li><strong>Professional:</strong> planning, teaching, data, classroom activities, and deployment.</li>
+          <li><strong>Personal:</strong> Hebrew practice, reading review, family learning, and routines.</li>
           <li><strong>Reading library:</strong> chapter collections and student-facing literature tools.</li>
-          <li><strong>Personal:</strong> family learning, Hebrew review, reading supports, and study routines.</li>
           <li><strong>Command Center:</strong> capture tasks and decide the next best move.</li>
         </ol>
       </aside>
@@ -285,16 +42,13 @@
         <p class="eyebrow">Main hub structure</p>
         <h2 id="lanes-title">Choose your lane</h2>
       </div>
-      <div class="hub-lane-grid">
-        <article class="hub-lane professional" id="professional" aria-labelledby="professional-title">
-          <span class="hub-divider-label">Professional</span>
+      <div class="hub-grid">
+        <article class="hub-card professional" id="professional" aria-labelledby="professional-title">
+          <span class="hub-label">Professional</span>
           <h3 id="professional-title">Teacher Work + Classroom Tools</h3>
-          <p>Everything connected to teaching, planning, instruction, classroom data, student-facing activities, professional development, and GitHub/Cloudflare deployment.</p>
-          <div class="hub-action-row">
-            <a class="primary-link" href="/teacher-tools/">Open Professional Hub</a>
-            <a class="secondary-link" href="/teacher-tools/neftos-command-center/">Open Command Center</a>
-          </div>
-          <div class="mini-link-grid" aria-label="Professional quick links">
+          <p>Planning, instruction, classroom data, student-facing activities, professional development, and GitHub/Cloudflare deployment.</p>
+          <div class="hub-actions"><a class="primary-link" href="/teacher-tools/">Open Professional Hub</a><a class="secondary-link" href="/teacher-tools/neftos-command-center/">Open Command Center</a></div>
+          <div class="mini-grid" aria-label="Professional quick links">
             <a href="/teacher-tools/forecast-engine/"><strong>Forecast Engine</strong><span>Evidence review, readiness forecasting, and intervention planning.</span></a>
             <a href="/statistics-data/data-studio/"><strong>Data Studio</strong><span>Charts, grouping, summaries, and classroom data analysis.</span></a>
             <a href="/math/"><strong>Math Section</strong><span>Grade 6 unit folders, math resources, and classroom activities.</span></a>
@@ -304,17 +58,14 @@
           </div>
         </article>
 
-        <article class="hub-lane personal" id="personal" aria-labelledby="personal-title">
-          <span class="hub-divider-label">Personal</span>
-          <h3 id="personal-title">Family Learning + Personal Routines</h3>
-          <p>Personal learning spaces and routines that should be easy to find without mixing them into the professional teaching dashboard.</p>
-          <div class="hub-action-row">
-            <a class="primary-link" href="/hebrew">Open Hebrew Review</a>
-            <a class="secondary-link" href="/teacher-tools/neftos-command-center/">Plan Personal Routines</a>
-          </div>
-          <div class="mini-link-grid" aria-label="Personal quick links">
-            <a href="/hebrew"><strong>Hebrew Review</strong><span>Reading review, vocabulary, and confidence-building practice.</span></a>
-            <a href="/noam-hebrew"><strong>Hebrew Shortcut</strong><span>A clean short route to the existing Hebrew review page.</span></a>
+        <article class="hub-card personal" id="personal" aria-labelledby="personal-title">
+          <span class="hub-label">Personal</span>
+          <h3 id="personal-title">Personal Practice + Family Learning</h3>
+          <p>Practice spaces and routines that should be easy to find without mixing them into the professional teaching dashboard.</p>
+          <div class="hub-actions"><a class="primary-link" href="/practice/hebrew-reading/">Open Hebrew Reading Practice</a><a class="secondary-link" href="/teacher-tools/neftos-command-center/">Plan Personal Routines</a></div>
+          <div class="mini-grid" aria-label="Personal quick links">
+            <a href="/practice/hebrew-reading/"><strong>Hebrew Reading Practice</strong><span>Short routines, reading review, confidence checks, and practice focus areas.</span></a>
+            <a href="/hebrew"><strong>Hebrew Review</strong><span>Existing review page for vocabulary, decoding, and word reading practice.</span></a>
             <a href="/blood-on-the-river/chapter-1/"><strong>Reading Practice</strong><span>Chapter-based reading support with vocabulary and checks.</span></a>
             <a href="/teacher-tools/neftos-command-center/"><strong>Personal Planning</strong><span>Use the command center for family learning routines and personal admin.</span></a>
           </div>
@@ -326,207 +77,46 @@
       <div class="section-heading">
         <p class="eyebrow">Reading library</p>
         <h2 id="reading-library-title">Blood on the River Interactive Chapters</h2>
-        <p>This is now a first-class Neft Hub section, not a hidden archive link. Use it for literature review, vocabulary, quote explanations, scene-based comprehension, and student checks.</p>
+        <p>This is a first-class Neft Hub section for literature review, vocabulary, quote explanations, scene-based comprehension, and student checks.</p>
       </div>
       <div class="feature-panel">
         <article class="feature-card">
-          <span class="hub-divider-label">Featured collection</span>
+          <span class="hub-label">Featured collection</span>
           <h3>Blood on the River</h3>
           <p>Open the full interactive chapter collection with visual vocabulary, passage-based scenes, quote explanations, why-it-matters notes, and short student checks.</p>
-          <div class="hub-action-row">
-            <a class="primary-link" href="/blood-on-the-river/">Open full collection</a>
-            <a class="secondary-link" href="/blood-on-the-river/chapter-1/">Start Chapter 1</a>
-          </div>
+          <div class="hub-actions"><a class="primary-link" href="/blood-on-the-river/">Open full collection</a><a class="secondary-link" href="/blood-on-the-river/chapter-1/">Start Chapter 1</a></div>
         </article>
         <article class="chapter-panel" aria-labelledby="chapter-grid-title">
           <h3 id="chapter-grid-title">Jump to a chapter</h3>
           <div class="chapter-grid" aria-label="Blood on the River chapter links">
-            <a href="/blood-on-the-river/chapter-1/">1</a>
-            <a href="/blood-on-the-river/chapter-2/">2</a>
-            <a href="/blood-on-the-river/chapter-3/">3</a>
-            <a href="/blood-on-the-river/chapter-4/">4</a>
-            <a href="/blood-on-the-river/chapter-5/">5</a>
-            <a href="/blood-on-the-river/chapter-6/">6</a>
-            <a href="/blood-on-the-river/chapter-7/">7</a>
-            <a href="/blood-on-the-river/chapter-8/">8</a>
-            <a href="/blood-on-the-river/chapter-9/">9</a>
-            <a href="/blood-on-the-river/chapter-10/">10</a>
-            <a href="/blood-on-the-river/chapter-11/">11</a>
-            <a href="/blood-on-the-river/chapter-12/">12</a>
-            <a href="/blood-on-the-river/chapter-13/">13</a>
-            <a href="/blood-on-the-river/chapter-14/">14</a>
-            <a href="/blood-on-the-river/chapter-15/">15</a>
-            <a href="/blood-on-the-river/chapter-16/">16</a>
-            <a href="/blood-on-the-river/chapter-17/">17</a>
-            <a href="/blood-on-the-river/chapter-18/">18</a>
-            <a href="/blood-on-the-river/chapter-19/">19</a>
-            <a href="/blood-on-the-river/chapter-20/">20</a>
-            <a href="/blood-on-the-river/chapter-21/">21</a>
-            <a href="/blood-on-the-river/chapter-22/">22</a>
-            <a href="/blood-on-the-river/chapter-23/">23</a>
-            <a href="/blood-on-the-river/chapter-24/">24</a>
-            <a href="/blood-on-the-river/chapter-25/">25</a>
-            <a href="/blood-on-the-river/chapter-26/">26</a>
-            <a href="/blood-on-the-river/chapter-27/">27</a>
+            <a href="/blood-on-the-river/chapter-1/">1</a><a href="/blood-on-the-river/chapter-2/">2</a><a href="/blood-on-the-river/chapter-3/">3</a><a href="/blood-on-the-river/chapter-4/">4</a><a href="/blood-on-the-river/chapter-5/">5</a><a href="/blood-on-the-river/chapter-6/">6</a><a href="/blood-on-the-river/chapter-7/">7</a><a href="/blood-on-the-river/chapter-8/">8</a><a href="/blood-on-the-river/chapter-9/">9</a><a href="/blood-on-the-river/chapter-10/">10</a><a href="/blood-on-the-river/chapter-11/">11</a><a href="/blood-on-the-river/chapter-12/">12</a><a href="/blood-on-the-river/chapter-13/">13</a><a href="/blood-on-the-river/chapter-14/">14</a><a href="/blood-on-the-river/chapter-15/">15</a><a href="/blood-on-the-river/chapter-16/">16</a><a href="/blood-on-the-river/chapter-17/">17</a><a href="/blood-on-the-river/chapter-18/">18</a><a href="/blood-on-the-river/chapter-19/">19</a><a href="/blood-on-the-river/chapter-20/">20</a><a href="/blood-on-the-river/chapter-21/">21</a><a href="/blood-on-the-river/chapter-22/">22</a><a href="/blood-on-the-river/chapter-23/">23</a><a href="/blood-on-the-river/chapter-24/">24</a><a href="/blood-on-the-river/chapter-25/">25</a><a href="/blood-on-the-river/chapter-26/">26</a><a href="/blood-on-the-river/chapter-27/">27</a>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="section-block" aria-labelledby="professional-quick-launch">
-      <div class="section-heading">
-        <p class="eyebrow">Professional quick launch</p>
-        <h2 id="professional-quick-launch">Teacher tools and classroom resources</h2>
-      </div>
+    <section class="section-block" aria-labelledby="quick-title">
+      <div class="section-heading"><p class="eyebrow">Quick launch</p><h2 id="quick-title">Main routes</h2></div>
       <div class="activity-grid">
-        <a class="activity-card" href="/teacher-tools/">
-          <span class="card-kicker">Professional hub</span>
-          <h3>Professional Hub</h3>
-          <p>Open the teacher-facing dashboard for planning, data, classroom workflow, and deployment tools.</p>
-          <span class="button-link">Open Professional Hub</span>
-        </a>
-        <a class="activity-card" href="/teacher-tools/neftos-command-center/">
-          <span class="card-kicker">Command center</span>
-          <h3>NeftOS Command Center</h3>
-          <p>Launch the local-first dashboard for daily priorities, reusable prompts, QA checks, and project planning.</p>
-          <span class="button-link">Open command center</span>
-        </a>
-        <a class="activity-card" href="/teacher-tools/forecast-engine/">
-          <span class="card-kicker">Teacher tool</span>
-          <h3>Neft Learning Forecast Engine</h3>
-          <p>Evidence review, readiness forecasting, small groups, and intervention planning.</p>
-          <span class="button-link">Review learning evidence</span>
-        </a>
-        <a class="activity-card" href="/statistics-data/data-studio/">
-          <span class="card-kicker">Data tool</span>
-          <h3>Data Studio</h3>
-          <p>Charts, spreadsheets, grouping, predictions, and plain-language analysis.</p>
-          <span class="button-link">Open Data Studio</span>
-        </a>
-        <a class="activity-card" href="/blood-on-the-river/">
-          <span class="card-kicker">Reading</span>
-          <h3>Blood on the River</h3>
-          <p>Open the complete chapter-by-chapter interactive reading collection.</p>
-          <span class="button-link">Open reading collection</span>
-        </a>
-        <a class="activity-card" href="/math/">
-          <span class="card-kicker">Curriculum</span>
-          <h3>Math Section</h3>
-          <p>Open the Grade 6 math section organized by units and instructional resources.</p>
-          <span class="button-link">Browse math</span>
-        </a>
-        <a class="activity-card" href="/esol/">
-          <span class="card-kicker">Language supports</span>
-          <h3>ESOL Section</h3>
-          <p>Open ESOL, reading, writing, newcomer-friendly, and math-language support activities.</p>
-          <span class="button-link">Browse ESOL</span>
-        </a>
+        <a class="activity-card" href="/teacher-tools/"><span class="card-kicker">Professional</span><h3>Professional Hub</h3><p>Planning, data, classroom workflow, and deployment tools.</p><span class="button-link">Open Professional Hub</span></a>
+        <a class="activity-card" href="/practice/hebrew-reading/"><span class="card-kicker">Personal</span><h3>Hebrew Reading Practice</h3><p>Short routines, review links, and confidence-building practice supports.</p><span class="button-link">Open practice page</span></a>
+        <a class="activity-card" href="/teacher-tools/neftos-command-center/"><span class="card-kicker">Command</span><h3>NeftOS Command Center</h3><p>Daily priorities, reusable prompts, QA checks, and project planning.</p><span class="button-link">Open command center</span></a>
+        <a class="activity-card" href="/blood-on-the-river/"><span class="card-kicker">Reading</span><h3>Blood on the River</h3><p>Complete chapter-by-chapter interactive reading collection.</p><span class="button-link">Open reading collection</span></a>
+        <a class="activity-card" href="/math/"><span class="card-kicker">Math</span><h3>Math Section</h3><p>Grade 6 math units and instructional resources.</p><span class="button-link">Browse math</span></a>
+        <a class="activity-card" href="/esol/"><span class="card-kicker">ESOL</span><h3>ESOL Section</h3><p>Language supports, newcomer access, reading, and writing activities.</p><span class="button-link">Browse ESOL</span></a>
       </div>
     </section>
 
-    <section class="section-block" aria-labelledby="personal-quick-launch">
-      <div class="section-heading">
-        <p class="eyebrow">Personal quick launch</p>
-        <h2 id="personal-quick-launch">Family learning and personal practice</h2>
-      </div>
-      <div class="activity-grid">
-        <a class="activity-card" href="/hebrew">
-          <span class="card-kicker">Hebrew</span>
-          <h3>Hebrew Review</h3>
-          <p>Open the existing Hebrew review space through a simple short route.</p>
-          <span class="button-link">Open Hebrew Review</span>
-        </a>
-        <a class="activity-card" href="/noam-hebrew">
-          <span class="card-kicker">Shortcut</span>
-          <h3>Hebrew Practice Shortcut</h3>
-          <p>Use the short route for quick access to the Hebrew review page.</p>
-          <span class="button-link">Open shortcut</span>
-        </a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-1/">
-          <span class="card-kicker">Reading</span>
-          <h3>Reading Practice · Chapter 1</h3>
-          <p>Launch the chapter review with vocabulary, passage scenes, quote popups, and easy student checks.</p>
-          <span class="button-link">Open reading practice</span>
-        </a>
-        <a class="activity-card" href="/teacher-tools/neftos-command-center/">
-          <span class="card-kicker">Planning</span>
-          <h3>Personal Planning in NeftOS</h3>
-          <p>Use the command center to capture family learning routines, personal admin, and next actions.</p>
-          <span class="button-link">Plan routines</span>
-        </a>
-      </div>
-    </section>
-
-    <section class="section-block" aria-labelledby="math-units">
-      <div class="section-heading">
-        <p class="eyebrow">Professional archive</p>
-        <h2 id="math-units">Math unit folders</h2>
-      </div>
-      <div class="collection-grid">
-        <a class="activity-card compact" href="/math/unit-1/"><span class="card-kicker">Unit 1</span><h3>Unit 1</h3><p>Foundations and beginning-of-year practice.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-2/"><span class="card-kicker">Unit 2</span><h3>Unit 2</h3><p>Statistics and data.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-3/"><span class="card-kicker">Unit 3</span><h3>Unit 3</h3><p>Ratios and proportions.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-4/"><span class="card-kicker">Unit 4</span><h3>Unit 4</h3><p>Decimal operations.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-5/"><span class="card-kicker">Unit 5</span><h3>Unit 5</h3><p>Geometry and measurement.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-6/"><span class="card-kicker">Unit 6</span><h3>Unit 6</h3><p>Number system.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-7/"><span class="card-kicker">Unit 7</span><h3>Unit 7</h3><p>Prepared folder.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-8/"><span class="card-kicker">Unit 8</span><h3>Unit 8</h3><p>Prepared folder.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-9/"><span class="card-kicker">Unit 9</span><h3>Unit 9</h3><p>Expressions and equations.</p><span class="button-link">Open</span></a>
-        <a class="activity-card compact" href="/math/unit-10/"><span class="card-kicker">Unit 10</span><h3>Unit 10</h3><p>Prepared folder.</p><span class="button-link">Open</span></a>
-      </div>
-    </section>
-
-    <section class="section-block" aria-labelledby="legacy-index">
-      <div class="section-heading">
-        <p class="eyebrow">Route archive</p>
-        <h2 id="legacy-index">Existing links kept intact</h2>
-        <p>Older folders remain available so current Cloudflare links continue to work.</p>
-      </div>
+    <section class="section-block" aria-labelledby="archive-title">
+      <div class="section-heading"><p class="eyebrow">Route archive</p><h2 id="archive-title">Existing links kept intact</h2><p>Older folders remain available so current Cloudflare links continue to work.</p></div>
       <div class="folder-index">
-        <div class="folder-index-group">
-          <h3>Professional math collections</h3>
-          <div class="folder-links">
-            <a href="/unit-1/">Unit 1 Foundations</a>
-            <a href="/unit-4/">Unit 4 Decimal Operations</a>
-            <a href="/unit-5/">Unit 5 Geometry and Measurement</a>
-            <a href="/unit-5-practice/">Unit 5 Practice</a>
-            <a href="/statistics-data/">Statistics and Data</a>
-            <a href="/geometry-prep/">Geometry Prep</a>
-            <a href="/surface-area-review/">Surface Area Review</a>
-            <a href="/expressions-equations/">Expressions, Equations, and Variables</a>
-            <a href="/number-system/">Number System</a>
-            <a href="/ratios-proportions/">Ratios and Proportions</a>
-            <a href="/mcap-review/">MCAP and General Review</a>
-            <a href="/world-architect-math-project/">World Architect Math Project</a>
-          </div>
-        </div>
-        <div class="folder-index-group">
-          <h3>Reading, ESOL, and personal learning</h3>
-          <div class="folder-links">
-            <a href="/blood-on-the-river/">Blood on the River Interactive Chapters</a>
-            <a href="/blood-on-the-river/chapter-1/">Blood on the River Chapter 1</a>
-            <a href="/esol/">ESOL Section</a>
-            <a href="/esol-reading-writing/">ESOL, Reading, Writing, and Math</a>
-            <a href="/hebrew">Hebrew Review</a>
-          </div>
-        </div>
-        <div class="folder-index-group">
-          <h3>Professional tools</h3>
-          <div class="folder-links">
-            <a href="/teacher-tools/">Professional Hub</a>
-            <a href="/teacher-tools/neftos-command-center/">NeftOS Command Center</a>
-            <a href="/teacher-tools/forecast-engine/">Neft Learning Forecast Engine</a>
-            <a href="/forecast-engine/">Forecast Engine Shortcut</a>
-            <a href="/statistics-data/data-studio/">Data Studio</a>
-          </div>
-        </div>
+        <div class="folder-index-group"><h3>Professional math collections</h3><div class="folder-links"><a href="/unit-1/">Unit 1 Foundations</a><a href="/unit-4/">Unit 4 Decimal Operations</a><a href="/unit-5/">Unit 5 Geometry and Measurement</a><a href="/unit-5-practice/">Unit 5 Practice</a><a href="/statistics-data/">Statistics and Data</a><a href="/geometry-prep/">Geometry Prep</a><a href="/surface-area-review/">Surface Area Review</a><a href="/expressions-equations/">Expressions, Equations, and Variables</a><a href="/number-system/">Number System</a><a href="/ratios-proportions/">Ratios and Proportions</a><a href="/mcap-review/">MCAP and General Review</a><a href="/world-architect-math-project/">World Architect Math Project</a></div></div>
+        <div class="folder-index-group"><h3>Reading, ESOL, and personal learning</h3><div class="folder-links"><a href="/practice/hebrew-reading/">Hebrew Reading Practice</a><a href="/hebrew">Hebrew Review</a><a href="/blood-on-the-river/">Blood on the River Interactive Chapters</a><a href="/blood-on-the-river/chapter-1/">Blood on the River Chapter 1</a><a href="/esol/">ESOL Section</a><a href="/esol-reading-writing/">ESOL, Reading, Writing, and Math</a></div></div>
+        <div class="folder-index-group"><h3>Professional tools</h3><div class="folder-links"><a href="/teacher-tools/">Professional Hub</a><a href="/teacher-tools/neftos-command-center/">NeftOS Command Center</a><a href="/teacher-tools/forecast-engine/">Neft Learning Forecast Engine</a><a href="/forecast-engine/">Forecast Engine Shortcut</a><a href="/statistics-data/data-studio/">Data Studio</a></div></div>
       </div>
     </section>
 
-    <footer class="site-footer">
-      <span>Neft Hub</span>
-      <span>Personal + Professional · <span data-current-year></span></span>
-    </footer>
+    <footer class="site-footer"><span>Neft Hub</span><span>Personal + Professional · <span data-current-year></span></span></footer>
   </main>
   <script src="/assets/app.js" defer></script>
 </body>
