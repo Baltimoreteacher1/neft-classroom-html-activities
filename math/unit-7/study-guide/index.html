@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 7 Study Guide — Integers &amp; Coordinate Plane | Neft Teacher
+    </title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f6f7f2;
+        color: #17202a;
+        line-height: 1.6;
+      }
+      .shell {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      .breadcrumb {
+        color: #5b6773;
+        font-size: 0.9rem;
+        margin-bottom: 18px;
+      }
+      .breadcrumb a {
+        color: #0f766e;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 6px;
+      }
+      .subtitle {
+        color: #5b6773;
+        margin-bottom: 28px;
+        font-size: 1.05rem;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #d8dfdc;
+        padding-bottom: 8px;
+      }
+      .tab {
+        padding: 8px 16px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px 8px 0 0;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #5b6773;
+        transition: all 0.15s;
+      }
+      .tab.active {
+        background: #0f766e;
+        color: #fff;
+        border-color: #0f766e;
+      }
+      .tab:hover:not(.active) {
+        background: #eef4f3;
+      }
+      .lesson {
+        display: none;
+        animation: fadeIn 0.3s;
+      }
+      .lesson.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .lesson-header {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-top: 4px solid #0f766e;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px rgba(23, 32, 42, 0.08);
+      }
+      .lesson-header h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .lesson-header p {
+        color: #5b6773;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .card h3 {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+        color: #0f766e;
+      }
+      .example {
+        background: #eef4f3;
+        border-left: 4px solid #b7791f;
+        padding: 14px 18px;
+        border-radius: 0 8px 8px 0;
+        margin: 12px 0;
+        font-size: 1rem;
+      }
+      .example strong {
+        color: #b7791f;
+      }
+      .number-line {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 12px 0;
+        text-align: center;
+        font-family: monospace;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+      }
+      .quiz h3 {
+        margin-bottom: 12px;
+      }
+      .question {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 14px;
+      }
+      .question p {
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .opt {
+        padding: 10px 14px;
+        border: 2px solid #d8dfdc;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.15s;
+        background: #fff;
+      }
+      .opt:hover {
+        border-color: #0f766e;
+        background: #eef4f3;
+      }
+      .opt.correct {
+        border-color: #16a34a;
+        background: #dcfce7;
+        pointer-events: none;
+      }
+      .opt.wrong {
+        border-color: #dc2626;
+        background: #fef2f2;
+        pointer-events: none;
+      }
+      .feedback {
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .feedback.wrong {
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .score-bar {
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-top: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.06);
+      }
+      .score-bar .label {
+        font-weight: 700;
+        color: #0f766e;
+      }
+      .score-fill {
+        flex: 1;
+        height: 10px;
+        background: #d8dfdc;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .score-fill span {
+        display: block;
+        height: 100%;
+        background: #0f766e;
+        border-radius: 99px;
+        transition: width 0.4s;
+      }
+      .score-text {
+        font-weight: 700;
+        min-width: 50px;
+        text-align: right;
+      }
+      .vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .vocab-card {
+        background: #eef4f3;
+        border: 1px solid rgba(15, 118, 110, 0.18);
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .vocab-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 32, 42, 0.1);
+      }
+      .vocab-card .term {
+        font-weight: 800;
+        color: #0f766e;
+        font-size: 0.95rem;
+      }
+      .vocab-card .def {
+        color: #5b6773;
+        font-size: 0.85rem;
+        margin-top: 4px;
+        display: none;
+      }
+      .vocab-card.flipped .def {
+        display: block;
+      }
+      .vocab-card.flipped {
+        background: #fff;
+      }
+      .coord-grid {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 12px 0;
+      }
+      .coord-grid svg {
+        display: block;
+      }
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 28px;
+      }
+      .nav-btn {
+        padding: 10px 20px;
+        border: 1px solid #d8dfdc;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f766e;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .nav-btn:hover {
+        background: #0f766e;
+        color: #fff;
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      @media (max-width: 600px) {
+        .tabs {
+          gap: 4px;
+        }
+        .tab {
+          padding: 6px 10px;
+          font-size: 0.8rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-7/">Unit 7</a> / Study Guide
+      </nav>
+      <h1>Integers &amp; Coordinate Plane</h1>
+      <p class="subtitle">
+        Interactive study guide — Reveal Math Unit 7 · Standard 6.NS
+      </p>
+
+      <div class="tabs" id="tabs"></div>
+
+      <!-- LESSON 1 -->
+      <div class="lesson" data-lesson="1">
+        <div class="lesson-header">
+          <h2>7.1–7.2 — Integers &amp; Rational Numbers</h2>
+          <p>
+            Understand positive and negative numbers, opposites, and how to
+            place them on a number line.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            <strong>Integers</strong> are whole numbers and their opposites:
+            …−3, −2, −1, 0, 1, 2, 3…
+          </p>
+          <p>
+            <strong>Rational numbers</strong> include fractions and decimals
+            too: −2.5, ¾, −⅓
+          </p>
+          <p>
+            Every positive number has an <strong>opposite</strong> (its
+            negative), and vice versa. The opposite of 5 is −5.
+          </p>
+          <div class="number-line">←──−4──−3──−2──−1──0──1──2──3──4──→</div>
+          <div class="example">
+            <strong>Comparing:</strong> −3 < 1 because −3 is farther left on the
+            number line.<br />Any negative number is less than any positive
+            number.
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>What is the opposite of −8?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">−8</div>
+              <div class="opt" data-idx="1">8</div>
+              <div class="opt" data-idx="2">0</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>Which is greater: −5 or −2?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">−2</div>
+              <div class="opt" data-idx="1">−5</div>
+              <div class="opt" data-idx="2">They are equal</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>Put in order from least to greatest: 3, −1, 0, −4</p>
+            <div class="options">
+              <div class="opt" data-idx="0">−1, −4, 0, 3</div>
+              <div class="opt" data-idx="1">3, 0, −1, −4</div>
+              <div class="opt" data-idx="2">−4, −1, 0, 3</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 2 -->
+      <div class="lesson" data-lesson="2">
+        <div class="lesson-header">
+          <h2>7.3 — Absolute Value</h2>
+          <p>
+            Absolute value is the distance from zero on the number line — always
+            positive or zero.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Idea</h3>
+          <p>
+            The absolute value of a number is written with vertical bars: |−5| =
+            5 and |5| = 5
+          </p>
+          <p>Think of it as: "How far from zero?" Direction doesn't matter.</p>
+          <div class="number-line">
+            ←──−5──−4──−3──−2──−1──0──1──2──3──4──5──→<br />|−5| = 5 units from
+            0 &nbsp;&nbsp;&nbsp; |3| = 3 units from 0
+          </div>
+          <div class="example">
+            <strong>Comparing with absolute value:</strong><br />|−7| = 7 and
+            |4| = 4, so |−7| > |4| even though −7 < 4
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="2">
+            <p>What is |−12|?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">−12</div>
+              <div class="opt" data-idx="1">0</div>
+              <div class="opt" data-idx="2">12</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>Which has a greater absolute value: −6 or 4?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">4, because it's positive</div>
+              <div class="opt" data-idx="1">−6, because |−6| = 6 > 4</div>
+              <div class="opt" data-idx="2">They are equal</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>|0| = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">0</div>
+              <div class="opt" data-idx="1">1</div>
+              <div class="opt" data-idx="2">Undefined</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 3 -->
+      <div class="lesson" data-lesson="3">
+        <div class="lesson-header">
+          <h2>7.4 — Add &amp; Subtract Integers</h2>
+          <p>
+            Use number lines and rules to add and subtract positive and negative
+            numbers.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Rules for Adding Integers</h3>
+          <p>
+            <strong>Same signs:</strong> Add the absolute values, keep the
+            sign.<br />
+            <strong>Different signs:</strong> Subtract the smaller absolute
+            value from the larger, take the sign of the larger.
+          </p>
+          <div class="example">
+            <strong>Same signs:</strong> −3 + (−5) = −8 (both negative, add,
+            keep negative)
+          </div>
+          <div class="example">
+            <strong>Different signs:</strong> −7 + 4 = −3 (|7| − |4| = 3, keep
+            the negative)
+          </div>
+          <h3>Subtracting Integers</h3>
+          <p>
+            <strong>Add the opposite!</strong> Change subtraction to addition
+            and flip the sign of the second number.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> 5 − (−3) = 5 + 3 = 8
+          </div>
+          <div class="example">
+            <strong>Example:</strong> −2 − 4 = −2 + (−4) = −6
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>−6 + (−4) = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">−2</div>
+              <div class="opt" data-idx="1">−10</div>
+              <div class="opt" data-idx="2">10</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>8 + (−3) = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">5</div>
+              <div class="opt" data-idx="1">11</div>
+              <div class="opt" data-idx="2">−5</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>3 − (−7) = ?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">−4</div>
+              <div class="opt" data-idx="1">4</div>
+              <div class="opt" data-idx="2">10</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 4 -->
+      <div class="lesson" data-lesson="4">
+        <div class="lesson-header">
+          <h2>7.5 — The Coordinate Plane</h2>
+          <p>
+            Plot ordered pairs in all four quadrants. The x-axis goes
+            left-right, the y-axis goes up-down.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Key Ideas</h3>
+          <p>
+            An <strong>ordered pair</strong> (x, y) tells you where to plot a
+            point. Start at the <strong>origin</strong> (0, 0).
+          </p>
+          <p>
+            Move right for positive x, left for negative x. Move up for positive
+            y, down for negative y.
+          </p>
+          <div class="example">
+            <strong>Quadrants:</strong><br />
+            Quadrant I: (+, +) — top right<br />
+            Quadrant II: (−, +) — top left<br />
+            Quadrant III: (−, −) — bottom left<br />
+            Quadrant IV: (+, −) — bottom right
+          </div>
+          <div class="example">
+            <strong>Example:</strong> Plot (−3, 2)<br />Start at origin → go
+            left 3 → go up 2 → Quadrant II
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="1">
+            <p>Which quadrant contains the point (−4, −2)?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">Quadrant II</div>
+              <div class="opt" data-idx="1">Quadrant III</div>
+              <div class="opt" data-idx="2">Quadrant IV</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="0">
+            <p>The point (5, −1) is in which quadrant?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">Quadrant IV</div>
+              <div class="opt" data-idx="1">Quadrant I</div>
+              <div class="opt" data-idx="2">Quadrant III</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>A point is on the y-axis. What must be true?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">The y-coordinate is 0</div>
+              <div class="opt" data-idx="1">Both coordinates are 0</div>
+              <div class="opt" data-idx="2">The x-coordinate is 0</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- LESSON 5 -->
+      <div class="lesson" data-lesson="5">
+        <div class="lesson-header">
+          <h2>7.6–7.7 — Distance &amp; Polygons on the Coordinate Plane</h2>
+          <p>
+            Find distances between points and draw polygons using coordinates.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Distance Between Points</h3>
+          <p>
+            For points on the same horizontal or vertical line, use absolute
+            value to find distance.
+          </p>
+          <div class="example">
+            <strong>Same y-axis (horizontal distance):</strong><br />(−3, 2) to
+            (5, 2): |−3 − 5| = |−8| = 8 units
+          </div>
+          <div class="example">
+            <strong>Same x-axis (vertical distance):</strong><br />(4, −1) to
+            (4, 6): |−1 − 6| = |−7| = 7 units
+          </div>
+          <h3>Polygons</h3>
+          <p>
+            Plot vertices as ordered pairs, connect them, then find perimeter by
+            adding side lengths and area using formulas.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> Rectangle with vertices (1,1), (1,4),
+            (5,4), (5,1)<br />Width = |5−1| = 4, Height = |4−1| = 3<br />Perimeter
+            = 2(4+3) = 14, Area = 4 × 3 = 12 sq units
+          </div>
+        </div>
+        <div class="quiz">
+          <h3>Practice</h3>
+          <div class="question" data-correct="0">
+            <p>Distance from (2, 3) to (2, −4)?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">7 units</div>
+              <div class="opt" data-idx="1">1 unit</div>
+              <div class="opt" data-idx="2">−1 units</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="2">
+            <p>Distance from (−3, 5) to (4, 5)?</p>
+            <div class="options">
+              <div class="opt" data-idx="0">1 unit</div>
+              <div class="opt" data-idx="1">9 units</div>
+              <div class="opt" data-idx="2">7 units</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="question" data-correct="1">
+            <p>
+              A rectangle has vertices at (0,0), (6,0), (6,3), (0,3). What is
+              its area?
+            </p>
+            <div class="options">
+              <div class="opt" data-idx="0">9 sq units</div>
+              <div class="opt" data-idx="1">18 sq units</div>
+              <div class="opt" data-idx="2">24 sq units</div>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="score-bar">
+          <span class="label">Score</span>
+          <div class="score-fill"><span style="width: 0%"></span></div>
+          <span class="score-text">0/3</span>
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="lesson" data-lesson="vocab">
+        <div class="lesson-header">
+          <h2>Vocabulary</h2>
+          <p>Tap a card to reveal the definition.</p>
+        </div>
+        <div class="vocab">
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Integer</div>
+            <div class="def">
+              Whole numbers and their opposites: …−3, −2, −1, 0, 1, 2, 3…
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Rational Number</div>
+            <div class="def">
+              Any number that can be written as a fraction, including integers,
+              decimals, and fractions.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Absolute Value</div>
+            <div class="def">
+              The distance of a number from zero on the number line. Always
+              positive or zero. Written |x|.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Opposite</div>
+            <div class="def">
+              Two numbers that are the same distance from zero but on different
+              sides. Example: 5 and −5.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Coordinate Plane</div>
+            <div class="def">
+              A grid formed by a horizontal x-axis and vertical y-axis, divided
+              into four quadrants.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Ordered Pair</div>
+            <div class="def">
+              A pair of numbers (x, y) that identifies a point on the coordinate
+              plane.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Origin</div>
+            <div class="def">
+              The point (0, 0) where the x-axis and y-axis cross.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">Quadrant</div>
+            <div class="def">
+              One of four sections of the coordinate plane. Numbered I–IV
+              counterclockwise from top-right.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">x-axis</div>
+            <div class="def">
+              The horizontal number line on the coordinate plane.
+            </div>
+          </div>
+          <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="term">y-axis</div>
+            <div class="def">
+              The vertical number line on the coordinate plane.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn" disabled>← Previous</button>
+        <button class="nav-btn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const lessons = document.querySelectorAll(".lesson");
+        const tabsEl = document.getElementById("tabs");
+        const names = [
+          "7.1–7.2 Integers",
+          "7.3 Abs Value",
+          "7.4 Add/Sub",
+          "7.5 Coord Plane",
+          "7.6–7.7 Distance",
+          "Vocabulary",
+        ];
+        let current = 0;
+
+        names.forEach((n, i) => {
+          const t = document.createElement("div");
+          t.className = "tab" + (i === 0 ? " active" : "");
+          t.textContent = n;
+          t.onclick = () => show(i);
+          tabsEl.appendChild(t);
+        });
+
+        function show(idx) {
+          current = idx;
+          lessons.forEach((l, i) => l.classList.toggle("active", i === idx));
+          tabsEl
+            .querySelectorAll(".tab")
+            .forEach((t, i) => t.classList.toggle("active", i === idx));
+          document.getElementById("prevBtn").disabled = idx === 0;
+          document.getElementById("nextBtn").disabled =
+            idx === lessons.length - 1;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.getElementById("prevBtn").onclick = () => {
+          if (current > 0) show(current - 1);
+        };
+        document.getElementById("nextBtn").onclick = () => {
+          if (current < lessons.length - 1) show(current + 1);
+        };
+
+        document.querySelectorAll(".question").forEach((q) => {
+          const correct = parseInt(q.dataset.correct);
+          const fb = q.querySelector(".feedback");
+          q.querySelectorAll(".opt").forEach((opt) => {
+            opt.onclick = () => {
+              const idx = parseInt(opt.dataset.idx);
+              q.querySelectorAll(".opt").forEach(
+                (o) => (o.style.pointerEvents = "none"),
+              );
+              if (idx === correct) {
+                opt.classList.add("correct");
+                fb.textContent = "Correct!";
+                fb.className = "feedback show correct";
+              } else {
+                opt.classList.add("wrong");
+                q.querySelectorAll(".opt")[correct].classList.add("correct");
+                fb.textContent = "Not quite — check the correct answer above.";
+                fb.className = "feedback show wrong";
+              }
+              updateScore(q.closest(".lesson"));
+            };
+          });
+        });
+
+        function updateScore(lesson) {
+          const qs = lesson.querySelectorAll(".question");
+          const answered = lesson.querySelectorAll(".opt.correct").length;
+          const bar = lesson.querySelector(".score-bar");
+          if (!bar) return;
+          const pct = Math.round((answered / qs.length) * 100);
+          bar.querySelector(".score-fill span").style.width = pct + "%";
+          bar.querySelector(".score-text").textContent =
+            answered + "/" + qs.length;
+        }
+
+        show(0);
+      })();
+    </script>
+  </body>
+</html>
