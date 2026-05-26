@@ -1,0 +1,153 @@
+{
+  "lessonId": "8-5",
+  "standard": "6.SP.4",
+  "unit": 8,
+  "lesson": 5,
+  "title": "Display Data: Box Plots",
+  "theme": "sports-analytics",
+  "themeEmoji": "🏀",
+  "vocabMode": "matching",
+  "vocabulary": [
+    {
+      "term": "Box Plot",
+      "definition": "A graph that shows the distribution of data using a five-number summary",
+      "visual": "A box with whiskers showing min, Q1, median, Q3, and max"
+    },
+    {
+      "term": "Median",
+      "definition": "The middle value of an ordered data set; splits the data into two equal halves",
+      "visual": "In 10, 15, 20, 25, 30 → median is 20"
+    },
+    {
+      "term": "Quartile",
+      "definition": "Values that divide an ordered data set into four equal parts (Q1 and Q3)",
+      "visual": "Q1 = median of lower half, Q3 = median of upper half"
+    },
+    {
+      "term": "Interquartile Range",
+      "definition": "The difference between the third quartile and first quartile (IQR = Q3 − Q1)",
+      "visual": "If Q1 = 12 and Q3 = 20, IQR = 20 − 12 = 8"
+    }
+  ],
+  "launch": {
+    "badge": "Team Scoring Breakdown",
+    "narrative": "The basketball league wants to compare scoring across teams. Here are the points scored by each player on the Wildcats in their last game: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. The league needs a quick visual that shows the spread, the middle 50%, and any high or low scorers. Time to build a box plot!",
+    "contextImage": "Basketball scoreboard with individual player stat lines",
+    "noticePrompts": [
+      "What are the lowest and highest scores?",
+      "What score is in the middle of the data?",
+      "Are the scores bunched together or spread out?"
+    ],
+    "wonderPrompts": [
+      "How can you show the spread of all this data in one picture?",
+      "What does the 'middle half' of the data look like?"
+    ]
+  },
+  "explore": {
+    "type": "number-line",
+    "label": "Find the five-number summary for the Wildcats' scoring data: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. Place each value on the number line.",
+    "min": 0,
+    "max": 30,
+    "step": 2,
+    "snapToTick": true,
+    "targets": [
+      { "value": 4, "label": "Min" },
+      { "value": 8, "label": "Q1" },
+      { "value": 14, "label": "Median" },
+      { "value": 22, "label": "Q3" },
+      { "value": 28, "label": "Max" }
+    ],
+    "discourse": {
+      "prompt": "The IQR is Q3 − Q1 = 22 − 8 = 14. What does this tell you about the middle 50% of scorers?",
+      "sentenceFrame": "The middle 50% of players scored between ___ and ___ points. The IQR of ___ means the middle half of the data is spread across ___ points. This tells me ___.",
+      "keywords": ["8", "22", "14", "spread", "middle", "quartile", "range"]
+    }
+  },
+  "practice": {
+    "approaching": [
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?",
+        "choices": ["13", "25", "10", "20"],
+        "correctIndex": 0,
+        "explanation": "IQR = Q3 − Q1 = 28 − 15 = 13."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "On a box plot, what does the line inside the box represent?",
+        "choices": ["The median", "The mean", "The mode", "The range"],
+        "correctIndex": 0,
+        "explanation": "The line inside the box of a box plot always represents the median."
+      }
+    ],
+    "onLevel": [
+      {
+        "type": "fill-table",
+        "headers": ["Measure", "Value"],
+        "rows": [
+          ["Data: 5, 8, 12, 15, 18, 20, 25, 30, 35", ""],
+          ["Minimum", ""],
+          ["Q1 (median of lower half: 5, 8, 12, 15)", ""],
+          ["Median", ""],
+          ["Q3 (median of upper half: 20, 25, 30, 35)", ""],
+          ["Maximum", ""],
+          ["IQR (Q3 − Q1)", ""]
+        ],
+        "editableCells": [
+          { "row": 1, "col": 1, "answer": "5" },
+          { "row": 2, "col": 1, "answer": "10" },
+          { "row": 3, "col": 1, "answer": "18" },
+          { "row": 4, "col": 1, "answer": "27.5" },
+          { "row": 5, "col": 1, "answer": "35" },
+          { "row": 6, "col": 1, "answer": "17.5" }
+        ]
+      }
+    ],
+    "extending": [
+      {
+        "type": "error-analysis",
+        "title": "Find the Box Plot Error",
+        "workedExample": [
+          { "label": "Data", "work": "3, 7, 9, 12, 15, 18, 21" },
+          { "label": "Min and Max", "work": "Min = 3, Max = 21" },
+          { "label": "Median", "work": "Middle value = 12 ✓" },
+          { "label": "Q1 and Q3", "work": "Q1 = 9, Q3 = 18" }
+        ],
+        "errorStep": 3,
+        "correctWork": "Q1 is the median of the lower half (3, 7, 9), which is 7. Q3 is the median of the upper half (15, 18, 21), which is 18. The student used the wrong values for Q1 — they picked 9 (the last value in the lower half) instead of the median of that half.",
+        "hints": [
+          "Q1 is not just a value in the lower half — it is the MEDIAN of the lower half.",
+          "Lower half: 3, 7, 9. The median of these three values is 7, not 9."
+        ]
+      }
+    ]
+  },
+  "connect": {
+    "scenario": "Two basketball teams' scoring data are displayed as box plots. Team A: Min=40, Q1=52, Median=60, Q3=68, Max=75. Team B: Min=35, Q1=55, Median=61, Q3=65, Max=80. A fan says Team B is better because they scored 80 points once.",
+    "promptQuestion": "Which team is more consistently scoring high? Use the box plot values to support your answer.",
+    "prompt": "Team A's IQR is ___ and Team B's IQR is ___. Team A's middle 50% scores between ___ and ___. The fan is wrong because ___. The box plot shows that ___ is more consistent because ___.",
+    "keywords": [
+      "IQR",
+      "16",
+      "10",
+      "consistent",
+      "spread",
+      "middle 50%",
+      "quartile",
+      "Team A"
+    ]
+  },
+  "reflect": {
+    "exitTicket": {
+      "stem": "A box plot has Q1 = 20 and Q3 = 36. What is the IQR and what does it represent?",
+      "choices": [
+        "IQR = 16; it is the spread of the middle 50% of the data",
+        "IQR = 56; it is the total of Q1 and Q3",
+        "IQR = 28; it is the median between Q1 and Q3",
+        "IQR = 36; it is the value of Q3"
+      ],
+      "correctIndex": 0,
+      "explanation": "IQR = Q3 − Q1 = 36 − 20 = 16. The IQR tells you the range of the middle 50% of the data."
+    }
+  }
+}

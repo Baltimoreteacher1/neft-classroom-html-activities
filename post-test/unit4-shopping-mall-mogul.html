@@ -1,0 +1,2386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Mall Mogul — Percent Power Challenge</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --pink: #ec4899;
+        --pink-light: #fdf2f8;
+        --gold: #d97706;
+        --slate: #1e293b;
+        --bg: #f9fafb;
+        --ink: #1e293b;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --success: #16a34a;
+        --success-bg: #f0fdf4;
+        --error: #dc2626;
+        --error-bg: #fef2f2;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      a {
+        color: var(--pink);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* ── Layout ── */
+      .intro-screen,
+      .app-screen,
+      .results-screen {
+        display: none;
+      }
+      .intro-screen.active,
+      .app-screen.active,
+      .results-screen.active {
+        display: block;
+      }
+
+      /* ── Intro ── */
+      .intro {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .hero-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 48px 36px;
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--slate);
+        margin-bottom: 6px;
+      }
+      .hero-sub {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .student-form {
+        display: grid;
+        grid-template-columns: 1fr 100px 100px;
+        gap: 12px;
+        max-width: 500px;
+        margin: 0 auto 24px;
+        text-align: left;
+      }
+      .student-form label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        grid-column: span 1;
+      }
+      .student-form .label-name {
+        grid-column: 1;
+      }
+      .student-form .label-period {
+        grid-column: 2;
+      }
+      .student-form .label-date {
+        grid-column: 3;
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--pink);
+      }
+      .resume-banner {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px;
+      }
+      .resume-banner button {
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .resume-banner .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      /* Mission selection */
+      .route-section {
+        margin-top: 28px;
+      }
+      .route-section h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--slate);
+        margin-bottom: 6px;
+      }
+      .route-section p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .route-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .route-card {
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: white;
+        text-align: left;
+        transition: all 0.2s;
+        cursor: pointer;
+        position: relative;
+      }
+      .route-card:hover {
+        border-color: var(--pink);
+        box-shadow: 0 2px 8px rgba(236, 72, 153, 0.12);
+      }
+      .route-card.selected {
+        border-color: var(--pink);
+        background: rgba(236, 72, 153, 0.04);
+      }
+      .route-card .rc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .route-card .rc-emoji {
+        font-size: 1.5rem;
+      }
+      .route-card .rc-check {
+        font-size: 1.1rem;
+        color: var(--pink);
+        font-weight: 900;
+      }
+      .route-card .rc-name {
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: var(--slate);
+        margin-bottom: 2px;
+      }
+      .route-card .rc-focus {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .route-card .rc-formula {
+        font-size: 0.75rem;
+        color: var(--pink);
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      .route-note {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .preset-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .preset-btn {
+        padding: 6px 14px;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        background: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--slate);
+        transition: all 0.2s;
+      }
+      .preset-btn:hover,
+      .preset-btn.active {
+        background: var(--slate);
+        color: white;
+        border-color: var(--slate);
+      }
+      .start-btn {
+        display: block;
+        margin: 0 auto;
+        padding: 14px 48px;
+        background: var(--pink);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+
+      /* ── App screen ── */
+      .app-header {
+        background: var(--slate);
+        color: white;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .app-header .progress-text {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .app-header .score-text {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-left: auto;
+      }
+      .progress-track {
+        flex: 1;
+        max-width: 300px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--gold);
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+      .save-status {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        margin-left: 12px;
+      }
+      .save-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+      .save-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .app-body {
+        display: flex;
+        min-height: calc(100vh - 48px);
+      }
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid var(--line);
+        padding: 16px;
+        overflow-y: auto;
+        flex-shrink: 0;
+      }
+      .sidebar h3 {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .jump-select {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+      }
+      .mission-mini {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 8px 10px;
+        border-radius: 8px;
+        text-align: left;
+        transition: background 0.15s;
+        font-size: 0.82rem;
+        margin-bottom: 4px;
+      }
+      .mission-mini:hover {
+        background: var(--pink-light);
+      }
+      .mission-mini.current {
+        background: var(--pink-light);
+        font-weight: 700;
+      }
+      .mission-mini.done {
+        opacity: 0.7;
+      }
+      .mini-flag {
+        font-size: 1.15rem;
+        flex-shrink: 0;
+      }
+      .mini-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .mini-name {
+        display: block;
+        font-weight: 700;
+        color: var(--slate);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mini-status {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .mini-check {
+        font-size: 0.9rem;
+      }
+
+      .mission-main {
+        flex: 1;
+        padding: 28px 32px;
+        overflow-y: auto;
+        max-width: 900px;
+      }
+
+      /* ── Mission card ── */
+      .dest-hero {
+        margin-bottom: 24px;
+      }
+      .dest-top {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .dest-emoji {
+        font-size: 2.8rem;
+      }
+      .dest-kicker {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .dest-title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--slate);
+      }
+      .dest-sub {
+        font-size: 0.88rem;
+        color: var(--pink);
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .stamp {
+        background: var(--gold);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-align: center;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      .stamp strong {
+        display: block;
+        font-size: 1.1rem;
+      }
+
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      @media (max-width: 768px) {
+        .panel-grid {
+          grid-template-columns: 1fr;
+        }
+        .app-body {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+        .student-form {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+      }
+      .panel h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--slate);
+        margin-bottom: 12px;
+      }
+      .panel.soft {
+        background: var(--pink-light);
+      }
+      .panel.warm {
+        background: #fffbeb;
+      }
+
+      .explore-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .explore-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 14px;
+        background: white;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .explore-link:hover {
+        border-color: var(--pink);
+        text-decoration: none;
+        background: rgba(236, 72, 153, 0.04);
+      }
+
+      .check-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 12px 0;
+      }
+      .check-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .check-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--pink);
+      }
+
+      .lab-field {
+        margin-bottom: 12px;
+      }
+      .lab-field label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .lab-field textarea,
+      .lab-field input,
+      .lab-field select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        transition: border-color 0.2s;
+        background: white;
+      }
+      .lab-field textarea:focus,
+      .lab-field input:focus,
+      .lab-field select:focus {
+        outline: none;
+        border-color: var(--pink);
+      }
+      .lab-field textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      .lab-field.full {
+        grid-column: span 2;
+      }
+
+      .starter-note {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-bottom: 6px;
+      }
+      .starter-tray {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .starter-chip {
+        padding: 4px 12px;
+        background: white;
+        border: 1.5px solid var(--line);
+        border-radius: 16px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--slate);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .starter-chip:hover {
+        border-color: var(--pink);
+        background: rgba(236, 72, 153, 0.04);
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.88rem;
+      }
+      .data-table th {
+        background: var(--slate);
+        color: white;
+        padding: 8px 12px;
+        text-align: left;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:nth-child(even) {
+        background: var(--pink-light);
+      }
+
+      /* Formula lab */
+      .formula-lab {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .formula-lab h3 {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--slate);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 14px;
+      }
+      .lab-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .answer-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .answer-row input {
+        flex: 1;
+      }
+      .unit-pill {
+        padding: 4px 12px;
+        background: var(--pink-light);
+        border-radius: 16px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--slate);
+        white-space: nowrap;
+      }
+      .hint-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .primary-btn {
+        padding: 10px 24px;
+        background: var(--pink);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .primary-btn:hover {
+        opacity: 0.9;
+      }
+      .primary-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .secondary-btn {
+        padding: 10px 24px;
+        background: var(--slate);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .secondary-btn:hover {
+        opacity: 0.9;
+      }
+      .ghost-btn {
+        padding: 8px 18px;
+        background: transparent;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--slate);
+        transition: all 0.2s;
+      }
+      .ghost-btn:hover {
+        border-color: var(--pink);
+        background: rgba(236, 72, 153, 0.04);
+      }
+      .ghost-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        display: none;
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-top: 8px;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: var(--success);
+      }
+      .feedback.no {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: var(--error);
+      }
+      .hint-box {
+        display: none;
+        padding: 12px 16px;
+        background: #fffbeb;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        margin-top: 8px;
+        border-left: 4px solid var(--gold);
+      }
+
+      /* Nav */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .fade-in {
+        animation: fadeSlide 0.35s ease;
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Store info card ── */
+      .store-info-card {
+        display: flex;
+        gap: 14px;
+        background: #fffbeb;
+        border-radius: 8px;
+        padding: 14px;
+        margin-bottom: 14px;
+        align-items: flex-start;
+      }
+      .store-info-text {
+        flex: 1;
+        font-size: 0.85rem;
+      }
+      .store-info-text strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--slate);
+      }
+      .store-tag {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 2px 10px;
+        background: var(--pink);
+        color: white;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      /* ── Extension challenge ── */
+      .extension-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+      .extension-output {
+        padding: 10px 16px;
+        background: var(--pink-light);
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--slate);
+        min-width: 180px;
+        text-align: center;
+      }
+
+      /* ── Results ── */
+      .results {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .results-hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .results-hero h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--slate);
+      }
+      .results-sub {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0;
+      }
+      .score-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        text-align: center;
+      }
+      .score-card .big {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--slate);
+      }
+      .score-card .label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .store-stamps {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      .store-stamp {
+        font-size: 1.6rem;
+        padding: 6px 10px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 24px 0;
+      }
+      .review-table th {
+        background: var(--slate);
+        color: white;
+        padding: 10px;
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      .review-table td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .review-table tr.good {
+        background: var(--success-bg);
+      }
+      .review-table tr.needs {
+        background: white;
+      }
+      .submit-section {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 28px;
+        text-align: center;
+      }
+      .submit-section h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--slate);
+        margin-bottom: 16px;
+      }
+      .submit-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .copy-confirm,
+      .email-confirm {
+        display: none;
+        font-size: 0.82rem;
+        color: var(--success);
+        font-weight: 600;
+        margin-top: 8px;
+      }
+      .footer-brand {
+        text-align: center;
+        padding: 24px 16px;
+        font-size: 0.75rem;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+        margin-top: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ INTRO SCREEN ═══════ -->
+    <div class="intro-screen active" id="intro-screen">
+      <div class="intro">
+        <div class="hero-card">
+          <div class="hero-emoji">🏬</div>
+          <h1 class="hero-title">Shopping Mall Mogul</h1>
+          <p class="hero-sub">
+            Percent Power Challenge — Convert between fractions, decimals, and
+            percents.<br />Manage stores, calculate discounts, and earn your
+            Mall Mogul badge!
+          </p>
+          <div class="student-form">
+            <label class="label-name">Your Name</label>
+            <label class="label-period">Period</label>
+            <label class="label-date">Date</label>
+            <input
+              id="student-name"
+              class="field"
+              type="text"
+              placeholder="First Last Initial"
+            />
+            <input
+              id="student-period"
+              class="field"
+              type="text"
+              placeholder="P3"
+            />
+            <input id="student-date" class="field" type="date" />
+          </div>
+        </div>
+
+        <div class="resume-banner" id="resume-banner">
+          <span id="resume-details"></span>
+          <button onclick="resumeSaved()">Resume</button>
+          <button class="clear-btn" onclick="clearSavedWork()">
+            Start Fresh
+          </button>
+        </div>
+
+        <div class="route-section">
+          <h2>Choose Your Missions</h2>
+          <p>
+            Pick at least 4 store missions. Each one puts fractions, decimals,
+            and percents to work in a real shopping scenario.
+          </p>
+          <div class="preset-row">
+            <button class="preset-btn" onclick="applyPreset('smart')">
+              Smart Shopper
+            </button>
+            <button class="preset-btn" onclick="applyPreset('manager')">
+              Mall Manager
+            </button>
+            <button class="preset-btn" onclick="applyPreset('quick')">
+              Quick Deal
+            </button>
+            <button class="preset-btn" onclick="applyPreset('all')">
+              All Missions
+            </button>
+          </div>
+          <div class="route-grid" id="route-grid"></div>
+          <div class="route-note" id="route-note">Selected: 4 missions</div>
+          <button class="start-btn" onclick="startExpedition()">
+            Open for Business 🏬
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ APP SCREEN ═══════ -->
+    <div class="app-screen" id="app-screen">
+      <div class="app-header">
+        <span class="progress-text" id="progress-label">Mission 1 of 4</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="score-text" id="score-label">0 correct</span>
+        <button class="save-btn" onclick="manualSave()">💾 Save</button>
+        <span class="save-status" id="save-status"></span>
+      </div>
+      <div class="app-body">
+        <div class="sidebar">
+          <h3>Mission Log</h3>
+          <select
+            class="jump-select"
+            id="jump-select"
+            onchange="jumpToMission(Number(this.value))"
+          ></select>
+          <div id="mission-list"></div>
+        </div>
+        <div class="mission-main">
+          <div id="mission-card" class="fade-in"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ RESULTS SCREEN ═══════ -->
+    <div class="results-screen" id="results-screen">
+      <div class="results">
+        <div class="results-hero">
+          <div style="font-size: 3rem; margin-bottom: 8px">🏆</div>
+          <h1>Mall Closed — Final Report!</h1>
+          <p class="results-sub" id="results-subtitle"></p>
+        </div>
+        <div class="score-grid">
+          <div class="score-card">
+            <div class="big" id="math-score">0/0</div>
+            <div class="label">Math Correct</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="explore-score">0/0</div>
+            <div class="label">Logs Complete</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="overall-score">0%</div>
+            <div class="label">Mogul Rating</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="time-score">0m</div>
+            <div class="label">Shopping Time</div>
+          </div>
+        </div>
+        <div class="store-stamps" id="result-stamps"></div>
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>Mission</th>
+              <th>Math Status</th>
+              <th>Observation</th>
+              <th>Work Shown</th>
+            </tr>
+          </thead>
+          <tbody id="review-body"></tbody>
+        </table>
+        <div class="submit-section">
+          <h3>Submit Your Shopping Report</h3>
+          <div class="submit-row">
+            <button class="primary-btn" onclick="downloadReport('html')">
+              📄 Download Report
+            </button>
+            <button class="ghost-btn" onclick="copyReport()">
+              📋 Copy to Clipboard
+            </button>
+            <button class="ghost-btn" onclick="downloadReport('txt')">
+              📝 Text File
+            </button>
+          </div>
+          <div class="submit-row">
+            <button class="ghost-btn" onclick="openClassroom()">
+              Google Classroom ↗
+            </button>
+            <input
+              id="teacher-email"
+              class="field"
+              type="email"
+              placeholder="Teacher email"
+              style="max-width: 220px"
+            />
+            <button class="ghost-btn" onclick="submitViaEmail()">
+              Email Report
+            </button>
+          </div>
+          <div class="submit-row" style="margin-top: 8px">
+            <input
+              id="submit-period"
+              class="field"
+              type="text"
+              placeholder="Period"
+              style="max-width: 120px"
+              readonly
+            />
+          </div>
+          <div class="copy-confirm" id="copy-confirm">
+            ✓ Copied to clipboard!
+          </div>
+          <div class="email-confirm" id="email-confirm">
+            ✓ Email client opened
+          </div>
+          <button
+            class="ghost-btn"
+            style="margin-top: 16px"
+            onclick="restartProject()"
+          >
+            🔄 Start Over
+          </button>
+        </div>
+        <div class="footer-brand">
+          Neft Teacher &middot; Percent Power Challenge &middot; 6.RP.3c
+        </div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      /* ── Mission Data ── */
+      const MISSIONS = [
+        {
+          id: "grand_opening",
+          emoji: "👗",
+          store: "Clothing Store",
+          badge: "Grand Opening Discount",
+          focus: "Percent of a Number",
+          type: "percent_of",
+          formula: "25% of $80",
+          query: "retail store discount strategies",
+          explorePrompt:
+            "Search to find one detail about how retail stores decide on discount percentages and pricing strategies.",
+          connectionPrompt:
+            "How does converting a percent to a decimal help you calculate a discount?",
+          story:
+            "The clothing store is having a grand opening sale: 25% off everything! A customer wants to buy an $80 jacket. Find the discount amount AND the sale price.",
+          data: [
+            ["Original price", "$80.00", ""],
+            ["Discount rate", "25%", ""],
+            ["Find", "Discount amount & sale price", ""],
+          ],
+          answers: [
+            {
+              label: "Discount Amount ($)",
+              key: "ans1",
+              correct: 20,
+              tolerance: 0.01,
+              unit: "$",
+            },
+            {
+              label: "Sale Price ($)",
+              key: "ans2",
+              correct: 60,
+              tolerance: 0.01,
+              unit: "$",
+            },
+          ],
+          substitution:
+            "25% = 0.25; 0.25 × $80 = $20 discount; $80 − $20 = $60 sale price",
+          hint1:
+            "Convert 25% to a decimal first: 25% = 0.25. Then multiply by the original price.",
+          hint2:
+            "0.25 × 80 = $20 discount. Subtract from $80: $80 − $20 = $60 sale price.",
+          extension: {
+            prompt:
+              "If the store increases the discount to 40%, what would the new sale price be?",
+            answer: 48,
+          },
+        },
+        {
+          id: "sales_tax",
+          emoji: "📱",
+          store: "Electronics Store",
+          badge: "Sales Tax Calculator",
+          focus: "Percent of a Decimal",
+          type: "percent_of",
+          formula: "8% of $45.50",
+          query: "how sales tax works United States",
+          explorePrompt:
+            "Search to find one detail about how sales tax is calculated and why different states have different rates.",
+          connectionPrompt:
+            "How is finding sales tax the same as finding a percent of a number?",
+          story:
+            "A customer buys a tablet for $45.50. The sales tax rate is 8%. Find the tax amount AND the total cost.",
+          data: [
+            ["Tablet price", "$45.50", ""],
+            ["Tax rate", "8%", ""],
+            ["Find", "Tax amount & total cost", ""],
+          ],
+          answers: [
+            {
+              label: "Tax Amount ($)",
+              key: "ans1",
+              correct: 3.64,
+              tolerance: 0.01,
+              unit: "$",
+            },
+            {
+              label: "Total Cost ($)",
+              key: "ans2",
+              correct: 49.14,
+              tolerance: 0.01,
+              unit: "$",
+            },
+          ],
+          substitution:
+            "8% = 0.08; 0.08 × $45.50 = $3.64 tax; $45.50 + $3.64 = $49.14 total",
+          hint1:
+            "Convert 8% to a decimal: 8% = 0.08. Multiply 0.08 × $45.50 to find the tax.",
+          hint2:
+            "0.08 × 45.50 = $3.64 tax. Add to the price: $45.50 + $3.64 = $49.14 total.",
+          extension: {
+            prompt:
+              "If the tax rate were 6.5% instead, what would the total be?",
+            answer: 48.46,
+          },
+        },
+        {
+          id: "restaurant_tip",
+          emoji: "🍔",
+          store: "Food Court",
+          badge: "Restaurant Tip",
+          focus: "Percent of a Number",
+          type: "percent_of",
+          formula: "15% of $32",
+          query: "restaurant tipping customs around world",
+          explorePrompt:
+            "Search to find one detail about tipping customs — how much people tip and why it varies around the world.",
+          connectionPrompt:
+            "How can you use 10% as a benchmark to quickly calculate 15%?",
+          story:
+            "A family's meal at the food court costs $32. They want to leave a 15% tip. Find the tip amount AND the total bill.",
+          data: [
+            ["Meal cost", "$32.00", ""],
+            ["Tip rate", "15%", ""],
+            ["Find", "Tip amount & total bill", ""],
+          ],
+          answers: [
+            {
+              label: "Tip Amount ($)",
+              key: "ans1",
+              correct: 4.8,
+              tolerance: 0.01,
+              unit: "$",
+            },
+            {
+              label: "Total Bill ($)",
+              key: "ans2",
+              correct: 36.8,
+              tolerance: 0.01,
+              unit: "$",
+            },
+          ],
+          substitution:
+            "15% = 0.15; 0.15 × $32 = $4.80 tip; $32 + $4.80 = $36.80 total",
+          hint1: "Convert 15% to a decimal: 15% = 0.15. Multiply 0.15 × $32.",
+          hint2: "0.15 × 32 = $4.80 tip. Add: $32 + $4.80 = $36.80 total bill.",
+          extension: {
+            prompt:
+              "If they tipped 20% instead, how much more would the tip be?",
+            answer: 1.6,
+          },
+        },
+        {
+          id: "clearance_rack",
+          emoji: "👟",
+          store: "Shoe Store",
+          badge: "Clearance Rack",
+          focus: "Fraction of a Number",
+          type: "fraction_of",
+          formula: "3/8 of $64",
+          query: "shoe store clearance sales retail",
+          explorePrompt:
+            "Search to find one detail about how shoe stores manage clearance sales and markdowns.",
+          connectionPrompt:
+            "How is finding 3/8 of a number similar to finding a percent of a number?",
+          story:
+            "Sneakers priced at $64 are on the clearance rack marked 3/8 off. Find the discount amount AND the sale price.",
+          data: [
+            ["Original price", "$64.00", ""],
+            ["Markdown", "3/8 off", ""],
+            ["Find", "Discount amount & sale price", ""],
+          ],
+          answers: [
+            {
+              label: "Discount Amount ($)",
+              key: "ans1",
+              correct: 24,
+              tolerance: 0.01,
+              unit: "$",
+            },
+            {
+              label: "Sale Price ($)",
+              key: "ans2",
+              correct: 40,
+              tolerance: 0.01,
+              unit: "$",
+            },
+          ],
+          substitution: "3/8 × $64 = $24 discount; $64 − $24 = $40 sale price",
+          hint1:
+            "First find 1/8 of $64, then multiply by 3. 64 ÷ 8 = 8, so 1/8 = $8.",
+          hint2:
+            "1/8 of $64 = $8. So 3/8 = 3 × $8 = $24 discount. $64 − $24 = $40 sale price.",
+          extension: {
+            prompt:
+              "What percent is 3/8? (Convert to a decimal first, then to a percent.)",
+            answer: 37.5,
+          },
+        },
+        {
+          id: "profit_margin",
+          emoji: "🍬",
+          store: "Candy Shop",
+          badge: "Profit Margin",
+          focus: "Decimal × Whole Number",
+          type: "decimal_mult",
+          formula: "0.35 × $1,250",
+          query: "small business profit margin candy store",
+          explorePrompt:
+            "Search to find one detail about how small candy stores or businesses calculate their profit margins.",
+          connectionPrompt:
+            "How is a profit margin expressed as a decimal the same as a percent?",
+          story:
+            "The candy shop reports $1,250 in revenue with a 0.35 profit margin. How much profit did the shop make?",
+          data: [
+            ["Revenue", "$1,250.00", ""],
+            ["Profit margin", "0.35", ""],
+            ["Find", "Profit amount", ""],
+          ],
+          answers: [
+            {
+              label: "Profit ($)",
+              key: "ans1",
+              correct: 437.5,
+              tolerance: 0.01,
+              unit: "$",
+            },
+          ],
+          substitution: "0.35 × $1,250 = $437.50 profit",
+          hint1: "Multiply the decimal by the revenue: 0.35 × 1,250.",
+          hint2:
+            "0.35 × 1,250 = 437.50. The candy shop made $437.50 in profit.",
+          extension: {
+            prompt:
+              "What is 0.35 expressed as a percent and as a fraction in simplest form?",
+            answer: "35% = 7/20",
+          },
+        },
+        {
+          id: "loyalty_points",
+          emoji: "📚",
+          store: "Bookstore",
+          badge: "Loyalty Points",
+          focus: "Fraction to Percent",
+          type: "fraction_to_percent",
+          formula: "1/5 of 450",
+          query: "bookstore loyalty reward programs",
+          explorePrompt:
+            "Search to find one detail about how bookstores or retailers design loyalty reward programs.",
+          connectionPrompt:
+            "How do you convert 1/5 to a percent? What steps do you use?",
+          story:
+            "A bookstore customer has 450 loyalty points and redeems 1/5 of them. How many points are redeemed? What percent of their points is that?",
+          data: [
+            ["Total points", "450", "points"],
+            ["Fraction redeemed", "1/5", ""],
+            ["Find", "Points redeemed & percent redeemed", ""],
+          ],
+          answers: [
+            {
+              label: "Points Redeemed",
+              key: "ans1",
+              correct: 90,
+              tolerance: 0.01,
+              unit: "points",
+            },
+            {
+              label: "Percent Redeemed (%)",
+              key: "ans2",
+              correct: 20,
+              tolerance: 0.01,
+              unit: "%",
+            },
+          ],
+          substitution: "1/5 × 450 = 90 points; 1/5 = 0.2 = 20%",
+          hint1:
+            "Divide 450 by 5 to find 1/5. Then convert 1/5 to a decimal to find the percent.",
+          hint2:
+            "450 ÷ 5 = 90 points. 1 ÷ 5 = 0.2 = 20%. So 90 points is 20% of 450.",
+          extension: {
+            prompt:
+              "If the customer earns 75 more points, what fraction of the new total (525) is 90 points? Simplify.",
+            answer: "6/35",
+          },
+        },
+        {
+          id: "inventory_check",
+          emoji: "⚽",
+          store: "Sports Equipment",
+          badge: "Inventory Check",
+          focus: "Fraction / Decimal / Percent",
+          type: "conversion",
+          formula: "72/240 → all forms",
+          query: "retail inventory management systems",
+          explorePrompt:
+            "Search to find one detail about how stores use inventory management systems to track what sells.",
+          connectionPrompt:
+            "Why is it useful to express the same quantity as a fraction, decimal, AND percent?",
+          story:
+            "The sports equipment store sold 72 out of 240 items this week. Express the items sold as a simplified fraction, a decimal, AND a percent.",
+          data: [
+            ["Items sold", "72", "items"],
+            ["Total inventory", "240", "items"],
+            ["Find", "Fraction, decimal, and percent", ""],
+          ],
+          answers: [
+            {
+              label: "Simplified Fraction (e.g. 3/10)",
+              key: "ans1",
+              correct: "3/10",
+              tolerance: 0,
+              unit: "",
+              isText: true,
+              accept: ["3/10"],
+            },
+            {
+              label: "Decimal",
+              key: "ans2",
+              correct: 0.3,
+              tolerance: 0.001,
+              unit: "",
+            },
+            {
+              label: "Percent (%)",
+              key: "ans3",
+              correct: 30,
+              tolerance: 0.01,
+              unit: "%",
+            },
+          ],
+          substitution: "72/240 = 3/10 = 0.3 = 30%",
+          hint1:
+            "Simplify 72/240 by finding the GCF. 72 and 240 are both divisible by 24.",
+          hint2:
+            "72 ÷ 24 = 3, 240 ÷ 24 = 10 → 3/10. As a decimal: 3 ÷ 10 = 0.3. As a percent: 0.3 × 100 = 30%.",
+          extension: {
+            prompt:
+              "If 48 more items sell next week (120 total out of 240), what is the new percent sold?",
+            answer: 50,
+          },
+        },
+        {
+          id: "revenue_compare",
+          emoji: "🍦",
+          store: "Two Ice Cream Shops",
+          badge: "Revenue Comparison",
+          focus: "Percent vs. Fraction Growth",
+          type: "comparison",
+          formula: "12.5% of $2,400 vs. 1/10 of $2,600",
+          query: "ice cream shop business growth strategies",
+          explorePrompt:
+            "Search to find one detail about how ice cream shops or small businesses measure and compare growth.",
+          connectionPrompt:
+            "Why do you need to find the actual dollar amount to compare — not just the rate?",
+          story:
+            "Shop A has $2,400 in revenue (up 12.5%). Shop B has $2,600 in revenue (up 1/10). Which shop grew more in actual dollars? By how much more?",
+          data: [
+            ["Shop A revenue", "$2,400", ""],
+            ["Shop A growth", "12.5%", ""],
+            ["Shop B revenue", "$2,600", ""],
+            ["Shop B growth", "1/10", ""],
+          ],
+          answers: [
+            {
+              label: "Shop A Growth ($)",
+              key: "ans1",
+              correct: 300,
+              tolerance: 0.01,
+              unit: "$",
+            },
+            {
+              label: "Shop B Growth ($)",
+              key: "ans2",
+              correct: 260,
+              tolerance: 0.01,
+              unit: "$",
+            },
+            {
+              label: "Which shop grew more? (A or B)",
+              key: "ans3",
+              correct: "A",
+              tolerance: 0,
+              unit: "",
+              isText: true,
+              accept: ["A", "a", "Shop A", "shop a"],
+            },
+          ],
+          substitution:
+            "A: 0.125 × $2,400 = $300; B: 1/10 × $2,600 = $260; Shop A grew $40 more",
+          hint1:
+            "Convert both growth rates to decimals. 12.5% = 0.125 and 1/10 = 0.1. Multiply each by the revenue.",
+          hint2:
+            "Shop A: 0.125 × 2,400 = $300. Shop B: 0.1 × 2,600 = $260. Shop A grew $40 more.",
+          extension: {
+            prompt:
+              "What percent growth would Shop B need to match Shop A's $300 growth? Round to nearest tenth.",
+            answer: 11.5,
+          },
+        },
+      ];
+
+      const METHODS = {
+        percent_of:
+          "Percent of a Number: Convert the percent to a decimal, then multiply by the amount.",
+        fraction_of:
+          "Fraction of a Number: Multiply the fraction by the whole number (or divide by the denominator, then multiply by the numerator).",
+        decimal_mult:
+          "Decimal Multiplication: Multiply the decimal by the amount to find the part.",
+        fraction_to_percent:
+          "Fraction to Percent: Divide numerator by denominator to get a decimal, then multiply by 100.",
+        conversion:
+          "Convert: Simplify the fraction, divide to get a decimal, multiply by 100 for percent.",
+        comparison:
+          "Compare: Convert both rates to decimals, multiply each by its base, then compare the results.",
+      };
+
+      const SENTENCE_STARTERS = [
+        "I noticed that ",
+        "One real detail I found is ",
+        "This connects to percent math because ",
+        "The pricing makes me think about ",
+      ];
+
+      const PRESETS = {
+        smart: [
+          "grand_opening",
+          "sales_tax",
+          "clearance_rack",
+          "inventory_check",
+        ],
+        manager: [
+          "profit_margin",
+          "loyalty_points",
+          "revenue_compare",
+          "restaurant_tip",
+        ],
+        quick: [
+          "grand_opening",
+          "restaurant_tip",
+          "profit_margin",
+          "loyalty_points",
+        ],
+        all: MISSIONS.map((m) => m.id),
+      };
+
+      const STORAGE_KEY = "shoppingMallMogul_v1";
+      let selectedIds = [...PRESETS.smart];
+      let state = {
+        started: false,
+        student: { first: "", period: "", date: "" },
+        selectedIds: [...selectedIds],
+        currentIndex: 0,
+        responses: {},
+        startTime: null,
+        endTime: null,
+      };
+
+      /* ── Utility Functions ── */
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function missionById(id) {
+        return MISSIONS.find((m) => m.id === id);
+      }
+      function responseFor(id) {
+        if (!state.responses[id]) {
+          state.responses[id] = {
+            checks: { opened: false, found: false, connection: false },
+            observation: "",
+            connectionNote: "",
+            method: "",
+            workShown: "",
+            answers: {},
+            checked: false,
+            correct: false,
+            extensionAnswer: "",
+            extensionChecked: false,
+            hintsShown: 0,
+          };
+        }
+        return state.responses[id];
+      }
+      function escapeHtml(v) {
+        return String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[c],
+        );
+      }
+      function money(n) {
+        const v = Number(n);
+        if (!isFinite(v)) return "—";
+        return (
+          "$" +
+          v.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
+      function cleanNumber(v) {
+        if (v == null) return NaN;
+        return Number(
+          String(v)
+            .replace(/,/g, "")
+            .replace(/\$/g, "")
+            .replace(/%/g, "")
+            .trim(),
+        );
+      }
+      function todayISO() {
+        const d = new Date(),
+          p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+      }
+
+      /* ── Init ── */
+      function init() {
+        $("student-date").value = todayISO();
+        applyPreset("smart", true);
+        renderRouteCards();
+        checkSavedWork();
+        window.addEventListener("beforeunload", () => {
+          if (state.started) saveState(false);
+        });
+      }
+      function checkSavedWork() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        try {
+          const saved = JSON.parse(raw);
+          if (!saved || !saved.started) return;
+          $("resume-banner").style.display = "flex";
+          const name = [saved.student?.first].filter(Boolean).join(" ");
+          $("resume-details").textContent =
+            `${name || "A student"} has saved progress with ${saved.selectedIds?.length || 0} missions.`;
+        } catch (e) {}
+      }
+      function resumeSaved() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        state = JSON.parse(raw);
+        selectedIds = [...state.selectedIds];
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+      }
+      function clearSavedWork() {
+        localStorage.removeItem(STORAGE_KEY);
+        $("resume-banner").style.display = "none";
+        $("save-status").textContent = "Fresh start";
+      }
+      function manualSave() {
+        if (!state.started) {
+          $("save-status").textContent = "Start first";
+          return;
+        }
+        saveState(true);
+      }
+      function saveState(show) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (show)
+          $("save-status").textContent =
+            "Saved " +
+            new Date().toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            });
+      }
+      function showScreen(name) {
+        ["intro", "app", "results"].forEach((s) => {
+          const el = $(s + "-screen");
+          el.classList.toggle("active", s === name);
+        });
+      }
+
+      /* ── Route Selection ── */
+      function renderRouteCards() {
+        const grid = $("route-grid");
+        grid.innerHTML = "";
+        MISSIONS.forEach((m) => {
+          const selected = selectedIds.includes(m.id);
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "route-card" + (selected ? " selected" : "");
+          card.onclick = () => toggleMission(m.id);
+          card.innerHTML = `
+      <div class="rc-top"><span class="rc-emoji">${m.emoji}</span><span class="rc-check">${selected ? "✓" : ""}</span></div>
+      <div class="rc-name">${escapeHtml(m.badge)}</div>
+      <div class="rc-focus">${escapeHtml(m.focus)}</div>
+      <div class="rc-formula">${escapeHtml(m.formula)}</div>
+    `;
+          grid.appendChild(card);
+        });
+        $("route-note").textContent =
+          `Selected: ${selectedIds.length} mission${selectedIds.length === 1 ? "" : "s"}`;
+      }
+      function applyPreset(preset, silent = false) {
+        selectedIds = [...(PRESETS[preset] || PRESETS.smart)];
+        if (!silent) renderRouteCards();
+      }
+      function toggleMission(id) {
+        if (selectedIds.includes(id))
+          selectedIds = selectedIds.filter((x) => x !== id);
+        else selectedIds.push(id);
+        renderRouteCards();
+      }
+
+      /* ── Start ── */
+      function startExpedition() {
+        const first = $("student-name").value.trim();
+        if (!first) {
+          $("student-name").focus();
+          $("save-status").textContent = "Enter name";
+          return;
+        }
+        if (selectedIds.length < 4) {
+          $("route-note").textContent = "Choose at least 4 missions.";
+          $("route-note").style.color = "var(--error)";
+          return;
+        }
+        state = {
+          started: true,
+          student: {
+            first,
+            period: $("student-period").value.trim(),
+            date: $("student-date").value || todayISO(),
+          },
+          selectedIds: [...selectedIds],
+          currentIndex: 0,
+          responses: {},
+          startTime: Date.now(),
+          endTime: null,
+        };
+        state.selectedIds.forEach((id) => responseFor(id));
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+        saveState(true);
+      }
+
+      /* ── Sidebar ── */
+      function renderSidebar() {
+        const jump = $("jump-select");
+        jump.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = `${i + 1}. ${m.emoji} ${m.badge}`;
+          jump.appendChild(opt);
+        });
+        const list = $("mission-list");
+        list.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const r = responseFor(id);
+          const done = r.checked && r.correct;
+          const explored = explorationComplete(r);
+          const mini = document.createElement("button");
+          mini.type = "button";
+          mini.className =
+            "mission-mini" +
+            (i === state.currentIndex ? " current" : "") +
+            (done ? " done" : "");
+          mini.onclick = () => jumpToMission(i);
+          mini.innerHTML = `
+      <span class="mini-flag">${m.emoji}</span>
+      <span class="mini-text">
+        <span class="mini-name">${escapeHtml(m.badge)}</span>
+        <span class="mini-status">${done ? "Math correct" : r.checked ? "Check feedback" : "Not checked"} · ${explored ? "Log done" : "Log open"}</span>
+      </span>
+      <span class="mini-check">${done ? "✅" : explored ? "📝" : "○"}</span>
+    `;
+          list.appendChild(mini);
+        });
+        updateHeaderProgress();
+      }
+      function updateHeaderProgress() {
+        const total = state.selectedIds.length || 1;
+        const idx = state.currentIndex + 1;
+        const correct = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        $("progress-label").textContent = `Mission ${idx} of ${total}`;
+        $("score-label").textContent = `${correct} correct`;
+        $("progress-fill").style.width = `${Math.round((idx / total) * 100)}%`;
+        $("jump-select").value = state.currentIndex;
+      }
+      function jumpToMission(index) {
+        persistInputs();
+        state.currentIndex = Math.max(
+          0,
+          Math.min(index, state.selectedIds.length - 1),
+        );
+        renderSidebar();
+        renderMission();
+        saveState(false);
+      }
+
+      /* ── Sentence Starters ── */
+      function sentenceStarterButtons(targetId) {
+        return SENTENCE_STARTERS.map(
+          (s) =>
+            `<button type="button" class="starter-chip" onclick="insertStarter('${targetId}',${JSON.stringify(s)})">${escapeHtml(s.trim())}...</button>`,
+        ).join("");
+      }
+      function insertStarter(targetId, starter) {
+        const box = $(targetId);
+        if (!box) return;
+        const start = box.selectionStart ?? box.value.length;
+        const before = box.value.slice(0, start);
+        const after = box.value.slice(box.selectionEnd ?? box.value.length);
+        const space = before && !/\s$/.test(before) ? " " : "";
+        box.value = before + space + starter + after;
+        box.focus();
+        const caret = (before + space + starter).length;
+        box.setSelectionRange(caret, caret);
+        saveState(false);
+      }
+
+      /* ── Explore Links ── */
+      function mapLinks(m) {
+        const q = encodeURIComponent(m.query);
+        return `
+    <a class="explore-link" href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">🖼️ Images</a>
+    <a class="explore-link" href="https://www.google.com/search?q=${q}+facts+for+kids" target="_blank" rel="noopener">🔎 Facts</a>
+    <a class="explore-link" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🌐 Search</a>
+  `;
+      }
+
+      /* ── Data Table ── */
+      function dataTable(m) {
+        return (
+          `<table class="data-table"><thead><tr><th>Item</th><th>Value</th></tr></thead><tbody>` +
+          m.data
+            .map(
+              (row) =>
+                `<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])} ${escapeHtml(row[2])}</td></tr>`,
+            )
+            .join("") +
+          `</tbody></table>`
+        );
+      }
+
+      /* ── Method dropdown ── */
+      function methodOptions(selected) {
+        return (
+          '<option value="">— Select a method —</option>' +
+          Object.entries(METHODS)
+            .map(
+              ([key, label]) =>
+                `<option value="${key}" ${selected === key ? "selected" : ""}>${escapeHtml(label)}</option>`,
+            )
+            .join("")
+        );
+      }
+
+      /* ── Build answer fields for multi-part missions ── */
+      function answerFieldsHtml(m, r) {
+        return m.answers
+          .map((a, i) => {
+            const val = r.answers[a.key] || "";
+            return `
+        <div class="lab-field">
+          <label for="answer-${a.key}">${escapeHtml(a.label)}</label>
+          <div class="answer-row">
+            <input id="answer-${a.key}" type="text" value="${escapeHtml(val)}" oninput="updateAnswer('${a.key}',this.value)" placeholder="Type answer">
+            ${a.unit ? `<span class="unit-pill">${escapeHtml(a.unit)}</span>` : ""}
+          </div>
+        </div>`;
+          })
+          .join("");
+      }
+
+      /* ── Render Mission ── */
+      function renderMission() {
+        const id = state.selectedIds[state.currentIndex];
+        const m = missionById(id);
+        const r = responseFor(id);
+        const card = $("mission-card");
+
+        card.innerHTML = `
+    <div class="dest-hero">
+      <div class="dest-top">
+        <div class="dest-emoji">${m.emoji}</div>
+        <div>
+          <div class="dest-kicker">${escapeHtml(m.store)} · ${escapeHtml(m.badge)}</div>
+          <div class="dest-title">${escapeHtml(m.badge)}</div>
+          <div class="dest-sub">${escapeHtml(m.focus)} · ${escapeHtml(m.formula)}</div>
+        </div>
+        <div class="stamp">Store<strong>${state.currentIndex + 1}/${state.selectedIds.length}</strong></div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel soft">
+        <h3>🔍 Explore the Store</h3>
+        <p style="font-size:.88rem;margin-bottom:10px;">${escapeHtml(m.explorePrompt)}</p>
+        <div class="explore-links">${mapLinks(m)}</div>
+        <div class="check-grid">
+          <label class="check-row"><input type="checkbox" id="check-opened" ${r.checks.opened ? "checked" : ""} onchange="updateCheck('opened',this.checked)"> I searched and found information.</label>
+          <label class="check-row"><input type="checkbox" id="check-found" ${r.checks.found ? "checked" : ""} onchange="updateCheck('found',this.checked)"> I found one real detail about this topic.</label>
+          <label class="check-row"><input type="checkbox" id="check-connection" ${r.checks.connection ? "checked" : ""} onchange="updateCheck('connection',this.checked)"> I connected it to the math concept.</label>
+        </div>
+        <div class="lab-field">
+          <label for="observation">Store Log: What I Found</label>
+          <div class="starter-note">Click a sentence starter, then finish it with your own real detail.</div>
+          <div class="starter-tray">${sentenceStarterButtons("observation")}</div>
+          <textarea id="observation" oninput="updateText('observation',this.value)" placeholder="Write what you discovered...">${escapeHtml(r.observation)}</textarea>
+        </div>
+        <div class="lab-field" style="margin-top:8px">
+          <label for="connection-note">Math Connection</label>
+          <textarea id="connection-note" oninput="updateText('connectionNote',this.value)" placeholder="${escapeHtml(m.connectionPrompt)}">${escapeHtml(r.connectionNote)}</textarea>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>💰 Store Data</h3>
+        <div class="store-info-card">
+          <div class="store-info-text">
+            <strong>Store Briefing</strong>
+            <p>${escapeHtml(m.story)}</p>
+            <span class="store-tag">${escapeHtml(m.focus)}</span>
+          </div>
+        </div>
+        ${dataTable(m)}
+      </div>
+    </div>
+
+    <div class="formula-lab">
+      <h3>🧮 Calculation Lab</h3>
+      <p style="margin-bottom:14px;font-size:.9rem;">${escapeHtml(m.story)} Show your method below.</p>
+      <div class="lab-grid">
+        <div class="lab-field">
+          <label for="method-select">Method I Used</label>
+          <select id="method-select" onchange="updateText('method',this.value)">${methodOptions(r.method)}</select>
+        </div>
+        ${answerFieldsHtml(m, r)}
+        <div class="lab-field full">
+          <label for="work-shown">Show Your Work</label>
+          <textarea id="work-shown" oninput="updateText('workShown',this.value)" placeholder="Show your steps: convert percents to decimals, multiply, add or subtract...">${escapeHtml(r.workShown)}</textarea>
+        </div>
+      </div>
+      <div class="hint-row">
+        <button class="secondary-btn" onclick="checkCalculation()">Check Answer</button>
+        <button class="ghost-btn" onclick="showHint(1)">Hint 1</button>
+        <button class="ghost-btn" onclick="showHint(2)">Hint 2</button>
+      </div>
+      <div class="feedback ${r.checked ? (r.correct ? "show ok" : "show no") : ""}" id="feedback-box">
+        ${r.checked ? feedbackText(m, r.correct) : ""}
+      </div>
+      <div class="hint-box" id="hint-box"></div>
+    </div>
+
+    <div class="panel warm" style="margin-top:20px">
+      <h3>⭐ Extension Challenge</h3>
+      <p style="font-size:.88rem;margin-bottom:12px;">${escapeHtml(m.extension.prompt)}</p>
+      <div class="extension-row">
+        <div class="lab-field">
+          <label for="extension-answer">Your Answer</label>
+          <input id="extension-answer" type="text" value="${escapeHtml(r.extensionAnswer)}" oninput="updateText('extensionAnswer',this.value)" placeholder="Type your answer">
+        </div>
+        <div class="extension-output" id="extension-output">${r.extensionChecked ? (r.extensionCorrect ? "✅ Correct!" : "Try again") : "Check below"}</div>
+      </div>
+      <div class="hint-row"><button class="ghost-btn" onclick="checkExtension()">Check Extension</button></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="ghost-btn" onclick="previousMission()" ${state.currentIndex === 0 ? "disabled" : ""}>← Previous</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghost-btn" onclick="downloadCheckpoint()">💾 Checkpoint</button>
+        <button class="primary-btn" onclick="nextMission()">${state.currentIndex === state.selectedIds.length - 1 ? "Finish Shopping 🏁" : "Next Store →"}</button>
+      </div>
+    </div>
+  `;
+        card.classList.remove("fade-in");
+        void card.offsetWidth;
+        card.classList.add("fade-in");
+        if (!r.method) {
+          r.method = "";
+          $("method-select").value = "";
+        }
+        updateHeaderProgress();
+      }
+
+      /* ── Feedback ── */
+      function feedbackText(m, ok) {
+        if (ok)
+          return `<strong>✅ Correct!</strong> ${escapeHtml(m.substitution)}.`;
+        return `<strong>Not quite.</strong> Check your work. Expected: <em>${escapeHtml(m.substitution)}</em>.`;
+      }
+      function explorationComplete(r) {
+        return !!(
+          r.checks.opened &&
+          r.checks.found &&
+          r.checks.connection &&
+          r.observation.trim().length >= 12 &&
+          r.connectionNote.trim().length >= 8
+        );
+      }
+
+      /* ── State Updates ── */
+      function updateCheck(key, val) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        r.checks[key] = val;
+        saveState(false);
+        renderSidebar();
+      }
+      function updateText(field, value) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        r[field] = value;
+        saveState(false);
+      }
+      function updateAnswer(key, value) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        if (!r.answers) r.answers = {};
+        r.answers[key] = value;
+        saveState(false);
+      }
+      function persistInputs() {
+        const id = state.selectedIds[state.currentIndex];
+        if (!id) return;
+        const m = missionById(id);
+        const r = responseFor(id);
+        if ($("observation")) r.observation = $("observation").value;
+        if ($("connection-note")) r.connectionNote = $("connection-note").value;
+        if ($("method-select")) r.method = $("method-select").value;
+        if ($("work-shown")) r.workShown = $("work-shown").value;
+        if ($("extension-answer"))
+          r.extensionAnswer = $("extension-answer").value;
+        m.answers.forEach((a) => {
+          const el = $("answer-" + a.key);
+          if (el) {
+            if (!r.answers) r.answers = {};
+            r.answers[a.key] = el.value;
+          }
+        });
+      }
+
+      /* ── Check Calculation (multi-part) ── */
+      function checkCalculation() {
+        persistInputs();
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        let allCorrect = true;
+
+        m.answers.forEach((a) => {
+          const studentVal = (r.answers && r.answers[a.key]) || "";
+          if (a.isText) {
+            const cleaned = studentVal.trim().replace(/\s+/g, "");
+            const accepted = a.accept.map((x) => x.replace(/\s+/g, ""));
+            if (!accepted.includes(cleaned)) allCorrect = false;
+          } else {
+            const num = cleanNumber(studentVal);
+            if (
+              !isFinite(num) ||
+              Math.abs(num - a.correct) > (a.tolerance || 0.01)
+            ) {
+              allCorrect = false;
+            }
+          }
+        });
+
+        r.checked = true;
+        r.correct = allCorrect;
+        const fb = $("feedback-box");
+        fb.className = "feedback show " + (r.correct ? "ok" : "no");
+        fb.innerHTML = r.correct
+          ? feedbackText(m, true)
+          : feedbackText(m, false);
+        saveState(true);
+        renderSidebar();
+      }
+
+      /* ── Hints ── */
+      function showHint(level) {
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        r.hintsShown = Math.max(r.hintsShown || 0, level);
+        const box = $("hint-box");
+        box.style.display = "block";
+        box.innerHTML =
+          level === 1
+            ? `<strong>Hint 1:</strong> ${escapeHtml(m.hint1)}`
+            : `<strong>Hint 2:</strong> ${escapeHtml(m.hint2)}`;
+        saveState(false);
+      }
+
+      /* ── Extension Check ── */
+      function checkExtension() {
+        persistInputs();
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        const studentVal = (r.extensionAnswer || "").trim();
+        const output = $("extension-output");
+
+        if (typeof m.extension.answer === "number") {
+          const num = cleanNumber(studentVal);
+          const correct =
+            isFinite(num) && Math.abs(num - m.extension.answer) <= 0.1;
+          r.extensionChecked = true;
+          r.extensionCorrect = correct;
+          output.textContent = correct
+            ? "✅ Correct!"
+            : `Not quite. Expected: ${m.extension.answer}`;
+        } else {
+          const cleaned = studentVal.replace(/\s+/g, "").toLowerCase();
+          const expected = String(m.extension.answer)
+            .replace(/\s+/g, "")
+            .toLowerCase();
+          const correct = cleaned === expected || cleaned.includes(expected);
+          r.extensionChecked = true;
+          r.extensionCorrect = correct;
+          output.textContent = correct
+            ? "✅ Correct!"
+            : `Expected: ${m.extension.answer}`;
+        }
+        saveState(false);
+      }
+
+      /* ── Navigation ── */
+      function previousMission() {
+        persistInputs();
+        if (state.currentIndex > 0) {
+          state.currentIndex--;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+      function nextMission() {
+        persistInputs();
+        if (state.currentIndex >= state.selectedIds.length - 1) showResults();
+        else {
+          state.currentIndex++;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+
+      /* ── Results Screen ── */
+      function showResults() {
+        persistInputs();
+        state.endTime = Date.now();
+        saveState(true);
+        showScreen("results");
+        const total = state.selectedIds.length;
+        const mathCorrect = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        const exploreComplete = state.selectedIds.filter((id) =>
+          explorationComplete(responseFor(id)),
+        ).length;
+        const readiness = Math.round(
+          ((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100,
+        );
+        const mins = Math.max(
+          0,
+          Math.round(
+            ((state.endTime || Date.now()) - (state.startTime || Date.now())) /
+              60000,
+          ),
+        );
+
+        $("results-subtitle").textContent =
+          `${state.student.first} · Period ${state.student.period || "—"} · ${state.student.date || ""}`;
+        $("math-score").textContent = `${mathCorrect}/${total}`;
+        $("explore-score").textContent = `${exploreComplete}/${total}`;
+        $("overall-score").textContent = `${readiness}%`;
+        $("time-score").textContent = `${mins}m`;
+
+        $("result-stamps").innerHTML = state.selectedIds
+          .map((id) => {
+            const m = missionById(id);
+            const r = responseFor(id);
+            return `<span class="store-stamp" title="${escapeHtml(m.badge)}">${m.emoji}${r.correct ? "✓" : ""}</span>`;
+          })
+          .join("");
+
+        $("review-body").innerHTML = state.selectedIds
+          .map((id, i) => {
+            const m = missionById(id);
+            const r = responseFor(id);
+            const cls = r.correct && explorationComplete(r) ? "good" : "needs";
+            const studentAnswers = m.answers
+              .map(
+                (a) => `${a.label}: ${(r.answers && r.answers[a.key]) || "—"}`,
+              )
+              .join(", ");
+            return `<tr class="${cls}">
+      <td><strong>${i + 1}. ${m.emoji} ${escapeHtml(m.badge)}</strong><br><span style="color:var(--muted);font-size:.78rem">${escapeHtml(m.focus)}</span></td>
+      <td>${r.correct ? "✅ Correct" : r.checked ? "🔁 Revise" : "○ Not checked"}<br><span style="color:var(--muted);font-size:.78rem">${escapeHtml(studentAnswers)}</span></td>
+      <td>${escapeHtml(r.observation || "No observation")}<br><span style="color:var(--muted);font-size:.78rem">Connection: ${escapeHtml(r.connectionNote || "—")}</span></td>
+      <td>${escapeHtml(r.workShown || "—")}<br><span style="color:var(--muted);font-size:.78rem">Expected: ${escapeHtml(m.substitution)}</span></td>
+    </tr>`;
+          })
+          .join("");
+
+        $("submit-period").value = state.student.period
+          ? "Period " + state.student.period
+          : "";
+      }
+
+      /* ── Report Generation ── */
+      function buildPlainReport() {
+        const total = state.selectedIds.length;
+        const mathCorrect = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        const exploreComplete = state.selectedIds.filter((id) =>
+          explorationComplete(responseFor(id)),
+        ).length;
+        const readiness = Math.round(
+          ((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100,
+        );
+        let lines = [];
+        lines.push("SHOPPING MALL MOGUL — PERCENT POWER CHALLENGE REPORT");
+        lines.push(
+          "Standard: 6.RP.3c — Relate Fractions, Decimals, and Percents",
+        );
+        lines.push("Student: " + state.student.first);
+        lines.push("Period: " + (state.student.period || "—"));
+        lines.push("Date: " + (state.student.date || ""));
+        lines.push("Math Correct: " + mathCorrect + "/" + total);
+        lines.push("Exploration Logs: " + exploreComplete + "/" + total);
+        lines.push("Mogul Rating: " + readiness + "%");
+        lines.push("");
+        lines.push("STORE REPORTS");
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const r = responseFor(id);
+          lines.push("────────────────────────────");
+          lines.push(`${i + 1}. ${m.emoji} ${m.badge} — ${m.focus}`);
+          lines.push("Store: " + m.store);
+          lines.push(
+            "Exploration: " +
+              (explorationComplete(r) ? "Complete" : "Incomplete"),
+          );
+          lines.push("Observation: " + (r.observation || "—"));
+          lines.push("Math connection: " + (r.connectionNote || "—"));
+          lines.push("Method: " + (METHODS[r.method] || "—"));
+          lines.push("Work shown: " + (r.workShown || "—"));
+          m.answers.forEach((a) => {
+            lines.push(`${a.label}: ${(r.answers && r.answers[a.key]) || "—"}`);
+          });
+          lines.push("Expected: " + m.substitution);
+          lines.push(
+            "Status: " +
+              (r.correct
+                ? "Correct"
+                : r.checked
+                  ? "Needs revision"
+                  : "Not checked"),
+          );
+          lines.push("Extension: " + (r.extensionAnswer || "—"));
+        });
+        lines.push("");
+        lines.push("Generated by Neft Teacher");
+        return lines.join("\n");
+      }
+      function buildHtmlReport() {
+        const text = buildPlainReport();
+        const escaped = escapeHtml(text).replace(/\n/g, "<br>");
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Shopping Mall Mogul — ${escapeHtml(state.student.first)}</title>
+  <style>body{font-family:Arial,sans-serif;line-height:1.5;margin:32px;color:#222}h1{color:#1E293B}.box{border:2px solid #EC4899;border-radius:12px;padding:20px}</style></head>
+  <body><h1>🏬 Shopping Mall Mogul — Percent Power Challenge Report</h1><div class="box">${escaped}</div><p style="color:#999;font-size:12px;margin-top:16px">Neft Teacher &middot; 6.RP.3c</p></body></html>`;
+      }
+      function safeFilename() {
+        return `Mall_Mogul_${state.student.first}_${state.student.period || "Period"}_${state.student.date || todayISO()}`.replace(
+          /[^a-z0-9_\-]+/gi,
+          "_",
+        );
+      }
+      function downloadReport(kind) {
+        const isHtml = kind === "html";
+        const content = isHtml ? buildHtmlReport() : buildPlainReport();
+        const blob = new Blob([content], {
+          type: isHtml ? "text/html" : "text/plain",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFilename() + (isHtml ? ".html" : ".txt");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        $("copy-confirm").style.display = "block";
+      }
+      function downloadCheckpoint() {
+        persistInputs();
+        const blob = new Blob([JSON.stringify(state, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFilename() + "_checkpoint.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        $("save-status").textContent = "Checkpoint saved";
+      }
+      async function copyReport() {
+        try {
+          await navigator.clipboard.writeText(buildPlainReport());
+          $("copy-confirm").style.display = "block";
+        } catch (e) {
+          const w = window.open("", "_blank");
+          w.document.write("<pre>" + escapeHtml(buildPlainReport()) + "</pre>");
+          w.document.close();
+        }
+      }
+      function openClassroom() {
+        window.open("https://classroom.google.com/", "_blank", "noopener");
+      }
+      function submitViaEmail() {
+        const email = $("teacher-email").value.trim();
+        if (!email) {
+          $("teacher-email").focus();
+          return;
+        }
+        const subject = encodeURIComponent(
+          `Shopping Mall Mogul — ${state.student.first} — ${state.student.period || "Period"}`,
+        );
+        const body = encodeURIComponent(buildPlainReport().slice(0, 12000));
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        $("email-confirm").style.display = "block";
+      }
+      function restartProject() {
+        if (!confirm("Start over and clear saved work?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Mission Control — Math Expedition</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --navy: #17324d;
+        --teal: #1fa6a2;
+        --amber: #f2c15b;
+        --coral: #e8736a;
+        --cream: #f7f4ec;
+        --sky: #e8f4fd;
+        --ink: #24323f;
+        --muted: #7a8a9e;
+        --line: #dde3ea;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(23, 50, 77, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--sky);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      a {
+        color: var(--teal);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* ── Layout ── */
+      .intro-screen,
+      .app-screen,
+      .results-screen {
+        display: none;
+      }
+      .intro-screen.active,
+      .app-screen.active,
+      .results-screen.active {
+        display: block;
+      }
+
+      /* ── Intro ── */
+      .intro {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .hero-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 48px 36px;
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .hero-sub {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .student-form {
+        display: grid;
+        grid-template-columns: 1fr 100px 100px;
+        gap: 12px;
+        max-width: 500px;
+        margin: 0 auto 24px;
+        text-align: left;
+      }
+      .student-form label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        grid-column: span 1;
+      }
+      .student-form .label-name {
+        grid-column: 1;
+      }
+      .student-form .label-period {
+        grid-column: 2;
+      }
+      .student-form .label-date {
+        grid-column: 3;
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .resume-banner {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px;
+      }
+      .resume-banner button {
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .resume-banner .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      /* Mission selection */
+      .route-section {
+        margin-top: 28px;
+      }
+      .route-section h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .route-section p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .route-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .route-card {
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: white;
+        text-align: left;
+        transition: all 0.2s;
+        cursor: pointer;
+        position: relative;
+      }
+      .route-card:hover {
+        border-color: var(--teal);
+        box-shadow: 0 2px 8px rgba(31, 166, 162, 0.12);
+      }
+      .route-card.selected {
+        border-color: var(--teal);
+        background: rgba(31, 166, 162, 0.06);
+      }
+      .route-card .rc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .route-card .rc-emoji {
+        font-size: 1.5rem;
+      }
+      .route-card .rc-check {
+        font-size: 1.1rem;
+        color: var(--teal);
+        font-weight: 900;
+      }
+      .route-card .rc-name {
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: var(--navy);
+        margin-bottom: 2px;
+      }
+      .route-card .rc-focus {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .route-card .rc-formula {
+        font-size: 0.75rem;
+        color: var(--teal);
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      .route-note {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .preset-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .preset-btn {
+        padding: 6px 14px;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        background: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--navy);
+        transition: all 0.2s;
+      }
+      .preset-btn:hover,
+      .preset-btn.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+      }
+      .start-btn {
+        display: block;
+        margin: 0 auto;
+        padding: 14px 48px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+
+      /* ── App screen ── */
+      .app-header {
+        background: var(--navy);
+        color: white;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .app-header .progress-text {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .app-header .score-text {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-left: auto;
+      }
+      .progress-track {
+        flex: 1;
+        max-width: 300px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--amber);
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+      .save-status {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        margin-left: 12px;
+      }
+      .save-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+      .save-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .app-body {
+        display: flex;
+        min-height: calc(100vh - 48px);
+      }
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid var(--line);
+        padding: 16px;
+        overflow-y: auto;
+        flex-shrink: 0;
+      }
+      .sidebar h3 {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .jump-select {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+      }
+      .mission-mini {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 8px 10px;
+        border-radius: 8px;
+        text-align: left;
+        transition: background 0.15s;
+        font-size: 0.82rem;
+        margin-bottom: 4px;
+      }
+      .mission-mini:hover {
+        background: var(--sky);
+      }
+      .mission-mini.current {
+        background: var(--sky);
+        font-weight: 700;
+      }
+      .mission-mini.done {
+        opacity: 0.7;
+      }
+      .mini-flag {
+        font-size: 1.15rem;
+        flex-shrink: 0;
+      }
+      .mini-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .mini-name {
+        display: block;
+        font-weight: 700;
+        color: var(--navy);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mini-status {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .mini-check {
+        font-size: 0.9rem;
+      }
+
+      .mission-main {
+        flex: 1;
+        padding: 28px 32px;
+        overflow-y: auto;
+        max-width: 900px;
+      }
+
+      /* ── Mission card ── */
+      .dest-hero {
+        margin-bottom: 24px;
+      }
+      .dest-top {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .dest-emoji {
+        font-size: 2.8rem;
+      }
+      .dest-kicker {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .dest-title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .dest-sub {
+        font-size: 0.88rem;
+        color: var(--teal);
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .stamp {
+        background: var(--amber);
+        color: var(--navy);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-align: center;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      .stamp strong {
+        display: block;
+        font-size: 1.1rem;
+      }
+
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      @media (max-width: 768px) {
+        .panel-grid {
+          grid-template-columns: 1fr;
+        }
+        .app-body {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+        .student-form {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+      }
+      .panel h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .panel.soft {
+        background: var(--sky);
+      }
+      .panel.warm {
+        background: var(--cream);
+      }
+
+      .explore-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .explore-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 14px;
+        background: white;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .explore-link:hover {
+        border-color: var(--teal);
+        text-decoration: none;
+        background: rgba(31, 166, 162, 0.06);
+      }
+
+      .check-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 12px 0;
+      }
+      .check-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .check-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--teal);
+      }
+
+      .lab-field {
+        margin-bottom: 12px;
+      }
+      .lab-field label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .lab-field textarea,
+      .lab-field input,
+      .lab-field select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        transition: border-color 0.2s;
+        background: white;
+      }
+      .lab-field textarea:focus,
+      .lab-field input:focus,
+      .lab-field select:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .lab-field textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      .lab-field.full {
+        grid-column: span 2;
+      }
+
+      .starter-note {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-bottom: 6px;
+      }
+      .starter-tray {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .starter-chip {
+        padding: 4px 12px;
+        background: white;
+        border: 1.5px solid var(--line);
+        border-radius: 16px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--navy);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .starter-chip:hover {
+        border-color: var(--teal);
+        background: rgba(31, 166, 162, 0.06);
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.88rem;
+      }
+      .data-table th {
+        background: var(--navy);
+        color: white;
+        padding: 8px 12px;
+        text-align: left;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:nth-child(even) {
+        background: var(--sky);
+      }
+
+      /* Formula lab */
+      .formula-lab {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .formula-lab h3 {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 14px;
+      }
+      .lab-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .answer-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .answer-row input {
+        flex: 1;
+      }
+      .unit-pill {
+        padding: 4px 12px;
+        background: var(--sky);
+        border-radius: 16px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--navy);
+        white-space: nowrap;
+      }
+      .hint-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .primary-btn {
+        padding: 10px 24px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .primary-btn:hover {
+        opacity: 0.9;
+      }
+      .primary-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .secondary-btn {
+        padding: 10px 24px;
+        background: var(--navy);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .secondary-btn:hover {
+        opacity: 0.9;
+      }
+      .ghost-btn {
+        padding: 8px 18px;
+        background: transparent;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--navy);
+        transition: all 0.2s;
+      }
+      .ghost-btn:hover {
+        border-color: var(--teal);
+        background: rgba(31, 166, 162, 0.06);
+      }
+      .ghost-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        display: none;
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-top: 8px;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: var(--success);
+      }
+      .feedback.no {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: var(--error);
+      }
+      .hint-box {
+        display: none;
+        padding: 12px 16px;
+        background: var(--cream);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        margin-top: 8px;
+        border-left: 4px solid var(--amber);
+      }
+
+      /* Nav */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .fade-in {
+        animation: fadeSlide 0.35s ease;
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── SVG Visual ── */
+      .visual-zone {
+        display: flex;
+        justify-content: center;
+        margin: 16px 0;
+      }
+
+      /* ── Shape evidence ── */
+      .shape-evidence-card {
+        display: flex;
+        gap: 14px;
+        background: var(--cream);
+        border-radius: 8px;
+        padding: 14px;
+        margin-bottom: 14px;
+        align-items: flex-start;
+      }
+      .shape-evidence-visual {
+        flex-shrink: 0;
+      }
+      .shape-evidence-text {
+        flex: 1;
+        font-size: 0.85rem;
+      }
+      .shape-evidence-text strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--navy);
+      }
+      .shape-tag {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 2px 10px;
+        background: var(--navy);
+        color: white;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      /* ── Budget bonus ── */
+      .budget-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+      .budget-output {
+        padding: 10px 16px;
+        background: var(--sky);
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--navy);
+        min-width: 180px;
+        text-align: center;
+      }
+
+      /* ── Results ── */
+      .results {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .results-hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .results-hero h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .results-sub {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0;
+      }
+      .score-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        text-align: center;
+      }
+      .score-card .big {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .score-card .label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .passport-stamps {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      .passport-stamp {
+        font-size: 1.6rem;
+        padding: 6px 10px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 24px 0;
+      }
+      .review-table th {
+        background: var(--navy);
+        color: white;
+        padding: 10px;
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      .review-table td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .review-table tr.good {
+        background: var(--success-bg);
+      }
+      .review-table tr.needs {
+        background: white;
+      }
+      .submit-section {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 28px;
+        text-align: center;
+      }
+      .submit-section h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 16px;
+      }
+      .submit-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .copy-confirm,
+      .email-confirm {
+        display: none;
+        font-size: 0.82rem;
+        color: var(--success);
+        font-weight: 600;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ INTRO SCREEN ═══════ -->
+    <div class="intro-screen active" id="intro-screen">
+      <div class="intro">
+        <div class="hero-card">
+          <div class="hero-emoji">🚀</div>
+          <h1 class="hero-title">Space Mission Control</h1>
+          <p class="hero-sub">
+            Use GCF, LCM, and factors to plan real space missions.<br />Explore,
+            calculate, and earn your Mission Commander badge!
+          </p>
+          <div class="student-form">
+            <label class="label-name">Your Name</label>
+            <label class="label-period">Period</label>
+            <label class="label-date">Date</label>
+            <input
+              id="student-name"
+              class="field"
+              type="text"
+              placeholder="First Last Initial"
+            />
+            <input
+              id="student-period"
+              class="field"
+              type="text"
+              placeholder="P3"
+            />
+            <input id="student-date" class="field" type="date" />
+          </div>
+        </div>
+
+        <div class="resume-banner" id="resume-banner">
+          <span id="resume-details"></span>
+          <button onclick="resumeSaved()">Resume</button>
+          <button class="clear-btn" onclick="clearSavedWork()">
+            Start Fresh
+          </button>
+        </div>
+
+        <div class="route-section">
+          <h2>Choose Your Missions</h2>
+          <p>
+            Pick at least 5 missions. Each one puts GCF, LCM, or factors to work
+            in a real space scenario.
+          </p>
+          <div class="preset-row">
+            <button class="preset-btn" onclick="applyPreset('balanced')">
+              Balanced Mix
+            </button>
+            <button class="preset-btn" onclick="applyPreset('gcf')">
+              GCF Focus
+            </button>
+            <button class="preset-btn" onclick="applyPreset('lcm')">
+              LCM Focus
+            </button>
+            <button class="preset-btn" onclick="applyPreset('all')">
+              All Missions
+            </button>
+          </div>
+          <div class="route-grid" id="route-grid"></div>
+          <div class="route-note" id="route-note">Selected: 6 missions</div>
+          <button class="start-btn" onclick="startExpedition()">
+            Launch Expedition 🚀
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ APP SCREEN ═══════ -->
+    <div class="app-screen" id="app-screen">
+      <div class="app-header">
+        <span class="progress-text" id="progress-label">Mission 1 of 6</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="score-text" id="score-label">0 correct</span>
+        <button class="save-btn" onclick="manualSave()">💾 Save</button>
+        <span class="save-status" id="save-status"></span>
+      </div>
+      <div class="app-body">
+        <div class="sidebar">
+          <h3>Mission Log</h3>
+          <select
+            class="jump-select"
+            id="jump-select"
+            onchange="jumpToMission(Number(this.value))"
+          ></select>
+          <div id="mission-list"></div>
+        </div>
+        <div class="mission-main">
+          <div id="mission-card" class="fade-in"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ RESULTS SCREEN ═══════ -->
+    <div class="results-screen" id="results-screen">
+      <div class="results">
+        <div class="results-hero">
+          <div style="font-size: 3rem; margin-bottom: 8px">🏆</div>
+          <h1>Mission Complete!</h1>
+          <p class="results-sub" id="results-subtitle"></p>
+        </div>
+        <div class="score-grid">
+          <div class="score-card">
+            <div class="big" id="math-score">0/0</div>
+            <div class="label">Math Correct</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="explore-score">0/0</div>
+            <div class="label">Logs Complete</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="overall-score">0%</div>
+            <div class="label">Commander Rating</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="time-score">0m</div>
+            <div class="label">Mission Time</div>
+          </div>
+        </div>
+        <div class="passport-stamps" id="result-stamps"></div>
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>Mission</th>
+              <th>Math Status</th>
+              <th>Observation</th>
+              <th>Work Shown</th>
+            </tr>
+          </thead>
+          <tbody id="review-body"></tbody>
+        </table>
+        <div class="submit-section">
+          <h3>Submit Your Mission Report</h3>
+          <div class="submit-row">
+            <button class="primary-btn" onclick="downloadReport('html')">
+              📄 Download Report
+            </button>
+            <button class="ghost-btn" onclick="copyReport()">
+              📋 Copy to Clipboard
+            </button>
+            <button class="ghost-btn" onclick="downloadReport('txt')">
+              📝 Text File
+            </button>
+          </div>
+          <div class="submit-row">
+            <button class="ghost-btn" onclick="openClassroom()">
+              Google Classroom ↗
+            </button>
+            <input
+              id="teacher-email"
+              class="field"
+              type="email"
+              placeholder="Teacher email"
+              style="max-width: 220px"
+            />
+            <button class="ghost-btn" onclick="submitViaEmail()">
+              Email Report
+            </button>
+          </div>
+          <div class="submit-row" style="margin-top: 8px">
+            <input
+              id="submit-period"
+              class="field"
+              type="text"
+              placeholder="Period"
+              style="max-width: 120px"
+              readonly
+            />
+          </div>
+          <div class="copy-confirm" id="copy-confirm">
+            ✓ Copied to clipboard!
+          </div>
+          <div class="email-confirm" id="email-confirm">
+            ✓ Email client opened
+          </div>
+          <button
+            class="ghost-btn"
+            style="margin-top: 16px"
+            onclick="restartProject()"
+          >
+            🔄 Start Over
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      const MISSIONS = [
+        {
+          id: "iss_supply",
+          emoji: "🛸",
+          location: "International Space Station — Low Earth Orbit",
+          badge: "Supply Sync",
+          focus: "Least Common Multiple (LCM)",
+          type: "lcm",
+          formula: "LCM(a, b)",
+          query: "International Space Station supply missions",
+          explorePrompt:
+            "Find one detail about how supplies reach the ISS — how often, from where, or what they carry.",
+          geometryPrompt:
+            "How does timing and scheduling connect to multiples?",
+          story:
+            "Two cargo ships resupply the ISS. Dragon arrives every 6 weeks and Cygnus arrives every 8 weeks. If both arrive this week, how many weeks until they both arrive the same week again?",
+          data: [
+            ["Dragon cycle", 6, "weeks"],
+            ["Cygnus cycle", 8, "weeks"],
+          ],
+          answer: 24,
+          unit: "weeks",
+          tolerance: 0.01,
+          substitution: "LCM(6, 8) = 24",
+          hint1:
+            "List multiples of 6 and multiples of 8. Find the smallest number in both lists.",
+          hint2:
+            "Multiples of 6: 6, 12, 18, 24... Multiples of 8: 8, 16, 24... The LCM is 24.",
+          rates: [
+            ["crew meal packs", 18],
+            ["experiment kits", 42],
+            ["water purification cartridges", 65],
+          ],
+        },
+        {
+          id: "crew_pods",
+          emoji: "👩‍🚀",
+          location: "Johnson Space Center — Houston, TX",
+          badge: "Crew Organizer",
+          focus: "Greatest Common Factor (GCF)",
+          type: "gcf",
+          formula: "GCF(a, b)",
+          query: "NASA astronaut training Johnson Space Center",
+          explorePrompt:
+            "Find one detail about astronaut training — what skills they learn or how teams are organized.",
+          geometryPrompt:
+            "How does dividing into equal groups connect to finding common factors?",
+          story:
+            "A training center has 24 pilots and 36 mission specialists. The director wants to divide them into identical teams, each with the same number of pilots AND the same number of specialists. What is the largest number of teams possible?",
+          data: [
+            ["Pilots", 24, "people"],
+            ["Mission specialists", 36, "people"],
+          ],
+          answer: 12,
+          unit: "teams",
+          tolerance: 0.01,
+          substitution: "GCF(24, 36) = 12",
+          hint1:
+            "List all factors of 24 and all factors of 36. Find the largest factor they share.",
+          hint2:
+            "Factors of 24: 1,2,3,4,6,8,12,24. Factors of 36: 1,2,3,4,6,9,12,18,36. GCF = 12.",
+          rates: [
+            ["training manuals per team", 8.5],
+            ["safety gear sets per team", 24],
+            ["simulation hours per team", 150],
+          ],
+        },
+        {
+          id: "solar_array",
+          emoji: "☀️",
+          location: "International Space Station — Solar Wings",
+          badge: "Array Designer",
+          focus: "Factor Pairs",
+          type: "factors",
+          formula: "Factor pairs of N",
+          query: "ISS solar panels array design",
+          explorePrompt:
+            "Find one detail about the ISS solar arrays — how big they are, how they move, or how much power they make.",
+          geometryPrompt:
+            "How do factor pairs help you design rectangular arrangements?",
+          story:
+            "An engineer is designing a new solar panel section with exactly 48 panels arranged in a perfect rectangle. List ALL the different rectangular arrangements possible (rows × columns). How many different arrangements are there?",
+          data: [
+            ["Total panels", 48, "panels"],
+            ["Shape", "rectangle", ""],
+            ["Find", "all factor pairs", ""],
+          ],
+          answer: 5,
+          unit: "arrangements",
+          tolerance: 0.01,
+          substitution:
+            "Factor pairs of 48: 1×48, 2×24, 3×16, 4×12, 6×8 → 5 pairs",
+          hint1:
+            "Start with 1 × 48, then try 2 × ?, 3 × ?, and keep going until the numbers meet.",
+          hint2:
+            "1×48, 2×24, 3×16, 4×12, 6×8. After 6×8, the next would be 8×6 (a repeat). So 5 unique pairs.",
+          rates: [
+            ["standard panel", 425],
+            ["high-efficiency panel", 680],
+            ["flexible panel", 890],
+          ],
+        },
+        {
+          id: "clock_sync",
+          emoji: "⏱️",
+          location: "Mission Control Center — Houston, TX",
+          badge: "Clock Master",
+          focus: "LCM of Three Numbers",
+          type: "lcm3",
+          formula: "LCM(a, b, c)",
+          query: "NASA Mission Control Center Houston clocks timing",
+          explorePrompt:
+            "Find one detail about how Mission Control tracks time — how many clocks, time zones, or countdown systems they use.",
+          geometryPrompt:
+            "Why is it useful to know when multiple repeating events line up at the same time?",
+          story:
+            "Three mission clocks beep at different intervals for system checks. Clock A beeps every 4 minutes, Clock B every 6 minutes, and Clock C every 10 minutes. If all three beep at 12:00 PM, at what time do all three beep together again?",
+          data: [
+            ["Clock A interval", 4, "minutes"],
+            ["Clock B interval", 6, "minutes"],
+            ["Clock C interval", 10, "minutes"],
+          ],
+          answer: 60,
+          unit: "minutes",
+          tolerance: 0.01,
+          substitution: "LCM(4, 6, 10) = 60 → All beep at 1:00 PM",
+          hint1:
+            "First find LCM(4, 6), then find the LCM of that result with 10.",
+          hint2:
+            "LCM(4,6) = 12. LCM(12,10) = 60. All three beep together every 60 minutes.",
+          rates: [
+            ["basic timer module", 35],
+            ["digital sync module", 72],
+            ["precision atomic sync", 195],
+          ],
+        },
+        {
+          id: "cargo_division",
+          emoji: "📦",
+          location: "Kennedy Space Center — Cape Canaveral, FL",
+          badge: "Cargo Chief",
+          focus: "Greatest Common Factor (GCF)",
+          type: "gcf",
+          formula: "GCF(a, b)",
+          query: "Kennedy Space Center rocket cargo loading",
+          explorePrompt:
+            "Find one detail about how cargo is loaded onto rockets — weight limits, types of cargo, or how they organize it.",
+          geometryPrompt:
+            "How does GCF help when you need to split things into the largest possible equal groups?",
+          story:
+            "A cargo bay must distribute 48 oxygen tanks and 64 first-aid kits equally among storage pods. Each pod gets the same number of oxygen tanks AND the same number of first-aid kits. What is the greatest number of pods they can fill?",
+          data: [
+            ["Oxygen tanks", 48, "units"],
+            ["First-aid kits", 64, "units"],
+          ],
+          answer: 16,
+          unit: "pods",
+          tolerance: 0.01,
+          substitution: "GCF(48, 64) = 16",
+          hint1:
+            "Find all factors of 48 and 64. The GCF is the largest number that divides both.",
+          hint2:
+            "48 = 2⁴ × 3. 64 = 2⁶. They share 2⁴ = 16. Each pod: 3 tanks + 4 kits.",
+          rates: [
+            ["storage pod rental", 55],
+            ["climate-controlled pod", 88],
+            ["pressurized cargo pod", 135],
+          ],
+        },
+        {
+          id: "satellite_orbit",
+          emoji: "🛰️",
+          location: "Goddard Space Flight Center — Greenbelt, MD",
+          badge: "Orbit Planner",
+          focus: "Least Common Multiple (LCM)",
+          type: "lcm",
+          formula: "LCM(a, b)",
+          query: "satellite orbits Earth observation timing",
+          explorePrompt:
+            "Find one detail about Earth-observation satellites — what they photograph, how fast they orbit, or how many are in space.",
+          geometryPrompt:
+            "How does LCM help predict when two satellites will be in the same position at the same time?",
+          story:
+            "Satellite Alpha completes one orbit every 9 hours. Satellite Beta completes one orbit every 12 hours. If both pass over Houston at 6:00 AM, how many hours until they are both over Houston at the same time again?",
+          data: [
+            ["Alpha orbit period", 9, "hours"],
+            ["Beta orbit period", 12, "hours"],
+          ],
+          answer: 36,
+          unit: "hours",
+          tolerance: 0.01,
+          substitution: "LCM(9, 12) = 36",
+          hint1: "List multiples of 9 and 12 until you find the first match.",
+          hint2:
+            "Multiples of 9: 9, 18, 27, 36. Multiples of 12: 12, 24, 36. LCM = 36 hours (6 PM next day).",
+          rates: [
+            ["ground station time", 120],
+            ["data bandwidth per orbit", 340],
+            ["priority imaging", 580],
+          ],
+        },
+        {
+          id: "training_groups",
+          emoji: "🏋️",
+          location: "European Astronaut Centre — Cologne, Germany",
+          badge: "Training Director",
+          focus: "GCF Application",
+          type: "gcf",
+          formula: "GCF(a, b, c)",
+          query: "European Space Agency astronaut training program",
+          explorePrompt:
+            "Find one detail about ESA's astronaut training — where it happens, what they practice, or how long it takes.",
+          geometryPrompt:
+            "When dividing three different groups equally, why is GCF the right tool?",
+          story:
+            "The ESA training facility has 18 astronauts, 30 engineers, and 42 scientists for a joint exercise. They must form identical mixed teams with equal numbers from each group. What is the maximum number of teams?",
+          data: [
+            ["Astronauts", 18, "people"],
+            ["Engineers", 30, "people"],
+            ["Scientists", 42, "people"],
+          ],
+          answer: 6,
+          unit: "teams",
+          tolerance: 0.01,
+          substitution: "GCF(18, 30, 42) = 6",
+          hint1:
+            "Find GCF of the first two numbers, then GCF of that with the third.",
+          hint2:
+            "GCF(18,30) = 6. GCF(6,42) = 6. Each team: 3 astronauts, 5 engineers, 7 scientists.",
+          rates: [
+            ["simulation session per team", 200],
+            ["EVA training kit per team", 475],
+            ["survival training per team", 310],
+          ],
+        },
+        {
+          id: "launch_window",
+          emoji: "🔥",
+          location: "Baikonur Cosmodrome — Kazakhstan",
+          badge: "Launch Calculator",
+          focus: "LCM Application",
+          type: "lcm",
+          formula: "LCM(a, b)",
+          query: "Baikonur Cosmodrome rocket launch Kazakhstan",
+          explorePrompt:
+            "Find one detail about the Baikonur Cosmodrome — where it is, what launches from there, or its history.",
+          geometryPrompt:
+            "How do launch windows relate to finding common multiples of orbital periods?",
+          story:
+            "A Mars transfer window opens every 15 months. A Jupiter gravity assist window opens every 20 months. If both windows are open this month, how many months until both are open at the same time again?",
+          data: [
+            ["Mars window cycle", 15, "months"],
+            ["Jupiter window cycle", 20, "months"],
+          ],
+          answer: 60,
+          unit: "months",
+          tolerance: 0.01,
+          substitution: "LCM(15, 20) = 60",
+          hint1: "Break 15 and 20 into prime factors. 15 = 3 × 5, 20 = 2² × 5.",
+          hint2:
+            "LCM = 2² × 3 × 5 = 60. Both windows align every 60 months (5 years).",
+          rates: [
+            ["launch fuel cost per month delay", 2400000],
+            ["crew standby cost per month", 850000],
+            ["ground support per month", 420000],
+          ],
+        },
+      ];
+
+      const METHODS = {
+        lcm: "LCM: List multiples of each number; the smallest shared multiple is the LCM.",
+        lcm3: "LCM of 3: Find LCM of the first two numbers, then find LCM of that result with the third.",
+        gcf: "GCF: List factors of each number; the greatest shared factor is the GCF.",
+        factors:
+          "Factor Pairs: Find all pairs of whole numbers that multiply to the given number.",
+      };
+
+      const SENTENCE_STARTERS = [
+        "I noticed that ",
+        "One real detail I found is ",
+        "This mission connects to math because ",
+        "The scheduling makes me think about ",
+      ];
+
+      const PRESETS = {
+        balanced: [
+          "iss_supply",
+          "crew_pods",
+          "solar_array",
+          "clock_sync",
+          "cargo_division",
+          "satellite_orbit",
+        ],
+        gcf: [
+          "crew_pods",
+          "cargo_division",
+          "training_groups",
+          "solar_array",
+          "clock_sync",
+          "iss_supply",
+        ],
+        lcm: [
+          "iss_supply",
+          "clock_sync",
+          "satellite_orbit",
+          "launch_window",
+          "crew_pods",
+          "solar_array",
+        ],
+        all: MISSIONS.map((m) => m.id),
+      };
+
+      const STORAGE_KEY = "spaceMissionControl_v1";
+      let selectedIds = [...PRESETS.balanced];
+      let state = {
+        started: false,
+        student: { first: "", period: "", date: "" },
+        selectedIds: [...selectedIds],
+        currentIndex: 0,
+        responses: {},
+        startTime: null,
+        endTime: null,
+      };
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function missionById(id) {
+        return MISSIONS.find((m) => m.id === id);
+      }
+      function responseFor(id) {
+        if (!state.responses[id]) {
+          state.responses[id] = {
+            checks: { opened: false, found: false, connection: false },
+            observation: "",
+            connectionNote: "",
+            method: "",
+            workShown: "",
+            numericAnswer: "",
+            checked: false,
+            correct: false,
+            budgetItem: "",
+            budgetEstimate: "",
+            budgetComputed: "",
+            hintsShown: 0,
+          };
+        }
+        return state.responses[id];
+      }
+      function escapeHtml(v) {
+        return String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[c],
+        );
+      }
+      function money(n) {
+        const v = Number(n);
+        if (!isFinite(v)) return "—";
+        return (
+          "$" +
+          v.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
+      function cleanNumber(v) {
+        if (v == null) return NaN;
+        return Number(String(v).replace(/,/g, "").replace(/\$/g, "").trim());
+      }
+      function todayISO() {
+        const d = new Date(),
+          p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+      }
+
+      function init() {
+        $("student-date").value = todayISO();
+        applyPreset("balanced", true);
+        renderRouteCards();
+        checkSavedWork();
+        window.addEventListener("beforeunload", () => {
+          if (state.started) saveState(false);
+        });
+      }
+      function checkSavedWork() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        try {
+          const saved = JSON.parse(raw);
+          if (!saved || !saved.started) return;
+          $("resume-banner").style.display = "flex";
+          const name = [saved.student?.first].filter(Boolean).join(" ");
+          $("resume-details").textContent =
+            `${name || "A student"} has saved progress with ${saved.selectedIds?.length || 0} missions.`;
+        } catch (e) {}
+      }
+      function resumeSaved() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        state = JSON.parse(raw);
+        selectedIds = [...state.selectedIds];
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+      }
+      function clearSavedWork() {
+        localStorage.removeItem(STORAGE_KEY);
+        $("resume-banner").style.display = "none";
+        $("save-status").textContent = "Fresh start";
+      }
+      function manualSave() {
+        if (!state.started) {
+          $("save-status").textContent = "Start first";
+          return;
+        }
+        saveState(true);
+      }
+      function saveState(show) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (show)
+          $("save-status").textContent =
+            "Saved " +
+            new Date().toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            });
+      }
+      function showScreen(name) {
+        ["intro", "app", "results"].forEach((s) => {
+          const el = $(s + "-screen");
+          el.classList.toggle("active", s === name);
+        });
+      }
+
+      function renderRouteCards() {
+        const grid = $("route-grid");
+        grid.innerHTML = "";
+        MISSIONS.forEach((m) => {
+          const selected = selectedIds.includes(m.id);
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "route-card" + (selected ? " selected" : "");
+          card.onclick = () => toggleMission(m.id);
+          card.innerHTML = `
+      <div class="rc-top"><span class="rc-emoji">${m.emoji}</span><span class="rc-check">${selected ? "✓" : ""}</span></div>
+      <div class="rc-name">${escapeHtml(m.badge)}</div>
+      <div class="rc-focus">${escapeHtml(m.focus)}</div>
+      <div class="rc-formula">${escapeHtml(m.formula)}</div>
+    `;
+          grid.appendChild(card);
+        });
+        $("route-note").textContent =
+          `Selected: ${selectedIds.length} mission${selectedIds.length === 1 ? "" : "s"}`;
+      }
+      function applyPreset(preset, silent = false) {
+        selectedIds = [...(PRESETS[preset] || PRESETS.balanced)];
+        if (!silent) renderRouteCards();
+      }
+      function toggleMission(id) {
+        if (selectedIds.includes(id))
+          selectedIds = selectedIds.filter((x) => x !== id);
+        else selectedIds.push(id);
+        renderRouteCards();
+      }
+
+      function startExpedition() {
+        const first = $("student-name").value.trim();
+        if (!first) {
+          $("student-name").focus();
+          $("save-status").textContent = "Enter name";
+          return;
+        }
+        if (selectedIds.length < 5) {
+          $("route-note").textContent = "Choose at least 5 missions.";
+          $("route-note").style.color = `var(--error)`;
+          return;
+        }
+        state = {
+          started: true,
+          student: {
+            first,
+            period: $("student-period").value.trim(),
+            date: $("student-date").value || todayISO(),
+          },
+          selectedIds: [...selectedIds],
+          currentIndex: 0,
+          responses: {},
+          startTime: Date.now(),
+          endTime: null,
+        };
+        state.selectedIds.forEach((id) => responseFor(id));
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+        saveState(true);
+      }
+
+      function renderSidebar() {
+        const jump = $("jump-select");
+        jump.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = `${i + 1}. ${m.emoji} ${m.badge}`;
+          jump.appendChild(opt);
+        });
+        const list = $("mission-list");
+        list.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const r = responseFor(id);
+          const done = r.checked && r.correct;
+          const explored = explorationComplete(r);
+          const mini = document.createElement("button");
+          mini.type = "button";
+          mini.className =
+            "mission-mini" +
+            (i === state.currentIndex ? " current" : "") +
+            (done ? " done" : "");
+          mini.onclick = () => jumpToMission(i);
+          mini.innerHTML = `
+      <span class="mini-flag">${m.emoji}</span>
+      <span class="mini-text">
+        <span class="mini-name">${escapeHtml(m.badge)}</span>
+        <span class="mini-status">${done ? "Math correct" : r.checked ? "Check feedback" : "Not checked"} · ${explored ? "Log done" : "Log open"}</span>
+      </span>
+      <span class="mini-check">${done ? "✅" : explored ? "📝" : "○"}</span>
+    `;
+          list.appendChild(mini);
+        });
+        updateHeaderProgress();
+      }
+      function updateHeaderProgress() {
+        const total = state.selectedIds.length || 1;
+        const idx = state.currentIndex + 1;
+        const correct = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        $("progress-label").textContent = `Mission ${idx} of ${total}`;
+        $("score-label").textContent = `${correct} correct`;
+        $("progress-fill").style.width = `${Math.round((idx / total) * 100)}%`;
+        $("jump-select").value = state.currentIndex;
+      }
+      function jumpToMission(index) {
+        persistInputs();
+        state.currentIndex = Math.max(
+          0,
+          Math.min(index, state.selectedIds.length - 1),
+        );
+        renderSidebar();
+        renderMission();
+        saveState(false);
+      }
+
+      function sentenceStarterButtons(targetId) {
+        return SENTENCE_STARTERS.map(
+          (s) =>
+            `<button type="button" class="starter-chip" onclick="insertStarter('${targetId}',${JSON.stringify(s)})">${escapeHtml(s.trim())}...</button>`,
+        ).join("");
+      }
+      function insertStarter(targetId, starter) {
+        const box = $(targetId);
+        if (!box) return;
+        const start = box.selectionStart ?? box.value.length;
+        const before = box.value.slice(0, start);
+        const after = box.value.slice(box.selectionEnd ?? box.value.length);
+        const space = before && !/\s$/.test(before) ? " " : "";
+        box.value = before + space + starter + after;
+        box.focus();
+        const caret = (before + space + starter).length;
+        box.setSelectionRange(caret, caret);
+        saveState(false);
+      }
+
+      function mapLinks(m) {
+        const q = encodeURIComponent(m.query);
+        return `
+    <a class="explore-link" href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">🖼️ Images</a>
+    <a class="explore-link" href="https://www.google.com/search?q=${q}+facts+for+kids" target="_blank" rel="noopener">🔎 Facts</a>
+    <a class="explore-link" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🌐 Search</a>
+  `;
+      }
+      function dataTable(m) {
+        return (
+          `<table class="data-table"><thead><tr><th>Measurement</th><th>Value</th></tr></thead><tbody>` +
+          m.data
+            .map(
+              (row) =>
+                `<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])} ${escapeHtml(row[2])}</td></tr>`,
+            )
+            .join("") +
+          `</tbody></table>`
+        );
+      }
+      function materialOptions(m, selected) {
+        return m.rates
+          .map((r, i) => {
+            const label = `${r[0]} — ${money(r[1])} per ${m.unit}`;
+            return `<option value="${i}" ${String(selected) === String(i) ? "selected" : ""}>${escapeHtml(label)}</option>`;
+          })
+          .join("");
+      }
+      function methodOptions(selected) {
+        return Object.entries(METHODS)
+          .map(
+            ([key, label]) =>
+              `<option value="${key}" ${selected === key ? "selected" : ""}>${escapeHtml(label)}</option>`,
+          )
+          .join("");
+      }
+
+      function renderMission() {
+        const id = state.selectedIds[state.currentIndex];
+        const m = missionById(id);
+        const r = responseFor(id);
+        const card = $("mission-card");
+
+        card.innerHTML = `
+    <div class="dest-hero">
+      <div class="dest-top">
+        <div class="dest-emoji">${m.emoji}</div>
+        <div>
+          <div class="dest-kicker">${escapeHtml(m.location)} · ${escapeHtml(m.badge)}</div>
+          <div class="dest-title">${escapeHtml(m.badge)}</div>
+          <div class="dest-sub">${escapeHtml(m.focus)} · ${escapeHtml(m.formula)}</div>
+        </div>
+        <div class="stamp">Mission<strong>${state.currentIndex + 1}/${state.selectedIds.length}</strong></div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel soft">
+        <h3>🔭 Explore the Mission</h3>
+        <p style="font-size:.88rem;margin-bottom:10px;">${escapeHtml(m.explorePrompt)}</p>
+        <div class="explore-links">${mapLinks(m)}</div>
+        <div class="check-grid">
+          <label class="check-row"><input type="checkbox" id="check-opened" ${r.checks.opened ? "checked" : ""} onchange="updateCheck('opened',this.checked)"> I searched and found information.</label>
+          <label class="check-row"><input type="checkbox" id="check-found" ${r.checks.found ? "checked" : ""} onchange="updateCheck('found',this.checked)"> I found one real detail about this topic.</label>
+          <label class="check-row"><input type="checkbox" id="check-connection" ${r.checks.connection ? "checked" : ""} onchange="updateCheck('connection',this.checked)"> I connected it to the math concept.</label>
+        </div>
+        <div class="lab-field">
+          <label for="observation">Mission Log: What I Found</label>
+          <div class="starter-note">Click a sentence starter, then finish it with your own real detail.</div>
+          <div class="starter-tray">${sentenceStarterButtons("observation")}</div>
+          <textarea id="observation" oninput="updateText('observation',this.value)" placeholder="Write what you discovered...">${escapeHtml(r.observation)}</textarea>
+        </div>
+        <div class="lab-field" style="margin-top:8px">
+          <label for="connection-note">Math Connection</label>
+          <textarea id="connection-note" oninput="updateText('connectionNote',this.value)" placeholder="${escapeHtml(m.geometryPrompt)}">${escapeHtml(r.connectionNote)}</textarea>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>📊 Mission Data</h3>
+        <div class="shape-evidence-card">
+          <div class="shape-evidence-text">
+            <strong>Mission Briefing</strong>
+            <p>${escapeHtml(m.story)}</p>
+            <span class="shape-tag">${escapeHtml(m.focus)}</span>
+          </div>
+        </div>
+        ${dataTable(m)}
+      </div>
+    </div>
+
+    <div class="formula-lab">
+      <h3>🧮 Calculation Lab</h3>
+      <p style="margin-bottom:14px;font-size:.9rem;">${escapeHtml(m.story)} Show your method below.</p>
+      <div class="lab-grid">
+        <div class="lab-field">
+          <label for="method-select">Method I Used</label>
+          <select id="method-select" onchange="updateText('method',this.value)">${methodOptions(r.method)}</select>
+        </div>
+        <div class="lab-field">
+          <label for="numeric-answer">My Answer</label>
+          <div class="answer-row">
+            <input id="numeric-answer" type="text" value="${escapeHtml(r.numericAnswer)}" oninput="updateText('numericAnswer',this.value)" placeholder="Type number">
+            <span class="unit-pill">${escapeHtml(m.unit)}</span>
+          </div>
+        </div>
+        <div class="lab-field full">
+          <label for="work-shown">Show Your Work</label>
+          <textarea id="work-shown" oninput="updateText('workShown',this.value)" placeholder="Show steps: list multiples, factors, or prime factorization...">${escapeHtml(r.workShown)}</textarea>
+        </div>
+      </div>
+      <div class="hint-row">
+        <button class="secondary-btn" onclick="checkCalculation()">Check Answer</button>
+        <button class="ghost-btn" onclick="showHint(1)">Hint 1</button>
+        <button class="ghost-btn" onclick="showHint(2)">Hint 2</button>
+      </div>
+      <div class="feedback ${r.checked ? (r.correct ? "show ok" : "show no") : ""}" id="feedback-box">
+        ${r.checked ? feedbackText(m, r.correct) : ""}
+      </div>
+      <div class="hint-box" id="hint-box"></div>
+    </div>
+
+    <div class="panel warm" style="margin-top:20px">
+      <h3>💰 Mission Budget Extension</h3>
+      <p style="font-size:.88rem;margin-bottom:12px;">Use your answer to estimate a real mission cost. Pick an item and multiply.</p>
+      <div class="budget-row">
+        <div class="lab-field">
+          <label for="budget-item">Item</label>
+          <select id="budget-item" onchange="updateText('budgetItem',this.value)">${materialOptions(m, r.budgetItem)}</select>
+        </div>
+        <div class="lab-field">
+          <label for="budget-estimate">My Estimate</label>
+          <input id="budget-estimate" type="text" value="${escapeHtml(r.budgetEstimate)}" oninput="updateText('budgetEstimate',this.value)" placeholder="$">
+        </div>
+        <div class="budget-output" id="budget-output">${r.budgetComputed ? escapeHtml(r.budgetComputed) : "Answer × rate"}</div>
+      </div>
+      <div class="hint-row"><button class="ghost-btn" onclick="computeBudget()">Calculate Budget</button></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="ghost-btn" onclick="previousMission()" ${state.currentIndex === 0 ? "disabled" : ""}>← Previous</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghost-btn" onclick="downloadCheckpoint()">💾 Checkpoint</button>
+        <button class="primary-btn" onclick="nextMission()">${state.currentIndex === state.selectedIds.length - 1 ? "Finish Expedition 🏁" : "Next Mission →"}</button>
+      </div>
+    </div>
+  `;
+        card.classList.remove("fade-in");
+        void card.offsetWidth;
+        card.classList.add("fade-in");
+        if (!r.method) {
+          r.method = "";
+          $("method-select").value = "";
+        }
+        updateHeaderProgress();
+      }
+
+      function feedbackText(m, ok) {
+        if (ok)
+          return `<strong>✅ Correct!</strong> ${escapeHtml(m.substitution)}.`;
+        return `<strong>Not quite.</strong> Check your work. Expected: <em>${escapeHtml(m.substitution)}</em>.`;
+      }
+      function explorationComplete(r) {
+        return !!(
+          r.checks.opened &&
+          r.checks.found &&
+          r.checks.connection &&
+          r.observation.trim().length >= 12 &&
+          r.connectionNote.trim().length >= 8
+        );
+      }
+      function updateCheck(key, val) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        r.checks[key] = val;
+        saveState(false);
+        renderSidebar();
+      }
+      function updateText(field, value) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        r[field] = value;
+        saveState(false);
+      }
+      function persistInputs() {
+        const id = state.selectedIds[state.currentIndex];
+        if (!id) return;
+        const r = responseFor(id);
+        if ($("observation")) r.observation = $("observation").value;
+        if ($("connection-note")) r.connectionNote = $("connection-note").value;
+        if ($("method-select")) r.method = $("method-select").value;
+        if ($("work-shown")) r.workShown = $("work-shown").value;
+        if ($("numeric-answer")) r.numericAnswer = $("numeric-answer").value;
+        if ($("budget-item")) r.budgetItem = $("budget-item").value;
+        if ($("budget-estimate")) r.budgetEstimate = $("budget-estimate").value;
+      }
+      function checkCalculation() {
+        persistInputs();
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        const value = cleanNumber(r.numericAnswer);
+        const methodOK = r.method === m.type;
+        const numericOK =
+          isFinite(value) &&
+          Math.abs(value - m.answer) <= (m.tolerance ?? 0.01);
+        r.checked = true;
+        r.correct = numericOK;
+        const fb = $("feedback-box");
+        fb.className = "feedback show " + (r.correct ? "ok" : "no");
+        if (r.correct) {
+          fb.innerHTML = feedbackText(m, true);
+        } else {
+          const answerMsg = numericOK
+            ? "Number correct."
+            : "Expected answer: <strong>" +
+              escapeHtml(m.answer) +
+              " " +
+              escapeHtml(m.unit) +
+              "</strong>.";
+          fb.innerHTML = `<strong>Try again.</strong> ${answerMsg}<br><em>Method: ${escapeHtml(m.substitution)}</em>`;
+        }
+        saveState(true);
+        renderSidebar();
+      }
+      function showHint(level) {
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        r.hintsShown = Math.max(r.hintsShown || 0, level);
+        const box = $("hint-box");
+        box.style.display = "block";
+        box.innerHTML =
+          level === 1
+            ? `<strong>Hint 1:</strong> ${escapeHtml(m.hint1)}`
+            : `<strong>Hint 2:</strong> ${escapeHtml(m.hint2)}`;
+        saveState(false);
+      }
+      function computeBudget() {
+        persistInputs();
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        const value = cleanNumber(r.numericAnswer);
+        const idx = Number(r.budgetItem || 0);
+        const rate = m.rates[idx]?.[1] ?? m.rates[0][1];
+        if (!isFinite(value)) {
+          $("budget-output").textContent = "Enter an answer first.";
+          return;
+        }
+        const total = value * rate;
+        r.budgetComputed = `${money(total)} = ${value} × ${money(rate)}`;
+        $("budget-output").textContent = r.budgetComputed;
+        saveState(false);
+      }
+      function previousMission() {
+        persistInputs();
+        if (state.currentIndex > 0) {
+          state.currentIndex--;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+      function nextMission() {
+        persistInputs();
+        if (state.currentIndex >= state.selectedIds.length - 1) showResults();
+        else {
+          state.currentIndex++;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+
+      function showResults() {
+        persistInputs();
+        state.endTime = Date.now();
+        saveState(true);
+        showScreen("results");
+        const total = state.selectedIds.length;
+        const mathCorrect = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        const exploreComplete = state.selectedIds.filter((id) =>
+          explorationComplete(responseFor(id)),
+        ).length;
+        const readiness = Math.round(
+          ((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100,
+        );
+        const mins = Math.max(
+          0,
+          Math.round(
+            ((state.endTime || Date.now()) - (state.startTime || Date.now())) /
+              60000,
+          ),
+        );
+
+        $("results-subtitle").textContent =
+          `${state.student.first} · Period ${state.student.period || "—"} · ${state.student.date || ""}`;
+        $("math-score").textContent = `${mathCorrect}/${total}`;
+        $("explore-score").textContent = `${exploreComplete}/${total}`;
+        $("overall-score").textContent = `${readiness}%`;
+        $("time-score").textContent = `${mins}m`;
+
+        $("result-stamps").innerHTML = state.selectedIds
+          .map((id) => {
+            const m = missionById(id);
+            const r = responseFor(id);
+            return `<span class="passport-stamp" title="${escapeHtml(m.badge)}">${m.emoji}${r.correct ? "✓" : ""}</span>`;
+          })
+          .join("");
+
+        $("review-body").innerHTML = state.selectedIds
+          .map((id, i) => {
+            const m = missionById(id);
+            const r = responseFor(id);
+            const cls = r.correct && explorationComplete(r) ? "good" : "needs";
+            return `<tr class="${cls}">
+      <td><strong>${i + 1}. ${m.emoji} ${escapeHtml(m.badge)}</strong><br><span style="color:var(--muted);font-size:.78rem">${escapeHtml(m.focus)}</span></td>
+      <td>${r.correct ? "✅ Correct" : r.checked ? "🔁 Revise" : "○ Not checked"}<br><span style="color:var(--muted);font-size:.78rem">Answer: ${escapeHtml(r.numericAnswer || "—")} ${escapeHtml(m.unit)}</span></td>
+      <td>${escapeHtml(r.observation || "No observation")}<br><span style="color:var(--muted);font-size:.78rem">Connection: ${escapeHtml(r.connectionNote || "—")}</span></td>
+      <td>${escapeHtml(r.workShown || "—")}<br><span style="color:var(--muted);font-size:.78rem">Expected: ${escapeHtml(m.substitution)}</span></td>
+    </tr>`;
+          })
+          .join("");
+
+        $("submit-period").value = state.student.period
+          ? "Period " + state.student.period
+          : "";
+      }
+
+      function buildPlainReport() {
+        const total = state.selectedIds.length;
+        const mathCorrect = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        const exploreComplete = state.selectedIds.filter((id) =>
+          explorationComplete(responseFor(id)),
+        ).length;
+        const readiness = Math.round(
+          ((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100,
+        );
+        let lines = [];
+        lines.push("SPACE MISSION CONTROL — MATH EXPEDITION REPORT");
+        lines.push("Student: " + state.student.first);
+        lines.push("Period: " + (state.student.period || "—"));
+        lines.push("Date: " + (state.student.date || ""));
+        lines.push("Math Correct: " + mathCorrect + "/" + total);
+        lines.push("Exploration Logs: " + exploreComplete + "/" + total);
+        lines.push("Commander Rating: " + readiness + "%");
+        lines.push("");
+        lines.push("MISSION REPORTS");
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const r = responseFor(id);
+          lines.push("────────────────────────────");
+          lines.push(`${i + 1}. ${m.emoji} ${m.badge} — ${m.focus}`);
+          lines.push("Location: " + m.location);
+          lines.push(
+            "Exploration: " +
+              (explorationComplete(r) ? "Complete" : "Incomplete"),
+          );
+          lines.push("Observation: " + (r.observation || "—"));
+          lines.push("Math connection: " + (r.connectionNote || "—"));
+          lines.push("Method: " + (METHODS[r.method] || "—"));
+          lines.push("Work shown: " + (r.workShown || "—"));
+          lines.push(
+            "Student answer: " + (r.numericAnswer || "—") + " " + m.unit,
+          );
+          lines.push(
+            "Expected: " + m.substitution + " = " + m.answer + " " + m.unit,
+          );
+          lines.push(
+            "Status: " +
+              (r.correct
+                ? "Correct"
+                : r.checked
+                  ? "Needs revision"
+                  : "Not checked"),
+          );
+          lines.push("Budget: " + (r.budgetComputed || "—"));
+        });
+        return lines.join("\n");
+      }
+      function buildHtmlReport() {
+        const text = buildPlainReport();
+        const escaped = escapeHtml(text).replace(/\n/g, "<br>");
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Space Mission Control — ${escapeHtml(state.student.first)}</title>
+  <style>body{font-family:Arial,sans-serif;line-height:1.5;margin:32px;color:#222}h1{color:#17324D}.box{border:2px solid #17324D;border-radius:12px;padding:20px}</style></head>
+  <body><h1>🚀 Space Mission Control — Math Expedition Report</h1><div class="box">${escaped}</div></body></html>`;
+      }
+      function safeFilename() {
+        return `Space_Mission_${state.student.first}_${state.student.period || "Period"}_${state.student.date || todayISO()}`.replace(
+          /[^a-z0-9_\-]+/gi,
+          "_",
+        );
+      }
+      function downloadReport(kind) {
+        const isHtml = kind === "html";
+        const content = isHtml ? buildHtmlReport() : buildPlainReport();
+        const blob = new Blob([content], {
+          type: isHtml ? "text/html" : "text/plain",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFilename() + (isHtml ? ".html" : ".txt");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        $("copy-confirm").style.display = "block";
+      }
+      function downloadCheckpoint() {
+        persistInputs();
+        const blob = new Blob([JSON.stringify(state, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFilename() + "_checkpoint.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        $("save-status").textContent = "Checkpoint saved";
+      }
+      async function copyReport() {
+        try {
+          await navigator.clipboard.writeText(buildPlainReport());
+          $("copy-confirm").style.display = "block";
+        } catch (e) {
+          const w = window.open("", "_blank");
+          w.document.write("<pre>" + escapeHtml(buildPlainReport()) + "</pre>");
+          w.document.close();
+        }
+      }
+      function openClassroom() {
+        window.open("https://classroom.google.com/", "_blank", "noopener");
+      }
+      function submitViaEmail() {
+        const email = $("teacher-email").value.trim();
+        if (!email) {
+          $("teacher-email").focus();
+          return;
+        }
+        const subject = encodeURIComponent(
+          `Space Mission Control — ${state.student.first} — ${state.student.period || "Period"}`,
+        );
+        const body = encodeURIComponent(buildPlainReport().slice(0, 12000));
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        $("email-confirm").style.display = "block";
+      }
+      function restartProject() {
+        if (!confirm("Start over and clear saved work?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

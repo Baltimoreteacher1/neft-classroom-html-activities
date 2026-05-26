@@ -1,0 +1,158 @@
+{
+  "lessonId": "8-2",
+  "standard": "6.SP.3",
+  "unit": 8,
+  "lesson": 2,
+  "title": "Mean, Median, and Mode",
+  "theme": "sports-analytics",
+  "themeEmoji": "🏀",
+  "vocabMode": "matching",
+  "vocabulary": [
+    {
+      "term": "Mean",
+      "definition": "The sum of all values divided by the number of values (average)",
+      "visual": "Mean of 2, 4, 6 = (2+4+6) ÷ 3 = 4"
+    },
+    {
+      "term": "Median",
+      "definition": "The middle value when data is ordered from least to greatest",
+      "visual": "In 1, 3, 5, 7, 9 → median is 5"
+    },
+    {
+      "term": "Mode",
+      "definition": "The value that appears most often in a data set",
+      "visual": "In 2, 3, 3, 5, 7 → mode is 3"
+    },
+    {
+      "term": "Outlier",
+      "definition": "A data value that is much greater or less than most other values",
+      "visual": "In 10, 12, 11, 13, 50 → 50 is an outlier"
+    }
+  ],
+  "launch": {
+    "badge": "Game Day Stats",
+    "narrative": "You're the stats analyst for the school basketball team. Coach needs a report on the team's scoring: in the last 7 games they scored 42, 38, 55, 41, 38, 44, and 40 points. Which average best represents the team's typical performance?",
+    "contextImage": "Basketball scoreboard with stat sheets and a clipboard",
+    "noticePrompts": [
+      "What are the highest and lowest scores?",
+      "Do any scores repeat?",
+      "Which score seems like a typical game for this team?"
+    ],
+    "wonderPrompts": [
+      "Will the mean and median be the same number?",
+      "How does the 55-point game affect the average?"
+    ]
+  },
+  "explore": {
+    "type": "number-line",
+    "label": "Order the scores on the number line, then find the mean, median, and mode. Place markers at: A = Mean, B = Median, C = Mode.",
+    "min": 35,
+    "max": 58,
+    "step": 1,
+    "snapToTick": true,
+    "targets": [
+      { "value": 42, "label": "A: Mean" },
+      { "value": 41, "label": "B: Median" },
+      { "value": 38, "label": "C: Mode" }
+    ],
+    "discourse": {
+      "prompt": "The mean (42.6 ≈ 42) is higher than the median (41). Why? Which better represents a 'typical' game?",
+      "sentenceFrame": "The mean is higher than the median because the outlier score of ___ pulls the mean ___. The ___ better represents a typical game because ___.",
+      "keywords": [
+        "55",
+        "outlier",
+        "higher",
+        "pulls",
+        "median",
+        "mean",
+        "typical"
+      ]
+    }
+  },
+  "practice": {
+    "approaching": [
+      {
+        "type": "multiple-choice",
+        "stem": "Find the mean of: 10, 14, 8, 12, 16",
+        "choices": ["12", "14", "10", "60"],
+        "correctIndex": 0,
+        "explanation": "Sum = 10 + 14 + 8 + 12 + 16 = 60. Mean = 60 ÷ 5 = 12."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Find the median of: 3, 7, 2, 9, 5",
+        "choices": ["5", "3", "7", "5.2"],
+        "correctIndex": 0,
+        "explanation": "Ordered: 2, 3, 5, 7, 9. The middle value is 5."
+      }
+    ],
+    "onLevel": [
+      {
+        "type": "fill-table",
+        "headers": ["Data Set", "Mean", "Median", "Mode"],
+        "rows": [
+          ["5, 8, 8, 10, 14", "", "", ""],
+          ["20, 25, 25, 30, 25, 35", "", "", ""],
+          ["100, 110, 90, 100, 115, 95", "", "", ""]
+        ],
+        "editableCells": [
+          { "row": 0, "col": 1, "answer": "9" },
+          { "row": 0, "col": 2, "answer": "8" },
+          { "row": 0, "col": 3, "answer": "8" },
+          { "row": 1, "col": 1, "answer": "26.67" },
+          { "row": 1, "col": 2, "answer": "25" },
+          { "row": 1, "col": 3, "answer": "25" },
+          { "row": 2, "col": 1, "answer": "101.67" },
+          { "row": 2, "col": 2, "answer": "100" },
+          { "row": 2, "col": 3, "answer": "100" }
+        ]
+      }
+    ],
+    "extending": [
+      {
+        "type": "error-analysis",
+        "title": "Find the Stats Error",
+        "workedExample": [
+          { "label": "Data set", "work": "12, 15, 18, 15, 20" },
+          {
+            "label": "Find mean",
+            "work": "Sum = 80, Count = 5, Mean = 80 ÷ 5 = 16"
+          },
+          {
+            "label": "Find median",
+            "work": "Ordered: 12, 15, 15, 18, 20 → Median = 15"
+          },
+          { "label": "Find mode", "work": "Mode = 18 (the biggest number)" }
+        ],
+        "errorStep": 3,
+        "correctWork": "Mode = 15 (appears twice, more than any other value). Mode is the most frequent value, not the largest.",
+        "hints": [
+          "Mode means 'most often,' not 'most.' Which number appears the most times?",
+          "15 appears twice. No other number repeats. So the mode is 15, not 18."
+        ]
+      }
+    ]
+  },
+  "connect": {
+    "scenario": "Your class took a math quiz. The scores were: 85, 92, 78, 88, 92, 95, 72, 88, 92, 84. The teacher says 'most students scored around 87.' A student disagrees and says 'the most common score was 92.'",
+    "promptQuestion": "Who is using the mean, and who is using the mode? Which is more useful here?",
+    "prompt": "The teacher used the ___ (about 86.6). The student used the ___ (92). The ___ is more useful here because ___.",
+    "keywords": [
+      "mean",
+      "mode",
+      "average",
+      "92",
+      "typical",
+      "spread",
+      "most common"
+    ]
+  },
+  "reflect": {
+    "exitTicket": {
+      "stem": "Data set: 4, 7, 10, 7, 12. What is the median?",
+      "choices": ["7", "8", "10", "4"],
+      "correctIndex": 0,
+      "explanation": "Ordered: 4, 7, 7, 10, 12. The middle (3rd) value is 7."
+    }
+  }
+}

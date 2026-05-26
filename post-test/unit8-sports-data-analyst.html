@@ -1,0 +1,1979 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sports Data Analyst — Math Expedition</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --navy: #17324d;
+        --teal: #1fa6a2;
+        --amber: #f2c15b;
+        --coral: #e8736a;
+        --cream: #f7f4ec;
+        --sky: #f4f5f7;
+        --ink: #24323f;
+        --muted: #7a8a9e;
+        --line: #dde3ea;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --red-accent: #d0342c;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(23, 50, 77, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--sky);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      a {
+        color: var(--teal);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      .intro-screen,
+      .app-screen,
+      .results-screen {
+        display: none;
+      }
+      .intro-screen.active,
+      .app-screen.active,
+      .results-screen.active {
+        display: block;
+      }
+
+      /* ── Intro ── */
+      .intro {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .hero-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 48px 36px;
+        text-align: center;
+        margin-bottom: 32px;
+        border-top: 5px solid var(--red-accent);
+      }
+      .hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .hero-sub {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .student-form {
+        display: grid;
+        grid-template-columns: 1fr 100px 100px;
+        gap: 12px;
+        max-width: 500px;
+        margin: 0 auto 24px;
+        text-align: left;
+      }
+      .student-form label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--red-accent);
+      }
+
+      .resume-banner {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px;
+      }
+      .resume-banner button {
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .resume-banner .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      .route-section {
+        margin-top: 28px;
+      }
+      .route-section h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .route-section p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .route-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .route-card {
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: white;
+        text-align: left;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .route-card:hover {
+        border-color: var(--red-accent);
+        box-shadow: 0 2px 8px rgba(208, 52, 44, 0.1);
+      }
+      .route-card.selected {
+        border-color: var(--red-accent);
+        background: rgba(208, 52, 44, 0.04);
+      }
+      .route-card .rc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .route-card .rc-emoji {
+        font-size: 1.5rem;
+      }
+      .route-card .rc-check {
+        font-size: 1.1rem;
+        color: var(--red-accent);
+        font-weight: 900;
+      }
+      .route-card .rc-name {
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: var(--navy);
+        margin-bottom: 2px;
+      }
+      .route-card .rc-focus {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .route-card .rc-formula {
+        font-size: 0.75rem;
+        color: var(--red-accent);
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      .route-note {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .preset-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .preset-btn {
+        padding: 6px 14px;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        background: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--navy);
+        transition: all 0.2s;
+      }
+      .preset-btn:hover,
+      .preset-btn.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+      }
+      .start-btn {
+        display: block;
+        margin: 0 auto;
+        padding: 14px 48px;
+        background: var(--red-accent);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+
+      /* ── App ── */
+      .app-header {
+        background: var(--navy);
+        color: white;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .app-header .progress-text {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .app-header .score-text {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-left: auto;
+      }
+      .progress-track {
+        flex: 1;
+        max-width: 300px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--red-accent);
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+      .save-status {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        margin-left: 12px;
+      }
+      .save-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+
+      .app-body {
+        display: flex;
+        min-height: calc(100vh - 48px);
+      }
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid var(--line);
+        padding: 16px;
+        overflow-y: auto;
+        flex-shrink: 0;
+      }
+      .sidebar h3 {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .jump-select {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+      }
+      .mission-mini {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 8px 10px;
+        border-radius: 8px;
+        text-align: left;
+        transition: background 0.15s;
+        font-size: 0.82rem;
+        margin-bottom: 4px;
+      }
+      .mission-mini:hover {
+        background: var(--sky);
+      }
+      .mission-mini.current {
+        background: var(--sky);
+        font-weight: 700;
+      }
+      .mission-mini.done {
+        opacity: 0.7;
+      }
+      .mini-flag {
+        font-size: 1.15rem;
+        flex-shrink: 0;
+      }
+      .mini-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .mini-name {
+        display: block;
+        font-weight: 700;
+        color: var(--navy);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mini-status {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .mini-check {
+        font-size: 0.9rem;
+      }
+
+      .mission-main {
+        flex: 1;
+        padding: 28px 32px;
+        overflow-y: auto;
+        max-width: 900px;
+      }
+      @media (max-width: 768px) {
+        .app-body {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+        .panel-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .student-form {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Mission card ── */
+      .dest-hero {
+        margin-bottom: 24px;
+      }
+      .dest-top {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .dest-emoji {
+        font-size: 2.8rem;
+      }
+      .dest-kicker {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .dest-title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .dest-sub {
+        font-size: 0.88rem;
+        color: var(--red-accent);
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .stamp {
+        background: var(--red-accent);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-align: center;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      .stamp strong {
+        display: block;
+        font-size: 1.1rem;
+      }
+
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      .panel {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+      }
+      .panel h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .panel.soft {
+        background: #f0f2f5;
+      }
+      .panel.warm {
+        background: var(--cream);
+      }
+
+      .explore-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .explore-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 14px;
+        background: white;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .explore-link:hover {
+        border-color: var(--red-accent);
+        text-decoration: none;
+        background: rgba(208, 52, 44, 0.04);
+      }
+
+      .check-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 12px 0;
+      }
+      .check-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .check-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--red-accent);
+      }
+
+      .lab-field {
+        margin-bottom: 12px;
+      }
+      .lab-field label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .lab-field textarea,
+      .lab-field input,
+      .lab-field select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        transition: border-color 0.2s;
+        background: white;
+      }
+      .lab-field textarea:focus,
+      .lab-field input:focus,
+      .lab-field select:focus {
+        outline: none;
+        border-color: var(--red-accent);
+      }
+      .lab-field textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      .lab-field.full {
+        grid-column: span 2;
+      }
+
+      .starter-note {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-bottom: 6px;
+      }
+      .starter-tray {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .starter-chip {
+        padding: 4px 12px;
+        background: white;
+        border: 1.5px solid var(--line);
+        border-radius: 16px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--navy);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .starter-chip:hover {
+        border-color: var(--red-accent);
+        background: rgba(208, 52, 44, 0.04);
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.88rem;
+      }
+      .data-table th {
+        background: var(--navy);
+        color: white;
+        padding: 8px 12px;
+        text-align: left;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:nth-child(even) {
+        background: #f8f9fa;
+      }
+      .data-highlight {
+        background: rgba(208, 52, 44, 0.06) !important;
+        font-weight: 700;
+      }
+
+      .formula-lab {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .formula-lab h3 {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 14px;
+      }
+      .lab-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .answer-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .answer-row input {
+        flex: 1;
+      }
+      .unit-pill {
+        padding: 4px 12px;
+        background: #f0f2f5;
+        border-radius: 16px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--navy);
+        white-space: nowrap;
+      }
+      .hint-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .primary-btn {
+        padding: 10px 24px;
+        background: var(--red-accent);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .primary-btn:hover {
+        opacity: 0.9;
+      }
+      .secondary-btn {
+        padding: 10px 24px;
+        background: var(--navy);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .ghost-btn {
+        padding: 8px 18px;
+        background: transparent;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--navy);
+        transition: all 0.2s;
+      }
+      .ghost-btn:hover {
+        border-color: var(--red-accent);
+        background: rgba(208, 52, 44, 0.04);
+      }
+      .ghost-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        display: none;
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-top: 8px;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: var(--success);
+      }
+      .feedback.no {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: var(--error);
+      }
+      .hint-box {
+        display: none;
+        padding: 12px 16px;
+        background: var(--cream);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        margin-top: 8px;
+        border-left: 4px solid var(--amber);
+      }
+
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .fade-in {
+        animation: fadeSlide 0.35s ease;
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .scoreboard {
+        display: inline-block;
+        background: var(--navy);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      /* ── Budget ── */
+      .budget-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+      .budget-output {
+        padding: 10px 16px;
+        background: #f0f2f5;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--navy);
+        min-width: 180px;
+        text-align: center;
+      }
+
+      /* ── Results ── */
+      .results {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .results-hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .results-hero h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .results-sub {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0;
+      }
+      .score-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        text-align: center;
+      }
+      .score-card .big {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .score-card .label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .passport-stamps {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      .passport-stamp {
+        font-size: 1.6rem;
+        padding: 6px 10px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 24px 0;
+      }
+      .review-table th {
+        background: var(--navy);
+        color: white;
+        padding: 10px;
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      .review-table td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .review-table tr.good {
+        background: var(--success-bg);
+      }
+      .review-table tr.needs {
+        background: white;
+      }
+      .submit-section {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 28px;
+        text-align: center;
+      }
+      .submit-section h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 16px;
+      }
+      .submit-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .copy-confirm,
+      .email-confirm {
+        display: none;
+        font-size: 0.82rem;
+        color: var(--success);
+        font-weight: 600;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ INTRO ═══════ -->
+    <div class="intro-screen active" id="intro-screen">
+      <div class="intro">
+        <div class="hero-card">
+          <div class="hero-emoji">🏀</div>
+          <h1 class="hero-title">Sports Data Analyst</h1>
+          <p class="hero-sub">
+            Use mean, median, mode, and range to analyze real sports data.<br />Crunch
+            the numbers, spot the trends, earn your Analyst badge!
+          </p>
+          <div class="student-form">
+            <label>Your Name</label><label>Period</label><label>Date</label>
+            <input
+              id="student-name"
+              class="field"
+              type="text"
+              placeholder="First Last Initial"
+            />
+            <input
+              id="student-period"
+              class="field"
+              type="text"
+              placeholder="P3"
+            />
+            <input id="student-date" class="field" type="date" />
+          </div>
+        </div>
+        <div class="resume-banner" id="resume-banner">
+          <span id="resume-details"></span>
+          <button onclick="resumeSaved()">Resume</button>
+          <button class="clear-btn" onclick="clearSavedWork()">
+            Start Fresh
+          </button>
+        </div>
+        <div class="route-section">
+          <h2>Choose Your Analyses</h2>
+          <p>
+            Pick at least 5 sports scenarios. Each one uses mean, median, mode,
+            or range with real sports data.
+          </p>
+          <div class="preset-row">
+            <button class="preset-btn" onclick="applyPreset('balanced')">
+              Balanced Mix
+            </button>
+            <button class="preset-btn" onclick="applyPreset('mean')">
+              Mean Focus
+            </button>
+            <button class="preset-btn" onclick="applyPreset('median')">
+              Median Focus
+            </button>
+            <button class="preset-btn" onclick="applyPreset('all')">
+              All Analyses
+            </button>
+          </div>
+          <div class="route-grid" id="route-grid"></div>
+          <div class="route-note" id="route-note"></div>
+          <button class="start-btn" onclick="startExpedition()">
+            Start Analysis 🏀
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ APP ═══════ -->
+    <div class="app-screen" id="app-screen">
+      <div class="app-header">
+        <span class="progress-text" id="progress-label"></span>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="score-text" id="score-label"></span>
+        <button class="save-btn" onclick="manualSave()">💾 Save</button>
+        <span class="save-status" id="save-status"></span>
+      </div>
+      <div class="app-body">
+        <div class="sidebar">
+          <h3>Analysis Log</h3>
+          <select
+            class="jump-select"
+            id="jump-select"
+            onchange="jumpTo(Number(this.value))"
+          ></select>
+          <div id="mission-list"></div>
+        </div>
+        <div class="mission-main">
+          <div id="mission-card" class="fade-in"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ RESULTS ═══════ -->
+    <div class="results-screen" id="results-screen">
+      <div class="results">
+        <div class="results-hero">
+          <div style="font-size: 3rem; margin-bottom: 8px">🏆</div>
+          <h1>Analysis Complete!</h1>
+          <p class="results-sub" id="results-subtitle"></p>
+        </div>
+        <div class="score-grid">
+          <div class="score-card">
+            <div class="big" id="math-score">0/0</div>
+            <div class="label">Math Correct</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="explore-score">0/0</div>
+            <div class="label">Logs Complete</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="overall-score">0%</div>
+            <div class="label">Analyst Rating</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="time-score">0m</div>
+            <div class="label">Analysis Time</div>
+          </div>
+        </div>
+        <div class="passport-stamps" id="result-stamps"></div>
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>Analysis</th>
+              <th>Status</th>
+              <th>Observation</th>
+              <th>Work</th>
+            </tr>
+          </thead>
+          <tbody id="review-body"></tbody>
+        </table>
+        <div class="submit-section">
+          <h3>Submit Your Report</h3>
+          <div class="submit-row">
+            <button class="primary-btn" onclick="downloadReport('html')">
+              📄 Download
+            </button>
+            <button class="ghost-btn" onclick="copyReport()">📋 Copy</button>
+            <button class="ghost-btn" onclick="downloadReport('txt')">
+              📝 Text
+            </button>
+          </div>
+          <div class="submit-row">
+            <button class="ghost-btn" onclick="openClassroom()">
+              Google Classroom ↗
+            </button>
+            <input
+              id="teacher-email"
+              class="field"
+              type="email"
+              placeholder="Teacher email"
+              style="max-width: 220px"
+            />
+            <button class="ghost-btn" onclick="submitViaEmail()">Email</button>
+          </div>
+          <div class="copy-confirm" id="copy-confirm">✓ Copied!</div>
+          <div class="email-confirm" id="email-confirm">✓ Email opened</div>
+          <button
+            class="ghost-btn"
+            style="margin-top: 16px"
+            onclick="restartProject()"
+          >
+            🔄 Start Over
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      const ANALYSES = [
+        {
+          id: "basketball_ppg",
+          emoji: "🏀",
+          sport: "Basketball",
+          scenario: "Season Scoring Average",
+          badge: "Scoring Analyst",
+          focus: "Mean (Average)",
+          type: "mean",
+          formula: "Mean = Sum ÷ Count",
+          query: "NBA basketball player points per game statistics",
+          explorePrompt:
+            "Find one real NBA player's scoring average or a fact about how points per game is tracked.",
+          connectionPrompt:
+            "Why is the mean useful for comparing players who played different numbers of games?",
+          story:
+            "A basketball player scored these points in her last 8 games. The coach needs her scoring average (mean) to decide the starting lineup.",
+          dataset: [18, 24, 15, 22, 28, 19, 24, 22],
+          dataLabel: "Points per game",
+          answer: 21.5,
+          unit: "points",
+          tolerance: 0.1,
+          substitution: "(18+24+15+22+28+19+24+22) ÷ 8 = 172 ÷ 8 = 21.5",
+          hint1: "Add all 8 scores together first, then divide by 8.",
+          hint2: "Sum = 18+24+15+22+28+19+24+22 = 172. Mean = 172 ÷ 8 = 21.5.",
+          extension: {
+            question:
+              "If she scores 30 in the next game, what is the new mean?",
+            answer: 22.4,
+            hint: "New sum = 172+30 = 202. New mean = 202 ÷ 9 ≈ 22.4",
+          },
+        },
+        {
+          id: "soccer_goals",
+          emoji: "⚽",
+          sport: "Soccer",
+          scenario: "Midseason Goals Median",
+          badge: "Goal Tracker",
+          focus: "Median",
+          type: "median",
+          formula: "Median = Middle value (ordered)",
+          query: "soccer goals scored per game MLS statistics",
+          explorePrompt:
+            "Find one fact about goals per game in professional soccer — league averages or a team's record.",
+          connectionPrompt:
+            "Why does the median sometimes represent a team better than the mean?",
+          story:
+            "A soccer team's goals in their last 9 games are listed below. The analyst needs the median to report the team's typical game.",
+          dataset: [1, 3, 0, 2, 5, 1, 2, 0, 4],
+          dataLabel: "Goals per game",
+          answer: 2,
+          unit: "goals",
+          tolerance: 0.01,
+          substitution: "Ordered: 0, 0, 1, 1, 2, 2, 3, 4, 5 → Middle (5th) = 2",
+          hint1:
+            "First, put the numbers in order from least to greatest. The median is the middle one.",
+          hint2:
+            "Ordered: 0,0,1,1,2,2,3,4,5. There are 9 values, so the middle is the 5th value = 2.",
+          extension: {
+            question:
+              "If the team scores 0 in the next game (10 values), what is the new median?",
+            answer: 1.5,
+            hint: "Ordered 10 values: 0,0,0,1,1,2,2,3,4,5. Middle pair: 1 and 2. Median = 1.5",
+          },
+        },
+        {
+          id: "baseball_hits",
+          emoji: "⚾",
+          sport: "Baseball",
+          scenario: "Batting Practice Mode",
+          badge: "Batting Analyst",
+          focus: "Mode",
+          type: "mode",
+          formula: "Mode = Most frequent value",
+          query: "baseball batting practice hits per round statistics",
+          explorePrompt:
+            "Find one fact about batting averages or hitting streaks in baseball.",
+          connectionPrompt:
+            "When would a coach care more about the mode than the mean?",
+          story:
+            "A player's hits per batting practice round over 10 sessions are recorded. The coach wants to know the mode — the most common result.",
+          dataset: [3, 5, 3, 4, 3, 2, 5, 3, 4, 3],
+          dataLabel: "Hits per round",
+          answer: 3,
+          unit: "hits",
+          tolerance: 0.01,
+          substitution: "3 appears 5 times (most frequent) → Mode = 3",
+          hint1:
+            "Count how many times each number appears. The one that shows up most is the mode.",
+          hint2:
+            "2→1 time, 3→5 times, 4→2 times, 5→2 times. Mode = 3 (appears 5 times).",
+          extension: {
+            question: "What is the mean of this same dataset?",
+            answer: 3.5,
+            hint: "Sum = 3+5+3+4+3+2+5+3+4+3 = 35. Mean = 35 ÷ 10 = 3.5",
+          },
+        },
+        {
+          id: "swimming_times",
+          emoji: "🏊",
+          sport: "Swimming",
+          scenario: "Lap Time Range",
+          badge: "Speed Analyst",
+          focus: "Range",
+          type: "range",
+          formula: "Range = Maximum − Minimum",
+          query: "swimming lap times competitive 50m freestyle",
+          explorePrompt:
+            "Find one fact about competitive swimming times — world records, typical times, or how races are timed.",
+          connectionPrompt:
+            "Why does a smaller range mean a swimmer is more consistent?",
+          story:
+            "A swimmer recorded 100m freestyle times (in seconds) over 7 races. The coach wants the range to see how consistent the swimmer is.",
+          dataset: [58.2, 61.5, 57.8, 59.4, 62.1, 58.9, 60.3],
+          dataLabel: "Time (seconds)",
+          answer: 4.3,
+          unit: "seconds",
+          tolerance: 0.1,
+          substitution: "Max = 62.1, Min = 57.8. Range = 62.1 − 57.8 = 4.3",
+          hint1: "Find the largest and smallest values, then subtract.",
+          hint2: "Max = 62.1, Min = 57.8. Range = 62.1 − 57.8 = 4.3 seconds.",
+          extension: {
+            question:
+              "If the swimmer drops the 62.1 outlier, what is the new range?",
+            answer: 3.7,
+            hint: "Without 62.1: max = 61.5, min = 57.8. Range = 3.7",
+          },
+        },
+        {
+          id: "football_yards",
+          emoji: "🏈",
+          sport: "Football",
+          scenario: "Rushing Yards Mean",
+          badge: "Yards Analyst",
+          focus: "Mean (Average)",
+          type: "mean",
+          formula: "Mean = Sum ÷ Count",
+          query: "NFL football rushing yards per carry statistics",
+          explorePrompt:
+            "Find one fact about a running back's stats — yards per carry, total yards, or a season record.",
+          connectionPrompt:
+            "How does yards-per-carry help compare runners on different teams?",
+          story:
+            "A running back's rushing yards for each of 6 games are shown. The sportscaster needs the mean yards per game for the highlight reel.",
+          dataset: [87, 112, 65, 94, 78, 108],
+          dataLabel: "Rushing yards",
+          answer: 90.7,
+          unit: "yards",
+          tolerance: 0.1,
+          substitution: "(87+112+65+94+78+108) ÷ 6 = 544 ÷ 6 ≈ 90.7",
+          hint1:
+            "Add all 6 values, then divide by 6. Round to the nearest tenth.",
+          hint2:
+            "Sum = 87+112+65+94+78+108 = 544. Mean = 544 ÷ 6 ≈ 90.666... ≈ 90.7",
+          extension: {
+            question:
+              "If he rushes 150 yards next game, how does the mean change?",
+            answer: 99.1,
+            hint: "New sum = 694. Mean = 694 ÷ 7 ≈ 99.1",
+          },
+        },
+        {
+          id: "tennis_aces",
+          emoji: "🎾",
+          sport: "Tennis",
+          scenario: "Serve Ace Median",
+          badge: "Serve Analyst",
+          focus: "Median",
+          type: "median",
+          formula: "Median = Middle value (ordered)",
+          query: "tennis aces per match statistics ATP WTA",
+          explorePrompt:
+            "Find one fact about aces in tennis — who holds records or what's considered a good ace count.",
+          connectionPrompt:
+            "With 10 matches of data, how do you find the median when there's no single middle number?",
+          story:
+            "A tennis player's ace count over 10 matches is listed. The analyst needs the median to report typical performance, ignoring outlier matches.",
+          dataset: [8, 12, 5, 15, 9, 11, 7, 14, 10, 9],
+          dataLabel: "Aces per match",
+          answer: 9.5,
+          unit: "aces",
+          tolerance: 0.1,
+          substitution:
+            "Ordered: 5,7,8,9,9,10,11,12,14,15 → Middle pair: 9,10 → (9+10)÷2 = 9.5",
+          hint1:
+            "Order the data. With 10 values (even count), the median is the average of the 5th and 6th values.",
+          hint2:
+            "Ordered: 5,7,8,9,9,10,11,12,14,15. 5th=9, 6th=10. Median = (9+10)÷2 = 9.5",
+          extension: {
+            question: "What is the mode of this dataset?",
+            answer: 9,
+            hint: "9 appears twice; all others appear once. Mode = 9",
+          },
+        },
+        {
+          id: "track_sprint",
+          emoji: "🏃",
+          sport: "Track & Field",
+          scenario: "Sprint Time Analysis",
+          badge: "Sprint Analyst",
+          focus: "Mean + Outlier",
+          type: "mean_outlier",
+          formula: "Mean with and without outlier",
+          query: "100 meter dash track and field times high school",
+          explorePrompt:
+            "Find one fact about 100m dash times — world records, high school averages, or how timing works.",
+          connectionPrompt:
+            "How does removing an outlier change the mean? When is that fair to do?",
+          story:
+            "A sprinter's 100m dash times (seconds) over 8 races include one race where she tripped. Find the mean with ALL times, then find the mean WITHOUT the outlier (the slowest time).",
+          dataset: [12.3, 12.1, 12.5, 12.2, 15.8, 12.4, 12.0, 12.3],
+          dataLabel: "Time (seconds)",
+          answer: 12.7,
+          unit: "seconds",
+          tolerance: 0.1,
+          answerB: 12.3,
+          substitution:
+            "All 8: (12.3+12.1+12.5+12.2+15.8+12.4+12.0+12.3) ÷ 8 = 101.6 ÷ 8 = 12.7",
+          substitutionB: "Without 15.8: (101.6−15.8) ÷ 7 = 85.8 ÷ 7 ≈ 12.3",
+          hint1:
+            "First find the mean of all 8 times. Then remove 15.8 (the outlier) and find the mean of the remaining 7.",
+          hint2:
+            "All: sum=101.6, mean=101.6÷8=12.7. Without 15.8: sum=85.8, mean=85.8÷7≈12.3",
+          extension: {
+            question:
+              "What is the range of all 8 times vs. the range without the outlier?",
+            answer: "3.8 vs 0.5",
+            hint: "All: 15.8−12.0=3.8. Without outlier: 12.5−12.0=0.5",
+          },
+        },
+        {
+          id: "volleyball_serve",
+          emoji: "🏐",
+          sport: "Volleyball",
+          scenario: "Serve Success Analysis",
+          badge: "Serve Strategist",
+          focus: "Mean + Compare",
+          type: "mean",
+          formula: "Mean = Sum ÷ Count",
+          query: "volleyball serve success rate statistics high school",
+          explorePrompt:
+            "Find one fact about volleyball serves — success rates, types of serves, or records.",
+          connectionPrompt:
+            "How can comparing two players' means help a coach make lineup decisions?",
+          story:
+            "Two volleyball players' successful serves per set (out of 10 attempts each) over 5 sets are recorded. Find the mean for EACH player to recommend who should serve in the final set.",
+          dataset: [8, 7, 9, 6, 10],
+          datasetB: [7, 8, 8, 7, 8],
+          dataLabel: "Successful serves (Player A)",
+          dataLabelB: "Successful serves (Player B)",
+          answer: 8,
+          unit: "serves",
+          tolerance: 0.01,
+          answerB: 7.6,
+          substitution:
+            "Player A: (8+7+9+6+10)÷5 = 40÷5 = 8. Player B: (7+8+8+7+8)÷5 = 38÷5 = 7.6",
+          hint1:
+            "Find each player's mean separately. Add their 5 values and divide by 5.",
+          hint2:
+            "A: 8+7+9+6+10=40, 40÷5=8. B: 7+8+8+7+8=38, 38÷5=7.6. A has higher mean.",
+          extension: {
+            question:
+              "Which player is more consistent? Find each player's range.",
+            answer: "Player B (range 1 vs 4)",
+            hint: "A: 10−6=4. B: 8−7=1. B is more consistent (smaller range).",
+          },
+        },
+      ];
+
+      const METHODS = {
+        mean: "Mean: Add all values, divide by the count.",
+        median:
+          "Median: Order values, find the middle one (or average of middle two).",
+        mode: "Mode: Find which value appears most often.",
+        range: "Range: Subtract the smallest from the largest.",
+        mean_outlier:
+          "Mean + Outlier: Find the mean with all data, then again without the outlier.",
+      };
+      const STARTERS = [
+        "I noticed that ",
+        "One real stat I found is ",
+        "This connects to statistics because ",
+        "The data makes me think about ",
+      ];
+      const PRESETS = {
+        balanced: [
+          "basketball_ppg",
+          "soccer_goals",
+          "baseball_hits",
+          "swimming_times",
+          "football_yards",
+          "tennis_aces",
+        ],
+        mean: [
+          "basketball_ppg",
+          "football_yards",
+          "volleyball_serve",
+          "track_sprint",
+          "soccer_goals",
+          "swimming_times",
+        ],
+        median: [
+          "soccer_goals",
+          "tennis_aces",
+          "basketball_ppg",
+          "baseball_hits",
+          "swimming_times",
+          "football_yards",
+        ],
+        all: ANALYSES.map((a) => a.id),
+      };
+
+      const STORAGE_KEY = "sportsDataAnalyst_v1";
+      let selectedIds = [...PRESETS.balanced];
+      let state = {
+        started: false,
+        student: { first: "", period: "", date: "" },
+        selectedIds: [...selectedIds],
+        currentIndex: 0,
+        responses: {},
+        startTime: null,
+        endTime: null,
+      };
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function analysisById(id) {
+        return ANALYSES.find((a) => a.id === id);
+      }
+      function responseFor(id) {
+        if (!state.responses[id])
+          state.responses[id] = {
+            checks: { searched: false, found: false, connected: false },
+            observation: "",
+            connectionNote: "",
+            method: "",
+            workShown: "",
+            numericAnswer: "",
+            numericAnswerB: "",
+            checked: false,
+            correct: false,
+            extAnswer: "",
+            hintsShown: 0,
+          };
+        return state.responses[id];
+      }
+      function esc(v) {
+        return String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[c],
+        );
+      }
+      function cleanNum(v) {
+        if (v == null) return NaN;
+        return Number(String(v).replace(/,/g, "").trim());
+      }
+      function todayISO() {
+        const d = new Date(),
+          p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+      }
+      function showScreen(n) {
+        ["intro", "app", "results"].forEach((s) =>
+          $(s + "-screen").classList.toggle("active", s === n),
+        );
+      }
+      function saveState(show) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (show)
+          $("save-status").textContent =
+            "Saved " +
+            new Date().toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            });
+      }
+
+      function init() {
+        $("student-date").value = todayISO();
+        applyPreset("balanced", true);
+        renderRouteCards();
+        checkSavedWork();
+        window.addEventListener("beforeunload", () => {
+          if (state.started) saveState(false);
+        });
+      }
+      function checkSavedWork() {
+        try {
+          const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (!s?.started) return;
+          $("resume-banner").style.display = "flex";
+          $("resume-details").textContent =
+            `${s.student?.first || "A student"} has saved progress.`;
+        } catch (e) {}
+      }
+      function resumeSaved() {
+        state = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        selectedIds = [...state.selectedIds];
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+      }
+      function clearSavedWork() {
+        localStorage.removeItem(STORAGE_KEY);
+        $("resume-banner").style.display = "none";
+      }
+      function manualSave() {
+        if (!state.started) return;
+        saveState(true);
+      }
+
+      function renderRouteCards() {
+        const g = $("route-grid");
+        g.innerHTML = "";
+        ANALYSES.forEach((a) => {
+          const sel = selectedIds.includes(a.id);
+          const c = document.createElement("button");
+          c.type = "button";
+          c.className = "route-card" + (sel ? " selected" : "");
+          c.onclick = () => {
+            if (selectedIds.includes(a.id))
+              selectedIds = selectedIds.filter((x) => x !== a.id);
+            else selectedIds.push(a.id);
+            renderRouteCards();
+          };
+          c.innerHTML = `<div class="rc-top"><span class="rc-emoji">${a.emoji}</span><span class="rc-check">${sel ? "✓" : ""}</span></div><div class="rc-name">${esc(a.badge)}</div><div class="rc-focus">${esc(a.focus)}</div><div class="rc-formula">${esc(a.formula)}</div>`;
+          g.appendChild(c);
+        });
+        $("route-note").textContent =
+          `Selected: ${selectedIds.length} analyses`;
+      }
+      function applyPreset(p, silent = false) {
+        selectedIds = [...(PRESETS[p] || PRESETS.balanced)];
+        if (!silent) renderRouteCards();
+      }
+
+      function startExpedition() {
+        const first = $("student-name").value.trim();
+        if (!first) {
+          $("student-name").focus();
+          return;
+        }
+        if (selectedIds.length < 5) {
+          $("route-note").textContent = "Choose at least 5.";
+          $("route-note").style.color = "var(--error)";
+          return;
+        }
+        state = {
+          started: true,
+          student: {
+            first,
+            period: $("student-period").value.trim(),
+            date: $("student-date").value || todayISO(),
+          },
+          selectedIds: [...selectedIds],
+          currentIndex: 0,
+          responses: {},
+          startTime: Date.now(),
+          endTime: null,
+        };
+        state.selectedIds.forEach((id) => responseFor(id));
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+        saveState(true);
+      }
+
+      function renderSidebar() {
+        const j = $("jump-select");
+        j.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const a = analysisById(id);
+          const o = document.createElement("option");
+          o.value = i;
+          o.textContent = `${i + 1}. ${a.emoji} ${a.badge}`;
+          j.appendChild(o);
+        });
+        const list = $("mission-list");
+        list.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const a = analysisById(id),
+            r = responseFor(id),
+            done = r.checked && r.correct,
+            exp = explorationDone(r);
+          const m = document.createElement("button");
+          m.type = "button";
+          m.className =
+            "mission-mini" +
+            (i === state.currentIndex ? " current" : "") +
+            (done ? " done" : "");
+          m.onclick = () => jumpTo(i);
+          m.innerHTML = `<span class="mini-flag">${a.emoji}</span><span class="mini-text"><span class="mini-name">${esc(a.badge)}</span><span class="mini-status">${done ? "Correct" : r.checked ? "Revise" : "Not checked"} · ${exp ? "Log done" : "Log open"}</span></span><span class="mini-check">${done ? "✅" : exp ? "📝" : "○"}</span>`;
+          list.appendChild(m);
+        });
+        updateHeader();
+      }
+      function updateHeader() {
+        const t = state.selectedIds.length || 1,
+          idx = state.currentIndex + 1,
+          correct = state.selectedIds.filter(
+            (id) => responseFor(id).correct,
+          ).length;
+        $("progress-label").textContent = `Analysis ${idx} of ${t}`;
+        $("score-label").textContent = `${correct} correct`;
+        $("progress-fill").style.width = `${Math.round((idx / t) * 100)}%`;
+        $("jump-select").value = state.currentIndex;
+      }
+      function jumpTo(i) {
+        persistInputs();
+        state.currentIndex = Math.max(
+          0,
+          Math.min(i, state.selectedIds.length - 1),
+        );
+        renderSidebar();
+        renderMission();
+        saveState(false);
+      }
+
+      function starterBtns(tid) {
+        return STARTERS.map(
+          (s) =>
+            `<button type="button" class="starter-chip" onclick="insertStarter('${tid}',${JSON.stringify(s)})">${esc(s.trim())}...</button>`,
+        ).join("");
+      }
+      function insertStarter(tid, s) {
+        const b = $(tid);
+        if (!b) return;
+        const pos = b.selectionStart ?? b.value.length;
+        const before = b.value.slice(0, pos);
+        const after = b.value.slice(b.selectionEnd ?? b.value.length);
+        const sp = before && !/\s$/.test(before) ? " " : "";
+        b.value = before + sp + s + after;
+        b.focus();
+        b.setSelectionRange((before + sp + s).length, (before + sp + s).length);
+        saveState(false);
+      }
+
+      function datasetTable(a) {
+        let html = `<table class="data-table"><thead><tr><th>Game</th><th>${esc(a.dataLabel)}</th></tr></thead><tbody>`;
+        a.dataset.forEach((v, i) => {
+          html += `<tr><td>Game ${i + 1}</td><td>${v}</td></tr>`;
+        });
+        if (a.datasetB) {
+          html += `</tbody></table><table class="data-table" style="margin-top:8px"><thead><tr><th>Game</th><th>${esc(a.dataLabelB)}</th></tr></thead><tbody>`;
+          a.datasetB.forEach((v, i) => {
+            html += `<tr><td>Game ${i + 1}</td><td>${v}</td></tr>`;
+          });
+        }
+        return html + `</tbody></table>`;
+      }
+      function searchLinks(a) {
+        const q = encodeURIComponent(a.query);
+        return `<a class="explore-link" href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">🖼️ Images</a><a class="explore-link" href="https://www.google.com/search?q=${q}+facts+for+kids" target="_blank" rel="noopener">🔎 Facts</a><a class="explore-link" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🌐 Search</a>`;
+      }
+      function methodOptions(sel) {
+        return Object.entries(METHODS)
+          .map(
+            ([k, l]) =>
+              `<option value="${k}" ${sel === k ? "selected" : ""}>${esc(l)}</option>`,
+          )
+          .join("");
+      }
+
+      function renderMission() {
+        const id = state.selectedIds[state.currentIndex],
+          a = analysisById(id),
+          r = responseFor(id);
+        const hasTwoParts = !!a.datasetB || a.type === "mean_outlier";
+        const card = $("mission-card");
+        card.innerHTML = `
+    <div class="dest-hero"><div class="dest-top">
+      <div class="dest-emoji">${a.emoji}</div>
+      <div><div class="dest-kicker">${esc(a.sport)} · ${esc(a.scenario)}</div><div class="dest-title">${esc(a.badge)}</div><div class="dest-sub">${esc(a.focus)} · ${esc(a.formula)}</div></div>
+      <div class="stamp">Analysis<strong>${state.currentIndex + 1}/${state.selectedIds.length}</strong></div>
+    </div></div>
+
+    <div class="panel-grid">
+      <div class="panel soft">
+        <h3>🔍 Research the Sport</h3>
+        <p style="font-size:.88rem;margin-bottom:10px">${esc(a.explorePrompt)}</p>
+        <div class="explore-links">${searchLinks(a)}</div>
+        <div class="check-grid">
+          <label class="check-row"><input type="checkbox" id="ck-searched" ${r.checks.searched ? "checked" : ""} onchange="updateCheck('searched',this.checked)"> I searched for real stats.</label>
+          <label class="check-row"><input type="checkbox" id="ck-found" ${r.checks.found ? "checked" : ""} onchange="updateCheck('found',this.checked)"> I found one real detail.</label>
+          <label class="check-row"><input type="checkbox" id="ck-connected" ${r.checks.connected ? "checked" : ""} onchange="updateCheck('connected',this.checked)"> I connected it to the math.</label>
+        </div>
+        <div class="lab-field"><label for="observation">Analyst Log</label>
+          <div class="starter-note">Click a starter, then add your own detail.</div>
+          <div class="starter-tray">${starterBtns("observation")}</div>
+          <textarea id="observation" oninput="updateText('observation',this.value)" placeholder="What I discovered...">${esc(r.observation)}</textarea>
+        </div>
+        <div class="lab-field"><label for="conn-note">Stats Connection</label>
+          <textarea id="conn-note" oninput="updateText('connectionNote',this.value)" placeholder="${esc(a.connectionPrompt)}">${esc(r.connectionNote)}</textarea>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>📊 Game Data</h3>
+        <div class="scoreboard">${esc(a.sport)} — ${esc(a.scenario)}</div>
+        <p style="font-size:.88rem;margin-bottom:10px">${esc(a.story)}</p>
+        ${datasetTable(a)}
+      </div>
+    </div>
+
+    <div class="formula-lab">
+      <h3>🧮 Calculation Lab</h3>
+      <p style="margin-bottom:14px;font-size:.9rem">${esc(a.story)}</p>
+      <div class="lab-grid">
+        <div class="lab-field"><label for="method-select">Method</label><select id="method-select" onchange="updateText('method',this.value)">${methodOptions(r.method)}</select></div>
+        <div class="lab-field"><label for="numeric-answer">${hasTwoParts ? "Answer (Part A)" : "My Answer"}</label><div class="answer-row"><input id="numeric-answer" type="text" value="${esc(r.numericAnswer)}" oninput="updateText('numericAnswer',this.value)" placeholder="Type number"><span class="unit-pill">${esc(a.unit)}</span></div></div>
+        ${hasTwoParts ? `<div class="lab-field"><label for="numeric-answer-b">Answer (Part B)</label><div class="answer-row"><input id="numeric-answer-b" type="text" value="${esc(r.numericAnswerB)}" oninput="updateText('numericAnswerB',this.value)" placeholder="Type number"><span class="unit-pill">${esc(a.unit)}</span></div></div>` : ""}
+        <div class="lab-field full"><label for="work-shown">Show Your Work</label><textarea id="work-shown" oninput="updateText('workShown',this.value)" placeholder="List values, show calculations step by step...">${esc(r.workShown)}</textarea></div>
+      </div>
+      <div class="hint-row">
+        <button class="secondary-btn" onclick="checkCalc()">Check Answer</button>
+        <button class="ghost-btn" onclick="showHint(1)">Hint 1</button>
+        <button class="ghost-btn" onclick="showHint(2)">Hint 2</button>
+      </div>
+      <div class="feedback ${r.checked ? (r.correct ? "show ok" : "show no") : ""}" id="feedback-box">${r.checked ? feedbackText(a, r.correct) : ""}</div>
+      <div class="hint-box" id="hint-box"></div>
+    </div>
+
+    ${
+      a.extension
+        ? `<div class="panel warm" style="margin-top:20px">
+      <h3>🌟 Extension Challenge</h3>
+      <p style="font-size:.88rem;margin-bottom:12px">${esc(a.extension.question)}</p>
+      <div class="lab-field"><label for="ext-answer">My Answer</label><input id="ext-answer" type="text" value="${esc(r.extAnswer)}" oninput="updateText('extAnswer',this.value)" placeholder="Type answer"><div class="hint-box" style="display:block;margin-top:8px;font-size:.82rem"><strong>Hint:</strong> ${esc(a.extension.hint)}</div></div>
+    </div>`
+        : ""
+    }
+
+    <div class="nav-row">
+      <button class="ghost-btn" onclick="prevMission()" ${state.currentIndex === 0 ? "disabled" : ""}>← Previous</button>
+      <div style="display:flex;gap:8px"><button class="ghost-btn" onclick="downloadCheckpoint()">💾 Checkpoint</button>
+      <button class="primary-btn" onclick="nextMission()">${state.currentIndex === state.selectedIds.length - 1 ? "Finish Analysis 🏁" : "Next Analysis →"}</button></div>
+    </div>`;
+        card.classList.remove("fade-in");
+        void card.offsetWidth;
+        card.classList.add("fade-in");
+        if (!r.method) {
+          r.method = "";
+          $("method-select").value = "";
+        }
+        updateHeader();
+      }
+
+      function feedbackText(a, ok) {
+        return ok
+          ? `<strong>✅ Correct!</strong> ${esc(a.substitution)}${a.substitutionB ? " | " + esc(a.substitutionB) : ""}.`
+          : `<strong>Not quite.</strong> ${esc(a.substitution)}.`;
+      }
+      function explorationDone(r) {
+        return !!(
+          r.checks.searched &&
+          r.checks.found &&
+          r.checks.connected &&
+          r.observation.trim().length >= 12 &&
+          r.connectionNote.trim().length >= 8
+        );
+      }
+      function updateCheck(k, v) {
+        responseFor(state.selectedIds[state.currentIndex]).checks[k] = v;
+        saveState(false);
+        renderSidebar();
+      }
+      function updateText(f, v) {
+        responseFor(state.selectedIds[state.currentIndex])[f] = v;
+        saveState(false);
+      }
+      function persistInputs() {
+        const id = state.selectedIds[state.currentIndex];
+        if (!id) return;
+        const r = responseFor(id);
+        [
+          "observation",
+          "conn-note",
+          "method-select",
+          "work-shown",
+          "numeric-answer",
+          "numeric-answer-b",
+          "ext-answer",
+        ].forEach((elId) => {
+          const el = $(elId);
+          if (!el) return;
+          const field = {
+            observation: "observation",
+            "conn-note": "connectionNote",
+            "method-select": "method",
+            "work-shown": "workShown",
+            "numeric-answer": "numericAnswer",
+            "numeric-answer-b": "numericAnswerB",
+            "ext-answer": "extAnswer",
+          }[elId];
+          if (field) r[field] = el.value;
+        });
+      }
+
+      function checkCalc() {
+        persistInputs();
+        const a = analysisById(state.selectedIds[state.currentIndex]),
+          r = responseFor(a.id);
+        const v = cleanNum(r.numericAnswer);
+        const okA =
+          isFinite(v) && Math.abs(v - a.answer) <= (a.tolerance ?? 0.1);
+        let okB = true;
+        if (a.answerB !== undefined) {
+          const vb = cleanNum(r.numericAnswerB);
+          okB =
+            isFinite(vb) && Math.abs(vb - a.answerB) <= (a.tolerance ?? 0.1);
+        }
+        r.checked = true;
+        r.correct = okA && okB;
+        const fb = $("feedback-box");
+        fb.className = "feedback show " + (r.correct ? "ok" : "no");
+        fb.innerHTML = r.correct
+          ? feedbackText(a, true)
+          : `<strong>Try again.</strong> Expected: <em>${esc(a.substitution)}</em>${a.substitutionB ? ` and <em>${esc(a.substitutionB)}</em>` : ""}`;
+        saveState(true);
+        renderSidebar();
+      }
+      function showHint(level) {
+        const a = analysisById(state.selectedIds[state.currentIndex]),
+          r = responseFor(a.id);
+        r.hintsShown = Math.max(r.hintsShown || 0, level);
+        const b = $("hint-box");
+        b.style.display = "block";
+        b.innerHTML =
+          level === 1
+            ? `<strong>Hint 1:</strong> ${esc(a.hint1)}`
+            : `<strong>Hint 2:</strong> ${esc(a.hint2)}`;
+        saveState(false);
+      }
+      function prevMission() {
+        persistInputs();
+        if (state.currentIndex > 0) {
+          state.currentIndex--;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+      function nextMission() {
+        persistInputs();
+        if (state.currentIndex >= state.selectedIds.length - 1) showResults();
+        else {
+          state.currentIndex++;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+
+      function showResults() {
+        persistInputs();
+        state.endTime = Date.now();
+        saveState(true);
+        showScreen("results");
+        const t = state.selectedIds.length,
+          mc = state.selectedIds.filter((id) => responseFor(id).correct).length,
+          ec = state.selectedIds.filter((id) =>
+            explorationDone(responseFor(id)),
+          ).length;
+        const rating = Math.round(((mc / t) * 0.7 + (ec / t) * 0.3) * 100),
+          mins = Math.max(
+            0,
+            Math.round(
+              ((state.endTime || Date.now()) -
+                (state.startTime || Date.now())) /
+                60000,
+            ),
+          );
+        $("results-subtitle").textContent =
+          `${state.student.first} · Period ${state.student.period || "—"} · ${state.student.date || ""}`;
+        $("math-score").textContent = `${mc}/${t}`;
+        $("explore-score").textContent = `${ec}/${t}`;
+        $("overall-score").textContent = `${rating}%`;
+        $("time-score").textContent = `${mins}m`;
+        $("result-stamps").innerHTML = state.selectedIds
+          .map((id) => {
+            const a = analysisById(id),
+              r = responseFor(id);
+            return `<span class="passport-stamp">${a.emoji}${r.correct ? "✓" : ""}</span>`;
+          })
+          .join("");
+        $("review-body").innerHTML = state.selectedIds
+          .map((id, i) => {
+            const a = analysisById(id),
+              r = responseFor(id);
+            return `<tr class="${r.correct && explorationDone(r) ? "good" : "needs"}"><td><strong>${i + 1}. ${a.emoji} ${esc(a.badge)}</strong><br><span style="color:var(--muted);font-size:.78rem">${esc(a.focus)}</span></td><td>${r.correct ? "✅" : r.checked ? "🔁" : "○"}<br><span style="font-size:.78rem">${esc(r.numericAnswer || "—")} ${esc(a.unit)}</span></td><td>${esc(r.observation || "—")}</td><td>${esc(r.workShown || "—")}<br><span style="color:var(--muted);font-size:.78rem">${esc(a.substitution)}</span></td></tr>`;
+          })
+          .join("");
+      }
+
+      function buildPlainReport() {
+        const t = state.selectedIds.length,
+          mc = state.selectedIds.filter((id) => responseFor(id).correct).length,
+          ec = state.selectedIds.filter((id) =>
+            explorationDone(responseFor(id)),
+          ).length;
+        const rating = Math.round(((mc / t) * 0.7 + (ec / t) * 0.3) * 100);
+        let lines = [
+          "SPORTS DATA ANALYST — REPORT",
+          `Student: ${state.student.first}`,
+          `Period: ${state.student.period || "—"}`,
+          `Date: ${state.student.date || ""}`,
+          `Math Correct: ${mc}/${t}`,
+          `Logs: ${ec}/${t}`,
+          `Rating: ${rating}%`,
+          "",
+          "ANALYSES",
+        ];
+        state.selectedIds.forEach((id, i) => {
+          const a = analysisById(id),
+            r = responseFor(id);
+          lines.push(
+            "──────────────",
+            `${i + 1}. ${a.emoji} ${a.badge} — ${a.focus}`,
+            `Sport: ${a.sport}`,
+            `Observation: ${r.observation || "—"}`,
+            `Work: ${r.workShown || "—"}`,
+            `Answer: ${r.numericAnswer || "—"} ${a.unit}`,
+            `Expected: ${a.substitution}`,
+            `Status: ${r.correct ? "Correct" : r.checked ? "Revise" : "Not checked"}`,
+          );
+        });
+        return lines.join("\n");
+      }
+      function buildHtmlReport() {
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Sports Data Analyst — ${esc(state.student.first)}</title><style>body{font-family:Arial,sans-serif;line-height:1.5;margin:32px;color:#222}h1{color:#17324D}.box{border:2px solid #17324D;border-radius:12px;padding:20px}</style></head><body><h1>🏀 Sports Data Analyst Report</h1><div class="box">${esc(buildPlainReport()).replace(/\n/g, "<br>")}</div></body></html>`;
+      }
+      function safeFilename() {
+        return `Sports_Analyst_${state.student.first}_${state.student.period || "P"}_${state.student.date || todayISO()}`.replace(
+          /[^a-z0-9_\-]+/gi,
+          "_",
+        );
+      }
+      function downloadReport(kind) {
+        const h = kind === "html",
+          c = h ? buildHtmlReport() : buildPlainReport(),
+          b = new Blob([c], { type: h ? "text/html" : "text/plain" }),
+          u = URL.createObjectURL(b),
+          a = document.createElement("a");
+        a.href = u;
+        a.download = safeFilename() + (h ? ".html" : ".txt");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(u);
+        $("copy-confirm").style.display = "block";
+      }
+      function downloadCheckpoint() {
+        persistInputs();
+        const b = new Blob([JSON.stringify(state, null, 2)], {
+            type: "application/json",
+          }),
+          u = URL.createObjectURL(b),
+          a = document.createElement("a");
+        a.href = u;
+        a.download = safeFilename() + "_checkpoint.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(u);
+        $("save-status").textContent = "Checkpoint saved";
+      }
+      async function copyReport() {
+        try {
+          await navigator.clipboard.writeText(buildPlainReport());
+          $("copy-confirm").style.display = "block";
+        } catch (e) {
+          const w = window.open("", "_blank");
+          w.document.write("<pre>" + esc(buildPlainReport()) + "</pre>");
+          w.document.close();
+        }
+      }
+      function openClassroom() {
+        window.open("https://classroom.google.com/", "_blank", "noopener");
+      }
+      function submitViaEmail() {
+        const e = $("teacher-email").value.trim();
+        if (!e) {
+          $("teacher-email").focus();
+          return;
+        }
+        window.location.href = `mailto:${e}?subject=${encodeURIComponent("Sports Data Analyst — " + state.student.first)}&body=${encodeURIComponent(buildPlainReport().slice(0, 12000))}`;
+        $("email-confirm").style.display = "block";
+      }
+      function restartProject() {
+        if (!confirm("Start over?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

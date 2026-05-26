@@ -1,0 +1,2235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Travel Planner — Ratio Route Challenge</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --teal: #0d9488;
+        --sand: #fef3c7;
+        --navy: #1e3a5f;
+        --cream: #fffbeb;
+        --coral: #f97316;
+        --sky: #f0fdfa;
+        --ink: #1e3a5f;
+        --muted: #6b7280;
+        --line: #d1d5db;
+        --success: #059669;
+        --success-bg: #ecfdf5;
+        --error: #dc2626;
+        --error-bg: #fef2f2;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(30, 58, 95, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--sky);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      a {
+        color: var(--teal);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* ── Layout ── */
+      .intro-screen,
+      .app-screen,
+      .results-screen {
+        display: none;
+      }
+      .intro-screen.active,
+      .app-screen.active,
+      .results-screen.active {
+        display: block;
+      }
+
+      /* ── Intro ── */
+      .intro {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .hero-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 48px 36px;
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .hero-sub {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .student-form {
+        display: grid;
+        grid-template-columns: 1fr 100px 100px;
+        gap: 12px;
+        max-width: 500px;
+        margin: 0 auto 24px;
+        text-align: left;
+      }
+      .student-form label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        grid-column: span 1;
+      }
+      .student-form .label-name {
+        grid-column: 1;
+      }
+      .student-form .label-period {
+        grid-column: 2;
+      }
+      .student-form .label-date {
+        grid-column: 3;
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .resume-banner {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px;
+      }
+      .resume-banner button {
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .resume-banner .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      /* Mission selection */
+      .route-section {
+        margin-top: 28px;
+      }
+      .route-section h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .route-section p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .route-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .route-card {
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: white;
+        text-align: left;
+        transition: all 0.2s;
+        cursor: pointer;
+        position: relative;
+      }
+      .route-card:hover {
+        border-color: var(--teal);
+        box-shadow: 0 2px 8px rgba(13, 148, 136, 0.12);
+      }
+      .route-card.selected {
+        border-color: var(--teal);
+        background: rgba(13, 148, 136, 0.06);
+      }
+      .route-card .rc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .route-card .rc-emoji {
+        font-size: 1.5rem;
+      }
+      .route-card .rc-check {
+        font-size: 1.1rem;
+        color: var(--teal);
+        font-weight: 900;
+      }
+      .route-card .rc-name {
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: var(--navy);
+        margin-bottom: 2px;
+      }
+      .route-card .rc-focus {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .route-card .rc-formula {
+        font-size: 0.75rem;
+        color: var(--teal);
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      .route-note {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .preset-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .preset-btn {
+        padding: 6px 14px;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        background: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--navy);
+        transition: all 0.2s;
+      }
+      .preset-btn:hover,
+      .preset-btn.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+      }
+      .start-btn {
+        display: block;
+        margin: 0 auto;
+        padding: 14px 48px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+
+      /* ── App screen ── */
+      .app-header {
+        background: var(--navy);
+        color: white;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .app-header .progress-text {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .app-header .score-text {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-left: auto;
+      }
+      .progress-track {
+        flex: 1;
+        max-width: 300px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--coral);
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+      .save-status {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        margin-left: 12px;
+      }
+      .save-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+      .save-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .app-body {
+        display: flex;
+        min-height: calc(100vh - 48px);
+      }
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid var(--line);
+        padding: 16px;
+        overflow-y: auto;
+        flex-shrink: 0;
+      }
+      .sidebar h3 {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .jump-select {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+      }
+      .mission-mini {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 8px 10px;
+        border-radius: 8px;
+        text-align: left;
+        transition: background 0.15s;
+        font-size: 0.82rem;
+        margin-bottom: 4px;
+      }
+      .mission-mini:hover {
+        background: var(--sky);
+      }
+      .mission-mini.current {
+        background: var(--sky);
+        font-weight: 700;
+      }
+      .mission-mini.done {
+        opacity: 0.7;
+      }
+      .mini-flag {
+        font-size: 1.15rem;
+        flex-shrink: 0;
+      }
+      .mini-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .mini-name {
+        display: block;
+        font-weight: 700;
+        color: var(--navy);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mini-status {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .mini-check {
+        font-size: 0.9rem;
+      }
+
+      .mission-main {
+        flex: 1;
+        padding: 28px 32px;
+        overflow-y: auto;
+        max-width: 900px;
+      }
+
+      /* ── Mission card ── */
+      .dest-hero {
+        margin-bottom: 24px;
+      }
+      .dest-top {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .dest-emoji {
+        font-size: 2.8rem;
+      }
+      .dest-kicker {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .dest-title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .dest-sub {
+        font-size: 0.88rem;
+        color: var(--teal);
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .stamp {
+        background: var(--coral);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-align: center;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      .stamp strong {
+        display: block;
+        font-size: 1.1rem;
+      }
+
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      @media (max-width: 768px) {
+        .panel-grid {
+          grid-template-columns: 1fr;
+        }
+        .app-body {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+        .student-form {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+      }
+      .panel h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .panel.soft {
+        background: var(--sky);
+      }
+      .panel.warm {
+        background: var(--sand);
+      }
+
+      .explore-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .explore-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 14px;
+        background: white;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .explore-link:hover {
+        border-color: var(--teal);
+        text-decoration: none;
+        background: rgba(13, 148, 136, 0.06);
+      }
+
+      .check-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 12px 0;
+      }
+      .check-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .check-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--teal);
+      }
+
+      .lab-field {
+        margin-bottom: 12px;
+      }
+      .lab-field label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .lab-field textarea,
+      .lab-field input,
+      .lab-field select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        transition: border-color 0.2s;
+        background: white;
+      }
+      .lab-field textarea:focus,
+      .lab-field input:focus,
+      .lab-field select:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .lab-field textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      .lab-field.full {
+        grid-column: span 2;
+      }
+
+      .starter-note {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-bottom: 6px;
+      }
+      .starter-tray {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .starter-chip {
+        padding: 4px 12px;
+        background: white;
+        border: 1.5px solid var(--line);
+        border-radius: 16px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--navy);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .starter-chip:hover {
+        border-color: var(--teal);
+        background: rgba(13, 148, 136, 0.06);
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.88rem;
+      }
+      .data-table th {
+        background: var(--navy);
+        color: white;
+        padding: 8px 12px;
+        text-align: left;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:nth-child(even) {
+        background: var(--sky);
+      }
+
+      /* Formula lab */
+      .formula-lab {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .formula-lab h3 {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 14px;
+      }
+      .lab-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .answer-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .answer-row input {
+        flex: 1;
+      }
+      .unit-pill {
+        padding: 4px 12px;
+        background: var(--sky);
+        border-radius: 16px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--navy);
+        white-space: nowrap;
+      }
+      .hint-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .primary-btn {
+        padding: 10px 24px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .primary-btn:hover {
+        opacity: 0.9;
+      }
+      .primary-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .secondary-btn {
+        padding: 10px 24px;
+        background: var(--navy);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .secondary-btn:hover {
+        opacity: 0.9;
+      }
+      .ghost-btn {
+        padding: 8px 18px;
+        background: transparent;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--navy);
+        transition: all 0.2s;
+      }
+      .ghost-btn:hover {
+        border-color: var(--teal);
+        background: rgba(13, 148, 136, 0.06);
+      }
+      .ghost-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        display: none;
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-top: 8px;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: var(--success);
+      }
+      .feedback.no {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: var(--error);
+      }
+      .hint-box {
+        display: none;
+        padding: 12px 16px;
+        background: var(--sand);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        margin-top: 8px;
+        border-left: 4px solid var(--coral);
+      }
+
+      /* Two-part answer */
+      .two-part-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* Nav */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .fade-in {
+        animation: fadeSlide 0.35s ease;
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Shape evidence ── */
+      .shape-evidence-card {
+        display: flex;
+        gap: 14px;
+        background: var(--sand);
+        border-radius: 8px;
+        padding: 14px;
+        margin-bottom: 14px;
+        align-items: flex-start;
+      }
+      .shape-evidence-text {
+        flex: 1;
+        font-size: 0.85rem;
+      }
+      .shape-evidence-text strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--navy);
+      }
+      .shape-tag {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 2px 10px;
+        background: var(--teal);
+        color: white;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      /* ── Extension bonus ── */
+      .extension-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+      .extension-output {
+        padding: 10px 16px;
+        background: var(--sky);
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--navy);
+        min-width: 180px;
+        text-align: center;
+      }
+
+      /* ── Results ── */
+      .results {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .results-hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .results-hero h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .results-sub {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0;
+      }
+      .score-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        text-align: center;
+      }
+      .score-card .big {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .score-card .label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .passport-stamps {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      .passport-stamp {
+        font-size: 1.6rem;
+        padding: 6px 10px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 24px 0;
+      }
+      .review-table th {
+        background: var(--navy);
+        color: white;
+        padding: 10px;
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      .review-table td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .review-table tr.good {
+        background: var(--success-bg);
+      }
+      .review-table tr.needs {
+        background: white;
+      }
+      .submit-section {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 28px;
+        text-align: center;
+      }
+      .submit-section h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 16px;
+      }
+      .submit-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .copy-confirm,
+      .email-confirm {
+        display: none;
+        font-size: 0.82rem;
+        color: var(--success);
+        font-weight: 600;
+        margin-top: 8px;
+      }
+      .footer-brand {
+        text-align: center;
+        padding: 16px;
+        font-size: 0.72rem;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ INTRO SCREEN ═══════ -->
+    <div class="intro-screen active" id="intro-screen">
+      <div class="intro">
+        <div class="hero-card">
+          <div class="hero-emoji">✈️</div>
+          <h1 class="hero-title">Global Travel Planner</h1>
+          <p class="hero-sub">
+            Ratio Route Challenge — Use equivalent ratios, unit rates, and
+            scaling to plan trips around the world.<br />Explore real
+            destinations, solve ratio problems, and earn your Travel Agent
+            badge!
+          </p>
+          <div class="student-form">
+            <label class="label-name">Your Name</label>
+            <label class="label-period">Period</label>
+            <label class="label-date">Date</label>
+            <input
+              id="student-name"
+              class="field"
+              type="text"
+              placeholder="First Last Initial"
+            />
+            <input
+              id="student-period"
+              class="field"
+              type="text"
+              placeholder="P3"
+            />
+            <input id="student-date" class="field" type="date" />
+          </div>
+        </div>
+
+        <div class="resume-banner" id="resume-banner">
+          <span id="resume-details"></span>
+          <button onclick="resumeSaved()">Resume</button>
+          <button class="clear-btn" onclick="clearSavedWork()">
+            Start Fresh
+          </button>
+        </div>
+
+        <div class="route-section">
+          <h2>Choose Your Destinations</h2>
+          <p>
+            Pick at least 4 destinations. Each one uses equivalent ratios in a
+            real travel scenario (6.RP.3).
+          </p>
+          <div class="preset-row">
+            <button class="preset-btn" onclick="applyPreset('budget')">
+              Budget Backpacker
+            </button>
+            <button class="preset-btn" onclick="applyPreset('luxury')">
+              Luxury Tour
+            </button>
+            <button class="preset-btn" onclick="applyPreset('adventure')">
+              Adventure Path
+            </button>
+            <button class="preset-btn" onclick="applyPreset('all')">
+              World Tour
+            </button>
+          </div>
+          <div class="route-grid" id="route-grid"></div>
+          <div class="route-note" id="route-note">Selected: 4 destinations</div>
+          <button class="start-btn" onclick="startExpedition()">
+            Board Your Flight ✈️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ APP SCREEN ═══════ -->
+    <div class="app-screen" id="app-screen">
+      <div class="app-header">
+        <span class="progress-text" id="progress-label"
+          >Destination 1 of 4</span
+        >
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="score-text" id="score-label">0 correct</span>
+        <button class="save-btn" onclick="manualSave()">💾 Save</button>
+        <span class="save-status" id="save-status"></span>
+      </div>
+      <div class="app-body">
+        <div class="sidebar">
+          <h3>Travel Log</h3>
+          <select
+            class="jump-select"
+            id="jump-select"
+            onchange="jumpToMission(Number(this.value))"
+          ></select>
+          <div id="mission-list"></div>
+        </div>
+        <div class="mission-main">
+          <div id="mission-card" class="fade-in"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ RESULTS SCREEN ═══════ -->
+    <div class="results-screen" id="results-screen">
+      <div class="results">
+        <div class="results-hero">
+          <div style="font-size: 3rem; margin-bottom: 8px">🏆</div>
+          <h1>Trip Complete!</h1>
+          <p class="results-sub" id="results-subtitle"></p>
+        </div>
+        <div class="score-grid">
+          <div class="score-card">
+            <div class="big" id="math-score">0/0</div>
+            <div class="label">Math Correct</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="explore-score">0/0</div>
+            <div class="label">Logs Complete</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="overall-score">0%</div>
+            <div class="label">Travel Agent Rating</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="time-score">0m</div>
+            <div class="label">Trip Time</div>
+          </div>
+        </div>
+        <div class="passport-stamps" id="result-stamps"></div>
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>Destination</th>
+              <th>Math Status</th>
+              <th>Observation</th>
+              <th>Work Shown</th>
+            </tr>
+          </thead>
+          <tbody id="review-body"></tbody>
+        </table>
+        <div class="submit-section">
+          <h3>Submit Your Travel Report</h3>
+          <div class="submit-row">
+            <button class="primary-btn" onclick="downloadReport('html')">
+              📄 Download Report
+            </button>
+            <button class="ghost-btn" onclick="copyReport()">
+              📋 Copy to Clipboard
+            </button>
+            <button class="ghost-btn" onclick="downloadReport('txt')">
+              📝 Text File
+            </button>
+          </div>
+          <div class="submit-row">
+            <button class="ghost-btn" onclick="openClassroom()">
+              Google Classroom ↗
+            </button>
+            <input
+              id="teacher-email"
+              class="field"
+              type="email"
+              placeholder="Teacher email"
+              style="max-width: 220px"
+            />
+            <button class="ghost-btn" onclick="submitViaEmail()">
+              Email Report
+            </button>
+          </div>
+          <div class="submit-row" style="margin-top: 8px">
+            <input
+              id="submit-period"
+              class="field"
+              type="text"
+              placeholder="Period"
+              style="max-width: 120px"
+              readonly
+            />
+          </div>
+          <div class="copy-confirm" id="copy-confirm">
+            ✓ Copied to clipboard!
+          </div>
+          <div class="email-confirm" id="email-confirm">
+            ✓ Email client opened
+          </div>
+          <button
+            class="ghost-btn"
+            style="margin-top: 16px"
+            onclick="restartProject()"
+          >
+            🔄 Start Over
+          </button>
+        </div>
+        <div class="footer-brand">Neft Teacher — Ratio Route Challenge</div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      /* ══════════════════════════════════════════
+         MISSIONS — 8 Equivalent Ratio Destinations
+         ══════════════════════════════════════════ */
+      const MISSIONS = [
+        {
+          id: "currency_exchange",
+          emoji: "💴",
+          location: "Tokyo, Japan",
+          badge: "Currency Exchange",
+          focus: "Equivalent Ratios — Scaling",
+          type: "ratio_table",
+          formula: "3/450 = 45/x",
+          query: "Tokyo Japan currency exchange travel",
+          explorePrompt:
+            "Search to find out about currency exchange when traveling to Japan. What is the yen and how do travelers convert money?",
+          ratioPrompt:
+            "How does setting up equivalent ratios help you convert between currencies?",
+          story:
+            "You are exchanging US dollars to Japanese yen. The exchange rate is $3 for every ¥450. If you exchange $45, how many yen will you receive?",
+          data: [
+            ["Exchange rate", "$3 = ¥450", ""],
+            ["Amount to exchange", "$45", ""],
+            ["Find", "¥ ?", ""],
+          ],
+          parts: 1,
+          answer: 6750,
+          unit: "yen",
+          tolerance: 1,
+          substitution: "3/450 = 45/x → x = 6,750 yen",
+          hint1:
+            "Set up the proportion: $3 is to ¥450 as $45 is to x yen. How many times does 3 go into 45?",
+          hint2:
+            "45 ÷ 3 = 15, so multiply 450 × 15 = 6,750 yen. Or cross-multiply: 3x = 450 × 45 = 20,250; x = 6,750.",
+          extension:
+            "If your hotel costs ¥13,500 per night, how much is that in US dollars? (Use the same rate.)",
+          extAnswer: "$90",
+        },
+        {
+          id: "map_scale",
+          emoji: "🗺️",
+          location: "Grand Canyon, USA",
+          badge: "Map Scale Distance",
+          focus: "Equivalent Ratios — Scale",
+          type: "unit_rate",
+          formula: "1/25 = 3.5/x",
+          query: "Grand Canyon hiking trail distances",
+          explorePrompt:
+            "Search to learn about hiking trails at the Grand Canyon. How do hikers use maps to measure trail distances?",
+          ratioPrompt:
+            "How does a map scale create a ratio between map distance and real distance?",
+          story:
+            "A trail map of the Grand Canyon uses a scale of 1 inch : 25 miles. You measure a trail on the map as 3.5 inches. What is the actual distance of the trail?",
+          data: [
+            ["Map scale", "1 inch = 25 miles", ""],
+            ["Map measurement", "3.5 inches", ""],
+            ["Find", "actual miles", ""],
+          ],
+          parts: 1,
+          answer: 87.5,
+          unit: "miles",
+          tolerance: 0.5,
+          substitution: "1/25 = 3.5/x → x = 87.5 miles",
+          hint1:
+            "Set up the proportion: 1 inch / 25 miles = 3.5 inches / x miles.",
+          hint2:
+            "Cross-multiply: 1 × x = 25 × 3.5 = 87.5. The trail is 87.5 miles.",
+          extension:
+            "If another trail measures 5.2 inches on the same map, how many miles is that?",
+          extAnswer: "130 miles",
+        },
+        {
+          id: "recipe_group",
+          emoji: "🥐",
+          location: "Paris, France",
+          badge: "Recipe for a Group",
+          focus: "Equivalent Ratios — Scaling Up",
+          type: "ratio_table",
+          formula: "6/4 = x/10 and 3/4 = y/10",
+          query: "French cooking techniques Paris",
+          explorePrompt:
+            "Search to learn about French cooking. What famous pastries or dishes come from Paris, and how do chefs scale recipes?",
+          ratioPrompt:
+            "How do equivalent ratios help you scale a recipe up or down for different group sizes?",
+          story:
+            "A French crepe recipe for 4 people uses 6 eggs and 3 cups of flour. You are cooking for 10 people. How many eggs and how many cups of flour do you need?",
+          data: [
+            ["Original recipe serves", "4 people", ""],
+            ["Eggs for 4", "6 eggs", ""],
+            ["Flour for 4", "3 cups", ""],
+            ["New group size", "10 people", ""],
+          ],
+          parts: 2,
+          answer: 15,
+          answer2: 7.5,
+          unit: "eggs",
+          unit2: "cups flour",
+          tolerance: 0.1,
+          tolerance2: 0.1,
+          substitution:
+            "6/4 = x/10 → x = 15 eggs; 3/4 = y/10 → y = 7.5 cups flour",
+          hint1:
+            "The scaling factor is 10 ÷ 4 = 2.5. Multiply each ingredient by 2.5.",
+          hint2:
+            "Eggs: 6 × 2.5 = 15 eggs. Flour: 3 × 2.5 = 7.5 cups. Or cross-multiply each proportion.",
+          extension:
+            "If you only have 9 eggs, how many people could you serve?",
+          extAnswer: "6 people",
+        },
+        {
+          id: "speed_distance",
+          emoji: "🚴",
+          location: "Tour de France",
+          badge: "Speed and Distance",
+          focus: "Unit Rate — Speed",
+          type: "unit_rate",
+          formula: "12 ÷ 0.75 = mph; mph × 2.5",
+          query: "Tour de France cycling routes stages",
+          explorePrompt:
+            "Search to learn about the Tour de France. How far do cyclists ride each day, and what speeds do they reach?",
+          ratioPrompt:
+            "How does finding a unit rate (miles per hour) help you predict distances over different times?",
+          story:
+            "A cyclist in the Tour de France covers 12 miles in 3/4 of an hour. What is the cyclist's speed in miles per hour? At that speed, how far would they ride in 2.5 hours?",
+          data: [
+            ["Distance covered", "12 miles", ""],
+            ["Time taken", "3/4 hour (0.75 hr)", ""],
+            ["Find", "speed (mph) and distance in 2.5 hours", ""],
+          ],
+          parts: 2,
+          answer: 16,
+          answer2: 40,
+          unit: "mph",
+          unit2: "miles",
+          tolerance: 0.1,
+          tolerance2: 0.5,
+          substitution: "12 ÷ 0.75 = 16 mph; 16 × 2.5 = 40 miles",
+          hint1:
+            "To find speed, divide distance by time: 12 ÷ 0.75. Then multiply speed × 2.5 for the second part.",
+          hint2: "12 ÷ 0.75 = 16 mph. Then 16 × 2.5 = 40 miles in 2.5 hours.",
+          extension: "At 16 mph, how long would it take to ride 100 miles?",
+          extAnswer: "6.25 hours (6 hours 15 minutes)",
+        },
+        {
+          id: "photo_enlarge",
+          emoji: "📸",
+          location: "Machu Picchu, Peru",
+          badge: "Photo Enlargement",
+          focus: "Equivalent Ratios — Proportional Scaling",
+          type: "cross_multiply",
+          formula: "4/6 = 10/x",
+          query: "Machu Picchu Peru photography tourism",
+          explorePrompt:
+            "Search to learn about Machu Picchu. What makes this ancient site so photogenic, and how do tourists capture its beauty?",
+          ratioPrompt:
+            "How does keeping ratios equivalent ensure a photo stays proportional when enlarged?",
+          story:
+            "You took a 4-inch wide by 6-inch tall photo of Machu Picchu. You want to enlarge it proportionally so the new width is 10 inches. What will the new height be?",
+          data: [
+            ["Original width", "4 inches", ""],
+            ["Original height", "6 inches", ""],
+            ["New width", "10 inches", ""],
+            ["Find", "new height", ""],
+          ],
+          parts: 1,
+          answer: 15,
+          unit: "inches",
+          tolerance: 0.1,
+          substitution: "4/6 = 10/x → 4x = 60 → x = 15 inches",
+          hint1:
+            "Set up: width/height = width/height. So 4/6 = 10/x. Cross-multiply to solve.",
+          hint2: "4x = 6 × 10 = 60. So x = 60 ÷ 4 = 15 inches tall.",
+          extension:
+            "If you wanted the height to be exactly 24 inches, what would the width need to be?",
+          extAnswer: "16 inches",
+        },
+        {
+          id: "fuel_efficiency",
+          emoji: "🚗",
+          location: "Australian Outback",
+          badge: "Fuel Efficiency",
+          focus: "Unit Rate — Miles Per Gallon",
+          type: "unit_rate",
+          formula: "180/6 = mpg; mpg × 8",
+          query: "Australian Outback road trip routes",
+          explorePrompt:
+            "Search to learn about road trips through the Australian Outback. How do travelers plan fuel stops across vast distances?",
+          ratioPrompt:
+            "How does knowing the unit rate (miles per gallon) help plan a road trip?",
+          story:
+            "Your car uses 6 gallons of fuel for every 180 miles. How many miles per gallon does the car get? How far can you travel on 8 gallons?",
+          data: [
+            ["Fuel used", "6 gallons", ""],
+            ["Distance driven", "180 miles", ""],
+            ["Find", "mpg and distance on 8 gallons", ""],
+          ],
+          parts: 2,
+          answer: 30,
+          answer2: 240,
+          unit: "mpg",
+          unit2: "miles",
+          tolerance: 0.1,
+          tolerance2: 1,
+          substitution: "180 ÷ 6 = 30 mpg; 30 × 8 = 240 miles",
+          hint1:
+            "Divide total miles by total gallons to find the unit rate. Then multiply by 8.",
+          hint2:
+            "180 ÷ 6 = 30 miles per gallon. 30 × 8 = 240 miles on 8 gallons.",
+          extension:
+            "If the next fuel station is 330 miles away, how many gallons do you need?",
+          extAnswer: "11 gallons",
+        },
+        {
+          id: "paint_mixing",
+          emoji: "🎨",
+          location: "Taj Mahal, India",
+          badge: "Paint Mixing",
+          focus: "Part-to-Whole Ratios",
+          type: "ratio_table",
+          formula: "2/(2+5) × 35 = blue cups",
+          query: "Taj Mahal India restoration architecture",
+          explorePrompt:
+            "Search to learn about the Taj Mahal's restoration. How do workers preserve its famous white marble and decorative details?",
+          ratioPrompt:
+            "How do part-to-whole ratios help when mixing paints or materials in a specific proportion?",
+          story:
+            "Restoration paint for the Taj Mahal mixes blue and white in a ratio of 2:5. If you need 35 cups of paint total, how many cups of blue paint do you need?",
+          data: [
+            ["Blue : White ratio", "2 : 5", ""],
+            ["Total parts", "2 + 5 = 7 parts", ""],
+            ["Total paint needed", "35 cups", ""],
+            ["Find", "cups of blue", ""],
+          ],
+          parts: 1,
+          answer: 10,
+          unit: "cups blue",
+          tolerance: 0.1,
+          substitution: "2/7 × 35 = 10 cups blue (and 25 cups white)",
+          hint1:
+            "Total parts = 2 + 5 = 7. Each part = 35 ÷ 7 = 5 cups. Blue = 2 parts.",
+          hint2:
+            "Each part = 35 ÷ 7 = 5 cups. Blue = 2 × 5 = 10 cups. White = 5 × 5 = 25 cups.",
+          extension:
+            "If you needed 63 cups total using the same ratio, how much white paint?",
+          extAnswer: "45 cups white",
+        },
+        {
+          id: "price_compare",
+          emoji: "🏺",
+          location: "Egyptian Bazaar, Cairo",
+          badge: "Price Comparison",
+          focus: "Unit Rate — Price Per Ounce",
+          type: "unit_rate",
+          formula: "$4.80/12 vs $3.60/8",
+          query: "Egyptian bazaar Cairo spice market",
+          explorePrompt:
+            "Search to learn about the spice markets (bazaars) of Cairo, Egypt. What spices are sold and how do vendors price them?",
+          ratioPrompt:
+            "How does finding the unit price (cost per ounce) help you compare deals from different vendors?",
+          story:
+            "At an Egyptian bazaar, Vendor A sells 12 oz of spices for $4.80 and Vendor B sells 8 oz for $3.60. Which vendor offers the better deal? Find both unit prices.",
+          data: [
+            ["Vendor A", "12 oz for $4.80", ""],
+            ["Vendor B", "8 oz for $3.60", ""],
+            ["Find", "price per oz for each; which is better?", ""],
+          ],
+          parts: 2,
+          answer: 0.4,
+          answer2: 0.45,
+          unit: "$/oz (A)",
+          unit2: "$/oz (B)",
+          tolerance: 0.01,
+          tolerance2: 0.01,
+          substitution:
+            "A: $4.80 ÷ 12 = $0.40/oz; B: $3.60 ÷ 8 = $0.45/oz → Vendor A is the better deal",
+          hint1:
+            "Divide each total price by the number of ounces to find the unit price for each vendor.",
+          hint2:
+            "Vendor A: $4.80 ÷ 12 = $0.40/oz. Vendor B: $3.60 ÷ 8 = $0.45/oz. Vendor A is cheaper per ounce.",
+          extension:
+            "If you need 20 oz of spices, how much would you pay at Vendor A's rate?",
+          extAnswer: "$8.00",
+        },
+      ];
+
+      const METHODS = {
+        ratio_table:
+          "Ratio Table: Write equivalent ratios by multiplying or dividing both parts by the same number.",
+        unit_rate:
+          "Unit Rate: Divide to find the rate for 1 unit, then multiply to scale.",
+        cross_multiply:
+          "Cross-Multiplication: Set up a/b = c/d, then solve ad = bc.",
+      };
+
+      const SENTENCE_STARTERS = [
+        "I noticed that ",
+        "One real detail I found is ",
+        "This connects to ratios because ",
+        "The math in this trip helps because ",
+      ];
+
+      const PRESETS = {
+        budget: [
+          "currency_exchange",
+          "map_scale",
+          "fuel_efficiency",
+          "price_compare",
+        ],
+        luxury: [
+          "recipe_group",
+          "photo_enlarge",
+          "paint_mixing",
+          "price_compare",
+        ],
+        adventure: [
+          "map_scale",
+          "speed_distance",
+          "fuel_efficiency",
+          "photo_enlarge",
+        ],
+        all: MISSIONS.map((m) => m.id),
+      };
+
+      const STORAGE_KEY = "globalTravelPlanner_v1";
+      let selectedIds = [...PRESETS.budget];
+      let state = {
+        started: false,
+        student: { first: "", period: "", date: "" },
+        selectedIds: [...selectedIds],
+        currentIndex: 0,
+        responses: {},
+        startTime: null,
+        endTime: null,
+      };
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function missionById(id) {
+        return MISSIONS.find((m) => m.id === id);
+      }
+      function responseFor(id) {
+        if (!state.responses[id]) {
+          state.responses[id] = {
+            checks: { opened: false, found: false, connection: false },
+            observation: "",
+            connectionNote: "",
+            method: "",
+            workShown: "",
+            numericAnswer: "",
+            numericAnswer2: "",
+            checked: false,
+            correct: false,
+            extensionAnswer: "",
+            hintsShown: 0,
+          };
+        }
+        return state.responses[id];
+      }
+      function escapeHtml(v) {
+        return String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[c],
+        );
+      }
+      function cleanNumber(v) {
+        if (v == null) return NaN;
+        return Number(
+          String(v)
+            .replace(/,/g, "")
+            .replace(/\$/g, "")
+            .replace(/yen|miles|eggs|cups|mph|mpg|inches|oz/gi, "")
+            .trim(),
+        );
+      }
+      function todayISO() {
+        const d = new Date(),
+          p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+      }
+
+      /* ── Init ── */
+      function init() {
+        $("student-date").value = todayISO();
+        applyPreset("budget", true);
+        renderRouteCards();
+        checkSavedWork();
+        window.addEventListener("beforeunload", () => {
+          if (state.started) saveState(false);
+        });
+      }
+      function checkSavedWork() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        try {
+          const saved = JSON.parse(raw);
+          if (!saved || !saved.started) return;
+          $("resume-banner").style.display = "flex";
+          const name = [saved.student?.first].filter(Boolean).join(" ");
+          $("resume-details").textContent =
+            `${name || "A student"} has saved progress with ${saved.selectedIds?.length || 0} destinations.`;
+        } catch (e) {}
+      }
+      function resumeSaved() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        state = JSON.parse(raw);
+        selectedIds = [...state.selectedIds];
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+      }
+      function clearSavedWork() {
+        localStorage.removeItem(STORAGE_KEY);
+        $("resume-banner").style.display = "none";
+        $("save-status").textContent = "Fresh start";
+      }
+      function manualSave() {
+        if (!state.started) {
+          $("save-status").textContent = "Start first";
+          return;
+        }
+        saveState(true);
+      }
+      function saveState(show) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (show)
+          $("save-status").textContent =
+            "Saved " +
+            new Date().toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            });
+      }
+      function showScreen(name) {
+        ["intro", "app", "results"].forEach((s) => {
+          const el = $(s + "-screen");
+          el.classList.toggle("active", s === name);
+        });
+      }
+
+      /* ── Route selection ── */
+      function renderRouteCards() {
+        const grid = $("route-grid");
+        grid.innerHTML = "";
+        MISSIONS.forEach((m) => {
+          const selected = selectedIds.includes(m.id);
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "route-card" + (selected ? " selected" : "");
+          card.onclick = () => toggleMission(m.id);
+          card.innerHTML = `
+      <div class="rc-top"><span class="rc-emoji">${m.emoji}</span><span class="rc-check">${selected ? "✓" : ""}</span></div>
+      <div class="rc-name">${escapeHtml(m.badge)}</div>
+      <div class="rc-focus">${escapeHtml(m.location)}</div>
+      <div class="rc-formula">${escapeHtml(m.formula)}</div>
+    `;
+          grid.appendChild(card);
+        });
+        $("route-note").textContent =
+          `Selected: ${selectedIds.length} destination${selectedIds.length === 1 ? "" : "s"}`;
+      }
+      function applyPreset(preset, silent = false) {
+        selectedIds = [...(PRESETS[preset] || PRESETS.budget)];
+        if (!silent) renderRouteCards();
+      }
+      function toggleMission(id) {
+        if (selectedIds.includes(id))
+          selectedIds = selectedIds.filter((x) => x !== id);
+        else selectedIds.push(id);
+        renderRouteCards();
+      }
+
+      /* ── Start ── */
+      function startExpedition() {
+        const first = $("student-name").value.trim();
+        if (!first) {
+          $("student-name").focus();
+          $("save-status").textContent = "Enter name";
+          return;
+        }
+        if (selectedIds.length < 4) {
+          $("route-note").textContent = "Choose at least 4 destinations.";
+          $("route-note").style.color = `var(--error)`;
+          return;
+        }
+        state = {
+          started: true,
+          student: {
+            first,
+            period: $("student-period").value.trim(),
+            date: $("student-date").value || todayISO(),
+          },
+          selectedIds: [...selectedIds],
+          currentIndex: 0,
+          responses: {},
+          startTime: Date.now(),
+          endTime: null,
+        };
+        state.selectedIds.forEach((id) => responseFor(id));
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+        saveState(true);
+      }
+
+      /* ── Sidebar ── */
+      function renderSidebar() {
+        const jump = $("jump-select");
+        jump.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = `${i + 1}. ${m.emoji} ${m.badge}`;
+          jump.appendChild(opt);
+        });
+        const list = $("mission-list");
+        list.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const r = responseFor(id);
+          const done = r.checked && r.correct;
+          const explored = explorationComplete(r);
+          const mini = document.createElement("button");
+          mini.type = "button";
+          mini.className =
+            "mission-mini" +
+            (i === state.currentIndex ? " current" : "") +
+            (done ? " done" : "");
+          mini.onclick = () => jumpToMission(i);
+          mini.innerHTML = `
+      <span class="mini-flag">${m.emoji}</span>
+      <span class="mini-text">
+        <span class="mini-name">${escapeHtml(m.badge)}</span>
+        <span class="mini-status">${done ? "Math correct" : r.checked ? "Check feedback" : "Not checked"} · ${explored ? "Log done" : "Log open"}</span>
+      </span>
+      <span class="mini-check">${done ? "✅" : explored ? "📝" : "○"}</span>
+    `;
+          list.appendChild(mini);
+        });
+        updateHeaderProgress();
+      }
+      function updateHeaderProgress() {
+        const total = state.selectedIds.length || 1;
+        const idx = state.currentIndex + 1;
+        const correct = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        $("progress-label").textContent = `Destination ${idx} of ${total}`;
+        $("score-label").textContent = `${correct} correct`;
+        $("progress-fill").style.width = `${Math.round((idx / total) * 100)}%`;
+        $("jump-select").value = state.currentIndex;
+      }
+      function jumpToMission(index) {
+        persistInputs();
+        state.currentIndex = Math.max(
+          0,
+          Math.min(index, state.selectedIds.length - 1),
+        );
+        renderSidebar();
+        renderMission();
+        saveState(false);
+      }
+
+      /* ── Helpers ── */
+      function sentenceStarterButtons(targetId) {
+        return SENTENCE_STARTERS.map(
+          (s) =>
+            `<button type="button" class="starter-chip" onclick="insertStarter('${targetId}',${JSON.stringify(s)})">${escapeHtml(s.trim())}...</button>`,
+        ).join("");
+      }
+      function insertStarter(targetId, starter) {
+        const box = $(targetId);
+        if (!box) return;
+        const start = box.selectionStart ?? box.value.length;
+        const before = box.value.slice(0, start);
+        const after = box.value.slice(box.selectionEnd ?? box.value.length);
+        const space = before && !/\s$/.test(before) ? " " : "";
+        box.value = before + space + starter + after;
+        box.focus();
+        const caret = (before + space + starter).length;
+        box.setSelectionRange(caret, caret);
+        saveState(false);
+      }
+
+      function mapLinks(m) {
+        const q = encodeURIComponent(m.query);
+        return `
+    <a class="explore-link" href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">🖼️ Images</a>
+    <a class="explore-link" href="https://www.google.com/search?q=${q}+facts+for+kids" target="_blank" rel="noopener">🔎 Facts</a>
+    <a class="explore-link" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🌐 Search</a>
+  `;
+      }
+      function dataTable(m) {
+        return (
+          `<table class="data-table"><thead><tr><th>Information</th><th>Value</th></tr></thead><tbody>` +
+          m.data
+            .map(
+              (row) =>
+                `<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])} ${escapeHtml(row[2])}</td></tr>`,
+            )
+            .join("") +
+          `</tbody></table>`
+        );
+      }
+      function methodOptions(selected) {
+        return (
+          '<option value="">-- Choose a method --</option>' +
+          Object.entries(METHODS)
+            .map(
+              ([key, label]) =>
+                `<option value="${key}" ${selected === key ? "selected" : ""}>${escapeHtml(label)}</option>`,
+            )
+            .join("")
+        );
+      }
+
+      /* ── Render mission ── */
+      function renderMission() {
+        const id = state.selectedIds[state.currentIndex];
+        const m = missionById(id);
+        const r = responseFor(id);
+        const card = $("mission-card");
+        const isTwoPart = m.parts === 2;
+
+        let answerHtml;
+        if (isTwoPart) {
+          answerHtml = `
+        <div class="two-part-grid">
+          <div class="lab-field">
+            <label for="numeric-answer">Answer Part 1</label>
+            <div class="answer-row">
+              <input id="numeric-answer" type="text" value="${escapeHtml(r.numericAnswer)}" oninput="updateText('numericAnswer',this.value)" placeholder="Type number">
+              <span class="unit-pill">${escapeHtml(m.unit)}</span>
+            </div>
+          </div>
+          <div class="lab-field">
+            <label for="numeric-answer2">Answer Part 2</label>
+            <div class="answer-row">
+              <input id="numeric-answer2" type="text" value="${escapeHtml(r.numericAnswer2)}" oninput="updateText('numericAnswer2',this.value)" placeholder="Type number">
+              <span class="unit-pill">${escapeHtml(m.unit2)}</span>
+            </div>
+          </div>
+        </div>`;
+        } else {
+          answerHtml = `
+        <div class="lab-field">
+          <label for="numeric-answer">My Answer</label>
+          <div class="answer-row">
+            <input id="numeric-answer" type="text" value="${escapeHtml(r.numericAnswer)}" oninput="updateText('numericAnswer',this.value)" placeholder="Type number">
+            <span class="unit-pill">${escapeHtml(m.unit)}</span>
+          </div>
+        </div>`;
+        }
+
+        card.innerHTML = `
+    <div class="dest-hero">
+      <div class="dest-top">
+        <div class="dest-emoji">${m.emoji}</div>
+        <div>
+          <div class="dest-kicker">${escapeHtml(m.location)} · ${escapeHtml(m.badge)}</div>
+          <div class="dest-title">${escapeHtml(m.badge)}</div>
+          <div class="dest-sub">${escapeHtml(m.focus)} · ${escapeHtml(m.formula)}</div>
+        </div>
+        <div class="stamp">Stop<strong>${state.currentIndex + 1}/${state.selectedIds.length}</strong></div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel soft">
+        <h3>🔍 Explore the Destination</h3>
+        <p style="font-size:.88rem;margin-bottom:10px;">${escapeHtml(m.explorePrompt)}</p>
+        <div class="explore-links">${mapLinks(m)}</div>
+        <div class="check-grid">
+          <label class="check-row"><input type="checkbox" id="check-opened" ${r.checks.opened ? "checked" : ""} onchange="updateCheck('opened',this.checked)"> I searched and found information.</label>
+          <label class="check-row"><input type="checkbox" id="check-found" ${r.checks.found ? "checked" : ""} onchange="updateCheck('found',this.checked)"> I found one real detail about this place.</label>
+          <label class="check-row"><input type="checkbox" id="check-connection" ${r.checks.connection ? "checked" : ""} onchange="updateCheck('connection',this.checked)"> I connected it to the ratio problem.</label>
+        </div>
+        <div class="lab-field">
+          <label for="observation">Travel Log: What I Found</label>
+          <div class="starter-note">Click a sentence starter, then finish it with your own real detail.</div>
+          <div class="starter-tray">${sentenceStarterButtons("observation")}</div>
+          <textarea id="observation" oninput="updateText('observation',this.value)" placeholder="Write what you discovered about this destination...">${escapeHtml(r.observation)}</textarea>
+        </div>
+        <div class="lab-field" style="margin-top:8px">
+          <label for="connection-note">Ratio Connection</label>
+          <textarea id="connection-note" oninput="updateText('connectionNote',this.value)" placeholder="${escapeHtml(m.ratioPrompt)}">${escapeHtml(r.connectionNote)}</textarea>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>📊 Trip Data</h3>
+        <div class="shape-evidence-card">
+          <div class="shape-evidence-text">
+            <strong>Travel Briefing</strong>
+            <p>${escapeHtml(m.story)}</p>
+            <span class="shape-tag">${escapeHtml(m.focus)}</span>
+          </div>
+        </div>
+        ${dataTable(m)}
+      </div>
+    </div>
+
+    <div class="formula-lab">
+      <h3>🧮 Calculation Lab</h3>
+      <p style="margin-bottom:14px;font-size:.9rem;">${escapeHtml(m.story)} Show your method below.</p>
+      <div class="lab-grid">
+        <div class="lab-field">
+          <label for="method-select">Method I Used</label>
+          <select id="method-select" onchange="updateText('method',this.value)">${methodOptions(r.method)}</select>
+        </div>
+        ${answerHtml}
+        <div class="lab-field full">
+          <label for="work-shown">Show Your Work</label>
+          <textarea id="work-shown" oninput="updateText('workShown',this.value)" placeholder="Show steps: set up the ratio, find the scale factor, cross-multiply, or use a ratio table...">${escapeHtml(r.workShown)}</textarea>
+        </div>
+      </div>
+      <div class="hint-row">
+        <button class="secondary-btn" onclick="checkCalculation()">Check Answer</button>
+        <button class="ghost-btn" onclick="showHint(1)">Hint 1</button>
+        <button class="ghost-btn" onclick="showHint(2)">Hint 2</button>
+      </div>
+      <div class="feedback ${r.checked ? (r.correct ? "show ok" : "show no") : ""}" id="feedback-box">
+        ${r.checked ? feedbackText(m, r) : ""}
+      </div>
+      <div class="hint-box" id="hint-box"></div>
+    </div>
+
+    <div class="panel warm" style="margin-top:20px">
+      <h3>🌍 Extension Challenge</h3>
+      <p style="font-size:.88rem;margin-bottom:12px;">${escapeHtml(m.extension)}</p>
+      <div class="extension-row">
+        <div class="lab-field">
+          <label for="extension-answer">My Extension Answer</label>
+          <input id="extension-answer" type="text" value="${escapeHtml(r.extensionAnswer)}" oninput="updateText('extensionAnswer',this.value)" placeholder="Show your reasoning...">
+        </div>
+        <div class="extension-output" id="extension-output">Expected: ${escapeHtml(m.extAnswer)}</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="ghost-btn" onclick="previousMission()" ${state.currentIndex === 0 ? "disabled" : ""}>← Previous</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghost-btn" onclick="downloadCheckpoint()">💾 Checkpoint</button>
+        <button class="primary-btn" onclick="nextMission()">${state.currentIndex === state.selectedIds.length - 1 ? "Finish Trip 🏁" : "Next Destination →"}</button>
+      </div>
+    </div>
+  `;
+        card.classList.remove("fade-in");
+        void card.offsetWidth;
+        card.classList.add("fade-in");
+        if (!r.method) {
+          r.method = "";
+          $("method-select").value = "";
+        }
+        updateHeaderProgress();
+      }
+
+      /* ── Feedback & checking ── */
+      function feedbackText(m, r) {
+        if (r.correct)
+          return `<strong>✅ Correct!</strong> ${escapeHtml(m.substitution)}.`;
+        return `<strong>Not quite.</strong> Check your work. Expected: <em>${escapeHtml(m.substitution)}</em>.`;
+      }
+      function explorationComplete(r) {
+        return !!(
+          r.checks.opened &&
+          r.checks.found &&
+          r.checks.connection &&
+          r.observation.trim().length >= 12 &&
+          r.connectionNote.trim().length >= 8
+        );
+      }
+      function updateCheck(key, val) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        r.checks[key] = val;
+        saveState(false);
+        renderSidebar();
+      }
+      function updateText(field, value) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        r[field] = value;
+        saveState(false);
+      }
+      function persistInputs() {
+        const id = state.selectedIds[state.currentIndex];
+        if (!id) return;
+        const r = responseFor(id);
+        if ($("observation")) r.observation = $("observation").value;
+        if ($("connection-note")) r.connectionNote = $("connection-note").value;
+        if ($("method-select")) r.method = $("method-select").value;
+        if ($("work-shown")) r.workShown = $("work-shown").value;
+        if ($("numeric-answer")) r.numericAnswer = $("numeric-answer").value;
+        if ($("numeric-answer2")) r.numericAnswer2 = $("numeric-answer2").value;
+        if ($("extension-answer"))
+          r.extensionAnswer = $("extension-answer").value;
+      }
+      function checkCalculation() {
+        persistInputs();
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        const value = cleanNumber(r.numericAnswer);
+        const tol = m.tolerance ?? 0.01;
+
+        let part1OK = isFinite(value) && Math.abs(value - m.answer) <= tol;
+
+        let part2OK = true;
+        if (m.parts === 2) {
+          const value2 = cleanNumber(r.numericAnswer2);
+          const tol2 = m.tolerance2 ?? 0.01;
+          part2OK = isFinite(value2) && Math.abs(value2 - m.answer2) <= tol2;
+        }
+
+        r.checked = true;
+        r.correct = part1OK && part2OK;
+
+        const fb = $("feedback-box");
+        fb.className = "feedback show " + (r.correct ? "ok" : "no");
+        if (r.correct) {
+          fb.innerHTML = feedbackText(m, r);
+        } else {
+          let detail = "";
+          if (!part1OK)
+            detail += `Part 1 expected: <strong>${escapeHtml(m.answer)} ${escapeHtml(m.unit)}</strong>. `;
+          if (m.parts === 2 && !part2OK)
+            detail += `Part 2 expected: <strong>${escapeHtml(m.answer2)} ${escapeHtml(m.unit2)}</strong>. `;
+          fb.innerHTML = `<strong>Try again.</strong> ${detail}<br><em>${escapeHtml(m.substitution)}</em>`;
+        }
+        saveState(true);
+        renderSidebar();
+      }
+      function showHint(level) {
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        r.hintsShown = Math.max(r.hintsShown || 0, level);
+        const box = $("hint-box");
+        box.style.display = "block";
+        box.innerHTML =
+          level === 1
+            ? `<strong>Hint 1:</strong> ${escapeHtml(m.hint1)}`
+            : `<strong>Hint 2:</strong> ${escapeHtml(m.hint2)}`;
+        saveState(false);
+      }
+
+      /* ── Navigation ── */
+      function previousMission() {
+        persistInputs();
+        if (state.currentIndex > 0) {
+          state.currentIndex--;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+      function nextMission() {
+        persistInputs();
+        if (state.currentIndex >= state.selectedIds.length - 1) showResults();
+        else {
+          state.currentIndex++;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+
+      /* ── Results ── */
+      function showResults() {
+        persistInputs();
+        state.endTime = Date.now();
+        saveState(true);
+        showScreen("results");
+        const total = state.selectedIds.length;
+        const mathCorrect = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        const exploreComplete = state.selectedIds.filter((id) =>
+          explorationComplete(responseFor(id)),
+        ).length;
+        const readiness = Math.round(
+          ((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100,
+        );
+        const mins = Math.max(
+          0,
+          Math.round(
+            ((state.endTime || Date.now()) - (state.startTime || Date.now())) /
+              60000,
+          ),
+        );
+
+        $("results-subtitle").textContent =
+          `${state.student.first} · Period ${state.student.period || "—"} · ${state.student.date || ""}`;
+        $("math-score").textContent = `${mathCorrect}/${total}`;
+        $("explore-score").textContent = `${exploreComplete}/${total}`;
+        $("overall-score").textContent = `${readiness}%`;
+        $("time-score").textContent = `${mins}m`;
+
+        const starCount =
+          readiness >= 90 ? 3 : readiness >= 70 ? 2 : readiness >= 50 ? 1 : 0;
+        const stars = "⭐".repeat(starCount) + "☆".repeat(3 - starCount);
+
+        $("result-stamps").innerHTML =
+          `<span class="passport-stamp" title="Star Rating">${stars}</span>` +
+          state.selectedIds
+            .map((id) => {
+              const m = missionById(id);
+              const r = responseFor(id);
+              return `<span class="passport-stamp" title="${escapeHtml(m.badge)}">${m.emoji}${r.correct ? "✓" : ""}</span>`;
+            })
+            .join("");
+
+        $("review-body").innerHTML = state.selectedIds
+          .map((id, i) => {
+            const m = missionById(id);
+            const r = responseFor(id);
+            const cls = r.correct && explorationComplete(r) ? "good" : "needs";
+            let answerDisplay =
+              escapeHtml(r.numericAnswer || "—") + " " + escapeHtml(m.unit);
+            if (m.parts === 2) {
+              answerDisplay +=
+                "; " +
+                escapeHtml(r.numericAnswer2 || "—") +
+                " " +
+                escapeHtml(m.unit2);
+            }
+            return `<tr class="${cls}">
+      <td><strong>${i + 1}. ${m.emoji} ${escapeHtml(m.badge)}</strong><br><span style="color:var(--muted);font-size:.78rem">${escapeHtml(m.location)}</span></td>
+      <td>${r.correct ? "✅ Correct" : r.checked ? "🔁 Revise" : "○ Not checked"}<br><span style="color:var(--muted);font-size:.78rem">Answer: ${answerDisplay}</span></td>
+      <td>${escapeHtml(r.observation || "No observation")}<br><span style="color:var(--muted);font-size:.78rem">Connection: ${escapeHtml(r.connectionNote || "—")}</span></td>
+      <td>${escapeHtml(r.workShown || "—")}<br><span style="color:var(--muted);font-size:.78rem">Expected: ${escapeHtml(m.substitution)}</span></td>
+    </tr>`;
+          })
+          .join("");
+
+        $("submit-period").value = state.student.period
+          ? "Period " + state.student.period
+          : "";
+      }
+
+      /* ── Reports ── */
+      function buildPlainReport() {
+        const total = state.selectedIds.length;
+        const mathCorrect = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        const exploreComplete = state.selectedIds.filter((id) =>
+          explorationComplete(responseFor(id)),
+        ).length;
+        const readiness = Math.round(
+          ((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100,
+        );
+        let lines = [];
+        lines.push("GLOBAL TRAVEL PLANNER — RATIO ROUTE CHALLENGE REPORT");
+        lines.push("Student: " + state.student.first);
+        lines.push("Period: " + (state.student.period || "—"));
+        lines.push("Date: " + (state.student.date || ""));
+        lines.push("Math Correct: " + mathCorrect + "/" + total);
+        lines.push("Exploration Logs: " + exploreComplete + "/" + total);
+        lines.push("Travel Agent Rating: " + readiness + "%");
+        lines.push("");
+        lines.push("DESTINATION REPORTS");
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const r = responseFor(id);
+          lines.push("────────────────────────────");
+          lines.push(`${i + 1}. ${m.emoji} ${m.badge} — ${m.focus}`);
+          lines.push("Location: " + m.location);
+          lines.push(
+            "Exploration: " +
+              (explorationComplete(r) ? "Complete" : "Incomplete"),
+          );
+          lines.push("Observation: " + (r.observation || "—"));
+          lines.push("Ratio connection: " + (r.connectionNote || "—"));
+          lines.push("Method: " + (METHODS[r.method] || "—"));
+          lines.push("Work shown: " + (r.workShown || "—"));
+          let ansStr = (r.numericAnswer || "—") + " " + m.unit;
+          if (m.parts === 2)
+            ansStr += "; " + (r.numericAnswer2 || "—") + " " + m.unit2;
+          lines.push("Student answer: " + ansStr);
+          lines.push("Expected: " + m.substitution);
+          lines.push(
+            "Status: " +
+              (r.correct
+                ? "Correct"
+                : r.checked
+                  ? "Needs revision"
+                  : "Not checked"),
+          );
+          lines.push("Extension: " + (r.extensionAnswer || "—"));
+        });
+        lines.push("");
+        lines.push("Generated by Neft Teacher — Ratio Route Challenge");
+        return lines.join("\n");
+      }
+      function buildHtmlReport() {
+        const text = buildPlainReport();
+        const escaped = escapeHtml(text).replace(/\n/g, "<br>");
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Global Travel Planner — ${escapeHtml(state.student.first)}</title>
+  <style>body{font-family:Arial,sans-serif;line-height:1.5;margin:32px;color:#1E3A5F}h1{color:#0D9488}.box{border:2px solid #0D9488;border-radius:12px;padding:20px}</style></head>
+  <body><h1>✈️ Global Travel Planner — Ratio Route Challenge Report</h1><div class="box">${escaped}</div></body></html>`;
+      }
+      function safeFilename() {
+        return `Travel_Planner_${state.student.first}_${state.student.period || "Period"}_${state.student.date || todayISO()}`.replace(
+          /[^a-z0-9_\-]+/gi,
+          "_",
+        );
+      }
+      function downloadReport(kind) {
+        const isHtml = kind === "html";
+        const content = isHtml ? buildHtmlReport() : buildPlainReport();
+        const blob = new Blob([content], {
+          type: isHtml ? "text/html" : "text/plain",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFilename() + (isHtml ? ".html" : ".txt");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        $("copy-confirm").style.display = "block";
+      }
+      function downloadCheckpoint() {
+        persistInputs();
+        const blob = new Blob([JSON.stringify(state, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFilename() + "_checkpoint.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        $("save-status").textContent = "Checkpoint saved";
+      }
+      async function copyReport() {
+        try {
+          await navigator.clipboard.writeText(buildPlainReport());
+          $("copy-confirm").style.display = "block";
+        } catch (e) {
+          const w = window.open("", "_blank");
+          w.document.write("<pre>" + escapeHtml(buildPlainReport()) + "</pre>");
+          w.document.close();
+        }
+      }
+      function openClassroom() {
+        window.open("https://classroom.google.com/", "_blank", "noopener");
+      }
+      function submitViaEmail() {
+        const email = $("teacher-email").value.trim();
+        if (!email) {
+          $("teacher-email").focus();
+          return;
+        }
+        const subject = encodeURIComponent(
+          `Global Travel Planner — ${state.student.first} — ${state.student.period || "Period"}`,
+        );
+        const body = encodeURIComponent(buildPlainReport().slice(0, 12000));
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        $("email-confirm").style.display = "block";
+      }
+      function restartProject() {
+        if (!confirm("Start over and clear saved work?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

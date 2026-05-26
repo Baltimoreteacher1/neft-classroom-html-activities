@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expression Engine ⚡</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --blue: #2563eb;
+        --bg: #f0f9ff;
+        --dark: #0f172a;
+        --lime: #84cc16;
+        --red: #ef4444;
+        --white: #ffffff;
+        --gray: #94a3b8;
+        --light-gray: #e2e8f0;
+        --shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0s !important;
+          transition-duration: 0s !important;
+        }
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--dark);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        font-size: 18px;
+        line-height: 1.5;
+      }
+      .card {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 32px;
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+      }
+      h1 {
+        color: var(--dark);
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+      }
+      h2 {
+        color: var(--dark);
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+      }
+      .subtitle {
+        color: var(--gray);
+        font-size: 1rem;
+        margin-bottom: 20px;
+      }
+      .emoji-big {
+        font-size: 3rem;
+        margin-bottom: 12px;
+      }
+      input[type="text"] {
+        width: 100%;
+        max-width: 320px;
+        padding: 12px 16px;
+        border: 2px solid var(--light-gray);
+        border-radius: 10px;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      input[type="text"]:focus {
+        border-color: var(--blue);
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 32px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        outline: none;
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--dark);
+        outline-offset: 3px;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: var(--blue);
+        color: var(--white);
+      }
+      .btn-primary:hover {
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+      }
+      .btn-lime {
+        background: var(--lime);
+        color: var(--dark);
+      }
+      .btn-lime:hover {
+        box-shadow: 0 4px 16px rgba(132, 204, 22, 0.35);
+      }
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hud-item {
+        background: var(--bg);
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--dark);
+      }
+      .hud-item span {
+        color: var(--blue);
+      }
+      .progress-bar {
+        width: 100%;
+        height: 10px;
+        background: var(--light-gray);
+        border-radius: 5px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--lime));
+        border-radius: 5px;
+        transition: width 0.4s;
+      }
+      .question-text {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 20px;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .opt-btn {
+        padding: 14px 12px;
+        border: 2px solid var(--light-gray);
+        border-radius: 10px;
+        background: var(--white);
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s,
+          transform 0.15s;
+        text-align: center;
+        font-weight: 500;
+        outline: none;
+      }
+      .opt-btn:hover {
+        border-color: var(--blue);
+        background: var(--bg);
+      }
+      .opt-btn:focus-visible {
+        outline: 3px solid var(--dark);
+        outline-offset: 2px;
+      }
+      .opt-btn.correct {
+        border-color: var(--lime);
+        background: #ecfccb;
+        color: #166534;
+        font-weight: 700;
+      }
+      .opt-btn.wrong {
+        border-color: var(--red);
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .opt-btn.reveal {
+        border-color: var(--lime);
+        background: #ecfccb;
+      }
+      .opt-btn:disabled {
+        cursor: default;
+      }
+      .feedback-box {
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .feedback-correct {
+        background: #ecfccb;
+        color: #166534;
+      }
+      .feedback-wrong {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .streak-badge {
+        display: inline-block;
+        background: var(--lime);
+        color: var(--dark);
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-left: 6px;
+      }
+      .lives {
+        display: flex;
+        gap: 4px;
+        font-size: 1.1rem;
+      }
+      .results-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .result-box {
+        background: var(--bg);
+        padding: 16px;
+        border-radius: 12px;
+      }
+      .result-box .big {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--blue);
+      }
+      .result-box .label {
+        font-size: 0.85rem;
+        color: var(--gray);
+      }
+      .stars {
+        font-size: 2.5rem;
+        margin: 12px 0;
+      }
+      .tier-badge {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .tier-easy {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+      .tier-med {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+      .tier-hard {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 0.8rem;
+        color: var(--gray);
+      }
+      .hidden {
+        display: none !important;
+      }
+      @media (max-width: 500px) {
+        .card {
+          padding: 20px;
+        }
+        .options {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+        .question-text {
+          font-size: 1.05rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card" id="loginScreen">
+      <div class="emoji-big">⚡</div>
+      <h1>Expression Engine</h1>
+      <p class="subtitle">
+        Master algebraic expressions &bull; 6.EE.1&ndash;6.EE.4
+      </p>
+      <div style="margin: 20px 0">
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Enter your name"
+          aria-label="Enter your name"
+          maxlength="30"
+        />
+      </div>
+      <button class="btn btn-primary" id="startBtn" onclick="startGame()">
+        Start Engine ⚡
+      </button>
+      <div class="footer">Neft Teacher</div>
+    </div>
+
+    <div class="card hidden" id="gameScreen">
+      <div class="hud">
+        <div class="hud-item">Q <span id="qNum">1</span>/15</div>
+        <div class="hud-item" id="timerDisplay">
+          ⏱ <span id="timer">0:00</span>
+        </div>
+        <div class="hud-item" id="livesDisplay"></div>
+        <div class="hud-item">🔥 <span id="streakDisplay">0</span></div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      <div id="tierBadge" class="tier-badge tier-easy">Easy</div>
+      <div class="question-text" id="questionText" aria-live="polite"></div>
+      <div
+        class="options"
+        id="optionsDiv"
+        role="group"
+        aria-label="Answer choices"
+      ></div>
+      <div
+        class="feedback-box hidden"
+        id="feedbackBox"
+        aria-live="assertive"
+      ></div>
+      <button
+        class="btn btn-primary hidden"
+        id="nextBtn"
+        onclick="nextQuestion()"
+      >
+        Next ⚡
+      </button>
+      <div class="footer">Neft Teacher</div>
+    </div>
+
+    <div class="card hidden" id="resultsScreen">
+      <div class="emoji-big">⚡</div>
+      <h1>Results</h1>
+      <div class="stars" id="starsDisplay" aria-label="Star rating"></div>
+      <p id="resultsName" style="font-weight: 600; margin-bottom: 4px"></p>
+      <div class="results-grid">
+        <div class="result-box">
+          <div class="big" id="resScore">0</div>
+          <div class="label">Correct</div>
+        </div>
+        <div class="result-box">
+          <div class="big" id="resTotal">15</div>
+          <div class="label">Questions</div>
+        </div>
+        <div class="result-box">
+          <div class="big" id="resPct">0%</div>
+          <div class="label">Accuracy</div>
+        </div>
+        <div class="result-box">
+          <div class="big" id="resStreak">0</div>
+          <div class="label">Best Streak</div>
+        </div>
+      </div>
+      <div id="resTime" style="color: var(--gray); margin-bottom: 16px"></div>
+      <button class="btn btn-lime" onclick="resetGame()">Play Again</button>
+      <div class="footer">Neft Teacher</div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ── Storage ── */
+        const STORAGE_KEY = "expressionEngine_v1";
+        function saveData(d) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+          } catch (e) {}
+        }
+        function loadData() {
+          try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY));
+          } catch (e) {
+            return null;
+          }
+        }
+
+        /* ── Questions ── */
+        const questions = [
+          // EASY (1-5)
+          {
+            id: 1,
+            tier: "easy",
+            text: "Evaluate 3x when x = 4",
+            options: ["12", "7", "34", "10"],
+            answer: 0,
+            hint: "Multiply the coefficient (3) by the value of x.",
+          },
+          {
+            id: 2,
+            tier: "easy",
+            text: "Evaluate 2 + 5n when n = 3",
+            options: ["17", "21", "13", "30"],
+            answer: 0,
+            hint: "First multiply 5 × 3, then add 2.",
+          },
+          {
+            id: 3,
+            tier: "easy",
+            text: "Evaluate 8 − 2y when y = 2",
+            options: ["4", "12", "6", "10"],
+            answer: 0,
+            hint: "First multiply 2 × 2, then subtract from 8.",
+          },
+          {
+            id: 4,
+            tier: "easy",
+            text: "In the expression 7m + 3, what is the coefficient?",
+            options: ["7", "3", "m", "10"],
+            answer: 0,
+            hint: "The coefficient is the number multiplied by the variable.",
+          },
+          {
+            id: 5,
+            tier: "easy",
+            text: "Evaluate 4a + 1 when a = 5",
+            options: ["21", "20", "25", "9"],
+            answer: 0,
+            hint: "Multiply 4 × 5 first, then add 1.",
+          },
+          // MEDIUM (6-10)
+          {
+            id: 6,
+            tier: "medium",
+            text: "Evaluate 2a² + 1 when a = 3",
+            options: ["19", "13", "37", "7"],
+            answer: 0,
+            hint: "Square a first (3² = 9), then multiply by 2 and add 1.",
+          },
+          {
+            id: 7,
+            tier: "medium",
+            text: "Which expression is equivalent to 3(x + 4)?",
+            options: ["3x + 12", "3x + 4", "x + 12", "3x + 7"],
+            answer: 0,
+            hint: "Use the distributive property: multiply 3 by each term inside.",
+          },
+          {
+            id: 8,
+            tier: "medium",
+            text: 'Which expression represents "six less than twice a number n"?',
+            options: ["2n − 6", "6 − 2n", "2n + 6", "n − 6"],
+            answer: 0,
+            hint: '"Twice a number" is 2n; "six less than" means subtract 6 from it.',
+          },
+          {
+            id: 9,
+            tier: "medium",
+            text: "Evaluate 5(2y − 3) when y = 4",
+            options: ["25", "35", "17", "5"],
+            answer: 0,
+            hint: "First compute inside the parentheses: 2(4) − 3 = 5. Then multiply by 5.",
+          },
+          {
+            id: 10,
+            tier: "medium",
+            text: "Which is equivalent to 4(m + 2)?",
+            options: ["4m + 8", "4m + 2", "m + 8", "4m + 6"],
+            answer: 0,
+            hint: "Distribute: multiply 4 by m and 4 by 2.",
+          },
+          // HARD (11-15)
+          {
+            id: 11,
+            tier: "hard",
+            text: "Simplify by combining like terms: 3x + 7 + 2x − 1",
+            options: ["5x + 6", "5x + 8", "6x + 5", "5x − 6"],
+            answer: 0,
+            hint: "Add the x-terms together (3x + 2x) and the constants together (7 − 1).",
+          },
+          {
+            id: 12,
+            tier: "hard",
+            text: "Which expression is equivalent to 2(3a + 4)?",
+            options: ["6a + 8", "6a + 4", "5a + 6", "3a + 8"],
+            answer: 0,
+            hint: "Distribute: 2 × 3a = 6a, and 2 × 4 = 8.",
+          },
+          {
+            id: 13,
+            tier: "hard",
+            text: "Evaluate 3b² − 2b + 1 when b = 2",
+            options: ["9", "7", "13", "5"],
+            answer: 0,
+            hint: "b² = 4, so 3(4) = 12. Then 2b = 4. Compute 12 − 4 + 1.",
+          },
+          {
+            id: 14,
+            tier: "hard",
+            text: "Simplify: 6y − 2(y − 3)",
+            options: ["4y + 6", "4y − 6", "4y − 3", "8y − 6"],
+            answer: 0,
+            hint: "Distribute the −2: −2 × y = −2y, −2 × (−3) = +6. Then combine.",
+          },
+          {
+            id: 15,
+            tier: "hard",
+            text: "Evaluate (4x + 2) ÷ 2 when x = 3",
+            options: ["7", "6", "8", "14"],
+            answer: 0,
+            hint: "First compute 4(3) + 2 = 14. Then divide by 2.",
+          },
+        ];
+
+        /* Shuffle options while tracking correct answer */
+        function shuffleQuestion(q) {
+          const correctText = q.options[q.answer];
+          const indices = [0, 1, 2, 3];
+          for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+          }
+          const shuffled = indices.map((i) => q.options[i]);
+          const newAnswer = shuffled.indexOf(correctText);
+          return { ...q, options: shuffled, answer: newAnswer };
+        }
+
+        /* ── State ── */
+        let playerName = "";
+        let currentQ = 0;
+        let score = 0;
+        let streak = 0;
+        let bestStreak = 0;
+        let lives = 3;
+        let answered = false;
+        let timerInterval = null;
+        let seconds = 0;
+        let gameQuestions = [];
+
+        /* ── DOM refs ── */
+        const loginScreen = document.getElementById("loginScreen");
+        const gameScreen = document.getElementById("gameScreen");
+        const resultsScreen = document.getElementById("resultsScreen");
+        const nameInput = document.getElementById("nameInput");
+        const qNumEl = document.getElementById("qNum");
+        const timerEl = document.getElementById("timer");
+        const livesDisplay = document.getElementById("livesDisplay");
+        const streakDisplay = document.getElementById("streakDisplay");
+        const progressFill = document.getElementById("progressFill");
+        const tierBadge = document.getElementById("tierBadge");
+        const questionText = document.getElementById("questionText");
+        const optionsDiv = document.getElementById("optionsDiv");
+        const feedbackBox = document.getElementById("feedbackBox");
+        const nextBtn = document.getElementById("nextBtn");
+
+        /* ── Helpers ── */
+        function show(el) {
+          el.classList.remove("hidden");
+        }
+        function hide(el) {
+          el.classList.add("hidden");
+        }
+
+        function renderLives() {
+          livesDisplay.innerHTML = Array.from({ length: 3 }, (_, i) =>
+            i < lives ? "❤️" : "🩶",
+          ).join(" ");
+          livesDisplay.setAttribute("aria-label", lives + " lives remaining");
+        }
+
+        function formatTime(s) {
+          return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+        }
+
+        function startTimer() {
+          seconds = 0;
+          timerEl.textContent = "0:00";
+          timerInterval = setInterval(() => {
+            seconds++;
+            timerEl.textContent = formatTime(seconds);
+          }, 1000);
+        }
+        function stopTimer() {
+          clearInterval(timerInterval);
+        }
+
+        /* ── Game Flow ── */
+        function startGame() {
+          playerName = nameInput.value.trim() || "Student";
+          gameQuestions = questions.map((q) => shuffleQuestion(q));
+          currentQ = 0;
+          score = 0;
+          streak = 0;
+          bestStreak = 0;
+          lives = 3;
+          hide(loginScreen);
+          show(gameScreen);
+          hide(resultsScreen);
+          renderLives();
+          startTimer();
+          showQuestion();
+        }
+
+        function showQuestion() {
+          if (currentQ >= gameQuestions.length || lives <= 0) {
+            endGame();
+            return;
+          }
+          answered = false;
+          const q = gameQuestions[currentQ];
+          qNumEl.textContent = currentQ + 1;
+          progressFill.style.width =
+            (currentQ / gameQuestions.length) * 100 + "%";
+          streakDisplay.textContent = streak;
+
+          // Tier badge
+          const tierMap = {
+            easy: ["Easy", "tier-easy"],
+            medium: ["Medium", "tier-med"],
+            hard: ["Hard", "tier-hard"],
+          };
+          const [tLabel, tClass] = tierMap[q.tier];
+          tierBadge.className = "tier-badge " + tClass;
+          tierBadge.textContent = tLabel;
+
+          questionText.textContent = q.text;
+
+          optionsDiv.innerHTML = "";
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.className = "opt-btn";
+            btn.textContent = opt;
+            btn.setAttribute("aria-label", "Option " + (i + 1) + ": " + opt);
+            btn.addEventListener("click", () => selectAnswer(i));
+            btn.addEventListener("keydown", (e) => {
+              if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                e.preventDefault();
+                const next =
+                  btn.nextElementSibling || optionsDiv.firstElementChild;
+                next.focus();
+              }
+              if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                e.preventDefault();
+                const prev =
+                  btn.previousElementSibling || optionsDiv.lastElementChild;
+                prev.focus();
+              }
+            });
+            optionsDiv.appendChild(btn);
+          });
+
+          hide(feedbackBox);
+          hide(nextBtn);
+        }
+
+        function selectAnswer(idx) {
+          if (answered) return;
+          answered = true;
+          const q = gameQuestions[currentQ];
+          const btns = optionsDiv.querySelectorAll(".opt-btn");
+          btns.forEach((b) => (b.disabled = true));
+
+          if (idx === q.answer) {
+            btns[idx].classList.add("correct");
+            score++;
+            streak++;
+            if (streak > bestStreak) bestStreak = streak;
+            feedbackBox.className = "feedback-box feedback-correct";
+            let fb = "✅ Correct!";
+            if (streak >= 3)
+              fb +=
+                '<span class="streak-badge">🔥 ' + streak + " streak!</span>";
+            feedbackBox.innerHTML = fb;
+          } else {
+            btns[idx].classList.add("wrong");
+            btns[q.answer].classList.add("reveal");
+            lives--;
+            streak = 0;
+            renderLives();
+            feedbackBox.className = "feedback-box feedback-wrong";
+            feedbackBox.innerHTML = "❌ " + q.hint;
+          }
+          show(feedbackBox);
+          streakDisplay.textContent = streak;
+
+          if (lives <= 0) {
+            nextBtn.textContent = "See Results";
+          } else if (currentQ >= gameQuestions.length - 1) {
+            nextBtn.textContent = "See Results";
+          } else {
+            nextBtn.textContent = "Next ⚡";
+          }
+          show(nextBtn);
+          nextBtn.focus();
+        }
+
+        function nextQuestion() {
+          currentQ++;
+          if (currentQ >= gameQuestions.length || lives <= 0) {
+            endGame();
+            return;
+          }
+          showQuestion();
+        }
+
+        function endGame() {
+          stopTimer();
+          hide(gameScreen);
+          show(resultsScreen);
+
+          const pct = Math.round((score / gameQuestions.length) * 100);
+          let starCount = 0;
+          if (pct >= 90) starCount = 3;
+          else if (pct >= 70) starCount = 2;
+          else if (pct >= 50) starCount = 1;
+
+          document.getElementById("starsDisplay").textContent =
+            "⭐".repeat(starCount) + "☆".repeat(3 - starCount);
+          document
+            .getElementById("starsDisplay")
+            .setAttribute("aria-label", starCount + " out of 3 stars");
+          document.getElementById("resultsName").textContent = playerName;
+          document.getElementById("resScore").textContent = score;
+          document.getElementById("resTotal").textContent =
+            gameQuestions.length;
+          document.getElementById("resPct").textContent = pct + "%";
+          document.getElementById("resStreak").textContent = bestStreak;
+          document.getElementById("resTime").textContent =
+            "Time: " + formatTime(seconds);
+
+          progressFill.style.width = "100%";
+
+          saveData({
+            name: playerName,
+            score: score,
+            total: gameQuestions.length,
+            pct: pct,
+            bestStreak: bestStreak,
+            time: seconds,
+            date: new Date().toISOString(),
+          });
+        }
+
+        function resetGame() {
+          hide(resultsScreen);
+          show(loginScreen);
+          nameInput.value = playerName;
+          nameInput.focus();
+        }
+
+        /* ── Keyboard: Enter on login ── */
+        nameInput.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") startGame();
+        });
+
+        /* ── Keyboard: Escape to skip focus to next btn ── */
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && !nextBtn.classList.contains("hidden")) {
+            nextBtn.focus();
+          }
+        });
+
+        /* ── Expose for onclick ── */
+        window.startGame = startGame;
+        window.nextQuestion = nextQuestion;
+        window.resetGame = resetGame;
+
+        /* ── Restore name from previous session ── */
+        const prev = loadData();
+        if (prev && prev.name) nameInput.value = prev.name;
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Master Chef Kitchen — Fraction Division Challenge</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --orange: #f97316;
+        --amber: #d97706;
+        --cream: #fffbeb;
+        --brown: #78350f;
+        --warm-bg: #fff7ed;
+        --ink: #78350f;
+        --muted: #92400e;
+        --line: #fde68a;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(120, 53, 15, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--cream);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      a {
+        color: var(--orange);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* ── Layout ── */
+      .intro-screen,
+      .app-screen,
+      .results-screen {
+        display: none;
+      }
+      .intro-screen.active,
+      .app-screen.active,
+      .results-screen.active {
+        display: block;
+      }
+
+      /* ── Intro ── */
+      .intro {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .hero-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 48px 36px;
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--brown);
+        margin-bottom: 6px;
+      }
+      .hero-sub {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .student-form {
+        display: grid;
+        grid-template-columns: 1fr 100px 100px;
+        gap: 12px;
+        max-width: 500px;
+        margin: 0 auto 24px;
+        text-align: left;
+      }
+      .student-form label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        grid-column: span 1;
+      }
+      .student-form .label-name {
+        grid-column: 1;
+      }
+      .student-form .label-period {
+        grid-column: 2;
+      }
+      .student-form .label-date {
+        grid-column: 3;
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--orange);
+      }
+      .resume-banner {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px;
+      }
+      .resume-banner button {
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .resume-banner .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      /* Mission selection */
+      .route-section {
+        margin-top: 28px;
+      }
+      .route-section h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--brown);
+        margin-bottom: 6px;
+      }
+      .route-section p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .route-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .route-card {
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: white;
+        text-align: left;
+        transition: all 0.2s;
+        cursor: pointer;
+        position: relative;
+      }
+      .route-card:hover {
+        border-color: var(--orange);
+        box-shadow: 0 2px 8px rgba(249, 115, 22, 0.12);
+      }
+      .route-card.selected {
+        border-color: var(--orange);
+        background: rgba(249, 115, 22, 0.06);
+      }
+      .route-card .rc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .route-card .rc-emoji {
+        font-size: 1.5rem;
+      }
+      .route-card .rc-check {
+        font-size: 1.1rem;
+        color: var(--orange);
+        font-weight: 900;
+      }
+      .route-card .rc-name {
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: var(--brown);
+        margin-bottom: 2px;
+      }
+      .route-card .rc-focus {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .route-card .rc-formula {
+        font-size: 0.75rem;
+        color: var(--orange);
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      .route-note {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .preset-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .preset-btn {
+        padding: 6px 14px;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        background: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--brown);
+        transition: all 0.2s;
+      }
+      .preset-btn:hover,
+      .preset-btn.active {
+        background: var(--brown);
+        color: white;
+        border-color: var(--brown);
+      }
+      .start-btn {
+        display: block;
+        margin: 0 auto;
+        padding: 14px 48px;
+        background: var(--orange);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+
+      /* ── App screen ── */
+      .app-header {
+        background: var(--brown);
+        color: white;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .app-header .progress-text {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .app-header .score-text {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-left: auto;
+      }
+      .progress-track {
+        flex: 1;
+        max-width: 300px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--amber);
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+      .save-status {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        margin-left: 12px;
+      }
+      .save-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+      .save-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .app-body {
+        display: flex;
+        min-height: calc(100vh - 48px);
+      }
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid var(--line);
+        padding: 16px;
+        overflow-y: auto;
+        flex-shrink: 0;
+      }
+      .sidebar h3 {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .jump-select {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+      }
+      .mission-mini {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 8px 10px;
+        border-radius: 8px;
+        text-align: left;
+        transition: background 0.15s;
+        font-size: 0.82rem;
+        margin-bottom: 4px;
+      }
+      .mission-mini:hover {
+        background: var(--warm-bg);
+      }
+      .mission-mini.current {
+        background: var(--warm-bg);
+        font-weight: 700;
+      }
+      .mission-mini.done {
+        opacity: 0.7;
+      }
+      .mini-flag {
+        font-size: 1.15rem;
+        flex-shrink: 0;
+      }
+      .mini-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .mini-name {
+        display: block;
+        font-weight: 700;
+        color: var(--brown);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mini-status {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .mini-check {
+        font-size: 0.9rem;
+      }
+
+      .mission-main {
+        flex: 1;
+        padding: 28px 32px;
+        overflow-y: auto;
+        max-width: 900px;
+      }
+
+      /* ── Mission card ── */
+      .dest-hero {
+        margin-bottom: 24px;
+      }
+      .dest-top {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .dest-emoji {
+        font-size: 2.8rem;
+      }
+      .dest-kicker {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .dest-title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--brown);
+      }
+      .dest-sub {
+        font-size: 0.88rem;
+        color: var(--orange);
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .stamp {
+        background: var(--amber);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-align: center;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      .stamp strong {
+        display: block;
+        font-size: 1.1rem;
+      }
+
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      @media (max-width: 768px) {
+        .panel-grid {
+          grid-template-columns: 1fr;
+        }
+        .app-body {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+        .student-form {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+      }
+      .panel h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--brown);
+        margin-bottom: 12px;
+      }
+      .panel.soft {
+        background: var(--warm-bg);
+      }
+      .panel.warm {
+        background: var(--cream);
+      }
+
+      .explore-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .explore-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 14px;
+        background: white;
+        border: 2px solid var(--line);
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .explore-link:hover {
+        border-color: var(--orange);
+        text-decoration: none;
+        background: rgba(249, 115, 22, 0.06);
+      }
+
+      .check-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 12px 0;
+      }
+      .check-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .check-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--orange);
+      }
+
+      .lab-field {
+        margin-bottom: 12px;
+      }
+      .lab-field label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .lab-field textarea,
+      .lab-field input,
+      .lab-field select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        transition: border-color 0.2s;
+        background: white;
+      }
+      .lab-field textarea:focus,
+      .lab-field input:focus,
+      .lab-field select:focus {
+        outline: none;
+        border-color: var(--orange);
+      }
+      .lab-field textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      .lab-field.full {
+        grid-column: span 2;
+      }
+
+      .starter-note {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-bottom: 6px;
+      }
+      .starter-tray {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .starter-chip {
+        padding: 4px 12px;
+        background: white;
+        border: 1.5px solid var(--line);
+        border-radius: 16px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--brown);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .starter-chip:hover {
+        border-color: var(--orange);
+        background: rgba(249, 115, 22, 0.06);
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.88rem;
+      }
+      .data-table th {
+        background: var(--brown);
+        color: white;
+        padding: 8px 12px;
+        text-align: left;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:nth-child(even) {
+        background: var(--warm-bg);
+      }
+
+      /* Formula lab */
+      .formula-lab {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .formula-lab h3 {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--brown);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 14px;
+      }
+      .lab-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .answer-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .answer-row input {
+        flex: 1;
+      }
+      .unit-pill {
+        padding: 4px 12px;
+        background: var(--warm-bg);
+        border-radius: 16px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--brown);
+        white-space: nowrap;
+      }
+      .hint-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .primary-btn {
+        padding: 10px 24px;
+        background: var(--orange);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .primary-btn:hover {
+        opacity: 0.9;
+      }
+      .primary-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .secondary-btn {
+        padding: 10px 24px;
+        background: var(--brown);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .secondary-btn:hover {
+        opacity: 0.9;
+      }
+      .ghost-btn {
+        padding: 8px 18px;
+        background: transparent;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--brown);
+        transition: all 0.2s;
+      }
+      .ghost-btn:hover {
+        border-color: var(--orange);
+        background: rgba(249, 115, 22, 0.06);
+      }
+      .ghost-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        display: none;
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-top: 8px;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: var(--success);
+      }
+      .feedback.no {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: var(--error);
+      }
+      .hint-box {
+        display: none;
+        padding: 12px 16px;
+        background: var(--cream);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        margin-top: 8px;
+        border-left: 4px solid var(--amber);
+      }
+
+      /* KCF steps */
+      .kcf-steps {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
+      .kcf-step {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-align: center;
+      }
+      .kcf-keep {
+        background: #dcfce7;
+        color: #166534;
+        border: 2px solid #86efac;
+      }
+      .kcf-change {
+        background: #fef3c7;
+        color: #92400e;
+        border: 2px solid #fcd34d;
+      }
+      .kcf-flip {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 2px solid #fca5a5;
+      }
+
+      /* Nav */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .fade-in {
+        animation: fadeSlide 0.35s ease;
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Recipe evidence ── */
+      .recipe-evidence-card {
+        display: flex;
+        gap: 14px;
+        background: var(--cream);
+        border-radius: 8px;
+        padding: 14px;
+        margin-bottom: 14px;
+        align-items: flex-start;
+      }
+      .recipe-evidence-text {
+        flex: 1;
+        font-size: 0.85rem;
+      }
+      .recipe-evidence-text strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--brown);
+      }
+      .recipe-tag {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 2px 10px;
+        background: var(--brown);
+        color: white;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      /* ── Extension ── */
+      .extension-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+      .extension-output {
+        padding: 10px 16px;
+        background: var(--warm-bg);
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--brown);
+        min-width: 180px;
+        text-align: center;
+      }
+
+      /* ── Results ── */
+      .results {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .results-hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .results-hero h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--brown);
+      }
+      .results-sub {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0;
+      }
+      .score-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        text-align: center;
+      }
+      .score-card .big {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--brown);
+      }
+      .score-card .label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .passport-stamps {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      .passport-stamp {
+        font-size: 1.6rem;
+        padding: 6px 10px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 24px 0;
+      }
+      .review-table th {
+        background: var(--brown);
+        color: white;
+        padding: 10px;
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      .review-table td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .review-table tr.good {
+        background: var(--success-bg);
+      }
+      .review-table tr.needs {
+        background: white;
+      }
+      .submit-section {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 28px;
+        text-align: center;
+      }
+      .submit-section h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--brown);
+        margin-bottom: 16px;
+      }
+      .submit-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .copy-confirm,
+      .email-confirm {
+        display: none;
+        font-size: 0.82rem;
+        color: var(--success);
+        font-weight: 600;
+        margin-top: 8px;
+      }
+      .footer-brand {
+        text-align: center;
+        padding: 18px;
+        font-size: 0.72rem;
+        color: var(--muted);
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ INTRO SCREEN ═══════ -->
+    <div class="intro-screen active" id="intro-screen">
+      <div class="intro">
+        <div class="hero-card">
+          <div class="hero-emoji">👨‍🍳</div>
+          <h1 class="hero-title">Master Chef Kitchen</h1>
+          <p class="hero-sub">
+            Divide fractions to prep ingredients, scale recipes, and run a
+            professional kitchen.<br />
+            Explore real cuisine, calculate portions, and earn your Head Chef
+            badge!
+          </p>
+          <div class="student-form">
+            <label class="label-name">Your Name</label>
+            <label class="label-period">Period</label>
+            <label class="label-date">Date</label>
+            <input
+              id="student-name"
+              class="field"
+              type="text"
+              placeholder="First Last Initial"
+            />
+            <input
+              id="student-period"
+              class="field"
+              type="text"
+              placeholder="P3"
+            />
+            <input id="student-date" class="field" type="date" />
+          </div>
+        </div>
+
+        <div class="resume-banner" id="resume-banner">
+          <span id="resume-details"></span>
+          <button onclick="resumeSaved()">Resume</button>
+          <button class="clear-btn" onclick="clearSavedWork()">
+            Start Fresh
+          </button>
+        </div>
+
+        <div class="route-section">
+          <h2>Choose Your Kitchen Missions</h2>
+          <p>
+            Pick at least 4 missions. Each one uses fraction division to solve a
+            real kitchen challenge.
+          </p>
+          <div class="preset-row">
+            <button class="preset-btn" onclick="applyPreset('quick')">
+              Quick Service
+            </button>
+            <button class="preset-btn" onclick="applyPreset('world')">
+              World Tour
+            </button>
+            <button class="preset-btn" onclick="applyPreset('pastry')">
+              Pastry Path
+            </button>
+            <button class="preset-btn" onclick="applyPreset('all')">
+              All Missions
+            </button>
+          </div>
+          <div class="route-grid" id="route-grid"></div>
+          <div class="route-note" id="route-note">Selected: 4 missions</div>
+          <button class="start-btn" onclick="startExpedition()">
+            Enter the Kitchen 👨‍🍳
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ APP SCREEN ═══════ -->
+    <div class="app-screen" id="app-screen">
+      <div class="app-header">
+        <span class="progress-text" id="progress-label">Mission 1 of 4</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="score-text" id="score-label">0 correct</span>
+        <button class="save-btn" onclick="manualSave()">💾 Save</button>
+        <span class="save-status" id="save-status"></span>
+      </div>
+      <div class="app-body">
+        <div class="sidebar">
+          <h3>Kitchen Log</h3>
+          <select
+            class="jump-select"
+            id="jump-select"
+            onchange="jumpToMission(Number(this.value))"
+          ></select>
+          <div id="mission-list"></div>
+        </div>
+        <div class="mission-main">
+          <div id="mission-card" class="fade-in"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ RESULTS SCREEN ═══════ -->
+    <div class="results-screen" id="results-screen">
+      <div class="results">
+        <div class="results-hero">
+          <div style="font-size: 3rem; margin-bottom: 8px">🏆</div>
+          <h1>Kitchen Challenge Complete!</h1>
+          <p class="results-sub" id="results-subtitle"></p>
+        </div>
+        <div class="score-grid">
+          <div class="score-card">
+            <div class="big" id="math-score">0/0</div>
+            <div class="label">Math Correct</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="explore-score">0/0</div>
+            <div class="label">Logs Complete</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="overall-score">0%</div>
+            <div class="label">Head Chef Rating</div>
+          </div>
+          <div class="score-card">
+            <div class="big" id="time-score">0m</div>
+            <div class="label">Kitchen Time</div>
+          </div>
+        </div>
+        <div class="passport-stamps" id="result-stamps"></div>
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>Mission</th>
+              <th>Math Status</th>
+              <th>Observation</th>
+              <th>Work Shown</th>
+            </tr>
+          </thead>
+          <tbody id="review-body"></tbody>
+        </table>
+        <div class="submit-section">
+          <h3>Submit Your Kitchen Report</h3>
+          <div class="submit-row">
+            <button class="primary-btn" onclick="downloadReport('html')">
+              📄 Download Report
+            </button>
+            <button class="ghost-btn" onclick="copyReport()">
+              📋 Copy to Clipboard
+            </button>
+            <button class="ghost-btn" onclick="downloadReport('txt')">
+              📝 Text File
+            </button>
+          </div>
+          <div class="submit-row">
+            <button class="ghost-btn" onclick="openClassroom()">
+              Google Classroom ↗
+            </button>
+            <input
+              id="teacher-email"
+              class="field"
+              type="email"
+              placeholder="Teacher email"
+              style="max-width: 220px"
+            />
+            <button class="ghost-btn" onclick="submitViaEmail()">
+              Email Report
+            </button>
+          </div>
+          <div class="submit-row" style="margin-top: 8px">
+            <input
+              id="submit-period"
+              class="field"
+              type="text"
+              placeholder="Period"
+              style="max-width: 120px"
+              readonly
+            />
+          </div>
+          <div class="copy-confirm" id="copy-confirm">
+            ✓ Copied to clipboard!
+          </div>
+          <div class="email-confirm" id="email-confirm">
+            ✓ Email client opened
+          </div>
+          <button
+            class="ghost-btn"
+            style="margin-top: 16px"
+            onclick="restartProject()"
+          >
+            🔄 Start Over
+          </button>
+        </div>
+        <div class="footer-brand">
+          Neft Teacher — Fraction Division Challenge
+        </div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      const MISSIONS = [
+        {
+          id: "pizza_dough",
+          emoji: "🍕",
+          location: "Italian Kitchen",
+          badge: "Pizza Dough Division",
+          focus: "Divide Fractions (6.NS.1)",
+          type: "kcf",
+          formula: "3/4 ÷ 1/8",
+          query: "Italian pizza dough techniques",
+          explorePrompt:
+            "Find one detail about how Italian chefs prepare pizza dough — techniques, ingredients, or rising times.",
+          connectionPrompt:
+            "How does dividing fractions help a chef figure out how many portions they can make?",
+          story:
+            "Chef has 3/4 lb of dough. Each mini pizza needs 1/8 lb. How many mini pizzas can the chef make?",
+          data: [
+            ["Total dough", "3/4", "lb"],
+            ["Per mini pizza", "1/8", "lb"],
+          ],
+          answer: 6,
+          acceptAlt: null,
+          unit: "mini pizzas",
+          tolerance: 0.01,
+          kcfSteps: ["Keep 3/4", "Change ÷ to ×", "Flip 1/8 → 8/1"],
+          substitution: "3/4 × 8/1 = 24/4 = 6",
+          hint1:
+            "Keep the first fraction (3/4). Change division to multiplication. Flip the second fraction (1/8 becomes 8/1).",
+          hint2: "3/4 × 8/1 = (3 × 8) / (4 × 1) = 24/4 = 6 mini pizzas.",
+          extension: {
+            prompt:
+              "If dough costs $2.50 per pound, how much does 3/4 lb cost?",
+            answer: "$1.88",
+          },
+        },
+        {
+          id: "recipe_batch",
+          emoji: "🥐",
+          location: "French Bakery",
+          badge: "Recipe Batch Scaling",
+          focus: "Divide Fractions (6.NS.1)",
+          type: "kcf",
+          formula: "2/3 ÷ 1/6",
+          query: "French bakery pastry techniques",
+          explorePrompt:
+            "Find one detail about French pastry baking — techniques, famous pastries, or how professional bakeries scale recipes.",
+          connectionPrompt:
+            "How does knowing how many batches fit help a baker plan their day?",
+          story:
+            "A recipe needs 2/3 cup of sugar total. Each batch uses 1/6 cup. How many batches can the baker make?",
+          data: [
+            ["Total sugar", "2/3", "cup"],
+            ["Per batch", "1/6", "cup"],
+          ],
+          answer: 4,
+          acceptAlt: null,
+          unit: "batches",
+          tolerance: 0.01,
+          kcfSteps: ["Keep 2/3", "Change ÷ to ×", "Flip 1/6 → 6/1"],
+          substitution: "2/3 × 6/1 = 12/3 = 4",
+          hint1:
+            "Keep the first fraction (2/3). Change division to multiplication. Flip the second fraction (1/6 becomes 6/1).",
+          hint2: "2/3 × 6/1 = (2 × 6) / (3 × 1) = 12/3 = 4 batches.",
+          extension: {
+            prompt:
+              "If each batch makes 12 croissants, how many croissants total from 4 batches?",
+            answer: "48 croissants",
+          },
+        },
+        {
+          id: "juice_bar",
+          emoji: "🥤",
+          location: "Smoothie Shop",
+          badge: "Juice Bar Servings",
+          focus: "Divide Fractions (6.NS.1)",
+          type: "kcf",
+          formula: "5/6 ÷ 1/3",
+          query: "professional smoothie bar operations",
+          explorePrompt:
+            "Find one detail about how smoothie bars operate — ingredients, portion sizes, or blending methods.",
+          connectionPrompt:
+            "Why is dividing fractions useful when splitting a large batch into smaller servings?",
+          story:
+            "The shop has 5/6 gallon of juice. Each glass holds 1/3 gallon. How many glasses can be filled?",
+          data: [
+            ["Total juice", "5/6", "gallon"],
+            ["Per glass", "1/3", "gallon"],
+          ],
+          answer: 2.5,
+          acceptAlt: "2 1/2",
+          unit: "glasses",
+          tolerance: 0.01,
+          kcfSteps: ["Keep 5/6", "Change ÷ to ×", "Flip 1/3 → 3/1"],
+          substitution: "5/6 × 3/1 = 15/6 = 2 1/2",
+          hint1:
+            "Keep the first fraction (5/6). Change division to multiplication. Flip the second fraction (1/3 becomes 3/1).",
+          hint2: "5/6 × 3/1 = (5 × 3) / (6 × 1) = 15/6 = 2 1/2 glasses.",
+          extension: {
+            prompt:
+              "If each glass sells for $4.50, what is the revenue from 2.5 glasses?",
+            answer: "$11.25",
+          },
+        },
+        {
+          id: "pasta_portions",
+          emoji: "🍜",
+          location: "Japanese Ramen Shop",
+          badge: "Pasta Portions",
+          focus: "Divide Fractions (6.NS.1)",
+          type: "kcf",
+          formula: "7/8 ÷ 1/4",
+          query: "Japanese ramen noodle preparation",
+          explorePrompt:
+            "Find one detail about Japanese ramen noodle preparation — types of noodles, broth, or serving traditions.",
+          connectionPrompt:
+            "How does dividing fractions help a chef plan the right number of servings?",
+          story:
+            "The chef has 7/8 lb of noodles. Each bowl needs 1/4 lb. How many servings can be made?",
+          data: [
+            ["Total noodles", "7/8", "lb"],
+            ["Per bowl", "1/4", "lb"],
+          ],
+          answer: 3.5,
+          acceptAlt: "3 1/2",
+          unit: "servings",
+          tolerance: 0.01,
+          kcfSteps: ["Keep 7/8", "Change ÷ to ×", "Flip 1/4 → 4/1"],
+          substitution: "7/8 × 4/1 = 28/8 = 3 1/2",
+          hint1:
+            "Keep the first fraction (7/8). Change division to multiplication. Flip the second fraction (1/4 becomes 4/1).",
+          hint2: "7/8 × 4/1 = (7 × 4) / (8 × 1) = 28/8 = 3 1/2 servings.",
+          extension: {
+            prompt:
+              "If each bowl of ramen is priced at $12, what is the revenue from 3.5 bowls?",
+            answer: "$42",
+          },
+        },
+        {
+          id: "frosting_layers",
+          emoji: "🧁",
+          location: "Cupcake Bakery",
+          badge: "Frosting Layers",
+          focus: "Divide Fractions (6.NS.1)",
+          type: "kcf",
+          formula: "1/2 ÷ 1/6",
+          query: "professional cupcake decorating techniques",
+          explorePrompt:
+            "Find one detail about professional cupcake decorating — frosting techniques, flavor combos, or bakery workflows.",
+          connectionPrompt:
+            "How does knowing the number of cupcakes help a baker plan frosting supplies?",
+          story:
+            "The baker has 1/2 cup of frosting. Each cupcake needs 1/6 cup. How many cupcakes can be frosted?",
+          data: [
+            ["Total frosting", "1/2", "cup"],
+            ["Per cupcake", "1/6", "cup"],
+          ],
+          answer: 3,
+          acceptAlt: null,
+          unit: "cupcakes",
+          tolerance: 0.01,
+          kcfSteps: ["Keep 1/2", "Change ÷ to ×", "Flip 1/6 → 6/1"],
+          substitution: "1/2 × 6/1 = 6/2 = 3",
+          hint1:
+            "Keep the first fraction (1/2). Change division to multiplication. Flip the second fraction (1/6 becomes 6/1).",
+          hint2: "1/2 × 6/1 = (1 × 6) / (2 × 1) = 6/2 = 3 cupcakes.",
+          extension: {
+            prompt:
+              "If the bakery sells cupcakes for $3.75 each, what do 3 cupcakes earn?",
+            answer: "$11.25",
+          },
+        },
+        {
+          id: "spice_measuring",
+          emoji: "🌶️",
+          location: "Indian Restaurant",
+          badge: "Spice Measuring",
+          focus: "Divide Fractions (6.NS.1)",
+          type: "kcf",
+          formula: "3/8 ÷ 1/4",
+          query: "Indian spice blending techniques",
+          explorePrompt:
+            "Find one detail about Indian spice blending — common spices, how masalas are made, or measuring techniques.",
+          connectionPrompt:
+            "Why is precise fraction measurement important when blending spices?",
+          story:
+            "The chef has 3/8 teaspoon of spice blend. Each dish needs 1/4 teaspoon. How many dishes can be seasoned?",
+          data: [
+            ["Total spice", "3/8", "teaspoon"],
+            ["Per dish", "1/4", "teaspoon"],
+          ],
+          answer: 1.5,
+          acceptAlt: "1 1/2",
+          unit: "dishes",
+          tolerance: 0.01,
+          kcfSteps: ["Keep 3/8", "Change ÷ to ×", "Flip 1/4 → 4/1"],
+          substitution: "3/8 × 4/1 = 12/8 = 1 1/2",
+          hint1:
+            "Keep the first fraction (3/8). Change division to multiplication. Flip the second fraction (1/4 becomes 4/1).",
+          hint2: "3/8 × 4/1 = (3 × 4) / (8 × 1) = 12/8 = 1 1/2 dishes.",
+          extension: {
+            prompt:
+              "If the spice blend costs $6.40 per teaspoon, what is the value of 3/8 teaspoon?",
+            answer: "$2.40",
+          },
+        },
+        {
+          id: "bread_loaves",
+          emoji: "🍞",
+          location: "Artisan Bakery",
+          badge: "Bread Loaves",
+          focus: "Divide Fractions (6.NS.1)",
+          type: "kcf",
+          formula: "4/5 ÷ 2/5",
+          query: "artisan bread baking techniques",
+          explorePrompt:
+            "Find one detail about artisan bread baking — flour types, proofing, or shaping techniques.",
+          connectionPrompt:
+            "How does dividing fractions help bakers figure out how many loaves they can make from their flour supply?",
+          story:
+            "The baker has 4/5 cup of flour. Each loaf needs 2/5 cup. How many loaves can be made?",
+          data: [
+            ["Total flour", "4/5", "cup"],
+            ["Per loaf", "2/5", "cup"],
+          ],
+          answer: 2,
+          acceptAlt: null,
+          unit: "loaves",
+          tolerance: 0.01,
+          kcfSteps: ["Keep 4/5", "Change ÷ to ×", "Flip 2/5 → 5/2"],
+          substitution: "4/5 × 5/2 = 20/10 = 2",
+          hint1:
+            "Keep the first fraction (4/5). Change division to multiplication. Flip the second fraction (2/5 becomes 5/2).",
+          hint2: "4/5 × 5/2 = (4 × 5) / (5 × 2) = 20/10 = 2 loaves.",
+          extension: {
+            prompt:
+              "If each loaf sells for $7.50, what is the revenue from 2 loaves?",
+            answer: "$15.00",
+          },
+        },
+        {
+          id: "smoothie_cups",
+          emoji: "🥭",
+          location: "Tropical Cafe",
+          badge: "Smoothie Cups",
+          focus: "Divide Fractions (6.NS.1)",
+          type: "kcf",
+          formula: "5/6 ÷ 5/12",
+          query: "tropical fruit smoothie recipes",
+          explorePrompt:
+            "Find one detail about tropical fruit smoothie recipes — ingredients, blending tips, or popular flavors.",
+          connectionPrompt:
+            "How does dividing fractions help when portioning a large batch of smoothie into individual cups?",
+          story:
+            "The cafe has 5/6 liter of smoothie base. Each cup needs 5/12 liter. How many cups can be filled?",
+          data: [
+            ["Total smoothie base", "5/6", "liter"],
+            ["Per cup", "5/12", "liter"],
+          ],
+          answer: 2,
+          acceptAlt: null,
+          unit: "cups",
+          tolerance: 0.01,
+          kcfSteps: ["Keep 5/6", "Change ÷ to ×", "Flip 5/12 → 12/5"],
+          substitution: "5/6 × 12/5 = 60/30 = 2",
+          hint1:
+            "Keep the first fraction (5/6). Change division to multiplication. Flip the second fraction (5/12 becomes 12/5).",
+          hint2: "5/6 × 12/5 = (5 × 12) / (6 × 5) = 60/30 = 2 cups.",
+          extension: {
+            prompt:
+              "If each smoothie cup sells for $5.25, what is the total revenue from 2 cups?",
+            answer: "$10.50",
+          },
+        },
+      ];
+
+      const KCF_METHOD =
+        "Keep, Change, Flip: Keep the first fraction. Change ÷ to ×. Flip the second fraction (reciprocal). Then multiply across.";
+
+      const SENTENCE_STARTERS = [
+        "I noticed that ",
+        "One real detail I found is ",
+        "This connects to fraction division because ",
+        "The recipe makes me think about ",
+      ];
+
+      const PRESETS = {
+        quick: [
+          "pizza_dough",
+          "recipe_batch",
+          "frosting_layers",
+          "bread_loaves",
+        ],
+        world: [
+          "pizza_dough",
+          "pasta_portions",
+          "spice_measuring",
+          "smoothie_cups",
+        ],
+        pastry: [
+          "recipe_batch",
+          "frosting_layers",
+          "bread_loaves",
+          "smoothie_cups",
+        ],
+        all: MISSIONS.map((m) => m.id),
+      };
+
+      const STORAGE_KEY = "masterChefKitchen_v1";
+      let selectedIds = [...PRESETS.quick];
+      let state = {
+        started: false,
+        student: { first: "", period: "", date: "" },
+        selectedIds: [...selectedIds],
+        currentIndex: 0,
+        responses: {},
+        startTime: null,
+        endTime: null,
+      };
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function missionById(id) {
+        return MISSIONS.find((m) => m.id === id);
+      }
+      function responseFor(id) {
+        if (!state.responses[id]) {
+          state.responses[id] = {
+            checks: { opened: false, found: false, connection: false },
+            observation: "",
+            connectionNote: "",
+            workShown: "",
+            numericAnswer: "",
+            checked: false,
+            correct: false,
+            extensionAnswer: "",
+            hintsShown: 0,
+          };
+        }
+        return state.responses[id];
+      }
+      function escapeHtml(v) {
+        return String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[c],
+        );
+      }
+      function cleanNumber(v) {
+        if (v == null) return NaN;
+        const s = String(v).trim();
+        // Handle mixed numbers like "2 1/2" or "3 1/2"
+        const mixedMatch = s.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+        if (mixedMatch) {
+          return (
+            Number(mixedMatch[1]) +
+            Number(mixedMatch[2]) / Number(mixedMatch[3])
+          );
+        }
+        // Handle simple fractions like "5/2"
+        const fracMatch = s.match(/^(\d+)\/(\d+)$/);
+        if (fracMatch) {
+          return Number(fracMatch[1]) / Number(fracMatch[2]);
+        }
+        return Number(s.replace(/,/g, "").trim());
+      }
+      function todayISO() {
+        const d = new Date(),
+          p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+      }
+
+      function init() {
+        $("student-date").value = todayISO();
+        applyPreset("quick", true);
+        renderRouteCards();
+        checkSavedWork();
+        window.addEventListener("beforeunload", () => {
+          if (state.started) saveState(false);
+        });
+      }
+      function checkSavedWork() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        try {
+          const saved = JSON.parse(raw);
+          if (!saved || !saved.started) return;
+          $("resume-banner").style.display = "flex";
+          const name = [saved.student?.first].filter(Boolean).join(" ");
+          $("resume-details").textContent =
+            `${name || "A student"} has saved progress with ${saved.selectedIds?.length || 0} missions.`;
+        } catch (e) {}
+      }
+      function resumeSaved() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        state = JSON.parse(raw);
+        selectedIds = [...state.selectedIds];
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+      }
+      function clearSavedWork() {
+        localStorage.removeItem(STORAGE_KEY);
+        $("resume-banner").style.display = "none";
+        $("save-status").textContent = "Fresh start";
+      }
+      function manualSave() {
+        if (!state.started) {
+          $("save-status").textContent = "Start first";
+          return;
+        }
+        saveState(true);
+      }
+      function saveState(show) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (show)
+          $("save-status").textContent =
+            "Saved " +
+            new Date().toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            });
+      }
+      function showScreen(name) {
+        ["intro", "app", "results"].forEach((s) => {
+          const el = $(s + "-screen");
+          el.classList.toggle("active", s === name);
+        });
+      }
+
+      function renderRouteCards() {
+        const grid = $("route-grid");
+        grid.innerHTML = "";
+        MISSIONS.forEach((m) => {
+          const selected = selectedIds.includes(m.id);
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "route-card" + (selected ? " selected" : "");
+          card.onclick = () => toggleMission(m.id);
+          card.innerHTML = `
+      <div class="rc-top"><span class="rc-emoji">${m.emoji}</span><span class="rc-check">${selected ? "✓" : ""}</span></div>
+      <div class="rc-name">${escapeHtml(m.badge)}</div>
+      <div class="rc-focus">${escapeHtml(m.location)}</div>
+      <div class="rc-formula">${escapeHtml(m.formula)}</div>
+    `;
+          grid.appendChild(card);
+        });
+        $("route-note").textContent =
+          `Selected: ${selectedIds.length} mission${selectedIds.length === 1 ? "" : "s"}`;
+      }
+      function applyPreset(preset, silent = false) {
+        selectedIds = [...(PRESETS[preset] || PRESETS.quick)];
+        if (!silent) renderRouteCards();
+      }
+      function toggleMission(id) {
+        if (selectedIds.includes(id))
+          selectedIds = selectedIds.filter((x) => x !== id);
+        else selectedIds.push(id);
+        renderRouteCards();
+      }
+
+      function startExpedition() {
+        const first = $("student-name").value.trim();
+        if (!first) {
+          $("student-name").focus();
+          $("save-status").textContent = "Enter name";
+          return;
+        }
+        if (selectedIds.length < 4) {
+          $("route-note").textContent = "Choose at least 4 missions.";
+          $("route-note").style.color = `var(--error)`;
+          return;
+        }
+        state = {
+          started: true,
+          student: {
+            first,
+            period: $("student-period").value.trim(),
+            date: $("student-date").value || todayISO(),
+          },
+          selectedIds: [...selectedIds],
+          currentIndex: 0,
+          responses: {},
+          startTime: Date.now(),
+          endTime: null,
+        };
+        state.selectedIds.forEach((id) => responseFor(id));
+        showScreen("app");
+        renderSidebar();
+        renderMission();
+        saveState(true);
+      }
+
+      function renderSidebar() {
+        const jump = $("jump-select");
+        jump.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = `${i + 1}. ${m.emoji} ${m.badge}`;
+          jump.appendChild(opt);
+        });
+        const list = $("mission-list");
+        list.innerHTML = "";
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const r = responseFor(id);
+          const done = r.checked && r.correct;
+          const explored = explorationComplete(r);
+          const mini = document.createElement("button");
+          mini.type = "button";
+          mini.className =
+            "mission-mini" +
+            (i === state.currentIndex ? " current" : "") +
+            (done ? " done" : "");
+          mini.onclick = () => jumpToMission(i);
+          mini.innerHTML = `
+      <span class="mini-flag">${m.emoji}</span>
+      <span class="mini-text">
+        <span class="mini-name">${escapeHtml(m.badge)}</span>
+        <span class="mini-status">${done ? "Math correct" : r.checked ? "Check feedback" : "Not checked"} · ${explored ? "Log done" : "Log open"}</span>
+      </span>
+      <span class="mini-check">${done ? "⭐" : explored ? "📝" : "○"}</span>
+    `;
+          list.appendChild(mini);
+        });
+        updateHeaderProgress();
+      }
+      function updateHeaderProgress() {
+        const total = state.selectedIds.length || 1;
+        const idx = state.currentIndex + 1;
+        const correct = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        $("progress-label").textContent = `Mission ${idx} of ${total}`;
+        $("score-label").textContent = `${correct} correct`;
+        $("progress-fill").style.width = `${Math.round((idx / total) * 100)}%`;
+        $("jump-select").value = state.currentIndex;
+      }
+      function jumpToMission(index) {
+        persistInputs();
+        state.currentIndex = Math.max(
+          0,
+          Math.min(index, state.selectedIds.length - 1),
+        );
+        renderSidebar();
+        renderMission();
+        saveState(false);
+      }
+
+      function sentenceStarterButtons(targetId) {
+        return SENTENCE_STARTERS.map(
+          (s) =>
+            `<button type="button" class="starter-chip" onclick="insertStarter('${targetId}',${JSON.stringify(s)})">${escapeHtml(s.trim())}...</button>`,
+        ).join("");
+      }
+      function insertStarter(targetId, starter) {
+        const box = $(targetId);
+        if (!box) return;
+        const start = box.selectionStart ?? box.value.length;
+        const before = box.value.slice(0, start);
+        const after = box.value.slice(box.selectionEnd ?? box.value.length);
+        const space = before && !/\s$/.test(before) ? " " : "";
+        box.value = before + space + starter + after;
+        box.focus();
+        const caret = (before + space + starter).length;
+        box.setSelectionRange(caret, caret);
+        saveState(false);
+      }
+
+      function mapLinks(m) {
+        const q = encodeURIComponent(m.query);
+        return `
+    <a class="explore-link" href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">🖼️ Images</a>
+    <a class="explore-link" href="https://www.google.com/search?q=${q}+facts+for+kids" target="_blank" rel="noopener">🔎 Facts</a>
+    <a class="explore-link" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🌐 Search</a>
+  `;
+      }
+      function dataTable(m) {
+        return (
+          `<table class="data-table"><thead><tr><th>Ingredient</th><th>Amount</th></tr></thead><tbody>` +
+          m.data
+            .map(
+              (row) =>
+                `<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])} ${escapeHtml(row[2])}</td></tr>`,
+            )
+            .join("") +
+          `</tbody></table>`
+        );
+      }
+      function kcfStepBadges(m) {
+        if (!m.kcfSteps) return "";
+        return `<div class="kcf-steps">
+          <span class="kcf-step kcf-keep">${escapeHtml(m.kcfSteps[0])}</span>
+          <span class="kcf-step kcf-change">${escapeHtml(m.kcfSteps[1])}</span>
+          <span class="kcf-step kcf-flip">${escapeHtml(m.kcfSteps[2])}</span>
+        </div>`;
+      }
+
+      function renderMission() {
+        const id = state.selectedIds[state.currentIndex];
+        const m = missionById(id);
+        const r = responseFor(id);
+        const card = $("mission-card");
+
+        card.innerHTML = `
+    <div class="dest-hero">
+      <div class="dest-top">
+        <div class="dest-emoji">${m.emoji}</div>
+        <div>
+          <div class="dest-kicker">${escapeHtml(m.location)} · ${escapeHtml(m.badge)}</div>
+          <div class="dest-title">${escapeHtml(m.badge)}</div>
+          <div class="dest-sub">${escapeHtml(m.focus)} · ${escapeHtml(m.formula)}</div>
+        </div>
+        <div class="stamp">Recipe<strong>${state.currentIndex + 1}/${state.selectedIds.length}</strong></div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel soft">
+        <h3>🔍 Explore the Kitchen</h3>
+        <p style="font-size:.88rem;margin-bottom:10px;">${escapeHtml(m.explorePrompt)}</p>
+        <div class="explore-links">${mapLinks(m)}</div>
+        <div class="check-grid">
+          <label class="check-row"><input type="checkbox" id="check-opened" ${r.checks.opened ? "checked" : ""} onchange="updateCheck('opened',this.checked)"> I searched and found information.</label>
+          <label class="check-row"><input type="checkbox" id="check-found" ${r.checks.found ? "checked" : ""} onchange="updateCheck('found',this.checked)"> I found one real detail about this cuisine.</label>
+          <label class="check-row"><input type="checkbox" id="check-connection" ${r.checks.connection ? "checked" : ""} onchange="updateCheck('connection',this.checked)"> I connected it to fraction division.</label>
+        </div>
+        <div class="lab-field">
+          <label for="observation">Kitchen Log: What I Found</label>
+          <div class="starter-note">Click a sentence starter, then finish it with your own real detail.</div>
+          <div class="starter-tray">${sentenceStarterButtons("observation")}</div>
+          <textarea id="observation" oninput="updateText('observation',this.value)" placeholder="Write what you discovered...">${escapeHtml(r.observation)}</textarea>
+        </div>
+        <div class="lab-field" style="margin-top:8px">
+          <label for="connection-note">Math Connection</label>
+          <textarea id="connection-note" oninput="updateText('connectionNote',this.value)" placeholder="${escapeHtml(m.connectionPrompt)}">${escapeHtml(r.connectionNote)}</textarea>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>📊 Recipe Data</h3>
+        <div class="recipe-evidence-card">
+          <div class="recipe-evidence-text">
+            <strong>Kitchen Challenge</strong>
+            <p>${escapeHtml(m.story)}</p>
+            <span class="recipe-tag">${escapeHtml(m.focus)}</span>
+          </div>
+        </div>
+        ${dataTable(m)}
+        <div style="margin-top:12px">
+          <strong style="font-size:.82rem;color:var(--brown);">Method: Keep, Change, Flip</strong>
+          ${kcfStepBadges(m)}
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-lab">
+      <h3>🧮 Calculation Lab</h3>
+      <p style="margin-bottom:14px;font-size:.9rem;">${escapeHtml(m.story)} Use "Keep, Change, Flip" to solve.</p>
+      <div class="lab-grid">
+        <div class="lab-field full">
+          <label for="work-shown">Show Your Work (Keep, Change, Flip Steps)</label>
+          <textarea id="work-shown" oninput="updateText('workShown',this.value)" placeholder="Step 1: Keep ___&#10;Step 2: Change ÷ to ×&#10;Step 3: Flip ___ → ___&#10;Multiply: ___ × ___ = ___">${escapeHtml(r.workShown)}</textarea>
+        </div>
+        <div class="lab-field">
+          <label for="numeric-answer">My Answer</label>
+          <div class="answer-row">
+            <input id="numeric-answer" type="text" value="${escapeHtml(r.numericAnswer)}" oninput="updateText('numericAnswer',this.value)" placeholder="Type answer (e.g., 6 or 2 1/2)">
+            <span class="unit-pill">${escapeHtml(m.unit)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="hint-row">
+        <button class="secondary-btn" onclick="checkCalculation()">Check Answer</button>
+        <button class="ghost-btn" onclick="showHint(1)">Hint 1: Method</button>
+        <button class="ghost-btn" onclick="showHint(2)">Hint 2: Full Solution</button>
+      </div>
+      <div class="feedback ${r.checked ? (r.correct ? "show ok" : "show no") : ""}" id="feedback-box">
+        ${r.checked ? feedbackText(m, r.correct) : ""}
+      </div>
+      <div class="hint-box" id="hint-box"></div>
+    </div>
+
+    <div class="panel warm" style="margin-top:20px">
+      <h3>🌟 Extension Challenge</h3>
+      <p style="font-size:.88rem;margin-bottom:12px;">${escapeHtml(m.extension.prompt)}</p>
+      <div class="extension-row">
+        <div class="lab-field">
+          <label for="extension-answer">Your Answer</label>
+          <input id="extension-answer" type="text" value="${escapeHtml(r.extensionAnswer)}" oninput="updateText('extensionAnswer',this.value)" placeholder="Show your thinking...">
+        </div>
+        <div class="extension-output" id="extension-output">Expected: ${escapeHtml(m.extension.answer)}</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="ghost-btn" onclick="previousMission()" ${state.currentIndex === 0 ? "disabled" : ""}>← Previous</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghost-btn" onclick="downloadCheckpoint()">💾 Checkpoint</button>
+        <button class="primary-btn" onclick="nextMission()">${state.currentIndex === state.selectedIds.length - 1 ? "Finish Challenge 🏁" : "Next Recipe →"}</button>
+      </div>
+    </div>
+  `;
+        card.classList.remove("fade-in");
+        void card.offsetWidth;
+        card.classList.add("fade-in");
+        updateHeaderProgress();
+      }
+
+      function feedbackText(m, ok) {
+        if (ok)
+          return `<strong>✅ Correct!</strong> ${escapeHtml(m.substitution)}.`;
+        return `<strong>Not quite.</strong> Check your Keep, Change, Flip steps. Expected: <em>${escapeHtml(m.substitution)}</em>.`;
+      }
+      function explorationComplete(r) {
+        return !!(
+          r.checks.opened &&
+          r.checks.found &&
+          r.checks.connection &&
+          r.observation.trim().length >= 12 &&
+          r.connectionNote.trim().length >= 8
+        );
+      }
+      function updateCheck(key, val) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        r.checks[key] = val;
+        saveState(false);
+        renderSidebar();
+      }
+      function updateText(field, value) {
+        const r = responseFor(state.selectedIds[state.currentIndex]);
+        r[field] = value;
+        saveState(false);
+      }
+      function persistInputs() {
+        const id = state.selectedIds[state.currentIndex];
+        if (!id) return;
+        const r = responseFor(id);
+        if ($("observation")) r.observation = $("observation").value;
+        if ($("connection-note")) r.connectionNote = $("connection-note").value;
+        if ($("work-shown")) r.workShown = $("work-shown").value;
+        if ($("numeric-answer")) r.numericAnswer = $("numeric-answer").value;
+        if ($("extension-answer"))
+          r.extensionAnswer = $("extension-answer").value;
+      }
+      function checkCalculation() {
+        persistInputs();
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        const value = cleanNumber(r.numericAnswer);
+        const numericOK =
+          isFinite(value) &&
+          Math.abs(value - m.answer) <= (m.tolerance ?? 0.01);
+        // Also check alternate text answers like "2 1/2"
+        const altOK = m.acceptAlt && r.numericAnswer.trim() === m.acceptAlt;
+        r.checked = true;
+        r.correct = numericOK || altOK;
+        const fb = $("feedback-box");
+        fb.className = "feedback show " + (r.correct ? "ok" : "no");
+        if (r.correct) {
+          fb.innerHTML = feedbackText(m, true);
+        } else {
+          fb.innerHTML = `<strong>Try again.</strong> Expected answer: <strong>${escapeHtml(m.answer)} ${escapeHtml(m.unit)}</strong>${m.acceptAlt ? " (or " + escapeHtml(m.acceptAlt) + ")" : ""}.<br><em>Steps: ${escapeHtml(m.substitution)}</em>`;
+        }
+        saveState(true);
+        renderSidebar();
+      }
+      function showHint(level) {
+        const m = missionById(state.selectedIds[state.currentIndex]);
+        const r = responseFor(m.id);
+        r.hintsShown = Math.max(r.hintsShown || 0, level);
+        const box = $("hint-box");
+        box.style.display = "block";
+        box.innerHTML =
+          level === 1
+            ? `<strong>Hint — Keep, Change, Flip:</strong> ${escapeHtml(m.hint1)}`
+            : `<strong>Full Solution:</strong> ${escapeHtml(m.hint2)}`;
+        saveState(false);
+      }
+      function previousMission() {
+        persistInputs();
+        if (state.currentIndex > 0) {
+          state.currentIndex--;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+      function nextMission() {
+        persistInputs();
+        if (state.currentIndex >= state.selectedIds.length - 1) showResults();
+        else {
+          state.currentIndex++;
+          renderSidebar();
+          renderMission();
+          saveState(false);
+        }
+      }
+
+      function showResults() {
+        persistInputs();
+        state.endTime = Date.now();
+        saveState(true);
+        showScreen("results");
+        const total = state.selectedIds.length;
+        const mathCorrect = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        const exploreComplete = state.selectedIds.filter((id) =>
+          explorationComplete(responseFor(id)),
+        ).length;
+        const readiness = Math.round(
+          ((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100,
+        );
+        const mins = Math.max(
+          0,
+          Math.round(
+            ((state.endTime || Date.now()) - (state.startTime || Date.now())) /
+              60000,
+          ),
+        );
+
+        $("results-subtitle").textContent =
+          `${state.student.first} · Period ${state.student.period || "—"} · ${state.student.date || ""}`;
+        $("math-score").textContent = `${mathCorrect}/${total}`;
+        $("explore-score").textContent = `${exploreComplete}/${total}`;
+        $("overall-score").textContent = `${readiness}%`;
+        $("time-score").textContent = `${mins}m`;
+
+        $("result-stamps").innerHTML = state.selectedIds
+          .map((id) => {
+            const m = missionById(id);
+            const r = responseFor(id);
+            return `<span class="passport-stamp" title="${escapeHtml(m.badge)}">${m.emoji}${r.correct ? "⭐" : ""}</span>`;
+          })
+          .join("");
+
+        $("review-body").innerHTML = state.selectedIds
+          .map((id, i) => {
+            const m = missionById(id);
+            const r = responseFor(id);
+            const cls = r.correct && explorationComplete(r) ? "good" : "needs";
+            return `<tr class="${cls}">
+      <td><strong>${i + 1}. ${m.emoji} ${escapeHtml(m.badge)}</strong><br><span style="color:var(--muted);font-size:.78rem">${escapeHtml(m.location)}</span></td>
+      <td>${r.correct ? "⭐ Correct" : r.checked ? "🔁 Revise" : "○ Not checked"}<br><span style="color:var(--muted);font-size:.78rem">Answer: ${escapeHtml(r.numericAnswer || "—")} ${escapeHtml(m.unit)}</span></td>
+      <td>${escapeHtml(r.observation || "No observation")}<br><span style="color:var(--muted);font-size:.78rem">Connection: ${escapeHtml(r.connectionNote || "—")}</span></td>
+      <td>${escapeHtml(r.workShown || "—")}<br><span style="color:var(--muted);font-size:.78rem">Expected: ${escapeHtml(m.substitution)}</span></td>
+    </tr>`;
+          })
+          .join("");
+
+        $("submit-period").value = state.student.period
+          ? "Period " + state.student.period
+          : "";
+      }
+
+      function buildPlainReport() {
+        const total = state.selectedIds.length;
+        const mathCorrect = state.selectedIds.filter(
+          (id) => responseFor(id).correct,
+        ).length;
+        const exploreComplete = state.selectedIds.filter((id) =>
+          explorationComplete(responseFor(id)),
+        ).length;
+        const readiness = Math.round(
+          ((mathCorrect / total) * 0.7 + (exploreComplete / total) * 0.3) * 100,
+        );
+        let lines = [];
+        lines.push("MASTER CHEF KITCHEN — FRACTION DIVISION CHALLENGE REPORT");
+        lines.push("Student: " + state.student.first);
+        lines.push("Period: " + (state.student.period || "—"));
+        lines.push("Date: " + (state.student.date || ""));
+        lines.push("Math Correct: " + mathCorrect + "/" + total);
+        lines.push("Kitchen Logs: " + exploreComplete + "/" + total);
+        lines.push("Head Chef Rating: " + readiness + "%");
+        lines.push("");
+        lines.push("KITCHEN MISSIONS");
+        state.selectedIds.forEach((id, i) => {
+          const m = missionById(id);
+          const r = responseFor(id);
+          lines.push("────────────────────────────");
+          lines.push(`${i + 1}. ${m.emoji} ${m.badge} — ${m.location}`);
+          lines.push("Problem: " + m.story);
+          lines.push(
+            "Exploration: " +
+              (explorationComplete(r) ? "Complete" : "Incomplete"),
+          );
+          lines.push("Observation: " + (r.observation || "—"));
+          lines.push("Math connection: " + (r.connectionNote || "—"));
+          lines.push("Work shown: " + (r.workShown || "—"));
+          lines.push(
+            "Student answer: " + (r.numericAnswer || "—") + " " + m.unit,
+          );
+          lines.push(
+            "Expected: " + m.substitution + " = " + m.answer + " " + m.unit,
+          );
+          lines.push(
+            "Status: " +
+              (r.correct
+                ? "Correct"
+                : r.checked
+                  ? "Needs revision"
+                  : "Not checked"),
+          );
+          lines.push("Extension: " + (r.extensionAnswer || "—"));
+        });
+        lines.push("");
+        lines.push("Generated by Neft Teacher");
+        return lines.join("\n");
+      }
+      function buildHtmlReport() {
+        const text = buildPlainReport();
+        const escaped = escapeHtml(text).replace(/\n/g, "<br>");
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Master Chef Kitchen — ${escapeHtml(state.student.first)}</title>
+  <style>body{font-family:Arial,sans-serif;line-height:1.5;margin:32px;color:#78350F}h1{color:#78350F}.box{border:2px solid #78350F;border-radius:12px;padding:20px}</style></head>
+  <body><h1>👨‍🍳 Master Chef Kitchen — Fraction Division Challenge Report</h1><div class="box">${escaped}</div></body></html>`;
+      }
+      function safeFilename() {
+        return `Chef_Kitchen_${state.student.first}_${state.student.period || "Period"}_${state.student.date || todayISO()}`.replace(
+          /[^a-z0-9_\-]+/gi,
+          "_",
+        );
+      }
+      function downloadReport(kind) {
+        const isHtml = kind === "html";
+        const content = isHtml ? buildHtmlReport() : buildPlainReport();
+        const blob = new Blob([content], {
+          type: isHtml ? "text/html" : "text/plain",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFilename() + (isHtml ? ".html" : ".txt");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        $("copy-confirm").style.display = "block";
+      }
+      function downloadCheckpoint() {
+        persistInputs();
+        const blob = new Blob([JSON.stringify(state, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFilename() + "_checkpoint.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        $("save-status").textContent = "Checkpoint saved";
+      }
+      async function copyReport() {
+        try {
+          await navigator.clipboard.writeText(buildPlainReport());
+          $("copy-confirm").style.display = "block";
+        } catch (e) {
+          const w = window.open("", "_blank");
+          w.document.write("<pre>" + escapeHtml(buildPlainReport()) + "</pre>");
+          w.document.close();
+        }
+      }
+      function openClassroom() {
+        window.open("https://classroom.google.com/", "_blank", "noopener");
+      }
+      function submitViaEmail() {
+        const email = $("teacher-email").value.trim();
+        if (!email) {
+          $("teacher-email").focus();
+          return;
+        }
+        const subject = encodeURIComponent(
+          `Master Chef Kitchen — ${state.student.first} — ${state.student.period || "Period"}`,
+        );
+        const body = encodeURIComponent(buildPlainReport().slice(0, 12000));
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        $("email-confirm").style.display = "block";
+      }
+      function restartProject() {
+        if (!confirm("Start over and clear saved work?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      init();
+    </script>
+  </body>
+</html>
