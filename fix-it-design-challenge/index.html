@@ -582,7 +582,7 @@
         min-height: 122px;
       }
       textarea.prompt-preview {
-        min-height: 190px;
+        min-height: 260px;
         background: #f7faf8;
         font-size: 13px;
         color: #344;
@@ -605,6 +605,15 @@
           rgba(220, 232, 223, 0.32),
           rgba(255, 248, 237, 0.55)
         );
+      }
+      .coach-prompt-panel {
+        display: grid;
+        gap: 8px;
+        margin: 12px 0;
+      }
+      .coach-prompt-title {
+        color: var(--navy);
+        font-weight: 900;
       }
       details {
         margin: 10px 0;
@@ -1401,9 +1410,18 @@
                   <h4>Use Gemini as a coach</h4>
                 </div>
                 <p class="model-hint">
-                  The coach prompt was copied into Gemini. Here is the useful
-                  feedback:
+                  The teacher pasted this coach prompt into Gemini before
+                  revising the scaffold.
                 </p>
+                <div class="coach-prompt-panel">
+                  <div class="coach-prompt-title">Gemini coach prompt</div>
+                  <textarea
+                    class="prompt-preview"
+                    id="model-prompt"
+                    readonly
+                  ></textarea>
+                </div>
+                <p class="model-hint">Useful feedback from Gemini:</p>
                 <div class="model-answer">
                   Gemini suggested adding a sentence-starter bank for the
                   written response so students who struggle with academic
@@ -1729,14 +1747,14 @@
                     >Open Gemini ↗</a
                   >
                 </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
+                <div class="coach-prompt-panel">
+                  <div class="coach-prompt-title">Gemini coach prompt</div>
                   <textarea
                     class="prompt-preview"
                     id="g1-prompt"
                     readonly
                   ></textarea>
-                </details>
+                </div>
                 <textarea
                   id="g1-feedback"
                   data-field="feedback"
@@ -1973,14 +1991,14 @@
                     >Open Gemini ↗</a
                   >
                 </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
+                <div class="coach-prompt-panel">
+                  <div class="coach-prompt-title">Gemini coach prompt</div>
                   <textarea
                     class="prompt-preview"
                     id="g2-prompt"
                     readonly
                   ></textarea>
-                </details>
+                </div>
                 <textarea
                   id="g2-feedback"
                   data-field="feedback"
@@ -2218,14 +2236,14 @@
                     >Open Gemini ↗</a
                   >
                 </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
+                <div class="coach-prompt-panel">
+                  <div class="coach-prompt-title">Gemini coach prompt</div>
                   <textarea
                     class="prompt-preview"
                     id="g3-prompt"
                     readonly
                   ></textarea>
-                </details>
+                </div>
                 <textarea
                   id="g3-feedback"
                   data-field="feedback"
@@ -2463,14 +2481,14 @@
                     >Open Gemini ↗</a
                   >
                 </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
+                <div class="coach-prompt-panel">
+                  <div class="coach-prompt-title">Gemini coach prompt</div>
                   <textarea
                     class="prompt-preview"
                     id="g4-prompt"
                     readonly
                   ></textarea>
-                </details>
+                </div>
                 <textarea
                   id="g4-feedback"
                   data-field="feedback"
@@ -2707,14 +2725,14 @@
                     >Open Gemini ↗</a
                   >
                 </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
+                <div class="coach-prompt-panel">
+                  <div class="coach-prompt-title">Gemini coach prompt</div>
                   <textarea
                     class="prompt-preview"
                     id="g5-prompt"
                     readonly
                   ></textarea>
-                </details>
+                </div>
                 <textarea
                   id="g5-feedback"
                   data-field="feedback"
@@ -2951,14 +2969,14 @@
                     >Open Gemini ↗</a
                   >
                 </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
+                <div class="coach-prompt-panel">
+                  <div class="coach-prompt-title">Gemini coach prompt</div>
                   <textarea
                     class="prompt-preview"
                     id="g6-prompt"
                     readonly
                   ></textarea>
-                </details>
+                </div>
                 <textarea
                   id="g6-feedback"
                   data-field="feedback"
@@ -3341,6 +3359,39 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
+      function coachPromptText({
+        scenario,
+        aiInput,
+        barrier,
+        thinking,
+        before,
+      }) {
+        return `You are an OSAMR coach for teachers using AI to make instruction more accessible without lowering rigor.
+
+Coach my draft prompt or scaffold. Do not complete the student task.
+
+Anchor rule:
+Barrier removed. Thinking preserved. Learning target unchanged.
+
+Context:
+- Scenario: ${scenario}
+- Concerning AI request: "${aiInput}"
+- Barrier to remove: ${barrier}
+- Student thinking to protect: ${thinking}
+
+My draft prompt/scaffold:
+${before}
+
+Please respond with:
+1. OSAMR fit: Is this closest to Substitution, Augmentation, Modification, Redefinition, or Overreliance? Give one brief reason.
+2. Overreliance check: Name any place AI may still be giving the answer, evidence, reasoning, model, explanation, or completed product.
+3. Revision moves: Give 3 practical changes that increase access while keeping the thinking with students.
+4. Stronger prompt: Rewrite my teacher-facing Gemini prompt so Gemini can build the support, with guardrails that prevent it from giving away answers, evidence, reasoning, labels, claims, explanations, or completed organizers.
+5. Rigor check: Complete this sentence: "Students still have to..."
+
+Keep it concise and teacher-ready.`;
+      }
+
       function promptFor(groupId) {
         const group = groupById(groupId);
         const barrier = getValue(groupId, "barrier") || group.barrier;
@@ -3349,46 +3400,28 @@
           getValue(groupId, "before") ||
           "[Paste your first redesigned support or teacher prompt here]";
 
-        return `You are an OSAMR coach for teachers using AI to design accessible, rigorous instruction.
+        return coachPromptText({
+          scenario: group.scenario,
+          aiInput: group.ai_input,
+          barrier,
+          thinking,
+          before,
+        });
+      }
 
-Your job is to coach the teacher's prompt or scaffold — not to complete the student task.
+      function modelPromptFor() {
+        const group = groupById(2);
 
-Use this rule as the anchor:
-Barrier removed. Thinking preserved. Learning target unchanged.
-
-Review the teacher's draft through OSAMR:
-- Substitution: AI replaces a basic tool, but the task is mostly unchanged.
-- Augmentation: AI improves access or efficiency while the same learning task remains.
-- Modification: AI helps redesign the task structure while students still do the target thinking.
-- Redefinition: AI enables a meaningfully new learning move that was not practical before.
-- Overreliance: AI gives students the answer, claim, evidence, reasoning, model, explanation, or completed product.
-
-Teacher context:
-Scenario:
-${group.scenario}
-
-Original AI request that caused concern:
-"${group.ai_input}"
-
-Access barrier the teacher is trying to remove:
-${barrier}
-
-Student thinking that must stay with students:
-${thinking}
-
-Teacher's current draft prompt/scaffold:
-${before}
-
-Coach my draft. Do not rewrite it as a final student-facing product yet.
-
-Please return:
-1. OSAMR diagnosis: Which level is the current draft closest to, and why?
-2. Overreliance check: Where might AI still be doing the student thinking?
-3. Revision moves: 3 concrete ways to improve the teacher prompt/scaffold so access increases while the learning target stays intact.
-4. Stronger prompt: A revised teacher-facing prompt I can paste back into Gemini. It should ask Gemini to build out the support I requested, but it must include guardrails that prevent Gemini from giving away answers, evidence, reasoning, labels, claims, explanations, or completed organizers.
-5. Quick rigor check: Finish this sentence — "Students still have to..."
-
-Keep the response practical, concise, and ready for a teacher to use.`;
+        return coachPromptText({
+          scenario: group.scenario,
+          aiInput: group.ai_input,
+          barrier:
+            "Dense academic text makes it hard for students to locate the claim and evidence on their own.",
+          thinking:
+            "Students must read the article closely, identify the central claim themselves, select their own evidence, and explain how the evidence supports the claim.",
+          before:
+            "Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create chunk headings, 5 student-friendly vocabulary supports, one focus question per chunk, and a blank evidence organizer that requires students to return to the original article and choose their own evidence.",
+        });
       }
 
       function postFor(groupId) {
@@ -3465,6 +3498,9 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         });
 
         GROUPS.forEach((group) => updateGroup(group.id));
+
+        const modelPrompt = $("#model-prompt");
+        if (modelPrompt) modelPrompt.value = modelPromptFor();
       }
 
       function renderGallery() {
