@@ -743,6 +743,92 @@
         font-weight: 800;
       }
 
+      .model-scenario {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 18px;
+        box-shadow: var(--soft);
+      }
+      .model-scenario p {
+        margin: 0 0 12px;
+        color: #334;
+        line-height: 1.48;
+      }
+      .model-steps {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--soft);
+      }
+      .model-step {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .model-step:last-child {
+        border-bottom: 0;
+      }
+      .model-step.gemini-step {
+        background: linear-gradient(
+          135deg,
+          rgba(220, 232, 223, 0.32),
+          rgba(255, 248, 237, 0.55)
+        );
+      }
+      .model-step-head {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .model-step-head span {
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        background: var(--navy);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        font-size: 14px;
+        flex: 0 0 auto;
+      }
+      .model-step-head h4 {
+        margin: 0;
+        color: var(--navy);
+        font-size: 17px;
+      }
+      .model-answer {
+        background: var(--sage);
+        border-radius: 12px;
+        padding: 12px 14px;
+        color: #243645;
+        line-height: 1.45;
+        font-size: 14px;
+        border: 1px solid rgba(36, 124, 127, 0.1);
+      }
+      .model-hint {
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .model-prove {
+        display: grid;
+        gap: 8px;
+      }
+      .model-prove div {
+        background: var(--sage);
+        border-radius: 12px;
+        padding: 10px 14px;
+        color: #243645;
+        line-height: 1.4;
+        font-size: 14px;
+        border: 1px solid rgba(36, 124, 127, 0.1);
+      }
+
       .osamr-display {
         display: grid;
         gap: 16px;
@@ -1242,83 +1328,142 @@
           </div>
         </div>
 
-        <!-- Step 4: Model — the before -->
+        <!-- Step 3: Model walkthrough — mirrors exact group steps -->
         <div class="walkthrough-section">
           <div class="walkthrough-number">3</div>
           <div>
-            <h3>See the model: What went wrong?</h3>
+            <h3>Walk through the model</h3>
             <p>
-              A teacher asked AI to help 7th graders with a challenging article.
-              The request sounded helpful, but it asked AI to do the core
-              student thinking.
+              Below is a completed example using the exact same steps you will
+              do in your group. Read through it so you know what to expect.
             </p>
-            <article class="prompt-card bad">
-              <p class="prompt-label">Problematic AI request</p>
-              <pre class="prompt-text">
-Summarize this article for 7th graders and tell students the author’s central claim and two pieces of evidence they should use in their response.</pre
-              >
-              <p class="why-line">
-                <strong>Why this is a problem:</strong> AI gives the claim and
-                evidence. Students can answer without reading closely, selecting
-                evidence, or explaining the connection.
-              </p>
-            </article>
-          </div>
-        </div>
 
-        <!-- Step 5: Model — the fix -->
-        <div class="walkthrough-section">
-          <div class="walkthrough-number">4</div>
-          <div>
-            <h3>See the model: The fix</h3>
-            <p>
-              The revised request keeps AI in a support role and leaves the
-              reading and evidence work with students.
-            </p>
-            <article class="prompt-card good">
-              <p class="prompt-label">Fixed AI request</p>
-              <pre class="prompt-text">
-Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create:
-1. chunk headings,
-2. 5 student-friendly vocabulary supports,
-3. one focus question per chunk, and
-4. a blank evidence organizer that requires students to return to the original article and choose their own evidence.</pre
-              >
-              <p class="why-line">
-                <strong>Why this works:</strong> AI removes language and
-                organization barriers, but students still read, identify the
-                claim, select evidence, and explain how the evidence supports
-                the claim.
+            <div class="model-scenario">
+              <div class="scenario-label">Model scenario</div>
+              <p>
+                <strong>Grade 7 ELA</strong> — A teacher asked AI to help
+                students analyze a challenging article. The AI request sounded
+                helpful but did the thinking for students.
               </p>
-            </article>
-          </div>
-        </div>
+              <div class="ai-input-card">
+                <h4>Problematic AI request</h4>
+                <p class="quote">
+                  "Summarize this article for 7th graders and tell students the
+                  author’s central claim and two pieces of evidence they should
+                  use in their response."
+                </p>
+              </div>
+            </div>
 
-        <!-- Step 6: Design rule -->
-        <div class="walkthrough-section">
-          <div class="walkthrough-number">5</div>
-          <div>
-            <h3>The design rule</h3>
-            <div class="callout">
-              Ask AI for
-              <strong
-                >scaffolds, questions, vocabulary, structure, and checks</strong
-              >
-              — not the answer, claim, evidence, reasoning, model, or completed
-              organizer.
+            <div class="model-steps">
+              <div class="model-step">
+                <div class="model-step-head">
+                  <span>1</span>
+                  <h4>Name the access barrier</h4>
+                </div>
+                <div class="model-answer">
+                  Dense academic text makes it hard for students to locate the
+                  claim and evidence on their own.
+                </div>
+              </div>
+
+              <div class="model-step">
+                <div class="model-step-head">
+                  <span>2</span>
+                  <h4>Protect the student thinking</h4>
+                </div>
+                <div class="model-answer">
+                  Students must read the article closely, identify the central
+                  claim themselves, select their own evidence, and explain how
+                  the evidence supports the claim.
+                </div>
+              </div>
+
+              <div class="model-step">
+                <div class="model-step-head">
+                  <span>3</span>
+                  <h4>Draft the fix before Gemini</h4>
+                </div>
+                <div class="model-answer">
+                  Create an access scaffold for students reading a challenging
+                  article. Do not summarize the article, name the central claim,
+                  or choose evidence for students. Instead, create chunk
+                  headings, 5 student-friendly vocabulary supports, one focus
+                  question per chunk, and a blank evidence organizer that
+                  requires students to return to the original article and choose
+                  their own evidence.
+                </div>
+              </div>
+
+              <div class="model-step gemini-step">
+                <div class="model-step-head">
+                  <span>4</span>
+                  <h4>Use Gemini as a coach</h4>
+                </div>
+                <p class="model-hint">
+                  The coach prompt was copied into Gemini. Here is the useful
+                  feedback:
+                </p>
+                <div class="model-answer">
+                  Gemini suggested adding a sentence-starter bank for the
+                  written response so students who struggle with academic
+                  writing can still engage with the evidence — without the
+                  sentence starters giving away which evidence to choose.
+                </div>
+              </div>
+
+              <div class="model-step">
+                <div class="model-step-head">
+                  <span>5</span>
+                  <h4>Final after-Gemini version</h4>
+                </div>
+                <div class="model-answer">
+                  Create an access scaffold for students reading a challenging
+                  article. Do not summarize the article, name the central claim,
+                  or choose evidence for students. Instead, create:<br />1.
+                  chunk headings,<br />2. 5 student-friendly vocabulary
+                  supports,<br />3. one focus question per chunk,<br />4. a
+                  blank evidence organizer that requires students to return to
+                  the original article and choose their own evidence, and<br />5.
+                  a sentence-starter bank for the written response that does not
+                  reference specific evidence from the text.
+                </div>
+              </div>
+
+              <div class="model-step">
+                <div class="model-step-head">
+                  <span>6</span>
+                  <h4>Prove rigor stayed intact</h4>
+                </div>
+                <div class="model-prove">
+                  <div><strong>OSAMR level:</strong> Augmentation</div>
+                  <div>
+                    <strong>Rigor evidence:</strong> Students still read the
+                    original text, identify the central claim, select their own
+                    evidence, and explain the connection. AI only removed
+                    vocabulary and organization barriers.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout" style="margin-top: 18px">
+              <strong>Design rule:</strong> Ask AI for scaffolds, questions,
+              vocabulary, structure, and checks — not the answer, claim,
+              evidence, reasoning, model, or completed organizer.
             </div>
           </div>
         </div>
 
-        <!-- Step 7: Go -->
+        <!-- Step 4: Go -->
         <div class="walkthrough-section walkthrough-go">
           <div class="walkthrough-number go">GO</div>
           <div>
             <h3>Now it is your turn</h3>
             <p>
               Choose your group page below. Each group has a different scenario
-              where AI overstepped. You will diagnose, redesign, test in Gemini,
-              and post to Padlet.
+              where AI overstepped. You will follow the same 6 steps you just
+              saw in the model.
             </p>
             <div class="action-row">
               <a class="btn primary" href="#menu" data-open-page="menu"
