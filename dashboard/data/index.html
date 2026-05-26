@@ -140,8 +140,6 @@ textarea.fi{resize:vertical;min-height:65px}
 .fbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .cw{position:relative;width:100%}
 canvas{display:block}
-@keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
-.loading{animation:shimmer 1.2s ease-in-out infinite}
 .tabbtn{padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;background:transparent;border:1px solid transparent;color:var(--muted);cursor:pointer;transition:all .12s}
 .tabbtn:hover{background:rgba(255,255,255,.04)}
 .tabbtn.on{background:var(--td);border-color:var(--tb);color:var(--teal)}
@@ -178,41 +176,38 @@ canvas{display:block}
   .card{border:1px solid #ddd!important;background:#fff!important;break-inside:avoid}
   canvas{max-width:100%!important}
 }
-.skip-nav{position:absolute;top:-40px;left:0;background:var(--teal);color:#000;padding:8px 16px;z-index:10000;font-weight:800;font-size:13px;border-radius:0 0 8px 0;transition:top .2s}
-.skip-nav:focus{top:0}
-:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:768px){
   #sidebar{width:52px}
   .nbtn .label,.sb-logo .sub,.sb-foot,.sb-sec{display:none}
   .sb-logo h1{font-size:15px}
   #content{padding:12px 14px 28px}
 }
+.skip-nav{position:absolute;top:-40px;left:0;background:var(--teal);color:#000;padding:8px 16px;z-index:10000;font-weight:800;font-size:13px;border-radius:0 0 8px 0;transition:top .2s}
+.skip-nav:focus{top:0}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+.loading{animation:shimmer 1.2s ease-in-out infinite}
 @media(max-width:1100px){
   .g5{grid-template-columns:repeat(3,1fr)}
   .g4{grid-template-columns:repeat(2,1fr)}
   .g3{grid-template-columns:1fr 1fr}
-}
-@media(max-width:768px){
-  .g5,.g4,.g3{grid-template-columns:1fr}
-  .g2{grid-template-columns:1fr}
-  #topbar{padding:12px 14px 0}
-  .kv{font-size:22px}
-  .tbl{font-size:11px}
-  .tbl th,.tbl td{padding:6px 8px}
 }
 @media(max-width:480px){
   #sidebar{display:none}
   #fab{bottom:14px;right:14px}
   .mbox{max-width:100%;border-radius:10px}
   .mb{padding:12px 14px}
+  .g5,.g4,.g3,.g2{grid-template-columns:1fr}
+  #topbar{padding:12px 14px 0}
+  .kv{font-size:22px}
 }
 </style>
 </head>
 <body>
-<a href="#content" class="skip-nav" id="skip-nav">Skip to main content</a>
+<a href="#content" class="skip-nav">Skip to main content</a>
 <div id="app">
-  <nav id="sidebar" role="navigation" aria-label="Main navigation">
+  <div id="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sb-logo">
       <h1>Edu<span>Pulse</span> <span style="font-size:10px;color:var(--muted);font-weight:400">v4</span></h1>
       <div class="sub">Teacher Intelligence</div>
@@ -247,7 +242,7 @@ canvas{display:block}
       <div style="margin-top:7px;padding-top:7px;border-top:1px solid var(--b2);font-size:10px" id="sb-dt"></div>
     </div>
   </div>
-  <main id="main" role="main">
+  <div id="main" role="main">
     <div id="topbar">
       <div><div style="font-size:21px;font-weight:900;letter-spacing:-.5px;color:var(--text)" id="pg-title">Overview</div><div style="font-size:12px;color:var(--muted);margin-top:3px" id="pg-date"></div></div>
       <div style="display:flex;gap:8px;align-items:center" id="hdr-acts"></div>
@@ -260,15 +255,15 @@ canvas{display:block}
 <script>
 
 // ── CONSTANTS ──────────────────────────────────────────────
-// ── SECURITY ──────────────────────────────────────────────
-function esc(s){if(s==null)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
-function debounce(fn,ms=200){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
-
 const C={teal:'#00e5cc',blue:'#4fc3f7',amber:'#f5a623',red:'#ff4d6d',green:'#10d4a8',purple:'#a78bfa',text:'#eef2ff',surface:'#0f1626',s2:'#162030',
   get muted(){return document.documentElement.classList.contains('light')?'#6b7280':'#6b7a99'},
   get s3(){return document.documentElement.classList.contains('light')?'#edf0f7':'#1c2840'}
 };
 const RC={low:C.green,medium:C.amber,high:C.red};
+// ── SECURITY & UTILS ──────────────────────────────────────
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function debounce(fn,ms=200){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+
 const LC={Advanced:C.green,Proficient:C.blue,Basic:C.amber,'Below Basic':C.red};
 const GM={
   enrichment:{label:'Enrichment',color:C.green,bg:'rgba(16,212,168,0.08)',desc:'Above benchmark',action:'DOK 3 tasks, acceleration, peer leadership'},
@@ -483,7 +478,7 @@ function showExp(key){
   ov.onclick=ev=>{if(ev.target===ov)ov.remove();};
   ov.innerHTML=`<div class="exbox">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:13px">
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--teal)">Plain English — What does this mean?</div>
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--teal)">Plain English — What does this mean?</div>
       <button onclick="this.closest('.exov').remove()" style="background:none;border:none;color:var(--muted);font-size:19px;cursor:pointer;line-height:1">×</button>
     </div>
     <div style="font-size:17px;font-weight:800;color:var(--text);margin-bottom:13px">${e.title}</div>
@@ -599,25 +594,21 @@ const VTITLES={datasetup:'Data Setup',overview:'Overview',students:'Students',gr
   analysis:'Analysis',predlab:'Prediction Lab',rti:'RTI / Intervention Tracker',
   stars:'Growth Stars',datasources:'Additional Data Sources'};
 
-function nav(v,extra={}){const prev=document.activeElement;
+function nav(v,extra={}){
   S.view=v;S.selId=null;Object.assign(S,extra);
   document.querySelectorAll('.nbtn').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
   updSidebar();updTopbar();render();
 }
 function updSidebar(){
   const st=gs(),n=st.length;
-  // Derive demo state from actual data — badge shows whenever SEED students are present
-  const seedIds=new Set(SEED.map(s=>s.id));
-  const hasSeed=S.students.some(s=>seedIds.has(s.id));
-  const pureDemoOnly=hasSeed&&S.students.every(s=>seedIds.has(s.id));
-  document.getElementById('sb-cn').textContent=pureDemoOnly?'Demo Class':n===0?'No Data':'Your Class';
-  document.getElementById('demo-badge').style.display=hasSeed?'inline-block':'none';
+  document.getElementById('sb-cn').textContent=S.isDemo?'Demo Class':'Your Class';
   document.getElementById('sb-st').textContent=`${n} student${n!==1?'s':''} loaded`;
   document.getElementById('sb-ie').textContent=`${st.filter(s=>s.iep).length} IEP · ${st.filter(s=>s.ell).length} ELL`;
   const ch=st.filter(s=>s.chronic).length;
   const ce=document.getElementById('sb-ch');
   ce.textContent=`${ch} chronic absence`;ce.style.color=ch>0?C.red:C.muted;
   document.getElementById('sb-dt').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('demo-badge').style.display=S.isDemo?'inline-block':'none';
   const hr=st.filter(s=>s.risk==='high').length;
   const a=document.getElementById('sb-alert');
   if(hr>0){a.style.display='block';a.textContent=`⚠ ${hr} high-risk student${hr>1?'s':''}`;}
@@ -648,7 +639,7 @@ function updTopbar(){
 function render(){
   const ct=document.getElementById('content');ct.innerHTML='';
   Object.keys(CHARTS).forEach(k=>{try{CHARTS[k].destroy()}catch{}delete CHARTS[k];});
-  document.getElementById('fab').style.display=(S.view==='datasetup'&&!S.selId)?'none':'flex';document.getElementById('content').setAttribute('tabindex','-1');
+  document.getElementById('fab').style.display=(S.view==='datasetup'&&!S.selId)?'none':'flex';
   if(S.selId){const st=gs();const s=st.find(x=>x.id===S.selId);if(s)ct.appendChild(vProfile(s));return;}
   const views={datasetup:vSetup,overview:vOverview,students:vStudents,groups:vGroups,analysis:vAnalysis,predlab:vPredLab,rti:vRTI,stars:vStars,datasources:vDataSources};
   ct.appendChild((views[S.view]||vOverview)());
@@ -659,7 +650,7 @@ function vSetup(){
   const wrap=document.createElement('div');
   // hero
   wrap.appendChild(ht(`<div style="background:linear-gradient(135deg,var(--s2) 0%,rgba(0,229,204,0.06) 100%);border:1px solid var(--tb);border-radius:14px;padding:22px 28px;margin-bottom:18px">
-    <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:5px">Getting Started</div>
+    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:5px">Getting Started</div>
     <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:7px">Set up your class data</div>
     <div style="font-size:13px;color:var(--muted);max-width:520px;line-height:1.7">Explore the demo to see all features, upload your own spreadsheet, or add students manually. You can mix and match.</div>
     ${S.students.length?`<button onclick="nav('overview')" class="btn btn-s" style="margin-top:12px;font-size:12px">→ Go to Dashboard (${S.students.length} students)</button>`:''}
@@ -687,10 +678,10 @@ function vSetup(){
         h('div',{style:{fontSize:'13px',color:'var(--muted)'}},'16 fully populated students. All features work — predictions, grouping, analysis, Prediction Lab.')
       ),
       h('div',{style:{display:'flex',gap:'9px',flexShrink:'0',marginLeft:'16px'}},
-        ...(S.students.some(s=>new Set(SEED.map(x=>x.id)).has(s.id))
-          ?[h('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.students=S.students.filter(s=>!new Set(SEED.map(x=>x.id)).has(s.id));updSidebar();render();toast('Demo data removed',C.red);}},'Remove Demo Data'),
+        ...(S.isDemo
+          ?[h('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.students=[];S.isDemo=false;render();updSidebar();toast('Demo data cleared',C.red);}},'Clear Demo'),
              h('button',{class:'btn btn-s',style:{fontSize:'12px'},onclick:()=>nav('overview')},'View Dashboard →')]
-          :[h('button',{class:'btn btn-p',onclick:()=>{const existing=S.students.filter(s=>!new Set(SEED.map(x=>x.id)).has(s.id));S.students=[...SEED,...existing];updSidebar();render();toast('Demo data loaded');}},'Load Demo Data')])
+          :[h('button',{class:'btn btn-p',onclick:()=>{S.students=[...SEED];S.isDemo=true;render();updSidebar();toast('Demo data loaded');}},'Load Demo Data')])
       )
     );
     card.appendChild(dhr);
@@ -713,7 +704,7 @@ function vSetup(){
     });
     card.appendChild(chips);
     wrap.appendChild(card);
-    if(S.students.some(s=>new Set(SEED.map(x=>x.id)).has(s.id)))wrap.appendChild(ht('<div style="margin-top:10px;padding:11px 14px;background:var(--gd);border:1px solid rgba(16,212,168,0.3);border-radius:9px;font-size:13px;color:var(--green);font-weight:600">✓ Demo data is loaded. Head to the Dashboard to explore all features.</div>'));
+    if(S.isDemo)wrap.appendChild(ht('<div style="margin-top:10px;padding:11px 14px;background:var(--gd);border:1px solid rgba(16,212,168,0.3);border-radius:9px;font-size:13px;color:var(--green);font-weight:600">✓ Demo data is loaded. Head to the Dashboard to explore all features.</div>'));
   }
 
   if(S.setupTab==='upload'){
@@ -806,7 +797,7 @@ function setupPreview(){
       h('div',{style:{display:'flex',gap:'9px'}},
         h('button',{class:'btn btn-g btn-sm',onclick:()=>{S.importPreview=null;render();}},'Cancel'),
         h('button',{class:'btn btn-s',style:{fontSize:'12px'},onclick:()=>{
-          S.students=[...S.students,...ps];S.importPreview=null;
+          S.students=[...S.students,...ps];S.isDemo=false;S.importPreview=null;
           updSidebar();toast(`${ps.length} students imported`);render();
         }},[`Import ${ps.length} Students ✓`])
       )
@@ -1783,7 +1774,7 @@ function pScenario(st){
   const t=ht('<table class="tbl"><thead class="tbl-fix"><tr><th>Student</th><th>P</th><th>Math Now → Proj</th><th>Level Now</th><th>After</th><th>Risk ↓</th><th>Up?</th></tr></thead></table>');
   const tb=document.createElement('tbody');
   [...res].sort((a,b)=>b.mg2-a.mg2).forEach(r=>{
-    const tr=ht(`<tr><td><div style="color:var(--text);font-weight:600;font-size:12px">${esc(r.name)}</div></td><td style="color:var(--muted)">${r.period}</td><td><span style="font-family:monospace;font-weight:700">${r.lm}</span> → <span style="font-family:monospace;font-weight:700;color:var(--teal)">${r.pm}</span><div style="font-size:9px;color:var(--green)">+${r.mg2} pts</div></td></tr>`);
+    const tr=ht(`<tr><td><div style="color:var(--text);font-weight:600;font-size:12px">${r.name}</div></td><td style="color:var(--muted)">${r.period}</td><td><span style="font-family:monospace;font-weight:700">${r.lm}</span> → <span style="font-family:monospace;font-weight:700;color:var(--teal)">${r.pm}</span><div style="font-size:9px;color:var(--green)">+${r.mg2} pts</div></td></tr>`);
     const b2=document.createElement('td');b2.appendChild(lbdg(r.bl));tr.appendChild(b2);
     const a2=document.createElement('td');a2.appendChild(lbdg(r.al));tr.appendChild(a2);
     tr.innerHTML+=`<td style="color:${r.rr>0?'var(--green)':'var(--muted)'};font-weight:700;font-size:12px">${r.rr>0?`−${r.rr}%`:'—'}</td><td style="font-size:14px;color:${r.lg?'var(--green)':'var(--muted)'};font-weight:900">${r.lg?'↑':'—'}</td>`;
@@ -2185,7 +2176,7 @@ function openAddModal(){
       const att=Array.from({length:dt},(_,i)=>i<dp?1:0);
       const stds={};[['6.RP.A.1','std_rp1'],['6.RP.A.2','std_rp2'],['6.RP.A.3','std_rp3'],['6.NS.A.1','std_ns1'],['6.NS.B.2','std_ns2'],['6.EE.A.1','std_ee1'],['6.EE.B.5','std_ee5'],['6.G.A.1','std_g1']].forEach(([k,fk])=>{if(g(form[fk])!==null)stds[k]=g(form[fk]);});
       const newStu={id:Date.now(),name:form.name.trim(),period:Number(form.period)||1,grade:Number(form.grade)||6,gender:form.gender,iep:form.iep,ell:form.ell,wida:Number(form.wida)||5,ireadyMath:im,ireadyReading:ir,exitHistory:ex.length?ex:[70],attendanceHistory:att,standards:stds,iepAccommodations:form.selAcc,mcapMathPrior:g(form.mcapM),mcapReadPrior:g(form.mcapR),notes:form.notes};
-      S.students.push(newStu);M.close();updSidebar();toast(`${newStu.name} added`);render();
+      S.students.push(newStu);S.isDemo=false;M.close();updSidebar();toast(`${newStu.name} added`);render();
     }},'Save Student ✓'));}
     M.box.appendChild(ft);
   }
@@ -2199,27 +2190,7 @@ function printReport(){
   const w=window.open('','_blank','width=900,height=700');
   const rows=st.sort((a,b)=>b.riskScore-a.riskScore).map(s=>`<tr style="background:${s.risk==='high'?'#fff8f8':s.risk==='medium'?'#fffdf5':'white'}"><td>${esc(s.name)}</td><td>${s.period}</td><td>${s.iep?'✓':''}</td><td>${s.ell?'✓':''}</td><td><b>${s.lm}</b></td><td style="color:green"><b>+${s.mg}</b></td><td>${s.exitAvg}%</td><td style="color:${s.attendance<90?'red':'inherit'}">${s.attendance}%</td><td><span style="padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;background:${s.mLevel==='Advanced'?'#d4f7ef':s.mLevel==='Proficient'?'#ddf0fb':s.mLevel==='Basic'?'#fef0d6':'#ffe0e6'};color:${s.mLevel==='Advanced'?'#007a72':s.mLevel==='Proficient'?'#1a7da0':s.mLevel==='Basic'?'#9a5c00':'#a00024'}">${s.mLevel}</span></td><td><span style="padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;background:${s.risk==='high'?'#ffe0e6':s.risk==='medium'?'#fef0d6':'#d4f7ef'};color:${s.risk==='high'?'#a00024':s.risk==='medium'?'#9a5c00':'#007a72'}">${s.risk}</span></td></tr>`).join('');
   const groupSections=Object.entries(grps).map(([k,arr])=>`<div style="margin-bottom:12px"><b style="text-transform:uppercase;font-size:11px;letter-spacing:1px;color:${GM[k].color}">${GM[k].label} (${arr.length})</b><br><span style="font-size:12px;color:#555">${arr.map(s=>s.name).join(' · ')}</span></div>`).join('');
-  w.document.write(`<!DOCTYPE html><html><head><title>EduPulse Class Report</title><style>body{font-family:Arial,sans-serif;color:#111;padding:28px;max-width:900px;margin:0 auto}h1{font-size:22px;font-weight:900;border-bottom:3px solid #00b8a4;padding-bottom:10px;margin-bottom:18px}h2{font-size:14px;font-weight:800;border-bottom:2px solid #00b8a4;padding-bottom:5px;margin:18px 0 10px}.krow{display:flex;gap:12px;margin-bottom:18px}.kc{flex:1;border:1px solid #ddd;border-radius:8px;padding:12px;text-align:center}.kv{font-size:22px;font-weight:900;color:#007a72}.kl{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#f0f0f0;padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px}td{padding:5px 8px;border-bottom:1px solid #eee}.footer{margin-top:22px;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:8px}@media print{*{transition:none!important}@page{margin:0.75in}}@media(max-width:1100px){
-  .g5{grid-template-columns:repeat(3,1fr)}
-  .g4{grid-template-columns:repeat(2,1fr)}
-  .g3{grid-template-columns:1fr 1fr}
-}
-@media(max-width:768px){
-  .g5,.g4,.g3{grid-template-columns:1fr}
-  .g2{grid-template-columns:1fr}
-  #topbar{padding:12px 14px 0}
-  .kv{font-size:22px}
-  .tbl{font-size:11px}
-  .tbl th,.tbl td{padding:6px 8px}
-}
-@media(max-width:480px){
-  #sidebar{display:none}
-  #fab{bottom:14px;right:14px}
-  .mbox{max-width:100%;border-radius:10px}
-  .mb{padding:12px 14px}
-}
-</style></head><body>
-<a href="#content" class="skip-nav" id="skip-nav">Skip to main content</a>
+  w.document.write(`<!DOCTYPE html><html><head><title>EduPulse Class Report</title><style>body{font-family:Arial,sans-serif;color:#111;padding:28px;max-width:900px;margin:0 auto}h1{font-size:22px;font-weight:900;border-bottom:3px solid #00b8a4;padding-bottom:10px;margin-bottom:18px}h2{font-size:14px;font-weight:800;border-bottom:2px solid #00b8a4;padding-bottom:5px;margin:18px 0 10px}.krow{display:flex;gap:12px;margin-bottom:18px}.kc{flex:1;border:1px solid #ddd;border-radius:8px;padding:12px;text-align:center}.kv{font-size:22px;font-weight:900;color:#007a72}.kl{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#f0f0f0;padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px}td{padding:5px 8px;border-bottom:1px solid #eee}.footer{margin-top:22px;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:8px}@media print{*{transition:none!important}@page{margin:0.75in}}</style></head><body>
   <h1>EduPulse Class Report</h1>
   <div style="font-size:12px;color:#666;margin-bottom:14px">Generated ${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})} · ${n} students · Grade 6</div>
   <div class="krow"><div class="kc"><div class="kl">Students</div><div class="kv">${n}</div></div><div class="kc"><div class="kl">High Risk</div><div class="kv" style="color:#c0002e">${st.filter(s=>s.risk==='high').length}</div></div><div class="kc"><div class="kl">Avg Math Growth</div><div class="kv">+${Math.round(st.reduce((a,s)=>a+s.mg,0)/n)} pts</div></div><div class="kc"><div class="kl">Proficient+</div><div class="kv">${Math.round(st.filter(s=>['Advanced','Proficient'].includes(s.mLevel)).length/n*100)}%</div></div></div>
@@ -2237,8 +2208,8 @@ function printParent(){
   function buildParent(s){
     const strengthStds=Object.entries(s.standards||{}).sort((a,b)=>b[1]-a[1]).slice(0,2);
     const focusStds=Object.entries(s.standards||{}).sort((a,b)=>a[1]-b[1]).slice(0,2);
-    const growMsg=s.mg>=20?`${esc(s.name.split(' ')[0])} has made excellent progress this year, gaining ${s.mg} points since the start of the school year.`:s.mg>=10?`${esc(s.name.split(' ')[0])} is making steady progress, gaining ${s.mg} points since the start of the year.`:`${esc(s.name.split(' ')[0])} has shown some growth this year. With continued support, we can accelerate their progress.`;
-    const attMsg=s.attendance>=95?`${esc(s.name.split(' ')[0])} has excellent attendance at ${s.attendance}%. Being in class every day makes a real difference.`:s.attendance>=90?`${esc(s.name.split(' ')[0])}'s attendance is ${s.attendance}% — good, with some room to improve.`:`Attendance has been a challenge at ${s.attendance}%. Every school day matters. Please reach out if there are barriers we can help with.`;
+    const growMsg=s.mg>=20?`${s.name.split(' ')[0]} has made excellent progress this year, gaining ${s.mg} points since the start of the school year.`:s.mg>=10?`${s.name.split(' ')[0]} is making steady progress, gaining ${s.mg} points since the start of the year.`:`${s.name.split(' ')[0]} has shown some growth this year. With continued support, we can accelerate their progress.`;
+    const attMsg=s.attendance>=95?`${s.name.split(' ')[0]} has excellent attendance at ${s.attendance}%. Being in class every day makes a real difference.`:s.attendance>=90?`${esc(s.name.split(' ')[0])}'s attendance is ${s.attendance}% — good, with some room to improve.`:`Attendance has been a challenge at ${s.attendance}%. Every school day matters. Please reach out if there are barriers we can help with.`;
     const steps=[];
     if(s.lm<430)steps.push(`Focus on closing the gap to grade-level proficiency — currently ${430-s.lm} points away.`);
     if(s.exitAvg<70)steps.push('Strengthen daily practice and review of recent lessons.');
@@ -2248,27 +2219,7 @@ function printParent(){
     const stepsHtml=steps.slice(0,3).map((t,i)=>`<div style="display:flex;gap:10px;margin-bottom:8px;font-size:13px;color:#333;line-height:1.5"><span style="color:#5b2d9e;font-weight:800;flex-shrink:0">${i+1}.</span><span>${t}</span></div>`).join('');
     const strHtml=strengthStds.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#333"><span>${CCSS[k]?.label||k}</span><span style="font-weight:700;color:#007a72">${v}% mastery</span></div>`).join('');
     const focHtml=focusStds.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#333"><span>${CCSS[k]?.label||k}</span><span style="font-weight:700;color:#9a5c00">${v}% mastery</span></div>`).join('');
-    return`<!DOCTYPE html><html><head><title>Family Summary — ${esc(s.name)}</title><style>body{font-family:Georgia,serif;color:#1a1a2e;padding:32px;max-width:600px;margin:0 auto;font-size:14px}h2{border-bottom:3px solid #00b8a4;padding-bottom:9px;margin-bottom:18px;font-family:Arial,sans-serif;font-weight:900;font-size:20px}.sub{font-size:12px;color:#666;margin-top:3px}.krow{display:flex;gap:12px;margin-bottom:18px}.kc{flex:1;border:2px solid ${s.mg>=10?'#00b8a4':'#e8a000'};border-radius:9px;padding:12px;text-align:center}.kv{font-size:19px;font-weight:900;color:${s.mg>=10?'#007a72':'#9a5c00'}}.kl{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.section{margin-bottom:20px;line-height:1.8}.box{padding:14px 16px;border-radius:9px;margin-bottom:12px}.footer{margin-top:24px;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:8px;text-align:center}@media print{*{transition:none!important}@page{margin:0.75in}}@media(max-width:1100px){
-  .g5{grid-template-columns:repeat(3,1fr)}
-  .g4{grid-template-columns:repeat(2,1fr)}
-  .g3{grid-template-columns:1fr 1fr}
-}
-@media(max-width:768px){
-  .g5,.g4,.g3{grid-template-columns:1fr}
-  .g2{grid-template-columns:1fr}
-  #topbar{padding:12px 14px 0}
-  .kv{font-size:22px}
-  .tbl{font-size:11px}
-  .tbl th,.tbl td{padding:6px 8px}
-}
-@media(max-width:480px){
-  #sidebar{display:none}
-  #fab{bottom:14px;right:14px}
-  .mbox{max-width:100%;border-radius:10px}
-  .mb{padding:12px 14px}
-}
-</style></head><body>
-<a href="#content" class="skip-nav" id="skip-nav">Skip to main content</a>
+    return`<!DOCTYPE html><html><head><title>Family Summary — ${esc(s.name)}</title><style>body{font-family:Georgia,serif;color:#1a1a2e;padding:32px;max-width:600px;margin:0 auto;font-size:14px}h2{border-bottom:3px solid #00b8a4;padding-bottom:9px;margin-bottom:18px;font-family:Arial,sans-serif;font-weight:900;font-size:20px}.sub{font-size:12px;color:#666;margin-top:3px}.krow{display:flex;gap:12px;margin-bottom:18px}.kc{flex:1;border:2px solid ${s.mg>=10?'#00b8a4':'#e8a000'};border-radius:9px;padding:12px;text-align:center}.kv{font-size:19px;font-weight:900;color:${s.mg>=10?'#007a72':'#9a5c00'}}.kl{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.section{margin-bottom:20px;line-height:1.8}.box{padding:14px 16px;border-radius:9px;margin-bottom:12px}.footer{margin-top:24px;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:8px;text-align:center}@media print{*{transition:none!important}@page{margin:0.75in}}</style></head><body>
     <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#007a72;margin-bottom:5px">Student Progress Summary</div>
     <h2>${esc(s.name)}</h2><div class="sub">Grade 6 · Period ${s.period} · ${new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'})}</div>
     <div class="krow" style="margin-top:16px"><div class="kc"><div class="kl">Math Progress</div><div class="kv">+${s.mg} pts</div><div class="kl">since BOY</div></div><div class="kc"><div class="kl">MCAP Track</div><div class="kv">${s.mLevel}</div><div class="kl">projected</div></div></div>
@@ -2333,6 +2284,7 @@ function applyTheme(t){
   }
 }
 
+
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
   if(e.key==='1'&&e.altKey){e.preventDefault();nav('overview');}
@@ -2341,6 +2293,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='4'&&e.altKey){e.preventDefault();nav('analysis');}
   if(e.key==='Escape'){const ov=document.querySelector('.ov,.exov');if(ov)ov.remove();}
 });
+
 document.addEventListener('DOMContentLoaded',()=>{
   // Restore saved theme before first render
   applyTheme(LS.get('theme','dark'));
