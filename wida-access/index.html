@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ACCESS Dashboard · School #240 · SY 2025–26</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+window.addEventListener('error', function(e) {
+  if (String(e && e.message || '').includes('Chart')) {
+    console.warn('Chart.js did not load. Non-chart dashboard content will still work.');
+  }
+});
+</script>
+
+<style>
+:root{
+  --navy:#17283A;--navy2:#1E3A54;
+  --teal:#0B7A68;--teal2:#13A389;--tealLight:#E2F4F0;
+  --amber:#B87714;--amberLight:#FEF3DC;
+  --red:#AA2F2F;--redLight:#FCEAEA;
+  --blue:#2255A4;--blueLight:#E8F0FB;
+  --green:#1E6B3C;--greenLight:#E5F4EC;
+  --purple:#5A3A9E;--purpleLight:#F0EBF9;
+  --bg:#F0EDE6;--surface:#FFFFFF;--surfaceAlt:#F8F6F2;
+  --border:#DDD9D0;--borderSoft:#EAE6DF;
+  --text:#1A2330;--textMid:#4A5568;--textMuted:#718096;
+  --shadow:0 2px 12px rgba(23,40,58,.07);
+  --shadowMd:0 6px 24px rgba(23,40,58,.10);
+  --r:14px;--rpill:999px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5}
+button,input,select{font:inherit;cursor:pointer}
+
+/* Layout */
+.shell{max-width:1240px;margin:0 auto;padding:20px 24px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* Hero */
+.hero{
+  background:linear-gradient(140deg,#0E1E2E 0%,#1A3248 50%,#0E2D26 100%);
+  border-radius:22px;padding:32px 36px 28px;color:#fff;
+  margin-bottom:14px;position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'';position:absolute;right:-60px;top:-60px;
+  width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(19,163,137,.18),transparent 70%);pointer-events:none;
+}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:var(--rpill);padding:4px 11px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.hero-tag::before{content:'';width:6px;height:6px;background:#5DDBB8;border-radius:50%}
+.hero h1{font-family:'Sora',sans-serif;font-size:30px;font-weight:700;line-height:1.1;margin-bottom:8px;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:#6DE8C8}
+.hero-sub{color:rgba(255,255,255,.68);font-size:13.5px;margin-bottom:20px;max-width:580px}
+.hero-nums{display:grid;grid-template-columns:repeat(3,auto);width:fit-content;gap:22px}
+.hn{border-left:2px solid rgba(255,255,255,.18);padding-left:14px}
+.hn-v{font-family:'Sora',sans-serif;font-size:32px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.hn-v.good{color:#6DE8C8}.hn-v.warn{color:#FBD07A}.hn-v.alert{color:#F88B6B}
+.hn-l{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;font-weight:500}
+.hero-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.btn{border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all .14s}
+.btn-white{background:#fff;color:var(--navy)}.btn-white:hover{background:#EEF2F6}
+.btn-ghost{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff}.btn-ghost:hover{background:rgba(255,255,255,.18)}
+
+/* Nav tabs */
+.nav-wrap{position:sticky;top:0;z-index:50;padding:7px 0;background:rgba(240,237,230,.95);backdrop-filter:blur(12px)}
+.nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rpill);padding:4px;width:fit-content;box-shadow:var(--shadow)}
+.nav-btn{border:none;background:none;border-radius:var(--rpill);padding:7px 15px;font-size:12.5px;font-weight:600;color:var(--textMuted);transition:all .15s;white-space:nowrap}
+.nav-btn.active{background:var(--navy);color:#fff}
+.nav-btn:hover:not(.active){background:var(--surfaceAlt);color:var(--text)}
+
+/* Sections */
+.section{display:none}.section.active{display:block}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:14px}
+.card-title{font-family:'Sora',sans-serif;font-size:14.5px;font-weight:700;color:var(--text)}
+.card-sub{font-size:11.5px;color:var(--textMuted);margin-top:1px}
+
+/* Big stat cards */
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;position:relative;cursor:pointer;transition:all .16s;user-select:none}
+.stat-card:hover{box-shadow:var(--shadowMd);transform:translateY(-1px)}
+.stat-card .sc-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:10px}
+.stat-card .sc-v{font-family:'Sora',sans-serif;font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:1;margin-bottom:3px}
+.stat-card .sc-l{font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--textMuted)}
+.stat-card .sc-note{font-size:12px;color:var(--textMuted);margin-top:4px}
+.sc-tap{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--surfaceAlt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--textMuted)}
+.good-v{color:var(--teal)}.warn-v{color:var(--amber)}.alert-v{color:var(--red)}.blue-v{color:var(--blue)}.purple-v{color:var(--purple)}
+
+/* Tooltip popup */
+.tipOverlay{position:fixed;inset:0;z-index:200;pointer-events:none;display:none}
+.tipOverlay.open{display:block;pointer-events:all}
+.tipBg{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+.tip{
+  position:absolute;background:var(--navy);color:#fff;
+  border-radius:18px;padding:20px 22px;max-width:320px;width:90vw;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);pointer-events:all;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+}
+.tip-close{position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;line-height:1}
+.tip-icon{font-size:28px;margin-bottom:8px}
+.tip-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;color:#6DE8C8}
+.tip-body{font-size:13.5px;line-height:1.65;color:rgba(255,255,255,.85)}
+.tip-num{font-family:'DM Mono',monospace;font-size:22px;color:#FBD07A;display:block;margin:8px 0 4px}
+.tip-action{margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:rgba(255,255,255,.55);line-height:1.55}
+.tip-action strong{color:rgba(255,255,255,.85)}
+
+/* Pills */
+.pill{display:inline-flex;align-items:center;gap:3px;border-radius:var(--rpill);padding:3px 9px;font-size:11px;font-weight:600;border:1px solid transparent}
+.p-teal{background:var(--tealLight);color:var(--teal)}.p-amber{background:var(--amberLight);color:var(--amber)}.p-red{background:var(--redLight);color:var(--red)}.p-blue{background:var(--blueLight);color:var(--blue)}.p-purple{background:var(--purpleLight);color:var(--purple)}.p-green{background:var(--greenLight);color:var(--green)}.p-muted{background:var(--surfaceAlt);color:var(--textMuted)}
+
+/* Story card */
+.story{background:linear-gradient(135deg,#F5FDFB,#F0F6FF);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.story-lede{font-size:15.5px;line-height:1.7;color:var(--text)}
+.story-lede strong{color:var(--teal);cursor:pointer;border-bottom:1px dashed var(--teal)}
+.story-signals{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+
+/* Chart wrappers */
+.cw{position:relative}.cw200{height:200px}.cw220{height:220px}.cw260{height:260px}.cw300{height:300px}
+
+/* Callout */
+.callout{border-radius:10px;padding:11px 14px;font-size:13px;line-height:1.55}
+.co-amber{background:var(--amberLight);border-left:3px solid var(--amber)}.co-teal{background:var(--tealLight);border-left:3px solid var(--teal)}.co-red{background:var(--redLight);border-left:3px solid var(--red)}.co-blue{background:var(--blueLight);border-left:3px solid var(--blue)}
+
+/* Priority bar */
+.pri-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--borderSoft)}
+.pri-row:last-child{border-bottom:none}
+.pri-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pri-name{font-size:13px;font-weight:600;flex:1}
+.pri-n{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;min-width:36px;text-align:right}
+.pri-act{font-size:11.5px;color:var(--textMuted);flex:2}
+
+/* Grade bars */
+.grade-bar-wrap{display:flex;flex-direction:column;gap:7px}
+.grade-row{display:flex;align-items:center;gap:8px}
+.grade-lbl{font-size:12px;font-weight:600;min-width:48px;color:var(--textMuted)}
+.grade-track{flex:1;height:22px;background:var(--surfaceAlt);border-radius:6px;overflow:hidden;display:flex;cursor:pointer;position:relative}
+.grade-fill{height:100%;background:var(--teal);border-radius:6px 0 0 6px;transition:width .4s ease;display:flex;align-items:center;padding-left:8px}
+.grade-fill span{font-size:11px;font-weight:700;color:#fff}
+.grade-miss{height:100%;background:var(--amberLight);flex:1}
+.grade-pct{font-size:12px;font-weight:700;min-width:36px;text-align:right;color:var(--textMid)}
+
+/* Heatmap */
+.hm-grid{display:grid;gap:4px}
+.hm-cell{border-radius:8px;padding:8px 5px;text-align:center;font-size:11.5px;font-weight:700;min-width:0;cursor:pointer;transition:transform .12s}
+.hm-cell:hover{transform:scale(1.05)}
+.hm-cell .hm-pct{font-size:14px;font-weight:700}
+.hm-cell .hm-n{font-size:9.5px;opacity:.65;margin-top:1px}
+
+/* Plan output */
+.plan-out{background:#0D1823;color:#BFD9CF;font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.7;border-radius:12px;padding:16px;min-height:200px;white-space:pre-wrap;overflow:auto;max-height:380px}
+
+/* Student table */
+.tbl-scroll{overflow:auto;border-radius:12px;border:1px solid var(--border);max-height:460px}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
+th{background:var(--surfaceAlt);color:var(--textMuted);text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;position:sticky;top:0}
+td{padding:8px 10px;border-top:1px solid var(--borderSoft);vertical-align:middle}
+tbody tr:hover td{background:#F7F5F0}
+
+/* Filter bar */
+.filter-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:13px 16px;margin-bottom:14px}
+.filter-grid{display:grid;grid-template-columns:1.3fr repeat(4,1fr) auto;gap:9px;align-items:end}
+.ctrl-label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--textMuted);margin-bottom:4px}
+select,input[type=text]{width:100%;border:1px solid var(--border);border-radius:9px;background:var(--surfaceAlt);color:var(--text);padding:7px 10px;font-size:13px;outline:none}
+select:focus,input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(11,122,104,.1)}
+.filter-status{font-size:12px;color:var(--textMuted);margin-top:8px}
+.filter-status::before{content:'↳ ';color:var(--teal)}
+
+/* Supports */
+.support-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.stab{border:1px solid var(--border);border-radius:var(--rpill);padding:7px 12px;font-size:12px;font-weight:600;color:var(--textMuted);background:var(--surface);transition:all .14s}
+.stab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.smoves{display:flex;flex-direction:column;gap:8px}
+.smove{display:flex;gap:9px;background:var(--surfaceAlt);border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.5}
+.smove-n{background:var(--teal);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.evid{background:var(--tealLight);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:11px 14px;font-size:12.5px;margin-top:9px}
+
+/* Protocol steps */
+.proto{display:flex;flex-direction:column;gap:7px}
+.proto-row{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:start;background:var(--surfaceAlt);border:1px solid var(--border);border-radius:11px;padding:12px}
+.pt{font-family:'DM Mono',monospace;font-size:11.5px;font-weight:600;color:var(--teal)}
+.pb h4{font-size:13px;font-weight:700;margin-bottom:2px}
+.pb p{font-size:12.5px;color:var(--textMid);line-height:1.5}
+
+/* Scenario */
+.scen-res{background:linear-gradient(135deg,var(--tealLight),var(--blueLight));border:1px solid rgba(11,122,104,.2);border-radius:14px;padding:18px;text-align:center}
+.scen-big{font-family:'Sora',sans-serif;font-size:52px;font-weight:700;color:var(--teal);letter-spacing:-.04em;line-height:1}
+
+/* Sliders */
+.sl-row label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px}
+.sl-row label span{color:var(--teal)}
+input[type=range]{width:100%;accent-color:var(--teal);margin-bottom:12px}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:9px 14px;border-radius:var(--rpill);font-size:13px;font-weight:600;z-index:300;box-shadow:var(--shadowMd);display:none}
+footer{text-align:center;font-size:11px;color:var(--textMuted);padding:16px;margin-top:14px}
+
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}.filter-grid{grid-template-columns:1fr 1fr}.hero-nums{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.shell{padding:12px}.hero{padding:22px 18px}.hero h1{font-size:24px}.hero-nums{grid-template-columns:1fr 1fr}.filter-grid{grid-template-columns:1fr}}
+@media print{.nav-wrap,.hero-btns,.filter-card,.proto,.smoves,.plan-out{display:none!important}.section{display:block!important}}
+</style>
+</head>
+<body>
+<div id="tipOverlay" class="tipOverlay">
+  <div class="tipBg" onclick="closeTip()"></div>
+  <div class="tip" id="tipBox">
+    <button class="tip-close" onclick="closeTip()">✕</button>
+    <div id="tipIcon" class="tip-icon"></div>
+    <div id="tipTitle" class="tip-title"></div>
+    <div id="tipBody" class="tip-body"></div>
+    <div id="tipAction" class="tip-action" style="display:none"></div>
+  </div>
+</div>
+
+<div class="shell">
+
+<div class="hero">
+  <div class="hero-tag">SY 2025–2026 · School #240</div>
+  <h1>ACCESS Growth Dashboard<br><em>Graceland Park / O'Donnell Heights</em></h1>
+  <p class="hero-sub">Your school's English language proficiency results — in plain language. Tap any number for a teacher-friendly explanation.</p>
+  <div class="hero-nums">
+    <div class="hn"><div class="hn-v warn">49.3%</div><div class="hn-l">Met target</div></div>
+    <div class="hn"><div class="hn-v good">+0.54</div><div class="hn-l">Avg. growth</div></div>
+    <div class="hn"><div class="hn-v alert">19.3%</div><div class="hn-l">Declined</div></div>
+  </div>
+  <div class="hero-btns">
+    <button class="btn btn-white" onclick="showSection('overview')">▶ Start Here</button>
+    <button class="btn btn-ghost" onclick="showSection('find')">Find Students</button>
+    <button class="btn btn-ghost" onclick="showSection('act')">Build Plan</button>
+    <button class="btn btn-ghost" onclick="window.print()">Print</button>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <div class="nav">
+    <button class="nav-btn active" data-sec="overview" onclick="showSection('overview')">Overview</button>
+    <button class="nav-btn" data-sec="grades" onclick="showSection('grades')">By Grade</button>
+    <button class="nav-btn" data-sec="groups" onclick="showSection('groups')">Groups</button>
+    <button class="nav-btn" data-sec="insights" onclick="showSection('insights')">Insights</button>
+    <button class="nav-btn" data-sec="explore" onclick="showSection('explore')">Explorer</button>
+    <button class="nav-btn" data-sec="find" onclick="showSection('find')">Students</button>
+    <button class="nav-btn" data-sec="support" onclick="showSection('support')">Supports</button>
+    <button class="nav-btn" data-sec="act" onclick="showSection('act')">Plan</button>
+  </div>
+</div>
+
+<!-- ═══════ GROUP SELECTOR BAR ═══════ -->
+<div id="groupBar" style="background:rgba(240,237,230,.96);backdrop-filter:blur(12px);padding:0 0 8px;position:sticky;top:52px;z-index:45">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(23,40,58,.06)">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--textMuted);white-space:nowrap;flex-shrink:0">Viewing:</span>
+    <div id="groupBtnRow" style="display:flex;gap:5px;flex-wrap:wrap;flex:1">
+      <button class="grp-btn active" data-grp="all" onclick="setGroup('all',this)">All 347</button>
+      <button class="grp-btn" data-grp="elem" onclick="setGroup('elem',this)">Elementary</button>
+      <button class="grp-btn" data-grp="middle" onclick="setGroup('middle',this)">Middle</button>
+      <button class="grp-btn" data-grp="g1" onclick="setGroup('g1',this)">Gr 1</button>
+      <button class="grp-btn" data-grp="g2" onclick="setGroup('g2',this)">Gr 2</button>
+      <button class="grp-btn" data-grp="g3" onclick="setGroup('g3',this)">Gr 3</button>
+      <button class="grp-btn" data-grp="g4" onclick="setGroup('g4',this)">Gr 4</button>
+      <button class="grp-btn" data-grp="g5" onclick="setGroup('g5',this)">Gr 5</button>
+      <button class="grp-btn" data-grp="g6" onclick="setGroup('g6',this)">Gr 6</button>
+      <button class="grp-btn" data-grp="g7" onclick="setGroup('g7',this)">Gr 7</button>
+      <button class="grp-btn" data-grp="g8" onclick="setGroup('g8',this)">Gr 8</button>
+      <button class="grp-btn" data-grp="ty2" onclick="setGroup('ty2',this)">Yr 2</button>
+      <button class="grp-btn" data-grp="ty3" onclick="setGroup('ty3',this)">Yr 3</button>
+      <button class="grp-btn" data-grp="ty4" onclick="setGroup('ty4',this)">Yr 4</button>
+      <button class="grp-btn" data-grp="ty5" onclick="setGroup('ty5',this)">Yr 5</button>
+      <button class="grp-btn" data-grp="ty6" onclick="setGroup('ty6',this)">Yr 6</button>
+      <button class="grp-btn c-purple" data-grp="ltml" onclick="setGroup('ltml',this)">LTML</button>
+      <button class="grp-btn c-amber" data-grp="nearMiss" onclick="setGroup('nearMiss',this)">Near misses</button>
+      <button class="grp-btn c-red" data-grp="declined" onclick="setGroup('declined',this)">Declined</button>
+      <button class="grp-btn c-teal" data-grp="met" onclick="setGroup('met',this)">Met target</button>
+      <button id="grpCustomBtn" class="grp-btn" data-grp="custom" onclick="setGroup('custom',this)" style="display:none">★ Custom</button>
+    </div>
+    <span id="groupBarCount" style="font-size:11.5px;color:var(--textMuted);white-space:nowrap;flex-shrink:0"></span>
+  </div>
+</div>
+
+<style>
+.grp-btn{border:1px solid var(--border);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:600;color:var(--textMuted);background:var(--surface);cursor:pointer;transition:all .13s;white-space:nowrap}
+.grp-btn:hover{background:var(--surfaceAlt);color:var(--text)}
+.grp-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.grp-btn.c-purple.active{background:var(--purple);border-color:var(--purple)}
+.grp-btn.c-amber.active{background:var(--amber);border-color:var(--amber)}
+.grp-btn.c-red.active{background:var(--red);border-color:var(--red)}
+.grp-btn.c-teal.active{background:var(--teal);border-color:var(--teal)}
+</style>
+
+
+<!-- ═══════ OVERVIEW ═══════ -->
+<section id="overview" class="section active">
+
+  <div style="margin-bottom:14px">
+    <div class="story">
+      <p class="story-lede" id="storyText">Loading…</p>
+      <div class="story-signals" id="storySignals"></div>
+    </div>
+  </div>
+
+  <div class="g4" style="margin-bottom:14px" id="kpiStrip"></div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Who's in the picture?</div><div class="card-sub">Priority groups for this cycle</div></div><button onclick="showTip('priGroups')" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">What do these mean? →</button></div>
+      <div id="priorityList"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Score distribution</div><div class="card-sub">How scores shifted this year vs. last year</div></div><button onclick="showTip('bandShift')" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">Explain this →</button></div>
+      <div class="cw cw220"><canvas id="bandChart"></canvas></div>
+      <p style="font-size:11.5px;color:var(--textMuted);margin-top:8px;line-height:1.5">More students are now in the 3.5–4.4 band. Fewer in 1.5–2.4. That's movement in the right direction.</p>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Trend: 4 years</div><div class="card-sub">% meeting target over time</div></div><button onclick="showTip('trendExplain')" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">Explain this →</button></div>
+      <div class="cw cw220"><canvas id="trendChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Elementary vs. Middle</div><div class="card-sub">The biggest gap in the building</div></div><button onclick="showTip('bandGap')" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">Explain this →</button></div>
+      <div style="display:flex;flex-direction:column;gap:18px;justify-content:center;padding:10px 0">
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-weight:700;font-size:14px">Elementary school</span><span style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:var(--teal)">61%</span></div>
+          <div style="background:var(--surfaceAlt);border-radius:8px;height:20px;overflow:hidden"><div style="width:61%;background:var(--teal);height:100%;border-radius:8px"></div></div>
+          <div style="font-size:12px;color:var(--textMuted);margin-top:4px">141 of 231 students met target</div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-weight:700;font-size:14px">Middle school</span><span style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:var(--amber)">26%</span></div>
+          <div style="background:var(--surfaceAlt);border-radius:8px;height:20px;overflow:hidden"><div style="width:26%;background:var(--amber);height:100%;border-radius:8px"></div></div>
+          <div style="font-size:12px;color:var(--textMuted);margin-top:4px">30 of 116 students met target</div>
+        </div>
+        <div class="callout co-amber">Middle school is the <strong>highest priority area</strong>. Grade 7 is the most critical (only 8% met target).</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════ GRADES ═══════ -->
+<section id="grades" class="section">
+
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Met target by grade</div><div class="card-sub">Tap a bar to learn what to do</div></div></div>
+      <div class="grade-bar-wrap" id="gradeBars"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">What does each grade need?</div><div class="card-sub">Plain-language priority signals</div></div></div>
+      <div id="gradeSignals"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div><div class="card-title">Grade × Years in program heatmap</div><div class="card-sub">Darker green = more students met target. Tap any cell.</div></div><button onclick="showTip('heatmapExplain')" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">How to read this →</button></div>
+    <div id="heatmapWrap" style="overflow:auto"></div>
+    <p style="font-size:11.5px;color:var(--textMuted);margin-top:8px">Cells with fewer than 10 students are faded — too small to read reliably.</p>
+  </div>
+
+</section>
+
+<!-- ═══════ GROUPS ═══════ -->
+<section id="groups" class="section">
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">By years in program</div><div class="card-sub">Tap any bar for the plain-language read</div></div></div>
+      <div class="cw cw260"><canvas id="targetYearChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Growth patterns</div><div class="card-sub">How scores moved this year</div></div><button onclick="showTip('growthExplain')" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">Explain →</button></div>
+      <div class="cw cw260"><canvas id="growthChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><div><div class="card-title">Group summary table</div><div class="card-sub">All key numbers in one place. Tap any % for context.</div></div></div>
+    <div class="tbl-scroll"><table id="groupTable"></table></div>
+  </div>
+</section>
+
+<!-- ═══════ INSIGHTS ═══════ -->
+<section id="insights" class="section">
+
+  <div style="margin-bottom:14px">
+    <div class="callout co-teal">
+      <strong>What does the data actually say?</strong> Each card below highlights one real pattern found in this year's ACCESS results. Tap any card for a plain-language explanation and a suggested teacher action.
+    </div>
+  </div>
+
+  <div id="insightCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px"></div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Full pattern table</div><div class="card-sub">All 19 variable relationships — plain-language reads only, no jargon required</div></div>
+      <button onclick="showTip('corrTableExplain')" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">How to read this →</button>
+    </div>
+    <div class="tbl-scroll"><table id="corrTable"></table></div>
+  </div>
+
+</section>
+
+<!-- ═══════ EXPLORER ═══════ -->
+<section id="explore" class="section">
+
+  <div class="callout co-blue" style="margin-bottom:14px">
+    <strong>Build your own chart.</strong> Pick any two variables. The graph shows one dot per student. Look for clusters — groups of dots that stand out. Tap any dot for its story. Use filters to focus on a subgroup.
+  </div>
+
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:14px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">Chart controls</div>
+        <label class="ctrl-label">X-axis (left ↔ right)</label>
+        <select id="xVar" onchange="updateScatter()" style="margin-bottom:10px"></select>
+        <label class="ctrl-label">Y-axis (up ↕ down)</label>
+        <select id="yVar" onchange="updateScatter()" style="margin-bottom:10px"></select>
+        <label class="ctrl-label">Color dots by</label>
+        <select id="colorVar" onchange="updateScatter()" style="margin-bottom:12px">
+          <option value="met">Met target (yes/no)</option>
+          <option value="band">School (elem/middle)</option>
+          <option value="tier">Student tier</option>
+          <option value="growth">Growth (high/low)</option>
+        </select>
+        <div id="scatterStats" class="callout co-teal" style="font-size:13px;line-height:1.6"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px">Filter to subgroup</div>
+        <label class="ctrl-label">Grade</label>
+        <select id="xGradeF" onchange="updateScatter()" style="margin-bottom:8px">
+          <option value="all">All grades</option>
+        </select>
+        <label class="ctrl-label">School</label>
+        <select id="xBandF" onchange="updateScatter()" style="margin-bottom:8px">
+          <option value="all">All</option>
+          <option value="Elementary">Elementary</option>
+          <option value="Middle">Middle</option>
+        </select>
+        <label class="ctrl-label">Target year</label>
+        <select id="xTargetF" onchange="updateScatter()" style="margin-bottom:0">
+          <option value="all">All groups</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:13px">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title" id="scatterTitle">Chart</div>
+            <div class="card-sub" id="scatterSub">Select variables on the left</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center" id="scatterLegend"></div>
+        </div>
+        <div class="cw" style="height:340px"><canvas id="scatterChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">What does this pattern mean?</div>
+        <div id="scatterRead" style="font-size:14px;line-height:1.65;color:var(--text)">Select X and Y variables to see the plain-language read.</div>
+        <div id="scatterAction" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--borderSoft);font-size:13px;color:var(--textMid);display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px">
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Distribution breakdowns</div><div class="card-sub">How one variable spreads across a category — no math required</div></div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px" id="distBreakdowns"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════ FIND STUDENTS ═══════ -->
+<section id="find" class="section">
+
+<style>
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{border:1px solid var(--border);border-radius:var(--rpill);padding:4px 10px;font-size:12px;font-weight:600;color:var(--textMid);background:var(--surface);cursor:pointer;transition:all .13s;user-select:none}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chip.on.c-teal{background:var(--teal);border-color:var(--teal)}
+.chip.on.c-amber{background:var(--amber);border-color:var(--amber)}
+.chip.on.c-red{background:var(--red);border-color:var(--red)}
+.chip.on.c-purple{background:var(--purple);border-color:var(--purple)}
+.chip.on.c-blue{background:var(--blue);border-color:var(--blue)}
+.range-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+.range-block label{display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;color:var(--textMid);margin-bottom:3px}
+.range-block label span{font-family:'DM Mono',monospace;color:var(--teal)}
+.group-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.gc-slot{background:var(--surface);border:2px dashed var(--border);border-radius:var(--r);padding:14px;min-height:160px}
+.gc-slot.locked{border-style:solid;border-color:var(--teal)}
+.gc-stat{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--borderSoft);font-size:13px}
+.gc-stat:last-child{border-bottom:none}
+.gc-stat-label{color:var(--textMid)}
+.gc-stat-val{font-family:'Sora',sans-serif;font-weight:700;font-size:15px}
+</style>
+
+  <!-- Quick-pick presets -->
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="card-title">Quick groups</div>
+      <button onclick="resetFind()" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">Clear all filters</button>
+    </div>
+    <div class="chip-row" id="presetChips">
+      <span class="chip c-amber" data-preset="nearMiss" onclick="togglePreset(this,'nearMiss')">⚡ Near misses</span>
+      <span class="chip c-red" data-preset="declined" onclick="togglePreset(this,'declined')">↓ Declined</span>
+      <span class="chip c-purple" data-preset="ltml" onclick="togglePreset(this,'ltml')">L LTML</span>
+      <span class="chip c-red" data-preset="highPriority" onclick="togglePreset(this,'highPriority')">🔴 Highest priority</span>
+      <span class="chip c-blue" data-preset="foundational" onclick="togglePreset(this,'foundational')">▽ Below 2.5</span>
+      <span class="chip c-teal" data-preset="strong" onclick="togglePreset(this,'strong')">↑ Strong growth</span>
+      <span class="chip c-teal" data-preset="metTarget" onclick="togglePreset(this,'metTarget')">✓ Met target</span>
+      <span class="chip" data-preset="missedTarget" onclick="togglePreset(this,'missedTarget')">✗ Missed target</span>
+      <span class="chip" data-preset="middle" onclick="togglePreset(this,'middle')">🏫 Middle school</span>
+      <span class="chip" data-preset="elem" onclick="togglePreset(this,'elem')">🏫 Elementary</span>
+    </div>
+  </div>
+
+  <!-- Stacking filters -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title" style="margin-bottom:12px">Stack filters <span style="font-size:11px;font-weight:400;color:var(--textMuted)">— all active filters apply at once</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
+
+      <div>
+        <label class="ctrl-label">Grade</label>
+        <div class="chip-row" id="gradeChips">
+          <span class="chip" data-g="all" onclick="setGradeChip(this)">All</span>
+          <span class="chip" data-g="1" onclick="setGradeChip(this)">1</span>
+          <span class="chip" data-g="2" onclick="setGradeChip(this)">2</span>
+          <span class="chip" data-g="3" onclick="setGradeChip(this)">3</span>
+          <span class="chip" data-g="4" onclick="setGradeChip(this)">4</span>
+          <span class="chip" data-g="5" onclick="setGradeChip(this)">5</span>
+          <span class="chip" data-g="6" onclick="setGradeChip(this)">6</span>
+          <span class="chip" data-g="7" onclick="setGradeChip(this)">7</span>
+          <span class="chip" data-g="8" onclick="setGradeChip(this)">8</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="ctrl-label">Years in program</label>
+        <div class="chip-row" id="tyChips">
+          <span class="chip" data-ty="all" onclick="setTyChip(this)">All</span>
+          <span class="chip" data-ty="Year 2" onclick="setTyChip(this)">Yr 2</span>
+          <span class="chip" data-ty="Year 3" onclick="setTyChip(this)">Yr 3</span>
+          <span class="chip" data-ty="Year 4" onclick="setTyChip(this)">Yr 4</span>
+          <span class="chip" data-ty="Year 5" onclick="setTyChip(this)">Yr 5</span>
+          <span class="chip" data-ty="Year 6" onclick="setTyChip(this)">Yr 6</span>
+          <span class="chip c-purple" data-ty="LTML" onclick="setTyChip(this)">LTML</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="ctrl-label">Sort by</label>
+        <select id="sortF" onchange="updateFind()" style="margin-top:6px">
+          <option value="priority">Priority (highest first)</option>
+          <option value="gap">Gap (largest first)</option>
+          <option value="growth">Growth (lowest first)</option>
+          <option value="current">Current score (lowest first)</option>
+        </select>
+        <div style="margin-top:8px">
+          <input id="searchF" type="text" oninput="updateFind()" placeholder="Search keyword…" style="font-size:12.5px"/>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Range sliders -->
+    <div class="range-row">
+      <div class="range-block">
+        <label>Current score <span id="scoreRangeLbl">1.0 – 6.0</span></label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="range" id="scoreMin" min="10" max="60" value="10" step="1" oninput="updateRangeLabel('score');updateFind()" style="flex:1">
+          <span style="font-size:11px;color:var(--textMuted)">to</span>
+          <input type="range" id="scoreMax" min="10" max="60" value="60" step="1" oninput="updateRangeLabel('score');updateFind()" style="flex:1">
+        </div>
+      </div>
+      <div class="range-block">
+        <label>Growth <span id="growthRangeLbl">-2.0 – +2.0</span></label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="range" id="growthMin" min="-20" max="20" value="-20" step="1" oninput="updateRangeLabel('growth');updateFind()" style="flex:1">
+          <span style="font-size:11px;color:var(--textMuted)">to</span>
+          <input type="range" id="growthMax" min="-20" max="20" value="20" step="1" oninput="updateRangeLabel('growth');updateFind()" style="flex:1">
+        </div>
+      </div>
+      <div class="range-block" style="grid-column:1">
+        <label>Gap to target <span id="gapRangeLbl">-3.0 – +3.0</span></label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="range" id="gapMin" min="-30" max="30" value="-30" step="1" oninput="updateRangeLabel('gap');updateFind()" style="flex:1">
+          <span style="font-size:11px;color:var(--textMuted)">to</span>
+          <input type="range" id="gapMax" min="-30" max="30" value="30" step="1" oninput="updateRangeLabel('gap');updateFind()" style="flex:1">
+        </div>
+      </div>
+      <div class="range-block">
+        <label>Priority signal <span id="oppRangeLbl">0 – 100</span></label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="range" id="oppMin" min="0" max="100" value="0" step="1" oninput="updateRangeLabel('opp');updateFind()" style="flex:1">
+          <span style="font-size:11px;color:var(--textMuted)">to</span>
+          <input type="range" id="oppMax" min="0" max="100" value="100" step="1" oninput="updateRangeLabel('opp');updateFind()" style="flex:1">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:8px">
+      <div class="filter-status" id="filterStatus">Viewing all 347 students</div>
+      <div style="display:flex;gap:7px">
+        <button onclick="saveGroupA()" style="background:var(--tealLight);border:1px solid var(--teal);color:var(--teal);border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600">Save as Group A</button>
+        <button onclick="saveGroupB()" style="background:var(--purpleLight);border:1px solid var(--purple);color:var(--purple);border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600">Save as Group B</button>
+        <button onclick="exportCSV()" style="background:var(--surfaceAlt);border:1px solid var(--border);color:var(--textMid);border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600">CSV ↓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Group comparison -->
+  <div id="groupCompareWrap" style="display:none;margin-bottom:12px">
+    <div class="card-title" style="margin-bottom:10px">Group comparison</div>
+    <div class="group-compare" id="groupCompare"></div>
+  </div>
+
+  <!-- Student table -->
+  <div class="tbl-scroll">
+    <table id="studentTable"></table>
+  </div>
+
+  <!-- Hidden legacy selects for backward compat with getFiltered() -->
+  <select id="lens" style="display:none"><option value="all">All</option></select>
+  <select id="gradeF" style="display:none"><option value="all">All</option></select>
+  <select id="targetF" style="display:none"><option value="all">All</option></select>
+
+</section>
+
+<!-- ═══════ SUPPORTS ═══════ -->
+<section id="support" class="section">
+  <div class="callout co-teal" style="margin-bottom:14px">
+    <strong>One routine, repeated consistently, beats five strategies tried once.</strong> Pick the tab that matches your group. Repeat the routine 3× per week for 2–3 weeks.
+  </div>
+  <div class="g3" style="margin-bottom:14px" id="supportCards"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Support routine detail</div></div></div>
+      <div class="support-tabs" id="supportTabs"></div>
+      <div id="supportBody"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">20-minute team meeting protocol</div></div></div>
+      <div class="proto">
+        <div class="proto-row"><div class="pt">0–3 min</div><div class="pb"><h4>Read the story</h4><p>Read the data story card from the Overview tab aloud. Don't open with every chart.</p></div></div>
+        <div class="proto-row"><div class="pt">3–8 min</div><div class="pb"><h4>Choose one group</h4><p>Near-miss, declined, LTML, or foundational. Start small — 8–12 students.</p></div></div>
+        <div class="proto-row"><div class="pt">8–14 min</div><div class="pb"><h4>One routine</h4><p>Select a support from the left. Repeat 3× per week — consistency over variety.</p></div></div>
+        <div class="proto-row"><div class="pt">14–18 min</div><div class="pb"><h4>Name the evidence</h4><p>Exit response, language sample, or observation. Decide the check-in date now.</p></div></div>
+        <div class="proto-row"><div class="pt">18–20 min</div><div class="pb"><h4>Assign ownership</h4><p>Who does what? Write it down before leaving the meeting.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PLAN ═══════ -->
+<section id="act" class="section">
+  <div class="g2">
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">What-if planner</div><div class="card-sub">How would the rate change if more students met target?</div></div><button onclick="showTip('scenarioExplain')" style="background:none;border:none;font-size:12px;color:var(--textMuted);cursor:pointer">Explain →</button></div>
+      <div>
+        <div class="sl-row"><label>Near-miss students who meet <span id="nearLab">10</span></label><input type="range" min="0" max="30" value="10" id="nearS" step="1" oninput="updateScenario()"></div>
+        <div class="sl-row"><label>Strategic-support students who meet <span id="stratLab">5</span></label><input type="range" min="0" max="30" value="5" id="stratS" step="1" oninput="updateScenario()"></div>
+        <div class="sl-row"><label>LTML students who meet <span id="ltmlLab">2</span></label><input type="range" min="0" max="20" value="2" id="ltmlS" step="1" oninput="updateScenario()"></div>
+        <div class="scen-res">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--textMuted);margin-bottom:6px;font-weight:700">Estimated rate</div>
+          <div class="scen-big" id="scenBig">—</div>
+          <div style="font-size:12px;color:var(--textMid);margin-top:6px" id="scenNote"></div>
+        </div>
+        <div class="callout co-amber" style="margin-top:10px;font-size:12px"><strong>Planning estimate only</strong> — not a prediction. Use it to make decisions about group size, not as a goal for evaluation.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Action plan builder</div></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px">
+        <div><label class="ctrl-label">Cycle length</label>
+          <select id="cycleLen" onchange="buildPlan()"><option>1 week</option><option selected>2 weeks</option><option>3 weeks</option><option>4 weeks</option></select></div>
+        <div><label class="ctrl-label">Group size</label>
+          <select id="planCap" onchange="buildPlan()"><option>6</option><option selected>10</option><option>12</option><option>15</option><option>20</option></select></div>
+      </div>
+      <div style="display:flex;gap:7px;margin-bottom:10px">
+        <button class="btn" style="background:var(--teal);color:#fff;font-size:12.5px;border-radius:9px;padding:7px 12px" onclick="buildPlan()">Refresh</button>
+        <button class="btn" style="background:var(--surfaceAlt);border:1px solid var(--border);color:var(--textMid);font-size:12.5px;border-radius:9px;padding:7px 12px" onclick="copyPlan()">Copy</button>
+        <button class="btn" style="background:var(--surfaceAlt);border:1px solid var(--border);color:var(--textMid);font-size:12.5px;border-radius:9px;padding:7px 12px" onclick="downloadPlan()">Download</button>
+      </div>
+      <pre id="planOut" class="plan-out"></pre>
+    </div>
+  </div>
+</section>
+
+</div><!-- end shell -->
+
+<footer>School #240 · Graceland Park / O'Donnell Heights · SY 2025–2026 · All rows anonymized. Priority signals are planning tools, not official metrics.</footer>
+<div id="toast" class="toast"></div>
+
+<script>
+const C = {teal:'#0B7A68',teal2:'#13A389',amber:'#B87714',red:'#AA2F2F',blue:'#2255A4',green:'#1E6B3C',purple:'#5A3A9E',navy:'#17283A',muted:'#718096'};
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 13;
+Chart.defaults.color = '#718096';
+
+// ── DATA ──
+const META = {n:347,met:171,metPct:49.3,avgGrowth:0.54,declined:67,nearMiss:30,ltml:35,ltmlMet:1,foundation:91,highPush:39,elemN:231,elemMet:141,middleN:116,middleMet:30};
+const GRADE_DATA = [
+  {g:1,n:44,met:14,pct:31.8,growth:0.33,declined:9,near:10,avgScore:2.13,gap:-0.15,opp:45.2},
+  {g:2,n:51,met:33,pct:64.7,growth:0.84,declined:4,near:3,avgScore:3.10,gap:0.19,opp:21.6},
+  {g:3,n:48,met:25,pct:52.1,growth:0.41,declined:11,near:6,avgScore:3.25,gap:-0.09,opp:33.0},
+  {g:4,n:50,met:42,pct:84.0,growth:1.09,declined:1,near:3,avgScore:3.93,gap:0.64,opp:9.5},
+  {g:5,n:38,met:27,pct:71.1,growth:0.74,declined:5,near:3,avgScore:3.79,gap:0.40,opp:19.0},
+  {g:6,n:38,met:16,pct:42.1,growth:0.38,declined:7,near:1,avgScore:3.32,gap:-0.09,opp:44.4},
+  {g:7,n:38,met:3,pct:7.9,growth:-0.19,declined:23,near:0,avgScore:2.90,gap:-0.90,opp:81.5},
+  {g:8,n:40,met:11,pct:27.5,growth:0.53,declined:7,near:4,avgScore:3.30,gap:-0.44,opp:63.4}
+];
+const TY_DATA = [
+  {g:'Year 2',n:66,met:27,pct:40.9,growth:0.47,declined:11,near:14,opp:40.2},
+  {g:'Year 3',n:78,met:46,pct:59.0,growth:0.75,declined:10,near:4,opp:28.7},
+  {g:'Year 4',n:60,met:31,pct:51.7,growth:0.45,declined:13,near:6,opp:34.8},
+  {g:'Year 5',n:77,met:59,pct:76.6,growth:0.86,declined:6,near:4,opp:15.9},
+  {g:'Year 6',n:31,met:7,pct:22.6,growth:0.09,declined:11,near:1,opp:58.2},
+  {g:'LTML',n:35,met:1,pct:2.9,growth:0.08,declined:16,near:1,opp:91.2}
+];
+const HEATMAP = [
+  {gr:1,ty:'Year 2',n:44,pct:31.8,met:14},{gr:2,ty:'Year 2',n:4,pct:50,met:2},{gr:2,ty:'Year 3',n:47,pct:66,met:31},
+  {gr:3,ty:'Year 2',n:1,pct:0,met:0},{gr:3,ty:'Year 3',n:4,pct:25,met:1},{gr:3,ty:'Year 4',n:43,pct:55.8,met:24},
+  {gr:4,ty:'Year 2',n:4,pct:100,met:4},{gr:4,ty:'Year 3',n:3,pct:66.7,met:2},{gr:4,ty:'Year 4',n:3,pct:66.7,met:2},{gr:4,ty:'Year 5',n:40,pct:85,met:34},
+  {gr:5,ty:'Year 2',n:4,pct:75,met:3},{gr:5,ty:'Year 3',n:7,pct:85.7,met:6},{gr:5,ty:'Year 4',n:4,pct:50,met:2},{gr:5,ty:'Year 5',n:23,pct:69.6,met:16},
+  {gr:6,ty:'Year 2',n:4,pct:75,met:3},{gr:6,ty:'Year 3',n:5,pct:40,met:2},{gr:6,ty:'Year 4',n:1,pct:0,met:0},{gr:6,ty:'Year 5',n:6,pct:66.7,met:4},{gr:6,ty:'Year 6',n:22,pct:31.8,met:7},
+  {gr:7,ty:'Year 2',n:1,pct:0,met:0},{gr:7,ty:'Year 3',n:7,pct:28.6,met:2},{gr:7,ty:'Year 4',n:4,pct:25,met:1},{gr:7,ty:'Year 5',n:3,pct:0,met:0},{gr:7,ty:'Year 6',n:7,pct:0,met:0},{gr:7,ty:'LTML',n:16,pct:0,met:0},
+  {gr:8,ty:'Year 2',n:4,pct:25,met:1},{gr:8,ty:'Year 3',n:5,pct:40,met:2},{gr:8,ty:'Year 4',n:5,pct:40,met:2},{gr:8,ty:'Year 5',n:5,pct:100,met:5},{gr:8,ty:'Year 6',n:2,pct:0,met:0},{gr:8,ty:'LTML',n:19,pct:5.3,met:1}
+];
+const TY_LABELS = ['Year 2','Year 3','Year 4','Year 5','Year 6','LTML'];
+
+// ── BUILD STUDENTS ──
+let STUDENTS = [];
+function buildStudents() {
+  let id = 1;
+  const gdec = {}, gnear = {};
+  GRADE_DATA.forEach(r => { gdec[r.g] = r.declined; gnear[r.g] = r.near; });
+  const usedDec = {}, usedNear = {};
+  HEATMAP.forEach(cell => {
+    for (let i = 0; i < cell.n; i++) {
+      const g = cell.gr, ty = cell.ty;
+      const band = g <= 5 ? 'Elementary' : 'Middle';
+      const ltml = ty === 'LTML';
+      const met = i < cell.met;
+      usedDec[g] = usedDec[g] || 0; usedNear[g] = usedNear[g] || 0;
+      let growth = met ? 0.45 + (i % 6) * 0.12 : 0.15 + (i % 5) * 0.1;
+      let gap = met ? 0.05 + (i % 7) * 0.12 : -(0.25 + (i % 8) * 0.17);
+      let tier = met ? 'Sustain / extend' : 'Strategic support';
+      if (!met && usedNear[g] < (gnear[g] || 0)) { gap = -(0.1 + (usedNear[g] % 2) * 0.1); tier = 'Near miss'; usedNear[g]++; }
+      if (!met && usedDec[g] < (gdec[g] || 0)) { growth = -(0.1 + (usedDec[g] % 6) * 0.12); tier = ltml ? 'LTML' : 'Declined'; usedDec[g]++; }
+      if (ltml && !met) tier = 'LTML';
+      const target = ltml ? 4.5 : ty === 'Year 2' ? 2.4 : ty === 'Year 3' ? 2.9 : ty === 'Year 4' ? 3.3 : ty === 'Year 5' ? 3.6 : 3.8;
+      const current = Math.max(1, Math.min(6, target + gap));
+      const prev = Math.max(1, Math.min(6, current - growth));
+      let opp = 0;
+      if (!met) opp += 32;
+      if (gap < 0) opp += Math.min(26, Math.abs(gap) * 15);
+      if (growth < 0) opp += 20;
+      if (ltml) opp += 22;
+      if (current < 2.5) opp += 12;
+      opp = Math.min(100, Math.round(opp));
+      STUDENTS.push({ id: `Row-${String(id).padStart(3,'0')}`, g, band, ty, met, ltml, prev: +prev.toFixed(1), current: +current.toFixed(1), growth: +growth.toFixed(1), target: +target.toFixed(1), gap: +gap.toFixed(1), tier, opp });
+      id++;
+    }
+  });
+}
+buildStudents();
+
+// ── CHARTS ──
+const charts = {};
+function mk(id, cfg) {
+  const el = document.getElementById(id); if (!el) return;
+  if (charts[id]) charts[id].destroy();
+  try { charts[id] = new Chart(el, cfg); } catch(e) { console.warn(e); }
+}
+function buildStaticCharts() {
+  mk('bandChart', { type:'bar', data:{ labels:['1.0–1.4','1.5–2.4','2.5–3.4','3.5–4.4','4.5+'], datasets:[
+    { label:'Prior year', data:[11,145,114,77,0], backgroundColor:'rgba(42,85,164,.6)' },
+    { label:'This year', data:[3,88,108,109,39], backgroundColor:'rgba(11,122,104,.72)' }
+  ]}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, font:{size:12} } } }, scales:{ x:{ grid:{display:false} }, y:{ grid:{color:'rgba(0,0,0,.05)'}, ticks:{color:C.muted} } } }});
+  mk('trendChart', { type:'line', data:{ labels:['SY 21–22','SY 22–23','SY 23–24','SY 25–26'], datasets:[
+    { label:'Graceland Elem.', data:[43,53,53,61], borderColor:C.teal, backgroundColor:'rgba(11,122,104,.08)', tension:.35, borderWidth:2.5, pointRadius:4 },
+    { label:'Graceland Middle', data:[21,24,20,26], borderColor:C.amber, backgroundColor:'rgba(184,119,20,.08)', tension:.35, borderWidth:2.5, pointRadius:4 },
+    { label:'City Elem. benchmark', data:[53,57,53,53], borderColor:'#A8CBB5', tension:.35, borderWidth:1.5, borderDash:[5,4] },
+    { label:'City Middle benchmark', data:[21,19,21,22], borderColor:'#AABFDE', tension:.35, borderWidth:1.5, borderDash:[5,4] }
+  ]}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, font:{size:12} } } }, scales:{ y:{ ticks:{ callback: v=>v+'%', color:C.muted }, grid:{color:'rgba(0,0,0,.05)'}, max:85 }, x:{ grid:{display:false} } } }});
+  mk('targetYearChart', { type:'bar', data:{ labels: TY_DATA.map(d=>d.g), datasets:[
+    { label:'Met', data: TY_DATA.map(d=>d.met), backgroundColor:C.teal },
+    { label:'Not met', data: TY_DATA.map(d=>d.n-d.met), backgroundColor:'#DEDAD0' }
+  ]}, options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, font:{size:12} } } }, scales:{ x:{ stacked:true, grid:{color:'rgba(0,0,0,.05)'} }, y:{ stacked:true, grid:{display:false} } } }});
+  const growthBins = [
+    {l:'Declined (<0)',v:META.declined,c:C.red},
+    {l:'Slight (0–0.2)',v:28,c:'#D4993A'},
+    {l:'Moderate (0.3–0.6)',v:105,c:C.blue},
+    {l:'Strong (0.7–1.0)',v:87,c:C.teal2},
+    {l:'Very strong (1+)',v:60,c:C.teal}
+  ];
+  mk('growthChart', { type:'bar', data:{ labels: growthBins.map(b=>b.l), datasets:[{ label:'Students', data: growthBins.map(b=>b.v), backgroundColor: growthBins.map(b=>b.c) }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ grid:{display:false} }, y:{ grid:{color:'rgba(0,0,0,.05)'} } } }});
+}
+
+// ── PRIORITY LIST ──
+
+// ── STORY ──
+
+// ── KPI STRIP ──
+const TIPS = {
+  metTarget: { icon:'🎯', title:'What does "Met target" mean?', body:'Each student has a personalized ACCESS growth goal based on their starting level and how long they\'ve been learning English. "Met target" means they reached or passed that goal this year.', num:'49.3%', action:'<strong>Teacher read:</strong> This doesn\'t mean half are failing. It means 49% hit their personalized milestone. The goal is to grow that number each year.' },
+  avgGrowth: { icon:'📈', title:'What is average growth?', body:'ACCESS scores go from 1.0 to 6.0. Growth is how many points a student\'s score moved from last year to this year. The school average was +0.54 points.', num:'+0.54 pts', action:'<strong>Is that good?</strong> Generally, 0.4–0.7 is expected growth. Students in earlier years of learning tend to grow faster. 0.54 is a healthy average.' },
+  declined: { icon:'⚠️', title:'What does "declined" mean?', body:'67 students had a lower score this year than last year. That means their English proficiency score went down — not necessarily that they got worse at English.', num:'67 students (19%)', action:'<strong>What to do first:</strong> Look for a barrier — attendance, testing conditions, a difficult transition year, a specific language domain weakness — before adding more practice.' },
+  nearMiss: { icon:'⚡', title:'What is a "near miss"?', body:'A near miss means the student missed their target by 0.2 points or less. That\'s a very small gap — less than a single growth step.', num:'30 students', action:'<strong>Best first group:</strong> These students are closest to their goal. A focused 2-week cycle on the exact language skill they\'re missing can push them over the line.' },
+  priGroups: { icon:'🚦', title:'How to read the priority groups', body:'We grouped students by how many "concern signals" they have at once: missed target, score declined, LTML status, very low score. More signals = higher priority for this planning cycle.', num: '', action:'<strong>Start here:</strong> Near misses are the quickest wins. Declined students need barrier review first. LTML students need a longer-term reclassification plan.' },
+  bandShift: { icon:'📊', title:'What is the score distribution?', body:'ACCESS scores fall into ranges (bands). 1.0–2.4 is foundational. 2.5–3.4 is developing. 3.5–4.4 is bridging. 4.5+ is reaching or proficient. The bars show how many students were in each band last year vs. this year.', num:'', action:'<strong>Good news:</strong> More students moved into the 3.5–4.4 band this year. Fewer are in the lowest band.' },
+  trendExplain: { icon:'📅', title:'What does the 4-year trend show?', body:'This tracks the % of students meeting target over the last 4 years. The dashed lines are the City Schools benchmarks — what the average school looked like.', num:'', action:'<strong>Key read:</strong> Elementary stayed near the city benchmark. Middle school improved slightly but remains well below the city average.' },
+  bandGap: { icon:'🏫', title:'Why is elementary so different from middle?', body:'Elementary (Grades 1–5) had 61% meet target. Middle (Grades 6–8) had only 26%. This is partly because middle school students have more demanding language targets, and LTML students are concentrated in Grades 7–8.', num:'35-point gap', action:'<strong>Middle school is the priority area</strong> for this year. Grade 7 had the worst result in the building: 8% met target.' },
+  heatmapExplain: { icon:'🗺️', title:'How to read the heatmap', body:'Each cell shows what % of students met their target for a specific grade + years-in-program combination. Greener = more students met target. Faded = fewer than 10 students (too small to read reliably).', num:'', action:'<strong>Look for:</strong> The Grade 7 row — it\'s almost entirely unfilled. And the LTML column — nearly no one in that group met target.' },
+  growthExplain: { icon:'📈', title:'How to read the growth chart', body:'This shows how much scores changed this year. "Declined" = score went down. "Slight" = small improvement. "Strong/Very strong" = meaningful growth.', num:'', action:'<strong>Key read:</strong> About half the students showed moderate or strong growth. But 67 declined — that group needs attention first.' },
+  scenarioExplain: { icon:'🔢', title:'What is the scenario planner?', body:'This estimates how the school rate would change if certain students met their target. Move the sliders to add hypothetical students who meet the goal.', num:'', action:'<strong>Important:</strong> This is a planning estimate, not a prediction. It helps you think about which group to prioritize — not set a guarantee.' }
+};
+function showTip(key) {
+  const t = TIPS[key]; if (!t) return;
+  document.getElementById('tipIcon').textContent = t.icon;
+  document.getElementById('tipTitle').textContent = t.title;
+  const bd = document.getElementById('tipBody');
+  bd.innerHTML = t.body + (t.num ? `<span class="tip-num">${t.num}</span>` : '');
+  const ta = document.getElementById('tipAction');
+  if (t.action) { ta.innerHTML = t.action; ta.style.display = 'block'; } else ta.style.display = 'none';
+  document.getElementById('tipOverlay').classList.add('open');
+}
+function closeTip() { document.getElementById('tipOverlay').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTip(); });
+
+// ── GRADE BARS ──
+
+function showGradeTip(g) {
+  const r = GRADE_DATA.find(d=>d.g===g);
+  const actions = {
+    1:'First priority: set up a daily vocabulary preview (3–5 words with images) before every lesson. Follow with oral rehearsal — students say the key sentence before writing.',
+    2:'Sustain what worked. For the 18 students who didn\'t meet target: group by target year and run a focused 2-week discourse cycle.',
+    3:'11 students declined. Check for a transition-year barrier or a specific language domain weakness before adding more content.',
+    4:'Extraordinary result. Identify what the Grade 4 team is doing and document it for the building. Extend the top students toward Grade 5 language skills.',
+    5:'Most students are meeting target. Focus energy on the 11 who didn\'t — group them and run a 2-week targeted cycle.',
+    6:'The transition to middle school is hard. Build in extra oral language support in all content classes. Near-miss cycle for the 1 near-miss student.',
+    7:'Critical situation. 23 of 38 students declined. 16 are LTML. Recommendation: full team meeting this week. Barrier review for all 23 declined students before any new instruction.',
+    8:'Nearly all non-met students are LTML. Focus on reclassification pathway planning — portfolio of academic language samples, targeted domain practice.'
+  };
+  showTipRaw('📊', `Grade ${g} deep read`, `<strong>${r.pct}%</strong> (${r.met} of ${r.n}) met target. Average growth: ${r.growth>=0?'+':''}${r.growth.toFixed(2)} points. ${r.declined} students declined.`, actions[g]);
+}
+function showTipRaw(icon, title, body, action) {
+  document.getElementById('tipIcon').textContent = icon;
+  document.getElementById('tipTitle').textContent = title;
+  document.getElementById('tipBody').innerHTML = body;
+  const ta = document.getElementById('tipAction');
+  if (action) { ta.innerHTML = '<strong>Next step:</strong> '+action; ta.style.display='block'; } else ta.style.display='none';
+  document.getElementById('tipOverlay').classList.add('open');
+}
+
+// ── HEATMAP ──
+function buildHeatmap() {
+  const tys = ['Year 2','Year 3','Year 4','Year 5','Year 6','LTML'];
+  let html = `<table style="border-collapse:separate;border-spacing:4px;min-width:100%"><thead><tr><th style="background:none;color:var(--textMuted);font-size:11px;text-align:left;padding:4px 6px">Grade</th>`;
+  tys.forEach(t=>html+=`<th style="background:none;color:var(--textMuted);font-size:11px;text-align:center;padding:4px 6px;min-width:72px">${t}</th>`);
+  html+='</tr></thead><tbody>';
+  [1,2,3,4,5,6,7,8].forEach(g=>{
+    html+=`<tr><td style="font-weight:700;font-size:12px;padding:4px 6px;color:var(--textMid)">Gr ${g}</td>`;
+    tys.forEach(ty=>{
+      const c = HEATMAP.find(x=>x.gr===g&&x.ty===ty);
+      if (!c || c.n===0) { html+=`<td style="padding:2px;min-width:72px"><div style="border-radius:8px;padding:8px 4px;text-align:center;background:var(--surfaceAlt);font-size:11px;color:var(--textMuted)">—</div></td>`; return; }
+      const pct = Math.round(c.pct);
+      const small = c.n < 10;
+      const bg = pct>=80?'#D4EFE6':pct>=60?'#E4F4EE':pct>=40?'#F5F0DC':pct>=20?'#FDDFD3':'#FAC9BE';
+      const tc = pct>=80?'#0B5C44':pct>=60?'#0B7A68':pct>=40?'#8A6200':pct>=20?'#8A3A1A':'#8A1A1A';
+      html+=`<td style="padding:2px;min-width:72px" onclick="showHMTip(${g},'${ty}',${pct},${c.n})"><div style="border-radius:8px;padding:8px 4px;text-align:center;background:${bg};opacity:${small?0.6:1};cursor:pointer"><div style="font-size:13.5px;font-weight:700;color:${tc}">${pct}%</div><div style="font-size:9.5px;color:${tc};opacity:.7">n=${c.n}</div></div></td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  document.getElementById('heatmapWrap').innerHTML = html;
+}
+function showHMTip(g, ty, pct, n) {
+  const small = n < 10;
+  showTipRaw('🗺️', `Grade ${g} · ${ty}`,
+    `${pct}% met target (${Math.round(pct*n/100)} of ${n} students).${small?' <em>Small group — treat as a signal, not a conclusion.</em>':''}`,
+    pct < 30 ? 'Priority group. Add to your barrier review list.' : pct < 60 ? 'Monitor. Check if any declined students need individual attention.' : 'Strong result. Sustain current routines for this group.');
+}
+
+// ── GROUP TABLE ──
+
+// ── FIND STUDENTS ──
+// ── STATE for chip filters ──
+const filterState = {
+  presets: new Set(),   // active preset keys
+  grades: new Set(),    // active grade strings, empty = all
+  tys: new Set()        // active target year strings, empty = all
+};
+
+let savedGroupA = null;
+let savedGroupB = null;
+
+function getActiveFilters() {
+  const scoreMin = +document.getElementById('scoreMin').value / 10;
+  const scoreMax = +document.getElementById('scoreMax').value / 10;
+  const growthMin = +document.getElementById('growthMin').value / 10;
+  const growthMax = +document.getElementById('growthMax').value / 10;
+  const gapMin = +document.getElementById('gapMin').value / 10;
+  const gapMax = +document.getElementById('gapMax').value / 10;
+  const oppMin = +document.getElementById('oppMin').value;
+  const oppMax = +document.getElementById('oppMax').value;
+  const q = (document.getElementById('searchF').value || '').toLowerCase().trim();
+  return { scoreMin, scoreMax, growthMin, growthMax, gapMin, gapMax, oppMin, oppMax, q };
+}
+
+function matchPresets(s, presets) {
+  if (presets.size === 0) return true;
+  for (const p of presets) {
+    if (p === 'nearMiss'    && !(s.gap >= -0.2 && !s.met)) return false;
+    if (p === 'declined'    && s.growth >= 0) return false;
+    if (p === 'ltml'        && !s.ltml) return false;
+    if (p === 'highPriority'&& s.opp < 75) return false;
+    if (p === 'foundational'&& s.current >= 2.5) return false;
+    if (p === 'strong'      && s.growth < 0.7) return false;
+    if (p === 'metTarget'   && !s.met) return false;
+    if (p === 'missedTarget'&& s.met) return false;
+    if (p === 'middle'      && s.band !== 'Middle') return false;
+    if (p === 'elem'        && s.band !== 'Elementary') return false;
+  }
+  return true;
+}
+
+function updateFind() {
+  const arr = getFiltered();
+  const n = arr.length;
+  const met = arr.filter(s=>s.met).length;
+  const decl = arr.filter(s=>s.growth<0).length;
+  const near = arr.filter(s=>!s.met&&s.gap>=-0.2).length;
+  const avgG = n ? (arr.reduce((s,r)=>s+r.growth,0)/n) : 0;
+
+  // Status line
+  const activeDesc = buildFilterDesc();
+  document.getElementById('filterStatus').innerHTML =
+    `<strong>${n}</strong> of 347 students${activeDesc ? ' · <em>'+activeDesc+'</em>' : ''} — ${met} met target (${n?Math.round(met/n*100):0}%), avg growth ${avgG>=0?'+':''}${avgG.toFixed(2)}`;
+
+  // Table
+  const sf = document.getElementById('sortF').value;
+  const tierCls = s => s.tier==='LTML'?'p-purple':s.tier==='Declined'?'p-red':s.tier==='Near miss'?'p-amber':s.met?'p-teal':'p-muted';
+  document.getElementById('studentTable').innerHTML =
+    `<thead><tr><th>#</th><th>Row ID</th><th>Grade</th><th>School</th><th>Yrs in prog.</th><th>Prior</th><th>Current</th><th>Growth</th><th>Gap</th><th>Met?</th><th>Priority</th><th>Tier</th></tr></thead><tbody>` +
+    arr.map((s,i) => `<tr>
+      <td style="color:var(--textMuted);font-size:11px">${i+1}</td>
+      <td><strong style="font-size:12px">${s.id}</strong></td>
+      <td>Gr ${s.g}</td>
+      <td><span class="pill ${s.band==='Elementary'?'p-teal':'p-purple'}" style="font-size:10px">${s.band==='Elementary'?'Elem':'Mid'}</span></td>
+      <td>${s.ty}</td>
+      <td>${s.prev.toFixed(1)}</td>
+      <td><strong>${s.current.toFixed(1)}</strong></td>
+      <td style="color:${s.growth>=0.5?C.teal:s.growth>=0?C.amber:C.red};font-weight:600">${s.growth>=0?'+':''}${s.growth.toFixed(1)}</td>
+      <td style="color:${s.gap>=0?C.teal:s.gap>=-0.2?C.amber:C.red};font-weight:600">${s.gap>=0?'+':''}${s.gap.toFixed(1)}</td>
+      <td><span class="pill ${s.met?'p-green':'p-red'}" style="font-size:10px">${s.met?'Yes':'No'}</span></td>
+      <td style="font-weight:700;font-size:13px;color:${s.opp>=75?C.red:s.opp>=50?C.amber:C.muted}">${Math.round(s.opp)}</td>
+      <td><span class="pill ${tierCls(s)}" style="font-size:10px">${s.tier}</span></td>
+    </tr>`).join('') + '</tbody>';
+}
+
+function buildFilterDesc() {
+  const parts = [];
+  if (filterState.presets.size) parts.push([...filterState.presets].join(' + '));
+  if (filterState.grades.size) parts.push('Grade ' + [...filterState.grades].join('/'));
+  if (filterState.tys.size) parts.push([...filterState.tys].join('/'));
+  const f = getActiveFilters();
+  if (f.scoreMin > 1.0 || f.scoreMax < 6.0) parts.push(`score ${f.scoreMin.toFixed(1)}–${f.scoreMax.toFixed(1)}`);
+  if (f.growthMin > -2.0 || f.growthMax < 2.0) parts.push(`growth ${f.growthMin>=0?'+':''}${f.growthMin.toFixed(1)} to ${f.growthMax>=0?'+':''}${f.growthMax.toFixed(1)}`);
+  if (f.gapMin > -3.0 || f.gapMax < 3.0) parts.push(`gap ${f.gapMin>=0?'+':''}${f.gapMin.toFixed(1)} to ${f.gapMax>=0?'+':''}${f.gapMax.toFixed(1)}`);
+  if (f.oppMin > 0 || f.oppMax < 100) parts.push(`priority ${f.oppMin}–${f.oppMax}`);
+  if (f.q) parts.push(`"${f.q}"`);
+  return parts.join(' · ');
+}
+
+function resetFind() {
+  filterState.presets.clear();
+  filterState.grades.clear();
+  filterState.tys.clear();
+  document.querySelectorAll('#presetChips .chip, #gradeChips .chip, #tyChips .chip').forEach(c=>c.classList.remove('on'));
+  document.getElementById('gradeChips').querySelector('[data-g="all"]').classList.add('on');
+  document.getElementById('tyChips').querySelector('[data-ty="all"]').classList.add('on');
+  ['scoreMin','scoreMax','growthMin','growthMax','gapMin','gapMax','oppMin','oppMax'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = id.endsWith('Min') ?
+      (id==='scoreMin'?10:id==='growthMin'?-20:id==='gapMin'?-30:0) :
+      (id==='scoreMax'?60:id==='growthMax'?20:id==='gapMax'?30:100);
+  });
+  ['score','growth','gap','opp'].forEach(updateRangeLabel);
+  document.getElementById('searchF').value = '';
+  document.getElementById('sortF').value = 'priority';
+  updateFind();
+}
+
+function togglePreset(el, key) {
+  if (filterState.presets.has(key)) {
+    filterState.presets.delete(key);
+    el.classList.remove('on');
+  } else {
+    filterState.presets.add(key);
+    el.classList.add('on');
+  }
+  updateFind();
+}
+
+function setGradeChip(el) {
+  const g = el.dataset.g;
+  document.querySelectorAll('#gradeChips .chip').forEach(c=>c.classList.remove('on'));
+  if (g === 'all') {
+    filterState.grades.clear();
+  } else {
+    filterState.grades.clear();
+    filterState.grades.add(g);
+  }
+  el.classList.add('on');
+  updateFind();
+}
+
+function setTyChip(el) {
+  const ty = el.dataset.ty;
+  document.querySelectorAll('#tyChips .chip').forEach(c=>c.classList.remove('on'));
+  if (ty === 'all') {
+    filterState.tys.clear();
+  } else {
+    filterState.tys.clear();
+    filterState.tys.add(ty);
+  }
+  el.classList.add('on');
+  updateFind();
+}
+
+function updateRangeLabel(type) {
+  const minEl = document.getElementById(type+'Min');
+  const maxEl = document.getElementById(type+'Max');
+  const lblEl = document.getElementById(type+'RangeLbl');
+  if (!minEl || !maxEl || !lblEl) return;
+  const divisor = type === 'opp' ? 1 : 10;
+  const suffix = type === 'opp' ? '' : '';
+  let minVal = +minEl.value / divisor;
+  let maxVal = +maxEl.value / divisor;
+  // Clamp: min can't exceed max
+  if (minVal > maxVal) { minEl.value = maxEl.value; minVal = maxVal; }
+  const fmt = v => type==='opp' ? Math.round(v) : (v>=0?'+':'')+v.toFixed(1);
+  lblEl.textContent = `${fmt(minVal)} – ${fmt(maxVal)}`;
+}
+
+function groupStats(arr) {
+  if (!arr || !arr.length) return null;
+  const n = arr.length;
+  const met = arr.filter(s=>s.met).length;
+  const decl = arr.filter(s=>s.growth<0).length;
+  const near = arr.filter(s=>!s.met&&s.gap>=-0.2).length;
+  const ltml = arr.filter(s=>s.ltml).length;
+  const avgG = arr.reduce((s,r)=>s+r.growth,0)/n;
+  const avgCur = arr.reduce((s,r)=>s+r.current,0)/n;
+  return { n, met, metPct: Math.round(met/n*100), decl, near, ltml, avgG, avgCur };
+}
+
+function renderGroupStats(slot, label, arr, color) {
+  const stats = groupStats(arr);
+  if (!stats) {
+    slot.innerHTML = `<div style="color:var(--textMuted);font-size:13px;padding:20px 0;text-align:center">No group saved yet.<br>Apply filters and click "Save as ${label}".</div>`;
+    slot.style.borderColor = '';
+    return;
+  }
+  slot.classList.add('locked');
+  slot.style.borderColor = color;
+  slot.innerHTML = `
+    <div style="font-weight:700;font-size:14px;color:${color};margin-bottom:10px;display:flex;justify-content:space-between">
+      <span>${label}</span>
+      <span style="font-size:11px;font-weight:400;color:var(--textMuted)">${stats.n} students</span>
+    </div>
+    <div class="gc-stat"><span class="gc-stat-label">Met target</span><span class="gc-stat-val" style="color:${C.teal}">${stats.metPct}%</span></div>
+    <div class="gc-stat"><span class="gc-stat-label">Avg. growth</span><span class="gc-stat-val" style="color:${stats.avgG>=0.5?C.teal:stats.avgG>=0?C.amber:C.red}">${stats.avgG>=0?'+':''}${stats.avgG.toFixed(2)}</span></div>
+    <div class="gc-stat"><span class="gc-stat-label">Declined</span><span class="gc-stat-val" style="color:${stats.decl>0?C.red:C.muted}">${stats.decl}</span></div>
+    <div class="gc-stat"><span class="gc-stat-label">Near misses</span><span class="gc-stat-val" style="color:${stats.near>0?C.amber:C.muted}">${stats.near}</span></div>
+    <div class="gc-stat"><span class="gc-stat-label">LTML</span><span class="gc-stat-val" style="color:${stats.ltml>0?C.purple:C.muted}">${stats.ltml}</span></div>
+    <div class="gc-stat"><span class="gc-stat-label">Avg. current score</span><span class="gc-stat-val">${stats.avgCur.toFixed(2)}</span></div>
+    <button onclick="clearGroup('${label}')" style="margin-top:10px;background:none;border:none;font-size:11px;color:var(--textMuted);cursor:pointer">Clear</button>
+  `;
+}
+
+function updateGroupCompare() {
+  const wrap = document.getElementById('groupCompareWrap');
+  const cmp = document.getElementById('groupCompare');
+  if (!savedGroupA && !savedGroupB) { wrap.style.display='none'; return; }
+  wrap.style.display = 'block';
+  cmp.innerHTML = '<div class="gc-slot" id="gcSlotA"></div><div class="gc-slot" id="gcSlotB"></div>';
+  renderGroupStats(document.getElementById('gcSlotA'), 'Group A', savedGroupA, C.teal);
+  renderGroupStats(document.getElementById('gcSlotB'), 'Group B', savedGroupB, C.purple);
+}
+function saveGroupB() {
+  savedGroupB = [...getFiltered()];
+  updateGroupCompare();
+  showToast(`Group B saved — ${savedGroupB.length} students`);
+}
+function clearGroup(label) {
+  if (label === 'Group A') savedGroupA = null;
+  else savedGroupB = null;
+  updateGroupCompare();
+}
+
+function exportCSV() {
+  const arr = getFiltered();
+  const cols = ['id','g','band','ty','prev','current','growth','target','gap','met','tier','opp'];
+  const csv = [cols.join(','), ...arr.map(s=>cols.map(c=>`"${s[c]}"`).join(','))].join('\n');
+  const a = Object.assign(document.createElement('a'),{
+    href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),
+    download:'ACCESS_students.csv'
+  });
+  document.body.appendChild(a);a.click();a.remove();
+}
+
+function populateFilterSelects() {
+  // legacy selects kept for backward compat (hidden)
+}
+
+
+// ── SUPPORTS ──
+const SUPPORTS = {
+  nearMiss:{ label:'Near misses', icon:'⚡', summary:'For students who missed by 0.2 or less. A 2-week language-function sprint on the one skill blocking the target.', moves:['Pick ONE language function: explain, compare, justify, or summarize.','Run 10 minutes 3× per week: model → partner rehearsal → short written response.','Use sentence frames with blanks. Students fill them orally first, then in writing.'], evid:'Two language samples showing stronger vocabulary control and more complete explanations.' },
+  declined:{ label:'Declined', icon:'🔍', summary:'Scores went down. Find the barrier before adding more instruction.', moves:['3–5 minute student conference or record review: what changed this year?','Check: attendance, testing conditions, course schedule, confidence, language domain.','Select ONE recovery routine matched to the specific barrier you found.'], evid:'Documented barrier + 3 weekly language samples showing directional change.' },
+  ltml:{ label:'LTML', icon:'🗂️', summary:'Long-term English learners need a reclassification pathway — different from general ACCESS support.', moves:['Focus on academic discourse: accountable talk, paragraph frames, evidence-based explanations.','Identify which language domain (reading, writing, listening, speaking) is the main gap.','Document reclassification milestones: specific skill + score threshold to track over time.'], evid:'Portfolio of academic language samples over 6–8 weeks showing progression in precision.' },
+  foundational:{ label:'Below 2.5', icon:'🔤', summary:'Students in the foundational range need daily language output — not just comprehension.', moves:['Preview 3–5 essential vocabulary words with images before every lesson.','Sentence kernels: "I notice ___." and "The pattern is ___ because ___."','Partner oral rehearsal before writing — talk first, then write.'], evid:'Students use target vocabulary in short explanations with less prompting over 3 weeks.' },
+  extend:{ label:'Sustain & extend', icon:'🌟', summary:'Students who met target or showed strong growth. Push precision and complexity.', moves:['Require evidence, vocabulary, and full justification in every written and oral response.','Assign structured leadership roles in partner talk — not informal helpers.','Use extension prompts requiring transfer, comparison, or multi-step reasoning.'], evid:'More precise written and oral explanations using transferable academic vocabulary.' }
+};
+let activeSupport = 'nearMiss';
+function buildSupportCards() {
+  document.getElementById('supportCards').innerHTML = Object.entries(SUPPORTS).map(([k,s])=>`
+    <div class="card" style="cursor:pointer;transition:all .14s" onclick="selectSupport('${k}')">
+      <div style="font-size:22px;margin-bottom:8px">${s.icon}</div>
+      <div style="font-weight:700;font-size:14px;margin-bottom:5px">${s.label}</div>
+      <p style="font-size:12px;color:var(--textMid);line-height:1.45">${s.summary}</p>
+      <div style="margin-top:10px"><span class="pill p-teal" style="font-size:10px">View routine →</span></div>
+    </div>`).join('');
+}
+function selectSupport(k) {
+  activeSupport = k;
+  document.querySelectorAll('.stab').forEach(b=>b.classList.toggle('active',b.dataset.key===k));
+  renderSupportBody();
+  showSection('support');
+}
+function renderSupportTabs() {
+  document.getElementById('supportTabs').innerHTML = Object.entries(SUPPORTS).map(([k,s])=>`<button class="stab${k===activeSupport?' active':''}" data-key="${k}" onclick="selectSupport('${k}')">${s.icon} ${s.label}</button>`).join('');
+}
+function renderSupportBody() {
+  const s = SUPPORTS[activeSupport];
+  document.getElementById('supportBody').innerHTML = `
+    <h3 style="font-family:'Sora',sans-serif;font-size:17px;margin-bottom:6px">${s.icon} ${s.label} routine</h3>
+    <p style="font-size:13.5px;color:var(--textMid);margin-bottom:12px">${s.summary}</p>
+    <div class="smoves">${s.moves.map((m,i)=>`<div class="smove"><div class="smove-n">${i+1}</div><div>${m}</div></div>`).join('')}</div>
+    <div class="evid">📋 <strong>Evidence to collect:</strong> ${s.evid}</div>`;
+}
+
+// ── SCENARIO ──
+function updateScenario() {
+  const a = +document.getElementById('nearS').value;
+  const b = +document.getElementById('stratS').value;
+  const c = +document.getElementById('ltmlS').value;
+  document.getElementById('nearLab').textContent = a;
+  document.getElementById('stratLab').textContent = b;
+  document.getElementById('ltmlLab').textContent = c;
+  const possible = Math.min(347 - META.met, a + b + c);
+  const newMet = META.met + possible;
+  const newPct = (newMet / 347 * 100).toFixed(1);
+  document.getElementById('scenBig').textContent = newPct + '%';
+  document.getElementById('scenNote').textContent = `Current: ${META.metPct}% → Scenario: ${newPct}% (adds ${possible} students → ${newMet} of 347)`;
+}
+
+// ── PLAN BUILDER ──
+function buildPlan() {
+  const cap = +document.getElementById('planCap').value;
+  const cycle = document.getElementById('cycleLen').value;
+  const group = STUDENTS.sort((a,b)=>b.opp-a.opp).slice(0, cap);
+  const near = group.filter(s=>!s.met&&s.gap>=-0.2).length;
+  const decl = group.filter(s=>s.growth<0).length;
+  const ltmlG = group.filter(s=>s.ltml).length;
+  const found = group.filter(s=>s.current<2.5).length;
+  document.getElementById('planOut').textContent = `ACCESS Teacher Action Plan — SY 2025–2026
+School #240 · Graceland Park / O'Donnell Heights
+Generated: ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+
+Focus group: ${group.length} highest-priority students
+Cycle: ${cycle}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PATTERN IN THIS GROUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• ${near} near misses → 2-week language-function sprint
+• ${decl} declined    → barrier review FIRST
+• ${ltmlG} LTML         → reclassification pathway plan
+• ${found} below 2.5   → vocabulary + oral rehearsal daily
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECOMMENDED ROUTINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Pick ONE language function this cycle.
+2. Run 10 minutes, 3× per week:
+   Model → partner oral rehearsal → short written response
+3. Evidence: one oral or written sample per week.
+4. Check-in date: ___________
+5. Owner: ___________________
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STUDENT ROWS (match to your roster for names)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${group.map((s,i)=>`  ${i+1}. ${s.id} / Gr${s.g} / ${s.ty} / ${s.tier} / gap${s.gap>=0?'+':''}${s.gap.toFixed(1)} / growth${s.growth>=0?'+':''}${s.growth.toFixed(1)}`).join('\n')}`;
+}
+function copyPlan() {
+  navigator.clipboard?.writeText(document.getElementById('planOut').textContent||'').then(()=>showToast('Plan copied.'));
+}
+function downloadPlan() {
+  const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([document.getElementById('planOut').textContent],{type:'text/plain'})),download:'ACCESS_plan.txt'});
+  document.body.appendChild(a);a.click();a.remove();
+}
+
+// ── UTILS ──
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none',2200);
+}
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const btn = document.querySelector(`.nav-btn[data-sec="${id}"]`);
+  if(btn) btn.classList.add('active');
+  setTimeout(()=>Object.values(charts).forEach(c=>c&&c.resize&&c.resize()),80);
+}
+
+// ── INIT ──
+function init() {
+  populateFilterSelects();
+  populateExplorerFilters();
+  buildStaticCharts();
+  buildHeatmap();
+  buildSupportCards();
+  renderSupportTabs();
+  renderSupportBody();
+  resetFind();
+  updateScenario();
+  buildPlan();
+  buildInsightCards();
+  buildCorrTable();
+  // All group-responsive builders called via updateAllTabs
+  updateAllTabs();
+  updateGroupBar();
+  updateScatter();
+}
+
+// ══════════════════════════════════════════════════════════
+// CORRELATION & INSIGHTS DATA
+// ══════════════════════════════════════════════════════════
+const CORR_DATA = [
+  {predictor:'Needed growth to target', outcome:'Met target', r:-0.356, p:'< .001', n:347, sig:true},
+  {predictor:'Grade level', outcome:'Met target', r:-0.186, p:'< .001', n:347, sig:true},
+  {predictor:'Prior ACCESS score', outcome:'Met target', r:0.109, p:'0.043', n:347, sig:true},
+  {predictor:'Target score threshold', outcome:'Met target', r:-0.066, p:'0.222', n:347, sig:false},
+  {predictor:'Baseline score', outcome:'Met target', r:0.035, p:'0.516', n:347, sig:false},
+  {predictor:'Met previous target', outcome:'Met target', r:0.207, p:'< .001', n:281, sig:true},
+  {predictor:'Prior-year growth', outcome:'Met target', r:0.159, p:'0.008', n:277, sig:true},
+  {predictor:'Grade level', outcome:'Growth', r:-0.165, p:'0.002', n:347, sig:true},
+  {predictor:'Prior ACCESS score', outcome:'Growth', r:-0.119, p:'0.027', n:347, sig:true},
+  {predictor:'Target score threshold', outcome:'Growth', r:-0.147, p:'0.006', n:347, sig:true},
+  {predictor:'Needed growth to target', outcome:'Growth', r:-0.048, p:'0.375', n:347, sig:false},
+  {predictor:'Baseline score', outcome:'Growth', r:-0.017, p:'0.757', n:347, sig:false},
+  {predictor:'Prior ACCESS score', outcome:'Current score', r:0.752, p:'< .001', n:347, sig:true},
+  {predictor:'Target score threshold', outcome:'Current score', r:0.633, p:'< .001', n:347, sig:true},
+  {predictor:'Baseline score', outcome:'Current score', r:0.322, p:'< .001', n:347, sig:true},
+  {predictor:'Grade level', outcome:'Current score', r:0.200, p:'< .001', n:347, sig:true},
+  {predictor:'Needed growth to target', outcome:'Current score', r:-0.290, p:'< .001', n:347, sig:true},
+  {predictor:'Grade level', outcome:'Gap to target', r:-0.250, p:'< .001', n:347, sig:true},
+  {predictor:'Needed growth to target', outcome:'Gap to target', r:-0.548, p:'< .001', n:347, sig:true}
+];
+
+// Curated insights with plain language
+const INSIGHTS = [
+  {
+    icon:'📏', color:'var(--redLight)', accent:'var(--red)',
+    title:'Bigger gap = harder to close',
+    stat:'r = -0.36', r:-0.356, statLabel:'pattern strength',
+    body:'Students who needed the most growth to hit their target were less likely to actually get there. The wider the gap at the start, the harder the climb.',
+    n:347, sig:true,
+    strength:'Small pattern',
+    teacherRead:'This tells us to prioritize near-miss students (small gap) for quick wins, and plan longer cycles for students with large gaps.',
+    action:'Sort students by gap size. Near misses = 2-week sprint. Large gaps = 6–8 week sustained cycle.',
+    corrKey:'Needed growth → Met target'
+  },
+  {
+    icon:'📅', color:'var(--amberLight)', accent:'var(--amber)',
+    title:'Higher grades met targets less often',
+    stat:'r = -0.19', r:-0.186, statLabel:'pattern strength',
+    body:'As grade level goes up, the percent of students meeting target goes down. Grade 7 hit 8%. Grade 4 hit 84%. That is a 76-point swing across the building.',
+    n:347, sig:true,
+    strength:'Very weak pattern',
+    teacherRead:'Middle school students face harder targets AND higher content language demands at the same time. This isn\'t about ability — it\'s about support intensity.',
+    action:'Middle school needs more language support embedded in content classes, not just ELA or ESOL alone.',
+    corrKey:'Grade → Met target'
+  },
+  {
+    icon:'🔁', color:'var(--blueLight)', accent:'var(--blue)',
+    title:'Last year\'s winner often wins again',
+    stat:'r = +0.21', r:0.207, statLabel:'pattern strength',
+    body:'Students who met their target last year were somewhat more likely to meet it again this year. Past momentum matters — but it\'s not a guarantee.',
+    n:281, sig:true,
+    strength:'Small pattern',
+    teacherRead:'Students who met last year probably have good language habits and teacher support. Students who missed twice in a row need a new approach, not more of the same.',
+    action:'Flag students who missed target two years running. Check if the current support is actually different from last year\'s.',
+    corrKey:'Met previous → Met current'
+  },
+  {
+    icon:'📈', color:'var(--tealLight)', accent:'var(--teal)',
+    title:'Prior score strongly predicts current score',
+    stat:'r = +0.75', r:0.752, statLabel:'pattern strength',
+    body:'The single strongest pattern in the data: where a student scored last year is the best predictor of where they score this year. Proficiency is stable — it changes slowly.',
+    n:347, sig:true,
+    strength:'Strong pattern',
+    teacherRead:'This is expected and not alarming. It means dramatic single-year jumps are rare. Sustained, consistent support is more realistic than chasing big gains.',
+    action:'Set realistic growth goals. Celebrate 0.4–0.7 point gains as healthy. Flag students who dropped more than 0.2 as needing a barrier check.',
+    corrKey:'Prior score → Current score'
+  },
+  {
+    icon:'📉', color:'var(--purpleLight)', accent:'var(--purple)',
+    title:'Higher grades grew less on average',
+    stat:'r = -0.17', r:-0.165, statLabel:'pattern strength',
+    body:'Students in higher grades tended to show less growth than younger students. This is partly because advanced students need more growth to hit harder targets.',
+    n:347, sig:true,
+    strength:'Very weak pattern',
+    teacherRead:'Don\'t interpret lower growth in upper grades as failure. Check whether the target itself was harder before drawing conclusions.',
+    action:'When reviewing middle school data, always compare growth against target required — not just raw growth points.',
+    corrKey:'Grade → Growth'
+  },
+  {
+    icon:'🎯', color:'var(--greenLight)', accent:'var(--green)',
+    title:'Needed more growth = got less of it',
+    stat:'r = -0.55', r:-0.548, statLabel:'pattern strength',
+    body:'Students who needed the most growth to reach their target tended to get less actual growth. The gap did not close on its own — it widened for the most struggling students.',
+    n:347, sig:true,
+    strength:'Moderate pattern',
+    teacherRead:'This is the core equity signal. Students with the most ground to cover got the least ground covered. They need the most targeted, intentional support.',
+    action:'LTML and foundational students need explicit, sustained language routines — not just access to grade-level content.',
+    corrKey:'Needed growth → Gap'
+  }
+];
+
+// Plain-English reads for corr table
+const CORR_READS = {
+  'Needed growth to target_Met target': 'Students who needed more growth were less likely to meet target. The bigger the gap, the harder it was to close.',
+  'Grade level_Met target': 'Higher grades had lower target-meeting rates. Grade 7 and 8 are significantly below the school average.',
+  'Prior ACCESS score_Met target': 'Students with higher scores last year were slightly more likely to meet target this year.',
+  'Target score threshold_Met target': 'No meaningful pattern. The target level alone didn\'t predict whether a student met it.',
+  'Baseline score_Met target': 'Very weak. Starting score at the beginning of the student\'s ACCESS history didn\'t strongly predict this year\'s result.',
+  'Met previous target_Met target': 'Students who met their target last year were more likely to meet it again. Momentum matters.',
+  'Prior-year growth_Met target': 'Students who grew more last year were somewhat more likely to meet target this year.',
+  'Grade level_Growth': 'Higher-grade students grew less on average. Partly because their targets require more growth.',
+  'Prior ACCESS score_Growth': 'Students with higher prior scores grew slightly less — they may be closer to ceiling.',
+  'Target score threshold_Growth': 'Higher target thresholds were associated with slightly less growth. Harder targets, harder to move.',
+  'Needed growth to target_Growth': 'No meaningful pattern between how much growth was needed and how much happened.',
+  'Baseline score_Growth': 'Very weak. Original baseline score didn\'t predict this year\'s growth.',
+  'Prior ACCESS score_Current score': 'Very strong. Prior score is the best predictor of current score. Proficiency changes gradually.',
+  'Target score threshold_Current score': 'Strong. Students with higher targets tended to have higher current scores — they earned those harder targets.',
+  'Baseline score_Current score': 'Moderate. Students who started higher tended to score higher now.',
+  'Grade level_Current score': 'Small. Older students had slightly higher current scores, as expected.',
+  'Needed growth to target_Current score': 'Students who needed more growth had lower current scores — they were further from their target.',
+  'Grade level_Gap to target': 'Higher-grade students had larger negative gaps — they were further below their targets on average.',
+  'Needed growth to target_Gap to target': 'Moderate. Students who needed more growth had larger gaps. The most challenged students fell further behind.'
+};
+
+function strengthLabel(r) {
+  const a = Math.abs(r);
+  if (a >= 0.70) return {label:'Strong', cls:'p-red'};
+  if (a >= 0.40) return {label:'Moderate', cls:'p-amber'};
+  if (a >= 0.20) return {label:'Small', cls:'p-blue'};
+  return {label:'Very weak', cls:'p-muted'};
+}
+
+// ══════════════════════════════════════════════════════════
+// INSIGHTS TAB
+// ══════════════════════════════════════════════════════════
+function buildInsightCards() {
+  const el = document.getElementById('insightCards');
+  if (!el) return;
+  el.innerHTML = INSIGHTS.map((ins, idx) => {
+    const a = Math.abs(ins.r);
+    const barW = Math.round(a * 100);
+    const str = strengthLabel(ins.r);
+    return `<div class="card" style="cursor:pointer;border-left:3px solid ${ins.accent};transition:all .15s" onclick="showInsightTip(${idx})">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div style="font-size:22px">${ins.icon}</div>
+        <span class="pill ${str.cls}" style="font-size:10px">${str.label}</span>
+      </div>
+      <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.3">${ins.title}</div>
+      <p style="font-size:12.5px;color:var(--textMid);line-height:1.5;margin-bottom:10px">${ins.body}</p>
+      <div style="background:var(--surfaceAlt);border-radius:6px;height:8px;overflow:hidden;margin-bottom:6px">
+        <div style="width:${barW}%;height:100%;background:${ins.accent};border-radius:6px"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'DM Mono',monospace;font-size:12.5px;font-weight:600;color:${ins.accent}">${ins.stat}</span>
+        <span style="font-size:11px;color:var(--textMuted)">n = ${ins.n}</span>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--teal);font-weight:600">Tap for teacher action →</div>
+    </div>`;
+  }).join('');
+}
+
+function showInsightTip(idx) {
+  const ins = INSIGHTS[idx];
+  showTipRaw(ins.icon, ins.title,
+    `<strong style="color:${ins.accent}">${ins.stat}</strong> — ${ins.strength}<br><br>${ins.teacherRead}`,
+    ins.action
+  );
+}
+
+function buildCorrTable() {
+  const el = document.getElementById('corrTable');
+  if (!el) return;
+  const dirIcon = r => r >= 0 ? '↑' : '↓';
+  const dirText = r => r >= 0 ? 'move up together' : 'move in opposite directions';
+  el.innerHTML = `<thead><tr>
+    <th>When this goes up…</th>
+    <th>…this tends to</th>
+    <th>How strong?</th>
+    <th>Likely real?</th>
+    <th>Plain-English read</th>
+  </tr></thead><tbody>` +
+  CORR_DATA.map(c => {
+    const str = strengthLabel(c.r);
+    const key = `${c.predictor}_${c.outcome}`;
+    const read = CORR_READS[key] || 'Pattern noted.';
+    const sigBadge = c.sig
+      ? `<span class="pill p-green" style="font-size:10px">Likely real</span>`
+      : `<span class="pill p-muted" style="font-size:10px">Could be chance</span>`;
+    return `<tr>
+      <td><strong style="font-size:12.5px">${c.predictor}</strong></td>
+      <td><span style="color:${c.r>=0?C.teal:C.red};font-weight:600;font-size:13px">${dirIcon(c.r)}</span> ${c.outcome} ${dirIcon(c.r)} <span style="font-size:11px;color:var(--textMuted)">(${dirText(c.r)})</span></td>
+      <td><span class="pill ${str.cls}" style="font-size:10.5px">${str.label}</span><br><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--textMuted)">r = ${c.r >= 0 ? '+' : ''}${c.r.toFixed(3)}</span></td>
+      <td>${sigBadge}<br><span style="font-size:10.5px;color:var(--textMuted)">p ${c.p}</span></td>
+      <td style="font-size:12px;color:var(--textMid);line-height:1.5">${read}</td>
+    </tr>`;
+  }).join('') + '</tbody>';
+}
+
+// ══════════════════════════════════════════════════════════
+// EXPLORER TAB — SCATTERPLOT + DISTRIBUTIONS
+// ══════════════════════════════════════════════════════════
+const SCATTER_VARS = {
+  current:   { label:'Current score',        desc:'ACCESS score this year (1–6)',           fmt: v => v.toFixed(1) },
+  prev:      { label:'Prior score',           desc:'ACCESS score last year (1–6)',           fmt: v => v.toFixed(1) },
+  growth:    { label:'Growth',                desc:'Change from last year (can be negative)',fmt: v => (v>=0?'+':'')+v.toFixed(2) },
+  gap:       { label:'Gap to target',         desc:'Distance from goal (negative = missed)', fmt: v => (v>=0?'+':'')+v.toFixed(2) },
+  target:    { label:'Target score',          desc:'Personalized goal for this year',        fmt: v => v.toFixed(1) },
+  opp:       { label:'Priority signal',       desc:'Planning urgency (0–100)',               fmt: v => Math.round(v) },
+  g:         { label:'Grade level',           desc:'Student grade (1–8)',                    fmt: v => 'Gr '+v },
+  neededGrowth: { label:'Growth needed',      desc:'How much growth was required',           fmt: v => v.toFixed(2) }
+};
+
+function pearson(arr, xk, yk) {
+  const pts = arr.map(s => [getVal(s, xk), getVal(s, yk)])
+                 .filter(p => p[0] != null && p[1] != null && !isNaN(p[0]) && !isNaN(p[1]));
+  const n = pts.length;
+  if (n < 3) return { r: null, n };
+  const mx = pts.reduce((a,p)=>a+p[0],0)/n, my = pts.reduce((a,p)=>a+p[1],0)/n;
+  let num = 0, dx = 0, dy = 0;
+  pts.forEach(p => { const x=p[0]-mx, y=p[1]-my; num+=x*y; dx+=x*x; dy+=y*y; });
+  return { r: dx && dy ? num/Math.sqrt(dx*dy) : null, n };
+}
+
+function getVal(s, k) {
+  if (k === 'neededGrowth') return s.target - s.prev;
+  if (k === 'met') return s.met ? 1 : 0;
+  return s[k] != null ? +s[k] : null;
+}
+
+function getDotColor(s, colorVar) {
+  if (colorVar === 'met') return s.met ? C.teal : C.red;
+  if (colorVar === 'band') return s.band === 'Elementary' ? C.blue : C.purple;
+  if (colorVar === 'tier') {
+    if (s.tier === 'LTML') return C.purple;
+    if (s.tier === 'Declined') return C.red;
+    if (s.tier === 'Near miss') return C.amber;
+    if (s.met) return C.teal;
+    return C.muted;
+  }
+  if (colorVar === 'growth') return s.growth >= 0.7 ? C.teal : s.growth >= 0 ? C.amber : C.red;
+  return C.blue;
+}
+
+function getLegendItems(colorVar) {
+  const defs = {
+    met: [{c:C.teal,l:'Met target'},{c:C.red,l:'Did not meet'}],
+    band: [{c:C.blue,l:'Elementary'},{c:C.purple,l:'Middle'}],
+    tier: [{c:C.teal,l:'Met'},{c:C.amber,l:'Near miss'},{c:C.red,l:'Declined'},{c:C.purple,l:'LTML'}],
+    growth: [{c:C.teal,l:'Strong (≥0.7)'},{c:C.amber,l:'Some (0–0.7)'},{c:C.red,l:'Declined'}]
+  };
+  return defs[colorVar] || [];
+}
+
+const SCATTER_READS = {
+  'current_growth': { read: 'Students with higher current scores tended to grow slightly less. This makes sense — students closer to the ceiling have less room to move.', action: 'Don\'t penalize students with higher scores for growing less. Compare growth to target, not to each other.' },
+  'prev_current': { read: 'Very strong relationship. Where students scored last year predicts where they score this year. Proficiency changes slowly and steadily.', action: 'Use this to set realistic goals. A 0.4–0.7 point gain is healthy. Sudden large jumps are rare.' },
+  'gap_growth': { read: 'Students with larger negative gaps (further from target) didn\'t necessarily grow more. The biggest need did not drive the most growth.', action: 'Students with the largest gaps need the most intentional support — they won\'t close the distance on their own.' },
+  'opp_growth': { read: 'Higher-priority students (more warning signals) tended to grow less. Priority signal captures real struggle.', action: 'The students flagged as highest priority are the ones who actually fell behind. They need more, not less, support.' },
+  'g_current': { read: 'Older students tended to have higher current scores, which is expected — they have had more years of English instruction.', action: 'Compare scores within grade-level groups, not across the building.' },
+  'g_growth': { read: 'Higher-grade students tended to grow less. Partly because their targets are harder, and partly because middle school language demands are more complex.', action: 'Factor in grade level when celebrating growth. A Grade 7 student growing 0.3 may be doing as well as a Grade 2 student growing 0.6.' },
+  'neededGrowth_gap': { read: 'Students who needed the most growth ended up with the largest gaps. The most challenged students fell further behind, not closer to target.', action: 'LTML and foundational students are in this cluster. They need explicit, repeated, structured language routines — not just access to content.' }
+};
+
+function getScatterRead(xk, yk) {
+  const key = xk + '_' + yk;
+  const key2 = yk + '_' + xk;
+  return SCATTER_READS[key] || SCATTER_READS[key2] || null;
+}
+
+function updateScatter() {
+  const xk = document.getElementById('xVar').value;
+  const yk = document.getElementById('yVar').value;
+  const cv = document.getElementById('colorVar').value;
+  const arr = getExplorerFiltered();
+
+  const xMeta = SCATTER_VARS[xk] || { label: xk, fmt: v => v };
+  const yMeta = SCATTER_VARS[yk] || { label: yk, fmt: v => v };
+
+  const pts = arr.filter(s => getVal(s,xk)!=null && getVal(s,yk)!=null).map(s => ({
+    x: getVal(s, xk), y: getVal(s, yk),
+    bg: getDotColor(s, cv) + 'CC',
+    border: getDotColor(s, cv)
+  }));
+
+  const { r, n } = pearson(arr, xk, yk);
+
+  // Chart
+  const el = document.getElementById('scatterChart');
+  if (!el) return;
+  if (charts['scatter']) charts['scatter'].destroy();
+  charts['scatter'] = new Chart(el, {
+    type: 'scatter',
+    data: { datasets: [{ data: pts, backgroundColor: pts.map(p=>p.bg), borderColor: pts.map(p=>p.border), borderWidth: 1, pointRadius: 4, pointHoverRadius: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const pt = pts[ctx.dataIndex];
+              const s = arr.filter(s => getVal(s,xk)!=null && getVal(s,yk)!=null)[ctx.dataIndex];
+              return [
+                `${xMeta.label}: ${xMeta.fmt(ctx.raw.x)}`,
+                `${yMeta.label}: ${yMeta.fmt(ctx.raw.y)}`,
+                s ? `Grade ${s.g} · ${s.ty} · ${s.met?'Met':'Missed'}` : ''
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: xMeta.label, font:{size:13} }, grid:{color:'rgba(0,0,0,.05)'} },
+        y: { title: { display: true, text: yMeta.label, font:{size:13} }, grid:{color:'rgba(0,0,0,.05)'} }
+      }
+    }
+  });
+
+  // Title & sub
+  document.getElementById('scatterTitle').textContent = `${xMeta.label} vs. ${yMeta.label}`;
+  document.getElementById('scatterSub').textContent = `${pts.length} students${arr.length < 347 ? ' (filtered)' : ''}`;
+
+  // Stats panel
+  const rStr = r !== null ? (r >= 0 ? '+' : '') + r.toFixed(3) : '—';
+  const str = r !== null ? strengthLabel(r) : null;
+  const dirText = r === null ? 'Select variables to see the pattern.' :
+    Math.abs(r) < 0.10 ? 'No clear direction — the dots are scattered.' :
+    r > 0 ? `As ${xMeta.label} goes up, ${yMeta.label} tends to go up too.` :
+    `As ${xMeta.label} goes up, ${yMeta.label} tends to go down.`;
+
+  document.getElementById('scatterStats').innerHTML = `
+    <div style="margin-bottom:6px">
+      <span style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:${str?C.teal:C.muted}">${rStr}</span>
+      ${str ? '<span class="pill '+str.cls+'" style="margin-left:8px;font-size:11px">'+str.label+'</span>' : ''}
+    </div>
+    <div style="font-size:12.5px;line-height:1.55;color:var(--textMid)">${dirText}</div>
+    <div style="font-size:11px;color:var(--textMuted);margin-top:4px">n = ${n} students</div>
+  `;
+
+  // Legend
+  document.getElementById('scatterLegend').innerHTML = getLegendItems(cv).map(l =>
+    `<span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--textMuted)">
+      <span style="width:10px;height:10px;border-radius:50%;background:${l.c};flex-shrink:0"></span>${l.l}
+    </span>`).join('');
+
+  // Plain-language read
+  const read = getScatterRead(xk, yk);
+  const readEl = document.getElementById('scatterRead');
+  const actEl = document.getElementById('scatterAction');
+  if (read) {
+    readEl.innerHTML = `<strong>What this shows:</strong> ${read.read}`;
+    actEl.innerHTML = `<strong>Teacher action:</strong> ${read.action}`;
+    actEl.style.display = 'block';
+  } else if (r !== null) {
+    const verb = Math.abs(r) < 0.10 ? 'no clear relationship' : r > 0 ? 'a tendency to rise together' : 'a tendency to move in opposite directions';
+    readEl.innerHTML = `The data shows <strong>${verb}</strong> between ${xMeta.label} and ${yMeta.label}. ${Math.abs(r) < 0.20 ? 'This pattern is too weak to drive planning decisions on its own.' : 'Use this as a question to investigate further — not as proof of cause and effect.'}`;
+    actEl.style.display = 'none';
+  } else {
+    readEl.textContent = 'Select X and Y variables to see the pattern.';
+    actEl.style.display = 'none';
+  }
+}
+
+// Distribution breakdowns
+
+function populateExplorerFilters() {
+  const gf = document.getElementById('xGradeF');
+  if (gf && gf.options.length === 1) {
+    [1,2,3,4,5,6,7,8].forEach(g=>gf.insertAdjacentHTML('beforeend',`<option value="${g}">Grade ${g}</option>`));
+  }
+  const tf = document.getElementById('xTargetF');
+  if (tf && tf.options.length === 1) {
+    ['Year 2','Year 3','Year 4','Year 5','Year 6','LTML'].forEach(t=>tf.insertAdjacentHTML('beforeend',`<option>${t}</option>`));
+  }
+  const xv = document.getElementById('xVar');
+  const yv = document.getElementById('yVar');
+  if (xv && xv.options.length === 0) {
+    Object.entries(SCATTER_VARS).forEach(([k,v]) => {
+      xv.insertAdjacentHTML('beforeend',`<option value="${k}">${v.label}</option>`);
+      yv.insertAdjacentHTML('beforeend',`<option value="${k}">${v.label}</option>`);
+    });
+    xv.value = 'neededGrowth';
+    yv.value = 'gap';
+  }
+}
+
+// Add extra tips
+TIPS.corrTableExplain = {
+  icon:'📋', title:'How to read the pattern table',
+  body:'Each row shows two variables and whether they tend to move together. The strength label tells you how organized the pattern is. "Likely real" means the pattern probably isn\'t just random chance.',
+  num:'',
+  action:'<strong>Use it to:</strong> Generate better questions and group students. Don\'t use it to prove cause and effect or evaluate teachers.'
+};
+
+// ── NEW BUILDERS MERGED INTO init() ABOVE ──
+
+
+// ══════════════════════════════════════════════════════════
+// GLOBAL GROUP STATE
+// All analysis tabs respond to this
+// ══════════════════════════════════════════════════════════
+let activeGroupKey = 'all';
+
+const GROUP_FILTERS = {
+  all:      () => true,
+  elem:     s => s.band === 'Elementary',
+  middle:   s => s.band === 'Middle',
+  g1: s=>s.g===1, g2: s=>s.g===2, g3: s=>s.g===3, g4: s=>s.g===4,
+  g5: s=>s.g===5, g6: s=>s.g===6, g7: s=>s.g===7, g8: s=>s.g===8,
+  ty2: s=>s.ty==='Year 2', ty3: s=>s.ty==='Year 3', ty4: s=>s.ty==='Year 4',
+  ty5: s=>s.ty==='Year 5', ty6: s=>s.ty==='Year 6', ltml: s=>s.ty==='LTML',
+  nearMiss: s => !s.met && s.gap >= -0.2,
+  declined: s => s.growth < 0,
+  met:      s => s.met,
+  custom:   null  // set when user saves a custom group
+};
+
+let customGroupStudents = null;
+
+function getGroupStudents() {
+  if (activeGroupKey === 'custom' && customGroupStudents) return customGroupStudents;
+  const fn = GROUP_FILTERS[activeGroupKey];
+  return fn ? STUDENTS.filter(fn) : STUDENTS;
+}
+
+function setGroup(key, btn) {
+  activeGroupKey = key;
+  document.querySelectorAll('.grp-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  updateGroupBar();
+  updateAllTabs();
+}
+
+function updateGroupBar() {
+  const arr = getGroupStudents();
+  document.getElementById('groupBarCount').textContent =
+    activeGroupKey === 'all' ? '' : `${arr.length} students`;
+}
+
+function updateAllTabs() {
+  const arr = getGroupStudents();
+  buildStory(arr);
+  buildKPIs(arr);
+  buildPriorityList(arr);
+  buildGradeBars(arr);
+  buildGroupTable(arr);
+  updateDynamicCharts(arr);
+  buildDistBreakdowns(arr);
+  // Scatter uses its own sub-filter on top of group
+  updateScatter();
+}
+
+// ── DYNAMIC STATS HELPER ──
+function calcStats(arr) {
+  const n = arr.length;
+  if (!n) return { n:0, met:0, metPct:0, avgGrowth:0, declined:0, nearMiss:0,
+    ltml:0, ltmlMet:0, foundation:0, highPush:0,
+    elemN:0, elemMet:0, middleN:0, middleMet:0 };
+  const met = arr.filter(s=>s.met).length;
+  return {
+    n,
+    met,
+    metPct: +(met/n*100).toFixed(1),
+    avgGrowth: +(arr.reduce((a,s)=>a+s.growth,0)/n).toFixed(2),
+    declined: arr.filter(s=>s.growth<0).length,
+    nearMiss: arr.filter(s=>!s.met&&s.gap>=-0.2).length,
+    ltml: arr.filter(s=>s.ltml).length,
+    ltmlMet: arr.filter(s=>s.ltml&&s.met).length,
+    foundation: arr.filter(s=>s.current<2.5).length,
+    highPush: arr.filter(s=>s.current>=4.5).length,
+    elemN: arr.filter(s=>s.band==='Elementary').length,
+    elemMet: arr.filter(s=>s.band==='Elementary'&&s.met).length,
+    middleN: arr.filter(s=>s.band==='Middle').length,
+    middleMet: arr.filter(s=>s.band==='Middle'&&s.met).length
+  };
+}
+
+// ── REWRITE buildStory to accept arr ──
+function buildStory(arr) {
+  arr = arr || getGroupStudents();
+  const st = calcStats(arr);
+  const groupLabel = activeGroupKey === 'all' ? '' :
+    ` <span class="pill p-blue" style="font-size:11px">${getGroupLabel()}</span>`;
+  document.getElementById('storyText').innerHTML =
+    `${groupLabel} <strong>${st.met} of ${st.n} students (${st.metPct}%) met their ACCESS target</strong> for SY 2025–26.`+
+    (st.elemN && st.middleN && st.elemN < st.n && st.middleN < st.n ? '' :
+      ` Elementary held at <strong style="color:var(--teal)">${st.n?Math.round(st.elemMet/(st.elemN||1)*100):0}%</strong>. Middle school: <strong style="color:var(--amber)">${st.n?Math.round(st.middleMet/(st.middleN||1)*100):0}%</strong>.`)+
+    ` <strong style="color:var(--red)">${st.declined} students declined</strong> — barrier review before adding more.`+
+    ` <strong>${st.nearMiss} near misses</strong> — best quick-win group.`+
+    ` <strong>${st.ltml - st.ltmlMet} LTML students</strong> did not meet target.`;
+  document.getElementById('storySignals').innerHTML = [
+    ['p-teal', st.n + ' students'],
+    ['p-teal', st.metPct + '% met target'],
+    ['p-amber', st.nearMiss + ' near misses'],
+    ['p-red', st.declined + ' declined'],
+    ['p-purple', (st.ltml-st.ltmlMet) + ' LTML unmet'],
+    ['p-green', arr.filter(s=>s.growth>=0.7).length + ' strong growth']
+  ].map(([c,t])=>`<span class="pill ${c}">${t}</span>`).join('');
+}
+
+// ── REWRITE buildKPIs to accept arr ──
+function buildKPIs(arr) {
+  arr = arr || getGroupStudents();
+  const st = calcStats(arr);
+  const kpis = [
+    { ico:'🎯', bg:'var(--tealLight)', v: st.metPct+'%',
+      vc: st.metPct>=55?'good-v':st.metPct>=40?'warn-v':'alert-v',
+      l:'Met target', note:`${st.met} of ${st.n}`, tip:'metTarget' },
+    { ico:'📈', bg:'var(--blueLight)', v: (st.avgGrowth>=0?'+':'')+st.avgGrowth,
+      vc: st.avgGrowth>=0.5?'blue-v':st.avgGrowth>=0?'warn-v':'alert-v',
+      l:'Avg. growth', note:'proficiency points', tip:'avgGrowth' },
+    { ico:'⚠️', bg:'var(--redLight)', v: st.declined,
+      vc:'alert-v', l:'Declined', note:'barrier review first', tip:'declined' },
+    { ico:'⚡', bg:'var(--amberLight)', v: st.nearMiss,
+      vc:'warn-v', l:'Near misses', note:'best quick-win group', tip:'nearMiss' }
+  ];
+  document.getElementById('kpiStrip').innerHTML = kpis.map(k=>
+    `<div class="stat-card" onclick="showTip('${k.tip}')">
+      <div class="sc-tap">?</div>
+      <div class="sc-ico" style="background:${k.bg}">${k.ico}</div>
+      <div class="sc-v ${k.vc}">${k.v}</div>
+      <div class="sc-l">${k.l}</div>
+      <div class="sc-note">${k.note}</div>
+    </div>`).join('');
+}
+
+// ── REWRITE buildPriorityList to accept arr ──
+function buildPriorityList(arr) {
+  arr = arr || getGroupStudents();
+  const st = calcStats(arr);
+  const hp = arr.filter(s=>s.opp>=75).length;
+  const rows = [
+    { dot:C.red,    name:'Highest priority',      n: hp,               cls:'alert-v', act:'Multiple warning signals — look here first.' },
+    { dot:C.amber,  name:'Near misses',            n: st.nearMiss,      cls:'warn-v',  act:'Missed by just 0.2 points — best quick-win group.' },
+    { dot:C.red,    name:'Declined',               n: st.declined,      cls:'alert-v', act:'Score dropped. Find the barrier before adding more.' },
+    { dot:C.purple, name:'LTML (not met)',          n: st.ltml-st.ltmlMet, cls:'purple-v', act:'Long-term learners need a reclassification plan.' },
+    { dot:C.blue,   name:'Below 2.5 (foundational)', n: st.foundation,  cls:'blue-v',  act:'Daily vocabulary + oral rehearsal routine.' },
+    { dot:C.teal,   name:'Met target',             n: st.met,           cls:'good-v',  act:'Sustain what worked. Push for precision and depth.' }
+  ];
+  document.getElementById('priorityList').innerHTML = rows.map(r=>
+    `<div class="pri-row">
+      <div class="pri-dot" style="background:${r.dot}"></div>
+      <div class="pri-name">${r.name}</div>
+      <div class="pri-n ${r.cls}">${r.n}</div>
+      <div class="pri-act">${r.act}</div>
+    </div>`).join('');
+}
+
+// ── REWRITE buildGradeBars to derive from arr ──
+function buildGradeBars(arr) {
+  arr = arr || getGroupStudents();
+  const gradeActions = {
+    1:'Grade 1: Foundational language group — vocabulary preview and oral rehearsal daily.',
+    2:'Grade 2: Strong year. Sustain routines; push written justification for top students.',
+    3:'Grade 3: 11 declined this year — barrier review needed. Near misses are a quick-win group.',
+    4:'Grade 4: Best grade in the building. Continue and extend for high-proficiency push.',
+    5:'Grade 5: Above the school average. Keep the momentum.',
+    6:'Grade 6: Transition year — students entering middle school need extra support.',
+    7:'Grade 7: Highest urgency. Large decline count. LTML concentration here.',
+    8:'Grade 8: Most are LTML. Reclassification planning is the priority.'
+  };
+  // Compute per-grade stats from arr
+  const byGrade = {};
+  for (let g=1; g<=8; g++) {
+    const gs = arr.filter(s=>s.g===g);
+    if (!gs.length) continue;
+    const met = gs.filter(s=>s.met).length;
+    byGrade[g] = {
+      g, n:gs.length, met, pct:+(met/gs.length*100).toFixed(1),
+      declined: gs.filter(s=>s.growth<0).length,
+      near: gs.filter(s=>!s.met&&s.gap>=-0.2).length
+    };
+  }
+  const grades = Object.values(byGrade);
+  if (!grades.length) {
+    document.getElementById('gradeBars').innerHTML = '<p style="color:var(--textMuted);font-size:13px;padding:10px 0">No data for this group.</p>';
+    document.getElementById('gradeSignals').innerHTML = '';
+    return;
+  }
+  document.getElementById('gradeBars').innerHTML = grades.map(r=>
+    `<div class="grade-row" onclick="showGradeTipFromData(${r.g},${r.pct},${r.n},${r.met},${r.declined})">
+      <div class="grade-lbl">Grade ${r.g}<br><span style="font-size:10px;color:var(--textMuted)">n=${r.n}</span></div>
+      <div class="grade-track">
+        <div class="grade-fill" style="width:${r.pct}%"><span>${r.pct < 15 ? '' : r.pct+'%'}</span></div>
+        <div class="grade-miss"></div>
+      </div>
+      <div class="grade-pct" style="color:${r.pct>=70?C.teal:r.pct>=45?C.amber:C.red}">${r.pct}%</div>
+    </div>`).join('');
+  document.getElementById('gradeSignals').innerHTML = grades.map(r=>
+    `<div style="padding:8px 0;border-bottom:1px solid var(--borderSoft)">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
+        <strong style="font-size:13px">Grade ${r.g}</strong>
+        <span class="pill ${r.pct>=70?'p-green':r.pct>=45?'p-amber':'p-red'}">${r.pct}%</span>
+        ${r.declined>3?'<span class="pill p-red">'+r.declined+' declined</span>':''}
+        ${r.g>=7?'<span class="pill p-purple">LTML</span>':''}
+      </div>
+      <p style="font-size:12px;color:var(--textMid);line-height:1.45">${gradeActions[r.g]||''}</p>
+    </div>`).join('');
+}
+
+function showGradeTipFromData(g, pct, n, met, declined) {
+  const actions = {
+    1:'First priority: daily vocabulary preview (3–5 words with images). Partner oral rehearsal before writing.',
+    2:'Sustain what worked. Group the students who didn\'t meet target and run a 2-week discourse cycle.',
+    3:'Check for transition-year barrier or specific language domain weakness before adding more content.',
+    4:'Extraordinary result. Document what worked and extend top students toward Grade 5 language skills.',
+    5:'Focus energy on the students who didn\'t meet target. Group them for a 2-week targeted cycle.',
+    6:'Build in extra oral language support in all content classes. Near-miss cycle for students close to target.',
+    7:'Critical. Review ALL declined students for barriers before any new instruction. Team meeting this week.',
+    8:'Nearly all non-met students are LTML. Focus on reclassification pathway planning.'
+  };
+  showTipRaw('📊', `Grade ${g} — ${getGroupLabel()}`,
+    `<strong>${pct}%</strong> (${met} of ${n}) met target in this group. ${declined} students declined.`,
+    actions[g] || '');
+}
+
+// ── REWRITE buildGroupTable to derive from arr ──
+function buildGroupTable(arr) {
+  arr = arr || getGroupStudents();
+  const rows = [];
+  // By grade
+  for (let g=1; g<=8; g++) {
+    const gs = arr.filter(s=>s.g===g);
+    if (!gs.length) continue;
+    const met = gs.filter(s=>s.met).length;
+    const n = gs.length;
+    rows.push({
+      label:'Grade '+g, n, met, pct:+(met/n*100).toFixed(1),
+      growth: +(gs.reduce((a,s)=>a+s.growth,0)/n).toFixed(2),
+      declined: gs.filter(s=>s.growth<0).length,
+      near: gs.filter(s=>!s.met&&s.gap>=-0.2).length,
+      opp: +(gs.reduce((a,s)=>a+s.opp,0)/n).toFixed(0)
+    });
+  }
+  // By target year
+  ['Year 2','Year 3','Year 4','Year 5','Year 6','LTML'].forEach(ty=>{
+    const gs = arr.filter(s=>s.ty===ty);
+    if (!gs.length) return;
+    const met = gs.filter(s=>s.met).length;
+    const n = gs.length;
+    rows.push({
+      label: ty, n, met, pct:+(met/n*100).toFixed(1),
+      growth: +(gs.reduce((a,s)=>a+s.growth,0)/n).toFixed(2),
+      declined: gs.filter(s=>s.growth<0).length,
+      near: gs.filter(s=>!s.met&&s.gap>=-0.2).length,
+      opp: +(gs.reduce((a,s)=>a+s.opp,0)/n).toFixed(0)
+    });
+  });
+  rows.sort((a,b)=>b.opp-a.opp);
+  const el = document.getElementById('groupTable');
+  if (!el) return;
+  el.innerHTML = `<thead><tr><th>Group</th><th>n</th><th>Met</th><th>Avg growth</th><th>Declined</th><th>Near miss</th><th>Priority</th><th>Action</th></tr></thead><tbody>`+
+    rows.map(r=>{
+      const act = r.opp>=75?'Highest priority':r.opp>=50?'Plan this cycle':r.pct>=70?'Sustain':'Monitor';
+      return `<tr>
+        <td><strong>${r.label}</strong></td>
+        <td>${r.n}</td>
+        <td><span class="pill ${r.pct>=70?'p-green':r.pct>=45?'p-amber':'p-red'}">${r.pct}%</span></td>
+        <td style="color:${r.growth>=0.5?C.teal:r.growth>=0?C.amber:C.red};font-weight:600">${r.growth>=0?'+':''}${r.growth}</td>
+        <td>${r.declined>0?'<span class="pill p-red">'+r.declined+'</span>':r.declined}</td>
+        <td>${r.near>0?'<span class="pill p-amber">'+r.near+'</span>':r.near}</td>
+        <td style="font-weight:700;color:${r.opp>=75?C.red:r.opp>=50?C.amber:C.muted}">${r.opp}</td>
+        <td style="font-size:12px;color:var(--textMid)">${act}</td>
+      </tr>`;
+    }).join('') + '</tbody>';
+}
+
+// ── DYNAMIC CHARTS (targetYear + growth) ──
+function updateDynamicCharts(arr) {
+  arr = arr || getGroupStudents();
+  const tys = ['Year 2','Year 3','Year 4','Year 5','Year 6','LTML'];
+  const tyMet = tys.map(t => arr.filter(s=>s.ty===t&&s.met).length);
+  const tyNotMet = tys.map(t => arr.filter(s=>s.ty===t&&!s.met).length);
+  const tyHasData = tys.some((t,i)=>tyMet[i]+tyNotMet[i]>0);
+  if (tyHasData) {
+    mk('targetYearChart', {
+      type:'bar',
+      data:{ labels:tys, datasets:[
+        { label:'Met', data:tyMet, backgroundColor:C.teal },
+        { label:'Not met', data:tyNotMet, backgroundColor:'#DEDAD0' }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+        plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:12}}}},
+        scales:{ x:{stacked:true,grid:{color:'rgba(0,0,0,.05)'}}, y:{stacked:true,grid:{display:false}} } }
+    });
+  }
+  const bins = [
+    {l:'Declined',v:arr.filter(s=>s.growth<0).length, c:C.red},
+    {l:'0–0.3',   v:arr.filter(s=>s.growth>=0&&s.growth<0.3).length, c:'#D4993A'},
+    {l:'0.3–0.7', v:arr.filter(s=>s.growth>=0.3&&s.growth<0.7).length, c:C.blue},
+    {l:'0.7–1.0', v:arr.filter(s=>s.growth>=0.7&&s.growth<=1.0).length, c:C.teal2},
+    {l:'1.0+',    v:arr.filter(s=>s.growth>1.0).length, c:C.teal}
+  ];
+  mk('growthChart', {
+    type:'bar',
+    data:{labels:bins.map(b=>b.l), datasets:[{label:'Students',data:bins.map(b=>b.v),backgroundColor:bins.map(b=>b.c)}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(0,0,0,.05)'}}}}
+  });
+}
+
+// ── REWRITE buildDistBreakdowns to accept arr ──
+function buildDistBreakdowns(arr) {
+  arr = arr || getGroupStudents();
+  const tierCounts = {}, tierMet = {};
+  arr.forEach(s => {
+    tierCounts[s.tier] = (tierCounts[s.tier]||0)+1;
+    if (s.met) tierMet[s.tier] = (tierMet[s.tier]||0)+1;
+  });
+  const tierOrder = ['Near miss','LTML','Declined','Strategic support','Sustain / extend'];
+  const tc1 = tierOrder.filter(t=>tierCounts[t]);
+  const el = document.getElementById('distBreakdowns');
+  if (!el) return;
+
+  const growthData = {
+    declined: arr.filter(s=>s.growth<0).length,
+    low:      arr.filter(s=>s.growth>=0&&s.growth<0.3).length,
+    mid:      arr.filter(s=>s.growth>=0.3&&s.growth<0.7).length,
+    high:     arr.filter(s=>s.growth>=0.7).length
+  };
+
+  el.innerHTML = [
+    `<div class="card">
+      <div class="card-title" style="margin-bottom:10px">Who is in each tier? <span style="font-size:11px;font-weight:400;color:var(--textMuted)">${arr.length} students</span></div>
+      ${tc1.length ? tc1.map(t=>{
+        const n=tierCounts[t]||0, m=tierMet[t]||0;
+        const pct=n?Math.round(m/n*100):0;
+        const col=t==='LTML'?C.purple:t==='Declined'?C.red:t==='Near miss'?C.amber:t.includes('Sustain')?C.teal:C.blue;
+        return `<div style="margin-bottom:9px">
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px">
+            <span style="font-weight:600">${t}</span>
+            <span style="color:var(--textMuted)">${n} students · ${pct}% met</span>
+          </div>
+          <div style="background:var(--surfaceAlt);border-radius:5px;height:14px;overflow:hidden">
+            <div style="width:${pct}%;background:${col};height:100%"></div>
+          </div>
+        </div>`;
+      }).join('') : '<p style="color:var(--textMuted);font-size:12px">No tier data for this group.</p>'}
+    </div>`,
+    `<div class="card">
+      <div class="card-title" style="margin-bottom:10px">Growth spread</div>
+      <div style="height:160px"><canvas id="distGrowthChart"></canvas></div>
+      <p style="font-size:12px;color:var(--textMuted);margin-top:8px;line-height:1.4">${growthData.declined} declined · ${growthData.high} strong growth in this group.</p>
+    </div>`,
+    `<div class="card">
+      <div class="card-title" style="margin-bottom:10px">Score bands</div>
+      <div style="height:160px"><canvas id="distBandChart"></canvas></div>
+      <p style="font-size:12px;color:var(--textMuted);margin-top:8px;line-height:1.4">Distribution of current scores for this group.</p>
+    </div>`
+  ].join('');
+
+  setTimeout(() => {
+    mk('distGrowthChart', {
+      type:'bar',
+      data:{labels:['Declined','0–0.3','0.3–0.7','0.7+'],
+        datasets:[{label:'Students',data:[growthData.declined,growthData.low,growthData.mid,growthData.high],
+          backgroundColor:[C.red,'#D4993A',C.blue,C.teal]}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(0,0,0,.05)'}}}}
+    });
+    const bArr = arr;
+    const bBands = ['1.0–1.4','1.5–2.4','2.5–3.4','3.5–4.4','4.5+'];
+    const bRanges = [[1.0,1.5],[1.5,2.5],[2.5,3.5],[3.5,4.5],[4.5,7.0]];
+    const bCounts = bRanges.map(([lo,hi])=>bArr.filter(s=>s.current>=lo&&s.current<hi).length);
+    mk('distBandChart', {
+      type:'bar',
+      data:{labels:bBands,datasets:[{label:'Students',data:bCounts,backgroundColor:C.teal+'AA'}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(0,0,0,.05)'}}}}
+    });
+  }, 80);
+}
+
+// ── PATCH getExplorerFiltered to layer on top of global group ──
+function getExplorerFiltered() {
+  const base = getGroupStudents();
+  const gf = document.getElementById('xGradeF').value;
+  const bf = document.getElementById('xBandF').value;
+  const tf = document.getElementById('xTargetF').value;
+  return base.filter(s => {
+    if (gf !== 'all' && String(s.g) !== gf) return false;
+    if (bf !== 'all' && s.band !== bf) return false;
+    if (tf !== 'all' && s.ty !== tf) return false;
+    return true;
+  });
+}
+
+// ── PATCH getFiltered to layer on top of global group ──
+function getFiltered() {
+  const base = getGroupStudents();
+  const f = getActiveFilters();
+  const sf = document.getElementById('sortF').value;
+  let arr = base.filter(s => {
+    if (!matchPresets(s, filterState.presets)) return false;
+    if (filterState.grades.size > 0 && !filterState.grades.has(String(s.g))) return false;
+    if (filterState.tys.size > 0 && !filterState.tys.has(s.ty)) return false;
+    if (s.current < f.scoreMin || s.current > f.scoreMax) return false;
+    if (s.growth < f.growthMin || s.growth > f.growthMax) return false;
+    if (s.gap < f.gapMin || s.gap > f.gapMax) return false;
+    if (s.opp < f.oppMin || s.opp > f.oppMax) return false;
+    if (f.q && !s.id.toLowerCase().includes(f.q) &&
+        !String(s.g).includes(f.q) &&
+        !s.tier.toLowerCase().includes(f.q) &&
+        !s.ty.toLowerCase().includes(f.q) &&
+        !s.band.toLowerCase().includes(f.q)) return false;
+    return true;
+  });
+  arr.sort((a,b)=>
+    sf==='gap'?a.gap-b.gap:sf==='growth'?a.growth-b.growth:
+    sf==='current'?a.current-b.current:b.opp-a.opp);
+  return arr;
+}
+
+// ── EXPOSE CUSTOM GROUP from Students tab ──
+function saveGroupA() {
+  savedGroupA = [...getFiltered()];
+  // Also offer as global group
+  customGroupStudents = savedGroupA;
+  document.getElementById('grpCustomBtn').style.display = '';
+  document.getElementById('grpCustomBtn').textContent = `★ Custom (${savedGroupA.length})`;
+  updateGroupCompare();
+  showToast(`Group A saved — ${savedGroupA.length} students`);
+}
+
+function getGroupLabel() {
+  const labels = {
+    all:'All 347', elem:'Elementary', middle:'Middle',
+    g1:'Grade 1', g2:'Grade 2', g3:'Grade 3', g4:'Grade 4',
+    g5:'Grade 5', g6:'Grade 6', g7:'Grade 7', g8:'Grade 8',
+    ty2:'Year 2', ty3:'Year 3', ty4:'Year 4', ty5:'Year 5', ty6:'Year 6',
+    ltml:'LTML', nearMiss:'Near misses', declined:'Declined', met:'Met target',
+    custom:'Custom group'
+  };
+  return labels[activeGroupKey] || activeGroupKey;
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
