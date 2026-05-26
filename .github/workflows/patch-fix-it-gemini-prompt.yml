@@ -1,0 +1,110 @@
+name: Patch Fix-It Gemini Coach Prompt
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/patch-fix-it-gemini-prompt.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Patch universal OSAMR Gemini coach prompt
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('fix-it-design-challenge/index.html')
+          text = path.read_text(encoding='utf-8')
+
+          start_marker = '      function promptFor(groupId) {'
+          end_marker = '\n\n      function postFor(groupId) {'
+          start = text.index(start_marker)
+          end = text.index(end_marker, start)
+
+          replacement = '''      function promptFor(groupId) {
+        const group = groupById(groupId);
+        const barrier = getValue(groupId, "barrier") || group.barrier;
+        const thinking = getValue(groupId, "thinking") || group.thinking;
+        const before =
+          getValue(groupId, "before") ||
+          "[Paste your first redesigned support or teacher prompt here]";
+
+        return `You are an OSAMR coach for teachers using AI to design accessible, rigorous instruction.
+
+Your job is to coach the teacher's prompt or scaffold — not to complete the student task.
+
+Use this rule as the anchor:
+Barrier removed. Thinking preserved. Learning target unchanged.
+
+Review the teacher's draft through OSAMR:
+- Substitution: AI replaces a basic tool, but the task is mostly unchanged.
+- Augmentation: AI improves access or efficiency while the same learning task remains.
+- Modification: AI helps redesign the task structure while students still do the target thinking.
+- Redefinition: AI enables a meaningfully new learning move that was not practical before.
+- Overreliance: AI gives students the answer, claim, evidence, reasoning, model, explanation, or completed product.
+
+Teacher context:
+Scenario:
+${group.scenario}
+
+Original AI request that caused concern:
+"${group.ai_input}"
+
+Access barrier the teacher is trying to remove:
+${barrier}
+
+Student thinking that must stay with students:
+${thinking}
+
+Teacher's current draft prompt/scaffold:
+${before}
+
+Coach my draft. Do not rewrite it as a final student-facing product yet.
+
+Please return:
+1. OSAMR diagnosis: Which level is the current draft closest to, and why?
+2. Overreliance check: Where might AI still be doing the student thinking?
+3. Revision moves: 3 concrete ways to improve the teacher prompt/scaffold so access increases while the learning target stays intact.
+4. Stronger prompt: A revised teacher-facing prompt I can paste back into Gemini. It should ask Gemini to build out the support I requested, but it must include guardrails that prevent Gemini from giving away answers, evidence, reasoning, labels, claims, explanations, or completed organizers.
+5. Quick rigor check: Finish this sentence — "Students still have to..."
+
+Keep the response practical, concise, and ready for a teacher to use.`;
+      }'''
+
+          current = text[start:end]
+          if replacement in text:
+              print('Already patched.')
+          else:
+              if 'Do NOT solve the student task' not in current or 'Please give:' not in current:
+                  raise SystemExit('Safety check failed: expected old prompt block was not found.')
+              text = text[:start] + replacement + text[end:]
+              path.write_text(text, encoding='utf-8')
+              print('Patched fix-it-design-challenge/index.html')
+          PY
+
+      - name: Remove one-time workflow
+        run: rm -f .github/workflows/patch-fix-it-gemini-prompt.yml
+
+      - name: Commit patched file
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fix-it-design-challenge/index.html .github/workflows/patch-fix-it-gemini-prompt.yml
+          git commit -m "Update Fix-It Gemini OSAMR coach prompt"
+          git push
