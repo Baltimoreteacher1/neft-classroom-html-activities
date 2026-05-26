@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Studio Master — Neft Teacher Professional Analytics</title>
+    <meta
+      name="description"
+      content="A professional local-first classroom data analysis studio with advanced statistical modeling, dynamic visualization, and plain-language pedagogical recommendations. By Neft Teacher."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230d3b66'/><text x='50' y='68' font-size='52' font-weight='900' text-anchor='middle' fill='%2314b8a6' font-family='system-ui'>DS</text></svg>"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  </head>
+  <body>
+    <!-- Skip to content link for keyboard/screen reader users -->
+    <a href="#mainContent" class="skip-to-content">Skip to main content</a>
+
+    <!-- Application Root -->
+    <div id="app" class="app" role="application" aria-label="Data Studio Analytics"></div>
+
+    <!-- Accessible Live Region for announcements -->
+    <div
+      id="liveAnnouncer"
+      class="sr-only"
+      aria-live="polite"
+      aria-atomic="true"
+      role="status"
+    ></div>
+
+    <!-- Explanation & Translation Modal -->
+    <div
+      id="modalBackdrop"
+      class="modal-backdrop"
+      data-action="close-modal"
+      aria-hidden="true"
+    ></div>
+    <div
+      id="explainModal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+      aria-describedby="modalBody"
+    >
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title">Statistical Meaning</h2>
+        <button
+          data-action="close-modal"
+          aria-label="Close dialog"
+          style="font-size: 1.5rem; font-weight: 700; color: var(--text-muted)"
+        >
+          &times;
+        </button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-action="close-modal">Got it</button>
+      </div>
+    </div>
+
+    <!-- Diagnostics Panel -->
+    <div
+      id="diagnosticsPanel"
+      class="diagnostics-panel"
+      role="complementary"
+      aria-label="System diagnostics"
+      aria-hidden="true"
+    >
+      <div class="diag-header">
+        <span class="diag-title">SYSTEM DIAGNOSTICS & PERFORMANCE MATRIX (Ctrl + D)</span>
+        <button
+          data-action="toggle-diagnostics"
+          aria-label="Close diagnostics panel"
+          style="color: hsl(120, 80%, 40%); font-weight: 800; font-size: 1.15rem"
+        >
+          [CLOSE]
+        </button>
+      </div>
+      <div
+        id="diagSuiteStatus"
+        style="font-weight: 800; border-bottom: 1px dashed hsl(120, 80%, 20%); padding-bottom: 6px"
+        role="status"
+        aria-label="Test suite status"
+      ></div>
+      <div
+        id="diagLogs"
+        class="diag-log-container"
+        role="log"
+        aria-label="Diagnostic log entries"
+      ></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- Scatter Plot Tooltip -->
+    <div id="scatterTooltip" class="scatter-tooltip" role="tooltip" aria-hidden="true"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" aria-hidden="true" role="status">
+      <div class="loading-spinner" aria-label="Loading data"></div>
+      <p class="loading-text" id="loadingText">Processing your data...</p>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
