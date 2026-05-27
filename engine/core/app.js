@@ -1,5 +1,6 @@
 import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
+import { mountExportToolbar } from "./export.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 
@@ -177,6 +178,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   document.addEventListener("rma:navigate", (e) =>
     app.navigateTo(e.detail.phase),
   );
+
+  // Mount the export toolbar (sticky top bar with Save / Copy buttons)
+  mountExportToolbar(state, config);
+
   app.start();
   return app;
 }
@@ -243,7 +248,6 @@ function updateSidebar(sidebar, state, phaseConfigs) {
         "phase-btn",
         isCurrent ? "active" : "",
         phase.status === "completed" ? "completed" : "",
-        phase.status === "locked" ? "locked" : "",
       ]
         .filter(Boolean)
         .join(" ");
@@ -255,7 +259,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
       ).join("");
 
       return `
-      <button class="${cls}" data-phase="${i}" ${phase.status === "locked" ? "disabled" : ""}>
+      <button class="${cls}" data-phase="${i}">
         <span class="phase-num">${i + 1}</span>
         <span>${escHtml(phaseConfigs[i]?.name || `Phase ${i + 1}`)}</span>
         <span class="phase-stars">${stars}</span>
