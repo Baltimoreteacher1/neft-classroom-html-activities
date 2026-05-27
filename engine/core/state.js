@@ -93,7 +93,7 @@ export function createState(lessonId, studentId) {
       id: i,
       name: cfg.name,
       icon: cfg.icon,
-      status: i === 0 ? "active" : "locked",
+      status: i === 0 ? "active" : "available",
       stars: 0,
       xpEarned: 0,
       attempts: 0,
@@ -121,7 +121,7 @@ export function createState(lessonId, studentId) {
 
     setPhase(index) {
       const phase = state.phases[index];
-      if (!phase || phase.status === "locked") return;
+      if (!phase) return;
       state.currentPhase = index;
       if (phase.status !== "completed") phase.status = "active";
       save();
@@ -140,9 +140,6 @@ export function createState(lessonId, studentId) {
       phase.stars = pct >= 0.9 ? 3 : pct >= 0.7 ? 2 : pct >= 0.5 ? 1 : 0;
 
       state.xp = state.phases.reduce((sum, p) => sum + p.xpEarned, 0);
-
-      const next = state.phases[index + 1];
-      if (next && next.status === "locked") next.status = "active";
 
       save();
       notify();
