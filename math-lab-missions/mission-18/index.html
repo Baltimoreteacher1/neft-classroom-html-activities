@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 18: Coordinate Plane | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #0f766e;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --soft-red: #fef2f1;
+      }
+      .mission-hero {
+        background: linear-gradient(
+          135deg,
+          #23395d 0%,
+          #1a5c5c 50%,
+          #2d6a4f 100%
+        );
+        color: #fff;
+        border-radius: var(--radius);
+        padding: clamp(24px, 5vw, 48px);
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 32px;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        margin: 0 0 8px;
+        line-height: 1.1;
+      }
+      .hero-eyebrow {
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7dd3c0;
+        margin-bottom: 4px;
+      }
+      .hero-standard {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        margin-top: 8px;
+      }
+      .hero-scenario {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        opacity: 0.92;
+        margin-top: 12px;
+      }
+      .hero-svg {
+        width: 100%;
+        max-width: 380px;
+        height: auto;
+      }
+      .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-bar a {
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .nav-bar a:hover {
+        background: var(--soft-teal);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(18px, 3vw, 28px);
+      }
+      .card h2 {
+        color: var(--navy);
+        margin-top: 0;
+        font-size: 1.4rem;
+      }
+      .card h3 {
+        color: var(--teal);
+        margin-top: 18px;
+        font-size: 1.1rem;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: start;
+      }
+      .problem-box {
+        background: var(--soft-blue);
+        border-left: 5px solid var(--navy);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 1.08rem;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .esol-box {
+        background: #f0faf8;
+        border: 2px solid #a7d8d0;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-top: 16px;
+      }
+      .esol-box h3 {
+        margin-top: 0;
+        color: var(--teal);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .vocab-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .sentence-frames {
+        background: var(--soft-gold);
+        padding: 14px;
+        border-radius: 6px;
+        margin-top: 10px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+        font-style: italic;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .rep-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: #fafcff;
+      }
+      .rep-card h4 {
+        margin: 0 0 8px;
+        color: var(--navy);
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: var(--radius);
+        border: 1px solid #b9ddd8;
+      }
+      .role-facilitator {
+        background: #eef6ff;
+      }
+      .role-model {
+        background: #ecf8f6;
+      }
+      .role-checker {
+        background: #fff6df;
+      }
+      .role-reporter {
+        background: #fef2f1;
+      }
+      .role strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .role .role-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .timer-section {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .timer-display {
+        font-size: 3rem;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        color: var(--gold);
+      }
+      .timer-label {
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .timer-btn {
+        min-height: 40px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .timer-btn.start {
+        background: var(--green);
+        color: #fff;
+      }
+      .timer-btn.pause {
+        background: var(--gold);
+        color: #fff;
+      }
+      .timer-btn.reset {
+        background: var(--surface);
+        color: var(--navy);
+        border: 1px solid var(--line);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+      }
+      .phase-header:hover {
+        background: #f8fafb;
+      }
+      .phase-time {
+        background: var(--soft-blue);
+        color: var(--navy);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .phase-name {
+        font-weight: 800;
+        flex: 1;
+      }
+      .phase-body {
+        padding: 0 14px 14px;
+        display: none;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-card.open .phase-arrow {
+        transform: rotate(90deg);
+      }
+      .phase-arrow {
+        transition: transform 0.2s;
+      }
+      .checkpoint {
+        background: var(--soft-green);
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 8px;
+        font-size: 0.92rem;
+      }
+      .challenge-box {
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.9rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .rubric-table th {
+        background: var(--soft-blue);
+        color: var(--navy);
+      }
+      .exit-box {
+        background: var(--soft-blue);
+        border: 2px solid #bed4ea;
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        font-size: 1.1rem;
+      }
+      .visual-model {
+        text-align: center;
+        margin: 16px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      @media print {
+        .nav-bar,
+        .timer-section,
+        .timer-controls,
+        .timer-btn,
+        .no-print {
+          display: none !important;
+        }
+        .card,
+        .mission-hero {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .mission-hero {
+          background: #23395d !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero {
+          grid-template-columns: 1fr;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          max-width: 300px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="nav-bar" aria-label="Mission navigation">
+        <a href="/math-lab-missions/">Back to All Missions</a>
+        <div>
+          <a href="/math-lab-missions/mission-17/">Prev Mission</a>
+          <a href="/math-lab-missions/mission-19/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <div class="hero-eyebrow">Mission 18 &middot; Unit 7</div>
+          <h1 id="hero-title">Coordinate Plane</h1>
+          <span class="hero-standard"
+            >6.NS.C.6b &middot; 6.NS.C.6c &middot; 6.NS.C.8</span
+          >
+          <p class="hero-scenario">
+            The school is planning a new outdoor lunch area. The principal has a
+            map on a coordinate grid where each square =
+            <strong>1 meter</strong>. Four possible table locations have been
+            marked: <strong>A(3, 5)</strong>, <strong>B(-4, 5)</strong>,
+            <strong>C(-4, -2)</strong>, and <strong>D(3, -2)</strong>. Your team
+            must plot these points, connect them to form a rectangle, find the
+            <strong>length and width</strong>, and calculate the
+            <strong>perimeter</strong> of the lunch area.
+          </p>
+        </div>
+        <svg
+          class="hero-svg"
+          viewBox="0 0 380 420"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="Coordinate grid map showing four points forming a rectangle for the school lunch area"
+        >
+          <!-- Background -->
+          <rect x="0" y="0" width="380" height="420" rx="12" fill="#e8f0e4" />
+          <!-- Grid -->
+          <g stroke="#c5d5c0" stroke-width="0.5">
+            <!-- Vertical lines every 30px, center at 190,210 -->
+            <line x1="10" y1="10" x2="10" y2="400" />
+            <line x1="40" y1="10" x2="40" y2="400" />
+            <line x1="70" y1="10" x2="70" y2="400" />
+            <line x1="100" y1="10" x2="100" y2="400" />
+            <line x1="130" y1="10" x2="130" y2="400" />
+            <line x1="160" y1="10" x2="160" y2="400" />
+            <line x1="220" y1="10" x2="220" y2="400" />
+            <line x1="250" y1="10" x2="250" y2="400" />
+            <line x1="280" y1="10" x2="280" y2="400" />
+            <line x1="310" y1="10" x2="310" y2="400" />
+            <line x1="340" y1="10" x2="340" y2="400" />
+            <line x1="370" y1="10" x2="370" y2="400" />
+            <!-- Horizontal lines -->
+            <line x1="10" y1="30" x2="370" y2="30" />
+            <line x1="10" y1="60" x2="370" y2="60" />
+            <line x1="10" y1="90" x2="370" y2="90" />
+            <line x1="10" y1="120" x2="370" y2="120" />
+            <line x1="10" y1="150" x2="370" y2="150" />
+            <line x1="10" y1="180" x2="370" y2="180" />
+            <line x1="10" y1="240" x2="370" y2="240" />
+            <line x1="10" y1="270" x2="370" y2="270" />
+            <line x1="10" y1="300" x2="370" y2="300" />
+            <line x1="10" y1="330" x2="370" y2="330" />
+            <line x1="10" y1="360" x2="370" y2="360" />
+            <line x1="10" y1="390" x2="370" y2="390" />
+          </g>
+          <!-- Axes -->
+          <line
+            x1="190"
+            y1="10"
+            x2="190"
+            y2="400"
+            stroke="#23395d"
+            stroke-width="2.5"
+          />
+          <line
+            x1="10"
+            y1="210"
+            x2="370"
+            y2="210"
+            stroke="#23395d"
+            stroke-width="2.5"
+          />
+          <!-- Axis labels -->
+          <text x="375" y="214" font-size="12" font-weight="700" fill="#23395d">
+            x
+          </text>
+          <text x="194" y="18" font-size="12" font-weight="700" fill="#23395d">
+            y
+          </text>
+          <!-- Number labels on x-axis -->
+          <text x="70" y="225" text-anchor="middle" font-size="10" fill="#555">
+            -4
+          </text>
+          <text x="100" y="225" text-anchor="middle" font-size="10" fill="#555">
+            -3
+          </text>
+          <text x="130" y="225" text-anchor="middle" font-size="10" fill="#555">
+            -2
+          </text>
+          <text x="160" y="225" text-anchor="middle" font-size="10" fill="#555">
+            -1
+          </text>
+          <text x="220" y="225" text-anchor="middle" font-size="10" fill="#555">
+            1
+          </text>
+          <text x="250" y="225" text-anchor="middle" font-size="10" fill="#555">
+            2
+          </text>
+          <text x="280" y="225" text-anchor="middle" font-size="10" fill="#555">
+            3
+          </text>
+          <text x="310" y="225" text-anchor="middle" font-size="10" fill="#555">
+            4
+          </text>
+          <text x="340" y="225" text-anchor="middle" font-size="10" fill="#555">
+            5
+          </text>
+          <!-- Number labels on y-axis -->
+          <text x="182" y="64" text-anchor="end" font-size="10" fill="#555">
+            5
+          </text>
+          <text x="182" y="94" text-anchor="end" font-size="10" fill="#555">
+            4
+          </text>
+          <text x="182" y="124" text-anchor="end" font-size="10" fill="#555">
+            3
+          </text>
+          <text x="182" y="154" text-anchor="end" font-size="10" fill="#555">
+            2
+          </text>
+          <text x="182" y="184" text-anchor="end" font-size="10" fill="#555">
+            1
+          </text>
+          <text x="182" y="244" text-anchor="end" font-size="10" fill="#555">
+            -1
+          </text>
+          <text x="182" y="274" text-anchor="end" font-size="10" fill="#555">
+            -2
+          </text>
+          <text x="182" y="304" text-anchor="end" font-size="10" fill="#555">
+            -3
+          </text>
+          <text x="182" y="334" text-anchor="end" font-size="10" fill="#555">
+            -4
+          </text>
+          <!-- Origin -->
+          <text x="196" y="224" font-size="10" font-weight="700" fill="#23395d">
+            0
+          </text>
+          <!-- Rectangle fill -->
+          <rect
+            x="70"
+            y="60"
+            width="210"
+            height="210"
+            fill="#0f766e"
+            opacity="0.12"
+            stroke="#0f766e"
+            stroke-width="2"
+            stroke-dasharray="6,3"
+          />
+          <!-- Points: A(3,5) B(-4,5) C(-4,-2) D(3,-2) -->
+          <!-- Scale: 1 unit = 30px, origin at (190, 210) -->
+          <!-- A(3,5) = (190+90, 210-150) = (280, 60) -->
+          <circle cx="280" cy="60" r="8" fill="#b42318" />
+          <text x="290" y="50" font-size="13" font-weight="800" fill="#b42318">
+            A(3, 5)
+          </text>
+          <!-- B(-4,5) = (190-120, 210-150) = (70, 60) -->
+          <circle cx="70" cy="60" r="8" fill="#4a90d9" />
+          <text x="14" y="50" font-size="13" font-weight="800" fill="#4a90d9">
+            B(-4, 5)
+          </text>
+          <!-- C(-4,-2) = (70, 210+60) = (70, 270) -->
+          <circle cx="70" cy="270" r="8" fill="#2f7d32" />
+          <text x="14" y="290" font-size="13" font-weight="800" fill="#2f7d32">
+            C(-4, -2)
+          </text>
+          <!-- D(3,-2) = (280, 270) -->
+          <circle cx="280" cy="270" r="8" fill="#b7791f" />
+          <text x="290" y="290" font-size="13" font-weight="800" fill="#b7791f">
+            D(3, -2)
+          </text>
+          <!-- Side labels -->
+          <text
+            x="175"
+            y="48"
+            text-anchor="middle"
+            font-size="12"
+            font-weight="700"
+            fill="#23395d"
+          >
+            7 m (width)
+          </text>
+          <text
+            x="296"
+            y="170"
+            font-size="12"
+            font-weight="700"
+            fill="#23395d"
+            transform="rotate(90, 296, 170)"
+          >
+            7 m (height)
+          </text>
+          <!-- Perimeter note -->
+          <rect x="90" y="360" width="200" height="35" rx="6" fill="#23395d" />
+          <text
+            x="190"
+            y="382"
+            text-anchor="middle"
+            font-size="13"
+            font-weight="800"
+            fill="#fff"
+          >
+            Perimeter = 2(7) + 2(7) = 28 m
+          </text>
+        </svg>
+      </section>
+
+      <!-- INVESTIGATION -->
+      <section class="card" aria-labelledby="investigation-title">
+        <h2 id="investigation-title">The Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> Plot points A(3, 5), B(-4, 5), C(-4,
+          -2), and D(3, -2) on a coordinate plane. Connect them in order to form
+          a rectangle. Find the <strong>length</strong> of side AB (the width),
+          the <strong>length</strong> of side BC (the height), and the
+          <strong>perimeter</strong> of the rectangle. Then answer: how many
+          square meters is the lunch area?
+        </div>
+
+        <h3>Visual Model: Coordinate Grid with Rectangle</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 600 340"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Coordinate grid showing how to calculate horizontal and vertical distances using coordinates"
+            style="max-width: 600px"
+          >
+            <text
+              x="300"
+              y="20"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Finding Distances on the Coordinate Plane
+            </text>
+            <!-- Horizontal distance example -->
+            <rect
+              x="20"
+              y="40"
+              width="270"
+              height="130"
+              rx="8"
+              fill="#edf5ff"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="155"
+              y="62"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Horizontal Distance (Side AB)
+            </text>
+            <text
+              x="155"
+              y="82"
+              text-anchor="middle"
+              font-size="12"
+              fill="#333"
+            >
+              A(3, 5) and B(-4, 5) have the SAME y-value
+            </text>
+            <text
+              x="155"
+              y="102"
+              text-anchor="middle"
+              font-size="12"
+              fill="#333"
+            >
+              Distance = |3 - (-4)| = |3 + 4| = 7
+            </text>
+            <!-- Mini number line -->
+            <line
+              x1="50"
+              y1="130"
+              x2="260"
+              y2="130"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <circle cx="80" cy="130" r="5" fill="#4a90d9" />
+            <text
+              x="80"
+              y="152"
+              text-anchor="middle"
+              font-size="10"
+              fill="#4a90d9"
+            >
+              -4
+            </text>
+            <circle cx="240" cy="130" r="5" fill="#b42318" />
+            <text
+              x="240"
+              y="152"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b42318"
+            >
+              3
+            </text>
+            <line
+              x1="80"
+              y1="124"
+              x2="240"
+              y2="124"
+              stroke="#0f766e"
+              stroke-width="2"
+            />
+            <text
+              x="160"
+              y="120"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              7 units
+            </text>
+            <!-- Vertical distance example -->
+            <rect
+              x="310"
+              y="40"
+              width="270"
+              height="130"
+              rx="8"
+              fill="#ecf8f6"
+              stroke="#0f766e"
+              stroke-width="1.5"
+            />
+            <text
+              x="445"
+              y="62"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              Vertical Distance (Side BC)
+            </text>
+            <text
+              x="445"
+              y="82"
+              text-anchor="middle"
+              font-size="12"
+              fill="#333"
+            >
+              B(-4, 5) and C(-4, -2) have the SAME x-value
+            </text>
+            <text
+              x="445"
+              y="102"
+              text-anchor="middle"
+              font-size="12"
+              fill="#333"
+            >
+              Distance = |5 - (-2)| = |5 + 2| = 7
+            </text>
+            <!-- Mini vertical line -->
+            <line
+              x1="370"
+              y1="115"
+              x2="370"
+              y2="162"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <circle cx="370" cy="118" r="5" fill="#4a90d9" />
+            <text x="385" y="122" font-size="10" fill="#4a90d9">y=5</text>
+            <circle cx="370" cy="158" r="5" fill="#2f7d32" />
+            <text x="385" y="162" font-size="10" fill="#2f7d32">y=-2</text>
+            <text
+              x="355"
+              y="142"
+              text-anchor="end"
+              font-size="11"
+              font-weight="700"
+              fill="#0f766e"
+            >
+              7
+            </text>
+            <!-- Summary -->
+            <rect
+              x="100"
+              y="190"
+              width="400"
+              height="60"
+              rx="8"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="1.5"
+            />
+            <text
+              x="300"
+              y="210"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Perimeter and Area
+            </text>
+            <text
+              x="300"
+              y="230"
+              text-anchor="middle"
+              font-size="13"
+              fill="#333"
+            >
+              Perimeter = 2(7) + 2(7) = 14 + 14 =
+              <tspan font-weight="800">28 meters</tspan>
+            </text>
+            <text
+              x="300"
+              y="246"
+              text-anchor="middle"
+              font-size="13"
+              fill="#333"
+            >
+              Area = 7 &times; 7 =
+              <tspan font-weight="800">49 square meters</tspan>
+            </text>
+            <!-- Quadrant labels -->
+            <rect
+              x="20"
+              y="270"
+              width="560"
+              height="55"
+              rx="8"
+              fill="#f8f9fa"
+              stroke="#ddd"
+              stroke-width="1"
+            />
+            <text
+              x="30"
+              y="290"
+              font-size="11"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Quadrant Key:
+            </text>
+            <text x="30" y="312" font-size="11" fill="#333">
+              I (+, +) = top right &nbsp; | &nbsp; II (-, +) = top left &nbsp; |
+              &nbsp; III (-, -) = bottom left &nbsp; | &nbsp; IV (+, -) = bottom
+              right
+            </text>
+          </svg>
+        </div>
+
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Set up the coordinate plane.</strong> Draw x and y axes.
+            Label the origin (0, 0). Number both axes from -6 to 6.
+            <em>Guiding question: Which direction is positive for x? For y?</em>
+          </li>
+          <li>
+            <strong>Plot the four points.</strong> Start at the origin each
+            time. Move right/left for x, then up/down for y. Mark and label A,
+            B, C, D.
+            <em
+              >Guiding question: For B(-4, 5), do you go left or right first?
+              Then up or down?</em
+            >
+          </li>
+          <li>
+            <strong>Connect the points.</strong> Draw line segments A to B, B to
+            C, C to D, D to A.
+            <em
+              >Guiding question: What shape do you see? How do you know it is a
+              rectangle?</em
+            >
+          </li>
+          <li>
+            <strong>Find the width (AB).</strong> A and B have the same y-value
+            (5). Width = |3 - (-4)| = |7| = 7 meters.
+            <em
+              >Guiding question: Why can we subtract x-values when the y-values
+              match?</em
+            >
+          </li>
+          <li>
+            <strong>Find the height (BC).</strong> B and C have the same x-value
+            (-4). Height = |5 - (-2)| = |7| = 7 meters.
+            <em
+              >Guiding question: This rectangle is actually a square! How do you
+              know?</em
+            >
+          </li>
+          <li>
+            <strong>Calculate perimeter and area.</strong> Perimeter = 2(7) +
+            2(7) = 28 m. Area = 7 x 7 = 49 sq m.
+            <em
+              >Guiding question: Is 49 square meters enough space for lunch
+              tables?</em
+            >
+          </li>
+        </ol>
+
+        <div class="esol-box">
+          <h3>ESOL Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-item">
+              <strong>Coordinate plane</strong><br />
+              A flat surface with two number lines (x and y) that cross at the
+              origin.
+            </div>
+            <div class="vocab-item">
+              <strong>Ordered pair</strong><br />
+              Two numbers (x, y) that tell the position of a point. Always x
+              first, then y.
+            </div>
+            <div class="vocab-item">
+              <strong>Origin</strong><br />
+              The point (0, 0) where the x-axis and y-axis cross.
+            </div>
+            <div class="vocab-item">
+              <strong>Quadrant</strong><br />
+              One of four sections of the coordinate plane, numbered I, II, III,
+              IV.
+            </div>
+            <div class="vocab-item">
+              <strong>x-axis</strong><br />
+              The horizontal number line (left-right).
+            </div>
+            <div class="vocab-item">
+              <strong>y-axis</strong><br />
+              The vertical number line (up-down).
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <strong>Sentence Frames:</strong>
+            <p>
+              "Point _____ is in Quadrant _____ because the x-value is _____ and
+              the y-value is _____."
+            </p>
+            <p>
+              "The distance between _____ and _____ is _____ because I
+              subtracted _____ and took the absolute value."
+            </p>
+            <p>
+              "To plot (x, y), I start at the origin, move _____ on the x-axis,
+              then _____ on the y-axis."
+            </p>
+          </div>
+        </div>
+
+        <h3>Multiple Representations</h3>
+        <div class="representations">
+          <div class="rep-card">
+            <h4>Approach 1: Plotting and Counting</h4>
+            <p>
+              Plot all four points on grid paper. Count the grid squares along
+              each side. AB goes from x = -4 to x = 3, that is 7 squares. BC
+              goes from y = 5 to y = -2, that is 7 squares.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 2: Absolute Value Formula</h4>
+            <p>
+              For horizontal distance: |x1 - x2| when y-values are equal.<br />For
+              vertical distance: |y1 - y2| when x-values are equal.<br />AB =
+              |3-(-4)| = 7. BC = |5-(-2)| = 7.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 3: Coordinate Table</h4>
+            <p>
+              List each point with its quadrant:<br />A(3,5) = Quadrant I<br />B(-4,5)
+              = Quadrant II<br />C(-4,-2) = Quadrant III<br />D(3,-2) = Quadrant
+              IV<br />The rectangle spans all four quadrants!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEAM ROLES -->
+      <section class="card" aria-labelledby="roles-title">
+        <h2 id="roles-title">Team Roles</h2>
+        <div class="role-grid">
+          <div class="role role-facilitator">
+            <span class="role-icon" aria-hidden="true">&#128218;</span>
+            <strong>Facilitator</strong>
+            Read the lunch area scenario. Make sure everyone understands (x, y)
+            order. Call out each point for the Model Builder to plot.
+          </div>
+          <div class="role role-model">
+            <span class="role-icon" aria-hidden="true">&#9999;&#65039;</span>
+            <strong>Model Builder</strong>
+            Draw the coordinate plane with labeled axes. Plot all four points
+            accurately. Connect them to form the rectangle. Label all sides.
+          </div>
+          <div class="role role-checker">
+            <span class="role-icon" aria-hidden="true">&#128270;</span>
+            <strong>Precision Checker</strong>
+            Verify each point is in the correct quadrant. Check distance
+            calculations. Confirm perimeter and area formulas are applied
+            correctly.
+          </div>
+          <div class="role role-reporter">
+            <span class="role-icon" aria-hidden="true">&#128221;</span>
+            <strong>Reporter</strong>
+            Prepare defense: name each point's quadrant, state the dimensions,
+            and present the perimeter and area with full calculations.
+          </div>
+        </div>
+      </section>
+
+      <!-- TIMER & PHASES -->
+      <div class="two-col">
+        <section class="card" aria-labelledby="phases-title">
+          <h2 id="phases-title">Timed Lab Phases</h2>
+
+          <div class="timer-section no-print">
+            <div class="timer-label" id="activePhaseLabel">Launch Phase</div>
+            <div class="timer-display" id="timerDisplay" aria-live="polite">
+              03:00
+            </div>
+            <div class="timer-controls">
+              <button class="timer-btn start" id="startTimer">Start</button>
+              <button class="timer-btn pause" id="pauseTimer">Pause</button>
+              <button class="timer-btn reset" id="resetTimer">Reset</button>
+            </div>
+          </div>
+
+          <div class="phase-cards" id="phaseList">
+            <article class="phase-card open" data-minutes="3">
+              <button class="phase-header" aria-expanded="true">
+                <span class="phase-time">3 min</span>
+                <span class="phase-name">Launch</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Read the scenario. Assign roles. Review how to read an ordered
+                  pair: x first, then y.
+                </p>
+                <ul>
+                  <li>In (3, 5), which number is x and which is y?</li>
+                  <li>What does a negative x-value mean on the grid?</li>
+                  <li>Which quadrant has both values negative?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Everyone can explain how to plot an ordered pair
+                  starting from the origin.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="6">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">6 min</span>
+                <span class="phase-name">Build</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Draw axes. Plot all four points. Connect them to form the
+                  rectangle.
+                </p>
+                <ul>
+                  <li>Is each point in the correct quadrant?</li>
+                  <li>Do the four points form a rectangle when connected?</li>
+                  <li>Label each vertex with its ordered pair.</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: All 4 points plotted correctly. Rectangle drawn
+                  and labeled.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="5">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">5 min</span>
+                <span class="phase-name">Solve</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>Calculate side lengths, perimeter, and area.</p>
+                <ul>
+                  <li>AB: |3 - (-4)| = ? meters</li>
+                  <li>BC: |5 - (-2)| = ? meters</li>
+                  <li>Perimeter = 2(length) + 2(width) = ?</li>
+                  <li>Area = length times width = ?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: All calculations complete with units (meters,
+                  square meters).
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="4">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">4 min</span>
+                <span class="phase-name">Defend</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Reporter prepares the defense using the coordinate grid as
+                  evidence.
+                </p>
+                <ul>
+                  <li>"Point A is in Quadrant _____ because _____."</li>
+                  <li>"The width is _____ because we calculated |_____|."</li>
+                  <li>
+                    "The lunch area has _____ square meters, which is enough for
+                    _____ tables."
+                  </li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Defense includes quadrant identification, distance
+                  calculations, and perimeter/area.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <div>
+          <section class="card" aria-labelledby="challenge-title">
+            <h2 id="challenge-title">Challenge Extensions</h2>
+            <div class="challenge-box">
+              <strong>Extension Problem:</strong> The principal wants to add a
+              fountain at the exact center of the rectangle. What are the
+              coordinates of the center point? (Hint: average the x-values and
+              average the y-values.) Then find the distance from the fountain to
+              the nearest corner.
+            </div>
+            <h3>What If?</h3>
+            <ul>
+              <li>
+                What if point D moved to (3, -5)? Would the shape still be a
+                rectangle? What would the new perimeter be?
+              </li>
+              <li>
+                Reflect the rectangle over the y-axis. What are the new
+                coordinates of each vertex?
+              </li>
+              <li>
+                If each lunch table needs 4 square meters of space, how many
+                tables fit in the 49 square meter area?
+              </li>
+            </ul>
+            <h3>Real-Life Connections</h3>
+            <p>
+              Coordinate planes are used in GPS navigation, video game design,
+              architecture blueprints, and mapping apps like Google Maps.
+            </p>
+          </section>
+
+          <section class="card" aria-labelledby="defense-title">
+            <h2 id="defense-title">Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>Name the quadrant of each point. How do you know?</li>
+              <li>
+                How did you find the length of side AB? Show the absolute value
+                calculation.
+              </li>
+              <li>Why does this shape span all four quadrants?</li>
+              <li>What is the perimeter and area? Include correct units.</li>
+            </ol>
+            <strong>Sentence Starters:</strong>
+            <ul>
+              <li>
+                "Point _____ is in Quadrant _____ because both its x and y are
+                _____."
+              </li>
+              <li>
+                "We found the distance by subtracting coordinates: |_____ -
+                (_____)| = _____."
+              </li>
+              <li>"The perimeter is _____ meters because _____."</li>
+            </ul>
+            <h3>Rubric</h3>
+            <table class="rubric-table">
+              <thead>
+                <tr>
+                  <th>Criteria</th>
+                  <th>Excellent (4)</th>
+                  <th>Proficient (3)</th>
+                  <th>Developing (2)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Plotting</td>
+                  <td>All 4 points in correct position with labels</td>
+                  <td>4 points plotted, minor label issue</td>
+                  <td>Some points plotted</td>
+                </tr>
+                <tr>
+                  <td>Quadrants</td>
+                  <td>All 4 quadrants correctly identified with reasoning</td>
+                  <td>Quadrants identified</td>
+                  <td>Some quadrants named</td>
+                </tr>
+                <tr>
+                  <td>Distance</td>
+                  <td>Both distances with absolute value shown</td>
+                  <td>Correct distances stated</td>
+                  <td>Attempted</td>
+                </tr>
+                <tr>
+                  <td>Perimeter/Area</td>
+                  <td>Both correct with units and formulas</td>
+                  <td>Correct answers</td>
+                  <td>One calculation correct</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+      </div>
+
+      <!-- EXIT PRODUCT -->
+      <section class="card" aria-labelledby="exit-title">
+        <h2 id="exit-title">Exit Product</h2>
+        <div class="exit-box">
+          <strong>Your team submits:</strong> A Lunch Area Blueprint that
+          includes:
+          <ul>
+            <li>
+              A coordinate grid with labeled axes (at least -6 to 6 on both)
+            </li>
+            <li>All four points plotted and labeled with ordered pairs</li>
+            <li>The rectangle drawn with side lengths labeled</li>
+            <li>
+              Distance calculations for width and height using absolute value
+            </li>
+            <li>Perimeter (28 m) and area (49 sq m) with formulas shown</li>
+            <li>Each point's quadrant identified</li>
+          </ul>
+        </div>
+        <h3>Self-Assessment Checklist</h3>
+        <ul class="checklist">
+          <li>
+            I can plot points in all four quadrants of the coordinate plane.
+          </li>
+          <li>I know that (x, y) means go right/left first, then up/down.</li>
+          <li>I can find horizontal distance using |x1 - x2|.</li>
+          <li>I can find vertical distance using |y1 - y2|.</li>
+          <li>I calculated perimeter and area correctly with units.</li>
+          <li>
+            I can name the quadrant of any point by looking at the signs of x
+            and y.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var currentPhase = 0,
+          remaining = phases[0].minutes * 60,
+          interval = null;
+        var display = document.getElementById("timerDisplay"),
+          label = document.getElementById("activePhaseLabel");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function upd() {
+          display.textContent = fmt(remaining);
+          label.textContent = phases[currentPhase].name + " Phase";
+        }
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (interval) return;
+            interval = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              upd();
+              if (remaining === 0) {
+                clearInterval(interval);
+                interval = null;
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+          });
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[currentPhase].minutes * 60;
+            upd();
+          });
+        document
+          .getElementById("phaseList")
+          .addEventListener("click", function (e) {
+            var h = e.target.closest(".phase-header");
+            if (!h) return;
+            var card = h.parentElement,
+              all = document.querySelectorAll(".phase-card"),
+              idx = Array.prototype.indexOf.call(all, card);
+            all.forEach(function (c, i) {
+              c.classList.toggle("open", i === idx);
+              c.querySelector(".phase-header").setAttribute(
+                "aria-expanded",
+                i === idx ? "true" : "false",
+              );
+            });
+            currentPhase = idx;
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[idx].minutes * 60;
+            upd();
+          });
+        upd();
+      })();
+    </script>
+  </body>
+</html>

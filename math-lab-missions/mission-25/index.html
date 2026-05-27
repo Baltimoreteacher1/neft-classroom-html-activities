@@ -1,0 +1,1553 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 25: Geometry Models | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #115e59;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #eef7ee;
+        --line: #d9e1e8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg);
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        color: var(--teal-dark);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .mission-nav a:hover {
+        text-decoration: underline;
+      }
+      .mission-hero {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 28px;
+        align-items: center;
+        padding: clamp(28px, 5vw, 48px);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--navy);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 12px;
+        color: var(--navy);
+      }
+      .mission-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .standard-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-teal);
+        color: var(--teal-dark);
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-left: 6px;
+      }
+      .hero-scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-svg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+        border-bottom: 2px solid var(--soft-blue);
+        padding-bottom: 8px;
+      }
+      .panel h3 {
+        color: var(--teal-dark);
+        font-size: 1.12rem;
+        margin-top: 18px;
+        margin-bottom: 8px;
+      }
+      .problem-box {
+        padding: 18px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 1.05rem;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        display: block;
+        margin-top: 4px;
+      }
+      .esol-box {
+        padding: 18px;
+        background: #f0faf9;
+        border: 2px dashed #8bbab3;
+        border-radius: 8px;
+        margin: 18px 0;
+      }
+      .esol-box h3 {
+        color: var(--teal-dark);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .vocab-item .def {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .sentence-frames {
+        padding: 12px 16px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .sentence-frames p {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role-card {
+        padding: 14px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+        border-radius: 8px;
+      }
+      .role-card strong {
+        display: block;
+        color: #115e60;
+        margin-bottom: 4px;
+      }
+      .role-card .task {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.6rem;
+        font-weight: 900;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .timer-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        min-height: 42px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn:focus-visible {
+        outline: 3px solid rgba(32, 122, 122, 0.35);
+        outline-offset: 2px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .phase-header {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 4px 14px 14px;
+        color: var(--muted);
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .challenge-box {
+        padding: 16px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        padding: 12px 16px;
+        background: var(--soft-blue);
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .sentence-starter {
+        display: block;
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.92rem;
+        margin-top: 2px;
+      }
+      .exit-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "☐";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+      .svg-container {
+        display: flex;
+        justify-content: center;
+        margin: 18px 0;
+      }
+      .svg-container svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .rep-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .rep-tab {
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .rep-tab.active {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .rep-content {
+        display: none;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .rep-content.active {
+        display: block;
+      }
+      .print-only {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-bar,
+        .timer-buttons,
+        .btn,
+        .rep-tabs {
+          display: none !important;
+        }
+        .panel,
+        .mission-hero {
+          box-shadow: none;
+          border-color: #999;
+          break-inside: avoid;
+        }
+        .phase-body,
+        .rep-content {
+          display: block !important;
+        }
+        .print-only {
+          display: block;
+        }
+        .content-grid {
+          display: block;
+        }
+        .content-grid > * {
+          margin-bottom: 18px;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero,
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          order: -1;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-24/">&#8592; Mission 24</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-26/">Mission 26 &#8594;</a>
+      </nav>
+
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <span class="mission-badge">Mission 25</span>
+          <span
+            class="mission-badge"
+            style="background: var(--soft-teal); color: var(--teal-dark)"
+            >Unit 10</span
+          >
+          <span class="standard-tag"
+            >6.G.A.1 &middot; 6.G.A.2 &middot; 6.G.A.4</span
+          >
+          <h1 id="hero-title">Geometry Models</h1>
+          <p class="hero-scenario">
+            The school wants to build a new outdoor classroom. It will have a
+            <strong>rectangular platform</strong> that is
+            <strong>12 ft long, 8 ft wide, and 1.5 ft tall</strong> (filled with
+            gravel). On top, there will be a
+            <strong>triangular shade sail</strong> with a base of
+            <strong>10 ft</strong> and a height of <strong>8 ft</strong>. Your
+            team must calculate: (1) the volume of gravel needed for the
+            platform, (2) the surface area of the platform that needs waterproof
+            paint, and (3) the area of the shade sail. Use geometric models of
+            real objects to solve each part.
+          </p>
+        </div>
+        <div class="hero-svg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 400 440"
+            width="400"
+            height="440"
+            aria-label="3D diagram of outdoor classroom with rectangular platform and triangular shade sail"
+          >
+            <rect width="400" height="440" rx="12" fill="#edf5ff" />
+            <text
+              x="200"
+              y="26"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Outdoor Classroom Design
+            </text>
+
+            <!-- Sky -->
+            <rect
+              x="20"
+              y="40"
+              width="360"
+              height="200"
+              rx="6"
+              fill="#e3f2fd"
+              opacity="0.5"
+            />
+
+            <!-- Shade sail (triangle) -->
+            <polygon
+              points="100,80 300,80 200,180"
+              fill="rgba(183,121,31,0.25)"
+              stroke="#b7791f"
+              stroke-width="2.5"
+            />
+            <text
+              x="200"
+              y="110"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              Shade Sail
+            </text>
+            <!-- Dimension labels on sail -->
+            <line
+              x1="100"
+              y1="85"
+              x2="300"
+              y2="85"
+              stroke="#b7791f"
+              stroke-width="1"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="200"
+              y="72"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              base = 10 ft
+            </text>
+            <line
+              x1="200"
+              y1="83"
+              x2="200"
+              y2="180"
+              stroke="#b7791f"
+              stroke-width="1"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="225"
+              y="140"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              h = 8 ft
+            </text>
+
+            <!-- Support poles -->
+            <line
+              x1="100"
+              y1="80"
+              x2="80"
+              y2="280"
+              stroke="#5b6573"
+              stroke-width="3"
+            />
+            <line
+              x1="300"
+              y1="80"
+              x2="320"
+              y2="280"
+              stroke="#5b6573"
+              stroke-width="3"
+            />
+            <line
+              x1="200"
+              y1="180"
+              x2="200"
+              y2="280"
+              stroke="#5b6573"
+              stroke-width="3"
+            />
+
+            <!-- Platform (3D rectangular prism) -->
+            <!-- Front face -->
+            <rect
+              x="60"
+              y="280"
+              width="280"
+              height="40"
+              rx="2"
+              fill="rgba(32,122,122,0.2)"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <!-- Top face (parallelogram for 3D effect) -->
+            <polygon
+              points="60,280 100,255 380,255 340,280"
+              fill="rgba(32,122,122,0.12)"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <!-- Right face -->
+            <polygon
+              points="340,280 380,255 380,295 340,320"
+              fill="rgba(32,122,122,0.08)"
+              stroke="#207a7a"
+              stroke-width="1.5"
+            />
+
+            <!-- Dimension labels on platform -->
+            <text
+              x="200"
+              y="305"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#207a7a"
+            >
+              12 ft (length)
+            </text>
+            <line
+              x1="345"
+              y1="282"
+              x2="385"
+              y2="257"
+              stroke="#207a7a"
+              stroke-width="1"
+              stroke-dasharray="3,2"
+            />
+            <text
+              x="385"
+              y="250"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              8 ft (width)
+            </text>
+            <text
+              x="50"
+              y="302"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              1.5 ft
+            </text>
+            <line
+              x1="56"
+              y1="282"
+              x2="56"
+              y2="318"
+              stroke="#207a7a"
+              stroke-width="1.5"
+              marker-start="url(#arrowUp)"
+              marker-end="url(#arrowDown)"
+            />
+
+            <!-- Ground -->
+            <rect
+              x="20"
+              y="325"
+              width="360"
+              height="20"
+              rx="4"
+              fill="#e8f5e9"
+            />
+            <text
+              x="200"
+              y="338"
+              text-anchor="middle"
+              font-size="9"
+              fill="#2f7d32"
+            >
+              Ground Level
+            </text>
+
+            <!-- Formulas -->
+            <rect
+              x="30"
+              y="355"
+              width="340"
+              height="75"
+              rx="6"
+              fill="#fff"
+              stroke="#d9e1e8"
+            />
+            <text
+              x="200"
+              y="374"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Key Formulas
+            </text>
+            <text
+              x="40"
+              y="394"
+              font-size="11"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              Volume = l x w x h = 12 x 8 x 1.5 = 144 ft³
+            </text>
+            <text
+              x="40"
+              y="412"
+              font-size="11"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              Surface Area = 2(lw) + 2(lh) + 2(wh)
+            </text>
+            <text
+              x="40"
+              y="428"
+              font-size="11"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              Sail Area = ½ x b x h = ½ x 10 x 8 = 40 ft²
+            </text>
+
+            <defs>
+              <marker
+                id="arrowUp"
+                markerWidth="6"
+                markerHeight="4"
+                refX="3"
+                refY="4"
+                orient="auto"
+              >
+                <polygon points="0,4 3,0 6,4" fill="#207a7a" />
+              </marker>
+              <marker
+                id="arrowDown"
+                markerWidth="6"
+                markerHeight="4"
+                refX="3"
+                refY="0"
+                orient="auto"
+              >
+                <polygon points="0,0 3,4 6,0" fill="#207a7a" />
+              </marker>
+            </defs>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <section class="panel">
+            <h2>The Problem</h2>
+            <div class="problem-box">
+              <strong
+                >How much material do you need to build the outdoor
+                classroom?</strong
+              >
+              <ol style="margin: 8px 0 0; padding-left: 20px">
+                <li>
+                  <strong>Gravel:</strong> How many cubic feet of gravel fill
+                  the platform? (Volume)
+                </li>
+                <li>
+                  <strong>Waterproof paint:</strong> How many square feet of the
+                  platform need paint? Consider: do you paint the bottom?
+                  (Surface Area)
+                </li>
+                <li>
+                  <strong>Shade fabric:</strong> How many square feet of fabric
+                  for the triangular sail? (Area of triangle)
+                </li>
+              </ol>
+              Gravel costs <strong>$2.50 per cubic foot</strong>, paint covers
+              <strong>50 sq ft per can ($18/can)</strong>, and fabric costs
+              <strong>$8 per square foot</strong>. What is the total cost?
+            </div>
+
+            <h3>Visual Model: Net and 3D Shape</h3>
+            <div class="svg-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 520 260"
+                width="520"
+                height="260"
+                aria-label="Net of the rectangular prism showing all faces unfolded"
+              >
+                <rect width="520" height="260" rx="8" fill="#f8fffd" />
+                <text
+                  x="260"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  Platform Net (Unfolded)
+                </text>
+                <!-- Center = top face -->
+                <rect
+                  x="160"
+                  y="70"
+                  width="180"
+                  height="120"
+                  fill="rgba(32,122,122,0.12)"
+                  stroke="#207a7a"
+                  stroke-width="2"
+                />
+                <text
+                  x="250"
+                  y="135"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="700"
+                  fill="#207a7a"
+                >
+                  TOP: 12 x 8 = 96 ft²
+                </text>
+                <!-- Bottom face (below) -->
+                <rect
+                  x="160"
+                  y="195"
+                  width="180"
+                  height="40"
+                  fill="rgba(32,122,122,0.06)"
+                  stroke="#207a7a"
+                  stroke-width="1.5"
+                  stroke-dasharray="4,3"
+                />
+                <text
+                  x="250"
+                  y="220"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  BOTTOM: 12 x 8 = 96 ft² (no paint?)
+                </text>
+                <!-- Left face -->
+                <rect
+                  x="110"
+                  y="70"
+                  width="45"
+                  height="120"
+                  fill="rgba(183,121,31,0.15)"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="132"
+                  y="135"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#b7791f"
+                  font-weight="700"
+                >
+                  8x1.5=12 ft²
+                </text>
+                <!-- Right face -->
+                <rect
+                  x="345"
+                  y="70"
+                  width="45"
+                  height="120"
+                  fill="rgba(183,121,31,0.15)"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="367"
+                  y="135"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#b7791f"
+                  font-weight="700"
+                >
+                  8x1.5=12 ft²
+                </text>
+                <!-- Front face -->
+                <rect
+                  x="160"
+                  y="35"
+                  width="180"
+                  height="30"
+                  fill="rgba(35,57,93,0.12)"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="250"
+                  y="55"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#23395d"
+                  font-weight="700"
+                >
+                  FRONT: 12 x 1.5 = 18 ft²
+                </text>
+                <!-- Back face (above top) -->
+                <rect
+                  x="160"
+                  y="195"
+                  width="180"
+                  height="30"
+                  fill="none"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                  stroke-dasharray="4,3"
+                  transform="translate(0,-130)"
+                />
+
+                <!-- Summary -->
+                <rect
+                  x="400"
+                  y="35"
+                  width="110"
+                  height="90"
+                  rx="6"
+                  fill="#fff6df"
+                  stroke="#b7791f"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="455"
+                  y="54"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  Painted Faces
+                </text>
+                <g font-size="9" fill="#263242">
+                  <text x="410" y="70">Top: 96 ft²</text>
+                  <text x="410" y="82">Front: 18 ft²</text>
+                  <text x="410" y="94">Back: 18 ft²</text>
+                  <text x="410" y="106">Left: 12 ft²</text>
+                  <text x="410" y="118">Right: 12 ft²</text>
+                </g>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Identify the geometric shapes.</strong> The platform is
+                a rectangular prism (box shape). The shade sail is a triangle.
+                Sketch both with dimensions.
+                <span class="guiding-q"
+                  >What real-life shapes do you see? How do you know the
+                  platform is a prism?</span
+                >
+              </li>
+              <li>
+                <strong>Calculate the volume of gravel.</strong> V = length x
+                width x height = 12 x 8 x 1.5 = 144 cubic feet.
+                <span class="guiding-q"
+                  >What does "cubic feet" mean? Why do we use volume for
+                  gravel?</span
+                >
+              </li>
+              <li>
+                <strong>Decide which faces to paint.</strong> The platform sits
+                on the ground, so you probably do NOT paint the bottom. That
+                leaves 5 faces: top, front, back, left, right.
+                <span class="guiding-q"
+                  >Why is deciding which faces to paint a real-world decision,
+                  not just a math one?</span
+                >
+              </li>
+              <li>
+                <strong>Calculate surface area to paint.</strong> Top: 12 x 8 =
+                96. Front + Back: 2(12 x 1.5) = 36. Left + Right: 2(8 x 1.5) =
+                24. Total = 96 + 36 + 24 = 156 sq ft.
+                <span class="guiding-q"
+                  >How many cans of paint do you need if each can covers 50 sq
+                  ft?</span
+                >
+              </li>
+              <li>
+                <strong>Calculate the shade sail area.</strong> A = 1/2 x base x
+                height = 1/2 x 10 x 8 = 40 sq ft.
+                <span class="guiding-q"
+                  >Why is the triangle formula half of the rectangle
+                  formula?</span
+                >
+              </li>
+              <li>
+                <strong>Calculate total cost.</strong> Gravel: 144 x $2.50 =
+                $360. Paint: 4 cans x $18 = $72 (since 156/50 = 3.12, round up
+                to 4). Fabric: 40 x $8 = $320. Total = $752.
+                <span class="guiding-q"
+                  >Why did you round up the number of paint cans instead of
+                  down?</span
+                >
+              </li>
+            </ol>
+
+            <div class="esol-box">
+              <h3>ESOL Support: Key Vocabulary</h3>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Volume</strong>
+                  <div class="def">
+                    The amount of space inside a 3D shape. Measured in cubic
+                    units (ft³).
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Surface Area</strong>
+                  <div class="def">
+                    The total area of all outside faces of a 3D shape. Measured
+                    in square units (ft²).
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Net</strong>
+                  <div class="def">
+                    A flat pattern that folds up into a 3D shape. Helps you see
+                    all faces at once.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Rectangular Prism</strong>
+                  <div class="def">
+                    A 3D shape with 6 rectangular faces, like a box. Has length,
+                    width, and height.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Area of a Triangle</strong>
+                  <div class="def">
+                    A = 1/2 x base x height. Half the area of a rectangle with
+                    the same base and height.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Cubic Foot (ft³)</strong>
+                  <div class="def">
+                    A unit for measuring volume. A cube that is 1 ft on each
+                    side.
+                  </div>
+                </div>
+              </div>
+              <div class="sentence-frames">
+                <strong>Sentence Frames:</strong>
+                <p>
+                  "The volume of the platform is ___ ft³ because I multiplied
+                  ___ x ___ x ___."
+                </p>
+                <p>"We need to paint ___ faces because the bottom ___."</p>
+                <p>
+                  "The total cost is $___ because gravel costs $___, paint costs
+                  $___, and fabric costs $___."
+                </p>
+              </div>
+            </div>
+
+            <h3>Multiple Representations</h3>
+            <div class="rep-tabs" role="tablist">
+              <button
+                class="rep-tab active"
+                role="tab"
+                data-target="rep1"
+                aria-selected="true"
+              >
+                3D Model
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep2"
+                aria-selected="false"
+              >
+                Net Diagram
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep3"
+                aria-selected="false"
+              >
+                Cost Breakdown
+              </button>
+            </div>
+            <div class="rep-content active" id="rep1">
+              <p>
+                The 3D model in the hero image shows the rectangular prism
+                (platform) and the triangular shade sail. Think of the platform
+                as layers: each layer is 12 x 8 = 96 sq ft. There are 1.5
+                layers, so 96 x 1.5 = 144 ft³ of gravel.
+              </p>
+            </div>
+            <div class="rep-content" id="rep2">
+              <p>
+                The net diagram above unfolds the prism so you can see every
+                face. Count the faces: 1 top, 1 bottom, 2 long sides, 2 short
+                sides = 6 faces total. Since the bottom touches the ground,
+                subtract it from the painted area.
+              </p>
+            </div>
+            <div class="rep-content" id="rep3">
+              <table
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 0.95rem;
+                "
+              >
+                <thead>
+                  <tr style="background: var(--soft-blue)">
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Item
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Calculation
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Amount
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Cost
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Gravel
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      12 x 8 x 1.5
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      144 ft³
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      144 x $2.50 = $360
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Paint
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      96+36+24 = 156 ft²
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      4 cans
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      4 x $18 = $72
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Fabric
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      1/2 x 10 x 8
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      40 ft²
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      40 x $8 = $320
+                    </td>
+                  </tr>
+                  <tr style="background: var(--soft-gold); font-weight: 700">
+                    <td
+                      style="padding: 8px; border: 1px solid var(--line)"
+                      colspan="3"
+                    >
+                      TOTAL
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      $752
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div>
+          <section class="panel">
+            <h2>Team Roles</h2>
+            <div class="role-grid">
+              <div class="role-card">
+                <strong>Facilitator</strong>
+                <div class="task">
+                  Read the 3 questions. Guide the team to tackle them in order:
+                  volume first, then surface area, then triangle area. Keep
+                  everyone on task.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Model Builder</strong>
+                <div class="task">
+                  Draw the 3D platform with labels. Draw the net showing all
+                  faces. Sketch the triangular sail. Use color to show which
+                  faces get painted.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Precision Checker</strong>
+                <div class="task">
+                  Check every multiplication. Verify units: volume in ft³, area
+                  in ft². Make sure the paint calculation rounds UP. Confirm
+                  cost arithmetic.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Reporter</strong>
+                <div class="task">
+                  Organize the final answer into a cost table. Prepare to
+                  explain the difference between area, surface area, and volume.
+                  State the total cost clearly.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Timed Lab Phases</h2>
+            <div class="timer-bar">
+              <div>
+                <strong id="activePhaseLabel">Ready</strong>
+                <div style="font-size: 0.9rem; color: var(--muted)">
+                  Click a phase, then press Start.
+                </div>
+              </div>
+              <div class="timer-display" id="timerDisplay" aria-live="polite">
+                03:00
+              </div>
+            </div>
+            <div class="timer-buttons">
+              <button class="btn btn-primary" id="startTimer">Start</button>
+              <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+              <button class="btn btn-secondary" id="resetTimer">Reset</button>
+            </div>
+            <div style="margin-top: 14px">
+              <article class="phase-card open">
+                <button class="phase-header" data-phase="0" data-minutes="3">
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Read the scenario. Identify the 3 questions.</li>
+                    <li>Assign roles.</li>
+                    <li>Sketch the outdoor classroom with dimensions.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can everyone identify which
+                      shape is the platform and which is the sail?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="1" data-minutes="6">
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Calculate volume: V = 12 x 8 x 1.5.</li>
+                    <li>Draw the net. Decide which faces to paint.</li>
+                    <li>Calculate surface area of painted faces.</li>
+                    <li>Calculate triangle area: A = 1/2 x 10 x 8.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Do you have all three
+                      measurements with correct units?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="2" data-minutes="5">
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Build the cost table: gravel, paint cans, fabric.</li>
+                    <li>Calculate how many paint cans (round up!).</li>
+                    <li>Find the total cost.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Does the total cost seem
+                      reasonable for building an outdoor classroom?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="3" data-minutes="4">
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>
+                      Reporter: explain each calculation and its real-world
+                      meaning.
+                    </li>
+                    <li>
+                      Practice answering: "Why did you round up for paint cans?"
+                    </li>
+                    <li>
+                      Explain the difference between area, surface area, and
+                      volume.
+                    </li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can the team explain why they
+                      chose to skip the bottom face?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Challenge</h2>
+            <div class="challenge-box">
+              <strong>Extension:</strong> The school wants to add a second
+              platform next to the first one (same dimensions) to make an
+              L-shape. How does the total volume change? How does the surface
+              area change? (Hint: two touching faces no longer need paint.)
+            </div>
+            <div class="whatif">
+              <strong>What If...?</strong>
+              <ul>
+                <li>
+                  What if the platform were 2 ft tall instead of 1.5 ft? How
+                  much more gravel and paint?
+                </li>
+                <li>
+                  What if the shade sail were a rectangle instead of a triangle?
+                  How much more fabric?
+                </li>
+              </ul>
+            </div>
+            <p>
+              <strong>Real-Life Connection:</strong> Architects and builders
+              calculate volume for materials (concrete, gravel, fill) and
+              surface area for coverings (paint, tile, wrap). Getting these
+              wrong can mean wasted money or a project that does not work.
+            </p>
+          </section>
+
+          <section class="panel">
+            <h2>Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                What is the difference between area, surface area, and
+                volume?<span class="sentence-starter"
+                  >"Area measures ___, surface area measures ___, and volume
+                  measures ___."</span
+                >
+              </li>
+              <li>
+                Why did you choose not to paint the bottom face?<span
+                  class="sentence-starter"
+                  >"We did not paint the bottom because in real life ___."</span
+                >
+              </li>
+              <li>
+                Why did you round up the number of paint cans?<span
+                  class="sentence-starter"
+                  >"We need 3.12 cans, but you cannot buy part of a can, so we
+                  rounded ___ to ___."</span
+                >
+              </li>
+              <li>
+                How did you use the net to find surface area?<span
+                  class="sentence-starter"
+                  >"The net shows all ___ faces laid flat. We calculated the
+                  area of each face and ___."</span
+                >
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 12px;
+                padding: 12px;
+                background: var(--soft-green);
+                border-radius: 6px;
+              "
+            >
+              <strong>Rubric Quick-Check:</strong>
+              <ul style="margin: 6px 0 0; padding-left: 18px">
+                <li>Volume calculated correctly with cubic units</li>
+                <li>Surface area calculated with correct faces selected</li>
+                <li>Triangle area formula used correctly</li>
+                <li>Cost table complete with all three materials</li>
+                <li>Drawings include labeled dimensions and units</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Exit Product</h2>
+            <div class="exit-box">
+              <strong>Submit a one-page Lab Report that includes:</strong>
+              <ul class="checklist">
+                <li>Labeled sketch of the outdoor classroom (3D view)</li>
+                <li>Net of the platform with face areas calculated</li>
+                <li>Volume calculation with correct units (ft³)</li>
+                <li>
+                  Surface area calculation showing which faces are painted
+                </li>
+                <li>Triangle area for the shade sail</li>
+                <li>Cost breakdown table with total</li>
+              </ul>
+            </div>
+            <div style="margin-top: 12px">
+              <strong>Self-Assessment:</strong>
+              <ul class="checklist">
+                <li>I can model a real object as a geometric shape</li>
+                <li>I can calculate volume of a rectangular prism</li>
+                <li>I can use a net to find surface area</li>
+                <li>I can calculate the area of a triangle</li>
+                <li>I can use measurements to solve a real cost problem</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section class="print-only">
+        <h2>Work Space</h2>
+        <p><strong>Sketch:</strong></p>
+        <br /><br />
+        <p><strong>Calculations:</strong></p>
+        <br /><br />
+        <p><strong>Cost Table:</strong></p>
+        <br /><br />
+      </section>
+
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-24/">&#8592; Mission 24</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-26/">Mission 26 &#8594;</a>
+      </nav>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        document.querySelectorAll(".rep-tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            document.querySelectorAll(".rep-tab").forEach(function (t) {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            document.querySelectorAll(".rep-content").forEach(function (c) {
+              c.classList.remove("active");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            var target = document.getElementById(tab.dataset.target);
+            if (target) target.classList.add("active");
+          });
+        });
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var activePhaseIndex = 0,
+          remainingSeconds = phases[0].minutes * 60,
+          timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay"),
+          activePhaseLabel = document.getElementById("activePhaseLabel");
+        function formatTime(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+        document.querySelectorAll(".phase-header").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.phase);
+            activePhaseIndex = idx;
+            remainingSeconds = parseInt(btn.dataset.minutes) * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent = phases[idx].title + " phase";
+            document.querySelectorAll(".phase-card").forEach(function (c, i) {
+              if (i === idx) c.classList.add("open");
+              else c.classList.remove("open");
+            });
+            stopTimer();
+          });
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stopTimer();
+            remainingSeconds = phases[activePhaseIndex].minutes * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent =
+              phases[activePhaseIndex].title + " phase";
+          });
+      })();
+    </script>
+  </body>
+</html>

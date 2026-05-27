@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 19: Statistical Questions | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #0f766e;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --soft-red: #fef2f1;
+      }
+      .mission-hero {
+        background: linear-gradient(
+          135deg,
+          #2c3e6b 0%,
+          #1a5c5c 60%,
+          #b7791f 100%
+        );
+        color: #fff;
+        border-radius: var(--radius);
+        padding: clamp(24px, 5vw, 48px);
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 32px;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        margin: 0 0 8px;
+        line-height: 1.1;
+      }
+      .hero-eyebrow {
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7dd3c0;
+        margin-bottom: 4px;
+      }
+      .hero-standard {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        margin-top: 8px;
+      }
+      .hero-scenario {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        opacity: 0.92;
+        margin-top: 12px;
+      }
+      .hero-svg {
+        width: 100%;
+        max-width: 380px;
+        height: auto;
+      }
+      .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-bar a {
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .nav-bar a:hover {
+        background: var(--soft-teal);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(18px, 3vw, 28px);
+      }
+      .card h2 {
+        color: var(--navy);
+        margin-top: 0;
+        font-size: 1.4rem;
+      }
+      .card h3 {
+        color: var(--teal);
+        margin-top: 18px;
+        font-size: 1.1rem;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: start;
+      }
+      .problem-box {
+        background: var(--soft-blue);
+        border-left: 5px solid var(--navy);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 1.08rem;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .esol-box {
+        background: #f0faf8;
+        border: 2px solid #a7d8d0;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-top: 16px;
+      }
+      .esol-box h3 {
+        margin-top: 0;
+        color: var(--teal);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .vocab-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .sentence-frames {
+        background: var(--soft-gold);
+        padding: 14px;
+        border-radius: 6px;
+        margin-top: 10px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+        font-style: italic;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .rep-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: #fafcff;
+      }
+      .rep-card h4 {
+        margin: 0 0 8px;
+        color: var(--navy);
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: var(--radius);
+        border: 1px solid #b9ddd8;
+      }
+      .role-facilitator {
+        background: #eef6ff;
+      }
+      .role-model {
+        background: #ecf8f6;
+      }
+      .role-checker {
+        background: #fff6df;
+      }
+      .role-reporter {
+        background: #fef2f1;
+      }
+      .role strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .role .role-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .timer-section {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .timer-display {
+        font-size: 3rem;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        color: var(--gold);
+      }
+      .timer-label {
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .timer-btn {
+        min-height: 40px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .timer-btn.start {
+        background: var(--green);
+        color: #fff;
+      }
+      .timer-btn.pause {
+        background: var(--gold);
+        color: #fff;
+      }
+      .timer-btn.reset {
+        background: var(--surface);
+        color: var(--navy);
+        border: 1px solid var(--line);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+      }
+      .phase-header:hover {
+        background: #f8fafb;
+      }
+      .phase-time {
+        background: var(--soft-blue);
+        color: var(--navy);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .phase-name {
+        font-weight: 800;
+        flex: 1;
+      }
+      .phase-body {
+        padding: 0 14px 14px;
+        display: none;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-card.open .phase-arrow {
+        transform: rotate(90deg);
+      }
+      .phase-arrow {
+        transition: transform 0.2s;
+      }
+      .checkpoint {
+        background: var(--soft-green);
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 8px;
+        font-size: 0.92rem;
+      }
+      .challenge-box {
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.9rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .rubric-table th {
+        background: var(--soft-blue);
+        color: var(--navy);
+      }
+      .exit-box {
+        background: var(--soft-blue);
+        border: 2px solid #bed4ea;
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        font-size: 1.1rem;
+      }
+      .visual-model {
+        text-align: center;
+        margin: 16px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      /* Sorting card styles */
+      .sort-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 16px 0;
+      }
+      .sort-col {
+        border-radius: var(--radius);
+        padding: 16px;
+      }
+      .sort-col.statistical {
+        background: var(--soft-green);
+        border: 2px solid #82c785;
+      }
+      .sort-col.non-statistical {
+        background: var(--soft-red);
+        border: 2px solid #e8a09b;
+      }
+      .sort-col h4 {
+        margin: 0 0 10px;
+      }
+      .sort-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .sort-item .reason {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      @media print {
+        .nav-bar,
+        .timer-section,
+        .timer-controls,
+        .timer-btn,
+        .no-print {
+          display: none !important;
+        }
+        .card,
+        .mission-hero {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .mission-hero {
+          background: #23395d !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero {
+          grid-template-columns: 1fr;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .sort-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          max-width: 300px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="nav-bar" aria-label="Mission navigation">
+        <a href="/math-lab-missions/">Back to All Missions</a>
+        <div>
+          <a href="/math-lab-missions/mission-18/">Prev Mission</a>
+          <a href="/math-lab-missions/mission-20/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <div class="hero-eyebrow">Mission 19 &middot; Unit 8</div>
+          <h1 id="hero-title">Statistical Questions</h1>
+          <span class="hero-standard">6.SP.A.1 &middot; 6.SP.A.2</span>
+          <p class="hero-scenario">
+            The student council wants to improve school lunches. They
+            brainstormed <strong>8 questions</strong> to survey students, but
+            some questions will not give useful data because they have only
+            <strong>one answer</strong>. Your team must sort the questions into
+            <strong>statistical</strong> (expect variability) and
+            <strong>non-statistical</strong> (only one answer), then write
+            <strong>2 original statistical questions</strong> the council should
+            add to the survey.
+          </p>
+        </div>
+        <svg
+          class="hero-svg"
+          viewBox="0 0 380 420"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="Survey clipboard with question marks and sorting bins"
+        >
+          <!-- Background -->
+          <rect x="0" y="0" width="380" height="420" rx="12" fill="#f5f0e8" />
+          <!-- Clipboard -->
+          <rect
+            x="60"
+            y="30"
+            width="260"
+            height="340"
+            rx="8"
+            fill="#fff"
+            stroke="#8B7355"
+            stroke-width="3"
+          />
+          <rect x="140" y="18" width="100" height="30" rx="6" fill="#8B7355" />
+          <circle cx="190" cy="33" r="8" fill="#d4a853" />
+          <!-- Survey title -->
+          <text
+            x="190"
+            y="75"
+            text-anchor="middle"
+            font-size="16"
+            font-weight="800"
+            fill="#23395d"
+          >
+            LUNCH SURVEY
+          </text>
+          <line
+            x1="90"
+            y1="85"
+            x2="290"
+            y2="85"
+            stroke="#ddd"
+            stroke-width="1"
+          />
+          <!-- Question lines with ? marks -->
+          <rect x="85" y="95" width="210" height="24" rx="4" fill="#edf5ff" />
+          <text x="95" y="112" font-size="12" fill="#23395d">
+            Q1: How many students eat lunch?
+          </text>
+          <rect x="85" y="125" width="210" height="24" rx="4" fill="#edf7ee" />
+          <text x="95" y="142" font-size="12" fill="#23395d">
+            Q2: What is your favorite lunch?
+          </text>
+          <rect x="85" y="155" width="210" height="24" rx="4" fill="#edf5ff" />
+          <text x="95" y="172" font-size="12" fill="#23395d">
+            Q3: How old is our principal?
+          </text>
+          <rect x="85" y="185" width="210" height="24" rx="4" fill="#edf7ee" />
+          <text x="95" y="202" font-size="12" fill="#23395d">
+            Q4: How many snacks do you buy?
+          </text>
+          <rect x="85" y="215" width="210" height="24" rx="4" fill="#edf5ff" />
+          <text x="95" y="232" font-size="12" fill="#23395d">
+            Q5: What time does lunch start?
+          </text>
+          <rect x="85" y="245" width="210" height="24" rx="4" fill="#edf7ee" />
+          <text x="95" y="262" font-size="12" fill="#23395d">
+            Q6: How long do you wait in line?
+          </text>
+          <rect x="85" y="275" width="210" height="24" rx="4" fill="#edf5ff" />
+          <text x="95" y="292" font-size="12" fill="#23395d">
+            Q7: How many lunch tables are there?
+          </text>
+          <rect x="85" y="305" width="210" height="24" rx="4" fill="#edf7ee" />
+          <text x="95" y="322" font-size="12" fill="#23395d">
+            Q8: How do you rate the pizza?
+          </text>
+          <!-- Sorting bins -->
+          <rect x="30" y="380" width="150" height="32" rx="6" fill="#2f7d32" />
+          <text
+            x="105"
+            y="401"
+            text-anchor="middle"
+            font-size="13"
+            font-weight="800"
+            fill="#fff"
+          >
+            STATISTICAL
+          </text>
+          <rect x="200" y="380" width="150" height="32" rx="6" fill="#b42318" />
+          <text
+            x="275"
+            y="401"
+            text-anchor="middle"
+            font-size="13"
+            font-weight="800"
+            fill="#fff"
+          >
+            NOT STATISTICAL
+          </text>
+        </svg>
+      </section>
+
+      <!-- INVESTIGATION -->
+      <section class="card" aria-labelledby="investigation-title">
+        <h2 id="investigation-title">The Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> Sort these 8 survey questions into two
+          groups: <strong>statistical</strong> (answers will vary from person to
+          person) and <strong>non-statistical</strong> (there is only one
+          correct answer). For each question, explain WHY you placed it in that
+          group. Then write 2 new statistical questions the student council
+          should add.
+        </div>
+
+        <h3>The 8 Survey Questions</h3>
+        <div class="sort-grid">
+          <div class="sort-col statistical">
+            <h4 style="color: #2f7d32">Statistical (Expect Variability)</h4>
+            <div class="sort-item">
+              <strong>Q2:</strong> What is your favorite school lunch?
+              <div class="reason">
+                Different students have different favorites. Answers vary.
+              </div>
+            </div>
+            <div class="sort-item">
+              <strong>Q4:</strong> How many snacks do you buy per week at
+              school?
+              <div class="reason">
+                Each student buys a different amount. Data will spread out.
+              </div>
+            </div>
+            <div class="sort-item">
+              <strong>Q6:</strong> How many minutes do you wait in the lunch
+              line?
+              <div class="reason">
+                Wait times change each day and per student. Variability exists.
+              </div>
+            </div>
+            <div class="sort-item">
+              <strong>Q8:</strong> On a scale of 1-5, how do you rate the school
+              pizza?
+              <div class="reason">
+                Opinions vary. We expect a range of ratings.
+              </div>
+            </div>
+          </div>
+          <div class="sort-col non-statistical">
+            <h4 style="color: #b42318">Non-Statistical (One Answer)</h4>
+            <div class="sort-item">
+              <strong>Q1:</strong> How many students eat lunch at our school?
+              <div class="reason">
+                There is one specific number. No variability.
+              </div>
+            </div>
+            <div class="sort-item">
+              <strong>Q3:</strong> How old is our principal?
+              <div class="reason">
+                The principal has one age. Only one answer.
+              </div>
+            </div>
+            <div class="sort-item">
+              <strong>Q5:</strong> What time does lunch start?
+              <div class="reason">
+                Lunch starts at a set time. One answer for everyone.
+              </div>
+            </div>
+            <div class="sort-item">
+              <strong>Q7:</strong> How many lunch tables are in the cafeteria?
+              <div class="reason">
+                There is one correct count. No variability in answers.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Visual Model: The Variability Test</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 600 250"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Flowchart showing how to decide if a question is statistical or not"
+            style="max-width: 600px"
+          >
+            <text
+              x="300"
+              y="22"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Decision Flowchart: Is It a Statistical Question?
+            </text>
+            <!-- Start -->
+            <rect
+              x="200"
+              y="40"
+              width="200"
+              height="40"
+              rx="20"
+              fill="#23395d"
+            />
+            <text
+              x="300"
+              y="65"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#fff"
+            >
+              Read the question
+            </text>
+            <!-- Arrow down -->
+            <line
+              x1="300"
+              y1="80"
+              x2="300"
+              y2="100"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <polygon points="300,105 295,98 305,98" fill="#23395d" />
+            <!-- Decision diamond -->
+            <polygon
+              points="300,110 430,155 300,200 170,155"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <text
+              x="300"
+              y="150"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              If I ask many people,
+            </text>
+            <text
+              x="300"
+              y="165"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              will I get DIFFERENT answers?
+            </text>
+            <!-- Yes arrow left -->
+            <line
+              x1="170"
+              y1="155"
+              x2="100"
+              y2="155"
+              stroke="#2f7d32"
+              stroke-width="2"
+            />
+            <polygon points="95,155 102,150 102,160" fill="#2f7d32" />
+            <rect
+              x="10"
+              y="135"
+              width="85"
+              height="40"
+              rx="8"
+              fill="#edf7ee"
+              stroke="#2f7d32"
+              stroke-width="2"
+            />
+            <text
+              x="52"
+              y="152"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#2f7d32"
+            >
+              YES
+            </text>
+            <text
+              x="52"
+              y="168"
+              text-anchor="middle"
+              font-size="10"
+              fill="#2f7d32"
+            >
+              Statistical!
+            </text>
+            <!-- No arrow right -->
+            <line
+              x1="430"
+              y1="155"
+              x2="500"
+              y2="155"
+              stroke="#b42318"
+              stroke-width="2"
+            />
+            <polygon points="505,155 498,150 498,160" fill="#b42318" />
+            <rect
+              x="505"
+              y="135"
+              width="85"
+              height="40"
+              rx="8"
+              fill="#fef2f1"
+              stroke="#b42318"
+              stroke-width="2"
+            />
+            <text
+              x="547"
+              y="152"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#b42318"
+            >
+              NO
+            </text>
+            <text
+              x="547"
+              y="168"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b42318"
+            >
+              Not statistical
+            </text>
+            <!-- Key insight -->
+            <rect
+              x="120"
+              y="215"
+              width="360"
+              height="28"
+              rx="6"
+              fill="#edf5ff"
+              stroke="#23395d"
+              stroke-width="1"
+            />
+            <text
+              x="300"
+              y="234"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Key: Statistical questions expect VARIABILITY in the data
+              collected.
+            </text>
+          </svg>
+        </div>
+
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Read each question carefully.</strong> Ask: "If I ask 30
+            students this question, will I get different answers?"
+            <em
+              >Guiding question: Would everyone in class give the same response
+              to Q5?</em
+            >
+          </li>
+          <li>
+            <strong>Apply the variability test.</strong> If answers vary, the
+            question is statistical. If there is one correct answer, it is not.
+            <em
+              >Guiding question: For Q2 (favorite lunch), would all students say
+              the same thing?</em
+            >
+          </li>
+          <li>
+            <strong>Sort all 8 questions.</strong> Create a two-column chart:
+            "Statistical" and "Non-Statistical." Place each question.
+            <em
+              >Guiding question: Which column do you expect to have more
+              questions?</em
+            >
+          </li>
+          <li>
+            <strong>Write your reasoning.</strong> For each question, explain in
+            one sentence why you placed it in that column.
+            <em
+              >Guiding question: Can you use the word "variability" in your
+              explanation?</em
+            >
+          </li>
+          <li>
+            <strong>Write 2 new statistical questions.</strong> These should
+            help the student council learn about lunch preferences.
+            <em
+              >Guiding question: What would the council need to know to make
+              lunch better?</em
+            >
+          </li>
+          <li>
+            <strong>Predict the data.</strong> For one of your new questions,
+            predict what the answers might look like. Would they be spread out
+            or clumped together?
+            <em
+              >Guiding question: How does anticipating variability help you plan
+              a survey?</em
+            >
+          </li>
+        </ol>
+
+        <div class="esol-box">
+          <h3>ESOL Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-item">
+              <strong>Statistical question</strong><br />
+              A question where you expect to get different answers from
+              different people. The data will vary.
+            </div>
+            <div class="vocab-item">
+              <strong>Non-statistical question</strong><br />
+              A question with only one correct answer. No variability.
+            </div>
+            <div class="vocab-item">
+              <strong>Variability</strong><br />
+              How much data values are different from each other. Spread.
+            </div>
+            <div class="vocab-item">
+              <strong>Survey</strong><br />
+              A set of questions asked to many people to collect data.
+            </div>
+            <div class="vocab-item">
+              <strong>Data</strong><br />
+              Information collected from observations or questions. Numbers or
+              categories.
+            </div>
+            <div class="vocab-item">
+              <strong>Predict</strong><br />
+              Make a guess about what will happen based on what you know.
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <strong>Sentence Frames:</strong>
+            <p>
+              "This is a statistical question because if I ask many people, I
+              will get _____."
+            </p>
+            <p>
+              "This is NOT statistical because there is only one answer: _____."
+            </p>
+            <p>"I expect variability because different students will _____."</p>
+          </div>
+        </div>
+
+        <h3>Multiple Representations</h3>
+        <div class="representations">
+          <div class="rep-card">
+            <h4>Approach 1: The "30 Students" Test</h4>
+            <p>
+              Imagine asking 30 students. Write down what you think the first 5
+              answers would be. If they are all the same, it is non-statistical.
+              If they differ, it is statistical.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 2: Sorting Chart</h4>
+            <p>
+              Create a T-chart. Left side: "Answers vary" (statistical). Right
+              side: "One answer" (non-statistical). Place each question card on
+              the correct side.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 3: Rewrite Strategy</h4>
+            <p>
+              Take a non-statistical question and rewrite it to make it
+              statistical. Example: "What time does lunch start?" becomes "What
+              time do YOU start eating lunch?" Now answers will vary!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEAM ROLES -->
+      <section class="card" aria-labelledby="roles-title">
+        <h2 id="roles-title">Team Roles</h2>
+        <div class="role-grid">
+          <div class="role role-facilitator">
+            <span class="role-icon" aria-hidden="true">&#128218;</span>
+            <strong>Facilitator</strong>
+            Read each question aloud to the team. After sorting, make sure every
+            member agrees on the placement. Manage time.
+          </div>
+          <div class="role role-model">
+            <span class="role-icon" aria-hidden="true">&#9999;&#65039;</span>
+            <strong>Model Builder</strong>
+            Create the two-column sorting chart on paper. Write each question in
+            the correct column. Draw the flowchart decision process.
+          </div>
+          <div class="role role-checker">
+            <span class="role-icon" aria-hidden="true">&#128270;</span>
+            <strong>Precision Checker</strong>
+            For each placement, ask: "Are you sure? Could answers vary?" Check
+            that the reasoning sentence uses the word "variability" or explains
+            why answers do/do not change.
+          </div>
+          <div class="role role-reporter">
+            <span class="role-icon" aria-hidden="true">&#128221;</span>
+            <strong>Reporter</strong>
+            Prepare the defense: explain the sorting rule, share the 2 new
+            questions, and present the team's reasoning for the trickiest
+            question.
+          </div>
+        </div>
+      </section>
+
+      <!-- TIMER & PHASES -->
+      <div class="two-col">
+        <section class="card" aria-labelledby="phases-title">
+          <h2 id="phases-title">Timed Lab Phases</h2>
+
+          <div class="timer-section no-print">
+            <div class="timer-label" id="activePhaseLabel">Launch Phase</div>
+            <div class="timer-display" id="timerDisplay" aria-live="polite">
+              03:00
+            </div>
+            <div class="timer-controls">
+              <button class="timer-btn start" id="startTimer">Start</button>
+              <button class="timer-btn pause" id="pauseTimer">Pause</button>
+              <button class="timer-btn reset" id="resetTimer">Reset</button>
+            </div>
+          </div>
+
+          <div class="phase-cards" id="phaseList">
+            <article class="phase-card open" data-minutes="3">
+              <button class="phase-header" aria-expanded="true">
+                <span class="phase-time">3 min</span>
+                <span class="phase-name">Launch</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Read the student council scenario. Assign roles. Discuss what
+                  makes a question statistical.
+                </p>
+                <ul>
+                  <li>What does "variability" mean?</li>
+                  <li>
+                    Give one example of a question where answers would vary.
+                  </li>
+                  <li>Give one example where there is only one answer.</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Everyone can explain the difference between
+                  statistical and non-statistical in their own words.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="6">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">6 min</span>
+                <span class="phase-name">Build</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Sort all 8 questions. Write one sentence of reasoning for
+                  each.
+                </p>
+                <ul>
+                  <li>Read each question and apply the "30 students" test.</li>
+                  <li>Place in the correct column of your chart.</li>
+                  <li>Write: "This IS/IS NOT statistical because _____."</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: All 8 questions sorted with reasoning written for
+                  each.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="5">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">5 min</span>
+                <span class="phase-name">Solve</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Write 2 new statistical questions. Predict what the data might
+                  look like.
+                </p>
+                <ul>
+                  <li>What topic would help the council improve lunch?</li>
+                  <li>Is your question one that will get different answers?</li>
+                  <li>
+                    Predict: would answers be spread out or clumped together?
+                  </li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: 2 new statistical questions written with
+                  variability predictions.
+                </div>
+              </div>
+            </article>
+            <article class="phase-card" data-minutes="4">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">4 min</span>
+                <span class="phase-name">Defend</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Reporter prepares the defense. Identify the trickiest question
+                  and explain your team's reasoning.
+                </p>
+                <ul>
+                  <li>
+                    "Our sorting rule is: if _____, then it is statistical."
+                  </li>
+                  <li>"The trickiest question was Q___ because _____."</li>
+                  <li>"Our two new questions are _____ and _____."</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Defense includes sorting rule, trickiest question
+                  explanation, and new questions.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <div>
+          <section class="card" aria-labelledby="challenge-title">
+            <h2 id="challenge-title">Challenge Extensions</h2>
+            <div class="challenge-box">
+              <strong>Extension Problem:</strong> Take non-statistical question
+              Q5 ("What time does lunch start?") and rewrite it THREE different
+              ways to make it statistical. For each rewrite, explain what kind
+              of variability you would expect in the answers.
+            </div>
+            <h3>What If?</h3>
+            <ul>
+              <li>
+                Is "How tall are 6th graders?" statistical? What about "How tall
+                is the tallest 6th grader?"
+              </li>
+              <li>
+                Write a question that LOOKS statistical but is actually
+                non-statistical. Can you trick another team?
+              </li>
+              <li>
+                If you surveyed 100 students with Q8 (pizza rating 1-5), predict
+                how many would give each rating. Sketch a bar graph.
+              </li>
+            </ul>
+            <h3>Real-Life Connections</h3>
+            <p>
+              Statistical questions drive real surveys: product reviews,
+              election polls, medical studies, sports analytics, and school
+              improvement plans all start with well-crafted statistical
+              questions.
+            </p>
+          </section>
+
+          <section class="card" aria-labelledby="defense-title">
+            <h2 id="defense-title">Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                What is a statistical question? Give the definition in your own
+                words.
+              </li>
+              <li>Why is Q3 ("How old is our principal?") not statistical?</li>
+              <li>Which question was hardest to sort? Why?</li>
+              <li>Share your 2 new questions. Why are they statistical?</li>
+            </ol>
+            <strong>Sentence Starters:</strong>
+            <ul>
+              <li>"A statistical question is one where _____."</li>
+              <li>
+                "Q___ is not statistical because the answer is always _____."
+              </li>
+              <li>"Our new question expects variability because _____."</li>
+            </ul>
+            <h3>Rubric</h3>
+            <table class="rubric-table">
+              <thead>
+                <tr>
+                  <th>Criteria</th>
+                  <th>Excellent (4)</th>
+                  <th>Proficient (3)</th>
+                  <th>Developing (2)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Sorting accuracy</td>
+                  <td>All 8 correct with reasoning</td>
+                  <td>7-8 correct, partial reasoning</td>
+                  <td>5-6 correct</td>
+                </tr>
+                <tr>
+                  <td>Reasoning quality</td>
+                  <td>Uses "variability" language for all</td>
+                  <td>Most explanations clear</td>
+                  <td>Some explanations present</td>
+                </tr>
+                <tr>
+                  <td>New questions</td>
+                  <td>2 strong statistical questions with predictions</td>
+                  <td>2 questions, one prediction</td>
+                  <td>1 question written</td>
+                </tr>
+                <tr>
+                  <td>Defense</td>
+                  <td>Clear rule + trickiest question analysis</td>
+                  <td>Rule stated, some analysis</td>
+                  <td>Partial defense</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+      </div>
+
+      <!-- EXIT PRODUCT -->
+      <section class="card" aria-labelledby="exit-title">
+        <h2 id="exit-title">Exit Product</h2>
+        <div class="exit-box">
+          <strong>Your team submits:</strong> A Survey Question Analysis Sheet
+          with:
+          <ul>
+            <li>
+              A two-column sorting chart (Statistical vs. Non-Statistical)
+            </li>
+            <li>All 8 questions placed correctly</li>
+            <li>One sentence of reasoning for each question</li>
+            <li>2 new statistical questions the council should add</li>
+            <li>A variability prediction for at least one new question</li>
+            <li>A one-sentence definition of "statistical question"</li>
+          </ul>
+        </div>
+        <h3>Self-Assessment Checklist</h3>
+        <ul class="checklist">
+          <li>I can explain what a statistical question is in my own words.</li>
+          <li>I sorted all 8 questions correctly.</li>
+          <li>
+            I wrote a reason for each placement using "variability" language.
+          </li>
+          <li>I wrote 2 new statistical questions about school lunch.</li>
+          <li>I can turn a non-statistical question into a statistical one.</li>
+          <li>
+            I can predict what kind of data a statistical question will collect.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var currentPhase = 0,
+          remaining = phases[0].minutes * 60,
+          interval = null;
+        var display = document.getElementById("timerDisplay"),
+          label = document.getElementById("activePhaseLabel");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function upd() {
+          display.textContent = fmt(remaining);
+          label.textContent = phases[currentPhase].name + " Phase";
+        }
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (interval) return;
+            interval = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              upd();
+              if (remaining === 0) {
+                clearInterval(interval);
+                interval = null;
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+          });
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[currentPhase].minutes * 60;
+            upd();
+          });
+        document
+          .getElementById("phaseList")
+          .addEventListener("click", function (e) {
+            var h = e.target.closest(".phase-header");
+            if (!h) return;
+            var card = h.parentElement,
+              all = document.querySelectorAll(".phase-card"),
+              idx = Array.prototype.indexOf.call(all, card);
+            all.forEach(function (c, i) {
+              c.classList.toggle("open", i === idx);
+              c.querySelector(".phase-header").setAttribute(
+                "aria-expanded",
+                i === idx ? "true" : "false",
+              );
+            });
+            currentPhase = idx;
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[idx].minutes * 60;
+            upd();
+          });
+        upd();
+      })();
+    </script>
+  </body>
+</html>

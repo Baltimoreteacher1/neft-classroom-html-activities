@@ -1,0 +1,1294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 14: Equivalent Expressions | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #0f766e;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ee;
+        --soft-red: #fef2f1;
+      }
+
+      /* ---- layout ---- */
+      .mission-hero {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a5c5c 100%);
+        color: #fff;
+        border-radius: var(--radius);
+        padding: clamp(24px, 5vw, 48px);
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 32px;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        margin: 0 0 8px;
+        line-height: 1.1;
+      }
+      .hero-eyebrow {
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7dd3c0;
+        margin-bottom: 4px;
+      }
+      .hero-standard {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        margin-top: 8px;
+      }
+      .hero-scenario {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        opacity: 0.92;
+        margin-top: 12px;
+      }
+      .hero-svg {
+        width: 100%;
+        max-width: 340px;
+        height: auto;
+      }
+
+      .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-bar a {
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .nav-bar a:hover {
+        background: var(--soft-teal);
+      }
+
+      /* ---- cards ---- */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(18px, 3vw, 28px);
+      }
+      .card h2 {
+        color: var(--navy);
+        margin-top: 0;
+        font-size: 1.4rem;
+      }
+      .card h3 {
+        color: var(--teal);
+        margin-top: 18px;
+        font-size: 1.1rem;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: start;
+      }
+
+      /* ---- investigation ---- */
+      .problem-box {
+        background: var(--soft-blue);
+        border-left: 5px solid var(--navy);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 1.08rem;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .esol-box {
+        background: #f0faf8;
+        border: 2px solid #a7d8d0;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-top: 16px;
+      }
+      .esol-box h3 {
+        margin-top: 0;
+        color: var(--teal);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .vocab-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .sentence-frames {
+        background: var(--soft-gold);
+        padding: 14px;
+        border-radius: 6px;
+        margin-top: 10px;
+      }
+      .sentence-frames p {
+        margin: 4px 0;
+        font-style: italic;
+      }
+
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .rep-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: #fafcff;
+      }
+      .rep-card h4 {
+        margin: 0 0 8px;
+        color: var(--navy);
+      }
+
+      /* ---- roles ---- */
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .role {
+        padding: 16px;
+        border-radius: var(--radius);
+        border: 1px solid #b9ddd8;
+      }
+      .role-facilitator {
+        background: #eef6ff;
+      }
+      .role-model {
+        background: #ecf8f6;
+      }
+      .role-checker {
+        background: #fff6df;
+      }
+      .role-reporter {
+        background: #fef2f1;
+      }
+      .role strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .role .role-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+        display: block;
+      }
+
+      /* ---- timer ---- */
+      .timer-section {
+        background: var(--soft-gold);
+        border: 2px solid #ead39d;
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .timer-display {
+        font-size: 3rem;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        color: var(--gold);
+      }
+      .timer-label {
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .timer-btn {
+        min-height: 40px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .timer-btn.start {
+        background: var(--green);
+        color: #fff;
+      }
+      .timer-btn.pause {
+        background: var(--gold);
+        color: #fff;
+      }
+      .timer-btn.reset {
+        background: var(--surface);
+        color: var(--navy);
+        border: 1px solid var(--line);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+
+      /* ---- phases ---- */
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        font: inherit;
+      }
+      .phase-header:hover {
+        background: #f8fafb;
+      }
+      .phase-time {
+        background: var(--soft-blue);
+        color: var(--navy);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .phase-name {
+        font-weight: 800;
+        flex: 1;
+      }
+      .phase-body {
+        padding: 0 14px 14px;
+        display: none;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .phase-card.open .phase-arrow {
+        transform: rotate(90deg);
+      }
+      .phase-arrow {
+        transition: transform 0.2s;
+      }
+      .checkpoint {
+        background: var(--soft-green);
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 8px;
+        font-size: 0.92rem;
+      }
+
+      /* ---- challenge / defense ---- */
+      .challenge-box {
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        padding: 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.9rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .rubric-table th {
+        background: var(--soft-blue);
+        color: var(--navy);
+      }
+
+      /* ---- exit ---- */
+      .exit-box {
+        background: var(--soft-blue);
+        border: 2px solid #bed4ea;
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 0;
+        padding-left: 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "\2610";
+        position: absolute;
+        left: 4px;
+        font-size: 1.1rem;
+      }
+
+      /* ---- SVG visual ---- */
+      .visual-model {
+        text-align: center;
+        margin: 16px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* ---- print ---- */
+      @media print {
+        .nav-bar,
+        .timer-section,
+        .timer-controls,
+        .timer-btn,
+        .no-print {
+          display: none !important;
+        }
+        .card,
+        .mission-hero {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .mission-hero {
+          background: #23395d !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .mission-hero {
+          grid-template-columns: 1fr;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          max-width: 280px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <!-- Navigation -->
+      <nav class="nav-bar" aria-label="Mission navigation">
+        <a href="/math-lab-missions/">Back to All Missions</a>
+        <div>
+          <a href="/math-lab-missions/mission-13/">Prev Mission</a>
+          <a href="/math-lab-missions/mission-15/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <div class="hero-eyebrow">Mission 14 &middot; Unit 6</div>
+          <h1 id="hero-title">Equivalent Expressions</h1>
+          <span class="hero-standard">6.EE.A.3 &middot; 6.EE.A.4</span>
+          <p class="hero-scenario">
+            The school garden club is building
+            <strong>3 identical raised beds</strong>. Each bed needs soil along
+            the length (<em>x</em> feet) plus <strong>4 extra feet</strong> of
+            border stone on every side. Two club members wrote different
+            expressions for the total border stone needed. Your team must prove
+            whether the two expressions are <strong>equivalent</strong> or not,
+            and recommend which form is easier for the club to use when ordering
+            materials.
+          </p>
+        </div>
+        <svg
+          class="hero-svg"
+          viewBox="0 0 340 400"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="Three raised garden beds with border stone measurements"
+        >
+          <!-- Background grass -->
+          <rect
+            x="0"
+            y="0"
+            width="340"
+            height="400"
+            rx="12"
+            fill="#2d6a4f"
+            opacity="0.15"
+          />
+          <!-- Bed 1 -->
+          <rect
+            x="30"
+            y="30"
+            width="280"
+            height="80"
+            rx="8"
+            fill="#8B6914"
+            stroke="#5a4510"
+            stroke-width="2"
+          />
+          <rect x="42" y="42" width="256" height="56" rx="4" fill="#6b8f3c" />
+          <text
+            x="170"
+            y="75"
+            text-anchor="middle"
+            font-size="16"
+            font-weight="800"
+            fill="#fff"
+          >
+            x feet
+          </text>
+          <text
+            x="16"
+            y="75"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#ffd700"
+          >
+            +4
+          </text>
+          <text
+            x="324"
+            y="75"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#ffd700"
+          >
+            +4
+          </text>
+          <!-- Bed 2 -->
+          <rect
+            x="30"
+            y="140"
+            width="280"
+            height="80"
+            rx="8"
+            fill="#8B6914"
+            stroke="#5a4510"
+            stroke-width="2"
+          />
+          <rect x="42" y="152" width="256" height="56" rx="4" fill="#6b8f3c" />
+          <text
+            x="170"
+            y="185"
+            text-anchor="middle"
+            font-size="16"
+            font-weight="800"
+            fill="#fff"
+          >
+            x feet
+          </text>
+          <text
+            x="16"
+            y="185"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#ffd700"
+          >
+            +4
+          </text>
+          <text
+            x="324"
+            y="185"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#ffd700"
+          >
+            +4
+          </text>
+          <!-- Bed 3 -->
+          <rect
+            x="30"
+            y="250"
+            width="280"
+            height="80"
+            rx="8"
+            fill="#8B6914"
+            stroke="#5a4510"
+            stroke-width="2"
+          />
+          <rect x="42" y="262" width="256" height="56" rx="4" fill="#6b8f3c" />
+          <text
+            x="170"
+            y="295"
+            text-anchor="middle"
+            font-size="16"
+            font-weight="800"
+            fill="#fff"
+          >
+            x feet
+          </text>
+          <text
+            x="16"
+            y="295"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#ffd700"
+          >
+            +4
+          </text>
+          <text
+            x="324"
+            y="295"
+            text-anchor="middle"
+            font-size="11"
+            font-weight="700"
+            fill="#ffd700"
+          >
+            +4
+          </text>
+          <!-- Labels -->
+          <text
+            x="170"
+            y="365"
+            text-anchor="middle"
+            font-size="14"
+            font-weight="700"
+            fill="#23395d"
+          >
+            Expression A: 3(x + 4)
+          </text>
+          <text
+            x="170"
+            y="388"
+            text-anchor="middle"
+            font-size="14"
+            font-weight="700"
+            fill="#0f766e"
+          >
+            Expression B: 3x + 12
+          </text>
+        </svg>
+      </section>
+
+      <!-- INVESTIGATION -->
+      <section class="card" aria-labelledby="investigation-title">
+        <h2 id="investigation-title">The Investigation</h2>
+
+        <div class="problem-box">
+          <strong>The Problem:</strong> Club member Maya wrote the total border
+          stone as <strong>3(x + 4)</strong> feet. Club member Carlos wrote it
+          as <strong>3x + 12</strong> feet. Are these expressions equivalent?
+          Prove it using <em>at least two</em> different methods. Then
+          determine: if each bed is <strong>6 feet</strong> long, how much total
+          border stone is needed?
+        </div>
+
+        <!-- Visual Model: Area Model -->
+        <h3>Visual Model: Area Model for the Distributive Property</h3>
+        <div class="visual-model">
+          <svg
+            viewBox="0 0 560 280"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Area model showing 3 times (x plus 4) equals 3x plus 12"
+            style="max-width: 560px"
+          >
+            <!-- Title -->
+            <text
+              x="280"
+              y="24"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Area Model: 3(x + 4)
+            </text>
+            <!-- Left section: 3 * x -->
+            <rect
+              x="40"
+              y="44"
+              width="200"
+              height="120"
+              rx="4"
+              fill="#d1ecf9"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="140"
+              y="112"
+              text-anchor="middle"
+              font-size="28"
+              font-weight="800"
+              fill="#23395d"
+            >
+              3x
+            </text>
+            <text
+              x="140"
+              y="42"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="700"
+              fill="#23395d"
+            >
+              x
+            </text>
+            <!-- Right section: 3 * 4 -->
+            <rect
+              x="240"
+              y="44"
+              width="120"
+              height="120"
+              rx="4"
+              fill="#fff6df"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <text
+              x="300"
+              y="112"
+              text-anchor="middle"
+              font-size="28"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              12
+            </text>
+            <text
+              x="300"
+              y="42"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="700"
+              fill="#b7791f"
+            >
+              4
+            </text>
+            <!-- Height label -->
+            <text
+              x="28"
+              y="110"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="700"
+              fill="#23395d"
+              transform="rotate(-90, 28, 110)"
+            >
+              3
+            </text>
+            <!-- Brace bottom -->
+            <line
+              x1="40"
+              y1="178"
+              x2="360"
+              y2="178"
+              stroke="#0f766e"
+              stroke-width="2"
+            />
+            <text
+              x="200"
+              y="200"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="800"
+              fill="#0f766e"
+            >
+              3(x + 4) = 3x + 12
+            </text>
+            <!-- Substitution example -->
+            <text
+              x="280"
+              y="236"
+              text-anchor="middle"
+              font-size="14"
+              fill="#555"
+            >
+              When x = 6:
+            </text>
+            <text
+              x="280"
+              y="258"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="700"
+              fill="#23395d"
+            >
+              3(6 + 4) = 3(10) = 30 &nbsp;&nbsp;&nbsp; 3(6) + 12 = 18 + 12 = 30
+              &#10004;
+            </text>
+          </svg>
+        </div>
+
+        <!-- Step-by-step -->
+        <h3>Step-by-Step Investigation Guide</h3>
+        <ol class="step-list">
+          <li>
+            <strong>Identify the expressions.</strong> Write both expressions on
+            your paper. What operation connects the 3 to (x + 4) in Maya's
+            expression?
+            <em
+              >Guiding question: What does the 3 represent in the garden
+              context?</em
+            >
+          </li>
+          <li>
+            <strong>Apply the Distributive Property.</strong> Expand 3(x + 4) by
+            multiplying 3 by each term inside the parentheses. Write each step.
+            <em>Guiding question: What is 3 times x? What is 3 times 4?</em>
+          </li>
+          <li>
+            <strong>Compare the results.</strong> After expanding, does Maya's
+            expression simplify to match Carlos's expression? Write your
+            conclusion.
+            <em
+              >Guiding question: If both expressions simplify to the same form,
+              what does that tell us?</em
+            >
+          </li>
+          <li>
+            <strong>Test with a value.</strong> Substitute x = 6 into both
+            expressions. Do they give the same number? Show all work.
+            <em
+              >Guiding question: Why is one test value not enough to be
+              completely sure?</em
+            >
+          </li>
+          <li>
+            <strong>Test with a second value.</strong> Substitute x = 10 into
+            both expressions. Record results.
+            <em
+              >Guiding question: Could two different expressions give the same
+              answer for one value but not another?</em
+            >
+          </li>
+          <li>
+            <strong>Write your recommendation.</strong> Which expression form is
+            more useful for the garden club when ordering stone? Explain your
+            reasoning.
+            <em
+              >Guiding question: When might the factored form be better? When
+              might the expanded form be better?</em
+            >
+          </li>
+        </ol>
+
+        <!-- ESOL Support -->
+        <div class="esol-box">
+          <h3>ESOL Support: Key Vocabulary</h3>
+          <div class="vocab-grid">
+            <div class="vocab-item">
+              <strong>Equivalent</strong><br />
+              Equal in value. Two expressions that always give the same answer.
+            </div>
+            <div class="vocab-item">
+              <strong>Expression</strong><br />
+              A math phrase with numbers, variables, and operations (no = sign).
+            </div>
+            <div class="vocab-item">
+              <strong>Distributive Property</strong><br />
+              a(b + c) = ab + ac. Multiply the outside number by each term
+              inside.
+            </div>
+            <div class="vocab-item">
+              <strong>Variable</strong><br />
+              A letter (like x) that stands for a number we do not know yet.
+            </div>
+            <div class="vocab-item">
+              <strong>Substitute</strong><br />
+              Replace a variable with a number to test or evaluate.
+            </div>
+            <div class="vocab-item">
+              <strong>Factored form</strong><br />
+              An expression written with parentheses, like 3(x + 4).
+            </div>
+          </div>
+          <div class="sentence-frames">
+            <strong>Sentence Frames:</strong>
+            <p>"The expression 3(x + 4) means _____ because _____."</p>
+            <p>
+              "I know the expressions are equivalent because when I substitute x
+              = _____, both give _____."
+            </p>
+            <p>"The distributive property lets me rewrite _____ as _____."</p>
+          </div>
+        </div>
+
+        <!-- Multiple Representations -->
+        <h3>Multiple Representations</h3>
+        <div class="representations">
+          <div class="rep-card">
+            <h4>Approach 1: Distributive Property (Algebraic)</h4>
+            <p>
+              Expand 3(x + 4) step by step:<br />
+              3 &middot; x + 3 &middot; 4 = 3x + 12<br />
+              Since 3x + 12 = 3x + 12, the expressions are equivalent.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 2: Substitution (Testing Values)</h4>
+            <p>
+              Try x = 6: 3(6+4) = 30 and 3(6)+12 = 30.<br />
+              Try x = 0: 3(0+4) = 12 and 3(0)+12 = 12.<br />
+              Same result each time supports equivalence.
+            </p>
+          </div>
+          <div class="rep-card">
+            <h4>Approach 3: Visual (Area Model)</h4>
+            <p>
+              Draw a rectangle with height 3 and width (x + 4). Split the width
+              into x and 4. The total area is 3x + 12, which matches the
+              expanded form.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEAM ROLES -->
+      <section class="card" aria-labelledby="roles-title">
+        <h2 id="roles-title">Team Roles</h2>
+        <div class="role-grid">
+          <div class="role role-facilitator">
+            <span class="role-icon" aria-hidden="true">&#128218;</span>
+            <strong>Facilitator</strong>
+            Read the scenario aloud. Make sure everyone writes both expressions.
+            Keep the team moving through each step.
+          </div>
+          <div class="role role-model">
+            <span class="role-icon" aria-hidden="true">&#9999;&#65039;</span>
+            <strong>Model Builder</strong>
+            Draw the area model on the team paper. Label every part: height = 3,
+            width sections = x and 4, area sections = 3x and 12.
+          </div>
+          <div class="role role-checker">
+            <span class="role-icon" aria-hidden="true">&#128270;</span>
+            <strong>Precision Checker</strong>
+            Check every substitution calculation. Verify that both expressions
+            give the same result for each test value. Flag any errors.
+          </div>
+          <div class="role role-reporter">
+            <span class="role-icon" aria-hidden="true">&#128221;</span>
+            <strong>Reporter</strong>
+            Prepare the defense statement. Write the claim ("These expressions
+            are/are not equivalent because...") with evidence from at least two
+            methods.
+          </div>
+        </div>
+      </section>
+
+      <!-- TIMER & PHASES -->
+      <div class="two-col">
+        <section class="card" aria-labelledby="phases-title">
+          <h2 id="phases-title">Timed Lab Phases</h2>
+
+          <div class="timer-section no-print">
+            <div class="timer-label" id="activePhaseLabel">Launch Phase</div>
+            <div class="timer-display" id="timerDisplay" aria-live="polite">
+              03:00
+            </div>
+            <div class="timer-controls">
+              <button class="timer-btn start" id="startTimer">Start</button>
+              <button class="timer-btn pause" id="pauseTimer">Pause</button>
+              <button class="timer-btn reset" id="resetTimer">Reset</button>
+            </div>
+          </div>
+
+          <div class="phase-cards" id="phaseList">
+            <!-- Phase 1 -->
+            <article class="phase-card open" data-minutes="3">
+              <button class="phase-header" aria-expanded="true">
+                <span class="phase-time">3 min</span>
+                <span class="phase-name">Launch</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Read the garden scenario aloud. Assign roles. Each member
+                  writes both expressions on their paper.
+                </p>
+                <ul>
+                  <li>What does x stand for in this problem?</li>
+                  <li>What does the 3 represent?</li>
+                  <li>What does +4 mean in the garden context?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Everyone can explain what the expressions mean in
+                  words.
+                </div>
+              </div>
+            </article>
+            <!-- Phase 2 -->
+            <article class="phase-card" data-minutes="6">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">6 min</span>
+                <span class="phase-name">Build</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Model Builder draws the area model. Team applies the
+                  distributive property step by step.
+                </p>
+                <ul>
+                  <li>Can you label every part of the area model?</li>
+                  <li>Does the total area match 3x + 12?</li>
+                  <li>Write the distributive property steps clearly.</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Area model is drawn and labeled. Distributive
+                  property is written out.
+                </div>
+              </div>
+            </article>
+            <!-- Phase 3 -->
+            <article class="phase-card" data-minutes="5">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">5 min</span>
+                <span class="phase-name">Solve</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Substitute x = 6 and x = 10 into both expressions. Calculate
+                  and compare results.
+                </p>
+                <ul>
+                  <li>Do both expressions give 30 when x = 6?</li>
+                  <li>Do both expressions give 42 when x = 10?</li>
+                  <li>Write your conclusion: are they equivalent?</li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Two substitution tests completed with matching
+                  results.
+                </div>
+              </div>
+            </article>
+            <!-- Phase 4 -->
+            <article class="phase-card" data-minutes="4">
+              <button class="phase-header" aria-expanded="false">
+                <span class="phase-time">4 min</span>
+                <span class="phase-name">Defend</span>
+                <span class="phase-arrow" aria-hidden="true">&#9654;</span>
+              </button>
+              <div class="phase-body">
+                <p>
+                  Reporter prepares the defense. Team reviews the claim,
+                  evidence, and recommendation.
+                </p>
+                <ul>
+                  <li>
+                    State your claim: "These expressions are equivalent
+                    because..."
+                  </li>
+                  <li>
+                    List your evidence: distributive property AND substitution
+                    results.
+                  </li>
+                  <li>
+                    Which form should the garden club use to order stone? Why?
+                  </li>
+                </ul>
+                <div class="checkpoint">
+                  Checkpoint: Defense includes claim + two types of evidence +
+                  recommendation.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- CHALLENGE & DEFENSE -->
+        <div>
+          <section class="card" aria-labelledby="challenge-title">
+            <h2 id="challenge-title">Challenge Extensions</h2>
+            <div class="challenge-box">
+              <strong>Extension Problem:</strong> A fourth raised bed is added,
+              but it needs 5 extra feet of border stone instead of 4. Write two
+              equivalent expressions for the total border stone of all 4 beds if
+              the new bed is also x feet long but with 5 extra feet. Prove they
+              are equivalent.
+            </div>
+            <h3>What If?</h3>
+            <ul>
+              <li>
+                What if the club builds 5 beds instead of 3? How do both
+                expressions change?
+              </li>
+              <li>
+                What if the border stone for each bed was (x + 4) on two sides
+                and just x on the other two? Write a new expression.
+              </li>
+              <li>
+                Can you write a <em>third</em> equivalent expression that looks
+                different from both Maya's and Carlos's?
+              </li>
+            </ul>
+            <h3>Real-Life Connections</h3>
+            <p>
+              Equivalent expressions appear in shopping (coupons applied before
+              vs. after tax), construction (different ways to calculate lumber),
+              and recipes (scaling ingredients).
+            </p>
+          </section>
+
+          <section class="card" aria-labelledby="defense-title">
+            <h2 id="defense-title">Defense Preparation</h2>
+            <p><strong>Be ready to answer:</strong></p>
+            <ol class="defense-list">
+              <li>
+                How did you prove the expressions are equivalent? Name at least
+                two methods.
+              </li>
+              <li>What does the distributive property do to 3(x + 4)?</li>
+              <li>
+                If x = 20, what is the total border stone? Show your work.
+              </li>
+              <li>
+                Which expression form is more useful for quick mental math? Why?
+              </li>
+            </ol>
+            <strong>Sentence Starters:</strong>
+            <ul>
+              <li>"We proved equivalence by..."</li>
+              <li>"The distributive property shows that..."</li>
+              <li>
+                "For ordering materials, we recommend _____ form because..."
+              </li>
+            </ul>
+            <h3>Rubric</h3>
+            <table class="rubric-table">
+              <thead>
+                <tr>
+                  <th>Criteria</th>
+                  <th>Excellent (4)</th>
+                  <th>Proficient (3)</th>
+                  <th>Developing (2)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Proof of equivalence</td>
+                  <td>Two+ methods with clear steps</td>
+                  <td>One complete method</td>
+                  <td>Attempted but incomplete</td>
+                </tr>
+                <tr>
+                  <td>Visual model</td>
+                  <td>Area model fully labeled</td>
+                  <td>Area model with minor gaps</td>
+                  <td>Model attempted</td>
+                </tr>
+                <tr>
+                  <td>Substitution</td>
+                  <td>Two+ values tested correctly</td>
+                  <td>One value tested correctly</td>
+                  <td>Attempted with errors</td>
+                </tr>
+                <tr>
+                  <td>Recommendation</td>
+                  <td>Clear choice with reasoning</td>
+                  <td>Choice stated</td>
+                  <td>No recommendation</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+      </div>
+
+      <!-- EXIT PRODUCT -->
+      <section class="card" aria-labelledby="exit-title">
+        <h2 id="exit-title">Exit Product</h2>
+        <div class="exit-box">
+          <strong>Your team submits:</strong> A one-page Equivalence Proof Sheet
+          that includes:
+          <ul>
+            <li>Both expressions written clearly at the top</li>
+            <li>An area model with all parts labeled</li>
+            <li>The distributive property shown step-by-step</li>
+            <li>Two substitution tests with calculations</li>
+            <li>A three-sentence defense: claim, evidence, recommendation</li>
+          </ul>
+        </div>
+        <h3>Self-Assessment Checklist</h3>
+        <ul class="checklist">
+          <li>I can explain what "equivalent expressions" means.</li>
+          <li>I used the distributive property to expand 3(x + 4).</li>
+          <li>I tested both expressions with at least two values of x.</li>
+          <li>Our area model is labeled with all dimensions and areas.</li>
+          <li>Our defense includes a claim, evidence, and recommendation.</li>
+          <li>I can explain which form is better for ordering and why.</li>
+        </ul>
+      </section>
+
+      <!-- Print workspace -->
+      <section
+        class="card print-only"
+        aria-label="Student work space"
+        style="display: none"
+      >
+        <h2>Work Space</h2>
+        <p>Expression A: 3(x + 4)</p>
+        <p>Expression B: 3x + 12</p>
+        <br /><br />
+        <p>Area Model:</p>
+        <br /><br /><br />
+        <p>Substitution Test 1 (x = _____):</p>
+        <br /><br />
+        <p>Substitution Test 2 (x = _____):</p>
+        <br /><br />
+        <p>Defense (Claim / Evidence / Recommendation):</p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        // Timer
+        var phases = [
+          { name: "Launch", minutes: 3 },
+          { name: "Build", minutes: 6 },
+          { name: "Solve", minutes: 5 },
+          { name: "Defend", minutes: 4 },
+        ];
+        var currentPhase = 0;
+        var remaining = phases[0].minutes * 60;
+        var interval = null;
+        var display = document.getElementById("timerDisplay");
+        var label = document.getElementById("activePhaseLabel");
+
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function updateDisplay() {
+          display.textContent = fmt(remaining);
+          label.textContent = phases[currentPhase].name + " Phase";
+        }
+
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (interval) return;
+            interval = setInterval(function () {
+              remaining = Math.max(0, remaining - 1);
+              updateDisplay();
+              if (remaining === 0) {
+                clearInterval(interval);
+                interval = null;
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+          });
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[currentPhase].minutes * 60;
+            updateDisplay();
+          });
+
+        // Phase accordion
+        document
+          .getElementById("phaseList")
+          .addEventListener("click", function (e) {
+            var header = e.target.closest(".phase-header");
+            if (!header) return;
+            var card = header.parentElement;
+            var allCards = document.querySelectorAll(".phase-card");
+            var idx = Array.prototype.indexOf.call(allCards, card);
+            allCards.forEach(function (c, i) {
+              c.classList.toggle("open", i === idx);
+              c.querySelector(".phase-header").setAttribute(
+                "aria-expanded",
+                i === idx ? "true" : "false",
+              );
+            });
+            currentPhase = idx;
+            clearInterval(interval);
+            interval = null;
+            remaining = phases[idx].minutes * 60;
+            updateDisplay();
+          });
+
+        updateDisplay();
+      })();
+    </script>
+  </body>
+</html>

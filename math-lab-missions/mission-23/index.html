@@ -1,0 +1,1483 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 23: Tables and Graphs | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #115e59;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #eef7ee;
+        --line: #d9e1e8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg);
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        color: var(--teal-dark);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .mission-nav a:hover {
+        text-decoration: underline;
+      }
+      .mission-hero {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 28px;
+        align-items: center;
+        padding: clamp(28px, 5vw, 48px);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--navy);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 12px;
+        color: var(--navy);
+      }
+      .mission-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .standard-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-teal);
+        color: var(--teal-dark);
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-left: 6px;
+      }
+      .hero-scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-svg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+        border-bottom: 2px solid var(--soft-blue);
+        padding-bottom: 8px;
+      }
+      .panel h3 {
+        color: var(--teal-dark);
+        font-size: 1.12rem;
+        margin-top: 18px;
+        margin-bottom: 8px;
+      }
+      .problem-box {
+        padding: 18px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 1.05rem;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        display: block;
+        margin-top: 4px;
+      }
+      .esol-box {
+        padding: 18px;
+        background: #f0faf9;
+        border: 2px dashed #8bbab3;
+        border-radius: 8px;
+        margin: 18px 0;
+      }
+      .esol-box h3 {
+        color: var(--teal-dark);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .vocab-item .def {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .sentence-frames {
+        padding: 12px 16px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .sentence-frames p {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role-card {
+        padding: 14px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+        border-radius: 8px;
+      }
+      .role-card strong {
+        display: block;
+        color: #115e60;
+        margin-bottom: 4px;
+      }
+      .role-card .task {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.6rem;
+        font-weight: 900;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .timer-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        min-height: 42px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn:focus-visible {
+        outline: 3px solid rgba(32, 122, 122, 0.35);
+        outline-offset: 2px;
+      }
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .phase-header {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 4px 14px 14px;
+        color: var(--muted);
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+      .challenge-box {
+        padding: 16px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        padding: 12px 16px;
+        background: var(--soft-blue);
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .sentence-starter {
+        display: block;
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.92rem;
+        margin-top: 2px;
+      }
+      .exit-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "☐";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+      .svg-container {
+        display: flex;
+        justify-content: center;
+        margin: 18px 0;
+      }
+      .svg-container svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .rep-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .rep-tab {
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .rep-tab.active {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .rep-content {
+        display: none;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .rep-content.active {
+        display: block;
+      }
+      .print-only {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-bar,
+        .timer-buttons,
+        .btn,
+        .rep-tabs {
+          display: none !important;
+        }
+        .panel,
+        .mission-hero {
+          box-shadow: none;
+          border-color: #999;
+          break-inside: avoid;
+        }
+        .phase-body,
+        .rep-content {
+          display: block !important;
+        }
+        .print-only {
+          display: block;
+        }
+        .content-grid {
+          display: block;
+        }
+        .content-grid > * {
+          margin-bottom: 18px;
+        }
+      }
+      @media (max-width: 900px) {
+        .mission-hero,
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          order: -1;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-22/">&#8592; Mission 22</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-24/">Mission 24 &#8594;</a>
+      </nav>
+
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <span class="mission-badge">Mission 23</span>
+          <span
+            class="mission-badge"
+            style="background: var(--soft-teal); color: var(--teal-dark)"
+            >Unit 9</span
+          >
+          <span class="standard-tag">6.EE.C.9 &middot; 6.RP.A.3</span>
+          <h1 id="hero-title">Tables and Graphs</h1>
+          <p class="hero-scenario">
+            The school garden club is growing sunflowers for a science fair.
+            They measure the height of one sunflower every week. After week 1 it
+            was <strong>4 cm</strong>, week 2 it was <strong>9 cm</strong>, week
+            3 it was <strong>14 cm</strong>, and week 4 it was
+            <strong>19 cm</strong>. The fair is in <strong>week 8</strong>. Your
+            team must represent the growth pattern using a table, a graph, and
+            an equation, then predict the sunflower's height at week 8.
+          </p>
+        </div>
+        <div class="hero-svg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 380 420"
+            width="380"
+            height="420"
+            aria-label="Coordinate graph showing sunflower growth with points at weeks 1 through 8"
+          >
+            <rect width="380" height="420" rx="12" fill="#edf5ff" />
+            <text
+              x="190"
+              y="28"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Sunflower Growth Over Time
+            </text>
+            <!-- Axes -->
+            <line
+              x1="55"
+              y1="370"
+              x2="360"
+              y2="370"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <line
+              x1="55"
+              y1="370"
+              x2="55"
+              y2="50"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="207"
+              y="402"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Week
+            </text>
+            <text
+              x="20"
+              y="210"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#23395d"
+              transform="rotate(-90,20,210)"
+            >
+              Height (cm)
+            </text>
+            <!-- Grid lines -->
+            <g stroke="#e8e8e8" stroke-width="1">
+              <line x1="55" y1="330" x2="360" y2="330" />
+              <line x1="55" y1="290" x2="360" y2="290" />
+              <line x1="55" y1="250" x2="360" y2="250" />
+              <line x1="55" y1="210" x2="360" y2="210" />
+              <line x1="55" y1="170" x2="360" y2="170" />
+              <line x1="55" y1="130" x2="360" y2="130" />
+              <line x1="55" y1="90" x2="360" y2="90" />
+            </g>
+            <!-- Y-axis labels -->
+            <g font-size="10" fill="#5b6573" text-anchor="end">
+              <text x="50" y="374">0</text>
+              <text x="50" y="334">5</text>
+              <text x="50" y="294">10</text>
+              <text x="50" y="254">15</text>
+              <text x="50" y="214">20</text>
+              <text x="50" y="174">25</text>
+              <text x="50" y="134">30</text>
+              <text x="50" y="94">35</text>
+              <text x="50" y="54">40</text>
+            </g>
+            <!-- X-axis labels -->
+            <g font-size="10" fill="#5b6573" text-anchor="middle">
+              <text x="93" y="388">1</text>
+              <text x="131" y="388">2</text>
+              <text x="169" y="388">3</text>
+              <text x="207" y="388">4</text>
+              <text x="245" y="388">5</text>
+              <text x="283" y="388">6</text>
+              <text x="321" y="388">7</text>
+              <text x="360" y="388">8</text>
+            </g>
+            <!-- Data points (known) -->
+            <g fill="#207a7a">
+              <circle cx="93" cy="338" r="6" />
+              <circle cx="131" cy="298" r="6" />
+              <circle cx="169" cy="258" r="6" />
+              <circle cx="207" cy="218" r="6" />
+            </g>
+            <!-- Predicted points (dashed) -->
+            <g
+              fill="none"
+              stroke="#b7791f"
+              stroke-width="2"
+              stroke-dasharray="3,3"
+            >
+              <circle cx="245" cy="178" r="6" />
+              <circle cx="283" cy="138" r="6" />
+              <circle cx="321" cy="98" r="6" />
+              <circle cx="360" cy="58" r="6" />
+            </g>
+            <!-- Line of best fit -->
+            <line
+              x1="93"
+              y1="338"
+              x2="207"
+              y2="218"
+              stroke="#207a7a"
+              stroke-width="2.5"
+            />
+            <line
+              x1="207"
+              y1="218"
+              x2="360"
+              y2="58"
+              stroke="#b7791f"
+              stroke-width="2"
+              stroke-dasharray="6,4"
+            />
+            <!-- Labels -->
+            <g font-size="9" font-weight="700">
+              <text x="100" y="332" fill="#207a7a">(1, 4)</text>
+              <text x="138" y="292" fill="#207a7a">(2, 9)</text>
+              <text x="176" y="252" fill="#207a7a">(3, 14)</text>
+              <text x="214" y="212" fill="#207a7a">(4, 19)</text>
+              <text x="252" y="172" fill="#b7791f">(5, 24)?</text>
+              <text x="290" y="132" fill="#b7791f">(6, 29)?</text>
+              <text x="328" y="92" fill="#b7791f">(7, 34)?</text>
+              <text x="340" y="52" fill="#b7791f">(8, 39)?</text>
+            </g>
+            <!-- Legend -->
+            <rect
+              x="220"
+              y="40"
+              width="140"
+              height="42"
+              rx="5"
+              fill="#fff"
+              stroke="#d9e1e8"
+            />
+            <circle cx="232" cy="52" r="4" fill="#207a7a" />
+            <text x="240" y="56" font-size="10" fill="#23395d">Known data</text>
+            <circle
+              cx="232"
+              cy="70"
+              r="4"
+              fill="none"
+              stroke="#b7791f"
+              stroke-width="1.5"
+              stroke-dasharray="2,2"
+            />
+            <text x="240" y="74" font-size="10" fill="#23395d">
+              Predictions
+            </text>
+            <!-- Sunflower icon -->
+            <g transform="translate(60,44)">
+              <line
+                x1="12"
+                y1="25"
+                x2="12"
+                y2="45"
+                stroke="#2f7d32"
+                stroke-width="3"
+              />
+              <circle cx="12" cy="18" r="10" fill="#b7791f" />
+              <circle cx="12" cy="18" r="5" fill="#23395d" />
+              <ellipse
+                cx="0"
+                cy="12"
+                rx="5"
+                ry="3"
+                fill="#b7791f"
+                transform="rotate(-30,12,18)"
+              />
+              <ellipse
+                cx="24"
+                cy="12"
+                rx="5"
+                ry="3"
+                fill="#b7791f"
+                transform="rotate(30,12,18)"
+              />
+              <ellipse
+                cx="6"
+                cy="6"
+                rx="5"
+                ry="3"
+                fill="#b7791f"
+                transform="rotate(-70,12,18)"
+              />
+              <ellipse
+                cx="18"
+                cy="6"
+                rx="5"
+                ry="3"
+                fill="#b7791f"
+                transform="rotate(70,12,18)"
+              />
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <section class="panel">
+            <h2>The Problem</h2>
+            <div class="problem-box">
+              <strong>How tall will the sunflower be at week 8?</strong> Use the
+              data from weeks 1-4 to find the growth pattern. Represent the
+              relationship with a table, a coordinate graph, and an equation.
+              Then use your equation to predict the height at week 8. Explain
+              whether you trust your prediction.
+            </div>
+
+            <h3>Visual Model: Growth Table and Graph</h3>
+            <div class="svg-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 480 200"
+                width="480"
+                height="200"
+                aria-label="Table showing week numbers and heights with the growth pattern highlighted"
+              >
+                <rect width="480" height="200" rx="8" fill="#f8fffd" />
+                <!-- Table -->
+                <rect
+                  x="20"
+                  y="20"
+                  width="440"
+                  height="30"
+                  rx="4"
+                  fill="#ecf8f6"
+                />
+                <g
+                  font-size="12"
+                  font-weight="800"
+                  fill="#115e59"
+                  text-anchor="center"
+                >
+                  <text x="70" y="40">Week (w)</text>
+                  <text x="180" y="40">Height (h) cm</text>
+                  <text x="320" y="40">Change</text>
+                  <text x="420" y="40">Pattern</text>
+                </g>
+                <g font-size="12" fill="#263242" text-anchor="center">
+                  <text x="70" y="68">1</text>
+                  <text x="180" y="68">4</text>
+                  <text x="320" y="68">--</text>
+                  <text x="420" y="68">start</text>
+                  <line x1="20" y1="76" x2="460" y2="76" stroke="#eee" />
+                  <text x="70" y="94">2</text>
+                  <text x="180" y="94">9</text>
+                  <text x="320" y="94" fill="#207a7a" font-weight="700">
+                    +5
+                  </text>
+                  <text x="420" y="94">5(2)-1=9</text>
+                  <line x1="20" y1="102" x2="460" y2="102" stroke="#eee" />
+                  <text x="70" y="120">3</text>
+                  <text x="180" y="120">14</text>
+                  <text x="320" y="120" fill="#207a7a" font-weight="700">
+                    +5
+                  </text>
+                  <text x="420" y="120">5(3)-1=14</text>
+                  <line x1="20" y1="128" x2="460" y2="128" stroke="#eee" />
+                  <text x="70" y="146">4</text>
+                  <text x="180" y="146">19</text>
+                  <text x="320" y="146" fill="#207a7a" font-weight="700">
+                    +5
+                  </text>
+                  <text x="420" y="146">5(4)-1=19</text>
+                  <line x1="20" y1="154" x2="460" y2="154" stroke="#eee" />
+                  <text x="70" y="172">8</text>
+                  <text x="180" y="172" fill="#b7791f" font-weight="700">
+                    ?
+                  </text>
+                  <text x="320" y="172" fill="#207a7a" font-weight="700">
+                    +5 each
+                  </text>
+                  <text x="420" y="172" fill="#b7791f" font-weight="700">
+                    5(8)-1=39
+                  </text>
+                </g>
+                <!-- Arrow showing constant change -->
+                <line
+                  x1="290"
+                  y1="62"
+                  x2="290"
+                  y2="170"
+                  stroke="#207a7a"
+                  stroke-width="1.5"
+                  stroke-dasharray="4,3"
+                />
+                <text
+                  x="292"
+                  y="186"
+                  font-size="10"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  Constant rate: +5 cm/week
+                </text>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Read and organize the data.</strong> Write the week
+                number and height as ordered pairs: (1, 4), (2, 9), (3, 14), (4,
+                19).
+                <span class="guiding-q"
+                  >Which value is the input (independent)? Which is the output
+                  (dependent)?</span
+                >
+              </li>
+              <li>
+                <strong>Find the pattern.</strong> Look at the change between
+                each pair of heights: 9-4=5, 14-9=5, 19-14=5. The height
+                increases by 5 cm each week.
+                <span class="guiding-q"
+                  >What does it mean when the change is the same every
+                  time?</span
+                >
+              </li>
+              <li>
+                <strong>Write the equation.</strong> The rate is +5 per week.
+                Test: h = 5w - 1. Check: 5(1)-1=4, 5(2)-1=9, 5(3)-1=14,
+                5(4)-1=19. All match!
+                <span class="guiding-q"
+                  >Where does the -1 come from? What would the height be at week
+                  0?</span
+                >
+              </li>
+              <li>
+                <strong>Make the graph.</strong> Plot the four known points on a
+                coordinate plane. Draw a line through them. Extend the line to
+                week 8.
+                <span class="guiding-q"
+                  >Does the line go through all four points? What does that
+                  confirm?</span
+                >
+              </li>
+              <li>
+                <strong>Predict week 8.</strong> Substitute w = 8: h = 5(8) - 1
+                = 39 cm. Check by reading the graph at w = 8.
+                <span class="guiding-q"
+                  >How confident are you in this prediction? What could make it
+                  less accurate?</span
+                >
+              </li>
+              <li>
+                <strong>Reflect on the model.</strong> In real life, sunflowers
+                do not grow at a constant rate forever. Discuss when this model
+                might stop working.
+                <span class="guiding-q"
+                  >At what week might the sunflower stop growing? How would the
+                  graph change?</span
+                >
+              </li>
+            </ol>
+
+            <div class="esol-box">
+              <h3>ESOL Support: Key Vocabulary</h3>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Table</strong>
+                  <div class="def">
+                    An organized chart with rows and columns that shows
+                    input-output pairs.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Coordinate Graph</strong>
+                  <div class="def">
+                    A picture that uses a horizontal axis (x) and vertical axis
+                    (y) to show points.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Equation</strong>
+                  <div class="def">
+                    A math sentence with = that shows the rule. Example: h = 5w
+                    - 1.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Constant Rate</strong>
+                  <div class="def">
+                    The same amount of change every time. Here: +5 cm every
+                    week.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Predict</strong>
+                  <div class="def">
+                    Use a pattern or equation to find a value you have not
+                    measured yet.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Ordered Pair</strong>
+                  <div class="def">
+                    Two numbers in parentheses (x, y) that name a point on a
+                    graph. Example: (3, 14).
+                  </div>
+                </div>
+              </div>
+              <div class="sentence-frames">
+                <strong>Sentence Frames:</strong>
+                <p>
+                  "The table shows that for every 1 week, the height increases
+                  by ___ cm."
+                </p>
+                <p>
+                  "The equation h = ___ tells us that at week ___, the height is
+                  ___."
+                </p>
+                <p>
+                  "I predict the sunflower will be ___ cm tall at week 8 because
+                  ___."
+                </p>
+              </div>
+            </div>
+
+            <h3>Multiple Representations</h3>
+            <div class="rep-tabs" role="tablist">
+              <button
+                class="rep-tab active"
+                role="tab"
+                data-target="rep1"
+                aria-selected="true"
+              >
+                Table
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep2"
+                aria-selected="false"
+              >
+                Graph
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep3"
+                aria-selected="false"
+              >
+                Equation in Words
+              </button>
+            </div>
+            <div class="rep-content active" id="rep1">
+              <table
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 0.95rem;
+                "
+              >
+                <thead>
+                  <tr style="background: var(--soft-blue)">
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Week (w)
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Height (h) cm
+                    </th>
+                    <th style="padding: 8px; border: 1px solid var(--line)">
+                      Check: 5w - 1
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      1
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      4
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      5(1)-1=4
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      2
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      9
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      5(2)-1=9
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      3
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      14
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      5(3)-1=14
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      4
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      19
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      5(4)-1=19
+                    </td>
+                  </tr>
+                  <tr style="background: var(--soft-gold)">
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                        font-weight: 700;
+                      "
+                    >
+                      8
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                        font-weight: 700;
+                      "
+                    >
+                      39
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                        font-weight: 700;
+                      "
+                    >
+                      5(8)-1=39
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="rep-content" id="rep2">
+              <p>
+                See the hero graph above. The four known points form a straight
+                line. The predicted points (dashed gold circles) continue the
+                same pattern. The line goes through (0, -1) if extended backward
+                — but a sunflower cannot have negative height, so the model only
+                works for w=1 and beyond.
+              </p>
+            </div>
+            <div class="rep-content" id="rep3">
+              <p>
+                <strong>In words:</strong> "To find the height of the sunflower,
+                multiply the week number by 5, then subtract 1. This works
+                because the sunflower grows 5 cm each week, and at week 1 it was
+                already 4 cm tall (which is 5 times 1 minus 1)."
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div>
+          <section class="panel">
+            <h2>Team Roles</h2>
+            <div class="role-grid">
+              <div class="role-card">
+                <strong>Facilitator</strong>
+                <div class="task">
+                  Read the data aloud. Ask: "What is changing? What stays the
+                  same?" Guide the team to build the table first before the
+                  graph.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Model Builder</strong>
+                <div class="task">
+                  Draw the coordinate graph on graph paper. Label axes (Week on
+                  x, Height on y). Plot all known points and extend to week 8.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Precision Checker</strong>
+                <div class="task">
+                  Verify the constant change (+5 each week). Check that the
+                  equation gives the correct height for all 4 known weeks.
+                  Confirm the prediction.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Reporter</strong>
+                <div class="task">
+                  Write: "At week 8, the sunflower will be ___ cm because ___."
+                  Prepare to show how the table, graph, and equation all agree.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Timed Lab Phases</h2>
+            <div class="timer-bar">
+              <div>
+                <strong id="activePhaseLabel">Ready</strong>
+                <div style="font-size: 0.9rem; color: var(--muted)">
+                  Click a phase, then press Start.
+                </div>
+              </div>
+              <div class="timer-display" id="timerDisplay" aria-live="polite">
+                03:00
+              </div>
+            </div>
+            <div class="timer-buttons">
+              <button class="btn btn-primary" id="startTimer">Start</button>
+              <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+              <button class="btn btn-secondary" id="resetTimer">Reset</button>
+            </div>
+            <div style="margin-top: 14px">
+              <article class="phase-card open">
+                <button class="phase-header" data-phase="0" data-minutes="3">
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Read the scenario and data.</li>
+                    <li>Assign roles.</li>
+                    <li>Identify: what is the question you need to answer?</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can everyone say the 4 data
+                      points?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="1" data-minutes="6">
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>
+                      Build the table with week and height columns. Add a
+                      "change" column.
+                    </li>
+                    <li>Find the constant rate (+5 cm/week).</li>
+                    <li>Write the equation h = 5w - 1.</li>
+                    <li>Draw the coordinate graph.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Do you have all 3
+                      representations started?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="2" data-minutes="5">
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Use the equation to predict week 8 height.</li>
+                    <li>Check: does the graph agree with the equation?</li>
+                    <li>Discuss: is 39 cm a reasonable prediction?</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Do all 3 representations give
+                      the same answer?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="3" data-minutes="4">
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span><span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Reporter: practice showing all 3 representations.</li>
+                    <li>
+                      Team: discuss when the linear model might stop working.
+                    </li>
+                    <li>Practice answering the defense questions.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can the Reporter point to
+                      each representation and explain it?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Challenge</h2>
+            <div class="challenge-box">
+              <strong>Extension:</strong> A second sunflower grew 3 cm per week
+              starting at 7 cm. Write its equation. At what week will both
+              sunflowers be the same height? Show this on the graph.
+            </div>
+            <div class="whatif">
+              <strong>What If...?</strong>
+              <ul>
+                <li>
+                  What if the growth rate slowed to 3 cm/week after week 4? What
+                  would the graph look like?
+                </li>
+                <li>
+                  What if you only had data from weeks 2 and 4? Could you still
+                  find the equation?
+                </li>
+              </ul>
+            </div>
+            <p>
+              <strong>Real-Life Connection:</strong> Scientists track plant
+              growth to study the effects of sunlight, water, and soil. Tables
+              and graphs help them see patterns and make predictions — just like
+              you did today.
+            </p>
+          </section>
+
+          <section class="panel">
+            <h2>Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                How did you find the rule from the data?<span
+                  class="sentence-starter"
+                  >"We noticed the height increased by ___ each week, so the
+                  rate is ___. We tested h = ___ and it matched all 4 data
+                  points."</span
+                >
+              </li>
+              <li>
+                How do the table, graph, and equation connect?<span
+                  class="sentence-starter"
+                  >"The table shows the numbers, the graph shows the shape, and
+                  the equation gives the rule. All three show ___."</span
+                >
+              </li>
+              <li>
+                Why did you choose a linear equation?<span
+                  class="sentence-starter"
+                  >"We chose a linear equation because the change is ___ every
+                  week, which means the graph is a ___."</span
+                >
+              </li>
+              <li>
+                When might this prediction be wrong?<span
+                  class="sentence-starter"
+                  >"The prediction might be wrong after week ___ because in real
+                  life ___."</span
+                >
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 12px;
+                padding: 12px;
+                background: var(--soft-green);
+                border-radius: 6px;
+              "
+            >
+              <strong>Rubric Quick-Check:</strong>
+              <ul style="margin: 6px 0 0; padding-left: 18px">
+                <li>
+                  Table with at least 5 ordered pairs including the prediction
+                </li>
+                <li>
+                  Coordinate graph with labeled axes and a visible pattern line
+                </li>
+                <li>Equation written and verified against all data points</li>
+                <li>Week 8 prediction stated with reasoning</li>
+                <li>Discussion of model limitations</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Exit Product</h2>
+            <div class="exit-box">
+              <strong>Submit a one-page Lab Report that includes:</strong>
+              <ul class="checklist">
+                <li>A completed table (weeks 1-8 with heights)</li>
+                <li>A coordinate graph with labeled axes and plotted points</li>
+                <li>
+                  The equation h = 5w - 1 with explanation of what 5 and -1
+                  represent
+                </li>
+                <li>
+                  Week 8 prediction with a sentence explaining your confidence
+                </li>
+              </ul>
+            </div>
+            <div style="margin-top: 12px">
+              <strong>Self-Assessment:</strong>
+              <ul class="checklist">
+                <li>I can create a table from a real-world situation</li>
+                <li>I can plot ordered pairs on a coordinate graph</li>
+                <li>I can write an equation that matches a table</li>
+                <li>I can use all three representations to make predictions</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section class="print-only">
+        <h2>Work Space</h2>
+        <p><strong>Table:</strong></p>
+        <br /><br />
+        <p><strong>Graph:</strong></p>
+        <br /><br />
+        <p><strong>Equation and Prediction:</strong></p>
+        <br /><br />
+      </section>
+
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-22/">&#8592; Mission 22</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-24/">Mission 24 &#8594;</a>
+      </nav>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        document.querySelectorAll(".rep-tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            document.querySelectorAll(".rep-tab").forEach(function (t) {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            document.querySelectorAll(".rep-content").forEach(function (c) {
+              c.classList.remove("active");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            var target = document.getElementById(tab.dataset.target);
+            if (target) target.classList.add("active");
+          });
+        });
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var activePhaseIndex = 0,
+          remainingSeconds = phases[0].minutes * 60,
+          timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay"),
+          activePhaseLabel = document.getElementById("activePhaseLabel");
+        function formatTime(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+        document.querySelectorAll(".phase-header").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.phase);
+            activePhaseIndex = idx;
+            remainingSeconds = parseInt(btn.dataset.minutes) * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent = phases[idx].title + " phase";
+            document.querySelectorAll(".phase-card").forEach(function (c, i) {
+              if (i === idx) c.classList.add("open");
+              else c.classList.remove("open");
+            });
+            stopTimer();
+          });
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stopTimer();
+            remainingSeconds = phases[activePhaseIndex].minutes * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent =
+              phases[activePhaseIndex].title + " phase";
+          });
+      })();
+    </script>
+  </body>
+</html>

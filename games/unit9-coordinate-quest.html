@@ -3,1189 +3,1167 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Coordinate Quest — Integers &amp; the Coordinate Plane</title>
+    <title>Coordinate Quest — Space Navigation</title>
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
-      :root {
-        --sand: #d4a574;
-        --parchment: #fdf6e3;
-        --brown: #44403c;
-        --gold: #eab308;
-        --ocean: #0ea5e9;
-        --cream: #faf7f0;
-        --muted: #78716c;
-        --line: #d6d3d1;
-        --success: #2d8a6e;
-        --success-bg: #e6f5ee;
-        --error: #c0392b;
-        --error-bg: #fceaea;
-        --radius: 12px;
-        --shadow: 0 2px 12px rgba(68, 64, 60, 0.1);
-        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
-      }
+      body,
       html {
-        font-family: var(--font);
-        color: var(--brown);
-        background: var(--parchment);
-        line-height: 1.55;
-      }
-      body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-      }
-      input,
-      select {
-        font-family: inherit;
-        font-size: inherit;
-      }
-
-      /* Screens */
-      .screen {
-        display: none;
-        flex: 1;
-      }
-      .screen.active {
-        display: block;
-      }
-
-      /* Login */
-      .login-wrap {
-        max-width: 520px;
-        margin: 0 auto;
-        padding: 48px 24px;
-      }
-      .hero-card {
-        background: #fff;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 44px 32px;
-        text-align: center;
-        border-top: 4px solid var(--gold);
-      }
-      .hero-emoji {
-        font-size: 3.6rem;
-        margin-bottom: 8px;
-      }
-      .hero-title {
-        font-size: 1.9rem;
-        font-weight: 900;
-        color: var(--brown);
-        margin-bottom: 4px;
-      }
-      .hero-sub {
-        font-size: 0.95rem;
-        color: var(--muted);
-        margin-bottom: 24px;
-      }
-      .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 90px 90px;
-        gap: 10px;
-        text-align: left;
-        margin-bottom: 20px;
-      }
-      .form-grid label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--muted);
-      }
-      .field {
-        padding: 10px 14px;
-        border: 2px solid var(--line);
-        border-radius: 8px;
-        font-size: 0.95rem;
-        transition: border-color 0.2s;
-      }
-      .field:focus {
-        outline: none;
-        border-color: var(--ocean);
-      }
-      .resume-bar {
-        display: none;
-        background: var(--success-bg);
-        border: 2px solid var(--success);
-        border-radius: var(--radius);
-        padding: 12px 16px;
-        margin-bottom: 16px;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.88rem;
-      }
-      .resume-bar.show {
-        display: flex;
-      }
-      .resume-bar button {
-        border: none;
-        border-radius: 8px;
-        padding: 7px 16px;
-        font-weight: 700;
-        font-size: 0.82rem;
-      }
-      .resume-bar .res-btn {
-        background: var(--success);
-        color: #fff;
-      }
-      .resume-bar .clear-btn {
-        background: transparent;
-        color: var(--muted);
-        font-size: 0.78rem;
-        padding: 5px 8px;
-      }
-      .start-btn {
         width: 100%;
-        padding: 14px;
-        border: none;
-        border-radius: var(--radius);
-        background: var(--ocean);
-        color: #fff;
-        font-size: 1.05rem;
-        font-weight: 800;
-        letter-spacing: 0.02em;
-        transition: background 0.2s;
-      }
-      .start-btn:hover {
-        background: #0284c7;
-      }
-      .start-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      /* HUD */
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
-        background: #fff;
-        border-bottom: 2px solid var(--line);
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .hud-left,
-      .hud-right {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .hud-label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--muted);
-      }
-      .hud-val {
-        font-size: 1rem;
-        font-weight: 800;
-        color: var(--brown);
-      }
-      .hud-val.gold {
-        color: var(--gold);
-      }
-      .hud-val.red {
-        color: var(--error);
-      }
-      .hud-val.green {
-        color: var(--success);
-      }
-      .streak-badge {
-        background: var(--gold);
-        color: #fff;
-        font-size: 0.72rem;
-        font-weight: 800;
-        padding: 3px 10px;
-        border-radius: 20px;
-        display: none;
-      }
-      .streak-badge.show {
-        display: inline-block;
-      }
-      .progress-track {
-        height: 6px;
-        background: var(--line);
-        border-radius: 3px;
-        margin: 0 20px;
-      }
-      .progress-fill {
         height: 100%;
-        background: var(--ocean);
-        border-radius: 3px;
-        transition: width 0.4s ease;
-      }
-
-      /* Question */
-      .q-wrap {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 32px 20px 80px;
-      }
-      .q-num {
-        font-size: 0.78rem;
-        font-weight: 700;
-        color: var(--ocean);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-bottom: 6px;
-      }
-      .q-diff {
-        display: inline-block;
-        font-size: 0.68rem;
-        font-weight: 700;
-        padding: 2px 10px;
-        border-radius: 20px;
-        margin-left: 8px;
-        vertical-align: middle;
-      }
-      .q-diff.easy {
-        background: #dcfce7;
-        color: #166534;
-      }
-      .q-diff.medium {
-        background: #fef3c7;
-        color: #92400e;
-      }
-      .q-diff.hard {
-        background: #fee2e2;
-        color: #991b1b;
-      }
-      .q-text {
-        font-size: 1.18rem;
-        font-weight: 700;
-        color: var(--brown);
-        margin-bottom: 24px;
-        line-height: 1.5;
-      }
-      .q-hint {
-        font-size: 0.88rem;
-        color: var(--ocean);
-        font-style: italic;
-        margin-bottom: 18px;
-        padding: 10px 14px;
-        background: rgba(14, 165, 233, 0.06);
-        border-radius: 8px;
-        display: none;
-      }
-      .q-hint.show {
-        display: block;
-      }
-      .opts {
-        display: grid;
-        gap: 10px;
-      }
-      .opt-btn {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 18px;
-        border: 2px solid var(--line);
-        border-radius: var(--radius);
-        background: #fff;
-        text-align: left;
-        font-size: 1rem;
-        font-weight: 600;
-        transition: all 0.2s;
-      }
-      .opt-btn:hover:not(:disabled) {
-        border-color: var(--ocean);
-        background: rgba(14, 165, 233, 0.04);
-      }
-      .opt-btn:focus-visible {
-        outline: 3px solid var(--ocean);
-        outline-offset: 2px;
-      }
-      .opt-btn .letter {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: var(--parchment);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 0.88rem;
-        color: var(--brown);
-        flex-shrink: 0;
-        transition: all 0.2s;
-      }
-      .opt-btn.correct {
-        border-color: var(--success);
-        background: var(--success-bg);
-      }
-      .opt-btn.correct .letter {
-        background: var(--success);
-        color: #fff;
-      }
-      .opt-btn.wrong {
-        border-color: var(--error);
-        background: var(--error-bg);
-      }
-      .opt-btn.wrong .letter {
-        background: var(--error);
-        color: #fff;
-      }
-      .opt-btn:disabled {
-        cursor: default;
-      }
-      .feedback-box {
-        margin-top: 18px;
-        padding: 14px 18px;
-        border-radius: var(--radius);
-        font-size: 0.92rem;
-        font-weight: 600;
-        display: none;
-      }
-      .feedback-box.show {
-        display: block;
-      }
-      .feedback-box.correct {
-        background: var(--success-bg);
-        color: var(--success);
-        border: 2px solid var(--success);
-      }
-      .feedback-box.wrong {
-        background: var(--error-bg);
-        color: var(--error);
-        border: 2px solid var(--error);
-      }
-      .next-btn {
-        margin-top: 18px;
-        padding: 12px 32px;
-        border: none;
-        border-radius: var(--radius);
-        background: var(--ocean);
-        color: #fff;
-        font-size: 0.95rem;
-        font-weight: 700;
-        display: none;
-        transition: background 0.2s;
-      }
-      .next-btn.show {
-        display: inline-block;
-      }
-      .next-btn:hover {
-        background: #0284c7;
-      }
-
-      /* Results */
-      .results-wrap {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 48px 24px;
-        text-align: center;
-      }
-      .results-card {
-        background: #fff;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 40px 32px;
-        border-top: 4px solid var(--gold);
-        margin-bottom: 24px;
-      }
-      .results-emoji {
-        font-size: 3.2rem;
-        margin-bottom: 8px;
-      }
-      .results-title {
-        font-size: 1.7rem;
-        font-weight: 900;
-        color: var(--brown);
-        margin-bottom: 4px;
-      }
-      .results-sub {
-        font-size: 0.95rem;
-        color: var(--muted);
-        margin-bottom: 24px;
-      }
-      .score-ring {
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 20px;
-        position: relative;
-      }
-      .score-ring svg {
-        transform: rotate(-90deg);
-      }
-      .score-ring .ring-bg {
-        fill: none;
-        stroke: var(--line);
-        stroke-width: 10;
-      }
-      .score-ring .ring-fg {
-        fill: none;
-        stroke: var(--ocean);
-        stroke-width: 10;
-        stroke-linecap: round;
-        transition: stroke-dashoffset 1s ease;
-      }
-      .score-pct {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 1.6rem;
-        font-weight: 900;
-        color: var(--brown);
-      }
-      .stat-row {
-        display: flex;
-        justify-content: center;
-        gap: 28px;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-      }
-      .stat-item {
-        text-align: center;
-      }
-      .stat-num {
-        font-size: 1.4rem;
-        font-weight: 900;
-        color: var(--brown);
-      }
-      .stat-label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--muted);
-      }
-      .review-list {
-        text-align: left;
-        margin-top: 20px;
-      }
-      .review-item {
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-bottom: 8px;
-        font-size: 0.88rem;
-      }
-      .review-item.r-correct {
-        background: var(--success-bg);
-        border-left: 4px solid var(--success);
-      }
-      .review-item.r-wrong {
-        background: var(--error-bg);
-        border-left: 4px solid var(--error);
-      }
-      .review-item strong {
-        display: block;
-        margin-bottom: 2px;
-      }
-      .review-item .your-ans {
-        color: var(--error);
-        font-weight: 600;
-      }
-      .review-item .right-ans {
-        color: var(--success);
-        font-weight: 600;
-      }
-      .retry-btn {
-        padding: 14px 36px;
-        border: none;
-        border-radius: var(--radius);
-        background: var(--gold);
-        color: #fff;
-        font-size: 1rem;
-        font-weight: 800;
-        margin-top: 12px;
-        transition: background 0.2s;
-      }
-      .retry-btn:hover {
-        background: #ca8a04;
-      }
-
-      /* Footer */
-      .site-footer {
-        text-align: center;
-        padding: 16px;
-        font-size: 0.75rem;
-        color: var(--muted);
-        border-top: 1px solid var(--line);
-        margin-top: auto;
-      }
-
-      /* Accessibility */
-      @media (prefers-reduced-motion: reduce) {
-        * {
-          animation: none !important;
-          transition-duration: 0s !important;
-        }
-      }
-      @media (max-width: 560px) {
-        .form-grid {
-          grid-template-columns: 1fr;
-        }
-        .hud {
-          padding: 8px 12px;
-        }
-        .q-wrap {
-          padding: 20px 14px 60px;
-        }
-        .stat-row {
-          gap: 16px;
-        }
+        overflow: hidden;
+        background: #020617;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
   </head>
   <body>
-    <!-- LOGIN SCREEN -->
-    <div class="screen active" id="scr-login">
-      <div class="login-wrap">
-        <div class="hero-card">
-          <div class="hero-emoji" aria-hidden="true">🗺️</div>
-          <h1 class="hero-title">Coordinate Quest</h1>
-          <p class="hero-sub">
-            Navigate the coordinate plane to find hidden treasure! 15 missions
-            await.
-          </p>
-          <div class="resume-bar" id="resume-bar">
-            <span>🔄 You have a saved quest — resume where you left off?</span>
-            <button class="res-btn" onclick="resumeGame()">Resume</button>
-            <button class="clear-btn" onclick="clearSave()">Start Fresh</button>
-          </div>
-          <div class="form-grid">
-            <label class="label-name">Name</label>
-            <label class="label-period">Period</label>
-            <label class="label-date">Date</label>
-            <input
-              class="field"
-              id="f-name"
-              placeholder="First Last"
-              aria-label="Student name"
-            />
-            <select class="field" id="f-period" aria-label="Class period">
-              <option value="">--</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-            </select>
-            <input class="field" id="f-date" type="date" aria-label="Date" />
-          </div>
-          <button
-            class="start-btn"
-            id="start-btn"
-            disabled
-            onclick="startGame()"
-          >
-            Begin Quest ⚓
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- GAME SCREEN -->
-    <div class="screen" id="scr-game">
-      <div class="hud" role="status" aria-live="polite">
-        <div class="hud-left">
-          <div>
-            <span class="hud-label">Mission</span><br /><span
-              class="hud-val"
-              id="hud-q"
-              >1 / 15</span
-            >
-          </div>
-          <div>
-            <span class="hud-label">Score</span><br /><span
-              class="hud-val gold"
-              id="hud-score"
-              >0</span
-            >
-          </div>
-          <span class="streak-badge" id="hud-streak" aria-label="Current streak"
-            >🔥 0</span
-          >
-        </div>
-        <div class="hud-right">
-          <div>
-            <span class="hud-label">Lives</span><br /><span
-              class="hud-val red"
-              id="hud-lives"
-              >❤️❤️❤️</span
-            >
-          </div>
-          <div>
-            <span class="hud-label">Time</span><br /><span
-              class="hud-val"
-              id="hud-time"
-              >0:00</span
-            >
-          </div>
-        </div>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progress" style="width: 0%"></div>
-      </div>
-      <div class="q-wrap">
-        <div>
-          <span class="q-num" id="q-num">Mission 1 of 15</span
-          ><span class="q-diff" id="q-diff">Easy</span>
-        </div>
-        <p class="q-text" id="q-text"></p>
-        <div class="q-hint" id="q-hint" aria-live="polite"></div>
-        <div
-          class="opts"
-          id="opts"
-          role="radiogroup"
-          aria-label="Answer choices"
-        ></div>
-        <div class="feedback-box" id="feedback" aria-live="assertive"></div>
-        <button class="next-btn" id="next-btn" onclick="nextQuestion()">
-          Next Mission ➡️
-        </button>
-      </div>
-    </div>
-
-    <!-- RESULTS SCREEN -->
-    <div class="screen" id="scr-results">
-      <div class="results-wrap">
-        <div class="results-card">
-          <div class="results-emoji" aria-hidden="true">🏆</div>
-          <h2 class="results-title" id="res-title">Quest Complete!</h2>
-          <p class="results-sub" id="res-sub"></p>
-          <div class="score-ring">
-            <svg viewBox="0 0 120 120" width="120" height="120">
-              <circle class="ring-bg" cx="60" cy="60" r="50" />
-              <circle
-                class="ring-fg"
-                id="ring-fg"
-                cx="60"
-                cy="60"
-                r="50"
-                stroke-dasharray="314.16"
-                stroke-dashoffset="314.16"
-              />
-            </svg>
-            <span class="score-pct" id="score-pct">0%</span>
-          </div>
-          <div class="stat-row">
-            <div class="stat-item">
-              <div class="stat-num green" id="stat-correct">0</div>
-              <div class="stat-label">Correct</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-num red" id="stat-wrong">0</div>
-              <div class="stat-label">Incorrect</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-num" id="stat-time">0:00</div>
-              <div class="stat-label">Time</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-num gold" id="stat-streak">0</div>
-              <div class="stat-label">Best Streak</div>
-            </div>
-          </div>
-          <div class="review-list" id="review-list"></div>
-          <button class="retry-btn" onclick="retryGame()">Try Again 🗺️</button>
-        </div>
-      </div>
-    </div>
-
-    <footer class="site-footer">
-      Neft Teacher &bull; Grade 6 &bull; Unit 9 &mdash; Integers &amp; the
-      Coordinate Plane (6.NS.5&ndash;8)
-    </footer>
-
     <script>
-      /* ===== QUESTION BANK ===== */
-      const QUESTIONS = [
-        /* ----- EASY (1-5): Quadrants, QI plotting, absolute value ----- */
-        {
-          id: 1,
-          difficulty: "easy",
-          text: "A point is located at (3, 5). Which quadrant of the coordinate plane is it in?",
-          options: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"],
-          correct: 0,
-          hint: "In Quadrant I, both x and y are positive.",
-          explain:
-            "(3, 5) has a positive x-value and a positive y-value, so it is in Quadrant I.",
-        },
-        {
-          id: 2,
-          difficulty: "easy",
-          text: "What is the absolute value of −9?",
-          options: ["9", "−9", "0", "−1"],
-          correct: 0,
-          hint: "Absolute value is the distance from zero on a number line — always non-negative.",
-          explain:
-            "|−9| = 9. Absolute value measures distance from 0, so it is always positive or zero.",
-        },
-        {
-          id: 3,
-          difficulty: "easy",
-          text: "Which point is located in Quadrant I of the coordinate plane?",
-          options: ["(4, 7)", "(−2, 5)", "(3, −1)", "(−6, −4)"],
-          correct: 0,
-          hint: "Quadrant I: x is positive AND y is positive.",
-          explain:
-            "(4, 7) has both coordinates positive. (−2, 5) is in QII, (3, −1) is in QIV, (−6, −4) is in QIII.",
-        },
-        {
-          id: 4,
-          difficulty: "easy",
-          text: "A treasure chest is buried at point (6, 2) on a map. How many units to the right of the y-axis is it?",
-          options: ["6 units", "2 units", "8 units", "4 units"],
-          correct: 0,
-          hint: "The x-coordinate tells you horizontal distance from the y-axis.",
-          explain:
-            "The x-coordinate is 6, so the point is 6 units to the right of the y-axis.",
-        },
-        {
-          id: 5,
-          difficulty: "easy",
-          text: "What is |−15|?",
-          options: ["15", "−15", "0", "1"],
-          correct: 0,
-          hint: "Think: how far is −15 from zero on a number line?",
-          explain:
-            "|−15| = 15. The distance from −15 to 0 on a number line is 15 units.",
-        },
-        /* ----- MEDIUM (6-10): All 4 quadrants, compare integers, reflections ----- */
-        {
-          id: 6,
-          difficulty: "medium",
-          text: "The point (−4, 6) is in which quadrant?",
-          options: ["Quadrant II", "Quadrant I", "Quadrant III", "Quadrant IV"],
-          correct: 0,
-          hint: "Check the signs: x is negative, y is positive. Which quadrant has (−, +)?",
-          explain: "(−4, 6): x is negative and y is positive → Quadrant II.",
-        },
-        {
-          id: 7,
-          difficulty: "medium",
-          text: "Which integer is greater: −3 or −8?",
-          options: ["−3", "−8", "They are equal", "Cannot be determined"],
-          correct: 0,
-          hint: "On a number line, the number farther to the right is greater.",
-          explain: "−3 is to the right of −8 on the number line, so −3 > −8.",
-        },
-        {
-          id: 8,
-          difficulty: "medium",
-          text: "Point A is at (5, 3). If you reflect Point A across the y-axis, what are the new coordinates?",
-          options: ["(−5, 3)", "(5, −3)", "(−5, −3)", "(3, 5)"],
-          correct: 0,
-          hint: "Reflecting across the y-axis changes the sign of the x-coordinate only.",
-          explain:
-            "Reflection across the y-axis: (x, y) → (−x, y). So (5, 3) → (−5, 3).",
-        },
-        {
-          id: 9,
-          difficulty: "medium",
-          text: "A pirate ship is at (−7, −2). Which quadrant is this location in?",
-          options: ["Quadrant III", "Quadrant I", "Quadrant II", "Quadrant IV"],
-          correct: 0,
-          hint: "Both coordinates are negative. Which quadrant has (−, −)?",
-          explain: "(−7, −2): both x and y are negative → Quadrant III.",
-        },
-        {
-          id: 10,
-          difficulty: "medium",
-          text: "Point B is at (2, −6). If you reflect Point B across the x-axis, what are the new coordinates?",
-          options: ["(2, 6)", "(−2, −6)", "(−2, 6)", "(2, −6)"],
-          correct: 0,
-          hint: "Reflecting across the x-axis changes the sign of the y-coordinate only.",
-          explain:
-            "Reflection across the x-axis: (x, y) → (x, −y). So (2, −6) → (2, 6).",
-        },
-        /* ----- HARD (11-15): Distance, ordering rationals, word problems ----- */
-        {
-          id: 11,
-          difficulty: "hard",
-          text: "What is the distance between the points (3, −2) and (3, 5)?",
-          options: ["7 units", "3 units", "5 units", "2 units"],
-          correct: 0,
-          hint: "When two points share the same x-coordinate, find the distance using |y₁ − y₂|.",
-          explain:
-            "Same x-coordinate → vertical distance = |−2 − 5| = |−7| = 7 units.",
-        },
-        {
-          id: 12,
-          difficulty: "hard",
-          text: "Order these numbers from least to greatest: −4, 1.5, −7, 0, 3",
-          options: [
-            "−7, −4, 0, 1.5, 3",
-            "−4, −7, 0, 1.5, 3",
-            "3, 1.5, 0, −4, −7",
-            "0, −4, −7, 1.5, 3",
-          ],
-          correct: 0,
-          hint: "Place each number on a number line. Numbers farther left are lesser.",
-          explain: "On a number line left to right: −7 < −4 < 0 < 1.5 < 3.",
-        },
-        {
-          id: 13,
-          difficulty: "hard",
-          text: "A diver is at a depth of −40 feet and a bird is at an altitude of 25 feet. What is the distance between them?",
-          options: ["65 feet", "15 feet", "40 feet", "25 feet"],
-          correct: 0,
-          hint: "Distance = |−40 − 25| or count from −40 up to 25 on a number line.",
-          explain:
-            "Distance = |−40 − 25| = |−65| = 65 feet. From −40 to 0 is 40, then 0 to 25 is 25. Total = 65.",
-        },
-        {
-          id: 14,
-          difficulty: "hard",
-          text: "Point P is at (−5, 4) and Point Q is at (2, 4). What is the distance between P and Q?",
-          options: ["7 units", "3 units", "5 units", "9 units"],
-          correct: 0,
-          hint: "Same y-coordinate means horizontal distance: |x₁ − x₂|.",
-          explain:
-            "Same y-coordinate → horizontal distance = |−5 − 2| = |−7| = 7 units.",
-        },
-        {
-          id: 15,
-          difficulty: "hard",
-          text: "A submarine starts at position (−3, −8) on a grid. It surfaces and ends at (−3, 0). How far did it travel?",
-          options: ["8 units", "3 units", "11 units", "5 units"],
-          correct: 0,
-          hint: "Same x-coordinate → find vertical distance using |y₁ − y₂|.",
-          explain: "Same x → vertical distance = |−8 − 0| = |−8| = 8 units.",
-        },
-      ];
+      // Coordinate Quest — Space Navigation
+      // Grade 6: 6.NS.5–6.NS.8 (Coordinate plane, integers, absolute value)
+      // Neft Teacher
 
-      /* ===== STATE ===== */
-      const STORAGE_KEY = "coordinateQuest_v1";
-      let state = {
-        name: "",
-        period: "",
-        date: "",
-        current: 0,
-        score: 0,
-        lives: 3,
-        streak: 0,
-        bestStreak: 0,
-        elapsed: 0,
-        answers: [],
-        finished: false,
-      };
-      let timer = null;
+      const W = 1024,
+        H = 768;
 
-      /* ===== HELPERS ===== */
-      const $ = (id) => document.getElementById(id);
-      function showScreen(id) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("active"));
-        $(id).classList.add("active");
-      }
-      function save() {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (e) {}
-      }
-      function loadSave() {
-        try {
-          const d = localStorage.getItem(STORAGE_KEY);
-          return d ? JSON.parse(d) : null;
-        } catch (e) {
-          return null;
+      // --- SFX ---
+      class SFX {
+        constructor() {
+          this.ctx = null;
+        }
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        }
+        tone(f, d, t = "sine", v = 0.08) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        }
+        warp() {
+          [300, 500, 800, 1200].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.1), i * 50),
+          );
+        }
+        hit() {
+          this.tone(200, 0.3, "sawtooth");
+          setTimeout(() => this.tone(150, 0.2, "sawtooth"), 100);
+        }
+        click() {
+          this.tone(600, 0.04);
+        }
+        nav() {
+          this.tone(800, 0.08);
+          setTimeout(() => this.tone(1000, 0.08), 60);
+        }
+        collect() {
+          this.tone(880, 0.08);
+          setTimeout(() => this.tone(1100, 0.1), 60);
+          setTimeout(() => this.tone(1320, 0.12), 120);
+        }
+        engine() {
+          this.tone(80, 0.15, "triangle", 0.03);
+        }
+        win() {
+          [523, 659, 784, 880, 1047, 1319].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.12), i * 70),
+          );
+        }
+        lose() {
+          [500, 400, 300, 200].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.2, "sawtooth"), i * 100),
+          );
+        }
+        alarm() {
+          this.tone(400, 0.1, "square");
+          setTimeout(() => this.tone(600, 0.1, "square"), 100);
         }
       }
-      function clearSave() {
-        localStorage.removeItem(STORAGE_KEY);
-        $("resume-bar").classList.remove("show");
-      }
-      function fmtTime(s) {
-        return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60);
-      }
+      const sfx = new SFX();
 
-      /* ===== LOGIN ===== */
-      function checkForm() {
-        const ok = $("f-name").value.trim() && $("f-period").value;
-        $("start-btn").disabled = !ok;
-      }
-      $("f-name").addEventListener("input", checkForm);
-      $("f-period").addEventListener("change", checkForm);
-      $("f-date").valueAsDate = new Date();
-
-      // Check for saved game
-      (function () {
-        const saved = loadSave();
-        if (saved && !saved.finished && saved.current < QUESTIONS.length) {
-          $("resume-bar").classList.add("show");
-          $("f-name").value = saved.name || "";
-          $("f-period").value = saved.period || "";
-          $("f-date").value = saved.date || "";
-          checkForm();
+      // --- QUESTIONS ---
+      function genQuestions() {
+        const qs = [];
+        function shuf(a) {
+          const b = [...a];
+          for (let i = b.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [b[i], b[j]] = [b[j], b[i]];
+          }
+          return b;
         }
-      })();
-
-      function resumeGame() {
-        const saved = loadSave();
-        if (saved) {
-          state = saved;
-          showScreen("scr-game");
-          startTimer();
-          renderQuestion();
+        function mk(text, correct, wrongs, explain, tier, coord) {
+          const opts = shuf([correct, ...wrongs]);
+          return {
+            text,
+            correct,
+            options: opts,
+            explain,
+            tier,
+            coord: coord || null,
+          };
         }
-      }
-
-      function startGame() {
-        state = {
-          name: $("f-name").value.trim(),
-          period: $("f-period").value,
-          date: $("f-date").value,
-          current: 0,
-          score: 0,
-          lives: 3,
-          streak: 0,
-          bestStreak: 0,
-          elapsed: 0,
-          answers: [],
-          finished: false,
-        };
-        save();
-        showScreen("scr-game");
-        startTimer();
-        renderQuestion();
-      }
-
-      /* ===== TIMER ===== */
-      function startTimer() {
-        clearInterval(timer);
-        timer = setInterval(() => {
-          state.elapsed++;
-          $("hud-time").textContent = fmtTime(state.elapsed);
-        }, 1000);
-      }
-      function stopTimer() {
-        clearInterval(timer);
-      }
-
-      /* ===== RENDER QUESTION ===== */
-      function renderQuestion() {
-        const i = state.current;
-        if (i >= QUESTIONS.length) {
-          endGame();
-          return;
+        // Tier 1: Quadrants, QI plotting, absolute value
+        for (let i = 0; i < 2; i++) {
+          const x = Phaser.Math.Between(1, 9),
+            y = Phaser.Math.Between(1, 9);
+          qs.push(
+            mk(
+              `Navigate to (${x}, ${y}). Which quadrant?`,
+              "Quadrant I",
+              ["Quadrant II", "Quadrant III", "Quadrant IV"],
+              `(${x},${y}): both positive = Quadrant I`,
+              1,
+              { x, y },
+            ),
+          );
         }
-        const q = QUESTIONS[i];
-        $("hud-q").textContent = i + 1 + " / 15";
-        $("hud-score").textContent = state.score;
-        updateLives();
-        updateStreak();
-        $("progress").style.width = (i / 15) * 100 + "%";
-        $("q-num").textContent = "Mission " + (i + 1) + " of 15";
-        const dEl = $("q-diff");
-        dEl.textContent =
-          q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1);
-        dEl.className = "q-diff " + q.difficulty;
-        $("q-text").textContent = q.text;
-        $("q-hint").classList.remove("show");
-        $("q-hint").textContent = "";
-        $("feedback").classList.remove("show", "correct", "wrong");
-        $("feedback").textContent = "";
-        $("next-btn").classList.remove("show");
-        // Render options
-        const container = $("opts");
-        container.innerHTML = "";
-        const letters = ["A", "B", "C", "D"];
-        q.options.forEach((opt, idx) => {
-          const btn = document.createElement("button");
-          btn.className = "opt-btn";
-          btn.setAttribute("role", "radio");
-          btn.setAttribute("aria-checked", "false");
-          btn.setAttribute("aria-label", letters[idx] + ": " + opt);
-          btn.innerHTML =
-            '<span class="letter">' +
-            letters[idx] +
-            "</span><span>" +
-            opt +
-            "</span>";
-          btn.onclick = () => handleAnswer(idx, btn);
-          container.appendChild(btn);
+        for (let i = 0; i < 2; i++) {
+          const n = Phaser.Math.Between(2, 15);
+          qs.push(
+            mk(
+              `What is |−${n}|?`,
+              String(n),
+              [String(-n), "0", String(n + 1)],
+              `|−${n}| = ${n}. Distance from 0 is always positive.`,
+              1,
+            ),
+          );
+        }
+        qs.push(
+          mk(
+            "Which point is in Quadrant I?",
+            "(4, 7)",
+            ["(−2, 5)", "(3, −1)", "(−6, −4)"],
+            "QI: both x and y positive. (4,7) works.",
+            1,
+            { x: 4, y: 7 },
+          ),
+        );
+        // Tier 2: All 4 quadrants, reflections, comparing integers
+        const q2pairs = [
+          { x: -4, y: 6, q: "II" },
+          { x: -7, y: -2, q: "III" },
+          { x: 5, y: -3, q: "IV" },
+        ];
+        q2pairs.forEach((p) => {
+          qs.push(
+            mk(
+              `Waypoint at (${p.x}, ${p.y}). Which quadrant?`,
+              `Quadrant ${p.q}`,
+              [
+                ...["I", "II", "III", "IV"]
+                  .filter((q) => q !== p.q)
+                  .map((q) => `Quadrant ${q}`),
+              ].slice(0, 3),
+              `(${p.x},${p.y}): check signs => Q${p.q}`,
+              2,
+              { x: p.x, y: p.y },
+            ),
+          );
         });
-        // Keyboard nav
-        container.onkeydown = function (e) {
-          const btns = [
-            ...container.querySelectorAll(".opt-btn:not(:disabled)"),
+        qs.push(
+          mk(
+            "Which integer is greater: −3 or −8?",
+            "−3",
+            ["−8", "Equal", "Cannot tell"],
+            "−3 is right of −8 on number line, so −3 > −8.",
+            2,
+          ),
+        );
+        qs.push(
+          mk(
+            "Reflect (5, 3) across the y-axis. New coordinates?",
+            "(−5, 3)",
+            ["(5, −3)", "(−5, −3)", "(3, 5)"],
+            "y-axis reflection: (x,y) → (−x,y). So (−5,3).",
+            2,
+            { x: -5, y: 3 },
+          ),
+        );
+        qs.push(
+          mk(
+            "Reflect (2, −6) across the x-axis. New coordinates?",
+            "(2, 6)",
+            ["(−2, −6)", "(−2, 6)", "(2, −6)"],
+            "x-axis reflection: (x,y) → (x,−y). So (2,6).",
+            2,
+            { x: 2, y: 6 },
+          ),
+        );
+        // Tier 3: Distance, ordering, word problems
+        qs.push(
+          mk(
+            "Distance between (3, −2) and (3, 5)?",
+            "7 units",
+            ["3 units", "5 units", "2 units"],
+            "Same x: distance = |−2 − 5| = 7",
+            3,
+            { x: 3, y: -2 },
+          ),
+        );
+        qs.push(
+          mk(
+            "Order least to greatest: −4, 1.5, −7, 0, 3",
+            "−7, −4, 0, 1.5, 3",
+            ["−4, −7, 0, 1.5, 3", "3, 1.5, 0, −4, −7", "0, −4, −7, 1.5, 3"],
+            "Number line: −7 < −4 < 0 < 1.5 < 3",
+            3,
+          ),
+        );
+        qs.push(
+          mk(
+            "Diver at −40 ft, bird at +25 ft. Distance between them?",
+            "65 feet",
+            ["15 feet", "40 feet", "25 feet"],
+            "|−40 − 25| = 65 feet",
+            3,
+          ),
+        );
+        qs.push(
+          mk(
+            "Distance between (−5, 4) and (2, 4)?",
+            "7 units",
+            ["3 units", "5 units", "9 units"],
+            "Same y: |−5 − 2| = 7 units",
+            3,
+            { x: -5, y: 4 },
+          ),
+        );
+        qs.push(
+          mk(
+            "Sub at (−3, −8) surfaces to (−3, 0). How far?",
+            "8 units",
+            ["3 units", "11 units", "5 units"],
+            "Same x: |−8 − 0| = 8 units",
+            3,
+            { x: -3, y: -8 },
+          ),
+        );
+        return shuf(qs).slice(0, 15);
+      }
+
+      // --- STARS BACKGROUND ---
+      function createStarfield(scene) {
+        for (let i = 0; i < 120; i++) {
+          const x = Phaser.Math.Between(0, W),
+            y = Phaser.Math.Between(0, H);
+          const s = Math.random() * 2 + 0.5;
+          const star = scene.add
+            .circle(x, y, s, 0xffffff, Math.random() * 0.5 + 0.3)
+            .setDepth(0);
+          scene.tweens.add({
+            targets: star,
+            alpha: Math.random() * 0.3 + 0.1,
+            duration: Phaser.Math.Between(1000, 3000),
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+        }
+        // Nebula patches
+        for (let i = 0; i < 3; i++) {
+          const nx = Phaser.Math.Between(100, W - 100),
+            ny = Phaser.Math.Between(100, H - 100);
+          const neb = scene.add
+            .circle(
+              nx,
+              ny,
+              Phaser.Math.Between(60, 120),
+              [0x4361ee, 0x7c3aed, 0x0ea5e9][i],
+              0.04,
+            )
+            .setDepth(0);
+        }
+      }
+
+      // --- BOOT ---
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          this.scene.start("Title");
+        }
+      }
+
+      // --- TITLE ---
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          sfx.init();
+          const cx = W / 2;
+          this.cameras.main.setBackgroundColor("#020617");
+          createStarfield(this);
+          // Spaceship
+          const ship = this.add.graphics().setPosition(cx, 380);
+          // Body
+          ship.fillStyle(0x64748b);
+          ship.fillTriangle(0, -40, 25, 20, -25, 20);
+          ship.fillStyle(0x3b82f6);
+          ship.fillTriangle(0, -30, 18, 15, -18, 15);
+          // Wings
+          ship.fillStyle(0x475569);
+          ship.fillTriangle(-18, 10, -40, 25, -15, 25);
+          ship.fillTriangle(18, 10, 40, 25, 15, 25);
+          // Cockpit
+          ship.fillStyle(0x22d3ee);
+          ship.fillCircle(0, -10, 7);
+          // Engine glow
+          ship.fillStyle(0xf97316);
+          ship.fillTriangle(-8, 20, 8, 20, 0, 35);
+          this.tweens.add({
+            targets: ship,
+            y: ship.y - 12,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          // Engine particles
+          this.add.particles(cx, 415, "__WHITE", {
+            speed: { min: 20, max: 80 },
+            angle: { min: 80, max: 100 },
+            scale: { start: 0.3, end: 0 },
+            lifespan: 500,
+            tint: [0xf97316, 0xfbbf24, 0xef4444],
+            quantity: 2,
+            frequency: 60,
+            blendMode: "ADD",
+          });
+          // Title
+          this.add
+            .text(cx, 70, "COORDINATE", {
+              fontSize: "52px",
+              fontFamily: "monospace",
+              color: "#22d3ee",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 135, "QUEST", {
+              fontSize: "68px",
+              fontFamily: "monospace",
+              color: "#a78bfa",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 195, "Space Navigation", {
+              fontSize: "22px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 225, "6.NS.5–6.NS.8 | Neft Teacher", {
+              fontSize: "13px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5);
+          // Mini coordinate grid preview
+          const gx = cx,
+            gy = 300;
+          const gs = 60;
+          // Axes
+          this.add.line(gx, gy, -gs * 2, 0, gs * 2, 0, 0x334155).setDepth(1);
+          this.add.line(gx, gy, 0, -gs * 2, 0, gs * 2, 0x334155).setDepth(1);
+          // Quadrant labels
+          this.add
+            .text(gx + gs / 2, gy - gs, "QI", {
+              fontSize: "10px",
+              color: "#22c55e",
+            })
+            .setOrigin(0.5)
+            .setDepth(1);
+          this.add
+            .text(gx - gs / 2, gy - gs, "QII", {
+              fontSize: "10px",
+              color: "#3b82f6",
+            })
+            .setOrigin(0.5)
+            .setDepth(1);
+          this.add
+            .text(gx - gs / 2, gy + gs / 2, "QIII", {
+              fontSize: "10px",
+              color: "#f59e0b",
+            })
+            .setOrigin(0.5)
+            .setDepth(1);
+          this.add
+            .text(gx + gs / 2, gy + gs / 2, "QIV", {
+              fontSize: "10px",
+              color: "#ef4444",
+            })
+            .setOrigin(0.5)
+            .setDepth(1);
+          // Features
+          const feats = [
+            { t: "Navigate all 4 quadrants", c: "#22d3ee" },
+            { t: "Plot waypoints & reflect", c: "#a78bfa" },
+            { t: "Calculate distances", c: "#f59e0b" },
           ];
-          const ci = btns.indexOf(document.activeElement);
+          feats.forEach((f, i) => {
+            this.add
+              .text(cx, 475 + i * 28, "● " + f.t, {
+                fontSize: "14px",
+                color: f.c,
+              })
+              .setOrigin(0.5);
+          });
+          // Start
+          const btn = this.add
+            .rectangle(cx, 600, 260, 60, 0x7c3aed)
+            .setStrokeStyle(2, 0xa78bfa)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx, 600, "LAUNCH MISSION", {
+              fontSize: "24px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => btn.setFillStyle(0x6d28d9));
+          btn.on("pointerout", () => btn.setFillStyle(0x7c3aed));
+          btn.on("pointerdown", () => {
+            sfx.warp();
+            this.scene.start("Game");
+          });
+          this.add
+            .text(cx, 660, "Keys 1-4 or click | Arrows + Enter", {
+              fontSize: "12px",
+              color: "#475569",
+            })
+            .setOrigin(0.5);
+          this.input.keyboard.on("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              sfx.warp();
+              this.scene.start("Game");
+            }
+          });
+        }
+      }
+
+      // --- GAME ---
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        create() {
+          sfx.init();
+          this.questions = genQuestions();
+          this.qIndex = 0;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          this.bestStreak = 0;
+          this.totalQ = Math.min(15, this.questions.length);
+          this.answered = false;
+          this.startTime = Date.now();
+          this.selectedIdx = -1;
+          this.cameras.main.setBackgroundColor("#020617");
+          createStarfield(this);
+          this.buildGrid();
+          this.buildShip();
+          this.buildHUD();
+          this.loadQuestion();
+          this.input.keyboard.on("keydown", this.handleKey, this);
+        }
+
+        buildGrid() {
+          // Coordinate grid (right side, compact)
+          this.gridX = 720;
+          this.gridY = 380;
+          this.gridSize = 25;
+          this.gridRange = 8;
+          const gx = this.gridX,
+            gy = this.gridY,
+            gs = this.gridSize,
+            gr = this.gridRange;
+          // Grid background
+          this.add
+            .rectangle(
+              gx,
+              gy,
+              gs * gr * 2 + 20,
+              gs * gr * 2 + 20,
+              0x0f172a,
+              0.8,
+            )
+            .setStrokeStyle(1, 0x1e293b)
+            .setDepth(1);
+          // Grid lines
+          for (let i = -gr; i <= gr; i++) {
+            const alpha = i === 0 ? 0.6 : 0.15;
+            const color = i === 0 ? 0x64748b : 0x334155;
+            this.add
+              .line(gx, gy, i * gs, -gr * gs, i * gs, gr * gs, color, alpha)
+              .setDepth(2);
+            this.add
+              .line(gx, gy, -gr * gs, i * gs, gr * gs, i * gs, color, alpha)
+              .setDepth(2);
+          }
+          // Axis labels
+          this.add
+            .text(gx + gr * gs + 5, gy, "x", {
+              fontSize: "11px",
+              color: "#64748b",
+            })
+            .setDepth(3);
+          this.add
+            .text(gx, gy - gr * gs - 15, "y", {
+              fontSize: "11px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5)
+            .setDepth(3);
+          // Number labels
+          for (let i = -gr; i <= gr; i += 2) {
+            if (i !== 0) {
+              this.add
+                .text(gx + i * gs, gy + 12, String(i), {
+                  fontSize: "8px",
+                  color: "#475569",
+                })
+                .setOrigin(0.5)
+                .setDepth(3);
+              this.add
+                .text(gx - 14, gy - i * gs, String(i), {
+                  fontSize: "8px",
+                  color: "#475569",
+                })
+                .setOrigin(0.5)
+                .setDepth(3);
+            }
+          }
+          this.add
+            .text(gx - 10, gy + 10, "0", { fontSize: "8px", color: "#475569" })
+            .setDepth(3);
+          // Quadrant labels
+          this.add
+            .text(gx + (gr * gs) / 2, gy - (gr * gs) / 2, "QI", {
+              fontSize: "10px",
+              color: "#22c55e",
+              alpha: 0.4,
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+          this.add
+            .text(gx - (gr * gs) / 2, gy - (gr * gs) / 2, "QII", {
+              fontSize: "10px",
+              color: "#3b82f6",
+              alpha: 0.4,
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+          this.add
+            .text(gx - (gr * gs) / 2, gy + (gr * gs) / 2, "QIII", {
+              fontSize: "10px",
+              color: "#f59e0b",
+              alpha: 0.4,
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+          this.add
+            .text(gx + (gr * gs) / 2, gy + (gr * gs) / 2, "QIV", {
+              fontSize: "10px",
+              color: "#ef4444",
+              alpha: 0.4,
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+          // Waypoint marker (will be positioned per question)
+          this.waypoint = this.add.graphics().setDepth(5);
+          this.waypointLabel = this.add
+            .text(0, 0, "", {
+              fontSize: "10px",
+              color: "#22d3ee",
+              fontStyle: "bold",
+            })
+            .setDepth(5);
+          // Ship marker on grid
+          this.shipMarker = this.add.graphics().setDepth(6);
+        }
+
+        plotWaypoint(coord) {
+          this.waypoint.clear();
+          this.waypointLabel.setText("");
+          if (!coord) return;
+          const px = this.gridX + coord.x * this.gridSize;
+          const py = this.gridY - coord.y * this.gridSize;
+          // Pulsing ring
+          this.waypoint.lineStyle(2, 0x22d3ee);
+          this.waypoint.strokeCircle(px, py, 8);
+          this.waypoint.fillStyle(0x22d3ee, 0.3);
+          this.waypoint.fillCircle(px, py, 5);
+          this.waypointLabel
+            .setText(`(${coord.x},${coord.y})`)
+            .setPosition(px + 10, py - 12);
+          // Pulse tween
+          if (this.wpTween) this.wpTween.remove();
+          this.wpTween = this.tweens.add({
+            targets: this.waypoint,
+            alpha: 0.4,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
+        moveShipToGrid(coord) {
+          if (!coord) return;
+          const px = this.gridX + coord.x * this.gridSize;
+          const py = this.gridY - coord.y * this.gridSize;
+          this.shipMarker.clear();
+          this.shipMarker.fillStyle(0xf97316);
+          this.shipMarker.fillTriangle(
+            px,
+            py - 6,
+            px + 5,
+            py + 4,
+            px - 5,
+            py + 4,
+          );
+          this.tweens.add({
+            targets: this.shipMarker,
+            alpha: 0.5,
+            duration: 400,
+            yoyo: true,
+            repeat: 2,
+          });
+        }
+
+        buildShip() {
+          // Main ship on left side
+          this.ship = this.add.graphics().setPosition(160, 400).setDepth(4);
+          this.drawShip(this.ship);
+          this.tweens.add({
+            targets: this.ship,
+            y: this.ship.y - 8,
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          // Engine particles
+          this.engineParticles = this.add
+            .particles(160, 430, "__WHITE", {
+              speed: { min: 10, max: 40 },
+              angle: { min: 85, max: 95 },
+              scale: { start: 0.2, end: 0 },
+              lifespan: 400,
+              tint: [0xf97316, 0xfbbf24],
+              quantity: 1,
+              frequency: 80,
+              blendMode: "ADD",
+            })
+            .setDepth(3);
+        }
+
+        drawShip(g) {
+          g.clear();
+          g.fillStyle(0x64748b);
+          g.fillTriangle(0, -30, 20, 15, -20, 15);
+          g.fillStyle(0x3b82f6);
+          g.fillTriangle(0, -22, 14, 10, -14, 10);
+          g.fillStyle(0x475569);
+          g.fillTriangle(-14, 8, -30, 20, -12, 20);
+          g.fillTriangle(14, 8, 30, 20, 12, 20);
+          g.fillStyle(0x22d3ee);
+          g.fillCircle(0, -8, 5);
+          g.fillStyle(0xf97316);
+          g.fillTriangle(-6, 15, 6, 15, 0, 25);
+        }
+
+        buildHUD() {
+          this.hudBg = this.add
+            .rectangle(W / 2, 22, W, 44, 0x000000, 0.8)
+            .setDepth(10);
+          this.hudQ = this.add
+            .text(15, 10, "", {
+              fontSize: "14px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+          this.hudScore = this.add
+            .text(170, 10, "", {
+              fontSize: "14px",
+              color: "#22d3ee",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+          this.hudLives = this.add
+            .text(340, 10, "", { fontSize: "14px", color: "#ef4444" })
+            .setDepth(11);
+          this.hudStreak = this.add
+            .text(520, 10, "", { fontSize: "14px", color: "#a78bfa" })
+            .setDepth(11);
+          this.hudTimer = this.add
+            .text(W - 100, 10, "", { fontSize: "14px", color: "#94a3b8" })
+            .setDepth(11);
+          this.progBg = this.add
+            .rectangle(W / 2, 44, W - 20, 4, 0x1e293b)
+            .setDepth(10);
+          this.progFill = this.add
+            .rectangle(10, 44, 0, 4, 0x7c3aed)
+            .setOrigin(0, 0.5)
+            .setDepth(10);
+        }
+
+        loadQuestion() {
+          if (this.qIndex >= this.totalQ || this.lives <= 0) {
+            this.endGame();
+            return;
+          }
+          this.answered = false;
+          this.selectedIdx = -1;
+          const q = this.questions[this.qIndex];
+          this.updateHUD();
+          this.progFill.width = (this.qIndex / this.totalQ) * (W - 20);
+          // Plot waypoint if question has coordinates
+          this.plotWaypoint(q.coord);
+          // Clean old
+          if (this.qGroup) this.qGroup.destroy(true);
+          this.qGroup = this.add.group();
+          // Question panel (left side, above ship)
+          const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
+          const tierNames = ["Sector 1", "Sector 2", "Sector 3"];
+          const panel = this.add
+            .rectangle(200, 140, 360, 120, 0x0f172a, 0.9)
+            .setStrokeStyle(2, 0x7c3aed)
+            .setDepth(5);
+          this.qGroup.add(panel);
+          const badge = this.add
+            .text(30, 85, tierNames[q.tier - 1], {
+              fontSize: "11px",
+              color: tierColors[q.tier - 1],
+              backgroundColor: "#1e293b",
+              padding: { x: 6, y: 2 },
+            })
+            .setDepth(6);
+          this.qGroup.add(badge);
+          const qtext = this.add
+            .text(200, 140, q.text, {
+              fontSize: "16px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: 330 },
+            })
+            .setOrigin(0.5)
+            .setDepth(6);
+          this.qGroup.add(qtext);
+          // Answer options (left column)
+          this.answerBtns = [];
+          q.options.forEach((opt, i) => {
+            const by = 240 + i * 55;
+            const bg = this.add
+              .rectangle(200, by, 350, 45, 0x1e293b)
+              .setStrokeStyle(2, 0x334155)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(6);
+            const num = this.add
+              .text(35, by - 6, String(i + 1), {
+                fontSize: "10px",
+                color: "#64748b",
+              })
+              .setDepth(7);
+            const txt = this.add
+              .text(200, by, opt, {
+                fontSize: "15px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(7);
+            bg.on("pointerover", () => {
+              if (!this.answered) {
+                bg.setStrokeStyle(3, 0x22d3ee);
+                sfx.click();
+              }
+            });
+            bg.on("pointerout", () => {
+              if (!this.answered && this.selectedIdx !== i)
+                bg.setStrokeStyle(2, 0x334155);
+            });
+            bg.on("pointerdown", () => {
+              if (!this.answered) this.submitAnswer(i);
+            });
+            this.qGroup.add(bg);
+            this.qGroup.add(txt);
+            this.qGroup.add(num);
+            this.answerBtns.push({ bg, txt, num, optText: opt });
+          });
+          // Feedback
+          this.fbObj = this.add
+            .text(200, 490, "", {
+              fontSize: "14px",
+              color: "#94a3b8",
+              align: "center",
+              wordWrap: { width: 350 },
+            })
+            .setOrigin(0.5)
+            .setDepth(8);
+          this.qGroup.add(this.fbObj);
+          this.hintObj = this.add
+            .text(200, 520, "", {
+              fontSize: "11px",
+              color: "#64748b",
+              align: "center",
+              wordWrap: { width: 350 },
+            })
+            .setOrigin(0.5)
+            .setDepth(8);
+          this.qGroup.add(this.hintObj);
+        }
+
+        submitAnswer(idx) {
+          if (this.answered) return;
+          this.answered = true;
+          const q = this.questions[this.qIndex];
+          const chosen = this.answerBtns[idx].optText;
+          const correct = chosen === q.correct;
+          if (correct) {
+            const pts = q.tier * 10 + Math.min(this.streak, 5) * 5;
+            this.score += pts;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            this.answerBtns[idx].bg.setFillStyle(0x22c55e);
+            this.answerBtns[idx].bg.setStrokeStyle(3, 0x22c55e);
+            this.fbObj.setText(
+              "WAYPOINT REACHED! +" +
+                pts +
+                (this.streak >= 3 ? " WARP x" + this.streak : ""),
+            );
+            this.fbObj.setColor("#22c55e");
+            sfx.collect();
+            // Move ship to waypoint on grid
+            if (q.coord) this.moveShipToGrid(q.coord);
+            // Particles
+            const spark = this.add
+              .particles(
+                this.gridX + (q.coord ? q.coord.x * this.gridSize : 0),
+                this.gridY - (q.coord ? q.coord.y * this.gridSize : 0),
+                "__WHITE",
+                {
+                  speed: { min: 30, max: 120 },
+                  angle: { min: 0, max: 360 },
+                  scale: { start: 0.3, end: 0 },
+                  lifespan: 500,
+                  tint: [0x22d3ee, 0xa78bfa, 0x22c55e],
+                  quantity: 15,
+                  emitting: false,
+                  blendMode: "ADD",
+                },
+              )
+              .setDepth(8);
+            spark.explode(18);
+            this.cameras.main.shake(100, 0.003);
+            // Ship pulse
+            this.tweens.add({
+              targets: this.ship,
+              scaleX: 1.15,
+              scaleY: 1.15,
+              duration: 150,
+              yoyo: true,
+            });
+          } else {
+            this.lives--;
+            this.streak = 0;
+            this.answerBtns[idx].bg.setFillStyle(0xef4444);
+            this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
+            const ci = this.answerBtns.findIndex(
+              (b) => b.optText === q.correct,
+            );
+            if (ci >= 0) {
+              this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
+              this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
+            }
+            this.fbObj.setText("ASTEROID HIT! Answer: " + q.correct);
+            this.fbObj.setColor("#ef4444");
+            this.hintObj.setText(q.explain);
+            sfx.hit();
+            sfx.alarm();
+            this.cameras.main.shake(250, 0.015);
+            this.cameras.main.flash(150, 255, 50, 50);
+            // Ship damage flash
+            this.drawShipDamaged();
+            this.time.delayedCall(400, () => this.drawShip(this.ship));
+          }
+          this.updateHUD();
+          this.time.delayedCall(correct ? 1500 : 2500, () => {
+            this.qIndex++;
+            this.loadQuestion();
+          });
+        }
+
+        drawShipDamaged() {
+          this.ship.clear();
+          this.ship.fillStyle(0xef4444);
+          this.ship.fillTriangle(0, -30, 20, 15, -20, 15);
+          this.ship.fillStyle(0x991b1b);
+          this.ship.fillTriangle(0, -22, 14, 10, -14, 10);
+          this.ship.fillStyle(0x7f1d1d);
+          this.ship.fillTriangle(-14, 8, -30, 20, -12, 20);
+          this.ship.fillTriangle(14, 8, 30, 20, 12, 20);
+          this.ship.fillStyle(0xfbbf24);
+          this.ship.fillCircle(0, -8, 5);
+        }
+
+        handleKey(e) {
+          if (this.answered) return;
+          if (e.key >= "1" && e.key <= "4") {
+            const i = parseInt(e.key) - 1;
+            if (i < this.answerBtns.length) this.submitAnswer(i);
+          }
           if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-            e.preventDefault();
-            btns[(ci + 1) % btns.length].focus();
+            this.selectedIdx = Math.min(
+              this.selectedIdx + 1,
+              this.answerBtns.length - 1,
+            );
+            if (this.selectedIdx < 0) this.selectedIdx = 0;
+            this.highlightSel();
           }
           if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-            e.preventDefault();
-            btns[(ci - 1 + btns.length) % btns.length].focus();
+            this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            this.highlightSel();
           }
-        };
-      }
-
-      /* ===== ANSWER ===== */
-      function handleAnswer(idx, btn) {
-        const q = QUESTIONS[state.current];
-        const btns = [...$("opts").querySelectorAll(".opt-btn")];
-        btns.forEach((b) => (b.disabled = true));
-        const isCorrect = idx === q.correct;
-        if (isCorrect) {
-          btn.classList.add("correct");
-          state.score++;
-          state.streak++;
-          if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-          showFeedback(true, "Correct! " + q.explain);
-        } else {
-          btn.classList.add("wrong");
-          btns[q.correct].classList.add("correct");
-          state.lives--;
-          state.streak = 0;
-          showFeedback(false, "Not quite. " + q.explain);
+          if (e.key === "Enter" && this.selectedIdx >= 0)
+            this.submitAnswer(this.selectedIdx);
         }
-        state.answers.push({
-          qId: q.id,
-          chosen: idx,
-          correct: q.correct,
-          isCorrect,
-        });
-        $("hud-score").textContent = state.score;
-        updateLives();
-        updateStreak();
-        $("next-btn").classList.add("show");
-        $("next-btn").focus();
-        save();
-        // Auto-end if lives depleted
-        if (state.lives <= 0) {
-          $("next-btn").textContent = "View Results";
+
+        highlightSel() {
+          this.answerBtns.forEach((b, i) => {
+            b.bg.setStrokeStyle(
+              i === this.selectedIdx ? 3 : 2,
+              i === this.selectedIdx ? 0x22d3ee : 0x334155,
+            );
+          });
+          sfx.click();
         }
-      }
 
-      function showFeedback(ok, msg) {
-        const fb = $("feedback");
-        fb.textContent = msg;
-        fb.className = "feedback-box show " + (ok ? "correct" : "wrong");
-      }
+        updateHUD() {
+          this.hudQ.setText(`MISSION ${this.qIndex + 1}/${this.totalQ}`);
+          this.hudScore.setText(`SCORE: ${this.score}`);
+          this.hudLives.setText(
+            "SHIELDS: " + "■".repeat(this.lives) + "□".repeat(3 - this.lives),
+          );
+          this.hudStreak.setText(
+            this.streak >= 2 ? `WARP x${this.streak}` : "",
+          );
+          const el = Math.floor((Date.now() - this.startTime) / 1000);
+          const m = Math.floor(el / 60),
+            s = el % 60;
+          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
+        }
 
-      function updateLives() {
-        $("hud-lives").textContent =
-          "❤️".repeat(Math.max(0, state.lives)) +
-          "🖤".repeat(Math.max(0, 3 - state.lives));
-      }
+        update() {
+          this.updateHUD();
+        }
 
-      function updateStreak() {
-        const el = $("hud-streak");
-        if (state.streak >= 2) {
-          el.textContent = "🔥 " + state.streak;
-          el.classList.add("show");
-        } else {
-          el.classList.remove("show");
+        endGame() {
+          const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+          const correct = this.qIndex - (3 - this.lives);
+          this.scene.start("Results", {
+            score: this.score,
+            total: this.totalQ,
+            correct: Math.max(0, correct),
+            bestStreak: this.bestStreak,
+            time: elapsed,
+          });
         }
       }
 
-      /* ===== NEXT ===== */
-      function nextQuestion() {
-        if (state.lives <= 0) {
-          endGame();
-          return;
+      // --- RESULTS ---
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
         }
-        state.current++;
-        if (state.current >= QUESTIONS.length) {
-          endGame();
-          return;
+        init(data) {
+          this.d = data;
         }
-        $("next-btn").textContent = "Next Mission ➡️";
-        save();
-        renderQuestion();
+        create() {
+          sfx.init();
+          const d = this.d,
+            cx = W / 2;
+          this.cameras.main.setBackgroundColor("#020617");
+          createStarfield(this);
+          const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
+          const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+          if (stars >= 2) {
+            sfx.win();
+            for (let i = 0; i < 4; i++) {
+              this.time.delayedCall(i * 200, () => {
+                this.add
+                  .particles(
+                    Phaser.Math.Between(150, W - 150),
+                    Phaser.Math.Between(50, 200),
+                    "__WHITE",
+                    {
+                      speed: { min: 60, max: 180 },
+                      angle: { min: 0, max: 360 },
+                      scale: { start: 0.3, end: 0 },
+                      lifespan: 1000,
+                      tint: [0x22d3ee, 0xa78bfa, 0xfbbf24],
+                      quantity: 12,
+                      emitting: false,
+                      blendMode: "ADD",
+                    },
+                  )
+                  .explode(15);
+              });
+            }
+          } else sfx.lose();
+          const titles = [
+            "Lost in Space",
+            "Cadet Pilot",
+            "Star Navigator!",
+            "GALACTIC COMMANDER!",
+          ];
+          this.add
+            .text(cx, 60, titles[stars], {
+              fontSize: "40px",
+              color: stars >= 2 ? "#22d3ee" : "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          let starStr = "";
+          for (let i = 0; i < 3; i++) starStr += i < stars ? "★ " : "☆ ";
+          this.add
+            .text(cx, 115, starStr, { fontSize: "48px", color: "#fbbf24" })
+            .setOrigin(0.5);
+          this.add.circle(cx, 215, 60, 0x0f172a).setStrokeStyle(4, 0x7c3aed);
+          this.add
+            .text(cx, 205, pct + "%", {
+              fontSize: "32px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 230, "Accuracy", { fontSize: "12px", color: "#64748b" })
+            .setOrigin(0.5);
+          const stats = [
+            { l: "Score", v: d.score, c: "#22d3ee" },
+            { l: "Waypoints", v: `${d.correct}/${d.total}`, c: "#22c55e" },
+            { l: "Best Warp", v: d.bestStreak, c: "#a78bfa" },
+            {
+              l: "Time",
+              v: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
+              c: "#94a3b8",
+            },
+          ];
+          stats.forEach((s, i) => {
+            const x = cx - 240 + i * 165,
+              y = 340;
+            this.add
+              .rectangle(x, y, 135, 60, 0x0f172a)
+              .setStrokeStyle(1, 0x1e293b);
+            this.add
+              .text(x, y - 8, String(s.v), {
+                fontSize: "22px",
+                color: s.c,
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, y + 14, s.l, { fontSize: "11px", color: "#64748b" })
+              .setOrigin(0.5);
+          });
+          this.add
+            .text(
+              cx,
+              400,
+              `Sectors explored: ${Math.min(d.correct, 15)} of ${d.total}`,
+              { fontSize: "14px", color: "#94a3b8" },
+            )
+            .setOrigin(0.5);
+          const btn1 = this.add
+            .rectangle(cx - 110, 480, 190, 50, 0x7c3aed)
+            .setStrokeStyle(2, 0xa78bfa)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx - 110, 480, "NEW MISSION", {
+              fontSize: "17px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn1.on("pointerdown", () => {
+            sfx.click();
+            this.scene.start("Game");
+          });
+          btn1.on("pointerover", () => btn1.setFillStyle(0x6d28d9));
+          btn1.on("pointerout", () => btn1.setFillStyle(0x7c3aed));
+          const btn2 = this.add
+            .rectangle(cx + 110, 480, 190, 50, 0x1e293b)
+            .setStrokeStyle(2, 0x334155)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx + 110, 480, "MAIN MENU", {
+              fontSize: "17px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn2.on("pointerdown", () => {
+            sfx.click();
+            this.scene.start("Title");
+          });
+          btn2.on("pointerover", () => btn2.setFillStyle(0x334155));
+          btn2.on("pointerout", () => btn2.setFillStyle(0x1e293b));
+          this.add
+            .text(
+              cx,
+              H - 25,
+              "Coordinate Quest — Neft Teacher — 6.NS.5–6.NS.8",
+              { fontSize: "11px", color: "#475569" },
+            )
+            .setOrigin(0.5);
+          this.input.keyboard.on("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") this.scene.start("Game");
+            if (e.key === "Escape") this.scene.start("Title");
+          });
+        }
       }
 
-      /* ===== END GAME ===== */
-      function endGame() {
-        stopTimer();
-        state.finished = true;
-        save();
-        showScreen("scr-results");
-        const total = state.answers.length;
-        const pct = total ? Math.round((state.score / total) * 100) : 0;
-        // Title
-        if (pct >= 90) $("res-title").textContent = "Legendary Navigator! 🏆";
-        else if (pct >= 70) $("res-title").textContent = "Skilled Explorer! ⚓";
-        else if (pct >= 50)
-          $("res-title").textContent = "Apprentice Sailor! 🚢";
-        else $("res-title").textContent = "Keep Practicing! 🗺️";
-        $("res-sub").textContent =
-          state.name +
-          ", you scored " +
-          state.score +
-          " out of " +
-          total +
-          " (" +
-          pct +
-          "%)";
-        // Ring
-        const circ = 314.16;
-        const offset = circ - (circ * pct) / 100;
-        setTimeout(() => {
-          $("ring-fg").style.strokeDashoffset = offset;
-          $("score-pct").textContent = pct + "%";
-        }, 100);
-        // Stats
-        $("stat-correct").textContent = state.score;
-        $("stat-wrong").textContent = total - state.score;
-        $("stat-time").textContent = fmtTime(state.elapsed);
-        $("stat-streak").textContent = state.bestStreak;
-        // Review
-        const rl = $("review-list");
-        rl.innerHTML =
-          "<h3 style='margin-bottom:10px;font-size:1rem'>Review</h3>";
-        state.answers.forEach((a) => {
-          const q = QUESTIONS.find((x) => x.id === a.qId);
-          const div = document.createElement("div");
-          div.className =
-            "review-item " + (a.isCorrect ? "r-correct" : "r-wrong");
-          let html = "<strong>" + q.text + "</strong>";
-          if (!a.isCorrect) {
-            html +=
-              '<span class="your-ans">Your answer: ' +
-              q.options[a.chosen] +
-              "</span> ";
-          }
-          html +=
-            '<span class="right-ans">Correct: ' +
-            q.options[q.correct] +
-            "</span>";
-          div.innerHTML = html;
-          rl.appendChild(div);
-        });
-      }
-
-      /* ===== RETRY ===== */
-      function retryGame() {
-        clearSave();
-        showScreen("scr-login");
-        checkForm();
-      }
-
-      /* ===== KEYBOARD: Enter to advance ===== */
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          const nb = $("next-btn");
-          if (nb.classList.contains("show")) {
-            nb.click();
-            e.preventDefault();
-          }
-          const sb = $("start-btn");
-          if (!sb.disabled && $("scr-login").classList.contains("active")) {
-            sb.click();
-            e.preventDefault();
-          }
-        }
+      // --- CONFIG ---
+      new Phaser.Game({
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#020617",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 0 }, debug: false },
+        },
+        input: { keyboard: true, mouse: true, touch: true },
       });
     </script>
   </body>
