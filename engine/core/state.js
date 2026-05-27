@@ -49,6 +49,10 @@ export function createState(lessonId, studentId) {
     currentPhase: 0,
     xp: 0,
     maxXp: 200,
+    streak: 0,
+    bestStreak: 0,
+    totalCorrect: 0,
+    totalAttempts: 0,
     phases: [],
     responses: {},
     startedAt: null,
@@ -152,6 +156,19 @@ export function createState(lessonId, studentId) {
 
     getResponse(phaseId, questionId) {
       return state.responses[`${phaseId}_${questionId}`] ?? null;
+    },
+
+    recordAnswer(isCorrect) {
+      state.totalAttempts++;
+      if (isCorrect) {
+        state.totalCorrect++;
+        state.streak++;
+        if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+      } else {
+        state.streak = 0;
+      }
+      save();
+      notify();
     },
 
     reset() {

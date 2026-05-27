@@ -26,6 +26,16 @@
       "term": "Dimensions",
       "definition": "The measurements of length, width, and height of a 3D shape",
       "visual": "l × w × h"
+    },
+    {
+      "term": "Net",
+      "definition": "A 2D pattern that folds into a 3D solid",
+      "visual": "A cross shape folds into a cube"
+    },
+    {
+      "term": "Edge",
+      "definition": "A line segment where two faces of a solid meet",
+      "visual": "A cube has 12 edges"
     }
   ],
   "launch": {
@@ -53,16 +63,56 @@
       "Volume (ft³)"
     ],
     "rows": [
-      ["Capsule A", "2", "1.5", "1", ""],
-      ["Capsule B", "3", "1", "1", ""],
-      ["Capsule C", "2", "2", "1.5", ""],
-      ["Capsule D", "1.5", "1.5", "2", ""]
+      [
+        "Capsule A",
+        "2",
+        "1.5",
+        "1",
+        ""
+      ],
+      [
+        "Capsule B",
+        "3",
+        "1",
+        "1",
+        ""
+      ],
+      [
+        "Capsule C",
+        "2",
+        "2",
+        "1.5",
+        ""
+      ],
+      [
+        "Capsule D",
+        "1.5",
+        "1.5",
+        "2",
+        ""
+      ]
     ],
     "editableCells": [
-      { "row": 0, "col": 4, "answer": "3" },
-      { "row": 1, "col": 4, "answer": "3" },
-      { "row": 2, "col": 4, "answer": "6" },
-      { "row": 3, "col": 4, "answer": "4.5" }
+      {
+        "row": 0,
+        "col": 4,
+        "answer": "3"
+      },
+      {
+        "row": 1,
+        "col": 4,
+        "answer": "3"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "answer": "6"
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "answer": "4.5"
+      }
     ],
     "discourse": {
       "prompt": "Capsules A and B have the same volume (3 ft³) but different dimensions. Why? Which design would you choose and why?",
@@ -85,16 +135,38 @@
       {
         "type": "multiple-choice",
         "stem": "What is the volume of a rectangular prism with l = 4 in, w = 3 in, h = 5 in?",
-        "choices": ["60 in³", "12 in³", "60 in²", "24 in³"],
+        "choices": [
+          "60 in³",
+          "12 in³",
+          "60 in²",
+          "24 in³"
+        ],
         "correctIndex": 0,
         "explanation": "V = l × w × h = 4 × 3 × 5 = 60 cubic inches."
       },
       {
         "type": "multiple-choice",
         "stem": "A box has a volume of 36 cm³. Its length is 6 cm and width is 3 cm. What is the height?",
-        "choices": ["2 cm", "6 cm", "3 cm", "12 cm"],
+        "choices": [
+          "2 cm",
+          "6 cm",
+          "3 cm",
+          "12 cm"
+        ],
         "correctIndex": 0,
         "explanation": "V = l × w × h → 36 = 6 × 3 × h → 36 = 18h → h = 2 cm."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A cube has side length 3 cm. What is its surface area?",
+        "choices": [
+          "54 sq cm",
+          "27 sq cm",
+          "18 sq cm",
+          "9 sq cm"
+        ],
+        "correctIndex": 0,
+        "explanation": "SA = 6s² = 6 × 3² = 6 × 9 = 54 sq cm."
       }
     ],
     "onLevel": [
@@ -102,7 +174,11 @@
         "type": "bar-model",
         "label": "A shipping container is 8 ft long, 4 ft wide, and 3 ft tall. It is half full of boxes.",
         "bars": [
-          { "value": 48, "label": "Boxes", "annotation": "Half full" },
+          {
+            "value": 48,
+            "label": "Boxes",
+            "annotation": "Half full"
+          },
           {
             "value": 48,
             "label": "Empty",
@@ -132,13 +208,22 @@
         "type": "error-analysis",
         "title": "Find the Volume Error",
         "workedExample": [
-          { "label": "Dimensions", "work": "l = 5 m, w = 3 m, h = 2.5 m" },
-          { "label": "Formula", "work": "V = l × w × h" },
+          {
+            "label": "Dimensions",
+            "work": "l = 5 m, w = 3 m, h = 2.5 m"
+          },
+          {
+            "label": "Formula",
+            "work": "V = l × w × h"
+          },
           {
             "label": "Calculate",
             "work": "V = 5 × 3 × 2.5 = 5 × 5.5 = 27.5 m³"
           },
-          { "label": "Answer", "work": "Volume = 27.5 m³" }
+          {
+            "label": "Answer",
+            "work": "Volume = 27.5 m³"
+          }
         ],
         "errorStep": 2,
         "correctWork": "3 × 2.5 = 7.5, not 5.5. Correct: V = 5 × 7.5 = 37.5 m³.",
@@ -146,6 +231,20 @@
           "Check Step 3: what is 3 × 2.5?",
           "3 × 2.5 = 7.5, not 5.5. The student may have added instead of multiplied."
         ]
+      },
+      {
+        "type": "open-response",
+        "prompt": "A box needs to hold exactly 60 cubic inches. Give three different sets of whole-number dimensions that work. Which would use the least cardboard?",
+        "sentenceFrame": "Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option uses the least cardboard because ___.",
+        "keywords": [
+          "volume",
+          "surface area",
+          "dimensions",
+          "length",
+          "width",
+          "height"
+        ],
+        "minLength": 30
       }
     ]
   },
@@ -153,12 +252,26 @@
     "scenario": "An aquarium store sells fish tanks. A small tank is 24 inches long, 12 inches wide, and 16 inches tall. One gallon of water takes up about 231 cubic inches.",
     "promptQuestion": "How many gallons of water does the small tank hold?",
     "prompt": "The tank's volume is ___ in³ because V = ___ × ___ × ___. It holds about ___ gallons because ___ ÷ 231 ≈ ___.",
-    "keywords": ["4608", "24", "12", "16", "20", "gallons", "volume", "cubic"]
+    "keywords": [
+      "4608",
+      "24",
+      "12",
+      "16",
+      "20",
+      "gallons",
+      "volume",
+      "cubic"
+    ]
   },
   "reflect": {
     "exitTicket": {
       "stem": "A rectangular prism has l = 7 ft, w = 2 ft, h = 3 ft. What is the volume?",
-      "choices": ["42 ft³", "24 ft³", "42 ft²", "12 ft³"],
+      "choices": [
+        "42 ft³",
+        "24 ft³",
+        "42 ft²",
+        "12 ft³"
+      ],
       "correctIndex": 0,
       "explanation": "V = 7 × 2 × 3 = 42 cubic feet. Remember: volume uses cubic units (ft³)."
     }

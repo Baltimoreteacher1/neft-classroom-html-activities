@@ -383,7 +383,19 @@ function renderPracticePhase(el, state, ctx, config) {
 
     renderComponent(area, prob, (isCorrect) => {
       totalAttempts++;
-      if (isCorrect) totalCorrect++;
+      if (isCorrect) {
+        totalCorrect++;
+        const result = ctx.engagement.recordCorrect(null);
+        if (result.streakMessage) {
+          const toast = document.createElement("div");
+          toast.className = "feedback feedback-success visible";
+          toast.style.animation = "feedbackIn 0.3s var(--ease-spring)";
+          toast.innerHTML = `<span class="feedback-icon">✓</span><span>${result.message} ${result.streakMessage}</span>`;
+          area.append(toast);
+        }
+      } else {
+        ctx.engagement.recordIncorrect(null);
+      }
       setTimeout(() => {
         idx++;
         next();
@@ -511,21 +523,60 @@ function showFinalSummary(el, state, config) {
   el.innerHTML = "";
   const s = state.get();
   const totalStars = s.phases.reduce((sum, p) => sum + p.stars, 0);
+  const pct = totalStars / 18;
+  const grade =
+    pct >= 0.9
+      ? "🏆 Outstanding!"
+      : pct >= 0.7
+        ? "⭐ Great Job!"
+        : pct >= 0.5
+          ? "👍 Good Effort!"
+          : "💪 Keep Practicing!";
+  const streakLine =
+    s.bestStreak >= 3
+      ? `<div style="margin-top:var(--sp-3); font-size:0.95rem; color:var(--coral); font-weight:700;">🔥 Best streak: ${s.bestStreak} in a row</div>`
+      : "";
+  const accuracy =
+    s.totalAttempts > 0
+      ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
+      : 100;
+  const paceBadge =
+    s.totalAttempts > 0 && s.totalCorrect / s.totalAttempts >= 0.85
+      ? "🎯 Sharpshooter"
+      : s.totalAttempts >= 8
+        ? "🧠 Deep Thinker"
+        : "";
+
   const summary = document.createElement("div");
   summary.className = "card text-center";
   summary.style.animation = "phaseIn 0.5s var(--ease-out)";
   summary.innerHTML = `
     <div class="badge badge-amber" style="font-size:0.9rem; padding:8px 20px; margin-bottom:var(--sp-5);">🎉 Activity Complete!</div>
     <h2 style="margin-bottom:var(--sp-2);">${esc(config.title)}</h2>
-    <p style="color:var(--muted); margin-bottom:var(--sp-5);">Great work, ${esc(s.studentName || "mathematician")}!</p>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-5); max-width:500px; margin:0 auto var(--sp-6);">
-      <div><div style="font-size:2.2rem; font-weight:900; color:var(--amber);">${s.xp}</div><div style="font-size:0.82rem; font-weight:700; color:var(--muted);">Total XP</div></div>
-      <div><div style="font-size:2.2rem; font-weight:900; color:var(--amber);">${totalStars}/18</div><div style="font-size:0.82rem; font-weight:700; color:var(--muted);">Stars</div></div>
-      <div><div style="font-size:2.2rem; font-weight:900; color:var(--success);">6/6</div><div style="font-size:0.82rem; font-weight:700; color:var(--muted);">Phases</div></div>
+    <p style="color:var(--muted); margin-bottom:var(--sp-2);">${grade}</p>
+    <p style="color:var(--muted); margin-bottom:var(--sp-5); font-size:0.92rem;">Great work, ${esc(s.studentName || "mathematician")}!</p>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-4); max-width:560px; margin:0 auto var(--sp-6);">
+      <div><div class="xp-counter" style="font-size:2rem; font-weight:900; color:var(--amber);">0</div><div style="font-size:0.78rem; font-weight:700; color:var(--muted);">Total XP</div></div>
+      <div><div style="font-size:2rem; font-weight:900; color:var(--amber);">${totalStars}/18</div><div style="font-size:0.78rem; font-weight:700; color:var(--muted);">Stars</div></div>
+      <div><div style="font-size:2rem; font-weight:900; color:var(--teal);">${accuracy}%</div><div style="font-size:0.78rem; font-weight:700; color:var(--muted);">Accuracy</div></div>
+      <div><div style="font-size:2rem; font-weight:900; color:var(--success);">6/6</div><div style="font-size:0.78rem; font-weight:700; color:var(--muted);">Phases</div></div>
     </div>
-    <div style="display:flex; flex-direction:column; gap:var(--sp-2); max-width:400px; margin:0 auto;">
+    ${streakLine}
+    ${paceBadge ? `<div style="margin-top:var(--sp-2); font-size:0.88rem; color:var(--teal); font-weight:700;">${paceBadge}</div>` : ""}
+    <div style="display:flex; flex-direction:column; gap:var(--sp-2); max-width:400px; margin:var(--sp-5) auto 0;">
       ${s.phases.map((p) => `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--cream); border-radius:var(--radius-sm);"><span style="font-weight:700; font-size:0.9rem;">${esc(p.name)}</span><span style="color:var(--amber);">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}</span></div>`).join("")}
     </div>
     <p style="margin-top:var(--sp-6); color:var(--muted); font-size:0.85rem;">Neft Teacher · ${esc(config.standard)} · ${new Date().toLocaleDateString()}</p>`;
   el.append(summary);
+
+  const counterEl = summary.querySelector(".xp-counter");
+  if (counterEl && s.xp > 0) {
+    let current = 0;
+    const step = Math.max(1, Math.ceil(s.xp / 30));
+    const interval = setInterval(() => {
+      current = Math.min(current + step, s.xp);
+      counterEl.textContent = current;
+      if (current >= s.xp) clearInterval(interval);
+    }, 30);
+  }
 }

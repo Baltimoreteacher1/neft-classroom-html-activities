@@ -27,6 +27,16 @@
       "term": "Outlier",
       "definition": "A data value that is much greater or less than most other values",
       "visual": "In 10, 12, 11, 13, 50 → 50 is an outlier"
+    },
+    {
+      "term": "Data distribution",
+      "definition": "The shape and spread of a data set",
+      "visual": "Symmetric, skewed left, or skewed right"
+    },
+    {
+      "term": "Variability",
+      "definition": "How spread out the values in a data set are",
+      "visual": "Low variability = values close together"
     }
   ],
   "launch": {
@@ -51,9 +61,18 @@
     "step": 1,
     "snapToTick": true,
     "targets": [
-      { "value": 42, "label": "A: Mean" },
-      { "value": 41, "label": "B: Median" },
-      { "value": 38, "label": "C: Mode" }
+      {
+        "value": 42,
+        "label": "A: Mean"
+      },
+      {
+        "value": 41,
+        "label": "B: Median"
+      },
+      {
+        "value": 38,
+        "label": "C: Mode"
+      }
     ],
     "discourse": {
       "prompt": "The mean (42.6 ≈ 42) is higher than the median (41). Why? Which better represents a 'typical' game?",
@@ -74,38 +93,147 @@
       {
         "type": "multiple-choice",
         "stem": "Find the mean of: 10, 14, 8, 12, 16",
-        "choices": ["12", "14", "10", "60"],
+        "choices": [
+          "12",
+          "14",
+          "10",
+          "60"
+        ],
         "correctIndex": 0,
         "explanation": "Sum = 10 + 14 + 8 + 12 + 16 = 60. Mean = 60 ÷ 5 = 12."
       },
       {
         "type": "multiple-choice",
         "stem": "Find the median of: 3, 7, 2, 9, 5",
-        "choices": ["5", "3", "7", "5.2"],
+        "choices": [
+          "5",
+          "3",
+          "7",
+          "5.2"
+        ],
         "correctIndex": 0,
         "explanation": "Ordered: 2, 3, 5, 7, 9. The middle value is 5."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Find the median of: 2, 8, 5, 1, 9",
+        "choices": [
+          "5",
+          "2",
+          "8",
+          "9"
+        ],
+        "correctIndex": 0,
+        "explanation": "Ordered: 1, 2, 5, 8, 9. Middle value is 5."
       }
     ],
     "onLevel": [
       {
         "type": "fill-table",
-        "headers": ["Data Set", "Mean", "Median", "Mode"],
+        "headers": [
+          "Data Set",
+          "Mean",
+          "Median",
+          "Mode"
+        ],
         "rows": [
-          ["5, 8, 8, 10, 14", "", "", ""],
-          ["20, 25, 25, 30, 25, 35", "", "", ""],
-          ["100, 110, 90, 100, 115, 95", "", "", ""]
+          [
+            "5, 8, 8, 10, 14",
+            "",
+            "",
+            ""
+          ],
+          [
+            "20, 25, 25, 30, 25, 35",
+            "",
+            "",
+            ""
+          ],
+          [
+            "100, 110, 90, 100, 115, 95",
+            "",
+            "",
+            ""
+          ]
         ],
         "editableCells": [
-          { "row": 0, "col": 1, "answer": "9" },
-          { "row": 0, "col": 2, "answer": "8" },
-          { "row": 0, "col": 3, "answer": "8" },
-          { "row": 1, "col": 1, "answer": "26.67" },
-          { "row": 1, "col": 2, "answer": "25" },
-          { "row": 1, "col": 3, "answer": "25" },
-          { "row": 2, "col": 1, "answer": "101.67" },
-          { "row": 2, "col": 2, "answer": "100" },
-          { "row": 2, "col": 3, "answer": "100" }
+          {
+            "row": 0,
+            "col": 1,
+            "answer": "9"
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "answer": "8"
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "answer": "8"
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "answer": "26.67"
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "answer": "25"
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "answer": "25"
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "answer": "101.67"
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "answer": "100"
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "answer": "100"
+          }
         ]
+      },
+      {
+        "type": "matching-game",
+        "pairs": [
+          {
+            "term": "Mean",
+            "match": "Sum ÷ Count"
+          },
+          {
+            "term": "Median",
+            "match": "Middle value"
+          },
+          {
+            "term": "Mode",
+            "match": "Most frequent"
+          },
+          {
+            "term": "Range",
+            "match": "Max − Min"
+          },
+          {
+            "term": "MAD",
+            "match": "Avg distance from mean"
+          },
+          {
+            "term": "Outlier",
+            "match": "Far from other values"
+          }
+        ],
+        "label": "Match each term to its definition.",
+        "columns": 4
       }
     ],
     "extending": [
@@ -113,7 +241,10 @@
         "type": "error-analysis",
         "title": "Find the Stats Error",
         "workedExample": [
-          { "label": "Data set", "work": "12, 15, 18, 15, 20" },
+          {
+            "label": "Data set",
+            "work": "12, 15, 18, 15, 20"
+          },
           {
             "label": "Find mean",
             "work": "Sum = 80, Count = 5, Mean = 80 ÷ 5 = 16"
@@ -122,7 +253,10 @@
             "label": "Find median",
             "work": "Ordered: 12, 15, 15, 18, 20 → Median = 15"
           },
-          { "label": "Find mode", "work": "Mode = 18 (the biggest number)" }
+          {
+            "label": "Find mode",
+            "work": "Mode = 18 (the biggest number)"
+          }
         ],
         "errorStep": 3,
         "correctWork": "Mode = 15 (appears twice, more than any other value). Mode is the most frequent value, not the largest.",
@@ -130,6 +264,20 @@
           "Mode means 'most often,' not 'most.' Which number appears the most times?",
           "15 appears twice. No other number repeats. So the mode is 15, not 18."
         ]
+      },
+      {
+        "type": "open-response",
+        "prompt": "Two students measured their height every month for 5 months. Student A's MAD is 0.5 inches. Student B's MAD is 2.3 inches. What does this tell you?",
+        "sentenceFrame": "Student A's measurements are more ___ because ___. Student B's measurements ___ because ___.",
+        "keywords": [
+          "consistent",
+          "spread",
+          "variability",
+          "MAD",
+          "mean",
+          "average distance"
+        ],
+        "minLength": 30
       }
     ]
   },
@@ -150,7 +298,12 @@
   "reflect": {
     "exitTicket": {
       "stem": "Data set: 4, 7, 10, 7, 12. What is the median?",
-      "choices": ["7", "8", "10", "4"],
+      "choices": [
+        "7",
+        "8",
+        "10",
+        "4"
+      ],
       "correctIndex": 0,
       "explanation": "Ordered: 4, 7, 7, 10, 12. The middle (3rd) value is 7."
     }
