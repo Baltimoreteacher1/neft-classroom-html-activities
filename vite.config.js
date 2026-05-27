@@ -17,60 +17,36 @@ function getLessonEntries() {
 }
 
 function copyStandaloneHtml() {
-  const standaloneDirs = [
-    "pre-test",
-    "post-test",
-    "games",
-    "blood-on-the-river",
-    "correlation-playground",
-    "dashboard",
-    "ecology-noam",
-    "esol",
-    "esol-reading-writing",
-    "expressions-equations",
-    "fix-it-design-challenge",
-    "forecast-engine",
-    "fractions-soccer",
-    "geometry-prep",
-    "math",
-    "mcap-review",
-    "neft-data-studio",
-    "Noam School",
-    "noam-bar-mitzvah",
-    "noam-school",
-    "noam-school-v10",
-    "number-system",
-    "practice",
-    "practice-engine",
-    "ratios-proportions",
-    "refugee",
-    "statistics-data",
-    "surface-area-review",
-    "teacher-data-dashboard",
-    "teacher-tools",
-    "tools",
-    "unit-1",
-    "unit-4",
-    "unit-5",
-    "unit-5-practice",
-    "wida-access",
-    "world-architect-math-project",
-    "assets",
-    "build",
-  ];
-  const rootFiles = ["_headers", "_redirects", "404.html", "robots.txt"];
+  const SKIP_DIRS = new Set([
+    "node_modules",
+    "dist",
+    ".git",
+    ".github",
+    ".claude",
+    ".wrangler",
+    "engine",
+    "lessons",
+    "scripts",
+    "docs",
+  ]);
+  const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt"];
 
   return {
     name: "copy-standalone-html",
     closeBundle() {
-      for (const folder of standaloneDirs) {
-        const src = resolve(__dirname, folder);
-        const dest = resolve(__dirname, "dist", folder);
-        if (!existsSync(src)) continue;
+      for (const entry of readdirSync(__dirname, { withFileTypes: true })) {
+        if (
+          !entry.isDirectory() ||
+          entry.name.startsWith(".") ||
+          SKIP_DIRS.has(entry.name)
+        )
+          continue;
+        const src = resolve(__dirname, entry.name);
+        const dest = resolve(__dirname, "dist", entry.name);
         mkdirSync(dest, { recursive: true });
         cpSync(src, dest, { recursive: true });
       }
-      for (const file of rootFiles) {
+      for (const file of ROOT_FILES) {
         const src = resolve(__dirname, file);
         const dest = resolve(__dirname, "dist", file);
         if (existsSync(src)) cpSync(src, dest);

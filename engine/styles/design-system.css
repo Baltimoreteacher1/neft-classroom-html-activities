@@ -294,6 +294,11 @@ h4 {
   cursor: not-allowed;
 }
 
+/* Available but not yet visited — fully interactive */
+.phase-btn:not(.active):not(.completed):not(.locked) {
+  cursor: pointer;
+}
+
 .phase-num {
   width: 36px;
   height: 36px;
@@ -1317,4 +1322,103 @@ h4 {
 .student-period-display {
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+/* ── Export Toolbar ── */
+.export-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  padding: 6px var(--sp-4);
+  background: rgba(247, 244, 236, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 1px 4px rgba(18, 53, 91, 0.06);
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all var(--duration-fast) ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.export-btn svg {
+  flex-shrink: 0;
+}
+
+.export-btn-primary {
+  background: var(--navy);
+  color: white;
+  box-shadow: 0 2px 8px rgba(18, 53, 91, 0.2);
+}
+
+.export-btn-primary:hover {
+  background: var(--teal);
+  box-shadow: 0 4px 12px rgba(31, 166, 162, 0.3);
+  transform: translateY(-1px);
+}
+
+.export-btn-secondary {
+  background: white;
+  color: var(--navy);
+  border: 1.5px solid var(--line);
+}
+
+.export-btn-secondary:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  transform: translateY(-1px);
+}
+
+.export-btn-success {
+  background: var(--success) !important;
+  color: white !important;
+  border-color: var(--success) !important;
+}
+
+/* Push body content down to make room for the toolbar */
+body:has(.export-toolbar) .app {
+  margin-top: 42px;
+}
+
+/* On the identity screen, hide the toolbar */
+body:has(.identity-screen) .export-toolbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .export-toolbar {
+    padding: 5px var(--sp-3);
+    gap: var(--sp-1);
+  }
+  .export-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+  .export-btn-primary span {
+    display: none;
+  }
+  .export-btn-primary::after {
+    content: "Save";
+  }
+  body:has(.export-toolbar) .app {
+    margin-top: 38px;
+  }
 }
