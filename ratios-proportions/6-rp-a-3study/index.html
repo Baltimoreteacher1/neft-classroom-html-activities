@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratios &amp; Proportional Reasoning — Interactive Review | Grade 6</title>
+<style>
+:root{
+  --ink:#2b1d0e;--parchment:#fdf6ec;--paper:#fff9f0;
+  --amber:#d97706;--amber2:#b45309;--amber-light:#fef3c7;--amber-xlight:#fffbf0;
+  --teal:#0d7377;--teal-light:#e6f7f7;
+  --clay:#b5541a;--clay-light:#fff0e8;
+  --slate:#2d4a5a;--slate-light:#e8f2f6;
+  --sage:#2d6a4f;--sage-light:#e8f7f1;
+  --rose:#9d2b3a;--rose-light:#fdeef0;
+  --shadow:0 4px 24px rgba(43,29,14,.13);
+  --rad:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--parchment);color:var(--ink);
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(217,119,6,.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(13,115,119,.05) 0%, transparent 50%);
+  min-height:100vh;
+}
+
+/* ===== HEADER ===== */
+.hdr{
+  background:var(--ink);padding:0 32px;position:sticky;top:0;z-index:100;
+  border-bottom:4px solid var(--amber);
+}
+.hdr-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand h1{font-family:'Playfair Display',serif;font-size:22px;color:var(--amber);letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.brand p{font-size:11px;color:rgba(253,246,236,.5);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+.score-badge{
+  background:var(--amber);color:var(--ink);font-family:'DM Mono',monospace;font-size:17px;font-weight:500;
+  padding:8px 20px;border-radius:6px;display:flex;align-items:center;gap:7px
+}
+.prog-rail{height:4px;background:rgba(253,246,236,.1)}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--clay),var(--teal));transition:width .7s cubic-bezier(.4,0,.2,1);width:0%}
+
+/* ===== MAIN ===== */
+main{max-width:980px;margin:0 auto;padding:40px 20px 110px}
+
+/* ===== SECTION CARDS ===== */
+.sec{border-radius:var(--rad);margin-bottom:48px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow);border:1.5px solid rgba(43,29,14,.06)}
+.sec-hdr{padding:20px 28px;display:flex;align-items:center;gap:16px;color:#fff}
+.sec-num{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:22px;flex-shrink:0}
+.sec-info h2{font-family:'Playfair Display',serif;font-size:20px;line-height:1.1}
+.sec-info p{font-size:12px;opacity:.8;margin-top:2px;letter-spacing:.3px}
+.c-amber .sec-hdr{background:linear-gradient(135deg,var(--amber),var(--amber2))}
+.c-teal .sec-hdr{background:linear-gradient(135deg,var(--teal),#064e52)}
+.c-clay .sec-hdr{background:linear-gradient(135deg,var(--clay),#7c3512)}
+.c-slate .sec-hdr{background:linear-gradient(135deg,var(--slate),#1a2e39)}
+.c-sage .sec-hdr{background:linear-gradient(135deg,var(--sage),#1a3d2c)}
+.sec-body{padding:28px 28px 24px}
+
+/* ===== STANDARD TAG & INSTRUCTION ===== */
+.std{display:inline-block;background:var(--amber-light);color:var(--amber2);
+  font-family:'DM Mono',monospace;font-size:11px;padding:3px 12px;border-radius:20px;
+  letter-spacing:.5px;margin-bottom:12px;font-weight:500}
+.instr{background:var(--amber-xlight);border-left:4px solid var(--amber);
+  padding:11px 16px;border-radius:0 8px 8px 0;font-size:13.5px;color:#5a3a1a;
+  margin-bottom:24px;line-height:1.55}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 26px;border:none;
+  border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .2s;letter-spacing:.2px}
+.btn-go{background:var(--sage);color:#fff}.btn-go:hover{background:#1f5238;transform:translateY(-2px);box-shadow:0 4px 14px rgba(45,106,79,.3)}
+.btn-rst{background:#f0ede8;color:#7a6a5a}.btn-rst:hover{background:#e5e0d8}
+.btn-row{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+
+/* ===== ACTIVITY 1 : EQUIVALENT RATIO SORT ===== */
+.ratio-bank{display:flex;flex-wrap:wrap;gap:10px;min-height:52px;margin-bottom:22px}
+.ratio-chip{
+  background:var(--ink);color:var(--amber);padding:9px 18px;border-radius:8px;
+  font-family:'DM Mono',monospace;font-size:15px;font-weight:500;
+  cursor:grab;user-select:none;border:2px solid transparent;
+  transition:transform .15s,box-shadow .15s
+}
+.ratio-chip:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(43,29,14,.2)}
+.ratio-chip.dragging{opacity:.4;cursor:grabbing}
+.eq-bins{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.eq-bin{border:2.5px dashed;border-radius:14px;padding:16px;min-height:160px}
+.bin-yes{border-color:var(--sage)}
+.bin-no{border-color:var(--rose)}
+.eq-bin.over{background:rgba(45,106,79,.06)}
+.bin-no.over{background:rgba(157,43,58,.05)}
+.bin-lbl{font-family:'Playfair Display',serif;font-size:17px;text-align:center;margin-bottom:4px}
+.bin-yes .bin-lbl{color:var(--sage)}.bin-no .bin-lbl{color:var(--rose)}
+.bin-sub{font-size:11px;color:#9a8a7a;text-align:center;margin-bottom:12px}
+.drop-chip{
+  display:inline-block;padding:7px 14px;border-radius:7px;font-family:'DM Mono',monospace;
+  font-size:14px;font-weight:500;margin:4px;color:#fff;background:var(--ink)
+}
+.drop-chip.ok{background:var(--sage)}.drop-chip.bad{background:var(--rose)}
+.target-ratio{
+  background:var(--amber-light);border:2px solid var(--amber);
+  border-radius:10px;padding:10px 20px;text-align:center;margin-bottom:18px;display:inline-block
+}
+.target-ratio span{font-family:'DM Mono',monospace;font-size:20px;color:var(--amber2);font-weight:500}
+.target-ratio p{font-size:12px;color:#9a7a3a;margin-top:3px}
+
+/* ===== ACTIVITY 2 : UNIT RATE TABLES ===== */
+.rate-tables{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.rt-section h4{font-family:'Playfair Display',serif;font-size:16px;color:var(--teal);margin-bottom:4px}
+.rt-section p{font-size:13px;color:#7a6a5a;margin-bottom:12px}
+.ratio-tbl{width:100%;border-collapse:collapse;border-radius:10px;overflow:hidden}
+.ratio-tbl th{background:var(--teal);color:#fff;padding:9px 14px;
+  font-family:'DM Mono',monospace;font-size:12px;text-align:center;letter-spacing:.3px}
+.ratio-tbl td{padding:8px 14px;text-align:center;border-bottom:1px solid #ede8df;
+  font-family:'DM Mono',monospace;font-size:15px;color:var(--ink)}
+.ratio-tbl tr:last-child td{border-bottom:none}
+.ratio-tbl tr:nth-child(even) td{background:#f9f5ef}
+.ratio-tbl input{
+  width:88px;padding:5px 8px;border:2px solid var(--teal);border-radius:6px;
+  text-align:center;font-family:'DM Mono',monospace;font-size:14px;outline:none;
+  background:var(--teal-light);transition:border-color .2s
+}
+.ratio-tbl input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(217,119,6,.12)}
+.ratio-tbl input.ok{border-color:var(--sage);background:var(--sage-light)}
+.ratio-tbl input.bad{border-color:var(--rose);background:var(--rose-light)}
+
+/* ===== ACTIVITY 3 : PERCENT CLICK ===== */
+.pct-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pct-item{border:2px solid #e8dfd0;border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--parchment)}
+.pct-item:hover{border-color:var(--amber);background:var(--amber-xlight);transform:translateY(-2px)}
+.pct-item.sel{border-color:var(--amber);background:var(--amber-light);transform:scale(1.03)}
+.pct-item.ok{border-color:var(--sage);background:var(--sage-light);pointer-events:none}
+.pct-item.bad{border-color:var(--rose);background:var(--rose-light);animation:shk .4s}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pct-q{font-family:'Playfair Display',serif;font-size:15px;color:var(--ink);line-height:1.4;margin-bottom:8px}
+.pct-ans{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--amber2)}
+.pct-reveal{font-size:12px;color:#9a8070;margin-top:4px;display:none}
+.pct-item.ok .pct-reveal{display:block;color:var(--sage)}
+.pct-item.bad .pct-reveal{display:block;color:var(--rose)}
+.pct-pairs{display:flex;gap:20px;margin-bottom:24px;flex-wrap:wrap}
+.pair-label{background:var(--clay-light);border:2px solid var(--clay);border-radius:8px;padding:8px 16px;font-size:14px;color:var(--clay);cursor:pointer;transition:all .2s;font-weight:600}
+.pair-label.sel{background:var(--clay);color:#fff}
+.pair-label.done{background:var(--sage-light);border-color:var(--sage);color:var(--sage);pointer-events:none}
+.pair-label.bad{border-color:var(--rose);background:var(--rose-light);animation:shk .4s}
+.pct-value{background:var(--slate-light);border:2px solid var(--slate);border-radius:8px;padding:8px 16px;font-family:'DM Mono',monospace;font-size:15px;color:var(--slate);cursor:pointer;transition:all .2s;font-weight:500}
+.pct-value.sel{background:var(--slate);color:#fff}
+.pct-value.done{background:var(--sage-light);border-color:var(--sage);color:var(--sage);pointer-events:none}
+.pct-value.bad{border-color:var(--rose);background:var(--rose-light);animation:shk .4s}
+.match-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.match-cols h4{font-family:'Playfair Display',serif;font-size:15px;margin-bottom:12px}
+
+/* ===== ACTIVITY 4 : TAPE DIAGRAM ===== */
+.tape-puzzle{border:2px solid #e8dfd0;border-radius:14px;padding:22px;margin-bottom:22px;background:var(--amber-xlight)}
+.tape-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--clay);margin-bottom:6px}
+.tape-desc{font-size:13.5px;color:#5a3a1a;margin-bottom:16px;line-height:1.5}
+.tape-visual{display:flex;align-items:stretch;gap:3px;margin-bottom:14px;height:48px}
+.tape-seg{
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#fff;
+  border-radius:6px;flex:1;position:relative;transition:all .3s
+}
+.tape-seg.a-seg{background:var(--teal)}
+.tape-seg.b-seg{background:var(--clay)}
+.tape-seg.unknown{background:#c8bba8;cursor:pointer;font-size:18px}
+.tape-seg.unknown:hover{background:var(--amber);transform:scale(1.05)}
+.tape-opts{display:flex;gap:10px;flex-wrap:wrap}
+.t-opt{
+  padding:8px 18px;border:2px solid #d5c9bc;border-radius:8px;
+  font-family:'DM Mono',monospace;font-size:15px;background:var(--paper);
+  cursor:pointer;transition:all .2s;color:var(--ink)
+}
+.t-opt:hover{border-color:var(--amber);background:var(--amber-xlight)}
+.t-opt.ok{border-color:var(--sage);background:var(--sage-light);color:var(--sage);pointer-events:none}
+.t-opt.bad{border-color:var(--rose);background:var(--rose-light);animation:shk .35s}
+
+/* ===== ACTIVITY 5 : PROPORTION SOLVE ===== */
+.prop-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.prop-item{background:var(--parchment);border:2px solid #e0d5c5;border-radius:12px;padding:18px}
+.prop-item h4{font-family:'Playfair Display',serif;font-size:15px;color:var(--slate);margin-bottom:8px}
+.prop-eq{display:flex;align-items:center;gap:10px;margin:12px 0;flex-wrap:wrap}
+.frac{display:inline-flex;flex-direction:column;align-items:center;gap:1px;text-align:center}
+.frac-top,.frac-bot{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;padding:2px 8px}
+.frac-line{width:100%;height:2px;background:var(--ink)}
+.eq-sym{font-size:22px;font-weight:700;color:var(--amber2)}
+.prop-input{
+  width:72px;padding:6px 8px;border:2px solid var(--amber);border-radius:7px;
+  text-align:center;font-family:'DM Mono',monospace;font-size:17px;outline:none;
+  background:var(--amber-xlight);transition:all .2s
+}
+.prop-input:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(181,84,26,.12)}
+.prop-input.ok{border-color:var(--sage);background:var(--sage-light)}
+.prop-input.bad{border-color:var(--rose);background:var(--rose-light);animation:shk .35s}
+.prop-hint{font-size:12px;color:#9a8a7a;margin-top:4px;display:none;font-style:italic}
+.prop-hint.vis{display:block}
+
+/* ===== VICTORY ===== */
+.victory{background:var(--ink);border-radius:var(--rad);padding:56px 36px;text-align:center;color:var(--parchment)}
+.v-seal{font-size:72px;display:block;margin-bottom:12px;animation:seal 1.5s infinite alternate ease-in-out}
+@keyframes seal{from{transform:rotate(-6deg) scale(1)}to{transform:rotate(6deg) scale(1.08)}}
+.v-title{font-family:'Playfair Display',serif;font-size:38px;color:var(--amber);margin-bottom:8px}
+.v-pts{font-family:'DM Mono',monospace;font-size:72px;color:var(--amber);line-height:1}
+.v-stars{display:flex;gap:8px;justify-content:center;font-size:40px;margin:16px 0}
+.v-star{opacity:.2;transition:opacity .5s,transform .5s}.v-star.lit{opacity:1;transform:scale(1.2)}
+.bar-wrap{background:rgba(255,255,255,.1);border-radius:12px;overflow:hidden;height:16px;max-width:400px;margin:0 auto 24px}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--clay));transition:width 1s ease;width:0%}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:28px;right:28px;padding:12px 22px;border-radius:10px;
+  font-weight:700;font-size:14.5px;opacity:0;transform:translateY(12px);
+  transition:all .3s;z-index:500;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.2);
+  display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--sage);color:#fff}
+.toast.bad{background:var(--rose);color:#fff}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:640px){
+  .eq-bins,.rate-tables,.prop-grid,.match-cols,.pct-grid{grid-template-columns:1fr}
+  main{padding:20px 14px 80px}
+  .sec-body{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-inner">
+    <div class="brand">
+      <h1>⚖️ Ratios &amp; Proportional Reasoning</h1>
+      <p>Grade 6 Mathematics · CCSS 6.RP.A.3 · Interactive Review</p>
+    </div>
+    <div class="score-badge">★ <span id="pts">0</span></div>
+  </div>
+  <div class="prog-rail"><div class="prog-fill" id="prog"></div></div>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════
+  ACTIVITY 1 — EQUIVALENT RATIO SORT
+══════════════════════════════ -->
+<div class="sec c-amber">
+  <div class="sec-hdr">
+    <div class="sec-num">1</div>
+    <div class="sec-info">
+      <h2>⚖️ Equivalent Ratio Sorter</h2>
+      <p>Drag each ratio into the correct category</p>
+    </div>
+  </div>
+  <div class="sec-body">
+    <span class="std">6.RP.A.3a — Equivalent Ratios &amp; Tables</span>
+    <div class="instr">🗂️ <strong>Directions:</strong> The <strong>target ratio</strong> is shown below. Drag each ratio card into the <em>Equivalent</em> bin if it simplifies to the same ratio, or the <em>Not Equivalent</em> bin if it does not.</div>
+
+    <div class="target-ratio"><span id="targetRatioText">3 : 4</span><p>← Target Ratio</p></div>
+
+    <div class="ratio-bank" id="ratioBank"></div>
+
+    <div class="eq-bins">
+      <div class="eq-bin bin-yes" id="bin-yes" ondragover="binOver(event)" ondragleave="binLeave(event)" ondrop="binDrop(event,'yes')">
+        <div class="bin-lbl">✓ Equivalent</div>
+        <div class="bin-sub">Simplifies to 3 : 4</div>
+        <div id="drop-yes"></div>
+      </div>
+      <div class="eq-bin bin-no" id="bin-no" ondragover="binOver(event)" ondragleave="binLeave(event)" ondrop="binDrop(event,'no')">
+        <div class="bin-lbl">✗ Not Equivalent</div>
+        <div class="bin-sub">Different simplified ratio</div>
+        <div id="drop-no"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-go" onclick="checkSort()">✅ Check Sort</button>
+      <button class="btn btn-rst" onclick="resetSort()">↺ Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  ACTIVITY 2 — UNIT RATE TABLES
+══════════════════════════════ -->
+<div class="sec c-teal">
+  <div class="sec-hdr">
+    <div class="sec-num">2</div>
+    <div class="sec-info">
+      <h2>🏎️ Rate Tables</h2>
+      <p>Find missing values using unit rate reasoning</p>
+    </div>
+  </div>
+  <div class="sec-body">
+    <span class="std">6.RP.A.3b — Unit Rate Problems</span>
+    <div class="instr">🧮 <strong>Directions:</strong> Each table shows a proportional relationship. Use the known values to find the <strong>unit rate</strong>, then fill in all missing cells. Enter numbers only (no units or dollar signs needed).</div>
+
+    <div class="rate-tables">
+      <div class="rt-section">
+        <h4>Table A: Road Trip</h4>
+        <p>A car travels at a constant speed. Use the data to find the missing distances.</p>
+        <table class="ratio-tbl">
+          <thead><tr><th>Hours (h)</th><th>Miles (m)</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><input id="ra1" placeholder="?"/></td></tr>
+            <tr><td>3</td><td>204</td></tr>
+            <tr><td>5</td><td><input id="ra2" placeholder="?"/></td></tr>
+            <tr><td>8</td><td><input id="ra3" placeholder="?"/></td></tr>
+            <tr><td>12</td><td>816</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="rt-section">
+        <h4>Table B: Juice Stand</h4>
+        <p>A juice stand sells cups at a constant price. Find the missing revenues.</p>
+        <table class="ratio-tbl">
+          <thead><tr><th>Cups Sold</th><th>Revenue ($)</th></tr></thead>
+          <tbody>
+            <tr><td>4</td><td>14.00</td></tr>
+            <tr><td>6</td><td><input id="rb1" placeholder="?"/></td></tr>
+            <tr><td>10</td><td><input id="rb2" placeholder="?"/></td></tr>
+            <tr><td>15</td><td><input id="rb3" placeholder="?"/></td></tr>
+            <tr><td>20</td><td>70.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-go" onclick="checkRates()">✅ Check Tables</button>
+      <button class="btn btn-rst" onclick="resetRates()">↺ Clear All</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  ACTIVITY 3 — PERCENT MATCH
+══════════════════════════════ -->
+<div class="sec c-clay">
+  <div class="sec-hdr">
+    <div class="sec-num">3</div>
+    <div class="sec-info">
+      <h2>🎯 Percent Match</h2>
+      <p>Click to pair each percent problem with its answer</p>
+    </div>
+  </div>
+  <div class="sec-body">
+    <span class="std">6.RP.A.3c — Percent as Rate per 100</span>
+    <div class="instr">🔗 <strong>Directions:</strong> Click a <strong>percent problem</strong> on the left (it will turn orange), then click the <strong>matching value</strong> on the right that is the correct answer. A correct match turns green instantly!</div>
+
+    <div class="match-cols">
+      <div>
+        <h4 style="color:var(--clay)">📝 Percent Problems</h4>
+        <div id="pctProblems"></div>
+      </div>
+      <div>
+        <h4 style="color:var(--slate)">🔢 Values</h4>
+        <div id="pctValues"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-rst" onclick="resetPctMatch()">↺ Reset Matches</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  ACTIVITY 4 — TAPE DIAGRAM
+══════════════════════════════ -->
+<div class="sec c-slate">
+  <div class="sec-hdr">
+    <div class="sec-num">4</div>
+    <div class="sec-info">
+      <h2>📏 Tape Diagram Decoder</h2>
+      <p>Use the tape diagram to find missing quantities</p>
+    </div>
+  </div>
+  <div class="sec-body">
+    <span class="std">6.RP.A.3 — Ratio Reasoning &amp; Tape Diagrams</span>
+    <div class="instr">📐 <strong>Directions:</strong> Each tape diagram shows a ratio relationship with a missing piece. Study the diagram and the clue, then click the correct value to fill in the <strong>?</strong> segment.</div>
+    <div id="tapeContainer"></div>
+    <div class="btn-row">
+      <button class="btn btn-rst" onclick="resetTape()">↺ Reset Diagrams</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  ACTIVITY 5 — PROPORTION STATION
+══════════════════════════════ -->
+<div class="sec c-sage">
+  <div class="sec-hdr">
+    <div class="sec-num">5</div>
+    <div class="sec-info">
+      <h2>🔄 Proportion Station</h2>
+      <p>Solve each proportion for the missing value</p>
+    </div>
+  </div>
+  <div class="sec-body">
+    <span class="std">6.RP.A.3 — Solving Proportions</span>
+    <div class="instr">✏️ <strong>Directions:</strong> Each problem shows a proportion with one missing value. Use cross-multiplication or equivalent fraction reasoning to find the missing number. Type your answer and press Enter or click Submit.</div>
+
+    <div class="prop-grid" id="propGrid"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-go" onclick="checkProps()">✅ Check All</button>
+      <button class="btn btn-rst" onclick="resetProps()">↺ Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="victory" id="victoryBox">
+  <span class="v-seal">📜</span>
+  <div class="v-title">Review Complete!</div>
+  <p style="color:rgba(253,246,236,.65);margin-bottom:10px">You've covered all four 6.RP.A.3 skill areas!</p>
+  <div class="v-pts" id="vPts">0</div>
+  <p style="font-size:14px;opacity:.5;margin-bottom:8px">Total Points</p>
+  <div class="bar-wrap"><div class="bar-fill" id="barFill"></div></div>
+  <div class="v-stars">
+    <span class="v-star" id="vs1">⭐</span>
+    <span class="v-star" id="vs2">⭐</span>
+    <span class="v-star" id="vs3">⭐</span>
+    <span class="v-star" id="vs4">⭐</span>
+    <span class="v-star" id="vs5">⭐</span>
+  </div>
+  <button class="btn btn-go" onclick="restartAll()" style="font-size:16px;padding:14px 36px">↺ Start Over</button>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== DATA ===== */
+const TARGET = {ratio:'3 : 4', n:3, d:4};
+
+const SORT_CARDS = [
+  {id:'c1', label:'6 : 8',   ans:'yes', hint:'6÷2=3, 8÷2=4 ✓'},
+  {id:'c2', label:'9 : 12',  ans:'yes', hint:'9÷3=3, 12÷3=4 ✓'},
+  {id:'c3', label:'15 : 20', ans:'yes', hint:'15÷5=3, 20÷5=4 ✓'},
+  {id:'c4', label:'4 : 6',   ans:'no',  hint:'4÷2=2, 6÷2=3 → 2:3 ✗'},
+  {id:'c5', label:'12 : 15', ans:'no',  hint:'12÷3=4, 15÷3=5 → 4:5 ✗'},
+  {id:'c6', label:'21 : 28', ans:'yes', hint:'21÷7=3, 28÷7=4 ✓'},
+  {id:'c7', label:'10 : 15', ans:'no',  hint:'10÷5=2, 15÷5=3 → 2:3 ✗'},
+  {id:'c8', label:'24 : 32', ans:'yes', hint:'24÷8=3, 32÷8=4 ✓'},
+];
+
+// Table A: 68 mph (3 → 204, so unit = 68)
+// Table B: $3.50/cup (4 → 14.00)
+const RATE_ANS = {ra1:'68', ra2:'340', ra3:'544', rb1:'21.00', rb2:'35.00', rb3:'52.50'};
+
+const PCT_PAIRS = [
+  {id:'p1', q:'25% of 80',          ans:'20'},
+  {id:'p2', q:'40% of 150',         ans:'60'},
+  {id:'p3', q:'15% of 200',         ans:'30'},
+  {id:'p4', q:'75% of 120',         ans:'90'},
+  {id:'p5', q:'12% of 50',          ans:'6'},
+  {id:'p6', q:'60% of 95',          ans:'57'},
+];
+
+const TAPE_DATA = [
+  {
+    title:'Lemonade Recipe',
+    desc:'A recipe uses lemon juice and water in a ratio of <strong>2 : 5</strong>. If you use <strong>10 cups of water</strong>, how many cups of lemon juice do you need?',
+    aLabel:'Lemon (2)',bLabel:'Water (5)',aCount:2,bCount:5,
+    clue:'10 cups water → each unit = 2 cups → lemon = ?',
+    correct:'4', opts:['2','3','4','5','6'],
+    explain:'10 ÷ 5 = 2 cups per unit. 2 units × 2 = 4 cups lemon juice.'
+  },
+  {
+    title:'Class Fundraiser',
+    desc:'Boys and girls participated in a ratio of <strong>3 : 4</strong>. There were <strong>28 girls</strong>. How many boys participated?',
+    aLabel:'Boys (3)',bLabel:'Girls (4)',aCount:3,bCount:4,
+    clue:'28 girls ÷ 4 units = 7 per unit. Boys = ?',
+    correct:'21', opts:['12','18','21','24','28'],
+    explain:'28 ÷ 4 = 7 per unit. 3 units × 7 = 21 boys.'
+  },
+  {
+    title:'Trail Mix',
+    desc:'A trail mix uses nuts and raisins in a ratio of <strong>5 : 3</strong>. If you use <strong>15 cups of nuts</strong>, how many cups of raisins are needed?',
+    aLabel:'Nuts (5)',bLabel:'Raisins (3)',aCount:5,bCount:3,
+    clue:'15 cups nuts ÷ 5 units = 3 per unit. Raisins = ?',
+    correct:'9', opts:['6','7','9','10','12'],
+    explain:'15 ÷ 5 = 3 per unit. 3 units × 3 = 9 cups raisins.'
+  },
+];
+
+const PROP_DATA = [
+  {story:'A car travels 5 miles in 8 minutes. How many miles in 40 minutes?',
+   num1:5,den1:8,num2:'x',den2:40,correct:'25',hint:'5×40 = 8×x → x = 200÷8'},
+  {story:'If 3 notebooks cost $7.50, how much do 9 notebooks cost?',
+   num1:3,den1:'7.50',num2:9,den2:'x',correct:'22.50',hint:'3×x = 9×7.50 → x = 67.50÷3'},
+  {story:'A recipe needs 2 cups of flour for every 3 cups of oats. For 12 cups of oats, how many cups of flour?',
+   num1:2,den1:3,num2:'x',den2:12,correct:'8',hint:'2×12 = 3×x → x = 24÷3'},
+  {story:'A map uses a scale of 1 inch : 25 miles. How many miles is 7 inches on the map?',
+   num1:1,den1:25,num2:7,den2:'x',correct:'175',hint:'1×x = 7×25 → x = 175'},
+];
+
+/* ===== STATE ===== */
+let score=0, dragging=null, pctSelProblem=null, pctSelValue=null;
+let pctMatched=new Set(), tapeDone=new Set();
+
+/* ===== SCORE ===== */
+function addPts(n){
+  score+=n;
+  document.getElementById('pts').textContent=score;
+  document.getElementById('prog').style.width=Math.min(score/480*100,100)+'%';
+  document.getElementById('vPts').textContent=score;
+  document.getElementById('barFill').style.width=Math.min(score/480*100,100)+'%';
+  ['vs1','vs2','vs3','vs4','vs5'].forEach((id,i)=>{
+    document.getElementById(id).classList.toggle('lit',score>=(i+1)*80);
+  });
+}
+function toast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show '+type;
+  clearTimeout(el._t);el._t=setTimeout(()=>el.className='toast',2800);
+}
+
+/* ===== ACT 1: SORT ===== */
+function initSort(){
+  const bank=document.getElementById('ratioBank');
+  bank.innerHTML='';
+  document.getElementById('drop-yes').innerHTML='';
+  document.getElementById('drop-no').innerHTML='';
+  SORT_CARDS.forEach(d=>{
+    const el=document.createElement('div');
+    el.className='ratio-chip';el.id=d.id;el.draggable=true;
+    el.dataset.ans=d.ans;el.textContent=d.label;
+    el.addEventListener('dragstart',e=>{dragging=el;el.classList.add('dragging');e.dataTransfer.setData('text',el.id)});
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    bank.appendChild(el);
+  });
+}
+function binOver(e){e.preventDefault();e.currentTarget.classList.add('over')}
+function binLeave(e){e.currentTarget.classList.remove('over')}
+function binDrop(e,bin){
+  e.preventDefault();e.currentTarget.classList.remove('over');
+  const id=e.dataTransfer.getData('text');
+  const card=document.getElementById(id);if(!card)return;
+  const zone=document.getElementById('drop-'+bin);
+  const clone=document.createElement('div');
+  clone.className='drop-chip';clone.dataset.ans=card.dataset.ans;clone.dataset.bin=bin;
+  clone.textContent=card.textContent;
+  zone.appendChild(clone);card.remove();
+}
+function checkSort(){
+  const all=document.querySelectorAll('.drop-chip');
+  let c=0;all.forEach(el=>{
+    const ok=el.dataset.ans===el.dataset.bin;
+    el.classList.add(ok?'ok':'bad');if(ok)c++;
+  });
+  addPts(c*12);
+  toast(c===all.length?`🎉 All ${all.length} sorted correctly! +${c*12} pts`:`${c}/${all.length} correct +${c*12} pts`,c===all.length?'ok':'bad');
+}
+function resetSort(){initSort()}
+
+/* ===== ACT 2: RATE TABLES ===== */
+function checkRates(){
+  let c=0,t=Object.keys(RATE_ANS).length;
+  Object.entries(RATE_ANS).forEach(([id,ans])=>{
+    const el=document.getElementById(id);if(!el)return;
+    const v=el.value.replace(/[$\s,]/g,'');
+    const ok=Math.abs(parseFloat(v)-parseFloat(ans))<0.01;
+    el.classList.toggle('ok',ok);el.classList.toggle('bad',!ok);
+    if(ok)c++;
+  });
+  addPts(c*12);
+  toast(c===t?`📋 Perfect tables! +${c*12} pts`:`${c}/${t} correct +${c*12} pts`,c>=5?'ok':'bad');
+}
+function resetRates(){
+  Object.keys(RATE_ANS).forEach(id=>{const el=document.getElementById(id);if(el){el.value='';el.className=''}});
+}
+
+/* ===== ACT 3: PERCENT MATCH ===== */
+function initPctMatch(){
+  pctMatched.clear();pctSelProblem=null;pctSelValue=null;
+  const pDiv=document.getElementById('pctProblems');
+  const vDiv=document.getElementById('pctValues');
+  pDiv.innerHTML='';vDiv.innerHTML='';
+  const shuffled=[...PCT_PAIRS].sort(()=>Math.random()-.5);
+  PCT_PAIRS.forEach(p=>{
+    const el=document.createElement('div');el.className='pair-label';el.id='pp_'+p.id;
+    el.textContent=p.q;el.dataset.pid=p.id;
+    el.onclick=()=>clickProblem(p.id,'pp_'+p.id);
+    pDiv.appendChild(el);
+  });
+  shuffled.forEach(p=>{
+    const el=document.createElement('div');el.className='pct-value';el.id='pv_'+p.id;
+    el.textContent=p.ans;el.dataset.pid=p.id;
+    el.onclick=()=>clickValue(p.id,'pv_'+p.id);
+    vDiv.appendChild(el);
+  });
+}
+function clickProblem(pid,eid){
+  if(pctMatched.has(pid))return;
+  document.querySelectorAll('.pair-label.sel').forEach(e=>e.classList.remove('sel'));
+  pctSelProblem={pid,eid};document.getElementById(eid).classList.add('sel');tryPctMatch();
+}
+function clickValue(pid,eid){
+  if(pctMatched.has(pid))return;
+  document.querySelectorAll('.pct-value.sel').forEach(e=>e.classList.remove('sel'));
+  pctSelValue={pid,eid};document.getElementById(eid).classList.add('sel');tryPctMatch();
+}
+function tryPctMatch(){
+  if(!pctSelProblem||!pctSelValue)return;
+  const sc=pctSelProblem,vl=pctSelValue;pctSelProblem=null;pctSelValue=null;
+  if(sc.pid===vl.pid){
+    ['pp_','pv_'].forEach(pre=>{
+      const el=document.getElementById(pre+sc.pid);
+      el.classList.remove('sel');el.classList.add('done');
+    });
+    pctMatched.add(sc.pid);addPts(20);
+    toast('✅ Correct match! +20 pts','ok');
+  } else {
+    [sc.eid,vl.eid].forEach(id=>{
+      const el=document.getElementById(id);el.classList.remove('sel');el.classList.add('bad');
+      setTimeout(()=>el.classList.remove('bad'),700);
+    });
+    toast('❌ Not a match — try again!','bad');
+  }
+}
+function resetPctMatch(){initPctMatch()}
+
+/* ===== ACT 4: TAPE ===== */
+function initTape(){
+  tapeDone.clear();
+  const c=document.getElementById('tapeContainer');c.innerHTML='';
+  TAPE_DATA.forEach((d,i)=>{
+    const div=document.createElement('div');div.className='tape-puzzle';
+    const segsA=[...Array(d.aCount)].map(()=>`<div class="tape-seg a-seg">${d.aLabel}</div>`).join('');
+    const segsB=[...Array(d.bCount)].map(()=>`<div class="tape-seg b-seg">${d.bLabel}</div>`).join('');
+    const opts=d.opts.map(o=>`<div class="t-opt" id="to_${i}_${o}" onclick="tapePick(${i},'${o}',this)">${o}</div>`).join('');
+    div.innerHTML=`<div class="tape-title">${d.title}</div>
+      <div class="tape-desc">${d.desc}</div>
+      <div class="tape-visual">${segsA}${segsB}<div class="tape-seg unknown" id="tapeMiss_${i}">?</div></div>
+      <p style="font-size:12px;color:#9a8a7a;margin-bottom:10px">💡 ${d.clue}</p>
+      <div class="tape-opts">${opts}</div>`;
+    c.appendChild(div);
+  });
+}
+function tapePick(i,val,btn){
+  if(tapeDone.has(i))return;
+  tapeDone.add(i);
+  const d=TAPE_DATA[i];
+  const isRight=val===d.correct;
+  const miss=document.getElementById('tapeMiss_'+i);
+  document.querySelectorAll(`[id^="to_${i}_"]`).forEach(b=>b.style.pointerEvents='none');
+  if(isRight){
+    btn.classList.add('ok');miss.textContent=val;miss.style.background='var(--sage)';
+    addPts(25);toast('📏 Correct! '+d.explain,'ok');
+  } else {
+    btn.classList.add('bad');
+    setTimeout(()=>{
+      document.getElementById(`to_${i}_${d.correct}`).classList.add('ok');
+    },600);
+    toast('💡 '+d.explain,'bad');
+  }
+}
+function resetTape(){initTape()}
+
+/* ===== ACT 5: PROPORTIONS ===== */
+function initProps(){
+  const grid=document.getElementById('propGrid');grid.innerHTML='';
+  PROP_DATA.forEach((d,i)=>{
+    const div=document.createElement('div');div.className='prop-item';
+    const topLeft=d.num2==='x'?`<input class="prop-input" id="pi${i}" placeholder="x"/>`:d.num1;
+    const botRight=d.den2==='x'?`<input class="prop-input" id="pi${i}" placeholder="x"/>`:d.den2;
+    const topRight=d.num2==='x'?`<input class="prop-input" id="pi${i}" placeholder="x"/>`:d.num2;
+    // pick which side has x
+    let left,right;
+    if(d.num2==='x'){
+      left=`<div class="frac"><div class="frac-top">${d.num1}</div><div class="frac-line"></div><div class="frac-bot">${d.den1}</div></div>`;
+      right=`<div class="frac"><div class="frac-top"><input class="prop-input" id="pi${i}" placeholder="x"/></div><div class="frac-line"></div><div class="frac-bot">${d.den2}</div></div>`;
+    } else {
+      left=`<div class="frac"><div class="frac-top">${d.num1}</div><div class="frac-line"></div><div class="frac-bot">${d.den1}</div></div>`;
+      right=`<div class="frac"><div class="frac-top">${d.num2}</div><div class="frac-line"></div><div class="frac-bot"><input class="prop-input" id="pi${i}" placeholder="x"/></div></div>`;
+    }
+    const hint=`<div class="prop-hint" id="ph${i}">💡 Hint: ${d.hint}</div>`;
+    div.innerHTML=`<h4>${d.story}</h4>
+      <div class="prop-eq">${left}<div class="eq-sym">=</div>${right}</div>
+      ${hint}`;
+    grid.appendChild(div);
+  });
+}
+function checkProps(){
+  let c=0;
+  PROP_DATA.forEach((d,i)=>{
+    const el=document.getElementById('pi'+i);if(!el)return;
+    const v=el.value.replace(/[$\s,]/g,'');
+    const ok=Math.abs(parseFloat(v)-parseFloat(d.correct))<0.02;
+    el.classList.toggle('ok',ok);el.classList.toggle('bad',!ok);
+    const ph=document.getElementById('ph'+i);
+    if(!ok&&ph) ph.classList.add('vis');
+    if(ok)c++;
+  });
+  addPts(c*20);
+  toast(c===PROP_DATA.length?`🔄 All proportions solved! +${c*20} pts`:`${c}/${PROP_DATA.length} correct +${c*20} pts`,c>=3?'ok':'bad');
+}
+function resetProps(){
+  PROP_DATA.forEach((_,i)=>{
+    const el=document.getElementById('pi'+i);if(el){el.value='';el.className='prop-input'}
+    const ph=document.getElementById('ph'+i);if(ph)ph.classList.remove('vis');
+  });
+}
+
+/* ===== RESTART ===== */
+function restartAll(){
+  score=0;pctMatched.clear();tapeDone.clear();pctSelProblem=null;pctSelValue=null;
+  document.getElementById('pts').textContent='0';
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('vPts').textContent='0';
+  document.getElementById('barFill').style.width='0%';
+  ['vs1','vs2','vs3','vs4','vs5'].forEach(id=>document.getElementById(id).classList.remove('lit'));
+  initSort();resetRates();initPctMatch();initTape();initProps();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  initSort();initPctMatch();initTape();initProps();
+});
+</script>
+</body>
+</html>

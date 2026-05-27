@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stat Attack: Data Monster Arena</title>
+<style>
+:root{
+  --navy:#14213d;
+  --navy-2:#0c1529;
+  --cream:#fff7e8;
+  --paper:#fffdf7;
+  --ink:#201a12;
+  --muted:#6c624f;
+  --orange:#f77f00;
+  --orange-2:#d96d00;
+  --gold:#fcbf49;
+  --teal:#1b998b;
+  --teal-2:#14786d;
+  --blue:#2d6cdf;
+  --purple:#7b4cc2;
+  --red:#e63946;
+  --green:#2a9d5c;
+  --line:#1e1e1e;
+  --soft:#eadfca;
+  --shadow:0 7px 0 rgba(0,0,0,.20);
+  --shadow-sm:0 4px 0 rgba(0,0,0,.16);
+  --glow:0 0 0 4px rgba(252,191,73,.25),0 16px 35px rgba(20,33,61,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family: "Aptos","Calibri","Trebuchet MS",system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(247,127,0,.18) 0 150px, transparent 230px),
+    radial-gradient(circle at 82% 20%, rgba(27,153,139,.16) 0 170px, transparent 260px),
+    radial-gradient(circle at 50% 92%, rgba(123,76,194,.16) 0 210px, transparent 310px),
+    linear-gradient(145deg,#fff4d8,#f9ead0 35%,#eaf4ef);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  overflow-x:hidden;
+}
+button{font-family:inherit}
+.screen{
+  width:100%;
+  max-width:980px;
+  display:none;
+  animation:screenIn .28s ease both;
+}
+.screen.active{display:block}
+@keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.shell{
+  background:rgba(255,253,247,.96);
+  border:3px solid var(--line);
+  border-radius:28px;
+  box-shadow:var(--shadow),0 22px 60px rgba(20,33,61,.22);
+  overflow:hidden;
+  position:relative;
+}
+.arcade-top{
+  height:14px;
+  background:repeating-linear-gradient(90deg,var(--orange) 0 40px,var(--gold) 40px 80px,var(--teal) 80px 120px,var(--blue) 120px 160px,var(--purple) 160px 200px);
+  border-bottom:3px solid var(--line);
+}
+.section-pad{padding:28px}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 12px;
+  border:2px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  font-weight:900;
+  font-size:.78rem;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  box-shadow:0 3px 0 rgba(0,0,0,.12);
+}
+.title-wrap{text-align:center}
+.logo-burst{
+  width:92px;height:92px;border-radius:28px;
+  border:3px solid var(--line);
+  margin:0 auto 12px;
+  display:grid;place-items:center;
+  font-size:3.4rem;
+  background:
+    linear-gradient(135deg,rgba(252,191,73,.95),rgba(247,127,0,.95)),
+    #fff;
+  box-shadow:var(--shadow-sm);
+  transform:rotate(-2deg);
+}
+.game-title{
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  font-size:clamp(2.6rem,7vw,5rem);
+  line-height:.96;
+  color:var(--navy);
+  letter-spacing:-.03em;
+  text-shadow:3px 3px 0 var(--gold);
+}
+.game-title span{color:var(--orange)}
+.subhead{
+  margin:10px auto 18px;
+  max-width:700px;
+  color:var(--muted);
+  font-weight:800;
+  font-size:1.05rem;
+  line-height:1.45;
+}
+.start-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  align-items:start;
+  margin-top:16px;
+}
+@media(max-width:820px){.start-grid{grid-template-columns:1fr}.section-pad{padding:20px}}
+.panel{
+  background:#fff;
+  border:3px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow-sm);
+  padding:18px;
+}
+.panel h2{
+  font-size:1rem;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+  color:var(--navy);
+}
+.avatar-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.avatar-btn{
+  border:3px solid var(--soft);
+  background:var(--cream);
+  border-radius:18px;
+  padding:12px 8px;
+  cursor:pointer;
+  min-height:96px;
+  transition:.14s ease;
+}
+.avatar-btn:hover{transform:translateY(-3px);box-shadow:0 5px 0 rgba(0,0,0,.12);border-color:var(--line)}
+.avatar-btn.selected{border-color:var(--orange);background:#fff2d0;box-shadow:var(--glow)}
+.avatar-emoji{font-size:2.2rem;display:block}
+.avatar-name{font-weight:900;font-size:.8rem;margin-top:4px;color:var(--navy)}
+.map{
+  display:grid;
+  gap:10px;
+}
+.map-node{
+  display:grid;
+  grid-template-columns:56px 1fr auto;
+  gap:12px;
+  align-items:center;
+  padding:12px;
+  border:2px solid var(--soft);
+  border-radius:18px;
+  background:linear-gradient(90deg,#fff,var(--cream));
+}
+.map-icon{
+  height:50px;width:50px;
+  display:grid;place-items:center;
+  border:3px solid var(--line);
+  border-radius:16px;
+  font-size:1.8rem;
+  box-shadow:0 3px 0 rgba(0,0,0,.16);
+}
+.map-node h3{font-size:1rem;color:var(--navy)}
+.map-node p{font-size:.82rem;color:var(--muted);font-weight:800;margin-top:2px}
+.node-lock{
+  font-weight:900;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#fff;
+  border:2px solid var(--soft);
+  color:var(--muted);
+  font-size:.72rem;
+}
+.start-actions{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:20px;
+}
+.btn{
+  border:3px solid var(--line);
+  border-radius:16px;
+  padding:13px 24px;
+  font-weight:950;
+  font-size:1rem;
+  cursor:pointer;
+  box-shadow:0 5px 0 rgba(0,0,0,.18);
+  transition:.11s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 7px 0 rgba(0,0,0,.2)}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--orange);color:#fff}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-dark{background:var(--navy);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{background:#fff;color:var(--navy)}
+.teacher-note{
+  margin-top:14px;
+  color:var(--muted);
+  font-weight:800;
+  font-size:.86rem;
+  line-height:1.4;
+}
+
+/* GAME HUD */
+.game-layout{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:16px;
+  padding:16px;
+}
+@media(max-width:880px){.game-layout{grid-template-columns:1fr}.side-panel{order:2}}
+.side-panel,.main-panel{
+  background:rgba(255,253,247,.98);
+  border:3px solid var(--line);
+  border-radius:24px;
+  box-shadow:var(--shadow-sm);
+  overflow:hidden;
+}
+.side-panel{padding:14px}
+.player-card{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  background:var(--navy);
+  color:#fff;
+  border-radius:18px;
+  border:3px solid var(--line);
+  padding:12px;
+}
+.player-face{
+  width:54px;height:54px;
+  display:grid;place-items:center;
+  border-radius:17px;
+  background:#fff;
+  color:var(--ink);
+  font-size:2rem;
+  border:3px solid var(--gold);
+}
+.player-name{font-weight:950;font-size:1.05rem}
+.player-rank{font-weight:850;color:#ffe3a3;font-size:.78rem;margin-top:2px}
+.hud-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px;
+}
+.hud-box{
+  border:2px solid var(--soft);
+  background:#fff;
+  border-radius:15px;
+  padding:10px;
+  text-align:center;
+}
+.hud-val{font-size:1.35rem;font-weight:950;color:var(--navy);line-height:1}
+.hud-label{font-size:.66rem;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.hearts{font-size:1.24rem;letter-spacing:1px}
+.heart.lost{filter:grayscale(1);opacity:.32}
+.power-panel{
+  margin-top:12px;
+  border:2px dashed rgba(20,33,61,.35);
+  border-radius:18px;
+  padding:12px;
+  background:#fff8e8;
+}
+.power-title{font-weight:950;color:var(--navy);font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.power-grid{display:grid;gap:8px}
+.power-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  text-align:left;
+  border:2px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  padding:9px 10px;
+  cursor:pointer;
+  box-shadow:0 3px 0 rgba(0,0,0,.12);
+  transition:.1s ease;
+}
+.power-btn:hover:not(:disabled){transform:translateY(-2px)}
+.power-main{font-weight:950;color:var(--navy);font-size:.88rem}
+.power-sub{font-weight:800;color:var(--muted);font-size:.7rem;margin-top:1px}
+.power-count{
+  min-width:30px;height:30px;border-radius:10px;
+  display:grid;place-items:center;
+  background:var(--gold);
+  border:2px solid var(--line);
+  font-weight:950;
+}
+.mission-mini{
+  margin-top:12px;
+  display:grid;
+  gap:7px;
+}
+.mission-dot{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 10px;
+  border:2px solid var(--soft);
+  border-radius:14px;
+  background:#fff;
+  font-weight:900;
+  color:var(--muted);
+  font-size:.82rem;
+}
+.mission-dot.active{border-color:var(--orange);background:#fff3d7;color:var(--navy)}
+.mission-dot.done{border-color:var(--green);background:#e9f8ef;color:var(--green)}
+.main-panel{padding:14px}
+.top-strip{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+}
+.progress-wrap{min-width:0}
+.round-line{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;
+}
+.round-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 10px;border-radius:999px;border:2px solid var(--line);
+  color:#fff;background:var(--navy);font-weight:950;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+}
+.q-counter{font-weight:950;color:var(--muted);font-size:.82rem}
+.progress-bar{
+  height:14px;border:2px solid var(--line);border-radius:999px;background:#fff;overflow:hidden;
+}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--gold),var(--orange));transition:width .45s ease;border-right:2px solid rgba(0,0,0,.2)}
+.timer{
+  width:78px;height:78px;border-radius:24px;
+  border:3px solid var(--line);
+  background:#fff;
+  display:grid;place-items:center;
+  box-shadow:0 4px 0 rgba(0,0,0,.15);
+  position:relative;
+}
+.timer svg{position:absolute;inset:7px;transform:rotate(-90deg)}
+.timer circle{fill:none;stroke-width:6;stroke-linecap:round}
+.timer .track{stroke:#eadfca}
+.timer .fill{stroke:var(--teal);stroke-dasharray:170;stroke-dashoffset:0;transition:stroke-dashoffset .9s linear,stroke .2s}
+.timer-text{font-size:1.45rem;font-weight:950;color:var(--navy);position:relative;z-index:2}
+
+
+
+/* Arena */
+.arena{
+  background:
+    linear-gradient(180deg,rgba(20,33,61,.94),rgba(12,21,41,.94)),
+    radial-gradient(circle at 60% 20%,rgba(252,191,73,.18),transparent 220px);
+  color:#fff;
+  border:3px solid var(--line);
+  border-radius:22px;
+  padding:14px;
+  margin-bottom:12px;
+  position:relative;
+  overflow:hidden;
+}
+.arena:before{
+  content:"";
+  position:absolute;
+  left:-40px;right:-40px;bottom:-28px;height:78px;
+  background:
+    linear-gradient(90deg,transparent 0 48%,rgba(255,255,255,.16) 49% 51%,transparent 52% 100%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.13) 0 14px,transparent 14px 50px);
+  transform:perspective(120px) rotateX(50deg);
+  opacity:.7;
+}
+.enemy-row{position:relative;z-index:2;display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
+.enemy-sprite{
+  height:90px;width:90px;border-radius:26px;
+  display:grid;place-items:center;
+  font-size:3.7rem;
+  background:linear-gradient(135deg,#fff,#ffe7b0);
+  border:3px solid var(--gold);
+  box-shadow:0 5px 0 rgba(0,0,0,.24);
+  transition:.15s ease;
+}
+.enemy-sprite.hit{animation:enemyHit .42s ease}
+.enemy-sprite.attack{animation:enemyAttack .5s ease}
+@keyframes enemyHit{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(12px) rotate(6deg)}55%{transform:translateX(-8px) rotate(-5deg)}}
+@keyframes enemyAttack{0%,100%{transform:scale(1)}50%{transform:scale(1.14) translateY(-4px)}}
+.enemy-name{font-size:1.16rem;font-weight:950}
+.enemy-sub{font-weight:800;color:#f9d98a;font-size:.82rem;margin:2px 0 8px}
+.enemy-hp-wrap{height:18px;border:2px solid #fff;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden}
+.enemy-hp{height:100%;width:100%;background:linear-gradient(90deg,var(--green),var(--gold),var(--red));transition:width .45s ease}
+.battle-log{
+  margin-top:9px;
+  min-height:24px;
+  font-weight:950;
+  color:#fff;
+  letter-spacing:.01em;
+}
+.attack-flash{
+  position:absolute;
+  top:12px;right:20px;
+  font-size:2.3rem;
+  opacity:0;
+  transform:scale(.5) rotate(-15deg);
+  pointer-events:none;
+}
+.attack-flash.show{animation:flash .7s ease}
+@keyframes flash{0%{opacity:0;transform:scale(.5) rotate(-15deg)}35%{opacity:1;transform:scale(1.15) rotate(6deg)}100%{opacity:0;transform:scale(1.5) rotate(20deg)}}
+
+
+.fight-versus{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:12px;
+  align-items:stretch;
+}
+.fighter-card{
+  border:3px solid rgba(255,255,255,.72);
+  border-radius:24px;
+  padding:12px;
+  background:rgba(255,255,255,.12);
+  box-shadow:0 5px 0 rgba(0,0,0,.20);
+  display:grid;
+  grid-template-columns:86px 1fr;
+  gap:12px;
+  align-items:center;
+  min-height:116px;
+}
+.fighter-card.student{
+  background:linear-gradient(135deg,rgba(24,168,157,.22),rgba(255,255,255,.11));
+}
+.fighter-card.monster{
+  background:linear-gradient(135deg,rgba(247,127,0,.22),rgba(255,255,255,.11));
+}
+.fight-face{
+  height:82px;
+  width:82px;
+  border-radius:24px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#fff,#fff0c2);
+  color:var(--ink);
+  border:3px solid var(--gold);
+  box-shadow:0 4px 0 rgba(0,0,0,.20);
+  font-size:3rem;
+  overflow:hidden;
+}
+.fight-face img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.fighter-label{
+  font-family:'Space Mono',monospace;
+  font-size:.68rem;
+  letter-spacing:.1em;
+  font-weight:950;
+  color:#f9d98a;
+  text-transform:uppercase;
+  margin-bottom:2px;
+}
+.fighter-name{
+  font-size:1.18rem;
+  font-weight:950;
+  color:#fff;
+}
+.fighter-sub{
+  font-weight:850;
+  color:#f9d98a;
+  font-size:.82rem;
+  margin:2px 0 8px;
+}
+.vs-badge{
+  align-self:center;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:var(--gold);
+  color:var(--navy);
+  border:4px solid #fff;
+  box-shadow:0 4px 0 rgba(0,0,0,.25);
+  font-family:'Space Mono',monospace;
+  font-weight:950;
+  transform:rotate(-7deg);
+}
+@media(max-width:760px){
+  .fight-versus{grid-template-columns:1fr}
+  .vs-badge{justify-self:center}
+  .fighter-card{grid-template-columns:74px 1fr}
+  .fight-face{width:70px;height:70px;font-size:2.55rem}
+}
+
+/* Question Card */
+.question-card{
+  background:#fff;
+  border:3px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow-sm);
+  padding:18px;
+  margin-bottom:12px;
+}
+.type-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.type-tag{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 12px;border-radius:999px;border:2px solid currentColor;
+  font-weight:950;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
+  background:#f7fbff;
+}
+.hint-pill{
+  display:none;
+  border:2px solid var(--gold);
+  background:#fff8df;
+  border-radius:14px;
+  padding:7px 10px;
+  font-weight:850;
+  color:var(--navy);
+  font-size:.82rem;
+  line-height:1.35;
+  max-width:520px;
+}
+.q-text{
+  font-size:1.12rem;
+  line-height:1.48;
+  color:var(--ink);
+  font-weight:900;
+}
+.data-zone{
+  margin-top:12px;
+  display:grid;
+  gap:10px;
+}
+.data-block{
+  display:flex;flex-wrap:wrap;gap:7px;align-items:center;
+  padding:12px;
+  border:2px solid var(--soft);
+  border-radius:17px;
+  background:var(--cream);
+}
+.data-label{font-weight:950;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-right:2px}
+.data-chip{
+  min-width:38px;
+  text-align:center;
+  padding:7px 10px;
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:12px;
+  font-weight:950;
+  box-shadow:0 3px 0 rgba(0,0,0,.11);
+}
+.data-chip.sorted{background:#e7f8f5;border-color:var(--teal)}
+.data-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  border:2px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  font-weight:850;
+}
+.data-table th{
+  background:var(--navy);
+  color:#fff;
+  text-align:left;
+  padding:10px 12px;
+  font-weight:950;
+}
+.data-table td{
+  padding:9px 12px;
+  border-top:2px solid var(--soft);
+  background:#fff;
+}
+.data-table tr:nth-child(even) td{background:#fff8e8}
+.choices-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+@media(max-width:620px){.choices-grid{grid-template-columns:1fr}.enemy-row{grid-template-columns:78px 1fr}.enemy-sprite{width:74px;height:74px;font-size:3rem}.timer{width:68px;height:68px}}
+.choice{
+  background:#fff;
+  border:3px solid var(--soft);
+  border-radius:18px;
+  padding:13px 14px;
+  cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,.12);
+  display:flex;
+  align-items:center;
+  gap:11px;
+  text-align:left;
+  color:var(--ink);
+  font-weight:900;
+  line-height:1.32;
+  transition:.12s ease;
+  min-height:68px;
+}
+.choice:hover:not(:disabled){border-color:var(--line);transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.choice:disabled{cursor:not-allowed}
+.choice-letter{
+  width:34px;height:34px;
+  border:2px solid var(--line);
+  border-radius:12px;
+  background:var(--cream);
+  display:grid;place-items:center;
+  flex-shrink:0;
+  font-weight:950;
+  color:var(--navy);
+}
+.choice.correct{border-color:var(--green);background:#e8f8ef;animation:pop .28s ease}
+.choice.correct .choice-letter{background:var(--green);color:#fff}
+.choice.wrong{border-color:var(--red);background:#fde8e9;animation:shake .34s ease}
+.choice.wrong .choice-letter{background:var(--red);color:#fff}
+.choice.reveal{border-color:var(--green);background:#f0fbf4}
+@keyframes pop{50%{transform:scale(1.025)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+
+.feedback{
+  display:none;
+  margin-top:12px;
+  border:3px solid;
+  border-radius:18px;
+  padding:13px 14px;
+  line-height:1.45;
+  font-weight:850;
+}
+.feedback.good{display:block;border-color:var(--green);background:#e8f8ef}
+.feedback.bad{display:block;border-color:var(--red);background:#fde8e9}
+.fb-title{font-size:1.05rem;font-weight:950;margin-bottom:3px}
+.feedback.good .fb-title{color:var(--green)}
+.feedback.bad .fb-title{color:var(--red)}
+.next-row{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+.next-row .btn{display:none}
+.next-row .btn.show{display:inline-flex}
+
+/* Mini Games */
+.mini-shell{
+  display:grid;
+  gap:16px;
+}
+.mini-hero{
+  background:linear-gradient(135deg,var(--navy),#233b69);
+  color:#fff;
+  border:3px solid var(--line);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  padding:24px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.mini-hero:after{
+  content:"";
+  position:absolute;
+  width:240px;height:240px;border-radius:50%;
+  background:rgba(252,191,73,.18);
+  right:-70px;top:-90px;
+}
+.mini-emoji{font-size:4rem;display:block;position:relative;z-index:2}
+.mini-title{font-size:2rem;font-weight:950;margin-top:6px;position:relative;z-index:2}
+.mini-sub{font-weight:850;color:#f7d589;margin-top:4px;position:relative;z-index:2}
+.mini-card{
+  background:#fff;
+  border:3px solid var(--line);
+  border-radius:24px;
+  box-shadow:var(--shadow-sm);
+  padding:20px;
+}
+.mini-instructions{
+  color:var(--muted);
+  font-weight:850;
+  margin-bottom:12px;
+  line-height:1.4;
+}
+.mini-target{
+  min-height:64px;
+  border:3px dashed rgba(20,33,61,.34);
+  background:#fff8e8;
+  border-radius:18px;
+  padding:12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  align-items:center;
+  margin-bottom:12px;
+}
+.mini-choice-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+}
+.mini-token{
+  border:3px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  padding:11px 13px;
+  cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,.12);
+  font-weight:950;
+  transition:.1s ease;
+}
+.mini-token:hover:not(:disabled){transform:translateY(-2px)}
+.mini-token.used{opacity:.35;cursor:default}
+.mini-token.correct{background:#e8f8ef;border-color:var(--green)}
+.mini-token.wrong{background:#fde8e9;border-color:var(--red);animation:shake .34s ease}
+.mini-token.placed{
+  background:var(--navy);
+  color:#fff;
+  cursor:default;
+}
+.mini-status{
+  min-height:32px;
+  font-weight:950;
+  color:var(--navy);
+  margin-top:10px;
+}
+.reward-card{
+  display:none;
+  border:3px solid var(--green);
+  background:#e8f8ef;
+  border-radius:18px;
+  padding:14px;
+  margin-top:12px;
+  font-weight:900;
+}
+.reward-card.show{display:block}
+
+/* Results */
+.results-grid{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:16px;
+  align-items:start;
+}
+@media(max-width:840px){.results-grid{grid-template-columns:1fr}}
+.final-number{
+  font-size:5rem;
+  line-height:1;
+  color:var(--orange);
+  font-weight:950;
+  text-shadow:3px 3px 0 var(--gold);
+}
+.stars{font-size:2.1rem;letter-spacing:3px;margin:4px 0 14px}
+.stat-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+@media(max-width:520px){.stat-row{grid-template-columns:1fr}}
+.stat-box{
+  border:2px solid var(--soft);
+  background:#fff;
+  border-radius:16px;
+  padding:13px;
+  text-align:center;
+}
+.stat-box .num{font-weight:950;color:var(--navy);font-size:1.7rem}
+.stat-box .label{font-size:.7rem;color:var(--muted);font-weight:950;text-transform:uppercase;letter-spacing:.06em}
+.achievement-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:12px;
+}
+@media(max-width:520px){.achievement-grid{grid-template-columns:1fr}}
+.achievement{
+  border:2px solid var(--soft);
+  border-radius:16px;
+  padding:12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  background:#fff;
+  opacity:.42;
+}
+.achievement.earned{
+  opacity:1;
+  border-color:var(--gold);
+  background:#fff7db;
+  box-shadow:0 3px 0 rgba(0,0,0,.12);
+}
+.ach-icon{font-size:1.8rem}
+.ach-title{font-weight:950;color:var(--navy);font-size:.92rem}
+.ach-sub{font-weight:800;color:var(--muted);font-size:.72rem;margin-top:1px}
+.review-list{
+  display:grid;
+  gap:8px;
+  margin-top:10px;
+}
+.review-item{
+  padding:11px 12px;
+  border:2px solid var(--soft);
+  border-radius:14px;
+  background:#fff;
+  font-weight:850;
+  color:var(--ink);
+}
+.review-item strong{color:var(--navy)}
+.confetti{
+  position:fixed;
+  top:-20px;
+  width:10px;height:16px;
+  background:var(--gold);
+  opacity:.95;
+  z-index:9999;
+  pointer-events:none;
+  animation:fall 1.45s linear forwards;
+}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.score-pop{
+  position:fixed;
+  z-index:9999;
+  pointer-events:none;
+  font-weight:950;
+  font-size:1.65rem;
+  color:var(--green);
+  text-shadow:2px 2px 0 #fff;
+  animation:scorePop .9s ease forwards;
+}
+@keyframes scorePop{to{opacity:0;transform:translateY(-62px) scale(1.2)}}
+
+
+.player-setup-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.name-input{
+  width:100%;
+  border:3px solid var(--line);
+  border-radius:18px;
+  padding:14px 16px;
+  font-size:1rem;
+  font-weight:900;
+  color:var(--navy);
+  outline:none;
+  background:#fff;
+}
+.name-input:focus{
+  border-color:var(--teal);
+  box-shadow:0 0 0 4px rgba(24,168,157,.15);
+}
+.player-role-note{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.role-card{
+  border:2px solid var(--line);
+  border-radius:18px;
+  padding:12px;
+  background:#fff;
+}
+.role-card.monster{
+  background:#fff2d0;
+  border-color:#f6c85f;
+}
+.role-title{
+  font-size:.75rem;
+  font-family:'Space Mono',monospace;
+  font-weight:900;
+  letter-spacing:.08em;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.role-name{
+  font-size:1.05rem;
+  font-weight:950;
+  color:var(--navy);
+}
+.upload-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:8px;
+}
+.file-label{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:2px dashed var(--line);
+  border-radius:14px;
+  padding:10px 12px;
+  font-size:.82rem;
+  font-weight:900;
+  color:var(--navy);
+  background:#fff;
+  cursor:pointer;
+}
+.file-label:hover{
+  border-color:var(--teal);
+  background:#e7f8f5;
+}
+.file-label input{
+  display:none;
+}
+.avatar-preview-img,
+.player-face-img{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  object-fit:cover;
+  border:3px solid #fff;
+  box-shadow:0 2px 0 rgba(0,0,0,.15);
+}
+.player-face-img{
+  width:74px;
+  height:74px;
+  border-radius:24px;
+}
+@media(max-width:620px){
+  .player-role-note{grid-template-columns:1fr}
+}
+
+.extra-lives-panel{
+  margin:18px auto 0;
+  max-width:620px;
+  background:#fff8e8;
+  border:3px dashed var(--line);
+  border-radius:22px;
+  padding:16px;
+  text-align:left;
+}
+.extra-lives-title{
+  font-weight:950;
+  color:var(--navy);
+  font-size:1rem;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.extra-lives-panel p{
+  color:var(--muted);
+  font-weight:850;
+  line-height:1.4;
+  margin-bottom:10px;
+}
+.extra-lives-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.extra-lives-input{
+  flex:1 1 260px;
+  border:3px solid var(--line);
+  border-radius:16px;
+  padding:12px 14px;
+  font-size:.95rem;
+  font-weight:900;
+  color:var(--navy);
+  outline:none;
+  background:#fff;
+}
+.extra-lives-input:focus{
+  border-color:var(--orange);
+  box-shadow:0 0 0 4px rgba(247,127,0,.16);
+}
+.extra-lives-status{
+  min-height:24px;
+  margin-top:8px;
+  font-weight:950;
+  color:var(--red);
+}
+.extra-lives-status.success{color:var(--green)}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- TITLE -->
+<section id="title-screen" class="screen active">
+  <div class="shell">
+    <div class="arcade-top"></div>
+    <div class="section-pad title-wrap">
+      <div class="logo-burst">📊</div>
+      <div class="badge">🎮 Mean · Median · Mode Adventure</div>
+      <h1 class="game-title">Stat Attack:<br><span>Data Monster Arena</span></h1>
+      <p class="subhead">Answer statistics questions, defeat data monsters, unlock power-ups, clear mini-games, and earn mastery badges.</p>
+
+      <div class="start-grid">
+        <div class="panel">
+          <h2>Player Setup</h2>
+          <div class="player-setup-grid">
+            <label class="role-title" for="student-name">Student / Player Name</label>
+            <input class="name-input" id="student-name" type="text" placeholder="Type your name" maxlength="24" />
+
+            <div class="role-title">Choose Your Player Avatar</div>
+            <div class="avatar-grid" id="avatar-grid"></div>
+
+            <div class="upload-row">
+              <label class="file-label">
+                📸 Upload your own image
+                <input type="file" id="avatar-upload" accept="image/*" onchange="handleAvatarUpload(event)" />
+              </label>
+              <span id="avatar-upload-preview"></span>
+            </div>
+
+            <div class="player-role-note">
+              <div class="role-card">
+                <div class="role-title">Student Player</div>
+                <div class="role-name" id="setup-player-label">You</div>
+              </div>
+              <div class="role-card monster">
+                <div class="role-title">Monster / Enemy</div>
+                <div class="role-name">Mr. Neft 👾</div>
+              </div>
+            </div>
+          </div>
+          <p class="teacher-note">You are the player. Mr. Neft is the monster you are trying to defeat by answering statistics questions.</p>
+        </div>
+
+        <div class="panel">
+          <h2>Levels 1–4</h2>
+          <div class="avatar-grid" id="level-grid"></div>
+          <p class="teacher-note">Each level mixes mean, median, mode, and best-fit questions, and the levels get progressively harder.</p>
+        </div>
+
+        <div class="panel">
+          <h2>Mission Map</h2>
+          <div class="map">
+            <div class="map-node">
+              <div class="map-icon" style="background:#eaf1ff">🧭</div>
+              <div><h3>Level 1: Data Scout</h3><p>Mixed question types with small numbers.</p></div>
+              <div class="node-lock">5 Qs</div>
+            </div>
+            <div class="map-node">
+              <div class="map-icon" style="background:#e7f8f5">🧩</div>
+              <div><h3>Level 2: Gallery Puzzle</h3><p>Mixed question types with unordered data.</p></div>
+              <div class="node-lock">5 Qs</div>
+            </div>
+            <div class="map-node">
+              <div class="map-icon" style="background:#f0e9ff">🎯</div>
+              <div><h3>Level 3: Curator Challenge</h3><p>Mixed question types with ties and decimals.</p></div>
+              <div class="node-lock">5 Qs</div>
+            </div>
+            <div class="map-node">
+              <div class="map-icon" style="background:#fff1d1">🔥</div>
+              <div><h3>Level 4: Mixed Boss Battle</h3><p>Mixed multi-step and real-world statistics.</p></div>
+              <div class="node-lock">5 Qs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="start-actions">
+        <button class="btn btn-primary" onclick="startGame()">Enter the Arena →</button>
+        <button class="btn btn-ghost" onclick="showHowTo()">How to Play</button>
+      </div>
+
+      <p class="teacher-note" id="high-score-note"></p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO -->
+<section id="howto-screen" class="screen">
+  <div class="shell">
+    <div class="arcade-top"></div>
+    <div class="section-pad">
+      <div class="badge">🕹 Player Guide</div>
+      <h1 class="game-title" style="font-size:clamp(2rem,5vw,3.3rem);margin:10px 0 12px">How to Win</h1>
+      <div class="start-grid">
+        <div class="panel">
+          <h2>Game Rules</h2>
+          <div class="review-list">
+            <div class="review-item"><strong>Correct answer:</strong> earn points, attack the monster, and build a streak.</div>
+            <div class="review-item"><strong>Wrong answer:</strong> lose a life unless your shield is active.</div>
+            <div class="review-item"><strong>Streaks:</strong> 3 correct answers in a row unlock a super attack and bonus points.</div>
+            <div class="review-item"><strong>Mini-games:</strong> clear them after rounds to earn extra power-ups.</div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Power-Ups</h2>
+          <div class="review-list">
+            <div class="review-item">💡 <strong>Coach Hint:</strong> gives a strategy clue.</div>
+            <div class="review-item">🙋 <strong>Ask Mr. Neft:</strong> shows a teacher-style strategy hint without giving away the answer.</div>
+            <div class="review-item">🛡 <strong>Shield:</strong> blocks one monster hit.</div>
+            <div class="review-item">📏 <strong>Sort Beam:</strong> orders the data chips to help with median and mode.</div>
+          </div>
+        </div>
+      </div>
+      <div class="start-actions">
+        <button class="btn btn-primary" onclick="showScreen('title-screen')">Back to Start</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game-screen" class="screen">
+  <div class="game-layout">
+    <aside class="side-panel">
+      <div class="player-card">
+        <div class="player-face" id="player-face">🧠</div>
+        <div>
+          <div class="player-name" id="player-name">Data Captain</div>
+          <div class="player-rank" id="player-rank">Rookie Statistician</div>
+        </div>
+      </div>
+
+      <div class="hud-grid">
+        <div class="hud-box">
+          <div class="hud-val" id="score-display">0</div>
+          <div class="hud-label">Score</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-val" id="coin-display">0</div>
+          <div class="hud-label">Coins</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-val hearts" id="lives-display">❤️❤️❤️</div>
+          <div class="hud-label">Lives</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-val" id="streak-display">0</div>
+          <div class="hud-label">Streak</div>
+        </div>
+      </div>
+
+      <div class="power-panel">
+        <div class="power-title">Power-Up Backpack</div>
+        <div class="power-grid">
+          <button class="power-btn" id="power-hint" onclick="usePower('hint')">
+            <span><span class="power-main">💡 Coach Hint</span><br><span class="power-sub">Show a strategy clue</span></span>
+            <span class="power-count" id="hint-count">1</span>
+          </button>
+          <button class="power-btn" id="power-ask" onclick="usePower('ask')">
+            <span><span class="power-main">🙋 Ask Mr. Neft</span><br><span class="power-sub">Show a teacher-style strategy hint</span></span>
+            <span class="power-count" id="ask-count">1</span>
+          </button>
+          <button class="power-btn" id="power-shield" onclick="usePower('shield')">
+            <span><span class="power-main">🛡 Shield</span><br><span class="power-sub">Block the next hit</span></span>
+            <span class="power-count" id="shield-count">1</span>
+          </button>
+          <button class="power-btn" id="power-sort" onclick="usePower('sort')">
+            <span><span class="power-main">📏 Sort Beam</span><br><span class="power-sub">Order visible data</span></span>
+            <span class="power-count" id="sort-count">1</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mission-mini" id="mission-mini"></div>
+    </aside>
+
+    <main class="main-panel">
+      <div class="top-strip">
+        <div class="progress-wrap">
+          <div class="round-line">
+            <span class="round-chip" id="round-chip">Level 1</span>
+            <span class="q-counter" id="q-counter">1 / 20</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+
+      </div>
+
+      <div class="arena">
+        <div class="attack-flash" id="attack-flash">💥</div>
+        <div class="fight-versus">
+          <div class="fighter-card student">
+            <div class="fight-face" id="fight-player-face">🧠</div>
+            <div>
+              <div class="fighter-label">Student Player</div>
+              <div class="fighter-name" id="fight-player-name">Student Player</div>
+              <div class="fighter-sub" id="fight-player-sub">Answer correctly to attack.</div>
+            </div>
+          </div>
+
+          <div class="vs-badge">VS</div>
+
+          <div class="fighter-card monster">
+            <div class="fight-face enemy-sprite" id="enemy-sprite">👾</div>
+            <div>
+              <div class="fighter-label">Monster / Enemy</div>
+              <div class="fighter-name enemy-name" id="enemy-name">Mr. Neft</div>
+              <div class="fighter-sub enemy-sub" id="enemy-sub">Defeat him by finding the right statistic.</div>
+              <div class="enemy-hp-wrap"><div class="enemy-hp" id="enemy-hp"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="battle-log" id="battle-log">Student Player vs. Mr. Neft — pick the best answer to attack!</div>
+      </div>
+
+      <div class="question-card">
+        <div class="type-row">
+          <div class="type-tag" id="q-type-tag">MEAN</div>
+          <div class="hint-pill" id="hint-pill"></div>
+        </div>
+        <div class="q-text" id="q-text"></div>
+        <div class="data-zone" id="q-data-area"></div>
+      </div>
+
+      <div class="choices-grid" id="choices-grid"></div>
+
+      <div class="feedback" id="feedback">
+        <div class="fb-title" id="fb-title"></div>
+        <div id="fb-body"></div>
+      </div>
+
+      <div class="next-row">
+        <button class="btn btn-teal" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- MINI GAME -->
+<section id="mini-screen" class="screen">
+  <div class="mini-shell">
+    <div class="mini-hero">
+      <span class="mini-emoji" id="mini-emoji">⚡</span>
+      <div class="mini-title" id="mini-title">Bonus Challenge</div>
+      <div class="mini-sub" id="mini-sub">Win the mini-game to unlock a power-up.</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-instructions" id="mini-instructions"></div>
+      <div class="mini-target" id="mini-target"></div>
+      <div class="mini-choice-grid" id="mini-choices"></div>
+      <div class="mini-status" id="mini-status"></div>
+      <div class="reward-card" id="mini-reward"></div>
+      <div class="start-actions" style="justify-content:flex-end">
+        <button class="btn btn-teal" id="mini-continue" onclick="finishMiniGame()" disabled>Continuing...</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUND COMPLETE -->
+<section id="round-screen" class="screen">
+  <div class="shell">
+    <div class="arcade-top"></div>
+    <div class="section-pad title-wrap">
+      <div class="logo-burst" id="round-emoji">✅</div>
+      <div class="badge" id="round-badge">Monster Defeated</div>
+      <h1 class="game-title" style="font-size:clamp(2.2rem,6vw,4rem);margin-top:10px" id="round-title">Level Complete!</h1>
+      <p class="subhead" id="round-sub">Next mission unlocked.</p>
+      <div class="stat-row" style="max-width:620px;margin:0 auto">
+        <div class="stat-box"><div class="num" id="round-score">0</div><div class="label">Score</div></div>
+        <div class="stat-box"><div class="num" id="round-coins">0</div><div class="label">Coins</div></div>
+        <div class="stat-box"><div class="num" id="round-streak">0</div><div class="label">Best Streak</div></div>
+      </div>
+      <div class="start-actions">
+        <button class="btn btn-primary" onclick="continueGame()">Keep Going →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAME OVER -->
+<section id="gameover-screen" class="screen">
+  <div class="shell">
+    <div class="arcade-top"></div>
+    <div class="section-pad title-wrap">
+      <div class="logo-burst">💔</div>
+      <div class="badge">Training Run Ended</div>
+      <h1 class="game-title" style="font-size:clamp(2.2rem,6vw,4rem);margin-top:10px">Out of Lives</h1>
+      <p class="subhead">That monster was tough, but your review list is ready. Try again and use your power-ups.</p>
+      <div class="stat-row" style="max-width:620px;margin:0 auto">
+        <div class="stat-box"><div class="num" id="go-score">0</div><div class="label">Score</div></div>
+        <div class="stat-box"><div class="num" id="go-correct">0</div><div class="label">Correct</div></div>
+        <div class="stat-box"><div class="num" id="go-streak">0</div><div class="label">Best Streak</div></div>
+      </div>
+      <div class="extra-lives-panel">
+        <div class="extra-lives-title">Need extra lives?</div>
+        <p>Type the exact secret phrase to get 3 extra lives and keep going.</p>
+        <div class="extra-lives-row">
+          <input class="extra-lives-input" id="extra-lives-code" type="text" placeholder="Type the secret phrase" autocomplete="off" />
+          <button class="btn btn-gold" onclick="claimExtraLives()">Unlock Extra Lives ❤️</button>
+        </div>
+        <div class="extra-lives-status" id="extra-lives-status"></div>
+      </div>
+      <div class="start-actions">
+        <button class="btn btn-primary" onclick="restartGame()">Restart Mission 🔄</button>
+        <button class="btn btn-ghost" onclick="showResults(true)">See Review</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results-screen" class="screen">
+  <div class="shell">
+    <div class="arcade-top"></div>
+    <div class="section-pad">
+      <div class="results-grid">
+        <div class="panel title-wrap">
+          <div class="logo-burst" id="res-emoji">🏆</div>
+          <div class="badge">Final Report</div>
+          <p class="teacher-note" id="final-hype-line" style="margin-top:8px;font-size:1rem;font-weight:950;color:var(--orange)">Stats W incoming.</p>
+          <h1 class="game-title" style="font-size:clamp(2.2rem,6vw,3.7rem);margin:10px 0">Mission Complete</h1>
+          <div class="final-number" id="final-score">0</div>
+          <div class="stars" id="stars">⭐⭐⭐⭐⭐</div>
+          <div class="stat-row">
+            <div class="stat-box"><div class="num" id="res-correct">0/20</div><div class="label">Correct</div></div>
+            <div class="stat-box"><div class="num" id="res-pct">0%</div><div class="label">Accuracy</div></div>
+            <div class="stat-box"><div class="num" id="res-best">0</div><div class="label">Best Streak</div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Achievement Badges</h2>
+          <div class="achievement-grid" id="achievement-grid"></div>
+          <h2 style="margin-top:16px">Review Targets</h2>
+          <div class="review-list" id="review-list"></div>
+          <div class="start-actions" style="justify-content:flex-end">
+            <button class="btn btn-primary" onclick="restartGame()">Play Again 🔄</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ==========================================================
+   STAT ATTACK: DATA MONSTER ARENA
+   Fully self-contained classroom review game
+   ========================================================== */
+
+const AVATARS = [
+  {emoji:"🧠", name:"Data Captain", rank:"Data Challenger"},
+  {emoji:"🦊", name:"Median Fox", rank:"Data Challenger"},
+  {emoji:"🐉", name:"Mode Dragon", rank:"Data Challenger"},
+  {emoji:"🤖", name:"Average Bot", rank:"Data Challenger"},
+  {emoji:"⚽", name:"Soccer Star", rank:"Data Challenger"},
+  {emoji:"🎨", name:"Art Curator", rank:"Data Challenger"}
+];
+
+const ROUND_INFO = [
+  {num:1, short:"Level 1", full:"Data Scout", skill:"MIXED REVIEW", icon:"🧭", color:"#2d6cdf", enemy:"Mr. Neft", enemyEmoji:"👾", sub:"Mixed review with small numbers.", next:"Gallery Puzzle"},
+  {num:2, short:"Level 2", full:"Gallery Puzzle", skill:"MIXED REVIEW", icon:"🧩", color:"#1b998b", enemy:"Mr. Neft", enemyEmoji:"👾", sub:"Mixed questions with unordered data.", next:"Curator Challenge"},
+  {num:3, short:"Level 3", full:"Curator Challenge", skill:"MIXED REVIEW", icon:"🎯", color:"#7b4cc2", enemy:"Mr. Neft", enemyEmoji:"👾", sub:"Mixed review with harder sets, ties, and decimals.", next:"Mixed Boss Battle"},
+  {num:4, short:"Level 4", full:"Mixed Boss Battle", skill:"ALL STATS", icon:"🔥", color:"#f77f00", enemy:"Mr. Neft", enemyEmoji:"👾", sub:"Mixed review with multi-step and real-world questions.", next:"Results"}
+];
+
+const QUESTIONS = [
+  {
+    round:1, type:"MEAN",
+    text:"A soccer team scored these goals in 4 games. What is the mean number of goals?",
+    dataSet:[2,4,6,8], dataLabel:"Goals:",
+    choices:["4","5","6","8"],
+    correct:1,
+    hint:"Mean means average. Add the goals, then divide by 4 games.",
+    explanation:"Add: 2 + 4 + 6 + 8 = 20. Divide by 4 games: 20 ÷ 4 = 5."
+  },
+  {
+    round:1, type:"MEDIAN",
+    text:"What is the median of this ordered data set?",
+    dataSet:[3,5,7,9,11], dataLabel:"Values:",
+    choices:["5","7","9","11"],
+    correct:1,
+    hint:"The data are already ordered. Find the value in the middle.",
+    explanation:"There are 5 values. The middle value is the 3rd value, 7."
+  },
+  {
+    round:1, type:"MODE",
+    text:"Which number is the mode?",
+    dataSet:[1,3,3,4,6], dataLabel:"Values:",
+    choices:["1","3","4","6"],
+    correct:1,
+    hint:"Mode means the value that appears most often.",
+    explanation:"3 appears twice. Every other value appears once. The mode is 3."
+  },
+  {
+    round:1, type:"ALL STATS",
+    text:"A teacher wants the average number of homework problems completed. Which measure should she use?",
+    choices:["Mean","Median","Mode","Maximum"],
+    correct:0,
+    hint:"Average is another word for mean.",
+    explanation:"The mean is the average, so the teacher should use the mean."
+  },
+  {
+    round:1, type:"MEDIAN",
+    text:"The numbers are 12, 4, 8, 10, 6. What should you do first to find the median?",
+    choices:["Add all the numbers","Put the numbers in order","Find the number that repeats","Subtract the smallest from the largest"],
+    correct:1,
+    hint:"Median is the middle value, but only after the data are ordered.",
+    explanation:"To find the median, first put the numbers in order from least to greatest."
+  },
+
+  {
+    round:2, type:"MEAN",
+    text:"A student read these numbers of pages over 5 nights. What is the mean?",
+    dataSet:[6,12,9,15,8], dataLabel:"Pages:",
+    choices:["9","10","11","12"],
+    correct:1,
+    hint:"Add the pages first. Then divide by 5 nights.",
+    explanation:"6 + 12 + 9 + 15 + 8 = 50. Then 50 ÷ 5 = 10."
+  },
+  {
+    round:2, type:"MEDIAN",
+    text:"Find the median of the data set.",
+    dataSet:[14,7,21,9,12,18], dataLabel:"Values:",
+    choices:["12","13","14","15"],
+    correct:1,
+    hint:"Order the numbers first. With 6 values, average the two middle numbers.",
+    explanation:"Ordered: 7, 9, 12, 14, 18, 21. The two middle values are 12 and 14. Their average is 13."
+  },
+  {
+    round:2, type:"MODE",
+    text:"Students chose favorite school activities. Which activity is the mode?",
+    tableData:{headers:["Activity","Votes"],rows:[["Art","6"],["Soccer","9"],["Robotics","5"],["Music","9"]]},
+    choices:["Art","Soccer only","Soccer and Music","Robotics"],
+    correct:2,
+    hint:"The mode is the category with the highest count. More than one category can tie.",
+    explanation:"Soccer and Music both have 9 votes, which is the highest count. Both are modes."
+  },
+  {
+    round:2, type:"ALL STATS",
+    text:"Which measure would best answer: “What shoe size was bought most often?”",
+    choices:["Mean","Median","Mode","Sum"],
+    correct:2,
+    hint:"The phrase “most often” points to one measure.",
+    explanation:"Most often means mode. The mode is the value or category that appears most frequently."
+  },
+  {
+    round:2, type:"MEAN",
+    text:"The number of students absent each day was 3, 5, 4, 2, and 6. What is the mean number absent?",
+    dataSet:[3,5,4,2,6], dataLabel:"Absent:",
+    choices:["3","4","5","6"],
+    correct:1,
+    hint:"Add all 5 values, then divide by 5.",
+    explanation:"3 + 5 + 4 + 2 + 6 = 20. Then 20 ÷ 5 = 4."
+  },
+
+  {
+    round:3, type:"MEDIAN",
+    text:"Find the median of these quiz scores.",
+    dataSet:[88,73,91,84,76,95,82], dataLabel:"Scores:",
+    choices:["82","84","86","88"],
+    correct:1,
+    hint:"Order the 7 scores. The 4th value will be the median.",
+    explanation:"Ordered: 73, 76, 82, 84, 88, 91, 95. The middle value is 84."
+  },
+  {
+    round:3, type:"MODE",
+    text:"Which statement is true about this data set?",
+    dataSet:[5,8,6,9,7,10], dataLabel:"Values:",
+    choices:["The mode is 5","The mode is 10","There is no mode","There are two modes"],
+    correct:2,
+    hint:"Check whether any number repeats more than the others.",
+    explanation:"Each number appears once, so no value appears most often. There is no mode."
+  },
+  {
+    round:3, type:"MEAN",
+    text:"A runner recorded these mile times in minutes: 8.5, 9.0, 8.0, and 9.5. What is the mean time?",
+    dataSet:[8.5,9.0,8.0,9.5], dataLabel:"Minutes:",
+    choices:["8.5","8.75","9","9.25"],
+    correct:1,
+    hint:"Add the four times, then divide by 4.",
+    explanation:"8.5 + 9.0 + 8.0 + 9.5 = 35. Then 35 ÷ 4 = 8.75."
+  },
+  {
+    round:3, type:"ALL STATS",
+    text:"A data set has one extremely high value compared with the rest. Which measure often gives a better picture of the middle?",
+    choices:["Mean","Median","Mode","Total"],
+    correct:1,
+    hint:"An extreme value can pull the average up or down.",
+    explanation:"The median often gives a better picture of the middle when there is an extreme value."
+  },
+  {
+    round:3, type:"ALL STATS",
+    text:"For the data set 4, 6, 6, 8, 10, which statement is true?",
+    dataSet:[4,6,6,8,10], dataLabel:"Values:",
+    choices:["Mean = 6.8, Median = 6, Mode = 6","Mean = 6, Median = 6.8, Mode = 10","Mean = 7, Median = 8, Mode = 6","Mean = 6.8, Median = 8, Mode = 4"],
+    correct:0,
+    hint:"Find all three measures: average, middle, and most frequent.",
+    explanation:"Mean = (4+6+6+8+10) ÷ 5 = 34 ÷ 5 = 6.8. Median = 6. Mode = 6."
+  },
+
+  {
+    round:4, type:"ALL STATS",
+    text:"House prices in thousands are 180, 190, 200, 210, and 720. Which measure best represents the middle home price?",
+    dataSet:[180,190,200,210,720], dataLabel:"Prices in thousands:",
+    choices:["Mean, because it uses every value","Median, because the mansion is an extreme value","Mode, because one price repeats","Range, because it gives the middle"],
+    correct:1,
+    hint:"Think about the very high mansion price and how it affects the average.",
+    explanation:"The mansion price is an extreme value that pulls the mean upward. The median better represents the middle home price."
+  },
+  {
+    round:4, type:"MEAN",
+    text:"A basketball player scored 14, 18, 22, 26, 30, and 34 points. What is the mean score?",
+    dataSet:[14,18,22,26,30,34], dataLabel:"Points:",
+    choices:["22","24","26","28"],
+    correct:1,
+    hint:"Add the six scores, then divide by 6.",
+    explanation:"14 + 18 + 22 + 26 + 30 + 34 = 144. Then 144 ÷ 6 = 24."
+  },
+  {
+    round:4, type:"MEDIAN",
+    text:"The data set is 19, 4, 12, 16, 8, 20, 10, 14. What is the median?",
+    dataSet:[19,4,12,16,8,20,10,14], dataLabel:"Values:",
+    choices:["11","12","13","14"],
+    correct:2,
+    hint:"Order the 8 values. Then average the 4th and 5th values.",
+    explanation:"Ordered: 4, 8, 10, 12, 14, 16, 19, 20. The two middle values are 12 and 14. Their average is 13."
+  },
+  {
+    round:4, type:"MODE",
+    text:"A survey asked students their favorite fruit: apple, mango, grape, mango, apple, mango, pear, apple. What is the mode?",
+    choices:["Apple only","Mango only","Apple and Mango","No mode"],
+    correct:2,
+    hint:"Count each fruit. More than one category can tie for mode.",
+    explanation:"Apple appears 3 times and mango appears 3 times. They tie for the most, so both are modes."
+  },
+  {
+    round:4, type:"ALL STATS",
+    text:"A student says, “The median of 6, 9, 12, 12, 15, 18 is 12.” Is the student correct?",
+    dataSet:[6,9,12,12,15,18], dataLabel:"Values:",
+    choices:["Yes, because both middle values are 12","No, because the mean is 12","No, because the mode is 12","No, because the median is 13.5"],
+    correct:0,
+    hint:"There are 6 values, so look at the two middle values.",
+    explanation:"The two middle values are 12 and 12. Their average is 12, so the student is correct."
+  }
+];
+
+const ACHIEVEMENTS = [
+  {id:"flawless", icon:"💎", title:"No-Damage Run", sub:"Finish with all 3 lives"},
+  {id:"streak", icon:"🔥", title:"Fire Streak", sub:"Reach a 5-answer streak"},
+  {id:"mean", icon:"➕", title:"Mean Machine", sub:"4+ Mean answers correct"},
+  {id:"median", icon:"📏", title:"Median Master", sub:"4+ Median answers correct"},
+  {id:"mode", icon:"🏆", title:"Mode Champion", sub:"4+ Mode answers correct"},
+  {id:"boss", icon:"🐲", title:"Boss Breaker", sub:"4+ Boss answers correct"},
+  {id:"power", icon:"⚡", title:"Power Player", sub:"Use 2+ power-ups"},
+  {id:"mini", icon:"🎯", title:"Mini-Game Legend", sub:"Clear all 3 mini-games"}
+];
+
+let G = {};
+let selectedAvatar = 0;
+let selectedAvatarImage = null;
+let currentMini = null;
+
+function $(id){ return document.getElementById(id); }
+
+function handleAvatarUpload(event){
+  const file = event.target.files && event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    selectedAvatarImage = reader.result;
+    const preview = $("avatar-upload-preview");
+    if(preview){
+      preview.innerHTML = `<img class="avatar-preview-img" src="${selectedAvatarImage}" alt="Uploaded avatar preview">`;
+    }
+    document.querySelectorAll(".avatar-btn").forEach(btn => btn.classList.remove("selected"));
+  };
+  reader.readAsDataURL(file);
+}
+
+function initTitle(){
+  const avatarGrid = $("avatar-grid");
+  avatarGrid.innerHTML = "";
+  AVATARS.forEach((a,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "avatar-btn" + (!selectedAvatarImage && i===selectedAvatar ? " selected" : "");
+    btn.innerHTML = `<span class="avatar-emoji">${a.emoji}</span><span class="avatar-name">${a.name}</span>`;
+    btn.onclick = () => {
+      selectedAvatar = i;
+      selectedAvatarImage = null;
+      const preview = $("avatar-upload-preview");
+      if(preview) preview.innerHTML = "";
+      initTitle();
+    };
+    avatarGrid.appendChild(btn);
+  });
+
+  const levelGrid = $("level-grid");
+  if(levelGrid){
+    levelGrid.innerHTML = "";
+    ROUND_INFO.forEach((lvl)=>{
+      const card = document.createElement("div");
+      card.className = "avatar-btn selected";
+      card.style.cursor = "default";
+      card.innerHTML = `<span class="avatar-emoji">${lvl.icon}</span><span class="avatar-name">Level ${lvl.num}</span><div class="teacher-note" style="margin-top:4px">${lvl.full}</div>`;
+      levelGrid.appendChild(card);
+    });
+  }
+
+  const nameInput = $("student-name");
+  if(nameInput && !$("student-name").dataset.bound){
+    nameInput.dataset.bound = "true";
+    nameInput.addEventListener("input", () => {
+      const label = $("setup-player-label");
+      if(label) label.textContent = nameInput.value.trim() || "You";
+    });
+  }
+
+  try{
+    const hs = Number(localStorage.getItem("statAttackHighScore") || 0);
+    $("high-score-note").textContent = hs ? `🏅 Local high score: ${hs} points` : "🏅 New players can set the first local high score.";
+  }catch(e){
+    $("high-score-note").textContent = "🏅 Play to set a high score.";
+  }
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+function showHowTo(){ showScreen("howto-screen"); }
+
+function initState(){
+  G = {
+    qIdx:0,
+    score:0,
+    coins:0,
+    lives:3,
+    streak:0,
+    bestStreak:0,
+    correct:0,
+    answered:false,
+    timerVal:null,
+    timerInterval:null,
+    enemyHp:100,
+    currentRound:1,
+    shieldActive:false,
+    usedPowerups:0,
+    miniWins:0,
+    missed:[],
+    answerTimes:[],
+    perSkillCorrect:{MEAN:0, MEDIAN:0, MODE:0, "ALL STATS":0},
+    perSkillTotal:{MEAN:0, MEDIAN:0, MODE:0, "ALL STATS":0},
+    inventory:{hint:1, ask:1, shield:1, sort:1},
+    defeatedRounds:[]
+  };
+}
+
+function startGame(){
+  initState();
+  const av = AVATARS[selectedAvatar];
+  const typedName = $("student-name") ? $("student-name").value.trim() : "";
+  const displayName = typedName || "Student Player";
+
+  if(selectedAvatarImage){
+    $("player-face").innerHTML = `<img class="player-face-img" src="${selectedAvatarImage}" alt="Student avatar">`;
+    $("fight-player-face").innerHTML = `<img src="${selectedAvatarImage}" alt="Student avatar">`;
+  }else{
+    $("player-face").textContent = av.emoji;
+    $("fight-player-face").textContent = av.emoji;
+  }
+
+  $("player-name").textContent = displayName;
+  $("player-rank").textContent = av.name + " · Data Challenger";
+  $("fight-player-name").textContent = displayName;
+  $("fight-player-sub").textContent = av.name + " · Student Player";
+  showScreen("game-screen");
+  renderQuestion();
+}
+
+function restartGame(){
+  clearInterval(G.timerInterval);
+  initTitle();
+  showScreen("title-screen");
+}
+
+function currentQuestion(){ return QUESTIONS[G.qIdx]; }
+function currentRoundInfo(){ return ROUND_INFO[(currentQuestion()?.round || G.currentRound) - 1]; }
+
+function updateHUD(){
+  $("score-display").textContent = G.score;
+  $("coin-display").textContent = G.coins;
+  $("streak-display").textContent = G.streak;
+  $("lives-display").innerHTML = [1,2,3].map(i=>`<span class="heart ${i>G.lives?'lost':''}">❤️</span>`).join("");
+  $("hint-count").textContent = G.inventory.hint;
+  $("ask-count").textContent = G.inventory.ask;
+  $("shield-count").textContent = G.inventory.shield;
+  $("sort-count").textContent = G.inventory.sort;
+  ["hint","ask","shield","sort"].forEach(p=>{
+    const btn = $(`power-${p}`);
+    btn.disabled = G.answered || G.inventory[p] <= 0 || (p==="shield" && G.shieldActive) || (p==="sort" && !currentQuestion()?.dataSet);
+  });
+  renderMissionMini();
+}
+
+function renderMissionMini(){
+  const box = $("mission-mini");
+  box.innerHTML = "";
+  ROUND_INFO.forEach(r=>{
+    const div = document.createElement("div");
+    const done = G.defeatedRounds.includes(r.num);
+    const active = currentQuestion()?.round === r.num;
+    div.className = "mission-dot" + (done ? " done" : active ? " active" : "");
+    div.innerHTML = `<span>${done ? "✅" : active ? "▶️" : "⭕"}</span><span>${r.full}</span>`;
+    box.appendChild(div);
+  });
+}
+
+function setEnemyForRound(round){
+  const info = ROUND_INFO[round-1];
+  $("enemy-sprite").textContent = info.enemyEmoji;
+  $("enemy-name").textContent = info.enemy;
+  $("enemy-sub").textContent = info.sub;
+  $("enemy-hp").style.width = `${G.enemyHp}%`;
+  $("battle-log").textContent = `${currentPlayerName()} vs. Mr. Neft — answer ${info.skill.toLowerCase()} questions to attack.`;
+}
+
+function renderQuestion(){
+  if(G.qIdx >= QUESTIONS.length){ showResults(false); return; }
+
+  const q = currentQuestion();
+  if(q.round !== G.currentRound){
+    G.currentRound = q.round;
+    G.enemyHp = 100;
+  }
+  G.answered = false;
+  $("feedback").className = "feedback";
+  $("feedback").style.display = "none";
+  $("next-btn").classList.remove("show");
+  $("hint-pill").style.display = "none";
+  $("hint-pill").textContent = "";
+
+  const info = ROUND_INFO[q.round-1];
+  setEnemyForRound(q.round);
+  updateHUD();
+
+  $("round-chip").textContent = `${info.icon} ${info.short}: ${info.full}`;
+  $("round-chip").style.background = info.color;
+  $("q-counter").textContent = `${G.qIdx+1} / ${QUESTIONS.length}`;
+  $("progress-fill").style.width = `${(G.qIdx / QUESTIONS.length) * 100}%`;
+
+  const tag = $("q-type-tag");
+  tag.textContent = q.type;
+  tag.style.color = info.color;
+  tag.style.background = softColor(q.type);
+
+  $("q-text").textContent = q.text;
+  renderData(q);
+  renderChoices(q);
+  startTimer();
+}
+
+function softColor(type){
+  return type==="MEAN" ? "#eaf1ff" : type==="MEDIAN" ? "#e7f8f5" : type==="MODE" ? "#f0e9ff" : "#fff1d1";
+}
+
+function renderData(q){
+  const area = $("q-data-area");
+  area.innerHTML = "";
+  if(q.dataSet){
+    const block = document.createElement("div");
+    block.className = "data-block";
+    block.innerHTML = `<span class="data-label">${q.dataLabel || "Data:"}</span>`;
+    q.dataSet.forEach(n=>{
+      const chip = document.createElement("span");
+      chip.className = "data-chip";
+      chip.textContent = n;
+      block.appendChild(chip);
+    });
+    area.appendChild(block);
+  }
+  if(q.tableData){
+    const table = document.createElement("table");
+    table.className = "data-table";
+    const head = q.tableData.headers.map(h=>`<th>${escapeHtml(h)}</th>`).join("");
+    const rows = q.tableData.rows.map(row=>`<tr>${row.map(c=>`<td>${escapeHtml(c)}</td>`).join("")}</tr>`).join("");
+    table.innerHTML = `<thead><tr>${head}</tr></thead><tbody>${rows}</tbody>`;
+    area.appendChild(table);
+  }
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+function renderChoices(q){
+  const letters = ["A","B","C","D"];
+  const grid = $("choices-grid");
+  grid.innerHTML = "";
+  q.choices.forEach((choice,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.innerHTML = `<span class="choice-letter">${letters[i]}</span><span>${escapeHtml(choice)}</span>`;
+    btn.onclick = () => selectAnswer(i, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function startTimer(){
+  // Unlimited-time version: no countdown and no timeouts.
+  clearInterval(G.timerInterval);
+  G.timerInterval = null;
+}
+
+function updateTimer(){
+  // Timer removed.
+}
+
+
+function teacherHint(q){
+  if(!q) return "Slow down, reread the question, and underline what it is asking for.";
+  if(q.type === "MEAN") return "Mean is the average. Add the values first, then divide by how many values there are.";
+  if(q.type === "MEDIAN") return "Median is the middle. Put the values in order first, then find the center.";
+  if(q.type === "MODE") return "Mode is the value that appears most often. Make a quick tally of repeats.";
+  return "First decide what the question wants: average, middle, or most common. Then use that measure.";
+}
+
+function usePower(type){
+  if(G.answered || G.inventory[type] <= 0) return;
+  const q = currentQuestion();
+
+  if(type === "hint"){
+    G.inventory.hint--;
+    G.usedPowerups++;
+    $("hint-pill").textContent = `💡 Coach Hint: ${q.hint}`;
+    $("hint-pill").style.display = "block";
+    $("battle-log").textContent = "Coach Hint activated. Use the strategy, then attack.";
+  }
+
+  if(type === "ask"){
+    G.inventory.ask--;
+    G.usedPowerups++;
+    const q = currentQuestion();
+    $("hint-pill").textContent = `🙋 Ask Mr. Neft: ${teacherHint(q)}`;
+    $("hint-pill").style.display = "block";
+    $("battle-log").textContent = "Mr. Neft gives you a strategy hint. Use it, then answer.";
+    showAttackFlash("🙋");
+  }
+
+  if(type === "shield"){
+    G.inventory.shield--;
+    G.usedPowerups++;
+    G.shieldActive = true;
+    $("battle-log").textContent = "🛡 Shield ready. Your next mistake is blocked.";
+    showAttackFlash("🛡");
+  }
+
+  if(type === "sort"){
+    if(!q.dataSet) return;
+    G.inventory.sort--;
+    G.usedPowerups++;
+    const sorted = [...q.dataSet].sort((a,b)=>Number(a)-Number(b));
+    q.dataSet = sorted;
+    renderData(q);
+    document.querySelectorAll(".data-chip").forEach(ch=>ch.classList.add("sorted"));
+    $("battle-log").textContent = "📏 Sort Beam! Data chips are ordered.";
+    showAttackFlash("📏");
+  }
+
+  updateHUD();
+}
+
+
+const GENZ_CORRECT_LINES = [
+  "No cap — Mr. Neft just got cooked.",
+  "That answer ate. Mr. Neft is stressed.",
+  "W answer. Mr. Neft felt that one.",
+  "You just dropped a stats combo on Mr. Neft.",
+  "That was clean. Mr. Neft is in his data-flop era.",
+  "Correct! Mr. Neft is fighting for his life on the number line.",
+  "Big brain move. Mr. Neft cannot recover from that.",
+  "That answer was lowkey a masterpiece."
+];
+
+const GENZ_WIN_LINES = [
+  "W LEVEL. Mr. Neft got absolutely cooked.",
+  "You ate that level and left no crumbs.",
+  "Certified data legend moment.",
+  "Mr. Neft has been respectfully sent back to the teacher desk.",
+  "That was a stats slay. Huge W.",
+  "Level cleared. The data understood the assignment."
+];
+
+function pickLine(lines){
+  return lines[Math.floor(Math.random() * lines.length)];
+}
+
+function currentPlayerName(){
+  const name = $("fight-player-name")?.textContent?.trim();
+  return name || "Student Player";
+}
+
+function selectAnswer(idx, btn){
+  if(G.answered) return;
+  G.answered = true;
+  clearInterval(G.timerInterval);
+  const q = currentQuestion();
+  G.perSkillTotal[q.type]++;
+
+  document.querySelectorAll(".choice").forEach(b=>b.disabled = true);
+  const isCorrect = idx === q.correct;
+  G.answerTimes.push(null);
+
+  if(isCorrect){
+    btn.classList.add("correct");
+    G.correct++;
+    G.perSkillCorrect[q.type]++;
+    G.streak++;
+    G.bestStreak = Math.max(G.bestStreak, G.streak);
+
+    const streakBonus = G.streak >= 3 ? 60 : 0;
+    const pts = 120 + streakBonus;
+    G.score += pts;
+    G.coins += G.streak >= 3 ? 3 : 2;
+
+    const damage = 24 + (G.streak >= 3 ? 18 : 0);
+    attackEnemy(damage, G.streak >= 3);
+    showScorePop(`+${pts}`, btn);
+    const hypeLine = pickLine(GENZ_CORRECT_LINES);
+    showFeedback(true, G.streak >= 3 ? `🔥 ${hypeLine} +${pts} points` : `${hypeLine} +${pts} points`, q.explanation);
+    $("battle-log").textContent = `${currentPlayerName()} landed a correct answer. ${hypeLine}`;
+
+    if(G.streak === 3){
+      G.inventory.hint++;
+      $("battle-log").textContent += " Bonus unlocked: +1 Coach Hint.";
+    }
+    if(G.streak === 5){
+      G.inventory.ask++;
+      $("battle-log").textContent += " Fire streak reward: +1 Ask Mr. Neft.";
+      confetti(18);
+    }
+  }else{
+    btn.classList.add("wrong");
+    document.querySelectorAll(".choice")[q.correct].classList.add("reveal");
+    handleWrong(q, "Not quite!");
+  }
+
+  updateHUD();
+  $("next-btn").classList.add("show");
+  if(G.lives <= 0){
+    setTimeout(showGameOver, 1500);
+  }
+}
+
+function handleWrong(q, headline){
+  G.streak = 0;
+  G.missed.push(q.type);
+  if(G.shieldActive){
+    G.shieldActive = false;
+    showFeedback(false, `🛡 Shield Blocked It!`, `${headline} ${q.explanation}`);
+    monsterMotion("attack");
+    $("battle-log").textContent = "The monster attacked, but your shield blocked the damage.";
+  }else{
+    G.lives--;
+    showFeedback(false, headline, q.explanation);
+    monsterMotion("attack");
+    $("battle-log").textContent = "Monster hit! Lose 1 life. Regroup and try the next one.";
+  }
+}
+
+function timeOut(){
+  G.answered = true;
+  const q = currentQuestion();
+  G.perSkillTotal[q.type]++;
+  document.querySelectorAll(".choice").forEach(b=>b.disabled = true);
+  document.querySelectorAll(".choice")[q.correct].classList.add("reveal");
+  handleWrong(q, "⏱ Time’s up!");
+  updateHUD();
+  $("next-btn").classList.add("show");
+  if(G.lives <= 0){
+    setTimeout(showGameOver, 1500);
+  }
+}
+
+function attackEnemy(damage, superHit){
+  G.enemyHp = Math.max(0, G.enemyHp - damage);
+  $("enemy-hp").style.width = `${G.enemyHp}%`;
+  monsterMotion("hit");
+  showAttackFlash(superHit ? "🔥" : "💥");
+  $("battle-log").textContent = superHit
+    ? `SUPER ATTACK! The monster lost ${damage} HP.`
+    : `Direct hit! The monster lost ${damage} HP.`;
+  if(G.enemyHp <= 0){
+    $("battle-log").textContent = pickLine(GENZ_WIN_LINES);
+    confetti(12);
+  }
+}
+
+function monsterMotion(cls){
+  const sprite = $("enemy-sprite");
+  sprite.classList.remove("hit","attack");
+  void sprite.offsetWidth;
+  sprite.classList.add(cls);
+  setTimeout(()=>sprite.classList.remove(cls),520);
+}
+
+function showAttackFlash(symbol){
+  const f = $("attack-flash");
+  f.textContent = symbol;
+  f.classList.remove("show");
+  void f.offsetWidth;
+  f.classList.add("show");
+}
+
+function showFeedback(good, title, body){
+  const fb = $("feedback");
+  fb.className = "feedback " + (good ? "good" : "bad");
+  fb.style.display = "block";
+  $("fb-title").textContent = title;
+  $("fb-body").textContent = body;
+}
+
+function showScorePop(text, anchor){
+  const r = anchor.getBoundingClientRect();
+  const pop = document.createElement("div");
+  pop.className = "score-pop";
+  pop.textContent = text;
+  pop.style.left = `${r.left + r.width/2 - 34}px`;
+  pop.style.top = `${r.top - 10}px`;
+  document.body.appendChild(pop);
+  setTimeout(()=>pop.remove(),900);
+}
+
+function nextQuestion(){
+  if(G.lives <= 0) return;
+  const oldQ = currentQuestion();
+  const next = QUESTIONS[G.qIdx + 1];
+
+  if(next && next.round !== oldQ.round){
+    if(!G.defeatedRounds.includes(oldQ.round)) G.defeatedRounds.push(oldQ.round);
+    G.qIdx++;
+    showMiniGame(oldQ.round);
+  }else{
+    G.qIdx++;
+    renderQuestion();
+  }
+}
+
+function showMiniGame(round){
+  const configs = {
+    1:{
+      emoji:"➕",
+      title:"Data Scout Bonus Room",
+      sub:"Review the steps for one important statistic.",
+      instructions:"Tap the steps in the correct order to review how to calculate an average.",
+      mode:"sequence",
+      expected:["Add all values","Count how many values","Divide total by count"],
+      choices:["Divide total by count","Find the biggest value","Add all values","Count how many values"],
+      reward:"Reward: +150 points and +1 Sort Beam.",
+      award:()=>{G.score+=150;G.inventory.sort++;G.miniWins++;}
+    },
+    2:{
+      emoji:"📏",
+      title:"Gallery Puzzle Sort Sprint",
+      sub:"Escape by ordering the numbers.",
+      instructions:"Tap the numbers from least to greatest.",
+      mode:"sort",
+      expected:["2","3","5","7","9"],
+      choices:["9","3","7","2","5"],
+      reward:"Reward: +150 points and +1 Shield.",
+      award:()=>{G.score+=150;G.inventory.shield++;G.miniWins++;}
+    },
+    3:{
+      emoji:"🏆",
+      title:"Curator Challenge Crowd Check",
+      sub:"Find the most popular value.",
+      instructions:"Tap the value that appears most often in this crowd: 6, 4, 6, 8, 6, 4, 9.",
+      mode:"single",
+      expected:["6"],
+      choices:["4","6","8","9"],
+      reward:"Reward: +150 points and +1 Ask Mr. Neft.",
+      award:()=>{G.score+=150;G.inventory.ask++;G.miniWins++;}
+    }
+  };
+  if(!configs[round]){
+    G.enemyHp = 100;
+    renderQuestion();
+    return;
+  }
+  currentMini = {...configs[round], round, selected:[], completed:false};
+
+  $("mini-emoji").textContent = currentMini.emoji;
+  $("mini-title").textContent = currentMini.title;
+  $("mini-sub").textContent = currentMini.sub;
+  $("mini-instructions").textContent = currentMini.instructions;
+  $("mini-target").innerHTML = "";
+  $("mini-choices").innerHTML = "";
+  $("mini-status").textContent = "";
+  $("mini-reward").classList.remove("show");
+  $("mini-reward").textContent = "";
+  $("mini-continue").disabled = true;
+  $("mini-continue").textContent = "Continuing...";
+
+  currentMini.choices.forEach(val=>{
+    const btn = document.createElement("button");
+    btn.className = "mini-token";
+    btn.textContent = val;
+    btn.onclick = () => handleMiniChoice(btn, val);
+    $("mini-choices").appendChild(btn);
+  });
+
+  showScreen("mini-screen");
+}
+
+function handleMiniChoice(btn, val){
+  if(currentMini.completed || btn.classList.contains("used")) return;
+
+  if(currentMini.mode === "single"){
+    if(val === currentMini.expected[0]){
+      placeMiniToken(val);
+      btn.classList.add("correct","used");
+      completeMini("Mode detected!");
+    }else{
+      btn.classList.add("wrong");
+      $("mini-status").textContent = "Not that one. Count which value appears the most.";
+      setTimeout(()=>btn.classList.remove("wrong"),450);
+    }
+    return;
+  }
+
+  const need = currentMini.expected[currentMini.selected.length];
+  if(val === need){
+    currentMini.selected.push(val);
+    btn.classList.add("used","correct");
+    placeMiniToken(val);
+    $("mini-status").textContent = `Correct step ${currentMini.selected.length}!`;
+    if(currentMini.selected.length === currentMini.expected.length){
+      completeMini("Mini-game cleared!");
+    }
+  }else{
+    btn.classList.add("wrong");
+    $("mini-status").textContent = currentMini.mode === "sort"
+      ? `Try again. The next number must be the smallest remaining value.`
+      : `Try again. Think about the recipe for finding the mean.`;
+    setTimeout(()=>btn.classList.remove("wrong"),450);
+  }
+}
+
+function placeMiniToken(val){
+  const token = document.createElement("div");
+  token.className = "mini-token placed";
+  token.textContent = val;
+  $("mini-target").appendChild(token);
+}
+
+function completeMini(message){
+  currentMini.completed = true;
+  currentMini.award();
+  $("mini-status").textContent = message + " Moving to the next section...";
+  $("mini-reward").textContent = currentMini.reward;
+  $("mini-reward").classList.add("show");
+  $("mini-continue").disabled = true;
+  $("mini-continue").textContent = "Continuing...";
+  $("mini-continue").textContent = "Continuing...";
+  confetti(18);
+
+  setTimeout(() => {
+    finishMiniGame();
+  }, 1100);
+}
+
+function finishMiniGame(){
+  if(!currentMini || !currentMini.completed) return;
+  updateHUD();
+  G.enemyHp = 100;
+
+  if(G.qIdx >= QUESTIONS.length){
+    showResults(false);
+    return;
+  }
+
+  showScreen("game-screen");
+  renderQuestion();
+}
+
+function showRoundTransition(completedRound){
+  const info = ROUND_INFO[completedRound-1];
+  const next = ROUND_INFO[completedRound] || null;
+  $("round-emoji").textContent = info.icon;
+  $("round-badge").textContent = `${info.enemy} Defeated`;
+  $("round-title").textContent = `${info.full} Complete!`;
+  $("round-sub").textContent = next ? `Next level unlocked: ${next.full}.` : "Final results unlocked.";
+  $("round-score").textContent = G.score;
+  $("round-coins").textContent = G.coins;
+  $("round-streak").textContent = G.bestStreak;
+  showScreen("round-screen");
+}
+
+function continueGame(){
+  G.enemyHp = 100;
+  if(G.qIdx >= QUESTIONS.length){
+    showResults(false);
+    return;
+  }
+  showScreen("game-screen");
+  renderQuestion();
+}
+
+function showGameOver(){
+  clearInterval(G.timerInterval);
+  $("go-score").textContent = G.score;
+  $("go-correct").textContent = G.correct;
+  $("go-streak").textContent = G.bestStreak;
+  const code = $("extra-lives-code");
+  const status = $("extra-lives-status");
+  if(code) code.value = "";
+  if(status){
+    status.textContent = "";
+    status.classList.remove("success");
+  }
+  showScreen("gameover-screen");
+  setTimeout(()=>$("extra-lives-code")?.focus(), 60);
+}
+
+
+function claimExtraLives(){
+  const code = $("extra-lives-code");
+  const status = $("extra-lives-status");
+  const phrase = "Mr. Neft. is the best";
+  if(!code || !status) return;
+
+  if(code.value.trim() === phrase){
+    G.lives = 3;
+    G.streak = 0;
+    status.textContent = "Extra lives unlocked! Back to the arena.";
+    status.classList.add("success");
+    updateHUD();
+    confetti(16);
+    setTimeout(()=>nextQuestion(), 500);
+  }else{
+    status.textContent = "Not yet. Type the exact phrase: Mr. Neft. is the best";
+    status.classList.remove("success");
+    code.select();
+  }
+}
+
+function showResults(fromGameOver){
+  clearInterval(G.timerInterval);
+  const total = QUESTIONS.length;
+  const pct = Math.round((G.correct / total) * 100);
+  $("final-score").textContent = G.score;
+  $("res-correct").textContent = `${G.correct}/${total}`;
+  $("res-pct").textContent = `${pct}%`;
+  $("res-best").textContent = G.bestStreak;
+
+  let stars = "⭐☆☆☆☆", emoji = "📘";
+  if(pct >= 90){ stars = "⭐⭐⭐⭐⭐"; emoji = "🏆"; confetti(36); }
+  else if(pct >= 80){ stars = "⭐⭐⭐⭐☆"; emoji = "🎉"; confetti(24); }
+  else if(pct >= 70){ stars = "⭐⭐⭐☆☆"; emoji = "💪"; }
+  else if(pct >= 60){ stars = "⭐⭐☆☆☆"; emoji = "🧭"; }
+  $("stars").textContent = stars;
+  $("res-emoji").textContent = emoji;
+  const finalHype = $("final-hype-line");
+  if(finalHype) finalHype.textContent = pct >= 70 ? pickLine(GENZ_WIN_LINES) : "Keep grinding — Mr. Neft is still beatable.";
+
+  try{
+    const old = Number(localStorage.getItem("statAttackHighScore") || 0);
+    if(G.score > old) localStorage.setItem("statAttackHighScore", String(G.score));
+  }catch(e){}
+
+  renderAchievements();
+  renderReview();
+  showScreen("results-screen");
+}
+
+function renderAchievements(){
+  const earned = getEarnedAchievements();
+  const grid = $("achievement-grid");
+  grid.innerHTML = "";
+  ACHIEVEMENTS.forEach(a=>{
+    const div = document.createElement("div");
+    div.className = "achievement" + (earned.includes(a.id) ? " earned" : "");
+    div.innerHTML = `<div class="ach-icon">${a.icon}</div><div><div class="ach-title">${a.title}</div><div class="ach-sub">${a.sub}</div></div>`;
+    grid.appendChild(div);
+  });
+}
+
+function getEarnedAchievements(){
+  const e = [];
+  if(G.lives === 3 && G.correct === QUESTIONS.length) e.push("flawless");
+  if(G.bestStreak >= 5) e.push("streak");
+  if(G.perSkillCorrect.MEAN >= 4) e.push("mean");
+  if(G.perSkillCorrect.MEDIAN >= 4) e.push("median");
+  if(G.perSkillCorrect.MODE >= 4) e.push("mode");
+  if(G.perSkillCorrect["ALL STATS"] >= 4) e.push("boss");
+  if(G.usedPowerups >= 2) e.push("power");
+  if(G.miniWins >= 3) e.push("mini");
+  return e;
+}
+
+function renderReview(){
+  const list = $("review-list");
+  list.innerHTML = "";
+  const tips = {
+    MEAN:"Mean: add all values, then divide by the number of values.",
+    MEDIAN:"Median: put the data in order first, then find the middle.",
+    MODE:"Mode: count repeats and choose the value that appears most often.",
+    "ALL STATS":"Mixed stats: decide what the question is asking for before calculating."
+  };
+  if(G.missed.length === 0){
+    const div = document.createElement("div");
+    div.className = "review-item";
+    div.innerHTML = "<strong>Clean run:</strong> No missed skills. Try again for a faster score or bigger streak.";
+    list.appendChild(div);
+    return;
+  }
+  const counts = {};
+  G.missed.forEach(m=>counts[m]=(counts[m]||0)+1);
+  Object.entries(counts).forEach(([skill,count])=>{
+    const div = document.createElement("div");
+    div.className = "review-item";
+    div.innerHTML = `<strong>${skill}</strong> — missed ${count}×. ${tips[skill]}`;
+    list.appendChild(div);
+  });
+}
+
+function confetti(n){
+  const colors = ["#f77f00","#fcbf49","#1b998b","#2d6cdf","#7b4cc2","#e63946"];
+  for(let i=0;i<n;i++){
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random()*100 + "vw";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = (Math.random()*.35) + "s";
+    c.style.transform = `rotate(${Math.random()*120}deg)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1900);
+  }
+}
+
+
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter" && document.activeElement && document.activeElement.id === "extra-lives-code"){
+    claimExtraLives();
+  }
+});
+
+initTitle();
+</script>
+</body>
+</html>

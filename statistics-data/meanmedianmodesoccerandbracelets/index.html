@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stats Choice Quest Deluxe</title>
+  <style>
+    :root{
+      --ink:#132238;
+      --muted:#5d6c7d;
+      --navy:#12325a;
+      --teal:#128277;
+      --teal-2:#1bb7a5;
+      --gold:#f4bf44;
+      --cream:#fff8e7;
+      --rose:#ffedf2;
+      --lav:#f1efff;
+      --sky:#ecf8ff;
+      --green:#48b261;
+      --red:#d94c4c;
+      --orange:#ea8b36;
+      --shadow:0 18px 40px rgba(19,34,56,.14);
+      --soft:0 10px 24px rgba(19,34,56,.08);
+      --radius:24px;
+      --radius-lg:30px;
+      --bgA:linear-gradient(135deg,#f7fbff 0%,#fff9ef 50%,#f6fdff 100%);
+      --panel:rgba(255,255,255,.88);
+      --border:rgba(18,50,90,.12);
+      --themeA1:#0e375e;
+      --themeA2:#148574;
+      --themeA3:#f4bf44;
+      --themeB1:#7a4ce2;
+      --themeB2:#f06792;
+      --themeB3:#ffc857;
+      --themeSoccerBg:
+        radial-gradient(circle at 10% 15%, rgba(57,191,120,.18), transparent 22%),
+        radial-gradient(circle at 88% 12%, rgba(244,191,68,.18), transparent 20%),
+        linear-gradient(135deg,#effff4 0%,#f7fff8 30%,#edf7ff 100%);
+      --themeStudioBg:
+        radial-gradient(circle at 10% 15%, rgba(240,103,146,.18), transparent 22%),
+        radial-gradient(circle at 88% 12%, rgba(122,76,226,.18), transparent 22%),
+        linear-gradient(135deg,#fff2f7 0%,#fff9ec 35%,#f6f0ff 100%);
+      --themeMixBg:
+        radial-gradient(circle at top left, rgba(27,183,165,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(240,103,146,.13), transparent 24%),
+        linear-gradient(135deg,#f5fbff 0%,#fff8ef 55%,#f8faff 100%);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Calibri,"Segoe UI",Arial,sans-serif;
+      color:var(--ink);
+      background:var(--bgA);
+      min-height:100vh;
+      transition:background .35s ease;
+    }
+
+    body.theme-soccer{background:var(--themeSoccerBg)}
+    body.theme-studio{background:var(--themeStudioBg)}
+
+    button,input{
+      font-family:inherit;
+      font-size:1rem;
+    }
+
+    .app{
+      width:min(1200px, calc(100% - 24px));
+      margin:0 auto;
+      padding:20px 0 38px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:34px;
+      padding:28px;
+      color:#fff;
+      background:
+        radial-gradient(circle at 85% 18%, rgba(255,255,255,.18), transparent 16%),
+        radial-gradient(circle at 16% 8%, rgba(255,255,255,.10), transparent 18%),
+        linear-gradient(135deg,var(--themeA1),var(--themeA2));
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.18);
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap:20px;
+      align-items:center;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.22);
+      font-weight:900;
+      text-transform:uppercase;
+      font-size:.82rem;
+      letter-spacing:.04em;
+    }
+
+    h1{
+      margin:16px 0 10px;
+      font-size:clamp(2.25rem,5vw,4.7rem);
+      line-height:.95;
+      letter-spacing:-.05em;
+      max-width:680px;
+    }
+
+    .hero p{
+      margin:0;
+      max-width:760px;
+      line-height:1.5;
+      font-size:clamp(1.02rem,1.6vw,1.22rem);
+      color:rgba(255,255,255,.92);
+    }
+
+    .hero-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.22);
+      font-weight:800;
+      font-size:.96rem;
+    }
+
+    .hero-art{
+      min-height:240px;
+      display:grid;
+      place-items:center;
+      padding:8px;
+    }
+
+    .hero-art svg{
+      width:min(100%, 470px);
+      height:auto;
+      filter:drop-shadow(0 10px 18px rgba(0,0,0,.12));
+    }
+
+    .section{
+      margin-top:20px;
+      background:var(--panel);
+      backdrop-filter: blur(12px);
+      border:1px solid var(--border);
+      border-radius:30px;
+      box-shadow:var(--soft);
+      padding:22px;
+    }
+
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-end;
+      margin-bottom:16px;
+    }
+
+    .section-title h2{
+      margin:0;
+      font-size:clamp(1.5rem,3vw,2.2rem);
+      letter-spacing:-.03em;
+    }
+
+    .section-title p{
+      margin:6px 0 0;
+      color:var(--muted);
+      max-width:760px;
+      line-height:1.45;
+      font-size:1.02rem;
+    }
+
+    .choice-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+    }
+
+    .choice-card{
+      position:relative;
+      overflow:hidden;
+      display:block;
+      width:100%;
+      text-align:left;
+      background:white;
+      border:2px solid var(--border);
+      border-radius:28px;
+      padding:20px;
+      box-shadow:var(--soft);
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .choice-card:hover,.choice-card:focus-visible{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow);
+      outline:none;
+    }
+
+    .choice-card.selected{
+      border-color:#17a08d;
+      box-shadow:0 0 0 5px rgba(27,183,165,.16), var(--shadow);
+    }
+
+    .choice-card.soccer{background:linear-gradient(135deg,#f6fff8,#f5fffb,#f2f9ff)}
+    .choice-card.studio{background:linear-gradient(135deg,#fff5fa,#fff9f0,#f8f3ff)}
+
+    .choice-top{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:10px;
+    }
+
+    .icon-tile{
+      width:78px;height:78px;border-radius:22px;display:grid;place-items:center;
+      background:white;border:1px solid rgba(19,34,56,.1);box-shadow:var(--soft);font-size:2.7rem;
+      flex:0 0 auto;
+    }
+
+    .choice-card h3{
+      margin:0;
+      font-size:1.65rem;
+      line-height:1.05;
+      letter-spacing:-.03em;
+    }
+
+    .choice-card p{
+      margin:10px 0 0;
+      line-height:1.45;
+      color:var(--muted);
+      font-size:1rem;
+      max-width:520px;
+    }
+
+    .choice-tag{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      margin-top:14px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:white;
+      border:1px solid rgba(19,34,56,.1);
+      font-weight:900;
+      color:var(--navy);
+    }
+
+    .scene-strip{
+      margin-top:16px;
+      border-radius:20px;
+      background:rgba(255,255,255,.76);
+      border:1px solid rgba(19,34,56,.08);
+      padding:10px;
+    }
+
+    .scene-strip svg{width:100%;height:auto;display:block}
+
+    .dashboard-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .dash-card{
+      background:white;
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:14px 15px;
+      box-shadow:var(--soft);
+    }
+
+    .dash-card small{
+      display:block;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .dash-card strong{
+      display:block;
+      font-size:1.55rem;
+      letter-spacing:-.03em;
+    }
+
+    .progress-wrap{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+    }
+
+    .progress-bar{
+      height:18px;
+      border-radius:999px;
+      background:#edf1f6;
+      overflow:hidden;
+      border:1px solid rgba(19,34,56,.08);
+    }
+
+    .progress-fill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#1bb7a5,#f4bf44,#f06792);
+      transition:width .25s ease;
+    }
+
+    .skill-strip{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .skill-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      background:white;
+      border:1px solid rgba(19,34,56,.1);
+      font-weight:900;
+      color:var(--navy);
+    }
+
+    .learn-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .learn-card{
+      background:white;
+      border-radius:24px;
+      border:1px solid var(--border);
+      box-shadow:var(--soft);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:460px;
+    }
+
+    .learn-head{
+      padding:16px 16px 10px;
+      display:flex;align-items:center;gap:12px;
+    }
+
+    .learn-icon{
+      width:50px;height:50px;border-radius:16px;display:grid;place-items:center;
+      background:#eefaf7;border:1px solid rgba(18,130,119,.18);font-size:1.55rem;
+      flex:0 0 auto;
+    }
+
+    .learn-head h3{
+      margin:0;
+      font-size:1.42rem;
+      letter-spacing:-.02em;
+    }
+
+    .learn-body{
+      padding:0 16px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      height:100%;
+    }
+
+    .learn-body p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.42;
+    }
+
+    .visual-box{
+      background:linear-gradient(135deg,#f7fbff,#fff9ec);
+      border:1px solid rgba(19,34,56,.08);
+      border-radius:18px;
+      padding:12px;
+    }
+
+    .data-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+
+    .chip{
+      min-width:40px;
+      height:40px;
+      padding:0 12px;
+      border-radius:14px;
+      display:inline-grid;
+      place-items:center;
+      background:#fff;
+      border:2px solid rgba(19,34,56,.13);
+      box-shadow:0 5px 10px rgba(19,34,56,.07);
+      font-weight:900;
+      color:var(--navy);
+      user-select:none;
+    }
+
+    .chip.mode-hit{background:#fff2bf;border-color:#f4bf44}
+    .chip.correct-slot{background:#e8fff0;border-color:#48b261}
+    .chip.dragging{opacity:.62;transform:scale(.97)}
+
+    .subtle{
+      font-size:.94rem;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    .mini-btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      border-radius:16px;
+      padding:11px 14px;
+      font-weight:900;
+      color:#fff;
+      background:linear-gradient(135deg,#128277,#0b6259);
+      box-shadow:0 8px 16px rgba(18,130,119,.22);
+      transition:transform .16s ease, filter .16s ease;
+    }
+
+    .btn:hover,.btn:focus-visible{transform:translateY(-2px);filter:brightness(1.03);outline:none}
+    .btn.secondary{
+      color:var(--navy);
+      background:#fff8e7;
+      border:1px solid rgba(244,191,68,.35);
+      box-shadow:none;
+    }
+    .btn.ghost{
+      color:var(--navy);
+      background:#fff;
+      border:1px solid rgba(19,34,56,.1);
+      box-shadow:none;
+    }
+    .btn.small{padding:9px 12px;font-size:.95rem;border-radius:14px}
+
+    .feedback{
+      display:none;
+      border-radius:16px;
+      padding:11px 12px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .feedback.show{display:block}
+    .feedback.correct{background:rgba(72,178,97,.12);border:1px solid rgba(72,178,97,.28);color:#216d36}
+    .feedback.try{background:rgba(240,103,146,.12);border:1px solid rgba(240,103,146,.25);color:#8b3152}
+    .feedback.hint{background:rgba(122,76,226,.11);border:1px solid rgba(122,76,226,.20);color:#4c3392}
+
+    .interactive-zone{
+      margin-top:auto;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .token-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .token{
+      width:30px;height:30px;border-radius:50%;
+      display:grid;place-items:center;
+      font-size:1rem;
+      background:#fff;
+      border:2px solid rgba(19,34,56,.12);
+      box-shadow:0 4px 8px rgba(19,34,56,.07);
+    }
+
+    .bucket-grid{
+      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px;
+    }
+
+    .bucket{
+      background:#fff;
+      border:2px dashed rgba(19,34,56,.18);
+      border-radius:18px;
+      min-height:124px;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+    }
+
+    .bucket h4{
+      margin:0;
+      font-size:1rem;
+      color:var(--navy);
+    }
+
+    .dropzone{
+      width:100%;
+      min-height:68px;
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:6px;
+      align-content:flex-start;
+    }
+
+    .sort-area{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .sort-slot{
+      min-height:54px;
+      border-radius:16px;
+      border:2px dashed rgba(19,34,56,.18);
+      background:#fff;
+      display:grid;
+      place-items:center;
+      padding:4px;
+    }
+
+    .sort-bank{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+      padding:10px;
+      background:#fff;
+      border:1px solid rgba(19,34,56,.08);
+      border-radius:18px;
+    }
+
+    .draggable{
+      cursor:grab;
+    }
+
+    .mode-counter{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .count-box{
+      background:#fff;
+      border:1px solid rgba(19,34,56,.10);
+      border-radius:16px;
+      padding:10px 8px;
+      text-align:center;
+      box-shadow:var(--soft);
+    }
+
+    .count-box strong{
+      display:block;
+      font-size:1.25rem;
+      color:var(--navy);
+      margin-bottom:6px;
+    }
+
+    .stars{
+      min-height:24px;
+      font-size:1rem;
+      letter-spacing:2px;
+      color:#f4bf44;
+    }
+
+    .practice-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .challenge-grid{
+      display:grid;
+      grid-template-columns:1.02fr .98fr;
+      gap:18px;
+    }
+
+    .problem-card,.challenge-card{
+      background:white;
+      border-radius:24px;
+      border:1px solid var(--border);
+      box-shadow:var(--soft);
+      padding:18px;
+    }
+
+    .problem-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .problem-head h3{
+      margin:0;
+      font-size:1.24rem;
+      line-height:1.15;
+      letter-spacing:-.02em;
+    }
+
+    .badge{
+      flex:0 0 auto;
+      padding:7px 10px;
+      border-radius:999px;
+      background:#eefaf7;
+      border:1px solid rgba(18,130,119,.18);
+      font-weight:900;
+      color:#0d655c;
+      font-size:.9rem;
+      white-space:nowrap;
+    }
+
+    .badge.theme-b{
+      background:#fff0f5;
+      border-color:rgba(240,103,146,.22);
+      color:#9b3a60;
+    }
+
+    .problem-card p,.challenge-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.42;
+    }
+
+    .visual-scene{
+      margin:12px 0;
+      background:linear-gradient(135deg,#f9fbff,#fff8ed);
+      border:1px solid rgba(19,34,56,.08);
+      border-radius:18px;
+      padding:10px;
+    }
+
+    .visual-scene svg{width:100%;height:auto;display:block}
+    .work-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .work-step{
+      background:#f9fbfd;
+      border:1px dashed rgba(19,34,56,.18);
+      border-radius:16px;
+      padding:10px;
+      min-height:74px;
+    }
+
+    .work-step strong{
+      display:block;
+      color:var(--navy);
+      margin-bottom:4px;
+      font-size:.94rem;
+    }
+
+    .answer-row{
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .answer-row input, .triple-row input{
+      border:2px solid rgba(19,34,56,.14);
+      border-radius:16px;
+      padding:12px 13px;
+      font-size:1.02rem;
+      font-weight:800;
+      outline:none;
+      width:100%;
+      background:white;
+    }
+
+    .answer-row input:focus, .triple-row input:focus{
+      border-color:#1bb7a5;
+      box-shadow:0 0 0 4px rgba(27,183,165,.14);
+    }
+
+    .triple-row{
+      display:grid;
+      grid-template-columns:96px 1fr;
+      gap:8px;
+      align-items:center;
+    }
+
+    .triple-row label{
+      font-weight:900;
+      color:var(--navy);
+    }
+
+    .challenge-side{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      justify-content:flex-start;
+    }
+
+    .teacher-box{
+      margin-top:16px;
+      border-radius:24px;
+      padding:18px;
+      color:white;
+      background:linear-gradient(135deg,#12325a,#7a4ce2);
+      box-shadow:var(--soft);
+    }
+
+    .teacher-box h3{margin:0 0 8px;font-size:1.28rem}
+    .teacher-box ul{margin:0;padding-left:1.1rem;line-height:1.45;color:rgba(255,255,255,.92)}
+
+    .footer-actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:20px;
+    }
+
+    .hidden{display:none !important}
+
+    .theme-banner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:22px;
+      color:#fff;
+      margin-bottom:14px;
+      box-shadow:var(--soft);
+    }
+
+    .theme-banner.soccer{background:linear-gradient(135deg,#1b7e4f,#11806e)}
+    .theme-banner.studio{background:linear-gradient(135deg,#a048d1,#ef6e98)}
+    .theme-banner h3{margin:0;font-size:1.25rem}
+    .theme-banner p{margin:4px 0 0;color:rgba(255,255,255,.92)}
+    .theme-banner .big{font-size:2.1rem}
+
+    .confetti{
+      pointer-events:none;
+      position:fixed;
+      inset:0;
+      overflow:hidden;
+      z-index:999;
+    }
+    .confetti span{
+      position:absolute;
+      width:10px;height:16px;border-radius:4px;opacity:.94;
+      animation:fall 950ms ease-out forwards;
+    }
+    @keyframes fall{
+      from{transform:translateY(-25px) rotate(0deg)}
+      to{transform:translateY(110vh) rotate(420deg);opacity:0}
+    }
+
+    @media (max-width: 980px){
+      .hero-grid,.challenge-grid,.practice-grid,.learn-grid,.choice-grid{grid-template-columns:1fr}
+      .dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .hero-art{order:-1}
+    }
+
+    @media (max-width: 700px){
+      .app{width:min(calc(100% - 14px),1200px);padding-top:10px}
+      .hero,.section{padding:16px;border-radius:24px}
+      .answer-row{grid-template-columns:1fr}
+      .work-grid,.bucket-grid{grid-template-columns:1fr}
+      .sort-area{grid-template-columns:repeat(5,minmax(0,1fr))}
+      .dashboard-grid{grid-template-columns:1fr}
+      .section-title{flex-direction:column;align-items:flex-start}
+    }
+
+    @media print{
+      body{background:white}
+      .section,.hero,.learn-card,.problem-card,.challenge-card,.choice-card{box-shadow:none}
+      .footer-actions,.btn{display:none!important}
+      .hidden{display:block!important}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">📊 Mean · Median · Mode · Deluxe Choice Activity</div>
+          <h1>Choose a Theme. Solve the Stats Missions.</h1>
+          <p>
+            Students choose between two interactive paths. Each path teaches mean, median, and mode with
+            visuals, click-and-move activities, instant feedback, and game-style practice.
+          </p>
+          <div class="hero-pills">
+            <span class="pill">👀 More visuals</span>
+            <span class="pill">🎮 More interactive</span>
+            <span class="pill">🌈 Themed backgrounds</span>
+            <span class="pill">✅ Practice + check</span>
+          </div>
+        </div>
+
+        <div class="hero-art" aria-hidden="true">
+          <svg viewBox="0 0 520 330" role="img">
+            <defs>
+              <linearGradient id="heroGrad1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity=".95"/>
+                <stop offset="100%" stop-color="#eaf8ff" stop-opacity=".94"/>
+              </linearGradient>
+              <linearGradient id="heroGrad2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#fff4c6"/>
+                <stop offset="100%" stop-color="#ffdca6"/>
+              </linearGradient>
+            </defs>
+
+            <rect x="20" y="26" rx="28" ry="28" width="480" height="278" fill="url(#heroGrad1)" opacity=".12"/>
+            <rect x="36" y="42" rx="24" ry="24" width="210" height="220" fill="url(#heroGrad1)"/>
+            <rect x="272" y="42" rx="24" ry="24" width="212" height="220" fill="url(#heroGrad1)"/>
+
+            <rect x="55" y="62" width="170" height="100" rx="18" fill="#e9fff1"/>
+            <rect x="74" y="79" width="132" height="64" rx="16" fill="#35c16c"/>
+            <rect x="93" y="96" width="94" height="30" rx="8" fill="none" stroke="#ffffff" stroke-width="4"/>
+            <circle cx="140" cy="111" r="11" fill="none" stroke="#ffffff" stroke-width="4"/>
+            <circle cx="156" cy="120" r="12" fill="#fff" stroke="#0e375e" stroke-width="3"/>
+            <text x="140" y="190" font-family="Calibri, Arial" font-size="22" font-weight="700" fill="#12325a">Soccer Stats</text>
+
+            <rect x="292" y="62" width="172" height="100" rx="18" fill="#fff0f7"/>
+            <rect x="314" y="78" width="127" height="18" rx="9" fill="#a048d1"/>
+            <rect x="314" y="104" width="106" height="18" rx="9" fill="#ef6e98"/>
+            <rect x="314" y="130" width="82" height="18" rx="9" fill="#ffc857"/>
+            <circle cx="425" cy="200" r="26" fill="#fff0f7"/>
+            <circle cx="425" cy="200" r="8" fill="#ef6e98"/>
+            <circle cx="404" cy="179" r="8" fill="#7a4ce2"/>
+            <circle cx="446" cy="179" r="8" fill="#ffc857"/>
+            <circle cx="404" cy="221" r="8" fill="#1bb7a5"/>
+            <circle cx="446" cy="221" r="8" fill="#f4bf44"/>
+            <text x="328" y="190" font-family="Calibri, Arial" font-size="22" font-weight="700" fill="#12325a">Style Studio</text>
+
+            <rect x="86" y="274" width="340" height="22" rx="11" fill="url(#heroGrad2)"/>
+            <text x="115" y="290" font-family="Calibri, Arial" font-size="15" font-weight="700" fill="#12325a">Mean = fair share · Median = middle · Mode = most common</text>
+          </svg>
+        </div>
+      </div>
+    </header>
+
+    <section class="section" id="chooseSection">
+      <div class="section-title">
+        <div>
+          <h2>Step 1: Pick your path</h2>
+          <p>Both options teach the same math skills. Students can choose the setting that feels more fun.</p>
+        </div>
+      </div>
+
+      <div class="choice-grid">
+        <button class="choice-card soccer" data-theme="soccer" aria-label="Choose soccer stats path">
+          <div class="choice-top">
+            <div class="icon-tile">⚽</div>
+            <div>
+              <h3>Option 1: Soccer Stats Stadium</h3>
+              <p>Use Messi, Ronaldo, and World Cup team stats to discover patterns in game data.</p>
+            </div>
+          </div>
+          <span class="choice-tag">Mean · Median · Mode · Messi · Ronaldo · World Cup Teams</span>
+          <div class="scene-strip">
+            <svg viewBox="0 0 520 130" role="img" aria-hidden="true">
+              <rect x="8" y="10" width="504" height="112" rx="18" fill="#dff8e7"/>
+              <rect x="24" y="24" width="472" height="84" rx="18" fill="#39bf78"/>
+              <line x1="260" y1="24" x2="260" y2="108" stroke="#fff" stroke-width="4"/>
+              <circle cx="260" cy="66" r="20" fill="none" stroke="#fff" stroke-width="4"/>
+              <rect x="34" y="42" width="72" height="48" fill="none" stroke="#fff" stroke-width="4"/>
+              <rect x="414" y="42" width="72" height="48" fill="none" stroke="#fff" stroke-width="4"/>
+              <circle cx="186" cy="64" r="11" fill="#fff"/>
+              <circle cx="334" cy="64" r="11" fill="#fff"/>
+              <circle cx="260" cy="66" r="11" fill="#0e375e" stroke="#fff" stroke-width="3"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="choice-card studio" data-theme="studio" aria-label="Choose bracelet and playlist studio path">
+          <div class="choice-top">
+            <div class="icon-tile">🎧</div>
+            <div>
+              <h3>Option 2: Bracelet + Playlist Studio</h3>
+              <p>Use playlists, charms, bracelet designs, snacks, and style choices to analyze data.</p>
+            </div>
+          </div>
+          <span class="choice-tag">Mean · Median · Mode · Trend Designer</span>
+          <div class="scene-strip">
+            <svg viewBox="0 0 520 130" role="img" aria-hidden="true">
+              <rect x="8" y="10" width="504" height="112" rx="18" fill="#fff1f6"/>
+              <rect x="34" y="28" width="168" height="84" rx="18" fill="#ffffff"/>
+              <rect x="58" y="46" width="118" height="12" rx="6" fill="#a048d1"/>
+              <rect x="58" y="66" width="94" height="12" rx="6" fill="#ef6e98"/>
+              <rect x="58" y="86" width="72" height="12" rx="6" fill="#ffc857"/>
+              <circle cx="340" cy="70" r="35" fill="#ffffff"/>
+              <circle cx="340" cy="70" r="12" fill="#ef6e98"/>
+              <circle cx="310" cy="42" r="12" fill="#7a4ce2"/>
+              <circle cx="370" cy="42" r="12" fill="#ffc857"/>
+              <circle cx="310" cy="98" r="12" fill="#1bb7a5"/>
+              <circle cx="370" cy="98" r="12" fill="#f06792"/>
+              <circle cx="430" cy="52" r="11" fill="#ffc857"/>
+              <circle cx="448" cy="70" r="11" fill="#a048d1"/>
+              <circle cx="430" cy="88" r="11" fill="#1bb7a5"/>
+              <circle cx="412" cy="70" r="11" fill="#ef6e98"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <section class="section hidden" id="dashboardSection">
+      <div class="section-title">
+        <div>
+          <h2 id="missionTitle">Mission Dashboard</h2>
+          <p id="missionSubtitle">Track your progress and work through the interactive learning stations.</p>
+        </div>
+        <button class="btn ghost" id="changeThemeBtn">Change Theme</button>
+      </div>
+
+      <div class="theme-banner soccer hidden" id="soccerBanner">
+        <div>
+          <h3>⚽ Soccer Stats Stadium</h3>
+          <p>You are the team analyst. Use Messi, Ronaldo, and World Cup team data to make smart decisions.</p>
+        </div>
+        <div class="big">🏟️</div>
+      </div>
+
+      <div class="theme-banner studio hidden" id="studioBanner">
+        <div>
+          <h3>🎧 Bracelet + Playlist Studio</h3>
+          <p>You are the trend designer. Use data to spot favorites and patterns.</p>
+        </div>
+        <div class="big">✨</div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="dash-card">
+          <small>Current Theme</small>
+          <strong id="themeStat">—</strong>
+        </div>
+        <div class="dash-card">
+          <small>Stations Solved</small>
+          <strong><span id="solvedCount">0</span>/<span id="totalCount">0</span></strong>
+        </div>
+        <div class="dash-card">
+          <small>Progress</small>
+          <strong id="statusText">Start</strong>
+        </div>
+        <div class="dash-card">
+          <small>Goal</small>
+          <strong>Master 3 Skills</strong>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar" aria-label="Progress bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div style="font-weight:900;color:var(--navy);" id="progressLabel">0%</div>
+      </div>
+
+      <div class="skill-strip">
+        <span class="skill-pill">⚖️ Mean = fair share</span>
+        <span class="skill-pill">🚶 Median = middle</span>
+        <span class="skill-pill">🏆 Mode = most common</span>
+      </div>
+    </section>
+
+    <section class="section hidden" id="learnSection">
+      <div class="section-title">
+        <div>
+          <h2>Step 2: Learn with visuals and interaction</h2>
+          <p>Each card includes a quick explanation and a mini interactive task.</p>
+        </div>
+      </div>
+
+      <div class="learn-grid">
+        <article class="learn-card">
+          <div class="learn-head">
+            <div class="learn-icon">⚖️</div>
+            <div>
+              <h3>Mean</h3>
+              <div class="subtle">The fair share</div>
+            </div>
+          </div>
+          <div class="learn-body">
+            <p>Mean shows what each group would get if the total were shared equally.</p>
+            <div class="visual-box">
+              <div class="subtle"><strong id="meanExampleLabel">Example</strong></div>
+              <div class="data-row" id="meanDataRow"></div>
+              <div class="subtle" id="meanEquation" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="interactive-zone">
+              <div class="visual-box">
+                <div class="subtle"><strong>Mini Interactive:</strong> Click <em>Share Evenly</em> to split the total into equal groups.</div>
+                <div class="token-row" id="meanTokenRow"></div>
+                <div class="bucket-grid">
+                  <div class="bucket">
+                    <h4>Group 1</h4>
+                    <div class="dropzone" id="bucket1"></div>
+                  </div>
+                  <div class="bucket">
+                    <h4>Group 2</h4>
+                    <div class="dropzone" id="bucket2"></div>
+                  </div>
+                  <div class="bucket">
+                    <h4>Group 3</h4>
+                    <div class="dropzone" id="bucket3"></div>
+                  </div>
+                </div>
+                <div class="mini-btn-row" style="margin-top:10px;">
+                  <button class="btn small" id="shareMeanBtn">Share Evenly</button>
+                  <button class="btn small secondary" id="resetMeanBtn">Reset</button>
+                </div>
+                <div class="feedback" id="meanMiniFeedback"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="learn-card">
+          <div class="learn-head">
+            <div class="learn-icon">🚶</div>
+            <div>
+              <h3>Median</h3>
+              <div class="subtle">The middle</div>
+            </div>
+          </div>
+          <div class="learn-body">
+            <p>Median is the middle value after you put the numbers in order from least to greatest.</p>
+            <div class="visual-box">
+              <div class="subtle"><strong id="medianExampleLabel">Example</strong></div>
+              <div class="data-row" id="medianOriginalRow"></div>
+              <div class="subtle" id="medianExplain" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="interactive-zone">
+              <div class="visual-box">
+                <div class="subtle"><strong>Mini Interactive:</strong> Drag the number cards into order.</div>
+                <div class="sort-area" id="medianSortSlots"></div>
+                <div class="sort-bank" id="medianSortBank"></div>
+                <div class="mini-btn-row">
+                  <button class="btn small" id="checkMedianSortBtn">Check Order</button>
+                  <button class="btn small secondary" id="resetMedianSortBtn">Reset</button>
+                </div>
+                <div class="feedback" id="medianMiniFeedback"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="learn-card">
+          <div class="learn-head">
+            <div class="learn-icon">🏆</div>
+            <div>
+              <h3>Mode</h3>
+              <div class="subtle">The most common</div>
+            </div>
+          </div>
+          <div class="learn-body">
+            <p>Mode is the number that appears the most times. Think of it as the most popular value.</p>
+            <div class="visual-box">
+              <div class="subtle"><strong id="modeExampleLabel">Example</strong></div>
+              <div class="data-row" id="modeDataRow"></div>
+              <div class="subtle" id="modeExplain" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="interactive-zone">
+              <div class="visual-box">
+                <div class="subtle"><strong>Mini Interactive:</strong> Click every card that belongs to the mode.</div>
+                <div class="data-row" id="modeClickArea" style="margin-top:10px;"></div>
+                <div class="mode-counter" id="modeCounters"></div>
+                <div class="mini-btn-row">
+                  <button class="btn small" id="checkModeBtn">Check Mode</button>
+                  <button class="btn small secondary" id="resetModeBtn">Reset</button>
+                </div>
+                <div class="feedback" id="modeMiniFeedback"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section hidden" id="practiceSection">
+      <div class="section-title">
+        <div>
+          <h2>Step 3: Interactive missions</h2>
+          <p id="practiceSubtitle">Use the clear data card below each visual for the numbers, solve the problem, and check your answer.</p>
+        </div>
+      </div>
+      <div class="practice-grid" id="problemGrid"></div>
+    </section>
+
+    <section class="section hidden" id="challengeSection">
+      <div class="section-title">
+        <div>
+          <h2>Step 4: Final triple challenge</h2>
+          <p>One data set. Three answers. Show that you can find mean, median, and mode.</p>
+        </div>
+      </div>
+
+      <div class="challenge-grid">
+        <article class="challenge-card">
+          <div class="problem-head">
+            <h3 id="challengeTitle">Final Challenge</h3>
+            <span class="badge" id="challengeBadge">All 3</span>
+          </div>
+          <p id="challengeContext"></p>
+          <div class="visual-scene" id="challengeVisual"></div>
+          <div class="visual-box">
+            <div class="subtle"><strong>Data Set</strong></div>
+            <div class="data-row" id="challengeDataRow" style="margin-top:8px;"></div>
+          </div>
+          <div class="work-grid">
+            <div class="work-step">
+              <strong>Mean</strong>
+              Add all numbers, then divide by how many numbers there are.
+            </div>
+            <div class="work-step">
+              <strong>Median</strong>
+              Put the numbers in order and find the middle.
+            </div>
+            <div class="work-step">
+              <strong>Mode</strong>
+              Find the number that shows up the most.
+            </div>
+          </div>
+        </article>
+
+        <article class="challenge-card challenge-side">
+          <div class="triple-row">
+            <label for="challengeMean">Mean</label>
+            <input id="challengeMean" type="text" inputmode="decimal" placeholder="Type mean">
+          </div>
+          <div class="triple-row">
+            <label for="challengeMedian">Median</label>
+            <input id="challengeMedian" type="text" inputmode="decimal" placeholder="Type median">
+          </div>
+          <div class="triple-row">
+            <label for="challengeMode">Mode</label>
+            <input id="challengeMode" type="text" inputmode="decimal" placeholder="Type mode">
+          </div>
+          <div class="mini-btn-row">
+            <button class="btn" id="checkChallengeBtn">Check Final Challenge</button>
+            <button class="btn secondary" id="hintChallengeBtn">Hint</button>
+          </div>
+          <div class="feedback" id="challengeFeedback"></div>
+        </article>
+      </div>
+
+      <div class="teacher-box">
+        <h3>Teacher Notes</h3>
+        <ul>
+          <li>Students can complete one theme independently or with a partner.</li>
+          <li>Built-in visuals and interactive stations support students who need concrete examples before abstract practice.</li>
+          <li>Good follow-up: have students create their own data set that has one clear mode and trade with a partner.</li>
+        </ul>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn" id="resetActivityBtn">Reset Activity</button>
+        <button class="btn secondary" id="printBtn">Print / Save PDF</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    const themes = {
+      soccer: {
+        short: "Soccer",
+        title: "⚽ Soccer Stats Stadium",
+        subtitle: "You are the team analyst. Use Messi, Ronaldo, and World Cup team data to spot patterns and explain what the numbers mean.",
+        practiceSubtitle: "Solve the soccer stat missions with Messi, Ronaldo, and World Cup team examples. Each card includes a visual scene, work hints, and instant feedback.",
+        meanMini: { label:"Messi shots in 3 matches", data:[2,4,6], icon:"⚽", itemWord:"shots" },
+        medianMini: { label:"Ronaldo shots on target", data:[8,4,7,10,6] },
+        modeMini: { label:"Argentina goals in recent matches", data:[2,3,3,4,3] },
+        problems: [
+          {
+            title: "Messi Goal Contribution Average",
+            skill: "mean",
+            context: "Messi tracked goal contributions in five matches. What is the mean number of goal contributions per match?",
+            data:[2,1,3,2,2],
+            label:"Messi goal contributions",
+            visual:"soccer",
+            artData:[2,1,3,2,2],
+            unit:"goal contributions"
+          },
+          {
+            title: "Ronaldo Shot Total Middle",
+            skill: "median",
+            context: "These are Ronaldo’s shot totals in five matches. What is the median?",
+            data:[6,4,7,5,8],
+            label:"Ronaldo shots",
+            visual:"soccer",
+            artData:[6,4,7,5,8],
+            unit:"shots"
+          },
+          {
+            title: "World Cup Goals Most Common",
+            skill: "mode",
+            context: "These are goals scored by Argentina in six recent games. What number of goals happened most often?",
+            data:[2,3,2,1,2,4],
+            label:"Argentina goals",
+            visual:"soccer",
+            artData:[2,3,2,1,2,4],
+            unit:"goals"
+          },
+          {
+            title: "World Cup Team Median",
+            skill: "median",
+            context: "These are six World Cup team point totals from a mini table: Argentina, Portugal, France, Brazil, Morocco, and Spain. What is the median?",
+            data:[6,9,7,8,5,10],
+            label:"World Cup team points",
+            visual:"soccer",
+            artData:[6,9,7,8,5,10],
+            unit:"points"
+          }
+        ],
+        challenge: {
+          title:"Messi vs. Ronaldo Final Stat Report",
+          context:"A commentator wants one quick summary of Messi’s goal totals in five recent matches.",
+          data:[1,2,2,3,4],
+          label:"Messi goals",
+          visual:"soccer",
+          artData:[1,2,2,3,4]
+        }
+      },
+
+      studio: {
+        short: "Studio",
+        title: "🎧 Bracelet + Playlist Studio",
+        subtitle: "You are the trend designer. Use fun data to figure out what is typical, middle, or most common.",
+        practiceSubtitle: "Solve the studio missions. Use the clear data card below the visual, then check your answers.",
+        meanMini: { label:"Beads in 3 bracelets", data:[10,12,14], icon:"🟡", itemWord:"beads" },
+        medianMini: { label:"Design times", data:[16,12,14,10,18] },
+        modeMini: { label:"Song ratings", data:[5,4,5,3,5] },
+        problems: [
+          {
+            title: "Playlist Average",
+            skill: "mean",
+            context: "A group added songs to a playlist over five days. What is the mean number of songs added each day?",
+            data:[7,6,8,9,5],
+            label:"Songs added",
+            visual:"studio",
+            artData:[7,6,8,9,5],
+            unit:"songs"
+          },
+          {
+            title: "Bracelet Middle",
+            skill: "median",
+            context: "These are the numbers of beads used in five bracelets. What is the median number of beads?",
+            data:[12,14,10,16,13],
+            label:"Beads used",
+            visual:"studio",
+            artData:[12,14,10,16,13],
+            unit:"beads"
+          },
+          {
+            title: "Charm Favorite",
+            skill: "mode",
+            context: "Students used charms on bracelets. What number of charms was most common?",
+            data:[2,3,4,3,5,3],
+            label:"Charm counts",
+            visual:"studio",
+            artData:[2,3,4,3,5,3],
+            unit:"charms"
+          },
+          {
+            title: "Snack Table Median",
+            skill: "median",
+            context: "Here are vote totals for snack options at a studio event. What is the median vote total?",
+            data:[6,8,10,12,14,16],
+            label:"Snack votes",
+            visual:"studio",
+            artData:[6,8,10,12,14,16],
+            unit:"votes"
+          }
+        ],
+        challenge: {
+          title:"Final Studio Trend Report",
+          context:"A group tracked sticker votes for five designs. Summarize the data with mean, median, and mode.",
+          data:[3,4,4,5,6],
+          label:"Sticker votes",
+          visual:"studio",
+          artData:[3,4,4,5,6]
+        }
+      }
+    };
+
+    const state = {
+      theme: null,
+      solved: new Set(),
+      meanMiniDone: false,
+      medianMiniDone: false,
+      modeMiniDone: false,
+      challengeDone: false
+    };
+
+    const $ = id => document.getElementById(id);
+
+    function sum(arr){ return arr.reduce((a,b)=>a+b,0); }
+    function mean(arr){ return sum(arr)/arr.length; }
+    function median(arr){
+      const s = [...arr].sort((a,b)=>a-b);
+      const mid = Math.floor(s.length/2);
+      return s.length % 2 ? s[mid] : (s[mid-1] + s[mid]) / 2;
+    }
+    function modeList(arr){
+      const c = {};
+      arr.forEach(n => c[n] = (c[n] || 0) + 1);
+      const max = Math.max(...Object.values(c));
+      if(max === 1) return [];
+      return Object.entries(c).filter(([k,v]) => v === max).map(([k]) => Number(k)).sort((a,b)=>a-b);
+    }
+    function roundSmart(v){
+      const x = Math.round(v*100)/100;
+      return Number.isInteger(x) ? String(x) : String(x);
+    }
+    function normalize(v){
+      return String(v).trim().toLowerCase().replace(/\s+/g,'').replace(/and/g,',').replace(/;/g,',');
+    }
+    function isCorrect(user, expected){
+      const u = normalize(user);
+      const e = normalize(expected);
+      if(!u) return false;
+      if(e === "nomode"){
+        return ["nomode","none","n/a","no"].includes(u);
+      }
+      const nu = Number(u);
+      const ne = Number(e);
+      if(!Number.isNaN(nu) && !Number.isNaN(ne)){
+        return Math.abs(nu-ne) < .01;
+      }
+      return u === e;
+    }
+    function answerFor(skill, data){
+      if(skill === "mean") return roundSmart(mean(data));
+      if(skill === "median") return roundSmart(median(data));
+      if(skill === "mode"){
+        const m = modeList(data);
+        return m.length ? m.join(", ") : "no mode";
+      }
+      return "";
+    }
+    function chipHTML(n, cls=""){ return `<span class="chip ${cls}">${n}</span>`; }
+
+    function updateProgress(){
+      const practiceSolved = state.solved.size;
+      const miniSolved = [state.meanMiniDone, state.medianMiniDone, state.modeMiniDone].filter(Boolean).length;
+      const total = (state.theme ? themes[state.theme].problems.length : 0) + 4; // 3 mini + challenge
+      const solved = practiceSolved + miniSolved + (state.challengeDone ? 1 : 0);
+      $("solvedCount").textContent = solved;
+      $("totalCount").textContent = total;
+      const pct = total ? Math.round((solved/total)*100) : 0;
+      $("progressFill").style.width = pct + "%";
+      $("progressLabel").textContent = pct + "%";
+      if(pct === 0) $("statusText").textContent = "Start";
+      else if(pct < 100) $("statusText").textContent = "In Progress";
+      else $("statusText").textContent = "Mastered";
+    }
+
+    function burstConfetti(count=18){
+      const box = $("confetti");
+      const colors = ["#1bb7a5","#f4bf44","#f06792","#7a4ce2","#48b261","#ea8b36"];
+      for(let i=0;i<count;i++){
+        const s = document.createElement("span");
+        s.style.left = (Math.random()*100) + "%";
+        s.style.background = colors[Math.floor(Math.random()*colors.length)];
+        s.style.animationDelay = (Math.random()*120) + "ms";
+        s.style.transform = `rotate(${Math.random()*180}deg)`;
+        box.appendChild(s);
+        setTimeout(()=>s.remove(), 1100);
+      }
+    }
+
+    function renderScene(theme, data, label){
+      if(theme === "soccer"){
+        return `
+          <svg viewBox="0 0 420 190" role="img" aria-label="${label}">
+            <rect x="8" y="12" width="404" height="166" rx="18" fill="#dff8e7"/>
+
+            <rect x="22" y="30" width="194" height="126" rx="18" fill="#38be77"/>
+            <line x1="119" y1="30" x2="119" y2="156" stroke="#ffffff" stroke-width="4"/>
+            <circle cx="119" cy="93" r="22" fill="none" stroke="#ffffff" stroke-width="4"/>
+            <rect x="34" y="58" width="44" height="70" fill="none" stroke="#ffffff" stroke-width="4"/>
+            <rect x="160" y="58" width="44" height="70" fill="none" stroke="#ffffff" stroke-width="4"/>
+
+            <circle cx="94" cy="74" r="10" fill="#ffffff" stroke="#12325a" stroke-width="3"/>
+            <circle cx="142" cy="112" r="10" fill="#ffffff" stroke="#12325a" stroke-width="3"/>
+            <circle cx="119" cy="93" r="10" fill="#12325a" stroke="#ffffff" stroke-width="3"/>
+
+            <text x="119" y="172" text-anchor="middle" font-family="Calibri, Arial" font-size="13" font-weight="800" fill="#12325a">Soccer scene</text>
+
+            <rect x="232" y="36" width="164" height="112" rx="18" fill="#ffffff" stroke="#d7e0ea" stroke-width="2"/>
+            <rect x="248" y="52" width="132" height="28" rx="14" fill="#ecf8ff"/>
+            <text x="314" y="70" text-anchor="middle" font-family="Calibri, Arial" font-size="13" font-weight="800" fill="#12325a">READ DATA BELOW</text>
+            <circle cx="277" cy="112" r="16" fill="#1bb7a5" opacity=".9"/>
+            <circle cx="314" cy="112" r="16" fill="#f4bf44" opacity=".9"/>
+            <circle cx="351" cy="112" r="16" fill="#12325a" opacity=".9"/>
+            <text x="314" y="172" text-anchor="middle" font-family="Calibri, Arial" font-size="13" font-weight="800" fill="#12325a">${label}</text>
+          </svg>
+        `;
+      }
+
+      return `
+        <svg viewBox="0 0 420 190" role="img" aria-label="${label}">
+          <rect x="8" y="12" width="404" height="166" rx="18" fill="#fff0f7"/>
+
+          <rect x="24" y="30" width="180" height="126" rx="18" fill="#ffffff"/>
+          <rect x="46" y="48" width="116" height="14" rx="7" fill="#7a4ce2"/>
+          <rect x="46" y="72" width="90" height="14" rx="7" fill="#ef6e98"/>
+          <rect x="46" y="96" width="72" height="14" rx="7" fill="#ffc857"/>
+          <circle cx="156" cy="126" r="13" fill="#1bb7a5"/>
+          <circle cx="130" cy="126" r="13" fill="#ef6e98"/>
+          <circle cx="104" cy="126" r="13" fill="#ffc857"/>
+          <circle cx="78" cy="126" r="13" fill="#7a4ce2"/>
+          <text x="114" y="172" text-anchor="middle" font-family="Calibri, Arial" font-size="13" font-weight="800" fill="#12325a">Bracelet + playlist scene</text>
+
+          <rect x="232" y="36" width="164" height="112" rx="18" fill="#ffffff" stroke="#ead8f5" stroke-width="2"/>
+          <rect x="248" y="52" width="132" height="28" rx="14" fill="#fff0f7"/>
+          <text x="314" y="70" text-anchor="middle" font-family="Calibri, Arial" font-size="13" font-weight="800" fill="#7a4ce2">READ DATA BELOW</text>
+          <circle cx="277" cy="112" r="16" fill="#ef6e98" opacity=".9"/>
+          <circle cx="314" cy="112" r="16" fill="#7a4ce2" opacity=".9"/>
+          <circle cx="351" cy="112" r="16" fill="#ffc857" opacity=".9"/>
+          <text x="314" y="172" text-anchor="middle" font-family="Calibri, Arial" font-size="13" font-weight="800" fill="#12325a">${label}</text>
+        </svg>
+      `;
+    }
+
+    function selectTheme(themeKey){
+      state.theme = themeKey;
+      state.solved = new Set();
+      state.meanMiniDone = false;
+      state.medianMiniDone = false;
+      state.modeMiniDone = false;
+      state.challengeDone = false;
+
+      document.body.classList.remove("theme-soccer","theme-studio");
+      document.body.classList.add(themeKey === "soccer" ? "theme-soccer" : "theme-studio");
+
+      document.querySelectorAll(".choice-card").forEach(card => {
+        card.classList.toggle("selected", card.dataset.theme === themeKey);
+      });
+
+      $("dashboardSection").classList.remove("hidden");
+      $("learnSection").classList.remove("hidden");
+      $("practiceSection").classList.remove("hidden");
+      $("challengeSection").classList.remove("hidden");
+
+      $("soccerBanner").classList.toggle("hidden", themeKey !== "soccer");
+      $("studioBanner").classList.toggle("hidden", themeKey !== "studio");
+
+      const theme = themes[themeKey];
+      $("missionTitle").textContent = theme.title;
+      $("missionSubtitle").textContent = theme.subtitle;
+      $("practiceSubtitle").textContent = theme.practiceSubtitle;
+      $("themeStat").textContent = theme.short;
+
+      setupLearnSection(theme);
+      setupPracticeSection(theme);
+      setupChallenge(theme);
+      updateProgress();
+      $("dashboardSection").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+
+    function setupLearnSection(theme){
+      // Mean
+      $("meanExampleLabel").textContent = theme.meanMini.label;
+      $("meanDataRow").innerHTML = theme.meanMini.data.map(n => chipHTML(n)).join("");
+      $("meanEquation").innerHTML = `<strong>${theme.meanMini.data.join(" + ")} = ${sum(theme.meanMini.data)}</strong> → <strong>${sum(theme.meanMini.data)} ÷ ${theme.meanMini.data.length} = ${roundSmart(mean(theme.meanMini.data))}</strong>`;
+      renderMeanTokens(theme);
+
+      // Median
+      $("medianExampleLabel").textContent = theme.medianMini.label;
+      $("medianOriginalRow").innerHTML = theme.medianMini.data.map(n => chipHTML(n)).join("");
+      const sortedMedian = [...theme.medianMini.data].sort((a,b)=>a-b);
+      $("medianExplain").innerHTML = `Ordered data: <strong>${sortedMedian.join(", ")}</strong>. The middle number is <strong>${roundSmart(median(theme.medianMini.data))}</strong>.`;
+      renderMedianSorter(theme);
+
+      // Mode
+      $("modeExampleLabel").textContent = theme.modeMini.label;
+      $("modeDataRow").innerHTML = theme.modeMini.data.map(n => chipHTML(n, modeList(theme.modeMini.data).includes(n) ? "mode-hit" : "")).join("");
+      $("modeExplain").innerHTML = `The value <strong>${modeList(theme.modeMini.data).join(", ")}</strong> appears the most, so it is the mode.`;
+      renderModeClicker(theme);
+
+      clearFeedback("meanMiniFeedback");
+      clearFeedback("medianMiniFeedback");
+      clearFeedback("modeMiniFeedback");
+    }
+
+    function clearFeedback(id){
+      const el = $(id);
+      el.className = "feedback";
+      el.textContent = "";
+      el.innerHTML = "";
+    }
+
+    function renderMeanTokens(theme){
+      const data = theme.meanMini.data;
+      const total = sum(data);
+      const icon = theme.meanMini.icon || "⚽";
+      $("meanTokenRow").innerHTML = Array.from({length: total}, () => `<span class="token">${icon}</span>`).join("");
+      ["bucket1","bucket2","bucket3"].forEach(id => $(id).innerHTML = "");
+    }
+
+    function handleShareMean(){
+      const data = themes[state.theme].meanMini.data;
+      const total = sum(data);
+      const groups = data.length;
+      const per = total / groups;
+      ["bucket1","bucket2","bucket3"].forEach(id => $(id).innerHTML = "");
+      for(let i=0;i<groups;i++){
+        const bucket = $("bucket" + (i+1));
+        for(let j=0;j<per;j++){
+          const token = document.createElement("span");
+          token.className = "token";
+          token.textContent = themes[state.theme].meanMini.icon || "⚽";
+          bucket.appendChild(token);
+        }
+      }
+      const box = $("meanMiniFeedback");
+      box.className = "feedback correct show";
+      box.innerHTML = `Each group gets <strong>${per}</strong>, so the mean is <strong>${per}</strong>.`;
+      state.meanMiniDone = true;
+      updateProgress();
+      burstConfetti(12);
+    }
+
+    function renderMedianSorter(theme){
+      const slots = $("medianSortSlots");
+      const bank = $("medianSortBank");
+      slots.innerHTML = "";
+      bank.innerHTML = "";
+      const values = theme.medianMini.data;
+      values.forEach((_,i) => {
+        const slot = document.createElement("div");
+        slot.className = "sort-slot";
+        slot.dataset.slot = i;
+        slot.addEventListener("dragover", e => e.preventDefault());
+        slot.addEventListener("drop", e => {
+          e.preventDefault();
+          const id = e.dataTransfer.getData("text/plain");
+          const chip = document.getElementById(id);
+          if(chip && slot.children.length === 0) slot.appendChild(chip);
+        });
+        slots.appendChild(slot);
+      });
+
+      values
+        .map((v,i) => ({v, key:`drag-${i}-${Math.random().toString(36).slice(2,7)}`}))
+        .sort(()=>Math.random() - 0.5)
+        .forEach(obj => {
+          const chip = document.createElement("div");
+          chip.className = "chip draggable";
+          chip.draggable = true;
+          chip.id = obj.key;
+          chip.textContent = obj.v;
+          chip.addEventListener("dragstart", e => {
+            chip.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", chip.id);
+          });
+          chip.addEventListener("dragend", () => chip.classList.remove("dragging"));
+          chip.addEventListener("dblclick", () => bank.appendChild(chip));
+          bank.appendChild(chip);
+        });
+
+      bank.addEventListener("dragover", e => e.preventDefault());
+      bank.addEventListener("drop", e => {
+        e.preventDefault();
+        const id = e.dataTransfer.getData("text/plain");
+        const chip = document.getElementById(id);
+        if(chip) bank.appendChild(chip);
+      });
+    }
+
+    function checkMedianSorter(){
+      const data = themes[state.theme].medianMini.data;
+      const sorted = [...data].sort((a,b)=>a-b);
+      const slotValues = [...$("medianSortSlots").children].map(slot => slot.firstElementChild ? Number(slot.firstElementChild.textContent) : null);
+      const ok = slotValues.every((v,i) => v === sorted[i]);
+      const box = $("medianMiniFeedback");
+      if(ok){
+        box.className = "feedback correct show";
+        box.innerHTML = `Nice work. Ordered data: <strong>${sorted.join(", ")}</strong>. The median is <strong>${roundSmart(median(data))}</strong>.`;
+        state.medianMiniDone = true;
+        updateProgress();
+        burstConfetti(12);
+      }else{
+        box.className = "feedback try show";
+        box.innerHTML = `Not yet. Put the numbers in least-to-greatest order: <strong>${sorted.join(", ")}</strong>.`;
+      }
+    }
+
+    function renderModeClicker(theme){
+      const area = $("modeClickArea");
+      const countsBox = $("modeCounters");
+      area.innerHTML = "";
+      countsBox.innerHTML = "";
+      const data = theme.modeMini.data;
+      const modes = modeList(data);
+      data.forEach((n, i) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.textContent = n;
+        chip.dataset.value = n;
+        chip.dataset.selected = "false";
+        chip.setAttribute("aria-label", `Value ${n}`);
+        chip.addEventListener("click", () => {
+          const sel = chip.dataset.selected === "true";
+          chip.dataset.selected = sel ? "false" : "true";
+          chip.classList.toggle("mode-hit", !sel);
+          updateModeCounters();
+        });
+        area.appendChild(chip);
+      });
+
+      const unique = [...new Set(data)].sort((a,b)=>a-b);
+      unique.forEach(v => {
+        const box = document.createElement("div");
+        box.className = "count-box";
+        box.dataset.countValue = v;
+        box.innerHTML = `<strong>${v}</strong><div class="stars"></div>`;
+        countsBox.appendChild(box);
+      });
+
+      function updateModeCounters(){
+        unique.forEach(v => {
+          const clicked = [...area.children].filter(ch => Number(ch.dataset.value) === v && ch.dataset.selected === "true").length;
+          countsBox.querySelector(`[data-count-value="${v}"] .stars`).textContent = "★".repeat(clicked);
+        });
+      }
+      updateModeCounters();
+    }
+
+    function checkModeMini(){
+      const data = themes[state.theme].modeMini.data;
+      const target = modeList(data);
+      const chosenValues = [...$("modeClickArea").children]
+        .filter(ch => ch.dataset.selected === "true")
+        .map(ch => Number(ch.dataset.value));
+      const allCorrect = chosenValues.length === data.filter(n => target.includes(n)).length &&
+        chosenValues.every(v => target.includes(v));
+      const box = $("modeMiniFeedback");
+      if(allCorrect){
+        box.className = "feedback correct show";
+        box.innerHTML = `Correct. The mode is <strong>${target.join(", ")}</strong> because it appears the most.`;
+        state.modeMiniDone = true;
+        updateProgress();
+        burstConfetti(12);
+      }else{
+        box.className = "feedback try show";
+        box.innerHTML = `Not yet. The mode is the value that shows up most often. Count the repeats.`;
+      }
+    }
+
+    function renderProblem(problem, idx){
+      const badgeClass = state.theme === "studio" ? "badge theme-b" : "badge";
+      const work = problem.skill === "mean"
+        ? [
+            "Add all the numbers.",
+            `Divide by ${problem.data.length}.`,
+            "That fair-share number is the mean."
+          ]
+        : problem.skill === "median"
+        ? [
+            "Put the numbers in order.",
+            "Look for the center.",
+            problem.data.length % 2 ? "The middle number is the median." : "Average the two center numbers."
+          ]
+        : [
+            "Look for repeated values.",
+            "Count how many times each number appears.",
+            "The most common value is the mode."
+          ];
+
+      return `
+        <article class="problem-card" data-index="${idx}">
+          <div class="problem-head">
+            <h3>${idx + 1}. ${problem.title}</h3>
+            <span class="${badgeClass}">${problem.skill.toUpperCase()}</span>
+          </div>
+          <p>${problem.context}</p>
+          <div class="visual-scene">${renderScene(problem.visual, problem.artData, problem.label)}</div>
+          <div class="visual-box">
+            <div class="subtle"><strong>${problem.label}</strong></div>
+            <div class="data-row" style="margin-top:8px;">${problem.data.map(n => chipHTML(n)).join("")}</div>
+          </div>
+          <div class="work-grid">
+            <div class="work-step"><strong>Step 1</strong>${work[0]}</div>
+            <div class="work-step"><strong>Step 2</strong>${work[1]}</div>
+            <div class="work-step"><strong>Step 3</strong>${work[2]}</div>
+          </div>
+          <div class="answer-row">
+            <input id="answer-${idx}" type="text" inputmode="decimal" placeholder="Type your answer">
+            <button class="btn" data-check="${idx}">Check</button>
+            <button class="btn secondary" data-hint="${idx}">Hint</button>
+          </div>
+          <div class="feedback" id="feedback-${idx}"></div>
+        </article>
+      `;
+    }
+
+    function setupPracticeSection(theme){
+      $("problemGrid").innerHTML = theme.problems.map((p,i)=>renderProblem(p,i)).join("");
+      document.querySelectorAll("[data-check]").forEach(btn => {
+        btn.addEventListener("click", () => checkProblem(Number(btn.dataset.check)));
+      });
+      document.querySelectorAll("[data-hint]").forEach(btn => {
+        btn.addEventListener("click", () => showHint(Number(btn.dataset.hint)));
+      });
+    }
+
+    function showHint(idx){
+      const p = themes[state.theme].problems[idx];
+      const box = $("feedback-" + idx);
+      let msg = "";
+      if(p.skill === "mean"){
+        msg = `Hint: First add: <strong>${p.data.join(" + ")} = ${sum(p.data)}</strong>. Then divide by <strong>${p.data.length}</strong>.`;
+      }else if(p.skill === "median"){
+        const sorted = [...p.data].sort((a,b)=>a-b);
+        msg = `Hint: Put them in order first: <strong>${sorted.join(", ")}</strong>.`;
+      }else{
+        const counts = {};
+        p.data.forEach(n => counts[n]=(counts[n]||0)+1);
+        msg = `Hint: Count repeats. ${Object.entries(counts).sort((a,b)=>a[0]-b[0]).map(([k,v]) => `<strong>${k}</strong>: ${v}`).join(" · ")}`;
+      }
+      box.className = "feedback hint show";
+      box.innerHTML = msg;
+    }
+
+    function checkProblem(idx){
+      const p = themes[state.theme].problems[idx];
+      const expected = answerFor(p.skill, p.data);
+      const input = $("answer-" + idx);
+      const box = $("feedback-" + idx);
+      if(isCorrect(input.value, expected)){
+        state.solved.add("p" + idx);
+        box.className = "feedback correct show";
+        box.innerHTML = `Correct. The ${p.skill} is <strong>${expected}</strong>${p.unit ? " " + p.unit : ""}.`;
+        burstConfetti(14);
+      }else{
+        box.className = "feedback try show";
+        box.innerHTML = `Not yet. Try again or use the hint.`;
+      }
+      updateProgress();
+    }
+
+    function setupChallenge(theme){
+      $("challengeTitle").textContent = theme.challenge.title;
+      $("challengeContext").textContent = theme.challenge.context;
+      $("challengeDataRow").innerHTML = theme.challenge.data.map(n => chipHTML(n)).join("");
+      $("challengeVisual").innerHTML = renderScene(theme.challenge.visual, theme.challenge.artData, theme.challenge.label);
+      $("challengeMean").value = "";
+      $("challengeMedian").value = "";
+      $("challengeMode").value = "";
+      clearFeedback("challengeFeedback");
+    }
+
+    function checkChallenge(){
+      const ch = themes[state.theme].challenge;
+      const a = roundSmart(mean(ch.data));
+      const b = roundSmart(median(ch.data));
+      const c = modeList(ch.data).join(", ") || "no mode";
+      const okA = isCorrect($("challengeMean").value, a);
+      const okB = isCorrect($("challengeMedian").value, b);
+      const okC = isCorrect($("challengeMode").value, c);
+      const box = $("challengeFeedback");
+      if(okA && okB && okC){
+        state.challengeDone = true;
+        box.className = "feedback correct show";
+        box.innerHTML = `Excellent. Mean = <strong>${a}</strong>, Median = <strong>${b}</strong>, Mode = <strong>${c}</strong>.`;
+        burstConfetti(34);
+      }else{
+        state.challengeDone = false;
+        box.className = "feedback try show";
+        box.innerHTML = `${okA ? "✅" : "⬜"} Mean · ${okB ? "✅" : "⬜"} Median · ${okC ? "✅" : "⬜"} Mode<br>Keep going. Use the three rules one at a time.`;
+      }
+      updateProgress();
+    }
+
+    function showChallengeHint(){
+      const ch = themes[state.theme].challenge;
+      const sorted = [...ch.data].sort((a,b)=>a-b);
+      const box = $("challengeFeedback");
+      box.className = "feedback hint show";
+      box.innerHTML = `Hint: Ordered data = <strong>${sorted.join(", ")}</strong>. Total = <strong>${sum(ch.data)}</strong>. There are <strong>${ch.data.length}</strong> numbers.`;
+    }
+
+    function resetActivity(){
+      if(!state.theme) return;
+      selectTheme(state.theme);
+      window.scrollTo({top:$("dashboardSection").offsetTop - 10, behavior:"smooth"});
+    }
+
+    function resetMiniAreas(){
+      if(!state.theme) return;
+      renderMeanTokens(themes[state.theme]);
+      clearFeedback("meanMiniFeedback");
+      renderMedianSorter(themes[state.theme]);
+      clearFeedback("medianMiniFeedback");
+      renderModeClicker(themes[state.theme]);
+      clearFeedback("modeMiniFeedback");
+    }
+
+    // Event bindings
+    document.querySelectorAll(".choice-card").forEach(card => {
+      card.addEventListener("click", () => selectTheme(card.dataset.theme));
+    });
+
+    $("changeThemeBtn").addEventListener("click", () => {
+      $("chooseSection").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+
+    $("shareMeanBtn").addEventListener("click", handleShareMean);
+    $("resetMeanBtn").addEventListener("click", () => {
+      if(!state.theme) return;
+      renderMeanTokens(themes[state.theme]);
+      clearFeedback("meanMiniFeedback");
+    });
+
+    $("checkMedianSortBtn").addEventListener("click", checkMedianSorter);
+    $("resetMedianSortBtn").addEventListener("click", () => {
+      if(!state.theme) return;
+      renderMedianSorter(themes[state.theme]);
+      clearFeedback("medianMiniFeedback");
+    });
+
+    $("checkModeBtn").addEventListener("click", checkModeMini);
+    $("resetModeBtn").addEventListener("click", () => {
+      if(!state.theme) return;
+      renderModeClicker(themes[state.theme]);
+      clearFeedback("modeMiniFeedback");
+    });
+
+    $("checkChallengeBtn").addEventListener("click", checkChallenge);
+    $("hintChallengeBtn").addEventListener("click", showChallengeHint);
+    $("resetActivityBtn").addEventListener("click", resetActivity);
+    $("printBtn").addEventListener("click", () => window.print());
+  </script>
+</body>
+</html>

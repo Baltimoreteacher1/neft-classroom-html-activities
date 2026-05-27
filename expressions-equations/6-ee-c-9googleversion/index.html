@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HELIX-PREDICT: Relationships & Graphs</title>
+
+  <!-- Fonts: keep system stack; external fonts could be added via <link> if desired -->
+  <style>
+    :root {
+      --navy: #263238;
+      --teal: #009688;
+      --coral: #FF7043;
+      --paper: #FFFDE7;
+      --sand: #F5F5F5;
+      --white: #FFFFFF;
+      --gray: #9E9E9E;
+      --success: #4CAF50;
+      --dark-text: #333333;
+      --font-primary: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-secondary: 'Century Gothic', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --hud-height: 65px;
+      --transition-fast: 0.2s;
+      --transition-med: 0.3s;
+      --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background-color: var(--paper);
+      background-image: radial-gradient(var(--gray) 1px, transparent 1px);
+      background-size: 20px 20px;
+      color: var(--dark-text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      user-select: none;
+    }
+
+    /* Boot Screen */
+    #boot-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--navy);
+      z-index: 5000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--white);
+      transition: opacity 0.5s ease;
+    }
+
+    #boot-title {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      color: var(--teal);
+    }
+
+    #boot-subtitle {
+      font-size: 1.3rem;
+      color: var(--gray);
+      font-family: var(--font-secondary);
+    }
+
+    .mode-container {
+      display: flex;
+      gap: 2rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .mode-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid var(--teal);
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      width: 280px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform var(--transition-med), box-shadow var(--transition-med),
+        background-color var(--transition-med), border-color var(--transition-med);
+      outline: none;
+    }
+
+    .mode-card h3 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .mode-card p {
+      font-size: 0.9rem;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+
+    .mode-card:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+
+    .mode-card:hover {
+      background: var(--teal);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 150, 136, 0.4);
+    }
+
+    .mode-card--coop {
+      border-color: var(--coral);
+    }
+
+    .mode-card--coop:hover {
+      background: var(--coral);
+      box-shadow: 0 10px 30px rgba(255, 112, 67, 0.4);
+    }
+
+    /* Coop Modal */
+    #coop-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(38, 50, 56, 0.85);
+      z-index: 6000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      background: var(--white);
+      padding: 3rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-card h2 {
+      color: var(--coral);
+      margin-bottom: 1rem;
+    }
+
+    .modal-card p {
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      color: var(--navy);
+      font-family: var(--font-secondary);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* HUD */
+    #hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--hud-height);
+      background-color: var(--navy);
+      color: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 3rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    .hud-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hud-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--teal);
+    }
+
+    .hud-value {
+      font-size: 1.3rem;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .streak-glow {
+      color: var(--coral);
+      text-shadow: 0 0 12px rgba(255, 112, 67, 0.8);
+    }
+
+    /* Layout */
+    #app-container {
+      margin-top: calc(var(--hud-height) + 2rem);
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .phase-card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-soft);
+      width: 100%;
+      max-width: 1000px;
+      padding: 3rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      display: none;
+    }
+
+    .phase-card--active {
+      opacity: 1;
+      transform: translateY(0);
+      display: block;
+    }
+
+    h2 {
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      color: var(--gray);
+      font-family: var(--font-secondary);
+      margin-bottom: 2.5rem;
+      font-size: 1.1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      background-color: var(--teal);
+      color: var(--white);
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color var(--transition-fast), transform var(--transition-fast),
+        box-shadow var(--transition-fast), opacity var(--transition-fast);
+      font-family: var(--font-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover:not(:disabled),
+    .btn:focus-visible:not(:disabled) {
+      background-color: #00796B;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 150, 136, 0.3);
+      outline: none;
+    }
+
+    .btn:disabled {
+      background-color: var(--gray);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      opacity: 0.7;
+    }
+
+    .btn--coral {
+      background-color: var(--coral);
+    }
+
+    .btn--coral:hover:not(:disabled),
+    .btn--coral:focus-visible:not(:disabled) {
+      background-color: #E64A19;
+      box-shadow: 0 4px 15px rgba(255, 112, 67, 0.3);
+      outline: none;
+    }
+
+    .btn--outline {
+      background-color: transparent;
+      border: 2px solid var(--teal);
+      color: var(--teal);
+    }
+
+    .btn--outline:hover:not(:disabled),
+    .btn--outline:focus-visible:not(:disabled) {
+      background-color: var(--sand);
+      transform: translateY(0);
+      box-shadow: none;
+      outline: none;
+    }
+
+    /* Phase 1: Definitions */
+    .term-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: var(--sand);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+
+    .term-btn {
+      background: var(--white);
+      border: 2px solid var(--teal);
+      color: var(--teal);
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color var(--transition-fast), color var(--transition-fast),
+        transform var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
+      font-family: var(--font-secondary);
+    }
+
+    .term-btn--active {
+      background: var(--coral);
+      border-color: var(--coral);
+      color: var(--white);
+      transform: scale(1.05);
+    }
+
+    .term-btn:focus-visible {
+      outline: 2px solid var(--navy);
+      outline-offset: 2px;
+    }
+
+    .definitions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .def-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--gray);
+      border-radius: 8px;
+      margin-bottom: 0.25rem;
+      background: var(--white);
+    }
+
+    .def-text {
+      flex: 1;
+      font-family: var(--font-secondary);
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    .def-slot {
+      width: 240px;
+      min-height: 45px;
+      border: 2px dashed var(--gray);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--sand);
+      color: var(--navy);
+      font-weight: bold;
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background-color var(--transition-fast),
+        transform var(--transition-fast);
+      text-align: center;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.98rem;
+    }
+
+    .def-slot:hover {
+      border-color: var(--teal);
+      background: rgba(0, 150, 136, 0.1);
+    }
+
+    .def-slot--filled {
+      border: 2px solid var(--teal);
+      border-style: solid;
+      background: rgba(0, 150, 136, 0.07);
+    }
+
+    .def-slot:focus-visible {
+      outline: 2px solid var(--navy);
+      outline-offset: 2px;
+    }
+
+    /* Phase 2: Graph */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+      gap: 2rem;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      font-size: 1.05rem;
+    }
+
+    .data-table th {
+      background-color: var(--navy);
+      color: var(--white);
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .data-table td {
+      border: 1px solid var(--gray);
+      padding: 12px;
+      text-align: center;
+      font-family: var(--font-secondary);
+      font-weight: bold;
+    }
+
+    .svg-container {
+      width: 100%;
+      background: var(--white);
+      border: 2px solid var(--sand);
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .math-plane {
+      cursor: crosshair;
+      display: block;
+    }
+
+    .ghost-point {
+      fill: rgba(255, 112, 67, 0.5);
+      pointer-events: none;
+      display: none;
+    }
+
+    .ghost-label {
+      font-family: var(--font-primary);
+      font-size: 13px;
+      font-weight: bold;
+      fill: var(--navy);
+      pointer-events: none;
+      display: none;
+    }
+
+    .axis-label {
+      font-family: var(--font-primary);
+      font-size: 14px;
+      font-weight: bold;
+      fill: var(--navy);
+      pointer-events: none;
+    }
+
+    .grid-label {
+      font-family: var(--font-secondary);
+      font-size: 11px;
+      fill: var(--gray);
+      pointer-events: none;
+    }
+
+    .plotted-pt {
+      cursor: pointer;
+      stroke: var(--white);
+      stroke-width: 2px;
+      fill: var(--coral);
+    }
+
+    .plotted-pt:focus-visible {
+      outline: 2px solid var(--navy);
+      outline-offset: 2px;
+    }
+
+    /* Phase 3: Synthesis */
+    #p3-scenario {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      color: var(--navy);
+      font-weight: bold;
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--sand);
+      border-left: 4px solid var(--navy);
+      line-height: 1.6;
+    }
+
+    .scenario-context {
+      color: var(--gray);
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+
+    .twr-frame {
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: 8px;
+      border: 2px solid var(--sand);
+      border-left: 6px solid var(--teal);
+      font-size: 1.2rem;
+      font-family: var(--font-secondary);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .twr-sentence {
+      margin-bottom: 1.5rem;
+      line-height: 2;
+    }
+
+    .twr-keyword {
+      font-weight: 800;
+      color: var(--navy);
+      font-family: var(--font-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 8px;
+    }
+
+    .twr-input {
+      border: none;
+      border-bottom: 3px solid var(--navy);
+      background: rgba(0, 150, 136, 0.05);
+      font-family: var(--font-primary);
+      font-size: 1.25rem;
+      color: var(--coral);
+      font-weight: bold;
+      text-align: center;
+      width: 110px;
+      outline: none;
+      transition: border-color var(--transition-fast), background-color var(--transition-fast),
+        box-shadow var(--transition-fast), color var(--transition-fast);
+      padding: 4px 8px;
+      border-radius: 4px 4px 0 0;
+      margin: 0 5px;
+    }
+
+    .twr-input:focus-visible {
+      border-bottom-color: var(--coral);
+      background: var(--white);
+      box-shadow: 0 4px 10px rgba(255, 112, 67, 0.1);
+      outline: none;
+    }
+
+    .twr-input--locked-success {
+      border-bottom-color: var(--success);
+      color: var(--success);
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .twr-select {
+      appearance: none;
+      border: none;
+      border-bottom: 3px solid var(--navy);
+      background: rgba(0, 150, 136, 0.05);
+      font-family: var(--font-primary);
+      font-size: 1.2rem;
+      color: var(--teal);
+      font-weight: bold;
+      outline: none;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 4px 4px 0 0;
+      min-width: 200px;
+    }
+
+    .twr-select:focus-visible {
+      border-bottom-color: var(--coral);
+      background: var(--white);
+      box-shadow: 0 4px 10px rgba(255, 112, 67, 0.1);
+      outline: none;
+    }
+
+    .twr-select--locked-success {
+      border-bottom-color: var(--success);
+      color: var(--success);
+      pointer-events: none;
+    }
+
+    #p3-submit-zone {
+      margin-top: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .p3-submit-hint {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    #p3-debrief {
+      margin-top: 2rem;
+      background: rgba(0, 150, 136, 0.05);
+      border: 2px solid var(--teal);
+      border-radius: 8px;
+      padding: 2rem;
+      display: none;
+      animation: slideDown 0.5s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .debrief-title {
+      color: var(--teal);
+      font-family: var(--font-primary);
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .answer-review {
+      background: var(--white);
+      border: 1px solid var(--sand);
+      border-left: 5px solid var(--coral);
+      border-radius: 8px;
+      padding: 1.25rem 1.25rem 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-review h4 {
+      color: var(--navy);
+      margin-bottom: 0.8rem;
+      font-size: 1rem;
+    }
+
+    .answer-review ul {
+      padding-left: 1.25rem;
+      list-style: disc;
+    }
+
+    .answer-review li {
+      margin-bottom: 0.45rem;
+      line-height: 1.45;
+      font-family: var(--font-secondary);
+    }
+
+    .discussion-card {
+      background: var(--white);
+      border: 1px solid var(--sand);
+      border-radius: 10px;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .discussion-card h4 {
+      color: var(--navy);
+      margin-bottom: 0.55rem;
+      font-size: 1rem;
+    }
+
+    .discussion-card p {
+      font-family: var(--font-secondary);
+      line-height: 1.5;
+      font-size: 1.08rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 0.75rem;
+      background: var(--white);
+      padding: 15px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--sand);
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .checklist-item:hover {
+      border-color: var(--teal);
+      background: rgba(0, 150, 136, 0.03);
+    }
+
+    .checklist-item input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--teal);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checklist-item label {
+      cursor: pointer;
+      font-family: var(--font-secondary);
+      font-size: 1.02rem;
+      color: var(--dark-text);
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: 16px 32px;
+      border-radius: 30px;
+      color: var(--white);
+      font-weight: bold;
+      font-size: 1.05rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2000;
+      max-width: 80vw;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #toast.toast--show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast--success {
+      background-color: var(--success);
+    }
+
+    .toast--error {
+      background-color: var(--coral);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.9rem;
+      padding: 1rem 0 1.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      #hud {
+        padding: 0 1rem;
+        gap: 0.5rem;
+      }
+
+      .hud-value {
+        font-size: 1rem;
+      }
+
+      .hud-label {
+        font-size: 0.65rem;
+      }
+
+      .phase-card {
+        padding: 1.5rem;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .def-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .def-slot {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Boot Screen -->
+  <section
+    id="boot-screen"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="boot-title"
+    aria-describedby="boot-subtitle"
+  >
+    <h1 id="boot-title">HELIX-PREDICT</h1>
+    <p id="boot-subtitle">Module: Graphs &amp; Relationships</p>
+
+    <div class="mode-container" role="list">
+      <article
+        class="mode-card"
+        role="button"
+        tabindex="0"
+        data-mode="solo"
+        aria-label="Solo Agent, standard individual assessment protocol"
+      >
+        <h3>Solo Agent</h3>
+        <p>Standard individual assessment protocol.</p>
+      </article>
+
+      <article
+        class="mode-card mode-card--coop"
+        role="button"
+        tabindex="0"
+        data-mode="coop"
+        aria-label="Co-op Mode, pair programming with review and partner discussions"
+      >
+        <h3 style="color: var(--coral);">Co-op Mode</h3>
+        <p>Pair programming. Includes answer review and partner discussion prompts.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Co-op Confirmation Modal -->
+  <div
+    id="coop-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="coop-modal-title"
+    aria-describedby="coop-modal-desc"
+  >
+    <div class="modal-card">
+      <h2 id="coop-modal-title">Partner Verification</h2>
+      <p id="coop-modal-desc">
+        Did both partners discuss this solution and agree on the logic?
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn--outline" data-coop-response="review">
+          Wait, let's review
+        </button>
+        <button type="button" class="btn btn--coral" data-coop-response="agree">
+          Yes, we agree
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <header id="hud" aria-label="Session status">
+    <div class="hud-stat">
+      <span class="hud-label">Protocol</span>
+      <span class="hud-value" id="hud-protocol">Booting...</span>
+    </div>
+    <div class="hud-stat">
+      <span class="hud-label">Phase</span>
+      <span class="hud-value" id="phase-indicator">1 : Foundation</span>
+    </div>
+    <div class="hud-stat">
+      <span class="hud-label">Streak</span>
+      <span class="hud-value" id="streak-counter">0</span>
+    </div>
+    <div class="hud-stat">
+      <span class="hud-label">Mastery XP</span>
+      <span class="hud-value" id="xp-counter">0</span>
+    </div>
+  </header>
+
+  <!-- Main App Container -->
+  <main id="app-container">
+    <!-- Phase 1 -->
+    <section id="phase-1" class="phase-card" aria-label="Phase 1: Establish the Baseline">
+      <h2>Phase 1: Establish the Baseline</h2>
+      <p class="subtitle">
+        Click a term in the bank, then click the correct empty slot to place it.
+      </p>
+
+      <div
+        class="term-bank"
+        id="term-bank"
+        role="listbox"
+        aria-label="Term bank"
+      ></div>
+
+      <div
+        class="definitions-list"
+        id="def-list"
+        aria-label="Definitions and slots"
+      ></div>
+
+      <div style="margin-top: 2.5rem; text-align: right;">
+        <button
+          type="button"
+          class="btn"
+          id="btn-p1-check"
+          data-phase-check="1"
+        >
+          Verify Definitions
+        </button>
+      </div>
+    </section>
+
+    <!-- Phase 2 -->
+    <section id="phase-2" class="phase-card" aria-label="Phase 2: Data to Visuals">
+      <h2>Phase 2: Data to Visuals</h2>
+      <p class="subtitle">
+        Analyze the table. Hover over the grid to snap to intersections. Plot the 4 points.
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <h3 style="color: var(--navy); margin-bottom: 1rem;">
+            Tramway Distance Over Time
+          </h3>
+          <table class="data-table" id="p2-table" aria-label="Tramway distance table">
+            <thead>
+              <tr>
+                <th scope="col">Time (x)</th>
+                <th scope="col">Distance (y)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div>
+          <div
+            class="svg-container"
+            id="svg-wrapper"
+            aria-label="Coordinate plane interactive graph region"
+          ></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2.5rem; text-align: right;">
+        <button
+          type="button"
+          class="btn"
+          id="btn-p2-check"
+          data-phase-check="2"
+        >
+          Analyze Graph
+        </button>
+      </div>
+    </section>
+
+    <!-- Phase 3 -->
+    <section id="phase-3" class="phase-card" aria-label="Phase 3: Synthesis & Dialogue">
+      <h2>Phase 3: Synthesis &amp; Dialogue</h2>
+      <p class="subtitle">
+        Read the dynamic scenario, complete the reasoning frame, then discuss your exact answers with a partner.
+      </p>
+
+      <div id="p3-scenario"></div>
+
+      <div class="twr-frame" id="p3-twr"></div>
+
+      <div id="p3-submit-zone">
+        <span class="p3-submit-hint">Fill all blanks to proceed.</span>
+        <button
+          type="button"
+          class="btn btn--coral"
+          id="btn-p3-check"
+          data-phase-check="3"
+        >
+          Verify Logic
+        </button>
+      </div>
+
+      <section id="p3-debrief" aria-label="Partner debrief section">
+        <div class="debrief-title">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Partner Answer Discussion
+        </div>
+
+        <div class="answer-review" id="answer-review-box"></div>
+
+        <article class="discussion-card">
+          <h4>Partner Question 1</h4>
+          <p id="dq-1"></p>
+          <div class="checklist-item" data-check-toggle="cb-1">
+            <input
+              type="checkbox"
+              class="debrief-cb"
+              id="cb-1"
+              aria-label="We asked and answered Question 1 together"
+            />
+            <label for="cb-1">
+              We asked and answered Question 1 together using our actual numbers and answer.
+            </label>
+          </div>
+        </article>
+
+        <article class="discussion-card">
+          <h4>Partner Question 2</h4>
+          <p id="dq-2"></p>
+          <div class="checklist-item" data-check-toggle="cb-2">
+            <input
+              type="checkbox"
+              class="debrief-cb"
+              id="cb-2"
+              aria-label="We asked and answered Question 2 together"
+            />
+            <label for="cb-2">
+              We asked and answered Question 2 together and explained why our answer makes sense.
+            </label>
+          </div>
+        </article>
+
+        <div style="text-align: right; margin-top: 1.5rem;">
+          <button
+            type="button"
+            class="btn"
+            id="btn-next-scenario"
+            disabled
+          >
+            Generate Next Scenario
+          </button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">Neft.Alba | Flagship Grade 6 Math</footer>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // ---------- State & Constants ----------
+    const PHASES = {
+      FOUNDATION: 1,
+      VISUAL: 2,
+      SYNTHESIS: 3
+    };
+
+    const State = {
+      mode: 'solo',
+      xp: 0,
+      streak: 0,
+      currentPhase: PHASES.FOUNDATION,
+      pendingCheckCallback: null,
+      p1: {
+        selectedTerm: null,
+        pairs: [
+          {
+            id: 't1',
+            text: 'Independent Variable',
+            def: 'The quantity that stands alone and is not changed by the other quantity.'
+          },
+          {
+            id: 't2',
+            text: 'Dependent Variable',
+            def: 'The quantity that changes based on another quantity.'
+          },
+          {
+            id: 't3',
+            text: 'x-axis',
+            def: 'The horizontal axis on a coordinate plane.'
+          },
+          {
+            id: 't4',
+            text: 'y-axis',
+            def: 'The vertical axis on a coordinate plane.'
+          }
+        ]
+      },
+      p2: {
+        data: [
+          { x: 1, y: 1200 },
+          { x: 5, y: 6000 },
+          { x: 10, y: 12000 },
+          { x: 15, y: 18000 }
+        ],
+        plottedPoints: [],
+        config: {
+          width: 550,
+          height: 400,
+          pad: 55,
+          xMax: 15,
+          yMax: 18000,
+          xStep: 15,
+          yStep: 15
+        }
+      },
+      p3: {
+        currentData: {}
+      }
+    };
+
+    // ---------- Utility ----------
+    function qs(selector) {
+      return document.querySelector(selector);
+    }
+
+    function qsa(selector) {
+      return document.querySelectorAll(selector);
+    }
+
+    function updateHUD() {
+      qs('#xp-counter').textContent = State.xp;
+
+      const streakEl = qs('#streak-counter');
+      streakEl.textContent = State.streak + (State.streak >= 3 ? ' 🔥' : '');
+      if (State.streak >= 3) {
+        streakEl.classList.add('streak-glow');
+      } else {
+        streakEl.classList.remove('streak-glow');
+      }
+
+      const phaseLabel =
+        State.currentPhase === PHASES.FOUNDATION
+          ? '1 : Foundation'
+          : State.currentPhase === PHASES.VISUAL
+          ? '2 : Visual Model'
+          : '3 : Synthesis';
+
+      qs('#phase-indicator').textContent = phaseLabel;
+    }
+
+    function showToast(message, isSuccess) {
+      const toast = qs('#toast');
+      toast.textContent = message;
+      toast.className = isSuccess ? 'toast--success toast--show' : 'toast--error toast--show';
+
+      // Clear after animation without stacking timers
+      if (toast._hideTimeout) {
+        clearTimeout(toast._hideTimeout);
+      }
+      toast._hideTimeout = setTimeout(() => {
+        toast.classList.remove('toast--show');
+      }, 3000);
+    }
+
+    function switchPhase(phase) {
+      qsa('.phase-card').forEach((card) => card.classList.remove('phase-card--active'));
+      State.currentPhase = phase;
+      const target = qs(`#phase-${phase}`);
+      if (target) {
+        target.classList.add('phase-card--active');
+      }
+      updateHUD();
+    }
+
+    function adjustStreakAndXP({ deltaXp = 0, resetStreak = false } = {}) {
+      State.xp += deltaXp;
+      if (resetStreak) {
+        State.streak = 0;
+      } else {
+        State.streak += 1;
+      }
+      updateHUD();
+    }
+
+    // ---------- Coop Handling ----------
+    function requestCheck(callback) {
+      if (State.mode === 'coop') {
+        State.pendingCheckCallback = callback;
+        qs('#coop-modal').style.display = 'flex';
+      } else {
+        callback();
+      }
+    }
+
+    function closeCoopModal(agreed) {
+      const modal = qs('#coop-modal');
+      modal.style.display = 'none';
+
+      if (agreed && typeof State.pendingCheckCallback === 'function') {
+        State.pendingCheckCallback();
+      }
+      State.pendingCheckCallback = null;
+    }
+
+    // ---------- Phase 1 ----------
+    function initPhase1() {
+      const bank = qs('#term-bank');
+      const defs = qs('#def-list');
+      bank.innerHTML = '';
+      defs.innerHTML = '';
+      State.p1.selectedTerm = null;
+
+      // Build term buttons
+      State.p1.pairs.forEach((pair) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'term-btn';
+        btn.textContent = pair.text;
+        btn.dataset.id = pair.id;
+        btn.setAttribute('role', 'option');
+
+        btn.addEventListener('click', () => handleTermSelect(pair.id));
+        btn.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleTermSelect(pair.id);
+          }
+        });
+
+        bank.appendChild(btn);
+      });
+
+      // Build definition rows in random order
+      const shuffledPairs = [...State.p1.pairs].sort(() => Math.random() - 0.5);
+      shuffledPairs.forEach((pair, index) => {
+        const row = document.createElement('div');
+        row.className = 'def-row';
+
+        const defText = document.createElement('div');
+        defText.className = 'def-text';
+        defText.textContent = pair.def;
+
+        const slot = document.createElement('div');
+        slot.className = 'def-slot';
+        slot.dataset.match = pair.id;
+        slot.dataset.index = String(index);
+        slot.tabIndex = 0;
+        slot.setAttribute('role', 'button');
+        slot.setAttribute('aria-label', 'Drop term here');
+
+        slot.addEventListener('click', () => handleDefSlotClick(slot));
+        slot.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleDefSlotClick(slot);
+          }
+        });
+
+        row.appendChild(defText);
+        row.appendChild(slot);
+        defs.appendChild(row);
+      });
+    }
+
+    function handleTermSelect(termId) {
+      const allButtons = qsa('.term-btn');
+      allButtons.forEach((btn) => btn.classList.remove('term-btn--active'));
+
+      const selectedBtn = qs(`.term-btn[data-id="${termId}"]`);
+      if (!selectedBtn || selectedBtn.style.display === 'none') return;
+
+      selectedBtn.classList.add('term-btn--active');
+
+      const pair = State.p1.pairs.find((p) => p.id === termId);
+      if (pair) {
+        State.p1.selectedTerm = {
+          id: pair.id,
+          text: pair.text,
+          el: selectedBtn
+        };
+      }
+    }
+
+    function handleDefSlotClick(slotEl) {
+      const selected = State.p1.selectedTerm;
+
+      if (selected && !slotEl.textContent.trim()) {
+        // Place selected term
+        slotEl.textContent = selected.text;
+        slotEl.dataset.filledId = selected.id;
+        slotEl.classList.add('def-slot--filled');
+
+        selected.el.style.display = 'none';
+        State.p1.selectedTerm = null;
+        qsa('.term-btn').forEach((btn) => btn.classList.remove('term-btn--active'));
+      } else if (slotEl.textContent.trim()) {
+        // Remove term from slot
+        const filledId = slotEl.dataset.filledId;
+        const hiddenBtn = qs(`.term-btn[data-id="${filledId}"]`);
+        if (hiddenBtn) {
+          hiddenBtn.style.display = 'inline-block';
+        }
+        slotEl.textContent = '';
+        slotEl.dataset.filledId = '';
+        slotEl.classList.remove('def-slot--filled');
+      }
+    }
+
+    function checkPhase1() {
+      requestCheck(() => {
+        const slots = qsa('.def-slot');
+        let correct = 0;
+
+        slots.forEach((slot) => {
+          if (slot.dataset.match === slot.dataset.filledId) {
+            correct += 1;
+          }
+        });
+
+        if (correct === State.p1.pairs.length) {
+          adjustStreakAndXP({ deltaXp: 100, resetStreak: false });
+          showToast('Foundation Verified!', true);
+
+          setTimeout(() => {
+            switchPhase(PHASES.VISUAL);
+            initPhase2();
+          }, 1500);
+        } else {
+          adjustStreakAndXP({ resetStreak: true });
+          showToast(`Incorrect logic. ${correct}/${State.p1.pairs.length} correct.`, false);
+        }
+      });
+    }
+
+    // ---------- Phase 2 ----------
+    function initPhase2() {
+      const tableBody = qs('#p2-table tbody');
+      tableBody.innerHTML = '';
+      State.p2.plottedPoints = [];
+
+      State.p2.data.forEach((pt) => {
+        const tr = document.createElement('tr');
+
+        const tdX = document.createElement('td');
+        tdX.textContent = pt.x;
+
+        const tdY = document.createElement('td');
+        tdY.textContent = pt.y.toLocaleString();
+
+        tr.appendChild(tdX);
+        tr.appendChild(tdY);
+        tableBody.appendChild(tr);
+      });
+
+      renderSVG();
+    }
+
+    function mapToScreenValue(val, max, screenDim, isY, config) {
+      const ratio = val / max;
+      const graphArea = screenDim - config.pad * 2;
+      return isY
+        ? config.height - config.pad - ratio * graphArea
+        : config.pad + ratio * graphArea;
+    }
+
+    function mapToDataValue(px, max, screenDim, isY, config) {
+      const graphArea = screenDim - config.pad * 2;
+      const ratio = isY
+        ? (config.height - config.pad - px) / graphArea
+        : (px - config.pad) / graphArea;
+      return ratio * max;
+    }
+
+    function renderSVG() {
+      const c = State.p2.config;
+      const svgWrapper = qs('#svg-wrapper');
+      const graphW = c.width - c.pad * 2;
+      const graphH = c.height - c.pad * 2;
+
+      let svg = `<svg
+        id="math-plane"
+        class="math-plane"
+        width="${c.width}"
+        height="${c.height}"
+        viewBox="0 0 ${c.width} ${c.height}"
+        role="application"
+        aria-label="Interactive coordinate plane for plotting time and distance"
+        tabindex="0"
+      >`;
+
+      // Grid + y labels
+      for (let i = 0; i <= c.yStep; i++) {
+        const yPos = c.height - c.pad - i * (graphH / c.yStep);
+        const yVal = Math.round(i * (c.yMax / c.yStep));
+
+        svg += `<line
+          x1="${c.pad}" y1="${yPos}"
+          x2="${c.width - c.pad}" y2="${yPos}"
+          stroke="${i === 0 ? 'none' : 'var(--sand)'}"
+          stroke-width="1"
+        ></line>`;
+
+        if (i % 5 === 0 || i === 1) {
+          svg += `<text
+            class="grid-label"
+            x="${c.pad - 8}"
+            y="${yPos + 4}"
+            text-anchor="end"
+          >${yVal}</text>`;
+        }
+      }
+
+      // Grid + x labels
+      for (let i = 0; i <= c.xStep; i++) {
+        const xPos = c.pad + i * (graphW / c.xStep);
+        const xVal = Math.round(i * (c.xMax / c.xStep));
+
+        svg += `<line
+          x1="${xPos}" y1="${c.pad}"
+          x2="${xPos}" y2="${c.height - c.pad}"
+          stroke="${i === 0 ? 'none' : 'var(--sand)'}"
+          stroke-width="1"
+        ></line>`;
+
+        if (i % 5 === 0 || i === 1) {
+          svg += `<text
+            class="grid-label"
+            x="${xPos}"
+            y="${c.height - c.pad + 18}"
+            text-anchor="middle"
+          >${xVal}</text>`;
+        }
+      }
+
+      // Axes
+      svg += `<line
+        x1="${c.pad}" y1="${c.pad}"
+        x2="${c.pad}" y2="${c.height - c.pad}"
+        stroke="var(--navy)"
+        stroke-width="2"
+      ></line>`;
+      svg += `<line
+        x1="${c.pad}" y1="${c.height - c.pad}"
+        x2="${c.width - c.pad}" y2="${c.height - c.pad}"
+        stroke="var(--navy)"
+        stroke-width="2"
+      ></line>`;
+
+      svg += `<text
+        class="axis-label"
+        x="${c.width / 2}"
+        y="${c.height - 10}"
+        text-anchor="middle"
+      >Time (minutes)</text>`;
+
+      svg += `<text
+        class="axis-label"
+        x="15"
+        y="${c.height / 2}"
+        text-anchor="middle"
+        transform="rotate(-90 15,${c.height / 2})"
+      >Distance (feet)</text>`;
+
+      // Plotted points
+      State.p2.plottedPoints.forEach((pt, idx) => {
+        const sx = mapToScreenValue(pt.x, c.xMax, c.width, false, c);
+        const sy = mapToScreenValue(pt.y, c.yMax, c.height, true, c);
+        svg += `<circle
+          cx="${sx}"
+          cy="${sy}"
+          r="7"
+          class="plotted-pt"
+          data-idx="${idx}"
+          tabindex="0"
+          aria-label="Plotted point at (${pt.x}, ${pt.y})"
+        ></circle>`;
+      });
+
+      // Ghost hover indicator
+      svg += `
+        <circle id="ghost-pt" class="ghost-point" cx="0" cy="0" r="8"></circle>
+        <rect id="ghost-bg" fill="white" opacity="0.85" rx="4" style="display:none; pointer-events:none;"></rect>
+        <text id="ghost-lbl" class="ghost-label" x="0" y="0" text-anchor="middle"></text>
+      `;
+
+      svg += '</svg>';
+
+      svgWrapper.innerHTML = svg;
+
+      const svgEl = qs('#math-plane');
+      svgEl.addEventListener('mousemove', handleSVGMove);
+      svgEl.addEventListener('click', handleSVGClick);
+      svgEl.addEventListener('mouseleave', handleSVGLostFocus);
+
+      // Keyboard remove support for plotted points
+      svgWrapper.querySelectorAll('.plotted-pt').forEach((ptEl) => {
+        ptEl.addEventListener('keydown', (event) => {
+          if (event.key === 'Delete' || event.key === 'Backspace') {
+            event.preventDefault();
+            const idx = Number(ptEl.dataset.idx);
+            if (!Number.isNaN(idx)) {
+              State.p2.plottedPoints.splice(idx, 1);
+              renderSVG();
+            }
+          }
+        });
+      });
+    }
+
+    function handleSVGMove(event) {
+      const c = State.p2.config;
+      const svgRect = qs('#math-plane').getBoundingClientRect();
+      const px = event.clientX - svgRect.left;
+      const py = event.clientY - svgRect.top;
+
+      const dataX = Math.round(mapToDataValue(px, c.xMax, c.width, false, c));
+      const rawY = mapToDataValue(py, c.yMax, c.height, true, c);
+      const dataY = Math.round(rawY / 1200) * 1200;
+
+      const ghostPt = qs('#ghost-pt');
+      const ghostLbl = qs('#ghost-lbl');
+      const ghostBg = qs('#ghost-bg');
+
+      const inXBounds = dataX >= 0 && dataX <= c.xMax;
+      const inYBounds = dataY >= 0 && dataY <= c.yMax;
+      const insideGraph =
+        px > c.pad - 10 && px < c.width - c.pad + 10 &&
+        py > c.pad - 10 && py < c.height - c.pad + 10;
+
+      if (inXBounds && inYBounds && insideGraph) {
+        const gx = mapToScreenValue(dataX, c.xMax, c.width, false, c);
+        const gy = mapToScreenValue(dataY, c.yMax, c.height, true, c);
+        const labelText = `(${dataX}, ${dataY})`;
+
+        ghostPt.setAttribute('cx', String(gx));
+        ghostPt.setAttribute('cy', String(gy));
+        ghostPt.style.display = 'block';
+
+        ghostLbl.textContent = labelText;
+        ghostLbl.setAttribute('x', String(gx));
+        ghostLbl.setAttribute('y', String(gy - 15));
+        ghostLbl.style.display = 'block';
+
+        const bgWidth = Math.max(76, labelText.length * 7.2);
+        ghostBg.setAttribute('x', String(gx - bgWidth / 2));
+        ghostBg.setAttribute('y', String(gy - 30));
+        ghostBg.setAttribute('width', String(bgWidth));
+        ghostBg.setAttribute('height', '22');
+        ghostBg.style.display = 'block';
+      } else {
+        ghostPt.style.display = 'none';
+        ghostLbl.style.display = 'none';
+        ghostBg.style.display = 'none';
+      }
+    }
+
+    function handleSVGLostFocus() {
+      const ghostPt = qs('#ghost-pt');
+      const ghostLbl = qs('#ghost-lbl');
+      const ghostBg = qs('#ghost-bg');
+
+      if (ghostPt) ghostPt.style.display = 'none';
+      if (ghostLbl) ghostLbl.style.display = 'none';
+      if (ghostBg) ghostBg.style.display = 'none';
+    }
+
+    function handleSVGClick(event) {
+      const target = event.target;
+
+      if (target.tagName.toLowerCase() === 'circle' && target.id !== 'ghost-pt') {
+        const idx = Number(target.dataset.idx);
+        if (!Number.isNaN(idx)) {
+          State.p2.plottedPoints.splice(idx, 1);
+          renderSVG();
+        }
+        return;
+      }
+
+      const ghostLbl = qs('#ghost-lbl');
+      if (ghostLbl && ghostLbl.style.display === 'block') {
+        const [xStr, yStr] = ghostLbl.textContent.replace(/[()]/g, '').split(',');
+        const px = parseInt(xStr, 10);
+        const py = parseInt(yStr, 10);
+
+        if (State.p2.plottedPoints.some((p) => p.x === px && p.y === py)) return;
+
+        if (State.p2.plottedPoints.length < 4) {
+          State.p2.plottedPoints.push({ x: px, y: py });
+          renderSVG();
+        } else {
+          showToast('Capacity reached. Click a point to remove it.', false);
+        }
+      }
+    }
+
+    function checkPhase2() {
+      requestCheck(() => {
+        if (State.p2.plottedPoints.length !== State.p2.data.length) {
+          showToast(`Plot exactly ${State.p2.data.length} points.`, false);
+          return;
+        }
+
+        let correctCount = 0;
+        State.p2.plottedPoints.forEach((p) => {
+          if (State.p2.data.some((d) => d.x === p.x && d.y === p.y)) {
+            correctCount += 1;
+          }
+        });
+
+        if (correctCount === State.p2.data.length) {
+          adjustStreakAndXP({ deltaXp: 250, resetStreak: false });
+          showToast('Visual Model Verified!', true);
+
+          setTimeout(() => {
+            switchPhase(PHASES.SYNTHESIS);
+            initPhase3();
+          }, 1500);
+        } else {
+          adjustStreakAndXP({ resetStreak: true });
+          showToast(`Mismatch. ${correctCount}/${State.p2.data.length} points are correct.`, false);
+        }
+      });
+    }
+
+    // ---------- Phase 3 ----------
+    function initPhase3() {
+      generateProceduralQuestion();
+    }
+
+    function generateProceduralQuestion() {
+      const debrief = qs('#p3-debrief');
+      const submitZone = qs('#p3-submit-zone');
+
+      debrief.style.display = 'none';
+      submitZone.style.display = 'flex';
+
+      qsa('.debrief-cb').forEach((cb) => {
+        cb.checked = false;
+      });
+
+      const scenarioTypes = [
+        {
+          context: 'Football Tickets',
+          singleItem: 'ticket',
+          pluralItem: 'tickets',
+          action: 'costs',
+          depLabel: 'Total Cost',
+          min: 20,
+          max: 65,
+          unit: '$'
+        },
+        {
+          context: 'Savings Account',
+          singleItem: 'month',
+          pluralItem: 'months',
+          action: 'saves',
+          depLabel: 'Total Saved',
+          min: 25,
+          max: 150,
+          unit: '$'
+        },
+        {
+          context: 'Tram Travel',
+          singleItem: 'minute',
+          pluralItem: 'minutes',
+          action: 'travels',
+          depLabel: 'Distance',
+          min: 500,
+          max: 1500,
+          unit: 'ft'
+        }
+      ];
+
+      const t = scenarioTypes[Math.floor(Math.random() * scenarioTypes.length)];
+      const rate = Math.floor(Math.random() * (t.max - t.min + 1)) + t.min;
+      const qMulti = Math.floor(Math.random() * 7) + 3;
+      const totalCost = rate * qMulti;
+      const constraintMulti = qMulti - 2;
+      const constraintCost = rate * constraintMulti;
+
+      let q1 = '';
+      let q2 = '';
+
+      if (t.context === 'Football Tickets') {
+        q1 = `Partner A asks: “You wrote that ${qMulti} tickets cost $${totalCost}. How does your answer show the rule ‘total cost = number of tickets × $${rate}’?” Partner B must point to the exact numbers in the problem and explain why multiplying ${qMulti} by ${rate} gives your total.`;
+        q2 = `Partner B asks: “You said the maximum number of tickets is ${constraintMulti} when the limit is $${constraintCost}. Why does ${constraintMulti + 1} tickets not work?” Partner A must compare both totals and explain why one stays within the limit and the other goes over.`;
+      } else if (t.context === 'Savings Account') {
+        q1 = `Partner A asks: “You wrote that ${qMulti} months gives a total of $${totalCost}. How does your answer match the rule ‘total saved = number of months × $${rate}’?” Partner B must explain which number is the rate and which number is the number of months.`;
+        q2 = `Partner B asks: “You said the maximum number of months is ${constraintMulti} when the savings limit is $${constraintCost}. Why would one more month be too much?” Partner A must explain using the value for ${constraintMulti + 1} months.`;
+      } else {
+        q1 = `Partner A asks: “You wrote that ${qMulti} minutes gives a distance of ${totalCost} ft. How does your answer match the rule ‘distance = minutes × ${rate} ft’?” Partner B must explain how the time and rate work together in this problem.`;
+        q2 = `Partner B asks: “You said the maximum number of minutes is ${constraintMulti} when the distance limit is ${constraintCost} ft. Why does ${constraintMulti + 1} minutes not work?” Partner A must compare both distances and explain which one goes past the limit.`;
+      }
+
+      State.p3.currentData = {
+        type: t,
+        rate,
+        totalCost,
+        constraintMulti,
+        constraintCost,
+        qMulti,
+        q1,
+        q2
+      };
+
+      renderP3Scenario(State.p3.currentData);
+      renderP3Twr(State.p3.currentData);
+
+      qs('#dq-1').textContent = q1;
+      qs('#dq-2').textContent = q2;
+      qs('#answer-review-box').innerHTML = '';
+      checkDebriefStatus();
+    }
+
+    function renderP3Scenario(data) {
+      const container = qs('#p3-scenario');
+      const { type, rate } = data;
+      const isDollar = type.unit === '$';
+      const unitLabel = isDollar ? `$${rate}` : `${rate} ${type.unit}`;
+
+      container.innerHTML = `
+        <span class="scenario-context">Context: ${type.context}</span><br />
+        1 ${type.singleItem} ${type.action} exactly <strong>${unitLabel}</strong>.<br /><br />
+        Calculate the totals and complete the reasoning frame.
+      `;
+    }
+
+    function renderP3Twr(data) {
+      const twr = qs('#p3-twr');
+      const { type, rate, totalCost, constraintMulti, constraintCost, qMulti } = data;
+
+      const unitPrefix = type.unit === '$' ? '$ ' : '';
+      const unitSuffix = type.unit !== '$' ? ` ${type.unit}` : '';
+
+      twr.innerHTML = `
+        <div class="twr-sentence">
+          <span class="twr-keyword">Because</span>
+          1 ${type.singleItem} ${type.action}
+          ${unitPrefix}<input type="number" id="twr-rate" class="twr-input" aria-label="Rate per ${type.singleItem}" placeholder="amount">${unitSuffix},
+          then <strong>${qMulti} ${type.pluralItem}</strong> ${type.action} a total of
+          ${unitPrefix}<input type="number" id="twr-total" class="twr-input" aria-label="Total for ${qMulti} ${type.pluralItem}" placeholder="total">${unitSuffix}.
+        </div>
+        <div class="twr-sentence">
+          <span class="twr-keyword">But</span>
+          if the total limit was <strong>${type.unit === '$' ? '$' + constraintCost : constraintCost + ' ' + type.unit}</strong>,
+          the maximum number of ${type.pluralItem} allowed is
+          <input type="number" id="twr-limit" class="twr-input" aria-label="Maximum number of ${type.pluralItem}" placeholder="max">.
+        </div>
+        <div class="twr-sentence">
+          <span class="twr-keyword">So</span>,
+          the dependent variable is the
+          <select id="twr-ind" class="twr-select" aria-label="Select the dependent variable">
+            <option value="none">-- Select Variable --</option>
+            <option value="ind">Number of ${type.pluralItem}</option>
+            <option value="dep">${type.depLabel}</option>
+          </select>.
+        </div>
+      `;
+
+      // Ensure inputs clear from previous scenario
+      ['twr-rate', 'twr-total', 'twr-limit'].forEach((id) => {
+        const el = qs(`#${id}`);
+        if (el) {
+          el.value = '';
+          el.classList.remove('twr-input--locked-success');
+        }
+      });
+      const select = qs('#twr-ind');
+      if (select) {
+        select.value = 'none';
+        select.classList.remove('twr-select--locked-success');
+      }
+    }
+
+    function buildAnswerReviewHTML(data) {
+      const { type, rate, totalCost, constraintMulti, constraintCost, qMulti } = data;
+      const itemLabel = type.pluralItem;
+      const depName = type.depLabel;
+
+      const firstAnswerLine =
+        type.unit === '$'
+          ? `<strong>1 ${type.singleItem}</strong> = $${rate}`
+          : `<strong>1 ${type.singleItem}</strong> = ${rate} ${type.unit}`;
+
+      const totalLine =
+        type.unit === '$'
+          ? `<strong>${qMulti} ${itemLabel}</strong> = $${totalCost}`
+          : `<strong>${qMulti} ${itemLabel}</strong> = ${totalCost} ${type.unit}`;
+
+      const limitLine =
+        type.unit === '$'
+          ? `With a limit of <strong>$${constraintCost}</strong>, the greatest possible number is <strong>${constraintMulti}</strong> ${itemLabel}.`
+          : `With a limit of <strong>${constraintCost} ${type.unit}</strong>, the greatest possible number is <strong>${constraintMulti}</strong> ${itemLabel}.`;
+
+      return `
+        <h4>Your Verified Answers</h4>
+        <ul>
+          <li>${firstAnswerLine}</li>
+          <li>${totalLine}</li>
+          <li>${limitLine}</li>
+          <li>The dependent variable is <strong>${depName}</strong>.</li>
+        </ul>
+      `;
+    }
+
+    function checkPhase3() {
+      requestCheck(() => {
+        const data = State.p3.currentData;
+        const rInput = qs('#twr-rate');
+        const tInput = qs('#twr-total');
+        const lInput = qs('#twr-limit');
+        const iSelect = qs('#twr-ind');
+
+        const ansRate = Number(rInput.value);
+        const ansTotal = Number(tInput.value);
+        const ansLimit = Number(lInput.value);
+        const ansInd = iSelect.value;
+
+        if (
+          Number.isFinite(ansRate) &&
+          Number.isFinite(ansTotal) &&
+          Number.isFinite(ansLimit) &&
+          ansRate === data.rate &&
+          ansTotal === data.totalCost &&
+          ansLimit === data.constraintMulti &&
+          ansInd === 'dep'
+        ) {
+          adjustStreakAndXP({ deltaXp: 500, resetStreak: false });
+          showToast('Logic Verified! Discuss your exact answers with your partner.', true);
+
+          [rInput, tInput, lInput].forEach((el) => {
+            el.classList.add('twr-input--locked-success');
+          });
+          iSelect.classList.add('twr-select--locked-success');
+
+          qs('#p3-submit-zone').style.display = 'none';
+          qs('#answer-review-box').innerHTML = buildAnswerReviewHTML(data);
+
+          setTimeout(() => {
+            qs('#p3-debrief').style.display = 'block';
+            qs('#cb-1').checked = false;
+            qs('#cb-2').checked = false;
+            checkDebriefStatus();
+          }, 450);
+        } else {
+          adjustStreakAndXP({ resetStreak: true });
+          showToast('Check your math and variable logic.', false);
+        }
+      });
+    }
+
+    function checkDebriefStatus() {
+      const cb1 = qs('#cb-1').checked;
+      const cb2 = qs('#cb-2').checked;
+      const btn = qs('#btn-next-scenario');
+
+      if (cb1 && cb2) {
+        btn.disabled = false;
+        btn.classList.add('btn--coral');
+      } else {
+        btn.disabled = true;
+        btn.classList.remove('btn--coral');
+      }
+    }
+
+    function resetForNextScenario() {
+      const phase3 = qs('#phase-3');
+      phase3.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        phase3.style.transform = 'scale(1)';
+      }, 200);
+      generateProceduralQuestion();
+    }
+
+    // ---------- Mode & Boot ----------
+    function startApp(mode) {
+      State.mode = mode;
+      qs('#hud-protocol').textContent =
+        mode === 'coop' ? 'Co-op Mode' : 'Solo Agent';
+
+      const boot = qs('#boot-screen');
+      boot.style.opacity = '0';
+      setTimeout(() => {
+        boot.style.display = 'none';
+        initPhase1();
+        switchPhase(PHASES.FOUNDATION);
+      }, 500);
+    }
+
+    function handleModeCardClick(event) {
+      const mode = event.currentTarget.dataset.mode;
+      if (mode) {
+        startApp(mode);
+      }
+    }
+
+    function handleModeCardKeydown(event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        const mode = event.currentTarget.dataset.mode;
+        if (mode) {
+          startApp(mode);
+        }
+      }
+    }
+
+    // ---------- Event Wiring ----------
+    function bindGlobalEvents() {
+      // Mode cards
+      qsa('.mode-card').forEach((card) => {
+        card.addEventListener('click', handleModeCardClick);
+        card.addEventListener('keydown', handleModeCardKeydown);
+      });
+
+      // Coop modal buttons
+      qsa('[data-coop-response]').forEach((btn) => {
+        btn.addEventListener('click', (event) => {
+          const response = event.currentTarget.dataset.coopResponse;
+          closeCoopModal(response === 'agree');
+        });
+      });
+
+      // Phase check buttons
+      qsa('[data-phase-check]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const phase = Number(btn.dataset.phaseCheck);
+          if (phase === PHASES.FOUNDATION) {
+            checkPhase1();
+          } else if (phase === PHASES.VISUAL) {
+            checkPhase2();
+          } else if (phase === PHASES.SYNTHESIS) {
+            checkPhase3();
+          }
+        });
+      });
+
+      // Debrief checklist toggles
+      qsa('[data-check-toggle]').forEach((wrap) => {
+        wrap.addEventListener('click', (event) => {
+          const id = wrap.dataset.checkToggle;
+          const cb = qs(`#${id}`);
+          if (!cb) return;
+          cb.checked = !cb.checked;
+          checkDebriefStatus();
+        });
+      });
+
+      qs('#btn-next-scenario').addEventListener('click', resetForNextScenario);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      bindGlobalEvents();
+      updateHUD();
+    });
+  </script>
+</body>
+</html>

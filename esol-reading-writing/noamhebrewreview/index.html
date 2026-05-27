@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Merged Noam Hebrew review section with Units 5.3 and 5.4 review, quiz quest, and study guide.">
+  <title>Noam Hebrew Review</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    .hebrew-shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 42px;
+    }
+
+    .hebrew-hero {
+      background: linear-gradient(135deg, #f8fbff 0%, #edf7f4 48%, #fff7ed 100%);
+      border: 1px solid rgba(30, 64, 175, 0.14);
+      border-radius: 8px;
+      padding: clamp(22px, 4vw, 42px);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
+    }
+
+    .hebrew-hero h1 {
+      margin: 0;
+      color: #102a43;
+      font-size: clamp(2.1rem, 5vw, 4rem);
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .hebrew-hero p {
+      max-width: 760px;
+      margin: 14px 0 0;
+      color: #334155;
+      font-size: 1.08rem;
+      line-height: 1.65;
+    }
+
+    .merged-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      color: #0f766e;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .quick-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .quick-row a {
+      border: 1px solid rgba(15, 118, 110, 0.22);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: #0f766e;
+      background: rgba(255, 255, 255, 0.74);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .quick-row a:hover,
+    .quick-row a:focus {
+      color: #ffffff;
+      background: #0f766e;
+      outline: none;
+    }
+
+    .viewer-card {
+      margin-top: 22px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.13);
+      border-radius: 8px;
+      box-shadow: 0 16px 38px rgba(15, 23, 42, 0.1);
+      overflow: hidden;
+    }
+
+    .tab-bar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      background: #e2e8f0;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.12);
+    }
+
+    .tab-button {
+      min-height: 64px;
+      border: 0;
+      border-right: 1px solid rgba(15, 23, 42, 0.1);
+      padding: 12px 16px;
+      color: #334155;
+      background: #f8fafc;
+      font: inherit;
+      font-weight: 850;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .tab-button:last-child {
+      border-right: 0;
+    }
+
+    .tab-button[aria-selected="true"] {
+      color: #ffffff;
+      background: #1d4ed8;
+    }
+
+    .tab-button span {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      opacity: 0.82;
+    }
+
+    .viewer-panel {
+      display: none;
+      padding: 0;
+    }
+
+    .viewer-panel.is-active {
+      display: block;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.09);
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      color: #102a43;
+      font-size: clamp(1.1rem, 2.6vw, 1.55rem);
+      letter-spacing: 0;
+    }
+
+    .panel-heading a {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 9px 13px;
+      color: #ffffff;
+      background: #0f766e;
+      font-size: 0.9rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .activity-frame {
+      display: block;
+      width: 100%;
+      height: min(980px, calc(100vh - 190px));
+      min-height: 620px;
+      border: 0;
+      background: #f8fafc;
+    }
+
+    @media (max-width: 760px) {
+      .hebrew-shell {
+        width: min(100vw - 20px, 1180px);
+        padding-top: 16px;
+      }
+
+      .tab-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .tab-button {
+        min-height: 54px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+      }
+
+      .panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .activity-frame {
+        height: 780px;
+        min-height: 560px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="hebrew-shell">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/esol-reading-writing/">ESOL, Reading, and Writing</a><span>/</span><span>Noam Hebrew Review</span></nav>
+
+    <section class="hebrew-hero">
+      <span class="merged-note">Merged Hebrew section</span>
+      <h1>Noam Hebrew Review</h1>
+      <p>One combined place for the Hebrew Units 5.3 and 5.4 review tools. Use the tabs below to switch between the full vocabulary review, the 5.4 quiz quest, and the 5.3 study guide.</p>
+      <div class="quick-row" aria-label="Noam Hebrew quick choices">
+        <a href="#units-53-54" data-open-tab="units-53-54">Units 5.3 &amp; 5.4</a>
+        <a href="#quiz-54" data-open-tab="quiz-54">5.4 Quiz Quest</a>
+        <a href="#study-guide-53" data-open-tab="study-guide-53">5.3 Study Guide</a>
+      </div>
+    </section>
+
+    <section class="viewer-card" aria-label="Merged Noam Hebrew activities">
+      <div class="tab-bar" role="tablist" aria-label="Noam Hebrew activity tabs">
+        <button class="tab-button" type="button" role="tab" id="tab-units-53-54" aria-selected="true" aria-controls="units-53-54" data-tab="units-53-54">
+          Units 5.3 &amp; 5.4 Review
+          <span>Vocabulary, practice, and review game</span>
+        </button>
+        <button class="tab-button" type="button" role="tab" id="tab-quiz-54" aria-selected="false" aria-controls="quiz-54" data-tab="quiz-54">
+          5.4 Quiz Quest
+          <span>Fast quiz review activity</span>
+        </button>
+        <button class="tab-button" type="button" role="tab" id="tab-study-guide-53" aria-selected="false" aria-controls="study-guide-53" data-tab="study-guide-53">
+          5.3 Study Guide
+          <span>Flashcards, matching, and sorting</span>
+        </button>
+      </div>
+
+      <article class="viewer-panel is-active" id="units-53-54" role="tabpanel" aria-labelledby="tab-units-53-54">
+        <div class="panel-heading">
+          <h2>Units 5.3 &amp; 5.4 Hebrew Vocabulary Review</h2>
+          <a href="/esol-reading-writing/noamhebrewreview/units-53-54/">Open full page</a>
+        </div>
+        <iframe class="activity-frame" title="Units 5.3 and 5.4 Hebrew vocabulary review" src="/esol-reading-writing/noamhebrewreview/units-53-54/"></iframe>
+      </article>
+
+      <article class="viewer-panel" id="quiz-54" role="tabpanel" aria-labelledby="tab-quiz-54">
+        <div class="panel-heading">
+          <h2>Hebrew Quiz Quest: 5.4 Vocabulary Review</h2>
+          <a href="/esol-reading-writing/noamhebrewreview/quiz-54/">Open full page</a>
+        </div>
+        <iframe class="activity-frame" title="Hebrew Quiz Quest 5.4 vocabulary review" data-src="/esol-reading-writing/noamhebrewreview/quiz-54/"></iframe>
+      </article>
+
+      <article class="viewer-panel" id="study-guide-53" role="tabpanel" aria-labelledby="tab-study-guide-53">
+        <div class="panel-heading">
+          <h2>Hebrew 5.3 Interactive Study Guide</h2>
+          <a href="/esol-reading-writing/noamhebrewreview/study-guide-53/">Open full page</a>
+        </div>
+        <iframe class="activity-frame" title="Hebrew 5.3 interactive study guide" data-src="/esol-reading-writing/noamhebrewreview/study-guide-53/"></iframe>
+      </article>
+    </section>
+
+    <div class="button-row"><a class="primary-button" href="/esol-reading-writing/">Back to ESOL, Reading, and Writing</a></div>
+
+    <footer class="site-footer">
+      <span>Noam Hebrew Review</span>
+      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
+    </footer>
+  </main>
+
+  <script src="/assets/app.js" defer></script>
+  <script>
+    const tabButtons = Array.from(document.querySelectorAll("[data-tab]"));
+    const tabPanels = Array.from(document.querySelectorAll(".viewer-panel"));
+    const quickLinks = Array.from(document.querySelectorAll("[data-open-tab]"));
+
+    function selectTab(tabName) {
+      tabButtons.forEach((button) => {
+        button.setAttribute("aria-selected", String(button.dataset.tab === tabName));
+      });
+
+      tabPanels.forEach((panel) => {
+        const isActive = panel.id === tabName;
+        panel.classList.toggle("is-active", isActive);
+        if (isActive) {
+          const frame = panel.querySelector("iframe[data-src]");
+          if (frame) {
+            frame.src = frame.dataset.src;
+            frame.removeAttribute("data-src");
+          }
+        }
+      });
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => selectTab(button.dataset.tab));
+    });
+
+    quickLinks.forEach((link) => {
+      link.addEventListener("click", () => selectTab(link.dataset.openTab));
+    });
+  </script>
+</body>
+</html>

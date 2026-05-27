@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <title>Grade 6 Mission Control – Proportional Relationships</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #020617 100%);
+      color: #e5e7eb;
+    }
+    header {
+      padding: 14px 20px;
+      border-bottom: 1px solid #111827;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(90deg, rgba(37,99,235,0.85), rgba(8,47,73,0.85));
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    header p {
+      margin: 2px 0 0 0;
+      font-size: 0.8rem;
+      color: #d1d5db;
+    }
+    main {
+      padding: 14px;
+      max-width: 1150px;
+      margin: 0 auto 80px auto;
+    }
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 840px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+    }
+    .panel {
+      background: rgba(15,23,42,0.9);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      padding: 12px 14px;
+      border: 1px solid #1f2937;
+    }
+    .panel h2 {
+      margin: 0 0 6px 0;
+      font-size: 1.05rem;
+      color: #e5e7eb;
+    }
+    .panel p {
+      margin: 4px 0;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    .field-label {
+      font-size: 0.8rem;
+      margin-top: 6px;
+      color: #d1d5db;
+    }
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      margin: 4px 0 8px 0;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid #3b82f6;
+    }
+    .mission-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .mission-card {
+      border-radius: 10px;
+      background: radial-gradient(circle at top left, #1e293b, #020617);
+      border: 1px solid #1f2937;
+      padding: 8px 9px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    }
+    .mission-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(15,23,42,0.8);
+      border-color: #3b82f6;
+    }
+    .mission-card.active {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.5), 0 10px 24px rgba(0,0,0,0.7);
+    }
+    .mission-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e5e7eb;
+      margin-bottom: 2px;
+    }
+    .mission-meta {
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      margin-right: 5px;
+    }
+    .badge.std { background: #0369a1; color: #e5e7eb; }
+    .badge.dok1 { background: #15803d; color: #dcfce7; }
+    .badge.dok2 { background: #a16207; color: #fef3c7; }
+    .badge.dok3 { background: #9d174d; color: #fdf2f8; }
+    .mission-score-chip {
+      font-size: 0.7rem;
+      position: absolute;
+      right: 8px;
+      bottom: 6px;
+      color: #a5b4fc;
+    }
+    .mission-score-chip span {
+      font-weight: 600;
+    }
+    #mission-title {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #e5e7eb;
+    }
+    #mission-desc {
+      margin: 4px 0 8px 0;
+      font-size: 0.83rem;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 4px 0 8px 0;
+      font-size: 0.8rem;
+      background: #020617;
+    }
+    th, td {
+      border: 1px solid #1f2937;
+      padding: 4px 6px;
+      text-align: center;
+    }
+    th {
+      background: #030712;
+      color: #d1d5db;
+    }
+    .prompt {
+      font-size: 0.82rem;
+      margin: 8px 0 4px 0;
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+    .btn-row {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 13px;
+      font-size: 0.86rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #3b82f6;
+      color: #e5e7eb;
+    }
+    button.secondary {
+      background: #111827;
+      color: #e5e7eb;
+      border: 1px solid #4b5563;
+    }
+    button.ghost {
+      background: transparent;
+      border: 1px dashed #4b5563;
+      color: #9ca3af;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .feedback {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      padding: 7px 9px;
+      border-radius: 8px;
+      display: none;
+    }
+    .feedback.ok {
+      display: block;
+      background: rgba(22,163,74,0.1);
+      border: 1px solid #22c55e;
+      color: #bbf7d0;
+    }
+    .feedback.partial {
+      display: block;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid #f59e0b;
+      color: #fed7aa;
+    }
+    .feedback.try {
+      display: block;
+      background: rgba(220,38,38,0.14);
+      border: 1px solid #ef4444;
+      color: #fecaca;
+    }
+    .status-bar {
+      font-size: 0.75rem;
+      margin-top: 6px;
+      color: #9ca3af;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .status-bar span strong {
+      color: #e5e7eb;
+    }
+    .graph-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      margin: 6px 0 8px 0;
+    }
+    .graph-cell {
+      border: 1px solid #1f2937;
+      padding-top: 100%;
+      position: relative;
+      cursor: pointer;
+      background: #020617;
+    }
+    .graph-cell span {
+      position: absolute;
+      font-size: 0.6rem;
+      right: 2px;
+      bottom: 2px;
+      color: #6b7280;
+    }
+    .graph-cell.active {
+      background: radial-gradient(circle at center, #22c55e, #16a34a);
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.9);
+    }
+    .graph-axes-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #9ca3af;
+      margin-bottom: 2px;
+    }
+    #log-container {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #020617;
+      border-top: 1px solid #111827;
+      max-height: 42vh;
+      overflow-y: auto;
+      padding: 6px 10px 8px 10px;
+      font-size: 0.72rem;
+      color: #e5e7eb;
+      z-index: 30;
+    }
+    #log-container h2 {
+      margin: 2px 0 4px 0;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .log-entry {
+      border-top: 1px solid #111827;
+      padding: 3px 0 3px 0;
+      white-space: pre-wrap;
+    }
+    .log-entry span.mission-tag {
+      font-weight: 600;
+      color: #93c5fd;
+    }
+    .log-entry span.time-tag {
+      color: #6b7280;
+      margin-right: 6px;
+    }
+    .log-entry .percent-tag {
+      color: #4ade80;
+      font-weight: 600;
+    }
+    .collapse-toggle {
+      cursor: pointer;
+      font-size: 0.7rem;
+      color: #6b7280;
+      text-decoration: underline;
+    }
+    .hidden {
+      display: none;
+    }
+    .streak-display {
+      font-size: 0.76rem;
+      color: #a5b4fc;
+      margin-top: 2px;
+    }
+    .streak-display strong {
+      color: #facc15;
+    }
+    .small-note {
+      font-size: 0.72rem;
+      color: #9ca3af;
+    }
+    @media print {
+      #log-container,
+      header,
+      .mission-list,
+      .btn-row,
+      .status-bar {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+      main {
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mission Control: Proportional Relationships</h1>
+    <p>Grade 6 • CCSS 6.EE.C.9 • Story-based missions with local classroom logging.</p>
+  </header>
+
+  <main>
+    <div class="shell">
+      <!-- LEFT: Player & mission list -->
+      <aside class="panel">
+        <h2>Pilot Console</h2>
+        <p>You are a mission specialist in the Grade 6 Math Operations Center. Complete missions, keep your streak alive, and send results back to HQ.</p>
+
+        <label class="field-label">Call sign (student name)</label>
+        <input type="text" id="student-name" placeholder="Ex: J. Neft" />
+
+        <label class="field-label">Class / Section (optional)</label>
+        <input type="text" id="class-tag" placeholder="Ex: 240-11033Y-602" />
+
+        <p style="margin-top:6px;">Choose a mission from the deck:</p>
+        <div class="mission-list" id="mission-list"></div>
+
+        <div class="streak-display" id="streak-display">
+          Current streak: <strong>0</strong> missions checked without a full miss.
+        </div>
+        <p class="small-note">Teachers can review the local quick-view log by call sign, mission, or score.</p>
+      </aside>
+
+      <!-- RIGHT: Active mission -->
+      <section class="panel">
+        <h2 id="mission-title">Awaiting Mission Selection…</h2>
+        <p id="mission-desc">Choose a mission card on the left. Each mission links to one of the 11 problems in the Unit 9 assessment.</p>
+        <div id="mission-content"></div>
+
+        <div class="btn-row">
+          <button id="check-btn" disabled>Check Mission Status</button>
+          <button id="record-btn" class="secondary" disabled>Record Locally</button>
+          <button id="clear-btn" class="ghost" disabled>Reset This Mission</button>
+        </div>
+        <div id="feedback" class="feedback"></div>
+        <div class="status-bar">
+          <span id="status-mission"><strong>Mission:</strong> none selected</span>
+          <span id="status-points"><strong>Points:</strong> 0 • DOK –</span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Teacher / HQ log (local quick view) -->
+  <section id="log-container">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h2>HQ Local Telemetry (quick view)</h2>
+      <span class="collapse-toggle" onclick="toggleLog()">Collapse / Expand</span>
+    </div>
+    <div id="log-entries"></div>
+  </section>
+
+  <script>
+    // Missions: same underlying math & question types as the PDF’s 11 items.
+    const missions = [
+      {
+        id: "M1",
+        title: "Time Keeper",
+        dok: 1,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Independent vs. dependent variable (minutes vs. questions).",
+        description:
+          "A test runner fires questions at 3 per minute. Let m be minutes and q be questions answered. You're calibrating the control panel: which variable is the independent one?",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Control Panel 1 – Choose the independent variable.</p>
+            <p style="font-size:0.8rem;">Type either <strong>m</strong> (minutes) or <strong>q</strong> (questions).</p>
+            <input type="text" id="m1-independent" placeholder="m or q" />
+
+            <p class="prompt">Control Panel 2 – Explain your logic.</p>
+            <textarea id="m1-explain" placeholder="What depends on what? Explain in one or two sentences."></textarea>
+          `;
+        },
+        check() {
+          const independent = (document.getElementById("m1-independent").value || "").trim().toLowerCase();
+          const explanation = (document.getElementById("m1-explain").value || "").trim();
+          let score = 0, total = 2, messages = [];
+
+          if (independent === "m") {
+            score++;
+            messages.push("Correct: m (minutes) is independent because time runs forward and questions answered depend on it.");
+          } else if (independent === "") {
+            messages.push("You left the variable blank—try choosing m or q.");
+          } else {
+            messages.push("q depends on how long the student works, so m is the independent variable.");
+          }
+
+          if (explanation.length >= 10) {
+            score++;
+            messages.push("Your explanation has enough detail to show your thinking.");
+          } else {
+            messages.push("Add more detail explaining which variable causes the change and which measures it.");
+          }
+
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M2",
+        title: "Storage Vault",
+        dok: 2,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Fill a missing value in a proportional table.",
+        description:
+          "A storage vault charges $82.50 per month. You’re checking a billing console that’s missing one number in the cost column.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Monitoring Screen – Complete the pricing table.</p>
+            <table>
+              <tr><th>Months</th><th>Total Cost ($)</th></tr>
+              <tr><td>1</td><td>82.50</td></tr>
+              <tr><td>2</td><td><input type="number" id="m2-c" step="0.01" /></td></tr>
+              <tr><td>3</td><td>247.50</td></tr>
+            </table>
+            <p class="prompt">What should the total cost be for 2 months?</p>
+            <input type="number" id="m2-final" step="0.01" placeholder="Total cost for 2 months" />
+          `;
+        },
+        check() {
+          const c = parseFloat(document.getElementById("m2-c").value);
+          const f = parseFloat(document.getElementById("m2-final").value);
+          let score = 0, total = 2, messages = [];
+
+          if (!isNaN(c) && Math.abs(c - 165) < 0.01) {
+            score++;
+            messages.push("C = 165 is correct for two months of $82.50.");
+          } else {
+            messages.push("For 2 months: 2 × 82.50 = 165, so C should be 165.");
+          }
+
+          if (!isNaN(f) && Math.abs(f - 165) < 0.01) {
+            score++;
+            messages.push("You correctly reported $165 as the 2‑month total.");
+          } else {
+            messages.push("Your final answer should match the missing table value: $165.");
+          }
+
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M3",
+        title: "Pear Cargo",
+        dok: 2,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Complete a table from a unit price and explain strategy.",
+        description:
+          "A cargo pod of pears costs $1.25 per pear. You’re the quartermaster filling in the cost table for different cargo sizes.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Cost Matrix – fill in the missing totals.</p>
+            <table>
+              <tr><th>Pears</th><th>Total Cost ($)</th></tr>
+              <tr><td>6</td><td><input type="number" id="m3-a" step="0.01" /></td></tr>
+              <tr><td>8</td><td><input type="number" id="m3-b" step="0.01" /></td></tr>
+              <tr><td>9</td><td><input type="number" id="m3-c" step="0.01" /></td></tr>
+            </table>
+            <p class="prompt">Explain your strategy.</p>
+            <textarea id="m3-explain" placeholder="Describe how you used 1.25 per pear to get each cost."></textarea>
+          `;
+        },
+        check() {
+          const a = parseFloat(document.getElementById("m3-a").value);
+          const b = parseFloat(document.getElementById("m3-b").value);
+          const c = parseFloat(document.getElementById("m3-c").value);
+          const exp = (document.getElementById("m3-explain").value || "").trim();
+          let score = 0, total = 4, messages = [];
+
+          if (!isNaN(a) && Math.abs(a - 7.5) < 0.01) {
+            score++;
+            messages.push("Cost for 6 pears (7.50) is correct.");
+          } else {
+            messages.push("6 pears: 6 × 1.25 = 7.50.");
+          }
+          if (!isNaN(b) && Math.abs(b - 10) < 0.01) {
+            score++;
+            messages.push("Cost for 8 pears (10.00) is correct.");
+          } else {
+            messages.push("8 pears: 8 × 1.25 = 10.00.");
+          }
+          if (!isNaN(c) && Math.abs(c - 11.25) < 0.01) {
+            score++;
+            messages.push("Cost for 9 pears (11.25) is correct.");
+          } else {
+            messages.push("9 pears: 9 × 1.25 = 11.25.");
+          }
+
+          if (exp.length >= 15) {
+            score++;
+            messages.push("Your explanation gives a clear strategy for using the unit price.");
+          } else {
+            messages.push("Explain that you multiply the number of pears by 1.25 for each row.");
+          }
+
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M4",
+        title: "Balloon Bay",
+        dok: 2,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Graph a proportional relationship on a grid.",
+        description:
+          "Terrence fills helium balloons at 7 per minute. Plot points on the grid that show how balloons increase over time.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Navigation Grid – mark the balloons vs. minutes.</p>
+            <div class="graph-axes-labels">
+              <span>Minutes (0–4)</span>
+              <span>Balloons (0–28)</span>
+            </div>
+            <div id="m4-grid" class="graph-grid"></div>
+            <p class="small-note">Tap cells for points like (1, 7), (2, 14), (3, 21) where y = 7x.</p>
+          `;
+          const grid = document.getElementById("m4-grid");
+          const xs = [0,1,2,3,4];
+          const ys = [0,7,14,21,28];
+          ys.slice().reverse().forEach(y => {
+            xs.forEach(x => {
+              const cell = document.createElement("div");
+              cell.className = "graph-cell";
+              cell.dataset.x = x;
+              cell.dataset.y = y;
+              const label = document.createElement("span");
+              label.textContent = `(${x},${y})`;
+              cell.appendChild(label);
+              cell.addEventListener("click", () => {
+                cell.classList.toggle("active");
+              });
+              grid.appendChild(cell);
+            });
+          });
+        },
+        check() {
+          const cells = document.querySelectorAll("#m4-grid .graph-cell");
+          let selected = [];
+          cells.forEach(c => {
+            if (c.classList.contains("active")) selected.push({x:+c.dataset.x,y:+c.dataset.y});
+          });
+          const correctPoints = [{x:0,y:0},{x:1,y:7},{x:2,y:14},{x:3,y:21},{x:4,y:28}];
+          let score = 0, total = 2, messages = [];
+          let correctSelected = 0;
+          correctPoints.forEach(pt => {
+            if (selected.some(s => s.x===pt.x && s.y===pt.y)) correctSelected++;
+          });
+          if (correctSelected >= 3) {
+            score++;
+            messages.push("You selected several correct points on the 7‑balloons‑per‑minute line.");
+          } else {
+            messages.push("Try marking points where the balloons are 7 times the minutes: (1,7), (2,14), (3,21).");
+          }
+          if (selected.length === correctSelected && selected.length > 0) {
+            score++;
+            messages.push("All chosen points are on the correct proportional line.");
+          } else if (selected.length === 0) {
+            messages.push("Choose at least one point on the grid to show the pattern.");
+          } else {
+            messages.push("Some selected points do not match y = 7x. Adjust them.");
+          }
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M5",
+        title: "Hot Dog Deck",
+        dok: 2,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Select an equation from a table and justify.",
+        description:
+          "The snack deck serves hot dogs on plates. The table shows how many hot dogs d go on p plates. Choose and defend an equation that matches the pattern.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Supply Grid – study the pattern.</p>
+            <table>
+              <tr><th>Plates (p)</th><th>Hot Dogs (d)</th></tr>
+              <tr><td>1</td><td>2</td></tr>
+              <tr><td>2</td><td>4</td></tr>
+              <tr><td>3</td><td>6</td></tr>
+              <tr><td>4</td><td>8</td></tr>
+            </table>
+            <p class="prompt">Choose the equation that fits.</p>
+            <select id="m5-eq">
+              <option value="">-- choose an equation --</option>
+              <option value="3p">d = 3p</option>
+              <option value="3p-1">d = 3p − 1</option>
+              <option value="2p">d = 2p</option>
+              <option value="2p+1">d = 2p + 1</option>
+            </select>
+            <p class="prompt">Explain your choice.</p>
+            <textarea id="m5-explain" placeholder="Explain how you used the table to pick your equation."></textarea>
+          `;
+        },
+        check() {
+          const eq = document.getElementById("m5-eq").value;
+          const exp = (document.getElementById("m5-explain").value || "").trim();
+          let score = 0, total = 2, messages = [];
+
+          if (eq === "2p") {
+            score++;
+            messages.push("d = 2p matches the table: 2 hot dogs on each plate.");
+          } else if (eq === "") {
+            messages.push("Pick an equation using the fact that each plate adds 2 hot dogs.");
+          } else {
+            messages.push("Only d = 2p gives 2, 4, 6, 8 for p = 1,2,3,4.");
+          }
+
+          if (exp.length >= 15) {
+            score++;
+            messages.push("Your explanation connects the equation to the pattern in the table.");
+          } else {
+            messages.push("Explain that every time p increases by 1, d increases by 2, so d = 2p.");
+          }
+
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M6",
+        title: "Abdi’s Route Map",
+        dok: 2,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Match a graph to an equation for a rate.",
+        description:
+          "Abdi drives at a constant speed. The graph (represented by this table) shows his miles after different hours. Choose an equation that fits.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Route Telemetry – table from the graph.</p>
+            <table>
+              <tr><th>Hours (h)</th><th>Miles (m)</th></tr>
+              <tr><td>1</td><td>30</td></tr>
+              <tr><td>2</td><td>60</td></tr>
+              <tr><td>3</td><td>90</td></tr>
+            </table>
+            <p class="prompt">Which equation matches this constant rate?</p>
+            <select id="m6-eq">
+              <option value="">-- choose an equation --</option>
+              <option value="m=30h">m = 30h</option>
+              <option value="m=h+30">m = h + 30</option>
+              <option value="h=m+30">h = m + 30</option>
+              <option value="h=30m">h = 30m</option>
+            </select>
+          `;
+        },
+        check() {
+          const eq = document.getElementById("m6-eq").value;
+          let score = 0, total = 1, messages = [];
+
+          if (eq === "m=30h") {
+            score++;
+            messages.push("Right: m = 30h means 30 miles for every hour.");
+          } else if (eq === "") {
+            messages.push("Pick the equation that says 'miles = 30 × hours'.");
+          } else {
+            messages.push("Test h = 1. Only m = 30h gives 30 miles.");
+          }
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M7",
+        title: "Music Bay",
+        dok: 2,
+        points: 2.0,
+        standard: "6.EE.C.9",
+        brief: "Write equation + graph for 3 pieces per week.",
+        description:
+          "Faith prepares 3 new musical pieces each week to teach. You’re programming a scheduler that needs both an equation and a visual pattern.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Programming Line – enter an equation for weeks w and pieces p.</p>
+            <input type="text" id="m7-eq" placeholder="Example: p = 3w" />
+
+            <p class="prompt">Plot a few points that fit your equation.</p>
+            <div class="graph-axes-labels">
+              <span>Weeks (0–4)</span>
+              <span>Pieces (0–12)</span>
+            </div>
+            <div id="m7-grid" class="graph-grid"></div>
+          `;
+          const grid = document.getElementById("m7-grid");
+          const xs = [0,1,2,3,4];
+          const ys = [0,3,6,9,12];
+          ys.slice().reverse().forEach(y => {
+            xs.forEach(x => {
+              const cell = document.createElement("div");
+              cell.className = "graph-cell";
+              cell.dataset.x = x;
+              cell.dataset.y = y;
+              const label = document.createElement("span");
+              label.textContent = `(${x},${y})`;
+              cell.appendChild(label);
+              cell.addEventListener("click", () => cell.classList.toggle("active"));
+              grid.appendChild(cell);
+            });
+          });
+        },
+        check() {
+          const eqText = (document.getElementById("m7-eq").value || "").replace(/\s+/g,"").toLowerCase();
+          const cells = document.querySelectorAll("#m7-grid .graph-cell");
+          let selected = [];
+          cells.forEach(c => {
+            if (c.classList.contains("active")) selected.push({x:+c.dataset.x,y:+c.dataset.y});
+          });
+          const correctPoints = [{x:0,y:0},{x:1,y:3},{x:2,y:6},{x:3,y:9},{x:4,y:12}];
+          let score = 0, total = 3, messages = [];
+          if (eqText === "p=3w" || eqText === "3w=p" || eqText === "p=3*w") {
+            score++;
+            messages.push("Your equation p = 3w matches the situation.");
+          } else if (!eqText) {
+            messages.push("Write p = 3w, since she prepares 3 pieces each week.");
+          } else {
+            messages.push("Pieces should equal 3 times weeks: p = 3w.");
+          }
+
+          let correctSelected = 0;
+          correctPoints.forEach(pt => {
+            if (selected.some(s => s.x===pt.x && s.y===pt.y)) correctSelected++;
+          });
+          if (correctSelected >= 2) {
+            score++;
+            messages.push("You plotted points consistent with 3 pieces per week.");
+          } else {
+            messages.push("Try plotting (1,3), (2,6), (3,9) to match p = 3w.");
+          }
+
+          if (selected.length === correctSelected && selected.length > 0) {
+            score++;
+            messages.push("All plotted points stay on the correct proportional line.");
+          } else if (selected.length === 0) {
+            messages.push("Plot at least one point to show the pattern.");
+          } else {
+            messages.push("Some plotted points are off the line; adjust to match p = 3w.");
+          }
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M8",
+        title: "Coffee Uplink",
+        dok: 2,
+        points: 2.0,
+        standard: "6.EE.C.9",
+        brief: "Equation + table for $0.50 per cup donation.",
+        description:
+          "A coffee shop donates $0.50 to charity for each cup sold. You’re configuring the donation tracker.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Donation Code – write an equation for cups c and dollars d.</p>
+            <input type="text" id="m8-eq" placeholder="Example: d = 0.5c" />
+
+            <p class="prompt">Complete the donation table.</p>
+            <table>
+              <tr><th>Cups (c)</th><th>Donation ($)</th></tr>
+              <tr><td>1</td><td><input type="number" id="m8-a" step="0.01" /></td></tr>
+              <tr><td>2</td><td><input type="number" id="m8-b" step="0.01" /></td></tr>
+              <tr><td>3</td><td><input type="number" id="m8-c" step="0.01" /></td></tr>
+            </table>
+          `;
+        },
+        check() {
+          const eqText = (document.getElementById("m8-eq").value || "").replace(/\s+/g,"").toLowerCase();
+          const a = parseFloat(document.getElementById("m8-a").value);
+          const b = parseFloat(document.getElementById("m8-b").value);
+          const c = parseFloat(document.getElementById("m8-c").value);
+          let score = 0, total = 4, messages = [];
+
+          if (eqText === "d=0.5c" || eqText === "d=0.50c" || eqText === "0.5c=d") {
+            score++;
+            messages.push("Your equation d = 0.5c correctly represents the situation.");
+          } else if (!eqText) {
+            messages.push("Write d = 0.5c because each cup adds $0.50.");
+          } else {
+            messages.push("Donation should be 0.5 times cups: d = 0.5c.");
+          }
+
+          if (!isNaN(a) && Math.abs(a - 0.5) < 0.01) {
+            score++;
+            messages.push("1 cup → $0.50 is correct.");
+          } else {
+            messages.push("For 1 cup: 1 × 0.50 = 0.50.");
+          }
+          if (!isNaN(b) && Math.abs(b - 1.0) < 0.01) {
+            score++;
+            messages.push("2 cups → $1.00 is correct.");
+          } else {
+            messages.push("For 2 cups: 2 × 0.50 = 1.00.");
+          }
+          if (!isNaN(c) && Math.abs(c - 1.5) < 0.01) {
+            score++;
+            messages.push("3 cups → $1.50 is correct.");
+          } else {
+            messages.push("For 3 cups: 3 × 0.50 = 1.50.");
+          }
+
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M9",
+        title: "Allowance Race",
+        dok: 2,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Extend a pattern for two kids and compare totals.",
+        description:
+          "Jorge and Cindya are in an allowance race. Their weekly amounts follow patterns. You’re predicting who pulls ahead after 9 weeks and by how much.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Allowance Feed – extend the pattern.</p>
+            <table>
+              <tr><th>Weeks</th><th>Jorge ($)</th><th>Cindya ($)</th></tr>
+              <tr><td>1</td><td>9</td><td>11</td></tr>
+              <tr><td>2</td><td>18</td><td>22</td></tr>
+              <tr><td>3</td><td>27</td><td>33</td></tr>
+              <tr><td>4</td><td>36</td><td>44</td></tr>
+            </table>
+            <p class="prompt">Predict the totals after 9 weeks.</p>
+            <label class="field-label">Jorge after 9 weeks</label>
+            <input type="number" id="m9-jorge" />
+            <label class="field-label">Cindya after 9 weeks</label>
+            <input type="number" id="m9-cindya" />
+            <p class="prompt">How much more will Cindya have than Jorge?</p>
+            <input type="number" id="m9-diff" />
+          `;
+        },
+        check() {
+          const j = parseFloat(document.getElementById("m9-jorge").value);
+          const c = parseFloat(document.getElementById("m9-cindya").value);
+          const d = parseFloat(document.getElementById("m9-diff").value);
+          let score = 0, total = 3, messages = [];
+
+          if (!isNaN(j) && Math.abs(j - 81) < 0.01) {
+            score++;
+            messages.push("Jorge earns 9 × 9 = 81 after 9 weeks.");
+          } else {
+            messages.push("Jorge’s weekly amount is 9, so 9 weeks → 81.");
+          }
+          if (!isNaN(c) && Math.abs(c - 99) < 0.01) {
+            score++;
+            messages.push("Cindya earns 11 × 9 = 99 after 9 weeks.");
+          } else {
+            messages.push("Cindya’s weekly amount is 11, so 9 weeks → 99.");
+          }
+          if (!isNaN(d) && Math.abs(d - 18) < 0.01) {
+            score++;
+            messages.push("Difference 99 − 81 = 18 is correct.");
+          } else {
+            messages.push("Subtract to compare: 99 − 81 = 18 more for Cindya.");
+          }
+
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M10",
+        title: "Coupon Puzzle",
+        dok: 3,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Multi-step reasoning with coupon, payment, and change.",
+        description:
+          "Bonnie uses a $10‑off coupon, pays with two $20 bills, and gets $14.05 in change. Decode the original price of the items and explain your reasoning clearly.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Explain your decoding strategy.</p>
+            <textarea id="m10-explain" placeholder="Describe how you use the $40 paid, the $10 coupon, and the $14.05 change to find the original price."></textarea>
+
+            <p class="prompt">What was the original price (before the $10 coupon)?</p>
+            <input type="number" id="m10-price" step="0.01" />
+          `;
+        },
+        check() {
+          const exp = (document.getElementById("m10-explain").value || "").trim();
+          const price = parseFloat(document.getElementById("m10-price").value);
+          let score = 0, total = 2, messages = [];
+
+          if (!isNaN(price) && Math.abs(price - 35.95) < 0.01) {
+            score++;
+            messages.push("Correct: the original price is $35.95.");
+          } else {
+            messages.push("Think: 40 − 14.05 = 25.95 after coupon; then add 10 back to get 35.95.");
+          }
+
+          const lower = exp.toLowerCase();
+          const keyBits = ["40 - 14.05","40-14.05","25.95","add 10","plus 10"];
+          let hits = 0;
+          keyBits.forEach(k => { if (lower.includes(k.toLowerCase())) hits++; });
+          if (exp.length >= 25 && hits >= 1) {
+            score++;
+            messages.push("Your explanation shows a clear, multi-step strategy.");
+          } else {
+            messages.push("Explain the two main steps: subtract the change from $40, then add back the $10 coupon.");
+          }
+
+          return { score, total, messages };
+        }
+      },
+
+      {
+        id: "M11",
+        title: "Lawn Earnings",
+        dok: 1,
+        points: 1.0,
+        standard: "6.EE.C.9",
+        brief: "Write & evaluate an expression for total earnings.",
+        description:
+          "Jeff earns $10 per lawn, spends $10 on gas, and mows 6 lawns. You’re calculating his net earnings.",
+        buildContent(container) {
+          container.innerHTML = `
+            <p class="prompt">Write an expression for Jeff's earnings for 6 lawns after gas.</p>
+            <input type="text" id="m11-expr" placeholder="Example: 10 × 6 − 10" />
+
+            <p class="prompt">Evaluate your expression.</p>
+            <input type="number" id="m11-total" />
+          `;
+        },
+        check() {
+          const expr = (document.getElementById("m11-expr").value || "").replace(/\s+/g,"");
+          const totalVal = parseFloat(document.getElementById("m11-total").value);
+          let score = 0, total = 2, messages = [];
+
+          if (expr.includes("10*6-10") || expr.includes("10x6-10") || expr.includes("10(6)-10")) {
+            score++;
+            messages.push("Your expression correctly shows '6 lawns × $10, then −$10 for gas'.");
+          } else if (!expr) {
+            messages.push("Write an expression like 10 × 6 − 10.");
+          } else {
+            messages.push("Your expression should multiply 10 by 6 and then subtract 10 for gas.");
+          }
+
+          if (!isNaN(totalVal) && Math.abs(totalVal - 50) < 0.01) {
+            score++;
+            messages.push("Jeff’s net earnings are $50.");
+          } else {
+            messages.push("Compute 10 × 6 − 10 = 50.");
+          }
+
+          return { score, total, messages };
+        }
+      }
+    ];
+
+    const missionListElem = document.getElementById("mission-list");
+    const missionTitleElem = document.getElementById("mission-title");
+    const missionDescElem = document.getElementById("mission-desc");
+    const missionContentElem = document.getElementById("mission-content");
+    const checkBtn = document.getElementById("check-btn");
+    const recordBtn = document.getElementById("record-btn");
+    const clearBtn = document.getElementById("clear-btn");
+    const feedbackElem = document.getElementById("feedback");
+    const statusMissionElem = document.getElementById("status-mission");
+    const statusPointsElem = document.getElementById("status-points");
+    const logEntriesElem = document.getElementById("log-entries");
+    const streakDisplay = document.getElementById("streak-display");
+
+    let currentMission = null;
+    let streak = 0;
+
+    function renderMissionCards() {
+      missions.forEach(m => {
+        const card = document.createElement("article");
+        card.className = "mission-card";
+        card.dataset.id = m.id;
+        card.innerHTML = `
+          <div class="mission-title">${m.title}</div>
+          <div class="mission-meta">
+            <span class="badge std">${m.standard}</span>
+            <span class="badge dok${m.dok}">DOK ${m.dok}</span>
+          </div>
+          <div style="margin-top:3px;font-size:0.74rem;">${m.brief}</div>
+          <div class="mission-score-chip">
+            <span>${m.points.toFixed(2)}</span> pts
+          </div>
+        `;
+        card.addEventListener("click", () => selectMission(m.id));
+        missionListElem.appendChild(card);
+      });
+    }
+
+    function selectMission(id) {
+      currentMission = missions.find(m => m.id === id);
+      if (!currentMission) return;
+
+      document.querySelectorAll(".mission-card").forEach(card => {
+        card.classList.toggle("active", card.dataset.id === id);
+      });
+
+      missionTitleElem.textContent = currentMission.title;
+      missionDescElem.textContent = currentMission.description;
+      missionContentElem.innerHTML = "";
+      currentMission.buildContent(missionContentElem);
+      feedbackElem.style.display = "none";
+      feedbackElem.textContent = "";
+      checkBtn.disabled = false;
+      recordBtn.disabled = false;
+      clearBtn.disabled = false;
+      statusMissionElem.innerHTML = `<strong>Mission:</strong> ${currentMission.id} • ${currentMission.title}`;
+      statusPointsElem.innerHTML = `<strong>Points:</strong> ${currentMission.points.toFixed(2)} • DOK ${currentMission.dok}`;
+    }
+
+    function gatherCurrentInputs() {
+      if (!currentMission) return {};
+      const container = missionContentElem;
+      const inputs = container.querySelectorAll("input, textarea, select, .graph-cell");
+      const data = {};
+      inputs.forEach((el, idx) => {
+        if (el.classList.contains("graph-cell")) return;
+        const key = el.id || `${el.tagName.toLowerCase()}_${idx}`;
+        if (el.tagName === "SELECT") {
+          data[key] = el.value;
+        } else {
+          data[key] = el.value;
+        }
+      });
+
+      const graphCells = container.querySelectorAll(".graph-cell");
+      if (graphCells.length > 0) {
+        const active = [];
+        graphCells.forEach(cell => {
+          if (cell.classList.contains("active")) {
+            active.push(`(${cell.dataset.x},${cell.dataset.y})`);
+          }
+        });
+        data["graph_points"] = active.join(", ");
+      }
+      return data;
+    }
+
+    function setFeedback(result) {
+      const { score, total, messages } = result;
+      const pct = total > 0 ? (score / total) : 0;
+      feedbackElem.innerHTML = messages.map(m => "• " + m).join("<br>");
+      feedbackElem.classList.remove("ok","partial","try");
+      if (pct === 1) {
+        feedbackElem.classList.add("ok");
+      } else if (pct >= 0.5) {
+        feedbackElem.classList.add("partial");
+      } else {
+        feedbackElem.classList.add("try");
+      }
+      feedbackElem.style.display = "block";
+
+      if (pct === 0) {
+        streak = 0;
+      } else {
+        streak += 1;
+      }
+      streakDisplay.innerHTML = `Current streak: <strong>${streak}</strong> missions checked without a full miss.`;
+    }
+
+    function addLocalLogEntry(payload) {
+      const time = new Date().toLocaleString();
+      const entry = document.createElement("div");
+      entry.className = "log-entry";
+      entry.innerHTML = `
+        <span class="time-tag">${time}</span>
+        <span class="mission-tag">${payload.missionId} – ${payload.missionTitle}</span>
+        <br/>
+        Pilot: ${payload.studentName} • Class: ${payload.classTag || "n/a"}
+        <br/>
+        Score: <span class="percent-tag">${payload.rawScore}/${payload.rawTotal} (${payload.percent}%)</span>
+        <br/>
+        Inputs:
+        <pre style="margin:2px 0 0 0;">${JSON.stringify(payload.inputs, null, 2)}</pre>
+      `;
+      logEntriesElem.appendChild(entry);
+      logEntriesElem.scrollTop = logEntriesElem.scrollHeight;
+    }
+
+    function onCheck() {
+      if (!currentMission) return;
+      const result = currentMission.check();
+      setFeedback(result);
+    }
+
+    function onRecord() {
+      if (!currentMission) return;
+      const studentName = document.getElementById("student-name").value || "Unnamed student";
+      const classTag = document.getElementById("class-tag").value || "";
+      const inputs = gatherCurrentInputs();
+      const result = currentMission.check();
+      const pct = result.total > 0 ? ((result.score / result.total) * 100).toFixed(0) : "0";
+
+      const payload = {
+        studentName,
+        classTag,
+        missionId: currentMission.id,
+        missionTitle: currentMission.title,
+        rawScore: result.score,
+        rawTotal: result.total,
+        percent: pct,
+        inputs
+      };
+
+      addLocalLogEntry(payload);
+      alert("Local log updated on this device.");
+    }
+
+    function onClear() {
+      if (!currentMission) return;
+      const container = missionContentElem;
+      container.querySelectorAll("input, textarea, select").forEach(el => {
+        if (el.tagName === "SELECT") el.selectedIndex = 0;
+        else el.value = "";
+      });
+      container.querySelectorAll(".graph-cell").forEach(cell => {
+        cell.classList.remove("active");
+      });
+      feedbackElem.style.display = "none";
+      feedbackElem.textContent = "";
+    }
+
+    function toggleLog() {
+      logEntriesElem.classList.toggle("hidden");
+    }
+
+    window.toggleLog = toggleLog;
+
+    renderMissionCards();
+  </script>
+</body>
+</html>

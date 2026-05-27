@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Independent &amp; Dependent Variables — Interactive Review | Grade 6</title>
+<style>
+:root {
+  --navy:#1a3562;--navy2:#24497a;
+  --teal:#0ea5c9;--teal-light:#e0f5fc;
+  --coral:#f05a5b;--coral-light:#fff0f0;
+  --amber:#f59e0b;--amber-light:#fffbeb;
+  --plum:#7c3aed;--plum-light:#f5f0ff;
+  --sage:#22c55e;--sage-light:#f0fff4;
+  --bg:#f1f4fb;--white:#fff;
+  --text:#1e2a45;--muted:#6b7a99;
+  --rad:18px;--shadow:0 6px 28px rgba(26,53,98,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ====== HEADER ====== */
+.site-header{
+  background:linear-gradient(135deg,var(--navy),var(--navy2));
+  color:#fff;padding:0 32px;
+  display:flex;align-items:stretch;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 4px 24px rgba(0,0,0,.25);
+}
+.header-inner{
+  display:flex;justify-content:space-between;align-items:center;
+  width:100%;padding:16px 0;
+}
+.header-brand h1{
+  font-family:'Baloo 2',cursive;font-size:22px;
+  display:flex;align-items:center;gap:8px;letter-spacing:.3px;
+}
+.header-brand p{font-size:12px;opacity:.7;margin-top:2px;letter-spacing:1px;text-transform:uppercase}
+.score-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.15);padding:8px 18px;
+  border-radius:30px;font-weight:800;font-size:17px;
+  border:1.5px solid rgba(255,255,255,.25);
+}
+.progress-strip{height:5px;background:rgba(0,0,0,.15)}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--teal),var(--coral),var(--amber));
+  transition:width .6s cubic-bezier(.4,0,.2,1);width:0%
+}
+
+/* ====== MAIN ====== */
+main{max-width:960px;margin:0 auto;padding:36px 20px 100px}
+
+/* ====== SECTION CARD ====== */
+.s-card{background:var(--white);border-radius:var(--rad);box-shadow:var(--shadow);margin-bottom:44px;overflow:hidden}
+.s-head{padding:22px 28px;display:flex;align-items:center;gap:16px;color:#fff}
+.s-num{
+  width:46px;height:46px;background:rgba(255,255,255,.22);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Baloo 2',cursive;font-size:22px;flex-shrink:0
+}
+.s-info h2{font-family:'Baloo 2',cursive;font-size:21px;line-height:1.1}
+.s-info p{font-size:12.5px;opacity:.85;margin-top:2px}
+.s-body{padding:28px 28px 24px}
+
+.h-teal .s-head{background:linear-gradient(135deg,var(--teal),#0369a1)}
+.h-coral .s-head{background:linear-gradient(135deg,var(--coral),#b91c1c)}
+.h-amber .s-head{background:linear-gradient(135deg,var(--amber),#d97706)}
+.h-plum .s-head{background:linear-gradient(135deg,var(--plum),#4c1d95)}
+.h-sage .s-head{background:linear-gradient(135deg,var(--sage),#15803d)}
+
+/* ====== STANDARD TAG + INSTRUCTION ====== */
+.std-tag{
+  display:inline-block;background:#e8eeff;color:var(--navy);
+  padding:3px 12px;border-radius:20px;font-size:11.5px;font-weight:800;
+  letter-spacing:.5px;margin-bottom:10px
+}
+.instr{
+  background:#f5f8ff;border-left:4px solid var(--teal);
+  padding:11px 15px;border-radius:0 8px 8px 0;
+  font-size:13.5px;color:#3a4a6b;margin-bottom:22px;line-height:1.5
+}
+
+/* ====== BUTTONS ====== */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 24px;border:none;border-radius:40px;
+  font-family:'Baloo 2',cursive;font-size:15px;cursor:pointer;
+  transition:all .2s;font-weight:600
+}
+.btn-check{background:var(--sage);color:#fff}
+.btn-check:hover{background:#16a34a;transform:translateY(-2px);box-shadow:0 4px 14px rgba(34,197,94,.3)}
+.btn-reset{background:#f0f2f8;color:var(--muted)}
+.btn-reset:hover{background:#e2e6f0}
+.btn-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+
+/* ====== ACTIVITY 1: DRAG SORT ====== */
+.card-bank{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px;min-height:50px}
+.var-card{
+  background:var(--navy);color:#fff;padding:10px 16px;
+  border-radius:10px;font-size:14px;font-weight:800;
+  cursor:grab;user-select:none;transition:transform .15s,opacity .15s,box-shadow .15s;
+  border:2px solid transparent;line-height:1.3
+}
+.var-card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(26,53,98,.25)}
+.var-card.dragging{opacity:.4;cursor:grabbing}
+.sort-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.sort-bin{
+  border:2.5px dashed;border-radius:14px;padding:16px;min-height:170px;
+  transition:background .2s
+}
+.bin-ind{border-color:var(--teal)}
+.bin-dep{border-color:var(--coral)}
+.sort-bin.over{background:rgba(14,165,201,.07)}
+.bin-dep.over{background:rgba(240,90,91,.07)}
+.bin-title{
+  font-family:'Baloo 2',cursive;font-size:17px;text-align:center;margin-bottom:6px
+}
+.bin-ind .bin-title{color:var(--teal)}
+.bin-dep .bin-title{color:var(--coral)}
+.bin-hint{font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px}
+.dropped-card{
+  padding:8px 13px;border-radius:8px;font-size:13px;font-weight:700;
+  margin-bottom:7px;color:#fff;background:var(--navy)
+}
+.dropped-card.ok{background:var(--sage)}
+.dropped-card.bad{background:var(--coral)}
+
+/* ====== ACTIVITY 2: TABLES ====== */
+.table-wrap{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.table-section h4{font-family:'Baloo 2',cursive;color:var(--teal);font-size:16px;margin-bottom:6px}
+.table-section p{font-size:13px;color:var(--muted);margin-bottom:10px}
+.math-tbl{width:100%;border-collapse:collapse;border-radius:10px;overflow:hidden}
+.math-tbl th{background:var(--teal);color:#fff;padding:9px 14px;font-family:'Baloo 2',cursive;font-size:14px;text-align:center}
+.math-tbl td{padding:7px 14px;text-align:center;border-bottom:1px solid #edf0fa;font-weight:700;font-size:15px}
+.math-tbl tr:last-child td{border-bottom:none}
+.math-tbl tr:nth-child(even) td{background:#f7f9ff}
+.math-tbl input{
+  width:82px;padding:5px 8px;border:2px solid var(--teal);
+  border-radius:7px;text-align:center;
+  font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;outline:none;
+  transition:border-color .2s,background .2s
+}
+.math-tbl input:focus{border-color:var(--plum);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.math-tbl input.ok{border-color:var(--sage);background:#f0fff4}
+.math-tbl input.bad{border-color:var(--coral);background:#fff5f5}
+
+/* ====== ACTIVITY 3: MATCH ====== */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.match-col h3{font-family:'Baloo 2',cursive;font-size:16px;margin-bottom:12px}
+.match-col:first-child h3{color:var(--amber)}
+.match-col:last-child h3{color:var(--navy)}
+.m-card{
+  border:2.5px solid;border-radius:11px;padding:11px 15px;
+  margin-bottom:10px;cursor:pointer;transition:all .2s;font-size:13.5px;font-weight:700
+}
+.m-scenario{border-color:#fde68a;background:#fffbeb;color:var(--text)}
+.m-scenario:hover{background:#fef3c7;border-color:var(--amber)}
+.m-scenario.sel{background:var(--amber);color:#fff;border-color:var(--amber)}
+.m-scenario.done{background:#f0fff4;border-color:var(--sage);color:var(--sage);cursor:default}
+.m-scenario.bad{background:#fff5f5;border-color:var(--coral);animation:shake .4s}
+.m-eq{
+  border-color:#e8eeff;background:#f5f8ff;color:var(--navy);
+  font-family:monospace;font-size:17px;text-align:center;font-weight:900
+}
+.m-eq:hover{background:#eef2ff;border-color:var(--navy)}
+.m-eq.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+.m-eq.done{background:#f0fff4;border-color:var(--sage);color:var(--sage);cursor:default}
+.m-eq.bad{background:#fff5f5;border-color:var(--coral);animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ====== ACTIVITY 4: FLIP CARDS ====== */
+.flip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.flip-wrap{height:150px;perspective:1000px;cursor:pointer}
+.flip-inner{
+  width:100%;height:100%;position:relative;
+  transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1)
+}
+.flip-wrap.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-face{
+  position:absolute;inset:0;border-radius:14px;
+  backface-visibility:hidden;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:13px;text-align:center
+}
+.flip-front{background:linear-gradient(135deg,var(--plum),#4c1d95);color:#fff}
+.flip-front .fnum{font-family:'Baloo 2',cursive;font-size:30px;opacity:.25;line-height:1}
+.flip-front .ftext{font-size:12px;line-height:1.4;margin-top:4px}
+.flip-front .ftap{font-size:10.5px;opacity:.55;margin-top:6px}
+.flip-back{transform:rotateY(180deg)}
+.flip-back.t{background:#f0fff4;border:3px solid var(--sage);color:var(--sage)}
+.flip-back.f{background:#fff5f5;border:3px solid var(--coral);color:var(--coral)}
+.flip-ans{font-family:'Baloo 2',cursive;font-size:26px}
+.flip-exp{font-size:10.5px;color:#555;margin-top:5px;font-family:'Nunito',sans-serif}
+
+/* ====== ACTIVITY 5: GRAPH DECODER ====== */
+.graph-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.graph-item{border:2px solid #e8f5ea;border-radius:14px;padding:18px}
+.graph-item h4{font-family:'Baloo 2',cursive;color:var(--sage);font-size:16px;margin-bottom:10px}
+.graph-item p{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.5}
+.graph-opts{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.g-opt{
+  padding:8px 15px;border:2px solid #e0e8ff;border-radius:8px;
+  cursor:pointer;font-size:15px;font-weight:800;
+  font-family:monospace;transition:all .2s;background:#f9fbff
+}
+.g-opt:hover{background:var(--sage-light);border-color:var(--sage)}
+.g-opt.ok{background:var(--sage-light);border-color:var(--sage);color:#166534}
+.g-opt.bad{background:#fff5f5;border-color:var(--coral);color:#991b1b}
+.g-opt:disabled,.g-opt[disabled]{pointer-events:none}
+
+/* ====== SVG MINI GRAPH ====== */
+.mini-svg{border-radius:10px;background:#f8fff8;border:1px solid #dcfce7;display:block}
+
+/* ====== TOAST ====== */
+.toast{
+  position:fixed;bottom:28px;right:28px;
+  padding:12px 22px;border-radius:12px;font-weight:800;font-size:15px;
+  opacity:0;transform:translateY(16px);transition:all .3s;z-index:500;
+  pointer-events:none;display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 28px rgba(0,0,0,.18)
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--sage);color:#fff}
+.toast.bad{background:var(--coral);color:#fff}
+
+/* ====== VICTORY ====== */
+.victory{
+  text-align:center;padding:60px 36px;
+  background:linear-gradient(135deg,var(--navy),var(--plum));
+  color:#fff;border-radius:var(--rad);margin-top:10px
+}
+.trophy{font-size:80px;display:block;margin-bottom:12px;animation:bob 1.2s infinite alternate ease-in-out}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.victory h2{font-family:'Baloo 2',cursive;font-size:38px;color:#ffd700}
+.victory p{font-size:17px;opacity:.85;margin:10px 0 4px}
+.final-pts{font-family:'Baloo 2',cursive;font-size:72px;color:#ffd700;line-height:1}
+.star-row{display:flex;gap:6px;justify-content:center;margin:16px 0 28px}
+.s-star{font-size:40px;opacity:.25;transition:opacity .5s .1s,transform .5s}
+.s-star.lit{opacity:1;transform:scale(1.2)}
+
+/* ====== RESPONSIVE ====== */
+@media(max-width:640px){
+  .sort-grid,.table-wrap,.match-wrap,.graph-grid,.flip-grid{grid-template-columns:1fr}
+  .flip-grid{grid-template-columns:repeat(2,1fr)}
+  main{padding:20px 14px 80px}
+  .s-body{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <h1>📊 Independent &amp; Dependent Variables</h1>
+      <p>Grade 6 Mathematics · CCSS 6.EE.C.9 · Interactive Review</p>
+    </div>
+    <div class="score-pill">⭐ <span id="pts">0</span> pts</div>
+  </div>
+</header>
+<div class="progress-strip"><div class="progress-fill" id="prog"></div></div>
+
+<main>
+
+<!-- ══════════════════════════════════════════════
+     ACTIVITY 1 — VARIABLE DETECTIVE (DRAG & DROP)
+══════════════════════════════════════════════ -->
+<div class="s-card h-teal">
+  <div class="s-head">
+    <div class="s-num">1</div>
+    <div class="s-info">
+      <h2>🔍 Variable Detective</h2>
+      <p>Drag each variable label to the correct bin</p>
+    </div>
+  </div>
+  <div class="s-body">
+    <span class="std-tag">CCSS 6.EE.C.9 — Independent vs. Dependent Variables</span>
+    <div class="instr">🗂️ <strong>Directions:</strong> Below are six labeled variable cards. Read the scenario description on each card and drag it to either the <strong>Independent Variable</strong> bin (the input — the thing you control) or the <strong>Dependent Variable</strong> bin (the output — the thing that changes as a result).</div>
+
+    <div class="card-bank" id="bank"></div>
+
+    <div class="sort-grid">
+      <div class="sort-bin bin-ind" id="bin-independent"
+           ondragover="binOver(event)" ondragleave="binLeave(event)" ondrop="binDrop(event,'independent')">
+        <div class="bin-title">🎯 Independent Variable</div>
+        <div class="bin-hint">The INPUT — you control this</div>
+        <div id="drop-independent"></div>
+      </div>
+      <div class="sort-bin bin-dep" id="bin-dependent"
+           ondragover="binOver(event)" ondragleave="binLeave(event)" ondrop="binDrop(event,'dependent')">
+        <div class="bin-title">📈 Dependent Variable</div>
+        <div class="bin-hint">The OUTPUT — this changes because of the input</div>
+        <div id="drop-dependent"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-check" onclick="checkSort()">✅ Check Sort</button>
+      <button class="btn btn-reset" onclick="resetSort()">🔄 Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ACTIVITY 2 — TABLE WORKSHOP (FILL IN)
+══════════════════════════════════════════════ -->
+<div class="s-card h-coral">
+  <div class="s-head">
+    <div class="s-num">2</div>
+    <div class="s-info">
+      <h2>📋 Table Workshop</h2>
+      <p>Complete the input/output tables using the pattern</p>
+    </div>
+  </div>
+  <div class="s-body">
+    <span class="std-tag">CCSS 6.EE.C.9 — Tables of Values</span>
+    <div class="instr">📝 <strong>Directions:</strong> Each table has a rule. Use the rule to calculate the missing values and type them in the yellow cells. Include the dollar sign for money values (e.g. <em>$110.00</em>).</div>
+
+    <div class="table-wrap">
+      <div class="table-section">
+        <h4>Table A: Gym Membership</h4>
+        <p>A gym charges <strong>$55 per month</strong>.</p>
+        <table class="math-tbl">
+          <thead><tr><th>Months (m)</th><th>Total Cost ($)</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>$55.00</td></tr>
+            <tr><td>2</td><td><input id="t1a" placeholder="?"/></td></tr>
+            <tr><td>3</td><td>$165.00</td></tr>
+            <tr><td>4</td><td><input id="t1b" placeholder="?"/></td></tr>
+            <tr><td>6</td><td><input id="t1c" placeholder="?"/></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-section">
+        <h4>Table B: Orange Stand</h4>
+        <p>Oranges cost <strong>$0.80 each</strong>.</p>
+        <table class="math-tbl">
+          <thead><tr><th>Oranges (n)</th><th>Total Cost ($)</th></tr></thead>
+          <tbody>
+            <tr><td>2</td><td><input id="t2a" placeholder="?"/></td></tr>
+            <tr><td>5</td><td>$4.00</td></tr>
+            <tr><td>8</td><td><input id="t2b" placeholder="?"/></td></tr>
+            <tr><td>10</td><td>$8.00</td></tr>
+            <tr><td>15</td><td><input id="t2c" placeholder="?"/></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-check" onclick="checkTables()">✅ Check Tables</button>
+      <button class="btn btn-reset" onclick="resetTables()">🔄 Clear All</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ACTIVITY 3 — EQUATION EXPRESS (CLICK MATCH)
+══════════════════════════════════════════════ -->
+<div class="s-card h-amber">
+  <div class="s-head">
+    <div class="s-num">3</div>
+    <div class="s-info">
+      <h2>🔗 Equation Express</h2>
+      <p>Match each scenario to its equation</p>
+    </div>
+  </div>
+  <div class="s-body">
+    <span class="std-tag">CCSS 6.EE.C.9 — Writing &amp; Matching Equations</span>
+    <div class="instr">🎯 <strong>Directions:</strong> Click a <strong>scenario</strong> on the left to select it (it turns gold), then click the <strong>equation</strong> on the right that represents it. A correct match turns green. An incorrect match flashes red — try again!</div>
+
+    <div class="match-wrap">
+      <div class="match-col">
+        <h3>📖 Scenarios</h3>
+        <div id="scenarios"></div>
+      </div>
+      <div class="match-col">
+        <h3>= Equations</h3>
+        <div id="equations"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-reset" onclick="resetMatch()">🔄 Reset Matches</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ACTIVITY 4 — FLIP FOR TRUTH (FLIP CARDS)
+══════════════════════════════════════════════ -->
+<div class="s-card h-plum">
+  <div class="s-head">
+    <div class="s-num">4</div>
+    <div class="s-info">
+      <h2>🃏 Flip for Truth</h2>
+      <p>Predict TRUE or FALSE — then flip to reveal!</p>
+    </div>
+  </div>
+  <div class="s-body">
+    <span class="std-tag">CCSS 6.EE.C.9 — Evaluating Relationships</span>
+    <div class="instr">🤔 <strong>Directions:</strong> Read each card statement carefully. Think about whether it is <strong>TRUE</strong> or <strong>FALSE</strong>, then click the card to flip it and check your reasoning.</div>
+
+    <div class="flip-grid" id="flipGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ACTIVITY 5 — GRAPH DECODER
+══════════════════════════════════════════════ -->
+<div class="s-card h-sage">
+  <div class="s-head">
+    <div class="s-num">5</div>
+    <div class="s-info">
+      <h2>📈 Graph Decoder</h2>
+      <p>Read the graph and identify its equation</p>
+    </div>
+  </div>
+  <div class="s-body">
+    <span class="std-tag">CCSS 6.EE.C.9 — Graphing Relationships</span>
+    <div class="instr">🔎 <strong>Directions:</strong> Study each coordinate graph. Notice where the points fall and how fast the output grows per unit of input. Then select the equation that matches the relationship shown.</div>
+
+    <div class="graph-grid" id="graphGrid"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-check" onclick="scrollToVictory()">🏆 See My Score</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VICTORY
+══════════════════════════════════════════════ -->
+<div class="victory" id="victoryBox">
+  <span class="trophy">🏆</span>
+  <h2>Review Complete!</h2>
+  <p>You've worked through all 5 key skill areas for your test!</p>
+  <div class="final-pts" id="finalPts">0</div>
+  <p style="opacity:.7;font-size:15px">Total Points Earned</p>
+  <div class="star-row">
+    <span class="s-star" id="st1">⭐</span>
+    <span class="s-star" id="st2">⭐</span>
+    <span class="s-star" id="st3">⭐</span>
+    <span class="s-star" id="st4">⭐</span>
+    <span class="s-star" id="st5">⭐</span>
+  </div>
+  <button class="btn btn-check" onclick="restartAll()" style="font-size:16px;padding:13px 32px">🔄 Try Again from the Start</button>
+</div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+const sortData = [
+  {id:'s1',label:'w (weeks)',note:'Baker makes 5 loaves/wk. w=weeks, L=loaves',ans:'independent',color:'#1a3562'},
+  {id:'s2',label:'L (loaves)',note:'Baker makes 5 loaves/wk. w=weeks, L=loaves',ans:'dependent',color:'#7c3aed'},
+  {id:'s3',label:'h (hours)',note:'Candle burns 3 cm/hr. h=hours, c=cm left',ans:'independent',color:'#1a3562'},
+  {id:'s4',label:'c (cm left)',note:'Candle burns 3 cm/hr. h=hours, c=cm left',ans:'dependent',color:'#7c3aed'},
+  {id:'s5',label:'r (races)',note:'Runner wins 1 medal/race. r=races, m=medals',ans:'independent',color:'#1a3562'},
+  {id:'s6',label:'m (medals)',note:'Runner wins 1 medal/race. r=races, m=medals',ans:'dependent',color:'#7c3aed'},
+];
+
+const tableAnswers = {t1a:'110',t1b:'220',t1c:'330',t2a:'1.60',t2b:'6.40',t2c:'12.00'};
+const tableDisplay = {t1a:'$110.00',t1b:'$220.00',t1c:'$330.00',t2a:'$1.60',t2b:'$6.40',t2c:'$12.00'};
+
+const matchData = [
+  {id:'p1',sc:'A printer prints 12 pages per minute. Let t=minutes, n=pages.',eq:'n = 12t'},
+  {id:'p2',sc:'Concert tickets cost $35 each. Let k=tickets, c=total cost.',eq:'c = 35k'},
+  {id:'p3',sc:'A plant grows 4 cm per month. Let m=months, h=height (cm).',eq:'h = 4m'},
+  {id:'p4',sc:'A bank adds $15/week to an account. Let w=weeks, a=amount.',eq:'a = 15w'},
+  {id:'p5',sc:'A cyclist covers 6 miles per hour. Let h=hours, d=distance.',eq:'d = 6h'},
+];
+
+const flipData = [
+  {stmt:'If a car travels at 60 mph, the equation is m = 60h (m=miles, h=hours)',ans:true,exp:'✔ Correct! Miles depend on hours: m = 60 × h'},
+  {stmt:'In the equation d = 7t, the variable d is the INDEPENDENT variable',ans:false,exp:'✘ False! t is independent (input). d depends on t.'},
+  {stmt:'The equation for 3 cookies per plate is c = p + 3 (c=cookies, p=plates)',ans:false,exp:'✘ False! It should be c = 3p (multiply, not add)'},
+  {stmt:'In y = 5x, the variable x is the independent variable',ans:true,exp:'✔ Yes! x is the input — we choose x to find y.'},
+  {stmt:'If total cost depends on number of items bought, cost is the DEPENDENT variable',ans:true,exp:'✔ Correct! Cost changes based on how many items you buy.'},
+  {stmt:'The ordered pairs (1,3), (2,6), (3,9), (4,12) can be represented by y = 3x',ans:true,exp:'✔ Correct! Each y-value equals 3 times the x-value.'},
+];
+
+const graphData = [
+  {
+    title:'Graph 1: Driving Distance',
+    desc:'The graph shows points at (1,8), (2,16), (3,24), (4,32). The x-axis shows hours driven and y-axis shows miles traveled.',
+    coef:8,
+    correct:'m = 8h',
+    opts:['m = h + 8','m = 8h','m = 4h','m = 8 + h'],
+  },
+  {
+    title:'Graph 2: Weekly Savings',
+    desc:'The graph shows points at (1,15), (2,30), (3,45), (4,60). The x-axis shows weeks and y-axis shows dollars saved.',
+    coef:15,
+    correct:'d = 15w',
+    opts:['d = 15 + w','d = 30w','d = 15w','w = 15d'],
+  },
+];
+
+/* ============================================================
+   STATE
+============================================================ */
+let score = 0;
+let dragging = null;
+let selSc = null, selEq = null;
+let matched = new Set();
+let flipped = new Set();
+let graphDone = new Set();
+
+/* ============================================================
+   SCORE + PROGRESS
+============================================================ */
+function addPts(n) {
+  score += n;
+  document.getElementById('pts').textContent = score;
+  document.getElementById('prog').style.width = Math.min(score/320*100,100)+'%';
+  document.getElementById('finalPts').textContent = score;
+  updateStars();
+}
+
+function updateStars() {
+  const thresholds = [40,100,180,250,300];
+  thresholds.forEach((t,i)=>{
+    document.getElementById('st'+(i+1)).classList.toggle('lit', score>=t);
+  });
+}
+
+function toast(msg,type='ok'){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show '+type;
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.className='toast',2800);
+}
+
+/* ============================================================
+   ACTIVITY 1 — DRAG SORT
+============================================================ */
+function initSort(){
+  const bank = document.getElementById('bank');
+  bank.innerHTML='';
+  document.getElementById('drop-independent').innerHTML='';
+  document.getElementById('drop-dependent').innerHTML='';
+  sortData.forEach(d=>{
+    const el = document.createElement('div');
+    el.className='var-card'; el.id=d.id; el.draggable=true;
+    el.dataset.ans=d.ans;
+    el.innerHTML=`<div style="font-size:15px;font-weight:900">${d.label}</div><div style="font-size:11px;opacity:.72;margin-top:3px">${d.note}</div>`;
+    el.addEventListener('dragstart',e=>{dragging=el;el.classList.add('dragging');e.dataTransfer.setData('text',el.id)});
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    bank.appendChild(el);
+  });
+}
+
+function binOver(e){e.preventDefault();e.currentTarget.classList.add('over')}
+function binLeave(e){e.currentTarget.classList.remove('over')}
+function binDrop(e,bin){
+  e.preventDefault();e.currentTarget.classList.remove('over');
+  const id=e.dataTransfer.getData('text');
+  const card=document.getElementById(id);
+  if(!card) return;
+  const zone=document.getElementById('drop-'+bin);
+  const clone=document.createElement('div');
+  clone.className='dropped-card';
+  clone.dataset.ans=card.dataset.ans;
+  clone.dataset.bin=bin;
+  clone.innerHTML=card.innerHTML;
+  zone.appendChild(clone);
+  card.remove();
+}
+
+function checkSort(){
+  const all=document.querySelectorAll('.dropped-card');
+  let c=0,t=all.length;
+  all.forEach(el=>{
+    if(el.dataset.ans===el.dataset.bin){el.classList.add('ok');c++}
+    else el.classList.add('bad');
+  });
+  const pts=c*10;addPts(pts);
+  toast(c===t?`🎉 All ${t} correct! +${pts} pts`:`${c}/${t} correct — check the red ones! +${pts} pts`,c===t?'ok':'bad');
+}
+function resetSort(){initSort()}
+
+/* ============================================================
+   ACTIVITY 2 — TABLES
+============================================================ */
+function checkTables(){
+  let c=0,t=Object.keys(tableAnswers).length;
+  Object.entries(tableAnswers).forEach(([id,ans])=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    const v=el.value.replace(/[$\s]/g,'');
+    if(parseFloat(v)===parseFloat(ans)){
+      el.classList.add('ok');el.classList.remove('bad');c++;
+    } else {
+      el.classList.add('bad');el.classList.remove('ok');
+    }
+  });
+  const pts=c*10;addPts(pts);
+  toast(c===t?`📋 Perfect tables! +${pts} pts`:`${c}/${t} correct values +${pts} pts`,c>=4?'ok':'bad');
+}
+function resetTables(){
+  Object.keys(tableAnswers).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.value='';el.className=''}
+  });
+}
+
+/* ============================================================
+   ACTIVITY 3 — MATCH
+============================================================ */
+function initMatch(){
+  matched.clear();selSc=null;selEq=null;
+  const scDiv=document.getElementById('scenarios');
+  const eqDiv=document.getElementById('equations');
+  scDiv.innerHTML='';eqDiv.innerHTML='';
+  const shuffled=[...matchData].sort(()=>Math.random()-.5);
+  matchData.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='m-card m-scenario';el.id='sc_'+p.id;
+    el.dataset.pid=p.id;el.textContent=p.sc;
+    el.onclick=()=>clickScenario(p.id,'sc_'+p.id);
+    scDiv.appendChild(el);
+  });
+  shuffled.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='m-card m-eq';el.id='eq_'+p.id;
+    el.dataset.pid=p.id;el.textContent=p.eq;
+    el.onclick=()=>clickEquation(p.id,'eq_'+p.id);
+    eqDiv.appendChild(el);
+  });
+}
+
+function clickScenario(pid,eid){
+  if(matched.has(pid)) return;
+  document.querySelectorAll('.m-scenario.sel').forEach(e=>e.classList.remove('sel'));
+  selSc={pid,eid};
+  document.getElementById(eid).classList.add('sel');
+  tryMatch2();
+}
+
+function clickEquation(pid,eid){
+  if(matched.has(pid)) return;
+  document.querySelectorAll('.m-eq.sel').forEach(e=>e.classList.remove('sel'));
+  selEq={pid,eid};
+  document.getElementById(eid).classList.add('sel');
+  tryMatch2();
+}
+
+function tryMatch2(){
+  if(!selSc||!selEq) return;
+  const sc=selSc,eq=selEq;
+  selSc=null;selEq=null;
+  if(sc.pid===eq.pid){
+    ['sc_','eq_'].forEach(pre=>{
+      const el=document.getElementById(pre+sc.pid);
+      el.classList.remove('sel');el.classList.add('done');
+    });
+    matched.add(sc.pid);
+    addPts(20);
+    toast('✅ Correct match! +20 pts','ok');
+  } else {
+    [sc.eid,eq.eid].forEach(id=>{
+      const el=document.getElementById(id);
+      el.classList.remove('sel');el.classList.add('bad');
+      setTimeout(()=>el.classList.remove('bad'),700);
+    });
+    toast('❌ Not a match — try again!','bad');
+  }
+}
+function resetMatch(){initMatch()}
+
+/* ============================================================
+   ACTIVITY 4 — FLIP CARDS
+============================================================ */
+function initFlip(){
+  const grid=document.getElementById('flipGrid');
+  grid.innerHTML='';
+  flipData.forEach((d,i)=>{
+    const wrap=document.createElement('div');
+    wrap.className='flip-wrap';
+    wrap.innerHTML=`<div class="flip-inner">
+      <div class="flip-face flip-front">
+        <div class="fnum">${i+1}</div>
+        <div class="ftext">${d.stmt}</div>
+        <div class="ftap">👆 tap to reveal</div>
+      </div>
+      <div class="flip-face flip-back ${d.ans?'t':'f'}">
+        <div class="flip-ans">${d.ans?'✅ TRUE':'❌ FALSE'}</div>
+        <div class="flip-exp">${d.exp}</div>
+      </div>
+    </div>`;
+    wrap.onclick=()=>{
+      wrap.classList.toggle('flipped');
+      if(wrap.classList.contains('flipped')&&!flipped.has(i)){
+        flipped.add(i);addPts(5);
+      }
+    };
+    grid.appendChild(wrap);
+  });
+}
+
+/* ============================================================
+   ACTIVITY 5 — GRAPH
+============================================================ */
+function buildSVG(coef){
+  const W=160,H=130,ox=28,oy=H-18,xS=28,yS=Math.min(28,80/coef);
+  const pts=[1,2,3,4].map(x=>({x:ox+x*xS,y:oy-x*coef*yS}));
+  const poly=pts.map(p=>`${p.x},${p.y}`).join(' ');
+  const dots=pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#22c55e" stroke="white" stroke-width="1.5"/>`).join('');
+  return`<svg class="mini-svg" width="${W}" height="${H}">
+    <line x1="${ox}" y1="8" x2="${ox}" y2="${oy}" stroke="#c8e6c9" stroke-width="1.5"/>
+    <line x1="${ox}" y1="${oy}" x2="${W-8}" y2="${oy}" stroke="#c8e6c9" stroke-width="1.5"/>
+    ${[1,2,3,4].map(x=>`<text x="${ox+x*xS}" y="${oy+12}" font-size="9" fill="#888" text-anchor="middle">${x}</text>`).join('')}
+    <polyline points="${ox},${oy} ${poly}" stroke="#22c55e" stroke-width="2" fill="none"/>
+    ${dots}
+    <text x="${ox-4}" y="${oy-40}" font-size="8" fill="#888" transform="rotate(-90,${ox-4},${oy-40})">output</text>
+    <text x="${W/2+12}" y="${H-2}" font-size="8" fill="#888" text-anchor="middle">input →</text>
+  </svg>`;
+}
+
+function initGraphs(){
+  const grid=document.getElementById('graphGrid');
+  grid.innerHTML='';
+  graphData.forEach((d,pi)=>{
+    const div=document.createElement('div');
+    div.className='graph-item';
+    const opts=d.opts.map(o=>`<div class="g-opt" onclick="checkGraph(${pi},'${o}',this)">${o}</div>`).join('');
+    div.innerHTML=`<h4>${d.title}</h4>${buildSVG(d.coef)}<p>${d.desc}</p><div class="graph-opts">${opts}</div>`;
+    grid.appendChild(div);
+  });
+}
+
+function checkGraph(pi,ans,btn){
+  if(graphDone.has(pi)) return;
+  graphDone.add(pi);
+  const correct=graphData[pi].correct;
+  const parent=btn.parentElement;
+  parent.querySelectorAll('.g-opt').forEach(b=>{
+    b.style.pointerEvents='none';
+    if(b.textContent===correct) b.classList.add('ok');
+  });
+  if(ans===correct){btn.classList.add('ok');addPts(25);toast('📊 Great graph reading! +25 pts','ok')}
+  else{btn.classList.add('bad');toast('Study the slope: how much does output grow each step?','bad')}
+}
+
+function scrollToVictory(){
+  document.getElementById('victoryBox').scrollIntoView({behavior:'smooth'});
+}
+
+/* ============================================================
+   RESTART
+============================================================ */
+function restartAll(){
+  score=0;dragging=null;selSc=null;selEq=null;
+  matched.clear();flipped.clear();graphDone.clear();
+  document.getElementById('pts').textContent='0';
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('finalPts').textContent='0';
+  ['st1','st2','st3','st4','st5'].forEach(id=>document.getElementById(id).classList.remove('lit'));
+  initSort();resetTables();initMatch();initFlip();initGraphs();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============================================================
+   BOOT
+============================================================ */
+window.addEventListener('DOMContentLoaded',()=>{
+  initSort();initMatch();initFlip();initGraphs();
+});
+</script>
+</body>
+</html>

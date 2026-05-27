@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.RP.A.2 — Unit Rate Interactive Study Guide | EduWonderLab</title>
+<style>
+:root{--navy:#1a2744;--teal:#0a8c7a;--teal-l:#12b89e;--gold:#f0b429;--gold-l:#fcd34d;--sky:#3b82f6;--rose:#e11d48;--purple:#7c3aed;--purple-l:#a78bfa;--bg:#f0f4f8;--card:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--ok:#059669;--err:#dc2626}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.site-header{background:linear-gradient(135deg,var(--navy) 0%,#2d3f6e 100%);color:#fff;padding:28px 32px 24px;position:relative;overflow:hidden}
+.site-header::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.04)}
+.badge{display:inline-block;background:var(--teal);color:#fff;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:10px}
+.hdr-title{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;line-height:1.2;margin-bottom:6px}
+.hdr-sub{font-size:14px;color:rgba(255,255,255,.65);margin-bottom:16px}
+.pills{display:flex;gap:10px;flex-wrap:wrap}
+.pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:500;color:rgba(255,255,255,.9)}
+.nav-tabs{background:#fff;border-bottom:2px solid var(--border);padding:0 32px;display:flex;gap:4px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.tab-btn{padding:14px 20px;border:none;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:7px}
+.tab-btn:hover{color:var(--navy)}.tab-btn.active{color:var(--teal);border-bottom-color:var(--teal)}
+.main{max-width:1100px;margin:0 auto;padding:32px 24px}
+.section{display:none}.section.active{display:block}
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:28px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.card-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.concept-box{background:linear-gradient(135deg,#e0f2fe 0%,#f0fdf4 100%);border:2px solid var(--teal);border-radius:14px;padding:22px 24px;margin-bottom:20px}
+.concept-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+.concept-txt{font-size:16px;font-weight:600;color:var(--navy);line-height:1.5}
+.formula{margin-top:14px;background:#fff;border-radius:10px;padding:14px 18px;font-size:20px;font-weight:700;color:var(--teal);text-align:center;border:1px solid rgba(10,140,122,.2)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+.alert{border-radius:10px;padding:14px 18px;margin:12px 0;font-size:14px}
+.alert.info{background:#eff6ff;border-left:4px solid var(--sky);color:#1e40af}
+.alert.tip{background:#fffbeb;border-left:4px solid var(--gold);color:#92400e}
+.example-block{background:linear-gradient(to right,#f8fafc,#f0fdf4);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:12px;padding:20px;margin:14px 0}
+.ex-tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.ex-prob{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:14px;line-height:1.5}
+.ex-line{display:flex;align-items:flex-start;gap:12px;font-size:13px;margin-bottom:6px}
+.ex-arrow{color:var(--teal);font-size:16px;margin-top:1px;min-width:16px}
+.ex-ans{margin-top:12px;background:var(--teal);color:#fff;border-radius:8px;padding:10px 16px;font-weight:700;font-size:14px;text-align:center}
+.vocab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:4px}
+.vc{border-radius:12px;padding:18px;border:2px solid transparent;position:relative;overflow:hidden}
+.vc::before{content:attr(data-e);position:absolute;right:14px;top:14px;font-size:28px;opacity:.2}
+.vc.teal{background:#f0fdfa;border-color:#5eead4}.vc.gold{background:#fffbeb;border-color:#fcd34d}
+.vc.sky{background:#eff6ff;border-color:#93c5fd}.vc.purple{background:#faf5ff;border-color:#c4b5fd}
+.vc-term{font-weight:700;font-size:16px;color:var(--navy);margin-bottom:6px}
+.vc-ph{font-size:11px;color:var(--muted);font-style:italic;margin-bottom:8px}
+.vc-def{font-size:13px;color:#374151;line-height:1.5}
+.vc-ex{margin-top:10px;font-size:12px;color:var(--teal);font-weight:600;padding:6px 10px;background:rgba(10,140,122,.08);border-radius:6px}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:16px;padding:20px 0;border-bottom:1px dashed var(--border)}
+.step:last-child{border-bottom:none}
+.snum{width:40px;height:40px;min-width:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;background:var(--teal)}
+.sc{flex:1}
+.st{font-weight:700;color:var(--navy);font-size:15px;margin-bottom:4px}
+.sd{font-size:13px;color:#374151;line-height:1.6}
+.sm{margin-top:8px;background:#f8fafc;border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 8px 8px 0;font-weight:600;font-size:14px;color:var(--navy)}
+.twr-frame{background:linear-gradient(135deg,#faf5ff,#f5f3ff);border:2px solid var(--purple-l);border-radius:14px;padding:20px 24px;margin:14px 0}
+.twr-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:10px}
+.twr-s{font-size:15px;color:var(--navy);line-height:1.8}
+.twr-fill{display:inline;border:none;border-bottom:2px solid var(--purple);background:transparent;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:var(--purple);width:90px;outline:none;text-align:center;padding:0 4px}
+.pp{border:2px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;transition:border-color .2s}
+.pp.correct{border-color:var(--ok);background:#f0fdf4}.pp.wrong{border-color:var(--err);background:#fef2f2}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.pnum{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.ptag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+.ptag.basic{background:#dcfce7;color:var(--ok)}.ptag.apply{background:#dbeafe;color:var(--sky)}.ptag.ext{background:#faf5ff;color:var(--purple)}
+.ptxt{font-size:15px;color:var(--navy);font-weight:500;margin-bottom:14px;line-height:1.6}
+.pir{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pi{border:2px solid var(--border);border-radius:8px;padding:10px 14px;font-size:15px;font-family:'Inter',sans-serif;font-weight:600;color:var(--navy);width:120px;outline:none;transition:border-color .2s}
+.pi:focus{border-color:var(--teal)}
+.pu{font-size:13px;color:var(--muted);font-weight:500}
+.cbtn{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.cbtn:hover{background:#0a7a6a;transform:translateY(-1px)}
+.fbx{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;display:none}
+.fbx.show{display:block}.fbx.correct{background:#dcfce7;color:var(--ok)}.fbx.wrong{background:#fee2e2;color:var(--err)}
+.htgl{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;margin-top:8px;transition:all .2s}
+.htgl:hover{border-color:var(--gold);color:var(--gold)}
+.hbox{display:none;margin-top:8px;background:#fffbeb;border:1px solid var(--gold-l);border-radius:8px;padding:10px 14px;font-size:13px;color:#92400e}
+.hbox.show{display:block}
+.sdisplay{display:flex;align-items:center;gap:16px;background:var(--navy);color:#fff;border-radius:14px;padding:16px 24px;margin-bottom:20px}
+.snum2{font-size:28px;font-weight:800;color:var(--gold)}
+.slbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.6)}
+.pbar-w{background:var(--border);border-radius:10px;height:10px;margin:8px 0;overflow:hidden;width:160px}
+.pbar{height:100%;background:linear-gradient(to right,var(--teal),var(--teal-l));border-radius:10px;transition:width .5s}
+.flip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.flip-card{perspective:1000px;height:130px;cursor:pointer}
+.flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s}
+.flip-card.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;text-align:center}
+.flip-front{background:var(--navy);color:#fff}.flip-back{background:var(--teal);color:#fff;transform:rotateY(180deg)}
+.flip-ft{font-size:14px;font-weight:600;line-height:1.4}.flip-bt{font-size:15px;font-weight:700}
+.flip-tap{font-size:10px;margin-top:8px;opacity:.5}
+.mc{border-radius:12px;padding:18px;border:2px solid transparent;position:relative;overflow:hidden}
+.mc.teal{background:#f0fdfa;border-color:#5eead4}
+.rt{width:100%;border-collapse:collapse;border-radius:10px;overflow:hidden}
+.rt th{background:var(--navy);color:#fff;padding:10px 16px;text-align:left;font-size:13px}
+.rt td{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--border)}
+.rt tr:last-child td{border-bottom:none}
+.rt tr:nth-child(even) td{background:#f8fafc}
+.rt .hl{font-weight:700;color:var(--teal)}
+.msc{display:flex;gap:16px;align-items:flex-start;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
+.mis-ico{font-size:28px;min-width:36px}
+.mis-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.mis-lbl.w{color:var(--err)}.mis-txt{font-size:13px;color:#374151;line-height:1.5}
+.dnl-c{background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:24px;margin:16px 0}
+.dnl-ln{display:flex;align-items:center;margin-bottom:6px}
+.dnl-al{font-size:12px;font-weight:700;color:var(--navy);min-width:90px}
+.dnl-tr{flex:1;height:8px;border-radius:4px;margin:0 8px}
+.dnl-tr.top{background:linear-gradient(to right,#0a8c7a,#12b89e)}.dnl-tr.bot{background:linear-gradient(to right,#3b82f6,#93c5fd)}
+.dnl-ticks{display:flex;margin:2px 0 14px 0}
+.dnl-sp{min-width:90px}
+.dnl-tr2{flex:1;display:flex;justify-content:space-between;padding:0 8px}
+.dnl-t{text-align:center;font-size:12px;font-weight:600}
+.dnl-t.tl{color:var(--teal)}.dnl-t.sk{color:var(--sky)}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+.cc{border:2px solid var(--border);border-radius:14px;padding:18px;text-align:center;transition:all .25s;position:relative;overflow:hidden}
+.cc.bb{border-color:var(--ok);background:#f0fdf4}
+.cc .sn{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.cc .pi2{font-size:20px;font-weight:800;color:var(--teal)}
+.cc .ul{font-size:11px;color:var(--muted)}
+.cc .urr{display:none;font-size:14px;font-weight:700;margin-top:10px;padding:6px 12px;border-radius:6px;background:#fff;border:1px solid var(--border)}
+.cc .urr.show{display:block}
+.btag{position:absolute;top:10px;right:10px;background:var(--ok);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:none}
+.btag.show{display:block}
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:8px;padding:10px 20px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-p{background:var(--teal);color:#fff}.btn-p:hover{background:#0a7a6a;transform:translateY(-1px)}
+.btn-g{background:var(--gold);color:var(--navy)}.btn-g:hover{background:#e9a112}
+.sort-c{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.sort-c{grid-template-columns:1fr}}
+.sc2{display:flex;flex-wrap:wrap;gap:8px;min-height:80px}
+.scard{background:var(--navy);color:#fff;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;cursor:grab;user-select:none;transition:all .2s}
+.scard:hover{transform:scale(1.03);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.scard.dragging{opacity:.5}
+.dz{border:2px dashed var(--border);border-radius:12px;padding:14px;min-height:70px;transition:all .2s}
+.dz:hover,.dz.drag-over{border-color:var(--teal);background:#f0fdfa}
+.dz-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.dz-d{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:10px}
+.dc{display:flex;flex-wrap:wrap;gap:6px;min-height:44px}
+.scbtn{background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:11px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:14px;width:100%;transition:all .2s}
+.scbtn:hover{background:#e9a112}
+.pf{padding-bottom:24px;text-align:center;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px;padding-top:20px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.section.active .card{animation:fadeUp .3s ease forwards}
+</style>
+</head>
+<body>
+<div class="site-header">
+  <div class="badge">6.RP.A.2 · Interactive Study Guide</div>
+  <div class="hdr-title">Unit Rate: From Ratio to Rate</div>
+  <div class="hdr-sub">Understand, calculate, and apply unit rates in real-world contexts · CCSS 6.RP.A.2</div>
+  <div class="pills">
+    <span class="pill">📐 6.RP.A.2</span><span class="pill">🔗 Ratios & Proportional Relationships</span><span class="pill">⭐ Grade 6 CCSS</span><span class="pill">🌎 EN/ES</span>
+  </div>
+</div>
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="showTab('concept')" id="tab-concept">💡 Concept</button>
+  <button class="tab-btn" onclick="showTab('vocab')" id="tab-vocab">📖 Vocabulary</button>
+  <button class="tab-btn" onclick="showTab('howto')" id="tab-howto">🪜 How-To</button>
+  <button class="tab-btn" onclick="showTab('practice')" id="tab-practice">✏️ Practice</button>
+  <button class="tab-btn" onclick="showTab('compare')" id="tab-compare">🛒 Best Buy</button>
+  <button class="tab-btn" onclick="showTab('sort')" id="tab-sort">🔀 Sort It</button>
+  <button class="tab-btn" onclick="showTab('review')" id="tab-review">🔁 Flash Review</button>
+  <button class="tab-btn" onclick="showTab('mistakes')" id="tab-mistakes">⚠️ Watch Out</button>
+</div>
+<div class="main">
+
+<!-- CONCEPT -->
+<div class="section active" id="section-concept">
+  <div class="card">
+    <div class="card-title">🎯 What is 6.RP.A.2?</div>
+    <div class="card-sub">The Big Idea — from ratio to rate to unit rate</div>
+    <div class="concept-box">
+      <div class="concept-lbl">📌 Standard</div>
+      <div class="concept-txt">Understand the concept of a <strong>unit rate a/b</strong> associated with a ratio a:b (where b ≠ 0), and use <strong>rate language</strong> in the context of a ratio relationship.</div>
+      <div class="formula">Unit Rate = Total Amount ÷ Number of Units</div>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="alert info"><strong>📊 Ratio</strong> compares two quantities.<br>Example: 12 apples for 4 students → 12:4</div>
+        <div class="alert tip"><strong>⚡ Rate</strong> is a ratio comparing <em>different units</em>.<br>Example: $75 for 15 burgers = rate</div>
+        <div class="concept-box" style="margin-top:12px">
+          <div class="concept-lbl">🏆 Unit Rate</div>
+          <div class="concept-txt" style="font-size:14px">Denominator is always <strong>1</strong>.<br>"…per 1 unit" — "$5 per burger"</div>
+        </div>
+      </div>
+      <div>
+        <div class="example-block">
+          <div class="ex-tag">📘 Real-World Examples</div>
+          <table class="rt" style="margin-top:4px">
+            <tr><th>Situation</th><th>Unit Rate</th></tr>
+            <tr><td>$75 for 15 burgers</td><td class="hl">$5/burger</td></tr>
+            <tr><td>240 miles in 4 hours</td><td class="hl">60 mph</td></tr>
+            <tr><td>$8.40 for 12 eggs</td><td class="hl">$0.70/egg</td></tr>
+            <tr><td>150 words in 2 min</td><td class="hl">75 words/min</td></tr>
+            <tr><td>18 push-ups in 3 min</td><td class="hl">6/min</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📏 Double Number Line Model</div>
+    <div class="card-sub">Each "jump" represents the same unit rate — see the pattern!</div>
+    <div class="dnl-c">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Example: $15 for 3 pounds of cherries → Unit rate = $5 per pound</div>
+      <div class="dnl-ln"><div class="dnl-al">💵 Money ($)</div><div class="dnl-tr top"></div></div>
+      <div class="dnl-ticks"><div class="dnl-sp"></div><div class="dnl-tr2"><div class="dnl-t tl">$0</div><div class="dnl-t tl">$5</div><div class="dnl-t tl">$10</div><div class="dnl-t tl">$15</div><div class="dnl-t tl">$20</div></div></div>
+      <div class="dnl-ln"><div class="dnl-al">⚖️ Pounds</div><div class="dnl-tr bot"></div></div>
+      <div class="dnl-ticks"><div class="dnl-sp"></div><div class="dnl-tr2"><div class="dnl-t sk">0</div><div class="dnl-t sk">1</div><div class="dnl-t sk">2</div><div class="dnl-t sk">3</div><div class="dnl-t sk">4</div></div></div>
+      <div class="alert info" style="margin-top:8px">✅ For <strong>each pound</strong>, the price increases by <strong>$5</strong>. That's the unit rate: <strong>$5 per pound</strong>.</div>
+    </div>
+    <div class="twr-frame">
+      <div class="twr-lbl">✍️ TWR Frame — Describe the Unit Rate (EN/ES)</div>
+      <div class="twr-s">The unit rate is <input class="twr-fill" placeholder="$5"> per <input class="twr-fill" style="width:70px" placeholder="pound">, because <input class="twr-fill" style="width:60px" placeholder="$15"> ÷ <input class="twr-fill" style="width:50px" placeholder="3"> = <input class="twr-fill" style="width:60px" placeholder="$5">.</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--purple);font-style:italic">🇪🇸 ES: La tasa unitaria es ___ por ___, porque ___ ÷ ___ = ___.</div>
+    </div>
+  </div>
+</div>
+
+<!-- VOCAB -->
+<div class="section" id="section-vocab">
+  <div class="card">
+    <div class="card-title">📖 Key Vocabulary</div>
+    <div class="card-sub">Academic language for 6.RP.A.2 — with Spanish translations</div>
+    <div class="vocab-grid">
+      <div class="vc teal" data-e="⚖️"><div class="vc-term">Ratio / Razón</div><div class="vc-ph">RA-shee-oh</div><div class="vc-def">A comparison of two quantities. Can be written as a:b, a/b, or "a to b."</div><div class="vc-ex">🍕 3 slices to 4 students → ratio 3:4</div></div>
+      <div class="vc gold" data-e="🏎️"><div class="vc-term">Rate / Tasa</div><div class="vc-ph">rayt</div><div class="vc-def">A ratio comparing two quantities with <strong>different units</strong>.</div><div class="vc-ex">💰 $30 for 6 hours of work</div></div>
+      <div class="vc sky" data-e="⭐"><div class="vc-term">Unit Rate / Tasa Unitaria</div><div class="vc-ph">YOO-nit rayt</div><div class="vc-def">A rate with denominator = 1. Tells you the amount <strong>per one unit</strong>.</div><div class="vc-ex">🚗 60 miles per 1 hour = 60 mph</div></div>
+      <div class="vc purple" data-e="📦"><div class="vc-term">Unit Price / Precio Unitario</div><div class="vc-ph">YOO-nit prys</div><div class="vc-def">Cost per <strong>1 item or 1 unit</strong> of measure.</div><div class="vc-ex">🛒 $2.50 per can of soup</div></div>
+      <div class="vc teal" data-e="🔢"><div class="vc-term">Denominator / Denominador</div><div class="vc-ph">deh-NOM-ih-NAY-tor</div><div class="vc-def">The <strong>bottom number</strong> in a fraction — what you divide by. For unit rates, denominator = 1.</div><div class="vc-ex">In 18/6, denominator is 6</div></div>
+      <div class="vc gold" data-e="🌎"><div class="vc-term">Per / Por</div><div class="vc-ph">pur</div><div class="vc-def">Means "for each one" — the key word that signals a unit rate.</div><div class="vc-ex">"$5 <strong>per</strong> burger" = unit rate language</div></div>
+    </div>
+    <div class="alert tip" style="margin-top:20px"><strong>🧠 Morphology:</strong> <em>"Unit"</em> comes from Latin <em>unus</em> = "one." A unit rate always means per ONE. <em>"Rate"</em> from Latin <em>rata</em> = "reckoned/calculated."</div>
+  </div>
+</div>
+
+<!-- HOW-TO -->
+<div class="section" id="section-howto">
+  <div class="card">
+    <div class="card-title">🪜 How to Find a Unit Rate — 5 Steps</div>
+    <div class="card-sub">Follow every time — never skip step 4 (labels!)</div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="sc"><div class="st">Identify the two quantities and their units</div><div class="sd">Read carefully. What are you comparing? Label each quantity.</div><div class="sm">Example: "Jayla earns $56 in 8 hours." → $56 and 8 hours</div></div></div>
+      <div class="step"><div class="snum">2</div><div class="sc"><div class="st">Write the ratio as a fraction</div><div class="sd">Put the quantity you want "per 1 of" on TOP (numerator).</div><div class="sm">$56 / 8 hours</div></div></div>
+      <div class="step"><div class="snum">3</div><div class="sc"><div class="st">Divide numerator ÷ denominator</div><div class="sd">Divide until denominator becomes 1.</div><div class="sm">$56 ÷ 8 = $7</div></div></div>
+      <div class="step"><div class="snum">4</div><div class="sc"><div class="st">Write the unit rate with labels!</div><div class="sd">Always include units. Use "per" language.</div><div class="sm">Answer: $7 per hour</div></div></div>
+      <div class="step"><div class="snum">5</div><div class="sc"><div class="st">Check — multiply back</div><div class="sd">Unit rate × denominator = original numerator</div><div class="sm">$7 × 8 hours = $56 ✅</div></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📘 Three Worked Examples</div>
+    <div class="card-sub">Money · Speed · Recipe contexts</div>
+    <div class="example-block">
+      <div class="ex-tag">💰 MONEY</div>
+      <div class="ex-prob">Marcus paid $4.50 for 3 avocados. Unit price per avocado?</div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>Write ratio: $4.50 / 3 avocados</div></div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>Divide: $4.50 ÷ 3 = $1.50</div></div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>Check: $1.50 × 3 = $4.50 ✅</div></div>
+      <div class="ex-ans">Unit Price = $1.50 per avocado</div>
+    </div>
+    <div class="example-block">
+      <div class="ex-tag">🚗 SPEED</div>
+      <div class="ex-prob">A train travels 360 miles in 6 hours. Unit rate in miles per hour?</div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>360 miles / 6 hours</div></div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>360 ÷ 6 = 60</div></div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>Label: 60 miles per 1 hour</div></div>
+      <div class="ex-ans">Unit Rate = 60 mph</div>
+    </div>
+    <div class="example-block">
+      <div class="ex-tag">🍳 RECIPE</div>
+      <div class="ex-prob">3 cups flour for 4 cups sugar. Cups of flour per 1 cup of sugar?</div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>3 cups flour / 4 cups sugar</div></div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>3 ÷ 4 = 0.75 (or 3/4)</div></div>
+      <div class="ex-line"><div class="ex-arrow">→</div><div>3/4 cup flour per 1 cup sugar</div></div>
+      <div class="ex-ans">Unit Rate = 3/4 (0.75) cup of flour per cup of sugar</div>
+    </div>
+    <div class="twr-frame">
+      <div class="twr-lbl">✍️ TWR — Unit Rate Explanation Frame</div>
+      <div class="twr-s">To find the unit rate, I divided <input class="twr-fill" style="width:60px" placeholder="360"> by <input class="twr-fill" style="width:60px" placeholder="6"> to get <input class="twr-fill" style="width:60px" placeholder="60"> per <input class="twr-fill" style="width:80px" placeholder="hour">. This means for every 1 <input class="twr-fill" style="width:80px" placeholder="hour">, the train travels <input class="twr-fill" style="width:90px" placeholder="60 miles">.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div class="section" id="section-practice">
+  <div class="sdisplay">
+    <div style="font-size:32px">🏅</div>
+    <div><div class="slbl">Your Score</div><div class="snum2" id="sdis">0 / 6</div></div>
+    <div style="flex:1"></div>
+    <div><div class="slbl">Progress</div><div class="pbar-w"><div class="pbar" id="spbar" style="width:0%"></div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">✏️ Practice Problems</div>
+    <div class="card-sub">Type your answer · Click Check · Use hints if stuck</div>
+    <div class="pp" id="p1"><div class="ph"><div class="pnum">Problem 1</div><div class="ptag basic">Basic</div></div><div class="ptxt">A car travels 180 miles in 3 hours. Unit rate in miles per hour?</div><div class="pir"><input class="pi" type="number" id="a1" placeholder="?"><span class="pu">miles per hour</span><button class="cbtn" onclick="check(1,60)">Check ✓</button></div><button class="htgl" onclick="hint(1)">💡 Hint</button><div class="hbox" id="h1">Divide 180 ÷ 3. How many miles for every 1 hour?</div><div class="fbx" id="f1"></div></div>
+    <div class="pp" id="p2"><div class="ph"><div class="pnum">Problem 2</div><div class="ptag basic">Basic</div></div><div class="ptxt">A store sells 5 oranges for $2.00. Unit price in cents per orange?</div><div class="pir"><input class="pi" type="number" id="a2" placeholder="?"><span class="pu">cents per orange</span><button class="cbtn" onclick="check(2,40)">Check ✓</button></div><button class="htgl" onclick="hint(2)">💡 Hint</button><div class="hbox" id="h2">$2.00 = 200 cents. Divide 200 ÷ 5 oranges.</div><div class="fbx" id="f2"></div></div>
+    <div class="pp" id="p3"><div class="ph"><div class="pnum">Problem 3</div><div class="ptag apply">Apply</div></div><div class="ptxt">A factory produces 840 bottles in 7 hours. Bottles per hour?</div><div class="pir"><input class="pi" type="number" id="a3" placeholder="?"><span class="pu">bottles per hour</span><button class="cbtn" onclick="check(3,120)">Check ✓</button></div><button class="htgl" onclick="hint(3)">💡 Hint</button><div class="hbox" id="h3">840 ÷ 7 = ? bottles for every 1 hour</div><div class="fbx" id="f3"></div></div>
+    <div class="pp" id="p4"><div class="ph"><div class="pnum">Problem 4</div><div class="ptag apply">Apply</div></div><div class="ptxt">Destiny reads 96 pages in 4 days. Pages per day?</div><div class="pir"><input class="pi" type="number" id="a4" placeholder="?"><span class="pu">pages per day</span><button class="cbtn" onclick="check(4,24)">Check ✓</button></div><button class="htgl" onclick="hint(4)">💡 Hint</button><div class="hbox" id="h4">96 ÷ 4. How many for each 1 day?</div><div class="fbx" id="f4"></div></div>
+    <div class="pp" id="p5"><div class="ph"><div class="pnum">Problem 5</div><div class="ptag ext">Extend</div></div><div class="ptxt">A recipe calls for 2.5 cups of milk for 5 servings. Cups per serving?</div><div class="pir"><input class="pi" type="number" step="0.1" id="a5" placeholder="?"><span class="pu">cups per serving</span><button class="cbtn" onclick="check(5,0.5)">Check ✓</button></div><button class="htgl" onclick="hint(5)">💡 Hint</button><div class="hbox" id="h5">2.5 ÷ 5. Your answer will be less than 1.</div><div class="fbx" id="f5"></div></div>
+    <div class="pp" id="p6"><div class="ph"><div class="pnum">Problem 6</div><div class="ptag ext">Extend</div></div><div class="ptxt">Store A: $13.50 for 9 pens. Store B: $11.20 for 8 pens. Enter the lower unit price in cents.</div><div class="pir"><input class="pi" type="number" id="a6" placeholder="?"><span class="pu">cents per pen</span><button class="cbtn" onclick="check(6,140)">Check ✓</button></div><button class="htgl" onclick="hint(6)">💡 Hint</button><div class="hbox" id="h6">A: $13.50÷9=$1.50=150¢ · B: $11.20÷8=$1.40=140¢ · Which is lower?</div><div class="fbx" id="f6"></div></div>
+  </div>
+</div>
+
+<!-- COMPARE -->
+<div class="section" id="section-compare">
+  <div class="card">
+    <div class="card-title">🛒 Best Buy Challenge</div>
+    <div class="card-sub">Calculate unit price to find the best deal — click Reveal to check!</div>
+    <div id="cr" style="font-weight:700;color:var(--navy);margin-bottom:16px;font-size:16px">Round 1 of 4</div>
+    <div class="cg" id="ccards"></div>
+    <div class="two-col" style="gap:12px;margin-top:14px">
+      <button class="btn btn-p" onclick="revealR()">🔍 Reveal Unit Prices</button>
+      <button class="btn btn-g" onclick="nextR()">➡️ Next Round</button>
+    </div>
+    <div class="fbx" id="cfb" style="margin-top:14px"></div>
+    <div class="twr-frame" style="margin-top:16px">
+      <div class="twr-lbl">✍️ TWR — Best Buy Explanation</div>
+      <div class="twr-s"><span id="bstore">Store ___</span> is the better deal because its unit price of $<input class="twr-fill" style="width:60px" placeholder="___"> per <input class="twr-fill" style="width:80px" placeholder="item"> is lower than $<input class="twr-fill" style="width:60px" placeholder="___"> at the other store.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SORT -->
+<div class="section" id="section-sort">
+  <div class="card">
+    <div class="card-title">🔀 Sort: Rate or Not a Rate?</div>
+    <div class="card-sub">Drag each card into the correct category</div>
+    <div class="sort-c">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Cards to Sort</div>
+        <div class="sc2" id="pool">
+          <div class="scard" draggable="true" data-cat="rate" data-id="s1" ondragstart="drag(event)">$5 per pizza</div>
+          <div class="scard" draggable="true" data-cat="not" data-id="s2" ondragstart="drag(event)">3 cats</div>
+          <div class="scard" draggable="true" data-cat="rate" data-id="s3" ondragstart="drag(event)">60 miles per hour</div>
+          <div class="scard" draggable="true" data-cat="not" data-id="s4" ondragstart="drag(event)">12 students</div>
+          <div class="scard" draggable="true" data-cat="unit" data-id="s5" ondragstart="drag(event)">$1.50 per egg</div>
+          <div class="scard" draggable="true" data-cat="rate" data-id="s6" ondragstart="drag(event)">30 laps in 5 min</div>
+          <div class="scard" draggable="true" data-cat="unit" data-id="s7" ondragstart="drag(event)">8 pages per day</div>
+          <div class="scard" draggable="true" data-cat="not" data-id="s8" ondragstart="drag(event)">7 apples</div>
+          <div class="scard" draggable="true" data-cat="unit" data-id="s9" ondragstart="drag(event)">25 words per minute</div>
+          <div class="scard" draggable="true" data-cat="rate" data-id="s10" ondragstart="drag(event)">$18 for 3 hours</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="dz" id="zone-unit" ondrop="drop(event)" ondragover="adrop(event)" ondragleave="ldrop(event)"><div class="dz-lbl">⭐ Unit Rate</div><div class="dz-d">Denominator = 1 ("per 1")</div><div class="dc" id="drop-unit"></div></div>
+        <div class="dz" id="zone-rate" ondrop="drop(event)" ondragover="adrop(event)" ondragleave="ldrop(event)"><div class="dz-lbl">⚡ Rate (not unit rate)</div><div class="dz-d">Different units, denom ≠ 1</div><div class="dc" id="drop-rate"></div></div>
+        <div class="dz" id="zone-not" ondrop="drop(event)" ondragover="adrop(event)" ondragleave="ldrop(event)"><div class="dz-lbl">❌ Not a Rate</div><div class="dz-d">Just a quantity, no comparison</div><div class="dc" id="drop-not"></div></div>
+      </div>
+    </div>
+    <button class="scbtn" onclick="checkSort()">✓ Check My Sort</button>
+    <div class="fbx" id="sfb"></div>
+  </div>
+</div>
+
+<!-- FLASH REVIEW -->
+<div class="section" id="section-review">
+  <div class="card">
+    <div class="card-title">🔁 Flash Review Cards</div>
+    <div class="card-sub">Tap each card to reveal the unit rate</div>
+    <div class="flip-grid">
+      <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="flip-ft">$24 for 8 gallons of juice</div><div class="flip-tap">Tap to reveal ↩</div></div><div class="flip-back"><div class="flip-bt">$3 per gallon</div><div class="flip-tap">$24 ÷ 8 = $3</div></div></div></div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="flip-ft">150 km in 3 hours</div><div class="flip-tap">Tap to reveal ↩</div></div><div class="flip-back"><div class="flip-bt">50 km/h</div><div class="flip-tap">150 ÷ 3 = 50</div></div></div></div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="flip-ft">72 push-ups in 6 minutes</div><div class="flip-tap">Tap to reveal ↩</div></div><div class="flip-back"><div class="flip-bt">12 push-ups/min</div><div class="flip-tap">72 ÷ 6 = 12</div></div></div></div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="flip-ft">$9.60 for 4 notebooks</div><div class="flip-tap">Tap to reveal ↩</div></div><div class="flip-back"><div class="flip-bt">$2.40 per notebook</div><div class="flip-tap">$9.60 ÷ 4 = $2.40</div></div></div></div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="flip-ft">45 tacos for 9 people</div><div class="flip-tap">Tap to reveal ↩</div></div><div class="flip-back"><div class="flip-bt">5 tacos per person</div><div class="flip-tap">45 ÷ 9 = 5</div></div></div></div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="flip-ft">$32 for 8 pounds grapes</div><div class="flip-tap">Tap to reveal ↩</div></div><div class="flip-back"><div class="flip-bt">$4 per pound</div><div class="flip-tap">$32 ÷ 8 = $4</div></div></div></div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="flip-ft">270 words in 3 minutes</div><div class="flip-tap">Tap to reveal ↩</div></div><div class="flip-back"><div class="flip-bt">90 words/min</div><div class="flip-tap">270 ÷ 3 = 90</div></div></div></div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="flip-ft">$5.25 for 3 muffins</div><div class="flip-tap">Tap to reveal ↩</div></div><div class="flip-back"><div class="flip-bt">$1.75 per muffin</div><div class="flip-tap">$5.25 ÷ 3 = $1.75</div></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MISTAKES -->
+<div class="section" id="section-mistakes">
+  <div class="card">
+    <div class="card-title">⚠️ Common Mistakes — Watch Out!</div>
+    <div class="card-sub">Real student errors and how to fix them</div>
+    <div class="msc"><div class="mis-ico">❌</div><div><div class="mis-lbl w">Mistake #1 — Dividing Backwards</div><div class="mis-txt"><strong>Error:</strong> For "$75 for 15 burgers," student divides 15 ÷ 75 = 0.2 instead of 75 ÷ 15 = 5.<br><br><strong>Fix:</strong> The unit you want "per 1 of" goes on TOP. Ask: "per 1 ____?" Put that unit's total on top.</div></div></div>
+    <div class="msc"><div class="mis-ico">❌</div><div><div class="mis-lbl w">Mistake #2 — Missing Labels</div><div class="mis-txt"><strong>Error:</strong> Writing "5" instead of "$5 per burger."<br><br><strong>Fix:</strong> A unit rate is meaningless without labels. Always write: [number] [unit] per [unit].</div></div></div>
+    <div class="msc"><div class="mis-ico">❌</div><div><div class="mis-lbl w">Mistake #3 — Confusing Ratio and Unit Rate</div><div class="mis-txt"><strong>Error:</strong> Saying "the rate is 3:4" when a unit rate is needed.<br><br><strong>Fix:</strong> Unit rate has denominator = 1. Keep dividing until you reach "per 1."</div></div></div>
+    <div class="msc"><div class="mis-ico">❌</div><div><div class="mis-lbl w">Mistake #4 — Adding Instead of Dividing</div><div class="mis-txt"><strong>Error:</strong> Thinking "3 miles per hour" means add 3 each hour rather than dividing to find the rate.<br><br><strong>Fix:</strong> Unit rates use <strong>division</strong>. Multiplication/tables scale from a known unit rate.</div></div></div>
+    <div class="alert tip" style="margin-top:16px"><strong>🎯 Self-Check Rule:</strong> After finding a unit rate, multiply back. Unit rate × denominator = original numerator. If it doesn't work → re-do the division.</div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+<div class="pf">📐 6.RP.A.2 — Unit Rate Interactive Study Guide · Grade 6 · EduWonderLab · Neft.Alba<br>CCSS 6.RP.A.2 · TWR Frames · EN/ES · SPED-accessible</div>
+
+<script>
+function showTab(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+let score=0,answered=new Set();
+function check(n,correct){
+  if(answered.has(n))return;
+  const v=parseFloat(document.getElementById('a'+n).value);
+  const fb=document.getElementById('f'+n);
+  fb.classList.add('show');
+  if(Math.abs(v-correct)<0.01){
+    fb.className='fbx show correct';fb.textContent='✅ Correct! Unit rate = '+correct;
+    document.getElementById('p'+n).classList.add('correct');
+    score++;answered.add(n);
+    document.getElementById('sdis').textContent=score+' / 6';
+    document.getElementById('spbar').style.width=(score/6*100)+'%';
+  }else{
+    fb.className='fbx show wrong';fb.textContent='❌ Not quite. Check your division and try again!';
+    const el=document.getElementById('p'+n);el.classList.add('wrong');
+    setTimeout(()=>el.classList.remove('wrong'),1200);
+  }
+}
+function hint(n){document.getElementById('h'+n).classList.toggle('show')}
+// COMPARE
+const rounds=[
+  {lbl:'Round 1 of 4',stores:[{n:'🏪 Store A',p:'$8.00',q:'4 lb',up:2.00},{n:'🏬 Store B',p:'$9.00',q:'6 lb',up:1.50},{n:'🛍️ Store C',p:'$7.50',q:'5 lb',up:1.50}],best:[1,2],bn:'Store B & C (tied at $1.50/lb)'},
+  {lbl:'Round 2 of 4',stores:[{n:'🏪 Value Mart',p:'$3.60',q:'12 eggs',up:0.30},{n:'🏬 Fresh Stop',p:'$2.50',q:'10 eggs',up:0.25},{n:'🛍️ Quick Shop',p:'$4.20',q:'15 eggs',up:0.28}],best:[1],bn:'Fresh Stop ($0.25/egg)'},
+  {lbl:'Round 3 of 4',stores:[{n:'⛽ Gas King',p:'$15.60',q:'12 gal',up:1.30},{n:'⛽ FuelQuick',p:'$11.25',q:'9 gal',up:1.25},{n:'⛽ EcoFill',p:'$17.60',q:'16 gal',up:1.10}],best:[2],bn:'EcoFill ($1.10/gal)'},
+  {lbl:'Round 4 of 4',stores:[{n:'📦 Bulk Buy',p:'$36.00',q:'24 cans',up:1.50},{n:'📦 Mini Mart',p:'$5.75',q:'5 cans',up:1.15},{n:'📦 Mid Pack',p:'$17.40',q:'12 cans',up:1.45}],best:[1],bn:'Mini Mart ($1.15/can)'}
+];
+let cr=0;
+function renderC(){
+  const r=rounds[cr];
+  document.getElementById('cr').textContent=r.lbl;
+  document.getElementById('ccards').innerHTML=r.stores.map((s,i)=>`<div class="cc" id="cc${i}"><div class="btag" id="bt${i}">BEST DEAL</div><div class="sn">${s.n}</div><div class="pi2">${s.p}</div><div class="ul">for ${s.q}</div><div class="urr" id="ur${i}">$${s.up.toFixed(2)} per unit</div></div>`).join('');
+}
+function revealR(){
+  const r=rounds[cr];
+  r.stores.forEach((_,i)=>document.getElementById('ur'+i).classList.add('show'));
+  r.best.forEach(i=>{document.getElementById('bt'+i).classList.add('show');document.getElementById('cc'+i).classList.add('bb');});
+  document.getElementById('bstore').textContent=r.bn;
+  const fb=document.getElementById('cfb');fb.className='fbx show correct';fb.textContent='✅ Best Deal: '+r.bn;
+}
+function nextR(){cr=(cr+1)%rounds.length;document.getElementById('cfb').className='fbx';renderC();}
+renderC();
+// DRAG/DROP
+let dragEl=null;
+function drag(e){dragEl=e.target;e.target.classList.add('dragging')}
+function adrop(e){e.preventDefault();e.currentTarget.classList.add('drag-over')}
+function ldrop(e){e.currentTarget.classList.remove('drag-over')}
+function drop(e){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(!dragEl)return;
+  const z=e.currentTarget.id.replace('zone-','');
+  document.getElementById('drop-'+z).appendChild(dragEl);
+  dragEl.classList.remove('dragging');
+}
+function checkSort(){
+  let ok=0;
+  document.querySelectorAll('[data-id]').forEach(c=>{
+    const exp=c.dataset.cat,par=c.parentElement.id;
+    let z=par==='drop-unit'?'unit':par==='drop-rate'?'rate':par==='drop-not'?'not':'';
+    if(z===exp){ok++;c.style.background='#059669';}
+    else if(z){c.style.background='#dc2626';}
+  });
+  const fb=document.getElementById('sfb');fb.classList.add('show');
+  if(ok===10){fb.className='fbx show correct';fb.textContent='🎉 Perfect! All 10 sorted correctly!';}
+  else{fb.className='fbx show wrong';fb.textContent=ok+'/10 correct. Red = wrong category.';}
+}
+</script>
+</body>
+</html>

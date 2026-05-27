@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volume of Rectangular Prisms | Interactive 3D Grade 6 Practice</title>
+  <style>
+    :root {
+      --navy: #17324d;
+      --navy-2: #234761;
+      --teal: #1f8a8a;
+      --teal-soft: #d9f0ef;
+      --cream: #fff8e8;
+      --gold: #f3b44b;
+      --coral: #d96f5d;
+      --sage: #7ea37f;
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #d7dee8;
+      --success: #237a57;
+      --danger: #b64646;
+      --warning: #986b1d;
+      --paper: #ffffff;
+      --shadow: 0 14px 34px rgba(23, 50, 77, 0.14);
+      --focus: 0 0 0 4px rgba(31, 138, 138, 0.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.15;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(31, 138, 138, 0.16), transparent 32rem),
+        linear-gradient(135deg, #f8fbff 0%, #fff8e8 52%, #f4fbfb 100%);
+      min-height: 100vh;
+    }
+
+    button, input, select, textarea { font-family: inherit; }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    a:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .app-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 54px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.04fr 0.96fr;
+      gap: 26px;
+      align-items: center;
+      color: white;
+      background:
+        linear-gradient(135deg, rgba(23, 50, 77, 0.98), rgba(31, 138, 138, 0.90)),
+        radial-gradient(circle at 85% 0%, rgba(243, 180, 75, 0.42), transparent 24rem);
+      border-radius: 30px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -90px -130px auto;
+      width: 360px;
+      height: 360px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: #10324a;
+      background: rgba(255, 248, 232, 0.95);
+    }
+
+    h1 {
+      margin: 16px 0 12px;
+      font-size: clamp(2.1rem, 5vw, 4.05rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      max-width: 740px;
+      margin: 0;
+      font-size: 1.13rem;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 900;
+      font-size: 0.98rem;
+      color: var(--navy);
+      background: white;
+      box-shadow: 0 8px 18px rgba(23, 50, 77, 0.18);
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(23, 50, 77, 0.22);
+    }
+
+    .btn.primary { background: var(--gold); color: #3d2806; }
+    .btn.teal { background: var(--teal); color: white; }
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.16);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      box-shadow: none;
+    }
+    .btn.small { padding: 9px 13px; font-size: 0.9rem; }
+    .btn.danger { background: #fae6e3; color: #7d2d2d; }
+
+    .hero-card {
+      position: relative;
+      z-index: 1;
+      min-height: 390px;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--ink);
+      border-radius: 26px;
+      padding: 18px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+      display: grid;
+      gap: 12px;
+    }
+
+    .formula {
+      width: 100%;
+      padding: 16px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #fff8e8, #e9f7f6);
+      border: 2px solid rgba(31, 138, 138, 0.24);
+      text-align: center;
+    }
+
+    .formula .big {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--navy);
+    }
+
+    .formula .words {
+      margin-top: 6px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 18px 0;
+      padding: 12px;
+      border: 1px solid rgba(23, 50, 77, 0.08);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 28px rgba(23, 50, 77, 0.08);
+    }
+
+    .topbar-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .progress-wrap {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .progress-track {
+      position: relative;
+      overflow: hidden;
+      height: 12px;
+      border-radius: 999px;
+      background: #e6edf4;
+      min-width: 130px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), var(--gold));
+      transition: width 260ms ease;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 94px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--navy);
+      color: white;
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--navy);
+      background: #f2f6f8;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+    .nav-links a:hover { background: var(--teal-soft); }
+
+    .section {
+      margin-top: 24px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(23, 50, 77, 0.08);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(23, 50, 77, 0.07);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(1.45rem, 2.8vw, 2rem);
+      letter-spacing: -0.025em;
+    }
+
+    .section-subtitle {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 800px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--navy);
+      background: var(--teal-soft);
+      font-size: 0.86rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      border: 1px solid rgba(23, 50, 77, 0.10);
+      border-radius: 20px;
+      padding: 18px;
+      background: var(--paper);
+    }
+
+    .card.soft { background: linear-gradient(135deg, #ffffff, #f5fbfb); }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: var(--navy);
+      font-size: 1.16rem;
+    }
+
+    .anchor-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .anchor-list li {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .num-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: var(--navy);
+      color: white;
+      font-weight: 900;
+    }
+
+    .vocab-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid #000000;
+    }
+
+    .vocab-table th,
+    .vocab-table td {
+      border: 2px solid #000000;
+      padding: 11px 12px;
+      vertical-align: top;
+    }
+
+    .vocab-table th {
+      background: var(--navy);
+      color: white;
+      text-align: left;
+    }
+
+    .vocab-table td:first-child {
+      font-weight: 900;
+      color: var(--navy);
+      width: 18%;
+    }
+
+    .quick-check-grid { display: grid; gap: 14px; }
+
+    .qc-card {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f8fbff;
+      border: 1px solid var(--line);
+    }
+
+    .qc-card p {
+      margin: 0;
+      font-weight: 900;
+      color: var(--navy);
+    }
+
+    .qc-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .option-btn {
+      cursor: pointer;
+      border: 2px solid rgba(23, 50, 77, 0.10);
+      background: white;
+      color: var(--navy);
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+
+    .option-btn.correct {
+      background: #e7f6ee;
+      border-color: rgba(35, 122, 87, 0.60);
+      color: var(--success);
+    }
+
+    .option-btn.incorrect {
+      background: #fae6e3;
+      border-color: rgba(182, 70, 70, 0.60);
+      color: var(--danger);
+    }
+
+    /* Actual CSS 3D prism */
+    .model-panel {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .scene-card {
+      position: relative;
+      min-height: 430px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 14px;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 2px solid rgba(31, 138, 138, 0.16);
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 1), rgba(217, 240, 239, 0.58) 50%, rgba(243, 180, 75, 0.14) 100%);
+      padding: 18px;
+    }
+
+    .scene {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 330px;
+      perspective: 980px;
+      overflow: hidden;
+      border-radius: 18px;
+      background:
+        linear-gradient(transparent 95%, rgba(23, 50, 77, 0.06) 96%),
+        linear-gradient(90deg, transparent 95%, rgba(23, 50, 77, 0.06) 96%);
+      background-size: 30px 30px;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .scene:active { cursor: grabbing; }
+
+    .cuboid {
+      --L: 216px;
+      --H: 132px;
+      --D: 96px;
+      position: relative;
+      width: var(--L);
+      height: var(--H);
+      transform-style: preserve-3d;
+      transform: rotateX(var(--rx, -22deg)) rotateY(var(--ry, -34deg));
+      transition: transform 120ms ease;
+    }
+
+    .face {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(23, 50, 77, 0.82);
+      color: #17324d;
+      font-weight: 900;
+      text-shadow: 0 1px 0 rgba(255,255,255,.6);
+      backface-visibility: visible;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.32);
+      background-size: var(--cell, 24px) var(--cell, 24px);
+    }
+
+    .face.front {
+      width: var(--L);
+      height: var(--H);
+      transform: translate(-50%, -50%) translateZ(calc(var(--D) / 2));
+      background-color: rgba(174, 216, 199, 0.86);
+      background-image:
+        linear-gradient(rgba(23,50,77,.42) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,50,77,.42) 1px, transparent 1px);
+    }
+
+    .face.back {
+      width: var(--L);
+      height: var(--H);
+      transform: translate(-50%, -50%) rotateY(180deg) translateZ(calc(var(--D) / 2));
+      background-color: rgba(151, 198, 181, 0.58);
+      background-image:
+        linear-gradient(rgba(23,50,77,.30) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,50,77,.30) 1px, transparent 1px);
+    }
+
+    .face.right {
+      width: var(--D);
+      height: var(--H);
+      transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--L) / 2));
+      background-color: rgba(152, 202, 184, 0.80);
+      background-image:
+        linear-gradient(rgba(23,50,77,.42) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,50,77,.42) 1px, transparent 1px);
+    }
+
+    .face.left {
+      width: var(--D);
+      height: var(--H);
+      transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--L) / 2));
+      background-color: rgba(130, 184, 166, 0.50);
+      background-image:
+        linear-gradient(rgba(23,50,77,.24) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,50,77,.24) 1px, transparent 1px);
+    }
+
+    .face.top {
+      width: var(--L);
+      height: var(--D);
+      transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--H) / 2));
+      background-color: rgba(218, 238, 226, 0.90);
+      background-image:
+        linear-gradient(rgba(23,50,77,.42) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,50,77,.42) 1px, transparent 1px);
+    }
+
+    .face.bottom {
+      width: var(--L);
+      height: var(--D);
+      transform: translate(-50%, -50%) rotateX(-90deg) translateZ(calc(var(--H) / 2));
+      background-color: rgba(243, 180, 75, 0.25);
+    }
+
+    .face-label {
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(23, 50, 77, 0.18);
+      font-size: 0.86rem;
+      pointer-events: none;
+    }
+
+    .dimension-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .dimension-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      font-weight: 900;
+      color: var(--navy);
+      background: white;
+      border: 2px solid rgba(23, 50, 77, 0.10);
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.length { background: var(--coral); }
+    .dot.width { background: var(--gold); }
+    .dot.height { background: var(--teal); }
+
+    .controls-card {
+      border-radius: 22px;
+      border: 1px solid rgba(23, 50, 77, 0.10);
+      background: #fff;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .slider-group { display: grid; gap: 12px; }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 88px 1fr 56px;
+      gap: 10px;
+      align-items: center;
+      font-weight: 900;
+      color: var(--navy);
+    }
+
+    input[type="range"] { accent-color: var(--teal); width: 100%; }
+
+    .volume-display {
+      padding: 18px;
+      border-radius: 20px;
+      background: var(--cream);
+      border: 2px solid rgba(243, 180, 75, 0.46);
+      color: var(--navy);
+      font-weight: 900;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+
+    .volume-display strong {
+      display: block;
+      font-size: clamp(2rem, 5vw, 3.45rem);
+      letter-spacing: -0.05em;
+    }
+
+    .view-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .view-btn {
+      border: 2px solid rgba(23, 50, 77, 0.10);
+      background: #f7fbfb;
+      color: var(--navy);
+      padding: 8px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .view-btn:hover { background: var(--teal-soft); }
+
+    .tiles {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .tile {
+      border: 2px solid rgba(23, 50, 77, 0.10);
+      border-radius: 18px;
+      padding: 13px;
+      background: white;
+      text-align: left;
+      cursor: pointer;
+      min-height: 104px;
+      transition: transform 140ms ease, border 140ms ease, background 140ms ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-2px);
+      border-color: rgba(31, 138, 138, 0.42);
+      background: #f8fdfd;
+    }
+
+    .tile.done {
+      border-color: rgba(35, 122, 87, 0.55);
+      background: #edf9f2;
+    }
+
+    .tile .tile-level {
+      font-weight: 900;
+      color: var(--teal);
+      font-size: 0.86rem;
+    }
+
+    .tile .tile-title {
+      margin-top: 6px;
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .tile .tile-status {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .practice-shell {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .problem-card {
+      min-height: 560px;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+      border: 2px solid rgba(23, 50, 77, 0.10);
+      border-radius: 24px;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(243, 180, 75, 0.18), transparent 14rem),
+        #ffffff;
+    }
+
+    .problem-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .level-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--navy);
+      color: white;
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+    .problem-number { color: var(--muted); font-weight: 900; }
+
+    .problem-text {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(1.22rem, 2.3vw, 1.58rem);
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .scenario {
+      color: #485465;
+      font-size: 1rem;
+      margin: -5px 0 0;
+      font-weight: 700;
+    }
+
+    .sub-prompt {
+      margin: 0;
+      color: #495a67;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .prism-stage {
+      border-radius: 22px;
+      border: 2px solid rgba(31, 138, 138, 0.16);
+      background: linear-gradient(180deg, #f9fefe, #eff9f8);
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      overflow: hidden;
+    }
+
+    .answer-panel {
+      border-radius: 24px;
+      background: var(--navy);
+      color: white;
+      padding: 20px;
+      display: grid;
+      gap: 15px;
+      min-height: 560px;
+    }
+
+    .answer-panel h3 { margin: 0; font-size: 1.35rem; }
+
+    .work-grid { display: grid; gap: 12px; }
+
+    .work-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 0.75fr) 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    label { font-weight: 900; }
+
+    .answer-panel input,
+    .answer-panel select {
+      width: 100%;
+      min-height: 44px;
+      border: 2px solid transparent;
+      border-radius: 13px;
+      padding: 10px 12px;
+      color: var(--ink);
+      background: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .unit-row {
+      display: grid;
+      grid-template-columns: 1fr 132px;
+      gap: 10px;
+    }
+
+    .inline-input {
+      width: 90px;
+      max-width: 100%;
+      min-height: 38px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      padding: 6px 9px;
+      font-weight: 800;
+    }
+
+    .feedback {
+      min-height: 72px;
+      border-radius: 18px;
+      padding: 13px 14px;
+      background: rgba(255, 255, 255, 0.13);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      font-weight: 800;
+    }
+
+    .feedback.success {
+      background: rgba(35, 122, 87, 0.20);
+      border-color: rgba(141, 233, 191, 0.45);
+    }
+
+    .feedback.error {
+      background: rgba(182, 70, 70, 0.22);
+      border-color: rgba(255, 170, 170, 0.42);
+    }
+
+    .feedback.warning {
+      background: rgba(243, 180, 75, 0.20);
+      border-color: rgba(250, 222, 154, 0.46);
+    }
+
+    .hint-box {
+      display: none;
+      color: var(--navy);
+      background: #fff8e8;
+      border-left: 6px solid var(--gold);
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 800;
+    }
+
+    .hint-box.show { display: block; }
+
+    .step-box {
+      display: none;
+      color: #203040;
+      background: white;
+      border-radius: 18px;
+      padding: 15px;
+      line-height: 1.3;
+    }
+
+    .step-box.show { display: block; }
+
+    .step-box ol {
+      margin: 10px 0 0 20px;
+      padding: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .teacher-panel {
+      display: none;
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f6f7fb;
+      border: 1px solid var(--line);
+    }
+
+    .teacher-panel.show { display: block; }
+
+    .teacher-panel h3 { margin: 0 0 8px; color: var(--navy); }
+
+    .print-card {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 2px dashed rgba(31, 138, 138, 0.42);
+      border-radius: 20px;
+      background: #fbfefe;
+    }
+
+    .reflection-area {
+      min-height: 96px;
+      width: 100%;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      resize: vertical;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .celebration {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      overflow: hidden;
+      display: none;
+    }
+
+    .celebration.show { display: block; }
+
+    .confetti {
+      position: absolute;
+      top: -20px;
+      width: 10px;
+      height: 18px;
+      border-radius: 2px;
+      background: var(--gold);
+      animation: fall 900ms ease-in forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(480deg);
+        opacity: 0.6;
+      }
+    }
+
+    .footer {
+      margin-top: 22px;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 800;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .model-panel,
+      .practice-shell,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar { border-radius: 24px; }
+      .topbar-inner { grid-template-columns: 1fr; }
+      .nav-links { justify-content: flex-start; }
+      .tiles { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 12px;
+      }
+
+      .hero,
+      .section {
+        padding: 18px;
+        border-radius: 22px;
+      }
+
+      .tiles { grid-template-columns: 1fr; }
+
+      .work-row,
+      .unit-row,
+      .progress-wrap,
+      .slider-row {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-panel,
+      .problem-card,
+      .scene-card {
+        min-height: auto;
+      }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      .topbar, .hero-actions, .answer-panel, .toolbar, .teacher-toggle, .tiles, .celebration, .view-buttons {
+        display: none !important;
+      }
+      .hero, .section, .card, .problem-card {
+        box-shadow: none;
+        border: 2px solid #000;
+        break-inside: avoid;
+      }
+      .hero { color: black; background: white; }
+      .hero p { color: black; }
+    }
+  </style>
+</head>
+<body>
+  <div class="celebration" id="celebration" aria-hidden="true"></div>
+
+  <main class="app-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <div class="kicker">Grade 6 Math · Actual 3D Interactive Practice</div>
+        <h1 id="page-title">Volume of Rectangular Prisms</h1>
+        <p>
+          Rotate a true 3D prism, connect the model to labeled practice diagrams, and build fluency with volume, missing sides, unit cubes, decimals, and real-world problems.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#practice">Start Practice</a>
+          <a class="btn ghost" href="#model">Use 3D Prism</a>
+          <button class="btn ghost teacher-toggle" type="button" onclick="toggleTeacherPanel()">Teacher Notes</button>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="Interactive 3D model preview">
+        <div class="scene" id="heroScene" aria-label="Rotatable 3D rectangular prism preview">
+          <div class="cuboid" id="heroCuboid" style="--L: 210px; --H: 118px; --D: 92px; --cell: 24px; --rx: -24deg; --ry: -36deg;">
+            <div class="face front"><span class="face-label">front face</span></div>
+            <div class="face back"></div>
+            <div class="face right"><span class="face-label">width</span></div>
+            <div class="face left"></div>
+            <div class="face top"><span class="face-label">top face</span></div>
+            <div class="face bottom"></div>
+          </div>
+        </div>
+        <div class="formula">
+          <div class="big">V = l × w × h</div>
+          <div class="words">Volume = length × width × height</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="teacher-panel" id="teacherPanel" aria-label="Teacher notes">
+      <h3>Teacher Notes</h3>
+      <p>
+        This version uses an actual CSS-3D rectangular prism in the exploration model so students can rotate the prism and view depth. Practice problems use clean, static 3D diagrams so the solving view stays readable and printable.
+      </p>
+      <ul>
+        <li><strong>Level 1:</strong> find volume from three dimensions.</li>
+        <li><strong>Level 2:</strong> missing side with total volume given.</li>
+        <li><strong>Level 3:</strong> unit-cube and fractional unit-cube volume tasks similar to textbook reveal problems.</li>
+        <li><strong>Levels 4–5:</strong> decimals, mixed practice, and real-world challenge problems.</li>
+      </ul>
+    </section>
+
+    <nav class="topbar" aria-label="Progress and section navigation">
+      <div class="topbar-inner">
+        <div class="progress-wrap" aria-live="polite">
+          <span>Progress</span>
+          <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+          <span id="progressLabel">0 / 30</span>
+          <span class="score-pill" id="scorePill">0 pts</span>
+        </div>
+        <div class="nav-links">
+          <a href="#learn">Learn</a>
+          <a href="#model">3D Model</a>
+          <a href="#practice">Practice</a>
+          <a href="#challenge">Exit</a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="section" id="learn">
+      <div class="section-header">
+        <div>
+          <h2>1. Learn the Big Idea</h2>
+          <p class="section-subtitle">
+            Volume measures the amount of space inside a 3D figure. A rectangular prism has three dimensions: length, width, and height.
+          </p>
+        </div>
+        <span class="tag">Formula Anchor</span>
+      </div>
+
+      <div class="grid-2">
+        <article class="card soft">
+          <h3>How to Solve</h3>
+          <ol class="anchor-list">
+            <li><span class="num-badge">1</span><span><strong>Identify the dimensions.</strong> Find length, width, and height.</span></li>
+            <li><span class="num-badge">2</span><span><strong>Write the formula.</strong> Use <strong>V = l × w × h</strong>.</span></li>
+            <li><span class="num-badge">3</span><span><strong>Multiply or divide.</strong> To find volume, multiply. To find a missing side, divide the volume by the product of the two known dimensions.</span></li>
+            <li><span class="num-badge">4</span><span><strong>Label the answer.</strong> Volume uses cubic units, such as <strong>cm³</strong>. A missing side uses regular units, such as <strong>cm</strong>.</span></li>
+          </ol>
+        </article>
+
+        <article class="card">
+          <h3>Vocabulary Support</h3>
+          <table class="vocab-table">
+            <thead>
+              <tr>
+                <th>Word</th>
+                <th>Student-Friendly Meaning</th>
+                <th>Sentence Frame</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>volume</td>
+                <td>The amount of space inside a 3D shape.</td>
+                <td>The volume is ___ cubic units.</td>
+              </tr>
+              <tr>
+                <td>rectangular prism</td>
+                <td>A box-shaped solid with rectangular faces.</td>
+                <td>The prism has dimensions ___, ___, and ___.</td>
+              </tr>
+              <tr>
+                <td>unit cube</td>
+                <td>A cube used to measure volume.</td>
+                <td>There are ___ unit cubes in the prism.</td>
+              </tr>
+              <tr>
+                <td>missing side</td>
+                <td>A length, width, or height that is not shown.</td>
+                <td>I can divide the volume by ___ to find the missing side.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="model">
+      <div class="section-header">
+        <div>
+          <h2>2. Interactive 3D Prism Builder</h2>
+          <p class="section-subtitle">
+            Drag the prism to rotate it. Change the dimensions and connect the 3D model to the formula.
+          </p>
+        </div>
+        <span class="tag">Actual 3D Rotation</span>
+      </div>
+
+      <div class="model-panel">
+        <div class="scene-card">
+          <div class="scene" id="mainScene" aria-label="Interactive rotatable 3D rectangular prism">
+            <div class="cuboid" id="mainCuboid" style="--L: 210px; --H: 126px; --D: 96px; --cell: 24px; --rx: -24deg; --ry: -36deg;">
+              <div class="face front"><span class="face-label">length × height</span></div>
+              <div class="face back"></div>
+              <div class="face right"><span class="face-label">width × height</span></div>
+              <div class="face left"></div>
+              <div class="face top"><span class="face-label">length × width</span></div>
+              <div class="face bottom"></div>
+            </div>
+          </div>
+          <div class="dimension-strip" id="dimensionStrip"></div>
+        </div>
+
+        <div class="controls-card">
+          <h3>Build the Prism</h3>
+          <div class="slider-group">
+            <div class="slider-row">
+              <label for="lengthSlider">Length</label>
+              <input type="range" min="1" max="12" value="5" id="lengthSlider" oninput="updateBuilder()" />
+              <span id="lengthVal">5</span>
+            </div>
+            <div class="slider-row">
+              <label for="widthSlider">Width</label>
+              <input type="range" min="1" max="10" value="4" id="widthSlider" oninput="updateBuilder()" />
+              <span id="widthVal">4</span>
+            </div>
+            <div class="slider-row">
+              <label for="heightSlider">Height</label>
+              <input type="range" min="1" max="10" value="3" id="heightSlider" oninput="updateBuilder()" />
+              <span id="heightVal">3</span>
+            </div>
+          </div>
+
+          <div class="volume-display" id="builderVolume" aria-live="polite">
+            <span>Volume</span>
+            <strong>60 units³</strong>
+            <span>5 × 4 × 3</span>
+          </div>
+
+          <div class="view-buttons" aria-label="3D view controls">
+            <button class="view-btn" type="button" onclick="setView(-24, -36)">3D View</button>
+            <button class="view-btn" type="button" onclick="setView(0, 0)">Front</button>
+            <button class="view-btn" type="button" onclick="setView(-90, 0)">Top</button>
+            <button class="view-btn" type="button" onclick="setView(0, -90)">Side</button>
+          </div>
+
+          <p class="scenario">
+            Math connection: the front face shows length × height, the top face shows length × width, and the side face helps you see the width.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="quick-check">
+      <div class="section-header">
+        <div>
+          <h2>3. Quick Checks</h2>
+          <p class="section-subtitle">Warm up before the main practice.</p>
+        </div>
+        <span class="tag">Self Check</span>
+      </div>
+      <div class="quick-check-grid" id="quickChecks"></div>
+    </section>
+
+    <section class="section" id="practice">
+      <div class="section-header">
+        <div>
+          <h2>4. Practice Pathway</h2>
+          <p class="section-subtitle">
+            Complete 30 problems. The practice begins with direct volume, then adds missing sides, unit cubes, decimals, and real-world tasks.
+          </p>
+        </div>
+        <span class="tag">30 Problems</span>
+      </div>
+
+      <div class="tiles" id="problemTiles" aria-label="Problem list"></div>
+
+      <div class="practice-shell" style="margin-top:18px;">
+        <article class="problem-card" aria-live="polite">
+          <div class="problem-meta">
+            <span class="level-pill" id="levelPill">Level 1 · Find Volume</span>
+            <span class="problem-number" id="problemNumber">Problem 1 of 30</span>
+          </div>
+
+          <p class="problem-text" id="problemText">Find the volume.</p>
+          <p class="scenario" id="scenarioText"></p>
+          <p class="sub-prompt" id="subPrompt"></p>
+
+          <div class="prism-stage">
+            <svg id="problemSvg" viewBox="0 0 560 340" width="100%" height="320" role="img" aria-label="Labeled 3D prism for the current problem"></svg>
+          </div>
+
+          <div class="hint-box" id="hintBox"></div>
+        </article>
+
+        <aside class="answer-panel" aria-label="Answer work area">
+          <h3>Show Your Thinking</h3>
+
+          <div class="work-grid">
+            <div class="work-row">
+              <label for="studentL" id="labelL">Length</label>
+              <input type="text" id="studentL" inputmode="decimal" autocomplete="off" placeholder="l" />
+            </div>
+            <div class="work-row">
+              <label for="studentW" id="labelW">Width</label>
+              <input type="text" id="studentW" inputmode="decimal" autocomplete="off" placeholder="w" />
+            </div>
+            <div class="work-row">
+              <label for="studentH" id="labelH">Height</label>
+              <input type="text" id="studentH" inputmode="decimal" autocomplete="off" placeholder="h" />
+            </div>
+            <div class="work-row">
+              <label for="studentEquation">Equation</label>
+              <input type="text" id="studentEquation" autocomplete="off" placeholder="Example: 6 × 4 × 3" />
+            </div>
+            <div class="work-row">
+              <label for="studentAnswer">Answer</label>
+              <div class="unit-row">
+                <input type="text" id="studentAnswer" inputmode="decimal" autocomplete="off" placeholder="answer" />
+                <select id="studentUnit" aria-label="Select unit">
+                  <option value="">unit?</option>
+                  <option value="units">units</option>
+                  <option value="cm">cm</option>
+                  <option value="m">m</option>
+                  <option value="in">in</option>
+                  <option value="ft">ft</option>
+                  <option value="units³">units³</option>
+                  <option value="cm³">cm³</option>
+                  <option value="m³">m³</option>
+                  <option value="in³">in³</option>
+                  <option value="ft³">ft³</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn primary" type="button" onclick="checkAnswer()">Check</button>
+            <button class="btn" type="button" onclick="showHint()">Hint</button>
+            <button class="btn" type="button" onclick="showSteps()">Show Steps</button>
+            <button class="btn teal" type="button" onclick="nextProblem()">Next</button>
+          </div>
+
+          <div class="feedback" id="feedback">Choose a problem and enter your work.</div>
+          <div class="step-box" id="stepBox"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="challenge">
+      <div class="section-header">
+        <div>
+          <h2>5. Exit Reflection</h2>
+          <p class="section-subtitle">Explain your thinking using precise math language.</p>
+        </div>
+        <span class="tag">Writing + Math</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="print-card">
+          <strong>Reflection Prompt</strong>
+          <span>Explain how the 3D prism model helps you understand length, width, height, and volume.</span>
+          <textarea class="reflection-area" id="reflection" placeholder="The 3D prism helps me because..."></textarea>
+        </div>
+        <div class="print-card">
+          <strong>Exit Ticket</strong>
+          <span>A rectangular prism has a volume of 180 cm³. Its length is 9 cm and its width is 4 cm. What is the height?</span>
+          <div>
+            <label for="exitAnswer">My answer:</label>
+            <input class="inline-input" id="exitAnswer" inputmode="decimal" />
+            <span>cm</span>
+            <button class="btn small teal" type="button" onclick="checkExit()">Check Exit Ticket</button>
+          </div>
+          <div class="feedback" id="exitFeedback">Use height = volume ÷ (length × width).</div>
+        </div>
+      </div>
+
+      <div class="toolbar" style="margin-top:16px;">
+        <button class="btn primary" type="button" onclick="window.print()">Print / Save as PDF</button>
+        <button class="btn danger" type="button" onclick="resetAll()">Reset Progress</button>
+      </div>
+    </section>
+
+    <p class="footer">Volume of Rectangular Prisms · Grade 6 Interactive 3D Practice</p>
+  </main>
+
+  <script>
+    const problems = [
+      {level:"Level 1", title:"Find Volume", l:4, w:3, h:2, linearUnit:"units", unit:"units³", type:"volume", scenario:"Find the volume of the rectangular prism.", prompt:"Use all three dimensions.", hint:"Multiply the three dimensions: 4 × 3 × 2."},
+      {level:"Level 1", title:"Find Volume", l:5, w:2, h:3, linearUnit:"units", unit:"units³", type:"volume", scenario:"How many cubic units fill the prism?", prompt:"Write the formula before multiplying.", hint:"Start with the base: 5 × 2. Then multiply by the height."},
+      {level:"Level 1", title:"Find Volume", l:6, w:4, h:2, linearUnit:"cm", unit:"cm³", type:"volume", scenario:"A small box is measured in centimeters.", prompt:"Find the volume.", hint:"Use V = l × w × h."},
+      {level:"Level 1", title:"Find Volume", l:7, w:3, h:2, linearUnit:"in", unit:"in³", type:"volume", scenario:"The prism is measured in inches.", prompt:"Find the volume.", hint:"Each dimension is in inches, so volume is in cubic inches."},
+      {level:"Level 1", title:"Find Volume", l:8, w:2, h:4, linearUnit:"units", unit:"units³", type:"volume", scenario:"Use the labeled prism to find the volume.", prompt:"Find the volume.", hint:"8 × 2 = 16, and 16 × 4 = ?"},
+      {level:"Level 1", title:"Find Volume", l:9, w:3, h:2, linearUnit:"ft", unit:"ft³", type:"volume", scenario:"A rectangular storage bin is measured in feet.", prompt:"Find the volume.", hint:"Multiply 9 × 3 × 2."},
+
+      {level:"Level 2", title:"Missing Side", l:6, w:4, h:5, linearUnit:"units", unit:"units³", type:"missingH", scenario:"The total volume of the prism is 120 units³.", prompt:"What is the missing height?", hint:"First find the base area: 6 × 4 = 24. Then 120 ÷ 24."},
+      {level:"Level 2", title:"Missing Side", l:8, w:3, h:7, linearUnit:"cm", unit:"cm³", type:"missingH", scenario:"The total volume of the prism is 168 cm³.", prompt:"What is the missing height?", hint:"Use height = volume ÷ (length × width)."},
+      {level:"Level 2", title:"Missing Side", l:9, w:5, h:4, linearUnit:"ft", unit:"ft³", type:"missingW", scenario:"The total volume of the prism is 180 ft³.", prompt:"What is the missing width?", hint:"Use width = volume ÷ (length × height)."},
+      {level:"Level 2", title:"Missing Side", l:12, w:4, h:3, linearUnit:"in", unit:"in³", type:"missingW", scenario:"The total volume of the prism is 144 in³.", prompt:"What is the missing width?", hint:"12 × 3 = 36. Then 144 ÷ 36."},
+      {level:"Level 2", title:"Missing Side", l:10, w:6, h:2.5, linearUnit:"m", unit:"m³", type:"missingH", scenario:"The total volume of the prism is 150 m³.", prompt:"What is the missing height?", hint:"10 × 6 = 60. Then 150 ÷ 60."},
+      {level:"Level 2", title:"Missing Side", l:7.5, w:4, h:3, linearUnit:"units", unit:"units³", type:"missingL", scenario:"The total volume of the prism is 90 units³.", prompt:"What is the missing length?", hint:"Use length = volume ÷ (width × height)."},
+
+      {level:"Level 3", title:"Unit Cubes", l:5, w:2, h:3, linearUnit:"in", unit:"in³", type:"unitCube", cubeEdge:0.5, scenario:"The prism is made of 30 unit cubes. Each unit cube has side length 1/2 inch.", prompt:"What is the total volume of the prism?", hint:"Find the volume of one small cube: 1/2 × 1/2 × 1/2 = 1/8 in³. Then multiply by 30."},
+      {level:"Level 3", title:"Unit Cubes", l:4, w:3, h:2, linearUnit:"cm", unit:"cm³", type:"unitCube", cubeEdge:0.5, scenario:"The prism is made of 24 unit cubes. Each unit cube has side length 1/2 cm.", prompt:"What is the total volume of the prism?", hint:"One small cube has volume 1/8 cm³. Multiply 24 × 1/8."},
+      {level:"Level 3", title:"Unit Cubes", l:6, w:2, h:2, linearUnit:"in", unit:"in³", type:"unitCube", cubeEdge:0.5, scenario:"The prism is made of 24 unit cubes. Each unit cube has side length 1/2 inch.", prompt:"What is the total volume of the prism?", hint:"Each cube is 1/8 in³. Multiply 24 × 1/8."},
+      {level:"Level 3", title:"Unit Cubes", l:3, w:3, h:3, linearUnit:"cm", unit:"cm³", type:"unitCube", cubeEdge:1, scenario:"The prism is made of 27 one-centimeter unit cubes.", prompt:"What is the total volume?", hint:"Each 1 cm cube has volume 1 cm³. There are 27 cubes."},
+      {level:"Level 3", title:"Decimals", l:2.5, w:4, h:3, linearUnit:"cm", unit:"cm³", type:"volume", scenario:"A rectangular prism has one decimal dimension.", prompt:"Find the volume.", hint:"2.5 × 4 = 10. Then multiply by 3."},
+      {level:"Level 3", title:"Decimals", l:3.5, w:2, h:6, linearUnit:"in", unit:"in³", type:"volume", scenario:"Decimal answers are okay.", prompt:"Find the volume.", hint:"3.5 × 2 = 7. Then multiply by 6."},
+
+      {level:"Level 4", title:"Mixed Practice", l:1.5, w:4, h:5, linearUnit:"m", unit:"m³", type:"volume", scenario:"A small rectangular tank is measured in meters.", prompt:"Find the volume.", hint:"1.5 × 4 = 6. Then 6 × 5."},
+      {level:"Level 4", title:"Mixed Practice", l:6, w:2.5, h:2, linearUnit:"ft", unit:"ft³", type:"volume", scenario:"Use the formula with a decimal width.", prompt:"Find the volume.", hint:"6 × 2.5 = 15. Then multiply by 2."},
+      {level:"Level 4", title:"Mixed Practice", l:4.5, w:3, h:2, linearUnit:"cm", unit:"cm³", type:"volume", scenario:"Find the volume of the rectangular prism.", prompt:"Find the volume.", hint:"4.5 × 3 = 13.5. Then multiply by 2."},
+      {level:"Level 4", title:"Mixed Practice", l:11, w:4, h:6, linearUnit:"cm", unit:"cm³", type:"volume", scenario:"Find the volume of the prism.", prompt:"Find the volume.", hint:"11 × 4 = 44. Then 44 × 6."},
+      {level:"Level 4", title:"Mixed Practice", l:6, w:5, h:4, linearUnit:"cm", unit:"cm³", type:"missingL", scenario:"The total volume of the prism is 120 cm³.", prompt:"What is the missing length?", hint:"Use length = volume ÷ (width × height)."},
+      {level:"Level 4", title:"Mixed Practice", l:8, w:6, h:5, linearUnit:"ft", unit:"ft³", type:"volume", scenario:"A storage closet is shaped like a rectangular prism.", prompt:"Find the volume.", hint:"8 × 6 gives the area of one layer. Then multiply by height."},
+
+      {level:"Level 5", title:"Real World Challenge", l:14, w:6, h:5, linearUnit:"ft", unit:"ft³", type:"volume", scenario:"A classroom supply cabinet is 14 ft long, 6 ft wide, and 5 ft tall.", prompt:"How much space is inside?", hint:"This is still a rectangular prism. Use V = l × w × h."},
+      {level:"Level 5", title:"Real World Challenge", l:8.5, w:4, h:2, linearUnit:"in", unit:"in³", type:"volume", scenario:"A shipping container for jewelry boxes has these dimensions.", prompt:"Find the volume.", hint:"8.5 × 4 = 34. Then multiply by 2."},
+      {level:"Level 5", title:"Real World Challenge", l:15, w:8, h:6, linearUnit:"cm", unit:"cm³", type:"volume", scenario:"A clear display case is shaped like a rectangular prism.", prompt:"Find the volume.", hint:"Multiply 15 × 8 × 6."},
+      {level:"Level 5", title:"Real World Challenge", l:20, w:5, h:4, linearUnit:"ft", unit:"ft³", type:"missingH", scenario:"A storage container has a total volume of 400 ft³.", prompt:"If it is 20 ft long and 5 ft wide, what is the height?", hint:"Find the base area first: 20 × 5. Then divide 400 by that base area."},
+      {level:"Level 5", title:"Real World Challenge", l:9, w:8, h:7, linearUnit:"m", unit:"m³", type:"volume", scenario:"A rectangular water tank is 9 m long, 8 m wide, and 7 m high.", prompt:"Find the volume.", hint:"Use V = 9 × 8 × 7."},
+      {level:"Level 5", title:"Real World Challenge", l:16, w:3.5, h:2, linearUnit:"cm", unit:"cm³", type:"volume", scenario:"A rectangular prism has one decimal dimension.", prompt:"Find the volume.", hint:"16 × 3.5 = 56. Then multiply by 2."}
+    ];
+
+    const quickChecks = [
+      {
+        q: "Which unit should be used for volume?",
+        options: ["cm", "cm²", "cm³", "cm per hour"],
+        answer: "cm³",
+        explain: "Volume is measured in cubic units because it fills 3D space."
+      },
+      {
+        q: "What are the three dimensions used to find volume?",
+        options: ["length, width, height", "base, angle, radius", "length, area, perimeter", "width, perimeter, height"],
+        answer: "length, width, height",
+        explain: "A rectangular prism uses length, width, and height."
+      },
+      {
+        q: "If the volume is known and one side is missing, what should you do?",
+        options: ["add the dimensions", "divide the volume by the product of the two known sides", "multiply the perimeter by the height", "subtract all of the side lengths"],
+        answer: "divide the volume by the product of the two known sides",
+        explain: "Missing side = volume ÷ (product of the two known dimensions)."
+      }
+    ];
+
+    let currentIndex = 0;
+    let completed = JSON.parse(localStorage.getItem("vrp3_completed") || "{}");
+    let score = Number(localStorage.getItem("vrp3_score") || "0");
+    let rotX = -24;
+    let rotY = -36;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    const els = {
+      progressFill: document.getElementById("progressFill"),
+      progressLabel: document.getElementById("progressLabel"),
+      scorePill: document.getElementById("scorePill"),
+      problemTiles: document.getElementById("problemTiles"),
+      levelPill: document.getElementById("levelPill"),
+      problemNumber: document.getElementById("problemNumber"),
+      problemText: document.getElementById("problemText"),
+      scenarioText: document.getElementById("scenarioText"),
+      subPrompt: document.getElementById("subPrompt"),
+      problemSvg: document.getElementById("problemSvg"),
+      studentL: document.getElementById("studentL"),
+      studentW: document.getElementById("studentW"),
+      studentH: document.getElementById("studentH"),
+      studentEquation: document.getElementById("studentEquation"),
+      studentAnswer: document.getElementById("studentAnswer"),
+      studentUnit: document.getElementById("studentUnit"),
+      labelL: document.getElementById("labelL"),
+      labelW: document.getElementById("labelW"),
+      labelH: document.getElementById("labelH"),
+      feedback: document.getElementById("feedback"),
+      hintBox: document.getElementById("hintBox"),
+      stepBox: document.getElementById("stepBox"),
+      celebration: document.getElementById("celebration"),
+      mainCuboid: document.getElementById("mainCuboid"),
+      mainScene: document.getElementById("mainScene")
+    };
+
+    function formatNumber(value) {
+      if (Math.abs(value - Math.round(value)) < 0.000001) return String(Math.round(value));
+      return String(Math.round(value * 100) / 100);
+    }
+
+    function parseStudentNumber(value) {
+      if (!value) return NaN;
+      const cleaned = String(value)
+        .trim()
+        .replace(/,/g, "")
+        .replace(/×/g, "*")
+        .replace(/\s/g, "");
+
+      if (cleaned.includes("/")) {
+        const parts = cleaned.split("/");
+        if (parts.length === 2) {
+          const numerator = Number(parts[0]);
+          const denominator = Number(parts[1]);
+          if (!Number.isNaN(numerator) && !Number.isNaN(denominator) && denominator !== 0) {
+            return numerator / denominator;
+          }
+        }
+      }
+
+      return Number(cleaned);
+    }
+
+    function nearlyEqual(a, b) {
+      return Math.abs(a - b) < 0.01;
+    }
+
+    function expectedAnswer(problem) {
+      if (problem.type === "missingL") return problem.l;
+      if (problem.type === "missingW") return problem.w;
+      if (problem.type === "missingH") return problem.h;
+      if (problem.type === "unitCube") return problem.l * problem.w * problem.h * Math.pow(problem.cubeEdge, 3);
+      return problem.l * problem.w * problem.h;
+    }
+
+    function countCubes(problem) {
+      return problem.l * problem.w * problem.h;
+    }
+
+    function missingKey(problem) {
+      if (problem.type === "missingL") return "l";
+      if (problem.type === "missingW") return "w";
+      if (problem.type === "missingH") return "h";
+      return "";
+    }
+
+    function answerUnit(problem) {
+      return problem.type === "volume" || problem.type === "unitCube" ? problem.unit : problem.linearUnit;
+    }
+
+    function isMissing(problem) {
+      return ["missingL", "missingW", "missingH"].includes(problem.type);
+    }
+
+    function dimensionPrompt(problem) {
+      if (problem.type === "missingL") return "Find the missing length.";
+      if (problem.type === "missingW") return "Find the missing width.";
+      if (problem.type === "missingH") return "Find the missing height.";
+      if (problem.type === "unitCube") return "Use unit cubes to find the volume.";
+      return "Find the volume.";
+    }
+
+    function arrowHead(id, color) {
+      return `
+        <marker id="${id}" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L8,4 L0,8 z" fill="${color}"></path>
+        </marker>
+      `;
+    }
+
+    function canGrid(value, max) {
+      return Number.isInteger(value) && value >= 1 && value <= max;
+    }
+
+    function drawStaticPrism(svg, problem) {
+      const l = Number(problem.l);
+      const w = Number(problem.w);
+      const h = Number(problem.h);
+      const volume = l * w * h;
+      const showVolume = isMissing(problem);
+      const missing = missingKey(problem);
+      const linearUnit = problem.linearUnit;
+      const unit = problem.unit;
+
+      const maxL = Math.max(12, l, w, h);
+      const maxW = Math.max(10, w);
+      const maxH = Math.max(10, h);
+
+      const frontW = 148 + (l / maxL) * 145;
+      const frontH = 82 + (h / maxH) * 98;
+      const depthX = 62 + (w / maxW) * 52;
+      const depthY = 38 + (w / maxW) * 23;
+
+      const x = 88;
+      const y = 88;
+      const right = x + frontW;
+      const bottom = y + frontH;
+
+      const lengthLabel = missing === "l" ? "?" : formatNumber(l);
+      const widthLabel = missing === "w" ? "?" : formatNumber(w);
+      const heightLabel = missing === "h" ? "?" : formatNumber(h);
+
+      let gridLines = "";
+      if (canGrid(l, 12) && canGrid(h, 12)) {
+        for (let i = 1; i < Math.round(l); i++) {
+          const gx = x + (frontW / l) * i;
+          gridLines += `<line x1="${gx}" y1="${y}" x2="${gx}" y2="${bottom}" stroke="#17324d" stroke-width="1.35" opacity="0.66"/>`;
+        }
+        for (let j = 1; j < Math.round(h); j++) {
+          const gy = y + (frontH / h) * j;
+          gridLines += `<line x1="${x}" y1="${gy}" x2="${right}" y2="${gy}" stroke="#17324d" stroke-width="1.35" opacity="0.66"/>`;
+        }
+      }
+
+      if (canGrid(w, 10) && canGrid(h, 12)) {
+        for (let i = 1; i < Math.round(w); i++) {
+          const sx = right + (depthX / w) * i;
+          const sy = y + (depthY / w) * i;
+          gridLines += `<line x1="${sx}" y1="${sy}" x2="${sx}" y2="${bottom + sy - y}" stroke="#17324d" stroke-width="1.35" opacity="0.66"/>`;
+        }
+        for (let j = 1; j < Math.round(h); j++) {
+          const gy = y + (frontH / h) * j;
+          gridLines += `<line x1="${right}" y1="${gy}" x2="${right + depthX}" y2="${gy + depthY}" stroke="#17324d" stroke-width="1.35" opacity="0.66"/>`;
+        }
+      }
+
+      if (canGrid(l, 12) && canGrid(w, 10)) {
+        for (let i = 1; i < Math.round(l); i++) {
+          const tx = x + (frontW / l) * i;
+          gridLines += `<line x1="${tx}" y1="${y}" x2="${tx + depthX}" y2="${y + depthY}" stroke="#17324d" stroke-width="1.35" opacity="0.66"/>`;
+        }
+        for (let j = 1; j < Math.round(w); j++) {
+          const tx1 = x + (depthX / w) * j;
+          const ty1 = y + (depthY / w) * j;
+          const tx2 = right + (depthX / w) * j;
+          const ty2 = y + (depthY / w) * j;
+          gridLines += `<line x1="${tx1}" y1="${ty1}" x2="${tx2}" y2="${ty2}" stroke="#17324d" stroke-width="1.35" opacity="0.66"/>`;
+        }
+      }
+
+      let unitCubeBlock = "";
+      if (problem.type === "unitCube") {
+        const cubeX = 404;
+        const cubeY = 188;
+        unitCubeBlock = `
+          <g aria-label="single unit cube">
+            <polygon points="${cubeX},${cubeY} ${cubeX+44},${cubeY} ${cubeX+61},${cubeY+15} ${cubeX+17},${cubeY+15}" fill="#e7f6ef" stroke="#17324d" stroke-width="2"></polygon>
+            <polygon points="${cubeX+44},${cubeY} ${cubeX+61},${cubeY+15} ${cubeX+61},${cubeY+59} ${cubeX+44},${cubeY+44}" fill="#b7dcca" stroke="#17324d" stroke-width="2"></polygon>
+            <rect x="${cubeX}" y="${cubeY+15}" width="44" height="44" fill="#abd7c4" stroke="#17324d" stroke-width="2"></rect>
+            <text x="${cubeX+28}" y="${cubeY+86}" text-anchor="middle" fill="#17324d" font-size="17" font-weight="900">edge = ${formatNumber(problem.cubeEdge)} ${linearUnit}</text>
+          </g>
+        `;
+      }
+
+      svg.innerHTML = `
+        <defs>
+          ${arrowHead("arrRedStatic", "#d96f5d")}
+          ${arrowHead("arrTealStatic", "#1f8a8a")}
+          ${arrowHead("arrGoldStatic", "#f3b44b")}
+          <linearGradient id="faceFrontStatic" x1="0" x2="1">
+            <stop offset="0" stop-color="#abd7c4"></stop>
+            <stop offset="1" stop-color="#d9efe6"></stop>
+          </linearGradient>
+          <linearGradient id="faceTopStatic" x1="0" x2="1">
+            <stop offset="0" stop-color="#d9ece2"></stop>
+            <stop offset="1" stop-color="#f1faf5"></stop>
+          </linearGradient>
+          <linearGradient id="faceSideStatic" x1="0" x2="1">
+            <stop offset="0" stop-color="#9ecbb9"></stop>
+            <stop offset="1" stop-color="#c5e4d7"></stop>
+          </linearGradient>
+        </defs>
+
+        ${showVolume ? `<rect x="170" y="16" rx="14" ry="14" width="230" height="40" fill="#fff8e8" stroke="#f3b44b" stroke-width="2"></rect>
+        <text x="285" y="42" text-anchor="middle" fill="#17324d" font-size="20" font-weight="900">Volume = ${formatNumber(volume)} ${unit}</text>` : ""}
+
+        ${problem.type === "unitCube" ? `<rect x="142" y="16" rx="14" ry="14" width="275" height="40" fill="#fff8e8" stroke="#f3b44b" stroke-width="2"></rect>
+        <text x="280" y="42" text-anchor="middle" fill="#17324d" font-size="19" font-weight="900">${formatNumber(countCubes(problem))} unit cubes total</text>` : ""}
+
+        <polygon points="${x},${y} ${right},${y} ${right + depthX},${y + depthY} ${x + depthX},${y + depthY}" fill="url(#faceTopStatic)" stroke="#17324d" stroke-width="3"></polygon>
+        <polygon points="${right},${y} ${right + depthX},${y + depthY} ${right + depthX},${bottom + depthY} ${right},${bottom}" fill="url(#faceSideStatic)" stroke="#17324d" stroke-width="3"></polygon>
+        <rect x="${x}" y="${y}" width="${frontW}" height="${frontH}" fill="url(#faceFrontStatic)" stroke="#17324d" stroke-width="3"></rect>
+        ${gridLines}
+
+        <line x1="${x}" y1="${bottom + 24}" x2="${right}" y2="${bottom + 24}" stroke="#d96f5d" stroke-width="4" marker-start="url(#arrRedStatic)" marker-end="url(#arrRedStatic)"></line>
+        <rect x="${(x + right) / 2 - 82}" y="${bottom + 36}" rx="11" ry="11" width="164" height="34" fill="white" stroke="#d96f5d" stroke-width="2"></rect>
+        <text x="${(x + right) / 2}" y="${bottom + 59}" text-anchor="middle" fill="#17324d" font-size="19" font-weight="900">
+          length = ${lengthLabel} ${linearUnit}
+        </text>
+
+        <line x1="${x - 30}" y1="${y}" x2="${x - 30}" y2="${bottom}" stroke="#1f8a8a" stroke-width="4" marker-start="url(#arrTealStatic)" marker-end="url(#arrTealStatic)"></line>
+        <rect x="${x - 86}" y="${(y + bottom) / 2 - 17}" rx="11" ry="11" width="50" height="112" fill="white" stroke="#1f8a8a" stroke-width="2" transform="rotate(-90 ${x - 61},${(y + bottom) / 2 + 39})"></rect>
+        <text x="${x - 58}" y="${(y + bottom) / 2}" transform="rotate(-90 ${x - 58},${(y + bottom) / 2})" text-anchor="middle" fill="#17324d" font-size="19" font-weight="900">
+          height = ${heightLabel} ${linearUnit}
+        </text>
+
+        <line x1="${right + 19}" y1="${y + 9}" x2="${right + depthX + 19}" y2="${y + depthY + 9}" stroke="#f3b44b" stroke-width="4" marker-start="url(#arrGoldStatic)" marker-end="url(#arrGoldStatic)"></line>
+        <rect x="${right + depthX - 35}" y="${y + depthY + 17}" rx="11" ry="11" width="152" height="36" fill="#fff8e8" stroke="#f3b44b" stroke-width="2"></rect>
+        <text x="${right + depthX + 41}" y="${y + depthY + 41}" text-anchor="middle" fill="#17324d" font-size="19" font-weight="900">
+          width = ${widthLabel} ${linearUnit}
+        </text>
+
+        ${unitCubeBlock}
+      `;
+    }
+
+    function buildTiles() {
+      els.problemTiles.innerHTML = "";
+      problems.forEach((p, index) => {
+        const btn = document.createElement("button");
+        btn.className = "tile" + (completed[index] ? " done" : "");
+        btn.type = "button";
+        btn.onclick = () => selectProblem(index);
+        btn.innerHTML = `
+          <div class="tile-level">${p.level}</div>
+          <div class="tile-title">Problem ${index + 1}</div>
+          <div class="tile-status">${completed[index] ? "Completed ✓" : p.title}</div>
+        `;
+        els.problemTiles.appendChild(btn);
+      });
+    }
+
+    function buildSteps(p, answer) {
+      const volume = p.l * p.w * p.h;
+
+      if (p.type === "volume") {
+        return `
+          <strong>Step-by-step solution</strong>
+          <ol>
+            <li>Write the formula: <strong>V = l × w × h</strong>.</li>
+            <li>Substitute the dimensions: <strong>V = ${formatNumber(p.l)} × ${formatNumber(p.w)} × ${formatNumber(p.h)}</strong>.</li>
+            <li>Multiply: <strong>V = ${formatNumber(volume)}</strong>.</li>
+            <li>Label the answer: <strong>${formatNumber(volume)} ${p.unit}</strong>.</li>
+          </ol>
+        `;
+      }
+
+      if (p.type === "unitCube") {
+        const cubes = countCubes(p);
+        const oneCube = Math.pow(p.cubeEdge, 3);
+        return `
+          <strong>Step-by-step solution</strong>
+          <ol>
+            <li>Count the cubes in the prism: <strong>${formatNumber(p.l)} × ${formatNumber(p.w)} × ${formatNumber(p.h)} = ${formatNumber(cubes)}</strong> cubes.</li>
+            <li>Find the volume of one small cube: <strong>${formatNumber(p.cubeEdge)} × ${formatNumber(p.cubeEdge)} × ${formatNumber(p.cubeEdge)} = ${formatNumber(oneCube)} ${p.unit}</strong>.</li>
+            <li>Multiply: <strong>${formatNumber(cubes)} × ${formatNumber(oneCube)} = ${formatNumber(answer)} ${p.unit}</strong>.</li>
+          </ol>
+        `;
+      }
+
+      const known = p.type === "missingL"
+        ? `${formatNumber(p.w)} × ${formatNumber(p.h)}`
+        : p.type === "missingW"
+        ? `${formatNumber(p.l)} × ${formatNumber(p.h)}`
+        : `${formatNumber(p.l)} × ${formatNumber(p.w)}`;
+
+      const missingName = p.type === "missingL" ? "length" : p.type === "missingW" ? "width" : "height";
+
+      return `
+        <strong>Step-by-step solution</strong>
+        <ol>
+          <li>Start with the formula: <strong>V = l × w × h</strong>.</li>
+          <li>Use the known dimensions: <strong>${known}</strong>.</li>
+          <li>Divide the total volume by the product of the two known dimensions.</li>
+          <li>The missing ${missingName} is <strong>${formatNumber(answer)} ${p.linearUnit}</strong>.</li>
+        </ol>
+      `;
+    }
+
+    function selectProblem(index) {
+      currentIndex = index;
+      const p = problems[index];
+
+      els.levelPill.textContent = `${p.level} · ${p.title}`;
+      els.problemNumber.textContent = `Problem ${index + 1} of ${problems.length}`;
+      els.problemText.textContent = dimensionPrompt(p);
+      els.scenarioText.textContent = p.scenario;
+      els.subPrompt.textContent = p.prompt;
+
+      drawStaticPrism(els.problemSvg, p);
+
+      if (p.type === "unitCube") {
+        els.labelL.textContent = "Cubes long";
+        els.labelW.textContent = "Cubes deep";
+        els.labelH.textContent = "Cubes high";
+        els.studentL.placeholder = "cubes long";
+        els.studentW.placeholder = "cubes deep";
+        els.studentH.placeholder = "cubes high";
+        els.studentEquation.placeholder = "Example: 30 × 1/8";
+      } else {
+        els.labelL.textContent = "Length";
+        els.labelW.textContent = "Width";
+        els.labelH.textContent = "Height";
+        els.studentL.placeholder = "l";
+        els.studentW.placeholder = "w";
+        els.studentH.placeholder = "h";
+        els.studentEquation.placeholder = "Example: 6 × 4 × 3";
+      }
+
+      els.studentL.value = "";
+      els.studentW.value = "";
+      els.studentH.value = "";
+      els.studentEquation.value = "";
+      els.studentAnswer.value = "";
+      els.studentUnit.value = "";
+      els.feedback.className = "feedback";
+
+      if (p.type === "volume") {
+        els.feedback.textContent = "Enter the dimensions, equation, volume, and cubic unit.";
+      } else if (p.type === "unitCube") {
+        els.feedback.textContent = "Use the number of cubes and the volume of one small cube.";
+      } else {
+        els.feedback.textContent = "Use the given total volume and the two known dimensions to find the missing side.";
+      }
+
+      els.hintBox.className = "hint-box";
+      els.hintBox.textContent = p.hint;
+      els.stepBox.className = "step-box";
+      els.stepBox.innerHTML = buildSteps(p, expectedAnswer(p));
+      window.location.hash = "practice";
+    }
+
+    function checkDimensionFields(p) {
+      const lVal = parseStudentNumber(els.studentL.value);
+      const wVal = parseStudentNumber(els.studentW.value);
+      const hVal = parseStudentNumber(els.studentH.value);
+
+      if (p.type === "unitCube") {
+        return nearlyEqual(lVal, p.l) && nearlyEqual(wVal, p.w) && nearlyEqual(hVal, p.h);
+      }
+
+      if (p.type === "volume") {
+        return nearlyEqual(lVal, p.l) && nearlyEqual(wVal, p.w) && nearlyEqual(hVal, p.h);
+      }
+
+      if (p.type === "missingL") return nearlyEqual(lVal, p.l);
+      if (p.type === "missingW") return nearlyEqual(wVal, p.w);
+      if (p.type === "missingH") return nearlyEqual(hVal, p.h);
+      return false;
+    }
+
+    function checkAnswer() {
+      const p = problems[currentIndex];
+      const expected = expectedAnswer(p);
+      const student = parseStudentNumber(els.studentAnswer.value);
+      const chosenUnit = els.studentUnit.value;
+      const targetUnit = answerUnit(p);
+
+      if (!els.studentAnswer.value.trim()) {
+        setFeedback("warning", "Enter your answer before checking.");
+        return;
+      }
+
+      const answerOk = nearlyEqual(student, expected);
+      const unitOk = chosenUnit === targetUnit;
+      const dimsOk = checkDimensionFields(p);
+
+      if (answerOk && unitOk) {
+        if (!completed[currentIndex]) {
+          completed[currentIndex] = true;
+          score += p.level === "Level 5" ? 15 : p.level === "Level 4" ? 12 : 10;
+          localStorage.setItem("vrp3_completed", JSON.stringify(completed));
+          localStorage.setItem("vrp3_score", String(score));
+          celebrate();
+        }
+        setFeedback("success", `Correct! The answer is ${formatNumber(expected)} ${targetUnit}.`);
+        updateProgress();
+        buildTiles();
+      } else if (answerOk && !unitOk) {
+        setFeedback("warning", `The number is correct. Fix the unit. The answer should be labeled ${targetUnit}.`);
+      } else if (!dimsOk && isMissing(p)) {
+        setFeedback("error", "Check which side is missing. Use the total volume and divide by the product of the two known dimensions.");
+      } else if (!dimsOk && p.type === "unitCube") {
+        setFeedback("error", "Check the cube count: cubes long × cubes deep × cubes high.");
+      } else {
+        setFeedback("error", "Not yet. Recheck the formula and your arithmetic. Use the hint or steps if needed.");
+      }
+    }
+
+    function setFeedback(type, message) {
+      els.feedback.className = `feedback ${type}`;
+      els.feedback.textContent = message;
+    }
+
+    function showHint() {
+      els.hintBox.classList.toggle("show");
+    }
+
+    function showSteps() {
+      els.stepBox.classList.toggle("show");
+    }
+
+    function nextProblem() {
+      selectProblem((currentIndex + 1) % problems.length);
+    }
+
+    function updateProgress() {
+      const count = Object.keys(completed).filter(k => completed[k]).length;
+      const pct = Math.round((count / problems.length) * 100);
+      els.progressFill.style.width = pct + "%";
+      els.progressLabel.textContent = `${count} / ${problems.length}`;
+      els.scorePill.textContent = `${score} pts`;
+    }
+
+    function updateBuilder() {
+      const l = Number(document.getElementById("lengthSlider").value);
+      const w = Number(document.getElementById("widthSlider").value);
+      const h = Number(document.getElementById("heightSlider").value);
+      const cell = 24;
+
+      document.getElementById("lengthVal").textContent = l;
+      document.getElementById("widthVal").textContent = w;
+      document.getElementById("heightVal").textContent = h;
+
+      const Lpx = Math.max(72, l * cell);
+      const Dpx = Math.max(48, w * cell);
+      const Hpx = Math.max(48, h * cell);
+
+      els.mainCuboid.style.setProperty("--L", `${Lpx}px`);
+      els.mainCuboid.style.setProperty("--D", `${Dpx}px`);
+      els.mainCuboid.style.setProperty("--H", `${Hpx}px`);
+      els.mainCuboid.style.setProperty("--cell", `${cell}px`);
+
+      const volume = l * w * h;
+      document.getElementById("builderVolume").innerHTML = `
+        <span>Volume</span>
+        <strong>${volume} units³</strong>
+        <span>${l} × ${w} × ${h}</span>
+      `;
+
+      document.getElementById("dimensionStrip").innerHTML = `
+        <span class="dimension-pill"><span class="dot length"></span> length = ${l} units</span>
+        <span class="dimension-pill"><span class="dot width"></span> width = ${w} units</span>
+        <span class="dimension-pill"><span class="dot height"></span> height = ${h} units</span>
+      `;
+    }
+
+    function setView(x, y) {
+      rotX = x;
+      rotY = y;
+      applyRotation();
+    }
+
+    function applyRotation() {
+      els.mainCuboid.style.setProperty("--rx", `${rotX}deg`);
+      els.mainCuboid.style.setProperty("--ry", `${rotY}deg`);
+    }
+
+    function setup3DDrag() {
+      const scene = els.mainScene;
+
+      const start = (clientX, clientY) => {
+        dragging = true;
+        lastX = clientX;
+        lastY = clientY;
+      };
+
+      const move = (clientX, clientY) => {
+        if (!dragging) return;
+        const dx = clientX - lastX;
+        const dy = clientY - lastY;
+        rotY += dx * 0.45;
+        rotX -= dy * 0.35;
+        rotX = Math.max(-88, Math.min(88, rotX));
+        lastX = clientX;
+        lastY = clientY;
+        applyRotation();
+      };
+
+      const stop = () => {
+        dragging = false;
+      };
+
+      scene.addEventListener("mousedown", (event) => start(event.clientX, event.clientY));
+      window.addEventListener("mousemove", (event) => move(event.clientX, event.clientY));
+      window.addEventListener("mouseup", stop);
+
+      scene.addEventListener("touchstart", (event) => {
+        const touch = event.touches[0];
+        start(touch.clientX, touch.clientY);
+      }, { passive: true });
+
+      window.addEventListener("touchmove", (event) => {
+        if (!dragging) return;
+        const touch = event.touches[0];
+        move(touch.clientX, touch.clientY);
+      }, { passive: true });
+
+      window.addEventListener("touchend", stop);
+    }
+
+    function buildQuickChecks() {
+      const container = document.getElementById("quickChecks");
+      container.innerHTML = "";
+
+      quickChecks.forEach((item, index) => {
+        const card = document.createElement("article");
+        card.className = "qc-card";
+        const p = document.createElement("p");
+        p.textContent = `${index + 1}. ${item.q}`;
+        const options = document.createElement("div");
+        options.className = "qc-options";
+        const feedback = document.createElement("div");
+        feedback.className = "scenario";
+        feedback.setAttribute("aria-live", "polite");
+
+        item.options.forEach(option => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "option-btn";
+          btn.textContent = option;
+          btn.onclick = () => {
+            [...options.querySelectorAll("button")].forEach(b => b.classList.remove("correct", "incorrect"));
+            if (option === item.answer) {
+              btn.classList.add("correct");
+              feedback.textContent = `Correct. ${item.explain}`;
+            } else {
+              btn.classList.add("incorrect");
+              feedback.textContent = `Try again. ${item.explain}`;
+            }
+          };
+          options.appendChild(btn);
+        });
+
+        card.appendChild(p);
+        card.appendChild(options);
+        card.appendChild(feedback);
+        container.appendChild(card);
+      });
+    }
+
+    function checkExit() {
+      const val = parseStudentNumber(document.getElementById("exitAnswer").value);
+      const box = document.getElementById("exitFeedback");
+      if (nearlyEqual(val, 5)) {
+        box.className = "feedback success";
+        box.textContent = "Correct! 180 ÷ (9 × 4) = 180 ÷ 36 = 5 cm.";
+        celebrate();
+      } else {
+        box.className = "feedback error";
+        box.textContent = "Not yet. Find 9 × 4 first, then divide 180 by that product.";
+      }
+    }
+
+    function celebrate() {
+      els.celebration.innerHTML = "";
+      els.celebration.classList.add("show");
+      const colors = ["#f3b44b", "#1f8a8a", "#d96f5d", "#7ea37f", "#17324d"];
+      for (let i = 0; i < 42; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDelay = Math.random() * 180 + "ms";
+        piece.style.transform = `rotate(${Math.random() * 180}deg)`;
+        els.celebration.appendChild(piece);
+      }
+      setTimeout(() => els.celebration.classList.remove("show"), 1100);
+    }
+
+    function toggleTeacherPanel() {
+      document.getElementById("teacherPanel").classList.toggle("show");
+    }
+
+    function resetAll() {
+      const ok = confirm("Reset all saved progress for this activity?");
+      if (!ok) return;
+      completed = {};
+      score = 0;
+      localStorage.removeItem("vrp3_completed");
+      localStorage.removeItem("vrp3_score");
+      buildTiles();
+      updateProgress();
+      selectProblem(0);
+      document.getElementById("exitAnswer").value = "";
+      document.getElementById("exitFeedback").className = "feedback";
+      document.getElementById("exitFeedback").textContent = "Use height = volume ÷ (length × width).";
+    }
+
+    function keyboardShortcuts() {
+      document.addEventListener("keydown", (event) => {
+        if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") return;
+        if (event.key.toLowerCase() === "n") nextProblem();
+        if (event.key.toLowerCase() === "h") showHint();
+      });
+    }
+
+    function init() {
+      setup3DDrag();
+      updateBuilder();
+      buildQuickChecks();
+      buildTiles();
+      updateProgress();
+      selectProblem(0);
+      keyboardShortcuts();
+    }
+
+    init();
+  </script>
+</body>
+</html>
