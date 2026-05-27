@@ -1,0 +1,2081 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 7: Percent Reasoning | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #135f60;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ed;
+        --soft-red: #fef2f2;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+      }
+
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg, var(--paper));
+      }
+
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal-dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 160ms;
+      }
+      .mission-nav a:hover {
+        border-color: var(--teal);
+      }
+      .mission-nav a.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .hero-mission {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: clamp(22px, 4vw, 38px);
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .hero-text .eyebrow {
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 8px;
+        color: var(--navy);
+      }
+      .hero-text .standards {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-blue);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+
+      .hero-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-illustration svg {
+        width: 100%;
+        max-width: 340px;
+        height: auto;
+      }
+
+      .student-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+      .student-info label {
+        display: block;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .student-info input {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font: inherit;
+        font-size: 0.95rem;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 22px;
+        align-items: start;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: 22px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+      }
+      .panel h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        margin-top: 18px;
+      }
+
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .role {
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal-dark);
+      }
+      .role span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .investigation-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .investigation-box h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 14px 14px 14px 52px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .step-list li strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        margin-top: 6px;
+      }
+
+      .esol-box {
+        padding: 18px;
+        background: var(--soft-green);
+        border: 1px solid #b2d8b4;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .esol-box h3 {
+        margin-top: 0;
+        color: var(--green);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        font-size: 0.92rem;
+      }
+      .vocab-item strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        list-style: none;
+        padding-left: 0;
+      }
+      .sentence-frames li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: #fff;
+        border-left: 4px solid var(--green);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #263242;
+      }
+
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .rep-card {
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rep-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .timer-section {
+        padding: 14px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 14px;
+      }
+      .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn-ghost {
+        background: var(--soft-teal);
+        border-color: #a7d8d0;
+        color: var(--teal-dark);
+      }
+
+      .phase-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .phase {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-toggle {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 12px 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .phase.is-open .phase-body {
+        display: block;
+      }
+      .phase-body .checkpoint {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      .challenge-box {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .challenge-box h3 {
+        margin-top: 0;
+        color: var(--gold);
+      }
+
+      .whatif-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .whatif-list li {
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .whatif-list li::before {
+        content: "What if... ";
+        font-weight: 800;
+        color: var(--gold);
+      }
+
+      .defense-section {
+        margin-top: 18px;
+      }
+      .defense-section ol {
+        padding-left: 20px;
+      }
+      .defense-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      .sentence-starters {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .sentence-starters li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: var(--soft-blue);
+        border-left: 4px solid var(--navy);
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .rubric-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.88rem;
+      }
+      .rubric-item strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+
+      .exit-product {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .exit-product h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        font-size: 0.95rem;
+      }
+      .checklist li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 4px;
+      }
+
+      .hint-toggle-box {
+        margin: 16px 0;
+        padding: 14px;
+        border: 1px dashed #8bbab3;
+        border-radius: 8px;
+        background: #f8fffd;
+      }
+      .hint-toggle-box .hint-content {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .hint-toggle-box .hint-content[hidden] {
+        display: none;
+      }
+
+      .calculator-box {
+        padding: 18px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .calculator-box h4 {
+        color: var(--navy);
+        margin: 0 0 10px;
+      }
+      .calc-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .calc-row label {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--ink);
+        min-width: 120px;
+      }
+      .calc-row input {
+        width: 100px;
+        padding: 6px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font: inherit;
+        font-size: 0.95rem;
+      }
+      .calc-row .result {
+        font-weight: 800;
+        color: var(--teal-dark);
+        font-size: 0.95rem;
+      }
+
+      .bar-model {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 14px 0;
+      }
+      .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .bar-label {
+        min-width: 60px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--navy);
+        text-align: right;
+      }
+      .bar-track {
+        flex: 1;
+        height: 28px;
+        background: var(--soft-blue);
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+      }
+      .bar-fill {
+        height: 100%;
+        border-radius: 6px;
+        transition: width 400ms ease;
+      }
+      .bar-value {
+        min-width: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .print-workspace {
+        display: none;
+        margin-top: 24px;
+        padding: 24px;
+        border: 2px solid #888;
+        border-radius: 8px;
+        min-height: 300px;
+      }
+
+      @media (max-width: 900px) {
+        .hero-mission {
+          grid-template-columns: 1fr;
+        }
+        .hero-illustration {
+          order: -1;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .vocab-grid {
+          grid-template-columns: 1fr;
+        }
+        .rubric-grid {
+          grid-template-columns: 1fr;
+        }
+        .student-info {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .timer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+        .representations {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-section,
+        .timer-controls,
+        .btn,
+        .calculator-box button {
+          display: none !important;
+        }
+        .panel,
+        .hero-mission {
+          box-shadow: none;
+          border-color: #aaa;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+        }
+        .hint-toggle-box .hint-content {
+          display: block !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="../">Back to Missions Hub</a>
+        <div>
+          <a href="../mission-6/">Previous Mission</a>
+          <a href="../mission-8/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- STUDENT INFO -->
+      <div class="student-info panel" id="studentInfo">
+        <div>
+          <label for="studentName">Student Name</label>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="First and Last"
+            autocomplete="off"
+          />
+        </div>
+        <div>
+          <label for="studentPeriod">Period</label>
+          <input
+            type="text"
+            id="studentPeriod"
+            placeholder="e.g. 3"
+            autocomplete="off"
+          />
+        </div>
+        <div>
+          <label for="studentDate">Date</label>
+          <input type="date" id="studentDate" />
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <section class="hero-mission" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 7 &middot; Unit 3</p>
+          <h1 id="mission-title">Percent Reasoning</h1>
+          <span class="standards"
+            >6.RP.A.3c &middot; Fractions, Decimals, Percents</span
+          >
+          <p class="scenario">
+            The sixth-grade student council is planning a school supplies drive.
+            They surveyed <strong>250 students</strong> about which supplies
+            they need most. The results show that <strong>35%</strong> need
+            notebooks, <strong>22%</strong> need pencils,
+            <strong>18%</strong> need folders, <strong>15%</strong> need
+            erasers, and <strong>10%</strong> need glue sticks. Your team must
+            convert every percentage to a fraction and a decimal, calculate the
+            exact number of students in each category, verify the total, and
+            recommend how to split a <strong>$500 donation budget</strong>
+            across the five supply categories proportionally.
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <svg
+            viewBox="0 0 340 400"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Pie chart showing school supply survey results with percent labels"
+          >
+            <!-- Background -->
+            <rect width="340" height="400" rx="16" fill="#edf5ff" />
+            <!-- Title -->
+            <text
+              x="170"
+              y="35"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="900"
+              fill="#23395d"
+            >
+              School Supplies Survey
+            </text>
+            <text
+              x="170"
+              y="55"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5b6573"
+            >
+              250 students surveyed
+            </text>
+            <!-- Pie chart center at 170, 200, radius 110 -->
+            <!-- Notebooks 35% = 126 deg, start at 0 -->
+            <path
+              d="M170,200 L170,90 A110,110 0 0,1 274.6,148.2 Z"
+              fill="#23395d"
+            />
+            <text
+              x="230"
+              y="128"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#fff"
+            >
+              35%
+            </text>
+            <!-- Pencils 22% = 79.2 deg -->
+            <path
+              d="M170,200 L274.6,148.2 A110,110 0 0,1 279.3,230.5 Z"
+              fill="#207a7a"
+            />
+            <text
+              x="260"
+              y="195"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#fff"
+            >
+              22%
+            </text>
+            <!-- Folders 18% = 64.8 deg -->
+            <path
+              d="M170,200 L279.3,230.5 A110,110 0 0,1 218.8,301.5 Z"
+              fill="#b7791f"
+            />
+            <text
+              x="248"
+              y="272"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#fff"
+            >
+              18%
+            </text>
+            <!-- Erasers 15% = 54 deg -->
+            <path
+              d="M170,200 L218.8,301.5 A110,110 0 0,1 113.8,296.0 Z"
+              fill="#2f7d32"
+            />
+            <text
+              x="165"
+              y="290"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#fff"
+            >
+              15%
+            </text>
+            <!-- Glue sticks 10% = 36 deg -->
+            <path
+              d="M170,200 L113.8,296.0 A110,110 0 0,1 170,90 Z"
+              fill="#b42318"
+            />
+            <text
+              x="115"
+              y="185"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#fff"
+            >
+              10%
+            </text>
+            <!-- Legend -->
+            <rect x="40" y="340" width="14" height="14" rx="3" fill="#23395d" />
+            <text x="60" y="352" font-size="11" fill="#23395d">Notebooks</text>
+            <rect
+              x="130"
+              y="340"
+              width="14"
+              height="14"
+              rx="3"
+              fill="#207a7a"
+            />
+            <text x="150" y="352" font-size="11" fill="#23395d">Pencils</text>
+            <rect
+              x="210"
+              y="340"
+              width="14"
+              height="14"
+              rx="3"
+              fill="#b7791f"
+            />
+            <text x="230" y="352" font-size="11" fill="#23395d">Folders</text>
+            <rect x="40" y="365" width="14" height="14" rx="3" fill="#2f7d32" />
+            <text x="60" y="377" font-size="11" fill="#23395d">Erasers</text>
+            <rect
+              x="130"
+              y="365"
+              width="14"
+              height="14"
+              rx="3"
+              fill="#b42318"
+            />
+            <text x="150" y="377" font-size="11" fill="#23395d">
+              Glue Sticks
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel" aria-labelledby="roles-title">
+            <h2 id="roles-title">Team Roles</h2>
+            <div class="role-grid">
+              <div class="role">
+                <strong>Facilitator</strong>
+                <span
+                  >Reads the survey scenario aloud, ensures every team member
+                  converts at least one percent before the group compares
+                  results, and monitors the timer.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Model Builder</strong>
+                <span
+                  >Creates the fraction-decimal-percent conversion table, draws
+                  a bar model or circle graph to represent the survey data, and
+                  labels all three forms.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Precision Checker</strong>
+                <span
+                  >Verifies that all five percentages add to 100%, confirms each
+                  student count is a whole number, and checks the budget splits
+                  sum to exactly $500.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Reporter</strong>
+                <span
+                  >Prepares the defense: states the budget recommendation, shows
+                  conversion evidence, and explains one rounding decision the
+                  team made.</span
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- INVESTIGATION -->
+          <section class="panel" aria-labelledby="investigation-title">
+            <h2 id="investigation-title">Investigation</h2>
+
+            <div class="investigation-box">
+              <h3>The Problem</h3>
+              <p>
+                A survey of <strong>250 sixth graders</strong> found that
+                students need five types of school supplies. The results are
+                expressed as percents:
+              </p>
+              <ul style="margin-bottom: 8px">
+                <li>Notebooks: 35%</li>
+                <li>Pencils: 22%</li>
+                <li>Folders: 18%</li>
+                <li>Erasers: 15%</li>
+                <li>Glue Sticks: 10%</li>
+              </ul>
+              <p><strong>Your tasks:</strong></p>
+              <ol>
+                <li>
+                  Convert each percent to a fraction (simplify!) and a decimal.
+                </li>
+                <li>
+                  Calculate the exact number of students for each category.
+                </li>
+                <li>Verify that the five student counts add up to 250.</li>
+                <li>
+                  Split a $500 donation budget proportionally based on the
+                  survey percentages.
+                </li>
+                <li>
+                  Create a visual model (bar model, pie chart, or number line)
+                  that shows how the five categories compare.
+                </li>
+              </ol>
+            </div>
+
+            <!-- SVG: Fraction-Decimal-Percent conversion diagram -->
+            <div class="visual-model">
+              <svg
+                viewBox="0 0 560 280"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Diagram showing how fractions, decimals, and percents connect with conversion arrows"
+              >
+                <!-- Three connected circles -->
+                <!-- Fraction circle -->
+                <circle
+                  cx="100"
+                  cy="130"
+                  r="70"
+                  fill="#edf5ff"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <text
+                  x="100"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  Fraction
+                </text>
+                <text
+                  x="100"
+                  y="145"
+                  text-anchor="middle"
+                  font-size="24"
+                  font-weight="800"
+                  fill="#207a7a"
+                >
+                  7/20
+                </text>
+                <!-- Decimal circle -->
+                <circle
+                  cx="280"
+                  cy="130"
+                  r="70"
+                  fill="#ecf8f6"
+                  stroke="#207a7a"
+                  stroke-width="2"
+                />
+                <text
+                  x="280"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="900"
+                  fill="#207a7a"
+                >
+                  Decimal
+                </text>
+                <text
+                  x="280"
+                  y="145"
+                  text-anchor="middle"
+                  font-size="24"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  0.35
+                </text>
+                <!-- Percent circle -->
+                <circle
+                  cx="460"
+                  cy="130"
+                  r="70"
+                  fill="#fff6df"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                />
+                <text
+                  x="460"
+                  y="120"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="900"
+                  fill="#b7791f"
+                >
+                  Percent
+                </text>
+                <text
+                  x="460"
+                  y="145"
+                  text-anchor="middle"
+                  font-size="24"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  35%
+                </text>
+                <!-- Arrows between -->
+                <line
+                  x1="170"
+                  y1="115"
+                  x2="210"
+                  y2="115"
+                  stroke="#23395d"
+                  stroke-width="2"
+                  marker-end="url(#arrowRight)"
+                />
+                <line
+                  x1="210"
+                  y1="145"
+                  x2="170"
+                  y2="145"
+                  stroke="#207a7a"
+                  stroke-width="2"
+                  marker-end="url(#arrowLeft)"
+                />
+                <line
+                  x1="350"
+                  y1="115"
+                  x2="390"
+                  y2="115"
+                  stroke="#207a7a"
+                  stroke-width="2"
+                  marker-end="url(#arrowRight)"
+                />
+                <line
+                  x1="390"
+                  y1="145"
+                  x2="350"
+                  y2="145"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                  marker-end="url(#arrowLeft)"
+                />
+                <!-- Conversion labels -->
+                <text
+                  x="190"
+                  y="108"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#23395d"
+                >
+                  divide
+                </text>
+                <text
+                  x="190"
+                  y="160"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#207a7a"
+                >
+                  numerator / denominator
+                </text>
+                <text
+                  x="370"
+                  y="108"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#207a7a"
+                >
+                  x 100
+                </text>
+                <text
+                  x="370"
+                  y="160"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#b7791f"
+                >
+                  / 100
+                </text>
+                <!-- Arrow markers -->
+                <defs>
+                  <marker
+                    id="arrowRight"
+                    markerWidth="8"
+                    markerHeight="8"
+                    refX="7"
+                    refY="4"
+                    orient="auto"
+                  >
+                    <path
+                      d="M0,0 L8,4 L0,8"
+                      fill="none"
+                      stroke="#23395d"
+                      stroke-width="1.5"
+                    />
+                  </marker>
+                  <marker
+                    id="arrowLeft"
+                    markerWidth="8"
+                    markerHeight="8"
+                    refX="1"
+                    refY="4"
+                    orient="auto"
+                  >
+                    <path
+                      d="M8,0 L0,4 L8,8"
+                      fill="none"
+                      stroke="#207a7a"
+                      stroke-width="1.5"
+                    />
+                  </marker>
+                </defs>
+                <!-- Bottom example bar -->
+                <text
+                  x="280"
+                  y="230"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  Example: 35% of 250 students
+                </text>
+                <rect
+                  x="60"
+                  y="242"
+                  width="440"
+                  height="24"
+                  rx="6"
+                  fill="#edf5ff"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <rect
+                  x="60"
+                  y="242"
+                  width="154"
+                  height="24"
+                  rx="6"
+                  fill="#23395d"
+                />
+                <text
+                  x="137"
+                  y="259"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#fff"
+                >
+                  87.5 students
+                </text>
+                <text
+                  x="280"
+                  y="275"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5b6573"
+                >
+                  0.35 x 250 = 87.5 ... but we need a whole number. What
+                  happened?
+                </text>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Verify the percents add to 100%</strong>
+                Before converting anything, add: 35 + 22 + 18 + 15 + 10. If the
+                sum is not 100%, something is wrong with the data.
+                <p class="guiding-q">
+                  Why must survey percents always add to exactly 100%?
+                </p>
+              </li>
+              <li>
+                <strong>Convert each percent to a fraction</strong>
+                Write the percent over 100, then simplify. Example: 35% = 35/100
+                = 7/20. Find the GCF of the numerator and 100 to simplify.
+                <p class="guiding-q">
+                  Which of the five percents produces the simplest fraction?
+                  Which is hardest to simplify?
+                </p>
+              </li>
+              <li>
+                <strong>Convert each fraction to a decimal</strong>
+                Divide the numerator by the denominator. Example: 7 / 20 = 0.35.
+                Check: does the decimal make sense compared to the percent?
+                <p class="guiding-q">
+                  How can you check your decimal without a calculator? (Hint:
+                  think about equivalent fractions with denominator 10 or 100.)
+                </p>
+              </li>
+              <li>
+                <strong>Calculate the number of students per category</strong>
+                Multiply each decimal by 250. Example: 0.35 x 250 = 87.5. Wait
+                -- can you have half a student? Discuss how to handle non-whole
+                results.
+                <p class="guiding-q">
+                  If 0.35 x 250 = 87.5, does the survey data make perfect sense
+                  for exactly 250 students? What does this tell you about
+                  rounding in surveys?
+                </p>
+              </li>
+              <li>
+                <strong>Calculate the budget allocation</strong>
+                Apply each percent to $500. Example: 35% of $500 = 0.35 x 500 =
+                $175. Check that all five amounts add to exactly $500.
+                <p class="guiding-q">
+                  Why is it important that the budget allocations add to exactly
+                  $500? What happens if they do not?
+                </p>
+              </li>
+              <li>
+                <strong>Build a visual model and prepare your defense</strong>
+                Create a bar model, pie chart, or stacked number line that shows
+                all five categories with fraction, decimal, AND percent labels.
+                Write a one-sentence recommendation for how to spend the $500.
+                <p class="guiding-q">
+                  Which visual model makes it easiest for another student to
+                  compare the five categories at a glance?
+                </p>
+              </li>
+            </ol>
+
+            <!-- INTERACTIVE PERCENT CALCULATOR -->
+            <div class="calculator-box" id="percentCalc">
+              <h4>Percent Calculator Tool</h4>
+              <p
+                style="
+                  font-size: 0.9rem;
+                  color: var(--muted);
+                  margin-bottom: 12px;
+                "
+              >
+                Enter a percent and a total to find the part. Use this to check
+                your work.
+              </p>
+              <div class="calc-row">
+                <label for="calcPercent">Percent:</label>
+                <input
+                  type="number"
+                  id="calcPercent"
+                  min="0"
+                  max="100"
+                  step="any"
+                  value="35"
+                />
+                <span>% of</span>
+                <input
+                  type="number"
+                  id="calcTotal"
+                  min="0"
+                  step="any"
+                  value="250"
+                />
+                <span>=</span>
+                <span class="result" id="calcResult">87.5</span>
+              </div>
+              <div class="calc-row">
+                <label>As a fraction:</label>
+                <span class="result" id="calcFraction">7/20</span>
+              </div>
+              <div class="calc-row">
+                <label>As a decimal:</label>
+                <span class="result" id="calcDecimal">0.35</span>
+              </div>
+              <button class="btn btn-ghost" type="button" id="calcBtn">
+                Calculate
+              </button>
+            </div>
+
+            <!-- BAR MODEL -->
+            <h3>Visual Bar Model</h3>
+            <div class="bar-model" id="barModel">
+              <div class="bar-row">
+                <span class="bar-label">Notebooks</span>
+                <div class="bar-track">
+                  <div
+                    class="bar-fill"
+                    style="width: 35%; background: var(--navy)"
+                  ></div>
+                </div>
+                <span class="bar-value">35%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-label">Pencils</span>
+                <div class="bar-track">
+                  <div
+                    class="bar-fill"
+                    style="width: 22%; background: var(--teal)"
+                  ></div>
+                </div>
+                <span class="bar-value">22%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-label">Folders</span>
+                <div class="bar-track">
+                  <div
+                    class="bar-fill"
+                    style="width: 18%; background: var(--gold)"
+                  ></div>
+                </div>
+                <span class="bar-value">18%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-label">Erasers</span>
+                <div class="bar-track">
+                  <div
+                    class="bar-fill"
+                    style="width: 15%; background: var(--green)"
+                  ></div>
+                </div>
+                <span class="bar-value">15%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-label">Glue</span>
+                <div class="bar-track">
+                  <div
+                    class="bar-fill"
+                    style="width: 10%; background: var(--red)"
+                  ></div>
+                </div>
+                <span class="bar-value">10%</span>
+              </div>
+            </div>
+
+            <!-- HINT -->
+            <div class="hint-toggle-box">
+              <button
+                class="btn btn-ghost"
+                type="button"
+                id="hintToggle1"
+                aria-expanded="false"
+                aria-controls="hintContent1"
+              >
+                Reveal Hint: Simplifying Fractions
+              </button>
+              <div class="hint-content" id="hintContent1" hidden>
+                <p>
+                  To simplify a fraction, find the GCF of the numerator and the
+                  denominator, then divide both by it.
+                </p>
+                <ul>
+                  <li>35/100: GCF of 35 and 100 is 5, so 35/100 = 7/20</li>
+                  <li>22/100: GCF of 22 and 100 is 2, so 22/100 = 11/50</li>
+                  <li>18/100: GCF of 18 and 100 is 2, so 18/100 = 9/50</li>
+                  <li>15/100: GCF of 15 and 100 is 5, so 15/100 = 3/20</li>
+                  <li>10/100: GCF of 10 and 100 is 10, so 10/100 = 1/10</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="hint-toggle-box">
+              <button
+                class="btn btn-ghost"
+                type="button"
+                id="hintToggle2"
+                aria-expanded="false"
+                aria-controls="hintContent2"
+              >
+                Reveal Hint: Budget Calculation
+              </button>
+              <div class="hint-content" id="hintContent2" hidden>
+                <p>Multiply each decimal by $500:</p>
+                <ul>
+                  <li>Notebooks: 0.35 x $500 = $175</li>
+                  <li>Pencils: 0.22 x $500 = $110</li>
+                  <li>Folders: 0.18 x $500 = $90</li>
+                  <li>Erasers: 0.15 x $500 = $75</li>
+                  <li>Glue Sticks: 0.10 x $500 = $50</li>
+                </ul>
+                <p>Check: $175 + $110 + $90 + $75 + $50 = $500</p>
+              </div>
+            </div>
+
+            <!-- ESOL SUPPORT -->
+            <div class="esol-box" id="esolSupport">
+              <h3>ESOL Support</h3>
+              <h4>Key Vocabulary</h4>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Percent:</strong> A number out of 100 (per = for each,
+                  cent = hundred)
+                </div>
+                <div class="vocab-item">
+                  <strong>Fraction:</strong> A part of a whole written as
+                  numerator over denominator
+                </div>
+                <div class="vocab-item">
+                  <strong>Decimal:</strong> A number written with a dot to show
+                  parts less than one
+                </div>
+                <div class="vocab-item">
+                  <strong>Convert:</strong> Change from one form to another
+                  (same value, different look)
+                </div>
+                <div class="vocab-item">
+                  <strong>Proportional:</strong> Keeping the same ratio when
+                  numbers change size
+                </div>
+                <div class="vocab-item">
+                  <strong>Survey:</strong> Asking many people a question and
+                  recording answers
+                </div>
+                <div class="vocab-item">
+                  <strong>Budget:</strong> A plan for how to spend a set amount
+                  of money
+                </div>
+                <div class="vocab-item">
+                  <strong>Simplify:</strong> Reduce a fraction to its smallest
+                  form (divide top and bottom by GCF)
+                </div>
+              </div>
+              <h4>Sentence Frames</h4>
+              <ul class="sentence-frames">
+                <li>
+                  "___% means ___ out of every 100, which equals the fraction
+                  ___."
+                </li>
+                <li>
+                  "To convert ___% to a decimal, I divide by 100 and get ___."
+                </li>
+                <li>
+                  "___% of 250 students is ___ students because ___ x 250 =
+                  ___."
+                </li>
+                <li>
+                  "The budget for ___ should be $___ because it is ___% of
+                  $500."
+                </li>
+              </ul>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="representations">
+              <div class="rep-card">
+                <h4>Conversion Table</h4>
+                <p>
+                  Organize all five items in rows with columns for percent,
+                  fraction, decimal, students, and budget.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Bar / Strip Model</h4>
+                <p>
+                  One long bar = 100%. Divide it into sections proportional to
+                  each category.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Pie / Circle Graph</h4>
+                <p>
+                  Divide a circle into five sectors. Label each with all three
+                  forms.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Double Number Line</h4>
+                <p>
+                  Top line shows percents 0-100. Bottom line shows student
+                  counts 0-250.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <!-- TIMED PHASES -->
+          <section class="panel" aria-labelledby="phases-title">
+            <h2 id="phases-title">Timed Lab Phases</h2>
+            <div class="timer-section">
+              <div class="timer">
+                <div>
+                  <strong id="activePhaseLabel">Explore phase</strong>
+                  <div style="font-size: 0.9rem; color: var(--muted)">
+                    Click a phase, then press Start.
+                  </div>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">
+                  04:00
+                </div>
+              </div>
+              <div class="timer-controls">
+                <button class="btn btn-primary" id="startTimer">Start</button>
+                <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+                <button class="btn btn-secondary" id="resetTimer">Reset</button>
+              </div>
+            </div>
+
+            <div class="phase-list" id="phaseList">
+              <article class="phase is-open">
+                <button
+                  class="phase-toggle"
+                  data-phase="0"
+                  data-minutes="4"
+                  aria-expanded="true"
+                >
+                  <span class="phase-time">4 min</span>
+                  <span class="phase-title">Explore</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Read the survey scenario aloud. Assign roles. Underline the
+                    five percentages, the total (250), and the budget ($500).
+                    Confirm that the percents add to 100%.
+                  </p>
+                  <p class="guiding-q">
+                    What are the three forms we need to show for each percent?
+                    Why does each form matter?
+                  </p>
+                  <div class="checkpoint">
+                    Checkpoint: every team member can name all five categories
+                    and their percents from memory.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="1"
+                  data-minutes="6"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">6 min</span>
+                  <span class="phase-title">Investigate</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Model Builder creates the conversion table. Each team member
+                    converts at least one percent to a fraction (simplified) and
+                    a decimal. Then calculate the number of students for each
+                    category (decimal x 250).
+                  </p>
+                  <p class="guiding-q">
+                    Which conversions produce terminating decimals and which do
+                    not? Why?
+                  </p>
+                  <div class="checkpoint">
+                    Checkpoint: table has all 5 rows filled. Student counts are
+                    calculated. Precision Checker has verified the fraction
+                    simplifications.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="2"
+                  data-minutes="5"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">5 min</span>
+                  <span class="phase-title">Analyze</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Calculate the budget allocation for each category: decimal x
+                    $500. Verify the total is exactly $500. Build the visual
+                    model. Discuss: does 87.5 students make sense? How should
+                    you handle that?
+                  </p>
+                  <p class="guiding-q">
+                    If you round each student count, will they still add to 250?
+                    What is the rounding dilemma?
+                  </p>
+                  <div class="checkpoint">
+                    Checkpoint: budget splits verified, visual model started,
+                    and team has discussed the rounding issue.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="3"
+                  data-minutes="4"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">4 min</span>
+                  <span class="phase-title">Report</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Reporter prepares the presentation. Show the conversion
+                    table, the visual model, and the budget recommendation.
+                    Explain why your team chose to round the way you did.
+                  </p>
+                  <p class="guiding-q">
+                    What is one error your team caught during the checking
+                    process?
+                  </p>
+                  <div class="checkpoint">
+                    Checkpoint: Reporter can explain conversions, budget splits,
+                    and the rounding decision in under 90 seconds.
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <div class="challenge-box">
+              <h3>Extension Challenge</h3>
+              <p>
+                The student council discovers that
+                <strong>12 students</strong> changed their answer from pencils
+                to notebooks. Recalculate the new percentages for notebooks and
+                pencils. Express each new percent as a fraction and decimal. How
+                does this change the budget allocation?
+              </p>
+            </div>
+
+            <h3>"What If?" Variations</h3>
+            <ul class="whatif-list">
+              <li>
+                the survey had 400 students instead of 250? Would all the
+                student counts be whole numbers now?
+              </li>
+              <li>
+                glue sticks jumped from 10% to 25% and notebooks dropped to 20%?
+                Recalculate the budget.
+              </li>
+              <li>
+                you had to express 22% as a fraction with denominator 200? What
+                would the numerator be?
+              </li>
+            </ul>
+
+            <h3>Real-Life Connection</h3>
+            <p style="font-size: 0.95rem; color: var(--muted)">
+              Businesses use percent reasoning every day to read survey results,
+              set prices with discounts, calculate sales tax, and allocate
+              budgets. When a store says "30% off," they are doing the same
+              fraction-decimal-percent conversion your team just practiced.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel defense-section">
+            <h2>Defense Preparation</h2>
+            <h3>Defense Questions</h3>
+            <ol>
+              <li>
+                Show the fraction and decimal form for each of the five
+                percentages. How did you simplify each fraction?
+              </li>
+              <li>
+                How many students chose each supply? Show your multiplication.
+              </li>
+              <li>
+                How should you handle a result like 87.5 students? Explain the
+                rounding challenge.
+              </li>
+              <li>
+                What is the budget allocation for each category? Prove they sum
+                to $500.
+              </li>
+              <li>
+                Which visual model did your team choose, and why is it the best
+                way to compare five categories?
+              </li>
+            </ol>
+
+            <h3>Sentence Starters for Your Defense</h3>
+            <ul class="sentence-starters">
+              <li>
+                "We converted 35% to the fraction 7/20 by finding the GCF of 35
+                and 100, which is..."
+              </li>
+              <li>
+                "To find the number of students, we multiplied ___ by 250 and
+                got..."
+              </li>
+              <li>
+                "The budget for notebooks is $___ because 0.35 x $500 = ..."
+              </li>
+              <li>"We handled the rounding problem by..."</li>
+            </ul>
+
+            <h3>What Makes a Strong Defense</h3>
+            <div class="rubric-grid">
+              <div class="rubric-item">
+                <strong>Clear Conversions</strong>
+                All 5 items shown in fraction, decimal, and percent form
+              </div>
+              <div class="rubric-item">
+                <strong>Accurate Calculations</strong>
+                Student counts and budget amounts verified with totals
+              </div>
+              <div class="rubric-item">
+                <strong>Reasonableness</strong>
+                Rounding discussed and visual model supports the argument
+              </div>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <div class="exit-product">
+              <h3>Exit Product</h3>
+              <p>Submit a one-page lab note with:</p>
+              <ul class="checklist">
+                <li>
+                  Conversion table: all 5 items with percent, fraction
+                  (simplified), and decimal
+                </li>
+                <li>
+                  Student count calculations: decimal x 250 for each category
+                </li>
+                <li>
+                  Budget allocation: decimal x $500 for each category, verified
+                  total
+                </li>
+                <li>
+                  Visual model (bar, pie, or number line) with all three forms
+                  labeled
+                </li>
+                <li>One-sentence budget recommendation</li>
+                <li>
+                  Three-sentence defense: claim, evidence, reasonableness check
+                </li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <!-- PRINT WORKSPACE -->
+      <section class="print-workspace" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Conversion Table:</strong></p>
+        <table
+          style="width: 100%; border-collapse: collapse; margin-bottom: 18px"
+        >
+          <thead>
+            <tr>
+              <th
+                style="border: 1px solid #aaa; padding: 6px; text-align: left"
+              >
+                Supply
+              </th>
+              <th
+                style="border: 1px solid #aaa; padding: 6px; text-align: left"
+              >
+                Percent
+              </th>
+              <th
+                style="border: 1px solid #aaa; padding: 6px; text-align: left"
+              >
+                Fraction
+              </th>
+              <th
+                style="border: 1px solid #aaa; padding: 6px; text-align: left"
+              >
+                Decimal
+              </th>
+              <th
+                style="border: 1px solid #aaa; padding: 6px; text-align: left"
+              >
+                Students
+              </th>
+              <th
+                style="border: 1px solid #aaa; padding: 6px; text-align: left"
+              >
+                Budget
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #aaa; padding: 6px">Notebooks</td>
+              <td style="border: 1px solid #aaa; padding: 6px">35%</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #aaa; padding: 6px">Pencils</td>
+              <td style="border: 1px solid #aaa; padding: 6px">22%</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #aaa; padding: 6px">Folders</td>
+              <td style="border: 1px solid #aaa; padding: 6px">18%</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #aaa; padding: 6px">Erasers</td>
+              <td style="border: 1px solid #aaa; padding: 6px">15%</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #aaa; padding: 6px">Glue Sticks</td>
+              <td style="border: 1px solid #aaa; padding: 6px">10%</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+              <td style="border: 1px solid #aaa; padding: 6px">&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <strong>Total students check:</strong> ___ + ___ + ___ + ___ + ___ =
+          ___
+        </p>
+        <br />
+        <p>
+          <strong>Total budget check:</strong> $___ + $___ + $___ + $___ + $___
+          = $___
+        </p>
+        <br />
+        <p><strong>Visual Model:</strong></p>
+        <br /><br /><br />
+        <p><strong>Recommendation and Defense:</strong></p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ── Auto-save / localStorage ── */
+        var STORAGE_KEY = "mathlab-mission-7";
+
+        function loadSaved() {
+          try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+          } catch (e) {
+            return {};
+          }
+        }
+
+        function save(data) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          } catch (e) {
+            /* storage full or blocked */
+          }
+        }
+
+        var saved = loadSaved();
+
+        var nameEl = document.getElementById("studentName");
+        var periodEl = document.getElementById("studentPeriod");
+        var dateEl = document.getElementById("studentDate");
+
+        if (saved.name) nameEl.value = saved.name;
+        if (saved.period) periodEl.value = saved.period;
+        if (saved.date) dateEl.value = saved.date;
+
+        function persistStudentInfo() {
+          saved.name = nameEl.value;
+          saved.period = periodEl.value;
+          saved.date = dateEl.value;
+          save(saved);
+        }
+
+        nameEl.addEventListener("input", persistStudentInfo);
+        periodEl.addEventListener("input", persistStudentInfo);
+        dateEl.addEventListener("input", persistStudentInfo);
+
+        /* ── Timer ── */
+        var phases = [
+          { title: "Explore", minutes: 4 },
+          { title: "Investigate", minutes: 6 },
+          { title: "Analyze", minutes: 5 },
+          { title: "Report", minutes: 4 },
+        ];
+        var activePhaseIndex = 0;
+        var remainingSeconds = phases[0].minutes * 60;
+        var timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay");
+        var activePhaseLabel = document.getElementById("activePhaseLabel");
+        var phaseList = document.getElementById("phaseList");
+
+        function formatTime(s) {
+          var m = Math.floor(s / 60);
+          var r = s % 60;
+          return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+        }
+
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+
+        function selectPhase(index) {
+          stopTimer();
+          activePhaseIndex = index;
+          remainingSeconds = phases[index].minutes * 60;
+          activePhaseLabel.textContent = phases[index].title + " phase";
+          timerDisplay.textContent = formatTime(remainingSeconds);
+          var articles = phaseList.querySelectorAll(".phase");
+          articles.forEach(function (a, i) {
+            a.classList.toggle("is-open", i === index);
+            a.querySelector(".phase-toggle").setAttribute(
+              "aria-expanded",
+              i === index ? "true" : "false",
+            );
+          });
+        }
+
+        phaseList.addEventListener("click", function (e) {
+          var toggle = e.target.closest(".phase-toggle");
+          if (toggle) selectPhase(Number(toggle.dataset.phase));
+        });
+
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent =
+                  phases[activePhaseIndex].title + " phase - COMPLETE";
+              }
+            }, 1000);
+          });
+
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            selectPhase(activePhaseIndex);
+          });
+
+        /* ── Hint toggles ── */
+        function setupHint(toggleId, contentId) {
+          var toggle = document.getElementById(toggleId);
+          var content = document.getElementById(contentId);
+          if (!toggle || !content) return;
+          toggle.addEventListener("click", function () {
+            var showing = content.hidden;
+            content.hidden = !showing;
+            toggle.setAttribute("aria-expanded", String(showing));
+            toggle.textContent = showing
+              ? toggle.textContent.replace("Reveal", "Hide")
+              : toggle.textContent.replace("Hide", "Reveal");
+          });
+        }
+        setupHint("hintToggle1", "hintContent1");
+        setupHint("hintToggle2", "hintContent2");
+
+        /* ── Percent Calculator ── */
+        function gcd(a, b) {
+          a = Math.abs(Math.round(a));
+          b = Math.abs(Math.round(b));
+          while (b) {
+            var t = b;
+            b = a % b;
+            a = t;
+          }
+          return a;
+        }
+
+        function calcUpdate() {
+          var pct =
+            parseFloat(document.getElementById("calcPercent").value) || 0;
+          var total =
+            parseFloat(document.getElementById("calcTotal").value) || 0;
+          var result = (pct / 100) * total;
+          document.getElementById("calcResult").textContent = Number.isInteger(
+            result,
+          )
+            ? result
+            : result.toFixed(2);
+
+          var num = Math.round(pct);
+          var den = 100;
+          var g = gcd(num, den);
+          document.getElementById("calcFraction").textContent =
+            num / g + "/" + den / g;
+          document.getElementById("calcDecimal").textContent = (pct / 100)
+            .toFixed(4)
+            .replace(/0+$/, "")
+            .replace(/\.$/, "");
+        }
+
+        document
+          .getElementById("calcBtn")
+          .addEventListener("click", calcUpdate);
+        document
+          .getElementById("calcPercent")
+          .addEventListener("input", calcUpdate);
+        document
+          .getElementById("calcTotal")
+          .addEventListener("input", calcUpdate);
+      })();
+    </script>
+  </body>
+</html>

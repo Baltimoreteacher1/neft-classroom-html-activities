@@ -2,1242 +2,1450 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Discount Dash — Rates, Percents &amp; Conversions</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Discount Dash — Shopping Spree Tycoon | Unit 4</title>
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
+      * {
         margin: 0;
         padding: 0;
-      }
-      :root {
-        --pink: #ec4899;
-        --pink-light: #fdf2f8;
-        --gold: #d97706;
-        --gold-light: #fffbeb;
-        --bg: #f4f5f7;
-        --ink: #1e293b;
-        --muted: #64748b;
-        --line: #e2e8f0;
-        --success: #16a34a;
-        --success-bg: #f0fdf4;
-        --error: #dc2626;
-        --error-bg: #fef2f2;
-        --radius: 12px;
-        --shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
-        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
-      }
-      html {
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-        -webkit-text-size-adjust: 100%;
+        box-sizing: border-box;
       }
       body {
-        min-height: 100vh;
-      }
-      button {
-        font-family: inherit;
-        cursor: pointer;
-      }
-      input {
-        font-family: inherit;
-        font-size: inherit;
-      }
-
-      /* ── Screens ── */
-      .screen {
-        display: none;
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 32px 20px 60px;
-      }
-      .screen.active {
-        display: block;
-      }
-
-      /* ── Intro ── */
-      .hero {
-        background: #fff;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 44px 32px;
-        text-align: center;
-        margin-bottom: 24px;
-      }
-      .hero-emoji {
-        font-size: 3.8rem;
-        margin-bottom: 8px;
-      }
-      .hero h1 {
-        font-size: 1.9rem;
-        font-weight: 900;
-        color: var(--ink);
-        margin-bottom: 4px;
-      }
-      .hero p {
-        font-size: 0.92rem;
-        color: var(--muted);
-        margin-bottom: 24px;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 90px 110px;
-        gap: 10px;
-        max-width: 480px;
-        margin: 0 auto;
-      }
-      .form-grid label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--muted);
-      }
-      .field {
-        padding: 10px 14px;
-        border: 2px solid var(--line);
-        border-radius: 8px;
-        font-size: 0.92rem;
-        transition: border-color 0.2s;
-      }
-      .field:focus {
-        outline: none;
-        border-color: var(--pink);
-      }
-      .resume-bar {
-        display: none;
-        background: var(--success-bg);
-        border: 2px solid var(--success);
-        border-radius: var(--radius);
-        padding: 12px 16px;
-        margin-bottom: 18px;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.85rem;
-      }
-      .resume-bar button {
-        background: var(--success);
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 7px 16px;
-        font-weight: 700;
-        font-size: 0.82rem;
-      }
-      .resume-bar .clear {
-        background: transparent;
-        color: var(--muted);
-        font-size: 0.78rem;
-        padding: 5px 8px;
-      }
-      .how-box {
-        background: #fff;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 24px 28px;
-        margin-bottom: 20px;
-      }
-      .how-box h2 {
-        font-size: 1.05rem;
-        font-weight: 800;
-        margin-bottom: 10px;
-      }
-      .how-box ul {
-        list-style: none;
-        padding: 0;
-      }
-      .how-box li {
-        font-size: 0.88rem;
-        color: var(--muted);
-        padding: 4px 0;
-      }
-      .how-box li::before {
-        content: "";
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 8px;
-      }
-      .how-box li:nth-child(1)::before {
-        background: var(--pink);
-      }
-      .how-box li:nth-child(2)::before {
-        background: var(--gold);
-      }
-      .how-box li:nth-child(3)::before {
-        background: var(--success);
-      }
-      .how-box li:nth-child(4)::before {
-        background: var(--error);
-      }
-      .btn-start {
-        display: block;
-        width: 100%;
-        max-width: 340px;
-        margin: 0 auto;
-        padding: 14px;
-        background: var(--pink);
-        color: #fff;
-        border: none;
-        border-radius: var(--radius);
-        font-size: 1.05rem;
-        font-weight: 800;
-        transition: background 0.2s;
-      }
-      .btn-start:hover {
-        background: #db2777;
-      }
-      .btn-start:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      /* ── Game HUD ── */
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #fff;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 12px 20px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .hud-item {
-        text-align: center;
-      }
-      .hud-label {
-        font-size: 0.65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
-      }
-      .hud-val {
-        font-size: 1.3rem;
-        font-weight: 900;
-        color: var(--ink);
-      }
-      .hud-val.lives {
-        color: var(--error);
-      }
-      .hud-val.streak {
-        color: var(--gold);
-      }
-      .progress-track {
-        height: 6px;
-        background: var(--line);
-        border-radius: 3px;
-        margin-bottom: 20px;
+        background: #1a0a2e;
         overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      .progress-fill {
-        height: 100%;
-        background: var(--pink);
-        border-radius: 3px;
-        transition: width 0.4s;
-      }
-
-      /* ── Question Card ── */
-      .q-card {
-        background: #fff;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 32px 28px;
-        margin-bottom: 20px;
-      }
-      .q-num {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--pink);
-        margin-bottom: 6px;
-      }
-      .q-diff {
-        display: inline-block;
-        padding: 2px 10px;
-        border-radius: 10px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        margin-left: 8px;
-      }
-      .q-diff.easy {
-        background: #dbeafe;
-        color: #1d4ed8;
-      }
-      .q-diff.medium {
-        background: var(--gold-light);
-        color: var(--gold);
-      }
-      .q-diff.hard {
-        background: #fee2e2;
-        color: var(--error);
-      }
-      .q-text {
-        font-size: 1.12rem;
-        font-weight: 700;
-        color: var(--ink);
-        margin-bottom: 24px;
-        line-height: 1.5;
-      }
-      .choices {
-        display: grid;
-        gap: 10px;
-      }
-      .choice-btn {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 18px;
-        background: var(--bg);
-        border: 2px solid var(--line);
-        border-radius: var(--radius);
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--ink);
-        text-align: left;
-        transition: all 0.2s;
-      }
-      .choice-btn:hover:not(:disabled) {
-        border-color: var(--pink);
-        background: var(--pink-light);
-      }
-      .choice-btn:focus {
-        outline: 2px solid var(--pink);
-        outline-offset: 2px;
-      }
-      .choice-btn .letter {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: var(--line);
-        font-weight: 800;
-        font-size: 0.82rem;
-        color: var(--muted);
-        flex-shrink: 0;
-      }
-      .choice-btn.correct {
-        border-color: var(--success);
-        background: var(--success-bg);
-      }
-      .choice-btn.correct .letter {
-        background: var(--success);
-        color: #fff;
-      }
-      .choice-btn.wrong {
-        border-color: var(--error);
-        background: var(--error-bg);
-      }
-      .choice-btn.wrong .letter {
-        background: var(--error);
-        color: #fff;
-      }
-
-      /* ── Feedback ── */
-      .feedback {
-        display: none;
-        padding: 16px 20px;
-        border-radius: var(--radius);
-        margin-bottom: 16px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        line-height: 1.5;
-      }
-      .feedback.correct {
-        background: var(--success-bg);
-        border: 2px solid var(--success);
-        color: #15803d;
-      }
-      .feedback.wrong {
-        background: var(--error-bg);
-        border: 2px solid var(--error);
-        color: #991b1b;
-      }
-      .btn-next {
-        display: none;
-        width: 100%;
-        padding: 13px;
-        background: var(--pink);
-        color: #fff;
-        border: none;
-        border-radius: var(--radius);
-        font-size: 1rem;
-        font-weight: 800;
-        transition: background 0.2s;
-      }
-      .btn-next:hover {
-        background: #db2777;
-      }
-
-      /* ── Results ── */
-      .results-hero {
-        text-align: center;
-        margin-bottom: 28px;
-      }
-      .results-hero h1 {
-        font-size: 2rem;
-        font-weight: 900;
-      }
-      .results-sub {
-        font-size: 0.9rem;
-        color: var(--muted);
-        margin-top: 4px;
-      }
-      .score-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 14px;
-        margin: 24px 0;
-      }
-      .score-box {
-        background: #fff;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 18px;
-        text-align: center;
-      }
-      .score-box .big {
-        font-size: 1.8rem;
-        font-weight: 900;
-        color: var(--ink);
-      }
-      .score-box .lbl {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-top: 3px;
-      }
-      .review-tbl {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.82rem;
-        margin: 20px 0;
-      }
-      .review-tbl th {
-        background: var(--ink);
-        color: #fff;
-        padding: 10px;
-        text-align: left;
-        font-size: 0.72rem;
-        text-transform: uppercase;
-      }
-      .review-tbl td {
-        padding: 10px;
-        border-bottom: 1px solid var(--line);
-        vertical-align: top;
-      }
-      .review-tbl tr.good {
-        background: var(--success-bg);
-      }
-      .review-tbl tr.bad {
-        background: var(--error-bg);
-      }
-      .submit-box {
-        background: #fff;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 24px;
-        text-align: center;
-        margin-top: 24px;
-      }
-      .submit-box h3 {
-        font-size: 1rem;
-        font-weight: 800;
-        margin-bottom: 14px;
-      }
-      .submit-row {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-      }
-      .btn-action {
-        padding: 10px 22px;
-        border-radius: var(--radius);
-        font-weight: 700;
-        font-size: 0.88rem;
-        border: none;
-        transition: background 0.2s;
-      }
-      .btn-copy {
-        background: var(--pink);
-        color: #fff;
-      }
-      .btn-copy:hover {
-        background: #db2777;
-      }
-      .btn-email {
-        background: var(--gold);
-        color: #fff;
-      }
-      .btn-email:hover {
-        background: #b45309;
-      }
-      .btn-retry {
-        background: var(--ink);
-        color: #fff;
-      }
-      .btn-retry:hover {
-        background: #334155;
-      }
-      .copy-msg {
-        display: none;
-        font-size: 0.8rem;
-        color: var(--success);
-        font-weight: 600;
-        margin-top: 6px;
-      }
-
-      /* ── Footer ── */
-      .footer {
-        text-align: center;
-        padding: 20px 16px;
-        font-size: 0.72rem;
-        color: var(--muted);
-        border-top: 1px solid var(--line);
-        margin-top: 28px;
-      }
-
-      /* ── Responsive ── */
-      @media (max-width: 600px) {
-        .form-grid {
-          grid-template-columns: 1fr;
-        }
-        .score-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        .hud {
-          justify-content: center;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        * {
-          animation: none !important;
-          transition: none !important;
-        }
+      canvas {
+        display: block;
+        margin: 0 auto;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
   </head>
   <body>
-    <!-- ═══════ INTRO SCREEN ═══════ -->
-    <div class="screen active" id="scr-intro">
-      <div class="hero">
-        <div class="hero-emoji" aria-hidden="true">🛒</div>
-        <h1>Discount Dash</h1>
-        <p>
-          Race through the aisles! Convert fractions, decimals &amp; percents,
-          calculate discounts, and compare unit rates to become a shopping
-          champion.
-        </p>
-        <div class="form-grid">
-          <label>Your Name</label><label>Period</label><label>Date</label>
-          <input
-            id="inp-name"
-            class="field"
-            type="text"
-            placeholder="First Last Initial"
-            aria-label="Student name"
-          />
-          <input
-            id="inp-period"
-            class="field"
-            type="text"
-            placeholder="P3"
-            aria-label="Class period"
-          />
-          <input id="inp-date" class="field" type="date" aria-label="Date" />
-        </div>
-      </div>
-
-      <div class="resume-bar" id="resume-bar">
-        <span id="resume-info"></span>
-        <button onclick="doResume()" aria-label="Resume saved game">
-          Resume
-        </button>
-        <button class="clear" onclick="doClear()">Start Fresh</button>
-      </div>
-
-      <div class="how-box">
-        <h2>How It Works</h2>
-        <ul>
-          <li>15 multiple-choice questions across 3 difficulty levels</li>
-          <li>Earn streak bonuses for consecutive correct answers</li>
-          <li>You start with 3 lives — wrong answers cost a life</li>
-          <li>Lose all lives and the game ends early</li>
-        </ul>
-      </div>
-
-      <button
-        class="btn-start"
-        id="btn-go"
-        onclick="startGame()"
-        disabled
-        aria-label="Start game"
-      >
-        Enter Your Name to Start
-      </button>
-    </div>
-
-    <!-- ═══════ GAME SCREEN ═══════ -->
-    <div class="screen" id="scr-game">
-      <div class="hud" role="status" aria-live="polite">
-        <div class="hud-item">
-          <div class="hud-label">Question</div>
-          <div class="hud-val" id="hud-q">1/15</div>
-        </div>
-        <div class="hud-item">
-          <div class="hud-label">Score</div>
-          <div class="hud-val" id="hud-score">0</div>
-        </div>
-        <div class="hud-item">
-          <div class="hud-label">Lives</div>
-          <div class="hud-val lives" id="hud-lives">❤️❤️❤️</div>
-        </div>
-        <div class="hud-item">
-          <div class="hud-label">Streak</div>
-          <div class="hud-val streak" id="hud-streak">0🔥</div>
-        </div>
-        <div class="hud-item">
-          <div class="hud-label">Time</div>
-          <div class="hud-val" id="hud-time">0:00</div>
-        </div>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="prog-fill" style="width: 0%"></div>
-      </div>
-
-      <div class="q-card" id="q-card">
-        <div class="q-num" id="q-num">Question 1 of 15</div>
-        <div class="q-text" id="q-text"></div>
-        <div
-          class="choices"
-          id="choices"
-          role="radiogroup"
-          aria-label="Answer choices"
-        ></div>
-      </div>
-
-      <div class="feedback" id="feedback" aria-live="assertive"></div>
-      <button class="btn-next" id="btn-next" onclick="nextQuestion()">
-        Next Question →
-      </button>
-    </div>
-
-    <!-- ═══════ RESULTS SCREEN ═══════ -->
-    <div class="screen" id="scr-results">
-      <div class="results-hero">
-        <div class="hero-emoji" aria-hidden="true">🛒</div>
-        <h1 id="res-title">Great Job!</h1>
-        <p class="results-sub" id="res-sub"></p>
-      </div>
-
-      <div class="score-grid" id="score-grid"></div>
-
-      <h2 style="font-size: 1.05rem; font-weight: 800; margin: 20px 0 8px">
-        Question Review
-      </h2>
-      <table class="review-tbl" aria-label="Question review">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Question</th>
-            <th>Your Answer</th>
-            <th>Correct</th>
-          </tr>
-        </thead>
-        <tbody id="review-body"></tbody>
-      </table>
-
-      <div class="submit-box">
-        <h3>Save Your Results</h3>
-        <div class="submit-row">
-          <button
-            class="btn-action btn-copy"
-            onclick="copyResults()"
-            aria-label="Copy results to clipboard"
-          >
-            📋 Copy Results
-          </button>
-          <button
-            class="btn-action btn-email"
-            onclick="emailResults()"
-            aria-label="Email results"
-          >
-            📧 Email Results
-          </button>
-          <button
-            class="btn-action btn-retry"
-            onclick="retryGame()"
-            aria-label="Play again"
-          >
-            🔄 Play Again
-          </button>
-        </div>
-        <div class="copy-msg" id="copy-msg">Copied to clipboard!</div>
-      </div>
-
-      <div class="footer">
-        Neft Teacher &bull; Grade 6 Unit 4 &bull; 6.RP.2 &amp; 6.RP.3c
-      </div>
-    </div>
-
     <script>
-      /* ══════════════════════════════════════
-   DISCOUNT DASH — Question Bank
-   Standards: 6.RP.2, 6.RP.3c
-   ══════════════════════════════════════ */
+      // ── DISCOUNT DASH — Shopping Spree Tycoon ──
+      // Phaser 3 — Grade 6 ESOL — Percents, Decimals, Conversions
 
-      const QUESTIONS = [
-        // ── EASY (1-5): Conversions & simple unit rates ──
-        {
-          id: 1,
-          difficulty: "easy",
-          text: "Convert the fraction 1/4 to a percent.",
-          choices: ["25%", "20%", "40%", "15%"],
-          answer: 0,
-          explain: "1/4 = 1 ÷ 4 = 0.25 = 25%.",
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         },
-        {
-          id: 2,
-          difficulty: "easy",
-          text: "What is 0.75 written as a percent?",
-          choices: ["75%", "7.5%", "57%", "80%"],
-          answer: 0,
-          explain: "0.75 × 100 = 75%.",
+        play(t, f, d, v = 0.2) {
+          this.init();
+          const c = this.ctx,
+            o = c.createOscillator(),
+            g = c.createGain();
+          o.type = t;
+          o.frequency.value = f;
+          g.gain.setValueAtTime(v, c.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+          o.connect(g);
+          g.connect(c.destination);
+          o.start();
+          o.stop(c.currentTime + d);
         },
-        {
-          id: 3,
-          difficulty: "easy",
-          text: "Convert 60% to a fraction in simplest form.",
-          choices: ["3/5", "6/10", "2/3", "3/4"],
-          answer: 0,
-          explain:
-            "60% = 60/100 = 3/5 after dividing numerator and denominator by 20.",
+        cha_ching() {
+          this.play("sine", 800, 0.08, 0.3);
+          this.play("sine", 1200, 0.12, 0.25);
         },
-        {
-          id: 4,
-          difficulty: "easy",
-          text: "A store sells 5 notebooks for $15. What is the unit rate (price per notebook)?",
-          choices: [
-            "$3 per notebook",
-            "$5 per notebook",
-            "$2 per notebook",
-            "$4 per notebook",
-          ],
-          answer: 0,
-          explain: "$15 ÷ 5 notebooks = $3 per notebook.",
+        scan() {
+          this.play("square", 1000, 0.05, 0.15);
+          this.play("square", 1500, 0.05, 0.1);
         },
-        {
-          id: 5,
-          difficulty: "easy",
-          text: "What decimal is equivalent to 40%?",
-          choices: ["0.4", "4.0", "0.04", "0.44"],
-          answer: 0,
-          explain: "40% ÷ 100 = 0.40 = 0.4.",
+        wrong() {
+          this.play("sawtooth", 200, 0.25, 0.2);
         },
-        // ── MEDIUM (6-10): Percent of a number, discounts, tax ──
-        {
-          id: 6,
-          difficulty: "medium",
-          text: "A jacket costs $80. It is 25% off. How much is the discount?",
-          choices: ["$20", "$25", "$15", "$60"],
-          answer: 0,
-          explain: "25% of $80 = 0.25 × 80 = $20.",
+        coin() {
+          this.play("sine", 1400, 0.08, 0.2);
+          this.play("sine", 1800, 0.1, 0.15);
         },
-        {
-          id: 7,
-          difficulty: "medium",
-          text: "Find 15% of 200.",
-          choices: ["30", "20", "15", "35"],
-          answer: 0,
-          explain: "15% of 200 = 0.15 × 200 = 30.",
+        combo() {
+          this.play("sine", 784, 0.08);
+          this.play("sine", 988, 0.1);
+          this.play("sine", 1175, 0.12);
         },
-        {
-          id: 8,
-          difficulty: "medium",
-          text: "A meal costs $40. The sales tax is 8%. What is the total cost including tax?",
-          choices: ["$43.20", "$48.00", "$44.00", "$42.80"],
-          answer: 0,
-          explain: "Tax = 0.08 × $40 = $3.20. Total = $40 + $3.20 = $43.20.",
+        tick() {
+          this.play("square", 600, 0.03, 0.08);
         },
-        {
-          id: 9,
-          difficulty: "medium",
-          text: "A pair of shoes originally costs $60. They are on sale for 30% off. What is the sale price?",
-          choices: ["$42", "$48", "$38", "$18"],
-          answer: 0,
-          explain: "Discount = 0.30 × $60 = $18. Sale price = $60 − $18 = $42.",
+        bonus() {
+          [659, 784, 988, 1175].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.12, 0.25), i * 80),
+          );
         },
-        {
-          id: 10,
-          difficulty: "medium",
-          text: "A 12-pack of juice costs $9.60. A 6-pack costs $5.40. Which is the better unit price?",
-          choices: [
-            "12-pack ($0.80 each)",
-            "6-pack ($0.90 each)",
-            "They cost the same",
-            "Not enough information",
-          ],
-          answer: 0,
-          explain:
-            "12-pack: $9.60 ÷ 12 = $0.80 each. 6-pack: $5.40 ÷ 6 = $0.90 each. The 12-pack is cheaper per juice.",
+        win() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.2, 0.3), i * 120),
+          );
         },
-        // ── HARD (11-15): Multi-step, percent increase/decrease, comparing rates ──
-        {
-          id: 11,
-          difficulty: "hard",
-          text: "A bike originally costs $250. It is marked down 20%, then an extra 10% off the sale price. What is the final price?",
-          choices: ["$180", "$175", "$200", "$170"],
-          answer: 0,
-          explain:
-            "After 20% off: $250 × 0.80 = $200. After extra 10% off: $200 × 0.90 = $180.",
+        lose() {
+          [400, 350, 300, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.15), i * 180),
+          );
         },
-        {
-          id: 12,
-          difficulty: "hard",
-          text: "A town's population grew from 8,000 to 9,200. What was the percent increase?",
-          choices: ["15%", "12%", "20%", "8%"],
-          answer: 0,
-          explain:
-            "Increase = 9,200 − 8,000 = 1,200. Percent increase = 1,200 ÷ 8,000 = 0.15 = 15%.",
+        pickup() {
+          this.play("triangle", 660, 0.1, 0.2);
         },
-        {
-          id: 13,
-          difficulty: "hard",
-          text: "Store A sells 3 lb of apples for $5.25. Store B sells 5 lb for $8.00. Which store has the lower unit price per pound?",
-          choices: [
-            "Store B ($1.60/lb)",
-            "Store A ($1.75/lb)",
-            "They are equal",
-            "Store A ($1.50/lb)",
-          ],
-          answer: 0,
-          explain:
-            "Store A: $5.25 ÷ 3 = $1.75/lb. Store B: $8.00 ÷ 5 = $1.60/lb. Store B is cheaper.",
+        drop() {
+          this.play("noise", 300, 0.08, 0.1);
         },
-        {
-          id: 14,
-          difficulty: "hard",
-          text: "A tablet costs $320 before tax. The tax rate is 6.5%. What is the total cost?",
-          choices: ["$340.80", "$336.50", "$345.00", "$339.20"],
-          answer: 0,
-          explain:
-            "Tax = 0.065 × $320 = $20.80. Total = $320 + $20.80 = $340.80.",
-        },
-        {
-          id: 15,
-          difficulty: "hard",
-          text: "Last year a coat was $90. This year the price dropped to $72. What is the percent decrease?",
-          choices: ["20%", "18%", "22%", "25%"],
-          answer: 0,
-          explain:
-            "Decrease = $90 − $72 = $18. Percent decrease = $18 ÷ $90 = 0.20 = 20%.",
-        },
-      ];
-
-      /* ══════════════════════════════════════
-   STATE & STORAGE
-   ══════════════════════════════════════ */
-      const STORAGE_KEY = "discountDash_v1";
-      let state = {
-        name: "",
-        period: "",
-        date: "",
-        current: 0,
-        score: 0,
-        lives: 3,
-        streak: 0,
-        bestStreak: 0,
-        answers: [], // {qId, picked, correct, time}
-        startTime: 0,
-        elapsed: 0,
-        finished: false,
       };
-      let timerInterval = null;
-      let questionStart = 0;
 
-      function save() {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (e) {}
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
       }
-      function load() {
-        try {
-          const d = localStorage.getItem(STORAGE_KEY);
-          return d ? JSON.parse(d) : null;
-        } catch (e) {
-          return null;
+      function shuffle(a) {
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
         }
-      }
-      function clearSave() {
-        try {
-          localStorage.removeItem(STORAGE_KEY);
-        } catch (e) {}
+        return r;
       }
 
-      /* ══════════════════════════════════════
-   INIT
-   ══════════════════════════════════════ */
-      document.addEventListener("DOMContentLoaded", () => {
-        const nameInp = document.getElementById("inp-name");
-        const dateInp = document.getElementById("inp-date");
-        dateInp.value = new Date().toISOString().slice(0, 10);
-        nameInp.addEventListener("input", () => {
-          const ok = nameInp.value.trim().length >= 2;
-          const btn = document.getElementById("btn-go");
-          btn.disabled = !ok;
-          btn.textContent = ok
-            ? "Start Discount Dash! 🛒"
-            : "Enter Your Name to Start";
-        });
+      // ── Question Generator ──
+      function generateQuestions(difficulty) {
+        const qs = [];
+        const items = [
+          { name: "Jacket", emoji: "🧥", base: 80 },
+          { name: "Sneakers", emoji: "👟", base: 60 },
+          { name: "Headphones", emoji: "🎧", base: 50 },
+          { name: "Backpack", emoji: "🎒", base: 45 },
+          { name: "Watch", emoji: "⌚", base: 120 },
+          { name: "Tablet", emoji: "📱", base: 200 },
+          { name: "Game", emoji: "🎮", base: 40 },
+          { name: "Book", emoji: "📚", base: 25 },
+          { name: "Sunglasses", emoji: "🕶️", base: 35 },
+          { name: "Hat", emoji: "🧢", base: 20 },
+          { name: "Scarf", emoji: "🧣", base: 30 },
+          { name: "Boots", emoji: "👢", base: 90 },
+          { name: "Lamp", emoji: "💡", base: 55 },
+          { name: "Speaker", emoji: "🔊", base: 75 },
+          { name: "Camera", emoji: "📷", base: 150 },
+          { name: "Skateboard", emoji: "🛹", base: 65 },
+        ];
 
-        // Check for saved game
-        const saved = load();
-        if (saved && !saved.finished && saved.current < QUESTIONS.length) {
-          const bar = document.getElementById("resume-bar");
-          bar.style.display = "flex";
-          document.getElementById("resume-info").textContent =
-            `${saved.name} — Q${saved.current + 1}/15, Score: ${saved.score}, Lives: ${saved.lives}`;
-        }
-      });
+        for (let i = 0; i < 20; i++) {
+          const item = items[i % items.length];
+          let prompt, answer, choices, category;
+          const type = randInt(0, 5);
 
-      function doResume() {
-        const saved = load();
-        if (!saved) return;
-        state = saved;
-        showScreen("scr-game");
-        startTimer();
-        renderQuestion();
-      }
-      function doClear() {
-        clearSave();
-        document.getElementById("resume-bar").style.display = "none";
-      }
-
-      /* ══════════════════════════════════════
-   GAME FLOW
-   ══════════════════════════════════════ */
-      function showScreen(id) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("active"));
-        document.getElementById(id).classList.add("active");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-
-      function startGame() {
-        const n = document.getElementById("inp-name").value.trim();
-        if (n.length < 2) return;
-        state.name = n;
-        state.period = document.getElementById("inp-period").value.trim();
-        state.date = document.getElementById("inp-date").value;
-        state.current = 0;
-        state.score = 0;
-        state.lives = 3;
-        state.streak = 0;
-        state.bestStreak = 0;
-        state.answers = [];
-        state.startTime = Date.now();
-        state.elapsed = 0;
-        state.finished = false;
-
-        // Shuffle choices (keeping answer tracking correct)
-        QUESTIONS.forEach((q) => {
-          const indices = [0, 1, 2, 3];
-          for (let i = indices.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [indices[i], indices[j]] = [indices[j], indices[i]];
+          if (type === 0) {
+            // Fraction to percent
+            const fracs = [
+              [1, 4, "25%"],
+              [1, 2, "50%"],
+              [3, 4, "75%"],
+              [1, 5, "20%"],
+              [2, 5, "40%"],
+              [3, 5, "60%"],
+              [1, 10, "10%"],
+              [3, 10, "30%"],
+              [7, 10, "70%"],
+            ];
+            const f = fracs[randInt(0, fracs.length - 1)];
+            prompt = `Convert ${f[0]}/${f[1]} to a percent`;
+            answer = f[2];
+            choices = [
+              answer,
+              `${f[0] * 10}%`,
+              `${f[1] * 5}%`,
+              `${100 - parseInt(f[2])}%`,
+            ];
+            category = "Convert";
+          } else if (type === 1) {
+            // Decimal to percent
+            const decs = [
+              [0.25, "25%"],
+              [0.5, "50%"],
+              [0.75, "75%"],
+              [0.1, "10%"],
+              [0.4, "40%"],
+              [0.6, "60%"],
+              [0.85, "85%"],
+              [0.15, "15%"],
+              [0.33, "33%"],
+            ];
+            const d = decs[randInt(0, decs.length - 1)];
+            prompt = `What is ${d[0]} as a percent?`;
+            answer = d[1];
+            const pct = parseInt(d[1]);
+            choices = [
+              answer,
+              `${pct + 10}%`,
+              `${Math.max(5, pct - 15)}%`,
+              `${pct * 2 > 100 ? pct / 2 : pct * 2}%`,
+            ];
+            category = "Convert";
+          } else if (type === 2) {
+            // Percent of a number (discount)
+            const percents =
+              difficulty === "easy"
+                ? [10, 20, 25, 50]
+                : difficulty === "medium"
+                  ? [10, 15, 20, 25, 30, 40, 50]
+                  : [5, 8, 12, 15, 18, 20, 25, 30, 35, 40, 50];
+            const pct = percents[randInt(0, percents.length - 1)];
+            const price = item.base;
+            const disc = (price * pct) / 100;
+            prompt = `${item.emoji} ${item.name} costs $${price}. ${pct}% off = how much discount?`;
+            answer = `$${disc}`;
+            choices = [
+              answer,
+              `$${disc + 5}`,
+              `$${Math.max(1, disc - 3)}`,
+              `$${price - disc}`,
+            ];
+            category = "Discount";
+          } else if (type === 3) {
+            // Sale price after discount
+            const pct = [10, 20, 25, 30, 50][randInt(0, 4)];
+            const price = item.base;
+            const sale = price - (price * pct) / 100;
+            prompt = `${item.emoji} ${item.name}: $${price} with ${pct}% off. Sale price?`;
+            answer = `$${sale}`;
+            choices = [
+              answer,
+              `$${sale + 10}`,
+              `$${(price * pct) / 100}`,
+              `$${Math.max(5, sale - 5)}`,
+            ];
+            category = "Sale Price";
+          } else if (type === 4) {
+            // Tax calculation
+            const taxRates = difficulty === "easy" ? [5, 10] : [5, 6, 7, 8, 10];
+            const tax = taxRates[randInt(0, taxRates.length - 1)];
+            const price = Math.round(item.base / 5) * 5; // nice numbers
+            const total = price + (price * tax) / 100;
+            prompt = `${item.emoji} $${price} + ${tax}% tax = total?`;
+            answer = `$${total}`;
+            choices = [
+              answer,
+              `$${total + 2}`,
+              `$${price + tax}`,
+              `$${Math.max(price, total - 5)}`,
+            ];
+            category = "Tax";
+          } else {
+            // Tip calculation
+            const tipRates = [10, 15, 20];
+            const tip = tipRates[randInt(0, 2)];
+            const meal = randInt(3, 12) * 5; // $15-$60
+            const tipAmt = (meal * tip) / 100;
+            prompt = `Meal: $${meal}. Leave a ${tip}% tip. How much tip?`;
+            answer = `$${tipAmt}`;
+            choices = [
+              answer,
+              `$${tipAmt + 2}`,
+              `$${Math.max(1, tipAmt - 1)}`,
+              `$${meal + tipAmt}`,
+            ];
+            category = "Tip";
           }
-          q._order = indices;
-        });
 
-        showScreen("scr-game");
-        startTimer();
-        renderQuestion();
-        save();
-      }
+          choices = [...new Set(choices)];
+          while (choices.length < 4) choices.push(`$${randInt(5, 100)}`);
+          choices = choices.slice(0, 4);
+          if (!choices.includes(answer)) {
+            choices[3] = answer;
+          }
+          choices = shuffle(choices);
 
-      function startTimer() {
-        const t0 = Date.now() - state.elapsed * 1000;
-        timerInterval = setInterval(() => {
-          state.elapsed = Math.floor((Date.now() - t0) / 1000);
-          const m = Math.floor(state.elapsed / 60);
-          const s = state.elapsed % 60;
-          document.getElementById("hud-time").textContent =
-            m + ":" + (s < 10 ? "0" : "") + s;
-        }, 500);
-      }
-
-      function renderQuestion() {
-        if (state.current >= QUESTIONS.length || state.lives <= 0) {
-          endGame();
-          return;
+          qs.push({
+            prompt,
+            answer,
+            choices,
+            category,
+            item,
+            timeLimit:
+              difficulty === "easy" ? 30 : difficulty === "medium" ? 24 : 18,
+          });
         }
-        const q = QUESTIONS[state.current];
-        const order = q._order || [0, 1, 2, 3];
-        const letters = ["A", "B", "C", "D"];
-
-        document.getElementById("hud-q").textContent =
-          state.current + 1 + "/15";
-        document.getElementById("hud-score").textContent = state.score;
-        document.getElementById("hud-lives").textContent =
-          "❤️".repeat(state.lives) + "🖤".repeat(3 - state.lives);
-        document.getElementById("hud-streak").textContent = state.streak + "🔥";
-        document.getElementById("prog-fill").style.width =
-          (state.current / 15) * 100 + "%";
-
-        document.getElementById("q-num").innerHTML =
-          `Question ${state.current + 1} of 15 <span class="q-diff ${q.difficulty}">${q.difficulty.toUpperCase()}</span>`;
-        document.getElementById("q-text").textContent = q.text;
-
-        const box = document.getElementById("choices");
-        box.innerHTML = "";
-        order.forEach((ci, i) => {
-          const btn = document.createElement("button");
-          btn.className = "choice-btn";
-          btn.setAttribute("role", "radio");
-          btn.setAttribute("aria-checked", "false");
-          btn.setAttribute("tabindex", i === 0 ? "0" : "-1");
-          btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${q.choices[ci]}</span>`;
-          btn.addEventListener("click", () => pickAnswer(ci, btn));
-          box.appendChild(btn);
-        });
-
-        document.getElementById("feedback").style.display = "none";
-        document.getElementById("feedback").className = "feedback";
-        document.getElementById("btn-next").style.display = "none";
-        questionStart = Date.now();
-
-        // Keyboard navigation for choices
-        box.addEventListener("keydown", handleChoiceKeys);
+        return qs;
       }
 
-      function handleChoiceKeys(e) {
-        const btns = [...document.querySelectorAll(".choice-btn")];
-        const idx = btns.indexOf(document.activeElement);
-        if (idx < 0) return;
-        if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-          e.preventDefault();
-          btns[(idx + 1) % btns.length].focus();
-        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-          e.preventDefault();
-          btns[(idx - 1 + btns.length) % btns.length].focus();
-        } else if (e.key === " " || e.key === "Enter") {
-          e.preventDefault();
-          document.activeElement.click();
-        }
+      const W = 800,
+        H = 600;
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#1a0a2e",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        physics: {
+          default: "arcade",
+          arcade: { debug: false, gravity: { y: 0 } },
+        },
+        scene: [
+          BootScene,
+          TitleScene,
+          DiffScene,
+          GameScene,
+          BonusScene,
+          ResultScene,
+        ],
+      };
+
+      // ── BOOT ──
+      function BootScene() {
+        return new Phaser.Scene("Boot");
       }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
 
-      function pickAnswer(ci, btn) {
-        // Disable all buttons
-        document
-          .querySelectorAll(".choice-btn")
-          .forEach((b) => (b.disabled = true));
-        const q = QUESTIONS[state.current];
-        const isCorrect = ci === q.answer;
-        const elapsed = Math.round((Date.now() - questionStart) / 1000);
+        // Shopper character
+        g.fillStyle(0x4488ff);
+        g.fillRoundedRect(5, 0, 20, 20, 6); // head
+        g.fillStyle(0xff6688);
+        g.fillRoundedRect(0, 22, 30, 30, 4); // body
+        g.fillStyle(0x333333);
+        g.fillRect(4, 54, 8, 16);
+        g.fillRect(18, 54, 8, 16); // legs
+        g.generateTexture("shopper", 30, 70);
+        g.clear();
 
-        // Points: easy=10, medium=20, hard=30; streak bonus +5 per streak level (max +25)
-        const base = { easy: 10, medium: 20, hard: 30 }[q.difficulty];
-        let pts = 0;
+        // Shopping cart
+        g.lineStyle(3, 0x888888);
+        g.strokeRect(0, 10, 40, 25);
+        g.fillStyle(0x888888);
+        g.fillCircle(8, 40, 5);
+        g.fillCircle(32, 40, 5);
+        g.fillStyle(0xaaaaaa);
+        g.fillRect(0, 0, 4, 35);
+        g.generateTexture("cart", 40, 45);
+        g.clear();
 
-        if (isCorrect) {
-          state.streak++;
-          if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-          const bonus = Math.min(state.streak - 1, 5) * 5;
-          pts = base + bonus;
-          state.score += pts;
-          btn.classList.add("correct");
-        } else {
-          state.streak = 0;
-          state.lives--;
-          btn.classList.add("wrong");
-          // Highlight correct answer
-          const order = q._order || [0, 1, 2, 3];
-          const btns = document.querySelectorAll(".choice-btn");
-          order.forEach((oi, i) => {
-            if (oi === q.answer) btns[i].classList.add("correct");
+        // Store shelf
+        g.fillStyle(0x664422);
+        g.fillRect(0, 0, 120, 20);
+        g.fillStyle(0x553311);
+        g.fillRect(0, 18, 120, 4);
+        g.generateTexture("shelf", 120, 22);
+        g.clear();
+
+        // Price tag
+        g.fillStyle(0xffee88);
+        g.fillRoundedRect(0, 0, 70, 35, 6);
+        g.lineStyle(2, 0xdd8800);
+        g.strokeRoundedRect(0, 0, 70, 35, 6);
+        g.generateTexture("pricetag", 70, 35);
+        g.clear();
+
+        // Item box
+        g.fillStyle(0xffffff);
+        g.fillRoundedRect(0, 0, 80, 80, 8);
+        g.lineStyle(2, 0xdddddd);
+        g.strokeRoundedRect(0, 0, 80, 80, 8);
+        g.generateTexture("itembox", 80, 80);
+        g.clear();
+
+        // Coin
+        g.fillStyle(0xffdd00);
+        g.fillCircle(10, 10, 10);
+        g.fillStyle(0xffaa00);
+        g.fillCircle(10, 10, 7);
+        g.generateTexture("coin", 20, 20);
+        g.clear();
+
+        // Particle
+        g.fillStyle(0xffffff);
+        g.fillCircle(3, 3, 3);
+        g.generateTexture("particle", 6, 6);
+        g.clear();
+
+        // Star
+        g.fillStyle(0xffdd00);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("star", 8, 8);
+        g.clear();
+
+        // Mall floor tile
+        g.fillStyle(0xf0e6d0);
+        g.fillRect(0, 0, 60, 60);
+        g.lineStyle(1, 0xddccaa);
+        g.strokeRect(0, 0, 60, 60);
+        g.generateTexture("tile", 60, 60);
+        g.clear();
+
+        g.destroy();
+        this.scene.start("Title");
+      };
+
+      // ── TITLE ──
+      function TitleScene() {
+        return new Phaser.Scene("Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x1a0a2e);
+
+        // Floating items
+        const emojis = [
+          "🧥",
+          "👟",
+          "🎧",
+          "🎒",
+          "⌚",
+          "📱",
+          "🎮",
+          "📚",
+          "🕶️",
+          "🧢",
+          "💰",
+          "🏷️",
+        ];
+        for (let i = 0; i < 15; i++) {
+          const t = this.add
+            .text(
+              randInt(30, W - 30),
+              randInt(60, H - 60),
+              emojis[i % emojis.length],
+              { fontSize: randInt(24, 44) + "px" },
+            )
+            .setAlpha(0.25);
+          this.tweens.add({
+            targets: t,
+            y: t.y - 15,
+            alpha: { from: 0.15, to: 0.35 },
+            duration: randInt(2000, 4000),
+            yoyo: true,
+            repeat: -1,
           });
         }
 
-        state.answers.push({
-          qId: q.id,
-          picked: ci,
-          correct: isCorrect,
-          time: elapsed,
-          pts,
-        });
-
-        // Show feedback
-        const fb = document.getElementById("feedback");
-        fb.style.display = "block";
-        if (isCorrect) {
-          fb.className = "feedback correct";
-          fb.innerHTML = `✅ Correct! +${pts} points${state.streak > 1 ? " (🔥 " + state.streak + " streak!)" : ""}<br><small>${q.explain}</small>`;
-        } else {
-          fb.className = "feedback wrong";
-          fb.innerHTML = `❌ Not quite. The correct answer is: <strong>${q.choices[q.answer]}</strong><br><small>${q.explain}</small>`;
+        // Neon glow rectangles
+        for (let i = 0; i < 3; i++) {
+          const rect = this.add
+            .rectangle(cx, 200 + i * 2, 400 - i * 40, 160 - i * 30, 0x000000, 0)
+            .setStrokeStyle(2, [0xec4899, 0xffdd00, 0x00ccff][i], 0.3);
+          this.tweens.add({
+            targets: rect,
+            alpha: { from: 0.2, to: 0.5 },
+            duration: 1500 + i * 300,
+            yoyo: true,
+            repeat: -1,
+          });
         }
 
-        // Update HUD
-        document.getElementById("hud-score").textContent = state.score;
-        document.getElementById("hud-lives").textContent =
-          "❤️".repeat(Math.max(0, state.lives)) +
-          "🖤".repeat(3 - Math.max(0, state.lives));
-        document.getElementById("hud-streak").textContent = state.streak + "🔥";
+        this.add.text(cx, 70, "💰", { fontSize: "64px" }).setOrigin(0.5);
+        this.add
+          .text(cx, 130, "DISCOUNT", {
+            fontSize: "60px",
+            fontFamily: "Impact,sans-serif",
+            color: "#ec4899",
+            stroke: "#4a0028",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 195, "DASH", {
+            fontSize: "60px",
+            fontFamily: "Impact,sans-serif",
+            color: "#ffdd00",
+            stroke: "#5a4400",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 240, "SHOPPING SPREE TYCOON", {
+            fontSize: "16px",
+            color: "#cc88dd",
+            letterSpacing: 5,
+          })
+          .setOrigin(0.5);
 
-        document.getElementById("btn-next").style.display = "block";
-        document.getElementById("btn-next").focus();
-        save();
-      }
-
-      function nextQuestion() {
-        state.current++;
-        save();
-        if (state.current >= QUESTIONS.length || state.lives <= 0) {
-          endGame();
-        } else {
-          renderQuestion();
-        }
-      }
-
-      /* ══════════════════════════════════════
-   RESULTS
-   ══════════════════════════════════════ */
-      function endGame() {
-        clearInterval(timerInterval);
-        state.finished = true;
-        save();
-        showScreen("scr-results");
-
-        const total = state.answers.length;
-        const correct = state.answers.filter((a) => a.correct).length;
-        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
-        const mins = Math.floor(state.elapsed / 60);
-        const secs = state.elapsed % 60;
-
-        // Title based on performance
-        let title, sub;
-        if (pct >= 90) {
-          title = "🏆 Shopping Champion!";
-          sub = "Outstanding work — you mastered those percents!";
-        } else if (pct >= 70) {
-          title = "⭐ Smart Shopper!";
-          sub = "Great job — keep practicing those trickier problems!";
-        } else if (pct >= 50) {
-          title = "🛒 Solid Start!";
-          sub = "You're building your skills — review the ones you missed.";
-        } else {
-          title = "📚 Keep Practicing!";
-          sub = "Percents take time — try again and watch your score climb!";
-        }
-
-        if (state.lives <= 0 && state.current < QUESTIONS.length) {
-          sub += ` (Game ended at question ${state.current} — ran out of lives.)`;
-        }
-
-        document.getElementById("res-title").textContent = title;
-        document.getElementById("res-sub").textContent = sub;
-
-        // Score cards
-        const grid = document.getElementById("score-grid");
-        grid.innerHTML = [
-          { big: `${correct}/${total}`, lbl: "Correct" },
-          { big: pct + "%", lbl: "Accuracy" },
-          { big: state.score, lbl: "Points" },
-          { big: `${mins}:${secs < 10 ? "0" : ""}${secs}`, lbl: "Time" },
-        ]
-          .map(
-            (c) =>
-              `<div class="score-box"><div class="big">${c.big}</div><div class="lbl">${c.lbl}</div></div>`,
+        this.add
+          .text(
+            cx,
+            285,
+            "Percents  •  Decimals  •  Discounts  •  Tax  •  Tips",
+            { fontSize: "14px", color: "#9966aa" },
           )
-          .join("");
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 310, "Shop smart — calculate the best deals!", {
+            fontSize: "13px",
+            color: "#775588",
+          })
+          .setOrigin(0.5);
 
-        // Review table
-        const tbody = document.getElementById("review-body");
-        tbody.innerHTML = "";
-        state.answers.forEach((a, i) => {
-          const q = QUESTIONS.find((qq) => qq.id === a.qId);
-          const tr = document.createElement("tr");
-          tr.className = a.correct ? "good" : "bad";
-          tr.innerHTML = `<td>${i + 1}</td><td>${q.text}</td><td>${q.choices[a.picked]}</td><td>${a.correct ? "✅" : "❌ " + q.choices[q.answer]}</td>`;
-          tbody.appendChild(tr);
+        // Animated cart
+        const cart = this.add.image(cx - 60, 400, "cart").setScale(2);
+        const shopper = this.add.image(cx + 60, 390, "shopper").setScale(1.5);
+        this.tweens.add({
+          targets: cart,
+          x: { from: cx - 80, to: cx - 40 },
+          duration: 2000,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
         });
+        this.tweens.add({
+          targets: shopper,
+          x: { from: cx + 40, to: cx + 80 },
+          duration: 2000,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+
+        // Coins
+        for (let i = 0; i < 5; i++) {
+          const c = this.add
+            .image(randInt(100, W - 100), randInt(340, 430), "coin")
+            .setScale(1.5)
+            .setAlpha(0.5);
+          this.tweens.add({
+            targets: c,
+            y: c.y - 10,
+            angle: 360,
+            duration: randInt(1500, 3000),
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
+        const btn = this.add
+          .rectangle(cx, 520, 260, 56, 0xec4899)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 520, "START SHOPPING", {
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#fff",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnT],
+          scaleX: { from: 1, to: 1.05 },
+          scaleY: { from: 1, to: 1.05 },
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        btn.on("pointerdown", () => {
+          SFX.init();
+          SFX.cha_ching();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
+        });
+        this.input.keyboard.on("keydown-SPACE", () => {
+          SFX.init();
+          SFX.cha_ching();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
+        });
+        this.cameras.main.fadeIn(500);
+      };
+
+      // ── DIFFICULTY ──
+      function DiffScene() {
+        return new Phaser.Scene("DiffSelect");
       }
+      DiffScene.prototype = Object.create(Phaser.Scene.prototype);
+      DiffScene.prototype.constructor = DiffScene;
+      DiffScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x1a0a2e);
+        this.add
+          .text(cx, 60, "CHOOSE YOUR MALL", {
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#ec4899",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 100, "Bigger malls = harder math + less time", {
+            fontSize: "14px",
+            color: "#9966aa",
+          })
+          .setOrigin(0.5);
 
-      function copyResults() {
-        const correct = state.answers.filter((a) => a.correct).length;
-        const total = state.answers.length;
-        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
-        const mins = Math.floor(state.elapsed / 60);
-        const secs = state.elapsed % 60;
-        let txt = `Discount Dash Results\nStudent: ${state.name}\nPeriod: ${state.period}\nDate: ${state.date}\nScore: ${state.score} pts | ${correct}/${total} (${pct}%) | Time: ${mins}:${secs < 10 ? "0" : ""}${secs}\nBest Streak: ${state.bestStreak}\n\n`;
-        state.answers.forEach((a, i) => {
-          const q = QUESTIONS.find((qq) => qq.id === a.qId);
-          txt += `Q${i + 1} [${q.difficulty}]: ${a.correct ? "✅" : "❌"} ${q.text} → ${q.choices[a.picked]}`;
-          if (!a.correct) txt += ` (Correct: ${q.choices[q.answer]})`;
-          txt += "\n";
+        const diffs = [
+          {
+            key: "easy",
+            label: "CORNER SHOP",
+            sub: "Basic percents & conversions, 30s",
+            emoji: "🏪",
+            color: 0x22c55e,
+            y: 200,
+          },
+          {
+            key: "medium",
+            label: "DEPARTMENT STORE",
+            sub: "Discounts & tax, 24s",
+            emoji: "🏬",
+            color: 0xf59e0b,
+            y: 320,
+          },
+          {
+            key: "hard",
+            label: "MEGA MALL",
+            sub: "Multi-step, tips & comparing, 18s",
+            emoji: "🏰",
+            color: 0xef4444,
+            y: 440,
+          },
+        ];
+        diffs.forEach((d) => {
+          const btn = this.add
+            .rectangle(cx, d.y, 380, 95, d.color, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx - 150, d.y - 10, d.emoji, { fontSize: "40px" })
+            .setOrigin(0, 0.5);
+          this.add
+            .text(cx + 10, d.y - 14, d.label, {
+              fontSize: "26px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx + 10, d.y + 16, d.sub, {
+              fontSize: "13px",
+              color: "#ffffffcc",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => btn.setFillStyle(d.color, 1));
+          btn.on("pointerout", () => btn.setFillStyle(d.color, 0.85));
+          btn.on("pointerdown", () => {
+            SFX.scan();
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () =>
+              this.scene.start("Game", { difficulty: d.key }),
+            );
+          });
         });
-        navigator.clipboard.writeText(txt).then(() => {
-          const msg = document.getElementById("copy-msg");
-          msg.style.display = "block";
-          setTimeout(() => (msg.style.display = "none"), 3000);
-        });
+        this.cameras.main.fadeIn(400);
+      };
+
+      // ── GAME SCENE ──
+      function GameScene() {
+        return new Phaser.Scene("Game");
       }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
 
-      function emailResults() {
-        const correct = state.answers.filter((a) => a.correct).length;
-        const total = state.answers.length;
-        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
-        const subj = encodeURIComponent(
-          `Discount Dash — ${state.name} — ${correct}/${total} (${pct}%)`,
+      GameScene.prototype.init = function (data) {
+        this.difficulty = data.difficulty || "easy";
+        this.questions = generateQuestions(this.difficulty);
+        this.currentQ = 0;
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.lives = 3;
+        this.totalCorrect = 0;
+        this.totalWrong = 0;
+        this.budget =
+          data.budget ||
+          (this.difficulty === "easy"
+            ? 500
+            : this.difficulty === "medium"
+              ? 400
+              : 300);
+        this.spent = 0;
+        this.savings = 0;
+        this.timeLeft = 0;
+        this.timerRunning = false;
+        this.answered = false;
+        this.bonusRound = false;
+        this.itemsGrabbed = 0;
+      };
+
+      GameScene.prototype.create = function () {
+        // Mall floor
+        this.add.rectangle(W / 2, H / 2, W, H, 0xf0e6d0);
+        for (let x = 0; x < W; x += 60) {
+          for (let y = 0; y < H; y += 60) {
+            this.add.image(x + 30, y + 30, "tile").setAlpha(0.5);
+          }
+        }
+
+        // Shelves decoration
+        for (let i = 0; i < 5; i++) {
+          this.add
+            .image(80 + i * 170, H - 30, "shelf")
+            .setScale(1.2)
+            .setAlpha(0.4);
+        }
+
+        // HUD bar
+        this.add.rectangle(W / 2, 0, W, 55, 0x1a0a2e, 0.9).setOrigin(0.5, 0);
+        this.scoreText = this.add.text(16, 8, "Score: 0", {
+          fontSize: "16px",
+          color: "#ec4899",
+          fontStyle: "bold",
+        });
+        this.budgetText = this.add.text(16, 30, "Budget: $500", {
+          fontSize: "14px",
+          color: "#ffdd00",
+        });
+        this.livesText = this.add
+          .text(W - 16, 8, "", { fontSize: "16px", color: "#ff4444" })
+          .setOrigin(1, 0);
+        this.comboText = this.add
+          .text(W - 16, 30, "", { fontSize: "14px", color: "#ffdd00" })
+          .setOrigin(1, 0);
+        this.savingsText = this.add
+          .text(W / 2, 8, "Saved: $0", { fontSize: "14px", color: "#22c55e" })
+          .setOrigin(0.5, 0);
+
+        // Timer
+        this.timerBg = this.add.rectangle(W / 2, 50, 500, 10, 0x333333);
+        this.timerBar = this.add
+          .rectangle(W / 2 - 250, 50, 500, 8, 0x22c55e)
+          .setOrigin(0, 0.5);
+        this.timerLabel = this.add
+          .text(W / 2 + 270, 50, "", { fontSize: "12px", color: "#ffdd00" })
+          .setOrigin(0, 0.5);
+
+        // Store closing countdown at top
+        this.closingText = this.add
+          .text(W / 2, 30, "", { fontSize: "12px", color: "#cc88dd" })
+          .setOrigin(0.5, 0);
+
+        // Item display area
+        this.itemBg = this.add
+          .rectangle(W / 2, 130, 520, 90, 0xffffff, 0.95)
+          .setStrokeStyle(2, 0xec4899);
+        this.categoryText = this.add
+          .text(W / 2, 95, "", {
+            fontSize: "13px",
+            color: "#ec4899",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.promptText = this.add
+          .text(W / 2, 135, "", {
+            fontSize: "20px",
+            color: "#1a0a2e",
+            fontStyle: "bold",
+            wordWrap: { width: 480 },
+            align: "center",
+          })
+          .setOrigin(0.5);
+
+        // Item number
+        this.qNumText = this.add
+          .text(W / 2, 175, "", { fontSize: "12px", color: "#9966aa" })
+          .setOrigin(0.5);
+
+        // 4 answer cards (store items)
+        this.cards = [];
+        this.cardTexts = [];
+        const cardW = 150,
+          cardH = 110;
+        for (let i = 0; i < 4; i++) {
+          const col = i % 2,
+            row = Math.floor(i / 2);
+          const x = W / 2 - 90 + col * 180;
+          const y = 250 + row * 130;
+
+          const card = this.add
+            .rectangle(x, y, cardW, cardH, 0xffffff, 0.95)
+            .setStrokeStyle(2, 0xddccaa)
+            .setInteractive({ useHandCursor: true });
+          const tag = this.add.image(x, y - 25, "pricetag").setScale(0.9);
+          const letter = this.add.text(
+            x - 55,
+            y - 45,
+            String.fromCharCode(65 + i),
+            { fontSize: "14px", color: "#ec4899", fontStyle: "bold" },
+          );
+          const txt = this.add
+            .text(x, y + 5, "", {
+              fontSize: "22px",
+              color: "#1a0a2e",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          card.on("pointerover", () => {
+            card.setStrokeStyle(3, 0xec4899);
+            this.tweens.add({
+              targets: card,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          card.on("pointerout", () => {
+            card.setStrokeStyle(2, 0xddccaa);
+            card.setScale(1);
+          });
+          card.on("pointerdown", () => this.selectAnswer(i));
+
+          this.cards.push(card);
+          this.cardTexts.push(txt);
+        }
+
+        // Keyboard
+        this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
+        this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
+        this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
+        this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
+
+        // Feedback
+        this.feedbackText = this.add
+          .text(W / 2, 490, "", {
+            fontSize: "20px",
+            color: "#fff",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Particles
+        this.sparkles = this.add.particles(0, 0, "star", {
+          speed: { min: 40, max: 180 },
+          scale: { start: 1.5, end: 0 },
+          lifespan: 600,
+          emitting: false,
+          quantity: 10,
+          tint: [0xec4899, 0xffdd00, 0x22c55e],
+        });
+        this.coinParticles = this.add.particles(0, 0, "coin", {
+          speed: { min: 50, max: 200 },
+          scale: { start: 1, end: 0 },
+          lifespan: 500,
+          emitting: false,
+          quantity: 6,
+          tint: [0xffdd00],
+        });
+
+        // Cart at bottom
+        this.cartImg = this.add
+          .image(W / 2, H - 30, "cart")
+          .setScale(2)
+          .setAlpha(0.6);
+        this.tweens.add({
+          targets: this.cartImg,
+          x: { from: W / 2 - 20, to: W / 2 + 20 },
+          duration: 3000,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+
+        this.loadQuestion();
+        this.updateHUD();
+        this.cameras.main.fadeIn(500);
+      };
+
+      GameScene.prototype.loadQuestion = function () {
+        if (this.currentQ >= this.questions.length || this.lives <= 0) {
+          this.endGame();
+          return;
+        }
+
+        // Bonus round every 7 questions
+        if (this.currentQ > 0 && this.currentQ % 7 === 0 && !this.bonusRound) {
+          this.bonusRound = true;
+          this.scene.start("Bonus", {
+            difficulty: this.difficulty,
+            score: this.score,
+            combo: this.maxCombo,
+            lives: this.lives,
+            budget: this.budget,
+            spent: this.spent,
+            savings: this.savings,
+            totalCorrect: this.totalCorrect,
+            totalWrong: this.totalWrong,
+            questions: this.questions,
+            currentQ: this.currentQ,
+            itemsGrabbed: this.itemsGrabbed,
+          });
+          return;
+        }
+        this.bonusRound = false;
+
+        const q = this.questions[this.currentQ];
+        this.categoryText.setText(`🏷️ ${q.category}`);
+        this.promptText.setText(q.prompt);
+        this.qNumText.setText(
+          `Item ${this.currentQ + 1} of ${this.questions.length}`,
         );
-        const body = encodeURIComponent(
-          `Student: ${state.name}\nPeriod: ${state.period}\nDate: ${state.date}\nScore: ${state.score} pts\nAccuracy: ${correct}/${total} (${pct}%)\nBest Streak: ${state.bestStreak}`,
-        );
-        window.open(`mailto:?subject=${subj}&body=${body}`);
-      }
 
-      function retryGame() {
-        clearSave();
-        state = {
-          name: state.name,
-          period: state.period,
-          date: state.date,
-          current: 0,
-          score: 0,
-          lives: 3,
-          streak: 0,
-          bestStreak: 0,
-          answers: [],
-          startTime: Date.now(),
-          elapsed: 0,
-          finished: false,
+        q.choices.forEach((c, i) => {
+          if (i < 4) this.cardTexts[i].setText(c);
+        });
+
+        // Reset cards
+        this.cards.forEach((c) => {
+          c.setFillStyle(0xffffff, 0.95);
+          c.setStrokeStyle(2, 0xddccaa);
+          c.setScale(1);
+          c.setAlpha(1);
+        });
+        this.feedbackText.setAlpha(0);
+        this.answered = false;
+
+        // Timer
+        this.timeLeft = q.timeLimit;
+        this.maxTime = q.timeLimit;
+        this.timerRunning = true;
+        this.timerBar.setDisplaySize(500, 8);
+        this.timerBar.setFillStyle(0x22c55e);
+
+        // Item entrance
+        this.tweens.add({
+          targets: this.itemBg,
+          scaleX: { from: 0.9, to: 1 },
+          scaleY: { from: 0.9, to: 1 },
+          duration: 250,
+          ease: "Back.easeOut",
+        });
+        SFX.scan();
+      };
+
+      GameScene.prototype.selectAnswer = function (idx) {
+        if (this.answered || !this.timerRunning) return;
+        this.answered = true;
+        this.timerRunning = false;
+
+        const q = this.questions[this.currentQ];
+        const chosen = q.choices[idx];
+        const isCorrect = chosen === q.answer;
+
+        if (isCorrect) {
+          SFX.cha_ching();
+          this.combo++;
+          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+          this.totalCorrect++;
+          this.itemsGrabbed++;
+
+          let pts = 100 + Math.floor(this.timeLeft * 5);
+          if (this.combo >= 3) pts = Math.floor(pts * 1.5);
+          if (this.combo >= 5) pts = Math.floor(pts * 2);
+          this.score += pts;
+
+          // Track savings
+          if (q.category === "Discount" || q.category === "Sale Price") {
+            const num = parseInt(q.answer.replace("$", "")) || 0;
+            this.savings += num > 0 ? randInt(5, 15) : 0;
+          }
+
+          this.cards[idx].setFillStyle(0xd4ffdd);
+          this.cards[idx].setStrokeStyle(3, 0x22c55e);
+          this.feedbackText
+            .setText(`✓ Correct! +${pts}`)
+            .setColor("#22c55e")
+            .setAlpha(1);
+          this.sparkles.emitParticleAt(this.cards[idx].x, this.cards[idx].y);
+          this.coinParticles.emitParticleAt(
+            this.cards[idx].x,
+            this.cards[idx].y - 20,
+          );
+          this.cameras.main.shake(80, 0.005);
+
+          if (this.combo >= 3) {
+            this.comboText.setText(`🔥 Combo x${this.combo}`);
+            SFX.combo();
+          }
+        } else {
+          SFX.wrong();
+          this.combo = 0;
+          this.comboText.setText("");
+          this.totalWrong++;
+          this.lives--;
+
+          this.cards[idx].setFillStyle(0xffdddd);
+          this.cards[idx].setStrokeStyle(3, 0xff3333);
+          const ci = q.choices.indexOf(q.answer);
+          if (ci >= 0) {
+            this.cards[ci].setFillStyle(0xd4ffdd);
+            this.cards[ci].setStrokeStyle(3, 0x22c55e);
+          }
+
+          this.feedbackText
+            .setText(`✗ Answer: ${q.answer}`)
+            .setColor("#ef4444")
+            .setAlpha(1);
+          this.cameras.main.shake(200, 0.015);
+        }
+
+        this.updateHUD();
+        this.time.delayedCall(1400, () => {
+          this.currentQ++;
+          this.loadQuestion();
+        });
+      };
+
+      GameScene.prototype.endGame = function () {
+        this.timerRunning = false;
+        this.time.delayedCall(500, () => {
+          this.scene.start("Results", {
+            score: this.score,
+            maxCombo: this.maxCombo,
+            lives: this.lives,
+            totalCorrect: this.totalCorrect,
+            totalWrong: this.totalWrong,
+            difficulty: this.difficulty,
+            savings: this.savings,
+            budget: this.budget,
+            spent: this.spent,
+            itemsGrabbed: this.itemsGrabbed,
+          });
+        });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText(`Score: ${this.score}`);
+        this.livesText.setText(
+          "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
+        );
+        this.budgetText.setText(`Budget: $${this.budget - this.spent}`);
+        this.savingsText.setText(`Saved: $${this.savings}`);
+        const remaining = this.questions.length - this.currentQ;
+        this.closingText.setText(`${remaining} items left in store`);
+      };
+
+      GameScene.prototype.update = function (time, delta) {
+        if (this.timerRunning && this.timeLeft > 0) {
+          this.timeLeft -= delta / 1000;
+          if (this.timeLeft <= 0) {
+            this.timeLeft = 0;
+            this.timerRunning = false;
+            this.answered = true;
+            SFX.wrong();
+            this.combo = 0;
+            this.comboText.setText("");
+            this.totalWrong++;
+            this.lives--;
+            const q = this.questions[this.currentQ];
+            const ci = q.choices.indexOf(q.answer);
+            if (ci >= 0) {
+              this.cards[ci].setFillStyle(0xd4ffdd);
+              this.cards[ci].setStrokeStyle(3, 0x22c55e);
+            }
+            this.feedbackText
+              .setText(`⏱ Time! Answer: ${q.answer}`)
+              .setColor("#f59e0b")
+              .setAlpha(1);
+            this.cameras.main.shake(150, 0.01);
+            this.updateHUD();
+            this.time.delayedCall(1400, () => {
+              this.currentQ++;
+              this.loadQuestion();
+            });
+          }
+          const pct = this.timeLeft / this.maxTime;
+          this.timerBar.setDisplaySize(500 * pct, 8);
+          this.timerBar.setFillStyle(
+            pct > 0.5 ? 0x22c55e : pct > 0.25 ? 0xf59e0b : 0xef4444,
+          );
+          this.timerLabel.setText(`${Math.ceil(this.timeLeft)}s`);
+          if (this.timeLeft <= 5)
+            this.timerBar.setAlpha(this.timerBar.alpha > 0.7 ? 0.5 : 1);
+        }
+      };
+
+      // ── BONUS ROUND ──
+      function BonusScene() {
+        return new Phaser.Scene("Bonus");
+      }
+      BonusScene.prototype = Object.create(Phaser.Scene.prototype);
+      BonusScene.prototype.constructor = BonusScene;
+      BonusScene.prototype.init = function (data) {
+        this.gd = data;
+      };
+      BonusScene.prototype.create = function () {
+        const cx = W / 2,
+          d = this.gd;
+        SFX.bonus();
+
+        this.add.rectangle(cx, H / 2, W, H, 0x1a0a2e);
+
+        // Rapid fire text
+        this.add
+          .text(cx, 40, "⚡ SPEED ROUND ⚡", {
+            fontSize: "36px",
+            fontStyle: "bold",
+            color: "#ffdd00",
+            stroke: "#5a4400",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 80, "Quick mental math! +50 per correct answer!", {
+            fontSize: "16px",
+            color: "#cc88dd",
+          })
+          .setOrigin(0.5);
+
+        // Generate 5 quick questions
+        const quickQs = [];
+        for (let i = 0; i < 5; i++) {
+          const pct = [10, 20, 25, 50][randInt(0, 3)];
+          const num = randInt(2, 20) * 10;
+          const ans = (num * pct) / 100;
+          quickQs.push({ q: `${pct}% of $${num}?`, answer: ans });
+        }
+
+        let qIdx = 0,
+          bonusScore = 0,
+          bonusTimer = 15;
+        const qText = this.add
+          .text(cx, 180, "", {
+            fontSize: "30px",
+            color: "#fff",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        const inputText = this.add
+          .text(cx, 240, "_", {
+            fontSize: "36px",
+            color: "#ffdd00",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        const timerText = this.add
+          .text(cx, 300, "", { fontSize: "20px", color: "#ff8888" })
+          .setOrigin(0.5);
+        const scoreText = this.add
+          .text(cx, 340, "Bonus: 0", { fontSize: "18px", color: "#22c55e" })
+          .setOrigin(0.5);
+        const resultText = this.add
+          .text(cx, 400, "", { fontSize: "18px", color: "#ffdd00" })
+          .setOrigin(0.5);
+
+        let currentInput = "";
+        let done = false;
+
+        const showQ = () => {
+          if (qIdx >= quickQs.length || done) {
+            done = true;
+            d.score += bonusScore;
+            resultText.setText(`Speed bonus: +${bonusScore} points!`);
+            this.time.delayedCall(2000, () => {
+              this.scene.start("Game", d);
+            });
+            return;
+          }
+          qText.setText(quickQs[qIdx].q);
+          currentInput = "";
+          inputText.setText("$_");
         };
-        showScreen("scr-intro");
-        document.getElementById("inp-name").value = state.name;
-        document.getElementById("inp-period").value = state.period;
-        document.getElementById("inp-date").value = state.date;
-        document.getElementById("btn-go").disabled = false;
-        document.getElementById("btn-go").textContent =
-          "Start Discount Dash! 🛒";
-        document.getElementById("resume-bar").style.display = "none";
+
+        // Number input
+        for (let n = 0; n <= 9; n++) {
+          this.input.keyboard.on(
+            `keydown-${n === 0 ? "ZERO" : ["ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"][n - 1]}`,
+            () => {
+              if (done) return;
+              currentInput += String(n);
+              inputText.setText("$" + currentInput + "_");
+            },
+          );
+        }
+        // Also handle numpad and direct key input
+        this.input.keyboard.on("keydown", (e) => {
+          if (done) return;
+          if (e.key >= "0" && e.key <= "9") {
+            // handled above or here for redundancy
+          }
+          if (e.key === "Backspace") {
+            currentInput = currentInput.slice(0, -1);
+            inputText.setText("$" + (currentInput || "") + "_");
+          }
+          if (e.key === "Enter" || e.key === " ") {
+            const val = parseFloat(currentInput);
+            if (!isNaN(val) && val === quickQs[qIdx].answer) {
+              SFX.coin();
+              bonusScore += 50;
+              scoreText.setText(`Bonus: ${bonusScore}`);
+              const ok = this.add
+                .text(cx, 180, "✓", { fontSize: "40px", color: "#22c55e" })
+                .setOrigin(0.5);
+              this.tweens.add({
+                targets: ok,
+                alpha: 0,
+                y: 160,
+                duration: 400,
+                onComplete: () => ok.destroy(),
+              });
+            } else {
+              SFX.wrong();
+              const no = this.add
+                .text(cx, 180, `✗ $${quickQs[qIdx].answer}`, {
+                  fontSize: "24px",
+                  color: "#ff4444",
+                })
+                .setOrigin(0.5);
+              this.tweens.add({
+                targets: no,
+                alpha: 0,
+                y: 160,
+                duration: 600,
+                onComplete: () => no.destroy(),
+              });
+            }
+            qIdx++;
+            showQ();
+          }
+        });
+
+        // On-screen number pad for touch
+        for (let n = 0; n <= 9; n++) {
+          const col = n % 5,
+            row = Math.floor(n / 5);
+          const bx = cx - 160 + col * 80,
+            by = 460 + row * 55;
+          const btn = this.add
+            .rectangle(bx, by, 65, 42, 0x334466)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(bx, by, String(n), {
+              fontSize: "22px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerdown", () => {
+            if (done) return;
+            currentInput += String(n);
+            inputText.setText("$" + currentInput + "_");
+          });
+        }
+        // Enter button
+        const enterBtn = this.add
+          .rectangle(cx + 160, 460, "GO".length * 20 + 20, 42, 0x22c55e)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx + 160, 460, "GO", {
+            fontSize: "18px",
+            color: "#fff",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        enterBtn.on("pointerdown", () => {
+          if (done) return;
+          const val = parseFloat(currentInput);
+          if (!isNaN(val) && val === quickQs[qIdx].answer) {
+            SFX.coin();
+            bonusScore += 50;
+            scoreText.setText(`Bonus: ${bonusScore}`);
+          } else {
+            SFX.wrong();
+          }
+          qIdx++;
+          showQ();
+        });
+        // Backspace
+        const bsBtn = this.add
+          .rectangle(cx + 160, 515, 65, 42, 0x664444)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx + 160, 515, "DEL", {
+            fontSize: "16px",
+            color: "#ffaaaa",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        bsBtn.on("pointerdown", () => {
+          currentInput = currentInput.slice(0, -1);
+          inputText.setText("$" + (currentInput || "") + "_");
+        });
+
+        // Timer
+        const timerEvent = this.time.addEvent({
+          delay: 1000,
+          repeat: bonusTimer - 1,
+          callback: () => {
+            bonusTimer--;
+            timerText.setText(`⏱ ${bonusTimer}s`);
+            if (bonusTimer <= 0) {
+              done = true;
+              d.score += bonusScore;
+              resultText.setText(`Speed bonus: +${bonusScore} points!`);
+              this.time.delayedCall(2000, () => this.scene.start("Game", d));
+            }
+          },
+        });
+
+        showQ();
+        timerText.setText(`⏱ ${bonusTimer}s`);
+        this.cameras.main.fadeIn(400);
+      };
+
+      // ── RESULTS ──
+      function ResultScene() {
+        return new Phaser.Scene("Results");
       }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.d = data;
+      };
+      ResultScene.prototype.create = function () {
+        const cx = W / 2,
+          d = this.d;
+        this.add.rectangle(cx, H / 2, W, H, 0x1a0a2e);
+
+        const won = d.lives > 0;
+        if (won) SFX.win();
+        else SFX.lose();
+
+        if (won) {
+          for (let i = 0; i < 6; i++) {
+            this.time.delayedCall(i * 300, () => {
+              const p = this.add.particles(0, 0, "star", {
+                speed: { min: 60, max: 200 },
+                scale: { start: 1.5, end: 0 },
+                lifespan: 700,
+                quantity: 12,
+                tint: [0xec4899, 0xffdd00, 0x22c55e],
+              });
+              p.emitParticleAt(randInt(100, W - 100), randInt(80, 250));
+              this.time.delayedCall(800, () => p.destroy());
+            });
+          }
+        }
+
+        this.add
+          .text(cx, 35, won ? "SHOPPING COMPLETE!" : "STORE CLOSED!", {
+            fontSize: "36px",
+            fontStyle: "bold",
+            color: won ? "#22c55e" : "#ef4444",
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 72, won ? "Great shopping today!" : "Out of lives!", {
+            fontSize: "16px",
+            color: "#cc88dd",
+          })
+          .setOrigin(0.5);
+
+        // Receipt style
+        this.add
+          .rectangle(cx, 320, 400, 380, 0xfffff0, 0.95)
+          .setStrokeStyle(2, 0xddccaa);
+        this.add
+          .text(cx, 150, "🧾 RECEIPT", {
+            fontSize: "22px",
+            color: "#1a0a2e",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.add.rectangle(cx, 170, 350, 2, 0xddccaa);
+
+        const stats = [
+          { label: "Final Score", val: String(d.score), color: "#ec4899" },
+          {
+            label: "Items Grabbed",
+            val: String(d.itemsGrabbed),
+            color: "#4488cc",
+          },
+          { label: "Correct", val: String(d.totalCorrect), color: "#22c55e" },
+          { label: "Wrong", val: String(d.totalWrong), color: "#ef4444" },
+          { label: "Max Combo", val: `x${d.maxCombo}`, color: "#f59e0b" },
+          { label: "Savings", val: `$${d.savings}`, color: "#22c55e" },
+          {
+            label: "Difficulty",
+            val: d.difficulty.toUpperCase(),
+            color: "#9966aa",
+          },
+        ];
+        stats.forEach((s, i) => {
+          const y = 195 + i * 40;
+          this.add
+            .text(cx - 160, y, s.label, { fontSize: "15px", color: "#666" })
+            .setOrigin(0, 0.5);
+          const v = this.add
+            .text(cx + 160, y, s.val, {
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: s.color,
+            })
+            .setOrigin(1, 0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: v,
+            alpha: 1,
+            x: { from: cx + 200, to: cx + 160 },
+            duration: 350,
+            delay: i * 120,
+          });
+        });
+
+        // Savings percentage
+        const pct =
+          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const grade =
+          pct >= 90
+            ? "A+"
+            : pct >= 80
+              ? "A"
+              : pct >= 70
+                ? "B"
+                : pct >= 60
+                  ? "C"
+                  : "D";
+        this.add.rectangle(cx, 490, 100, 60, 0x1a0a2e, 0.8);
+        this.add
+          .text(cx, 490, grade, {
+            fontSize: "48px",
+            fontStyle: "bold",
+            color: pct >= 80 ? "#22c55e" : pct >= 60 ? "#f59e0b" : "#ef4444",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 528, `${Math.round(pct)}% Accuracy`, {
+            fontSize: "14px",
+            color: "#cc88dd",
+          })
+          .setOrigin(0.5);
+
+        const retry = this.add
+          .rectangle(cx - 100, 565, 170, 40, 0xec4899)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx - 100, 565, "SHOP AGAIN", {
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#fff",
+          })
+          .setOrigin(0.5);
+        retry.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () =>
+            this.scene.start("Game", { difficulty: d.difficulty }),
+          );
+        });
+
+        const menu = this.add
+          .rectangle(cx + 100, 565, 170, 40, 0x334466)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx + 100, 565, "MAIN MENU", {
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#cc88dd",
+          })
+          .setOrigin(0.5);
+        menu.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () => this.scene.start("Title"));
+        });
+
+        this.cameras.main.fadeIn(600);
+      };
+
+      new Phaser.Game(config);
     </script>
   </body>
 </html>

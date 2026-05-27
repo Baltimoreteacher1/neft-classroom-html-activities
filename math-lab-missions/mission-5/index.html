@@ -1,0 +1,1912 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 5: Ratios and Rates | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #135f60;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ed;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg, var(--paper));
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal-dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 160ms;
+      }
+      .mission-nav a:hover {
+        border-color: var(--teal);
+      }
+      .mission-nav a.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .hero-mission {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: clamp(22px, 4vw, 38px);
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .hero-text .eyebrow {
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 8px;
+        color: var(--navy);
+      }
+      .hero-text .standards {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-blue);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-illustration svg {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+      }
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: 22px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+      }
+      .panel h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        margin-top: 18px;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .role {
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal-dark);
+      }
+      .role span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .investigation-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .investigation-box h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 14px 14px 14px 52px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .step-list li strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        margin-top: 6px;
+      }
+      .esol-box {
+        padding: 18px;
+        background: var(--soft-green);
+        border: 1px solid #b2d8b4;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .esol-box h3 {
+        margin-top: 0;
+        color: var(--green);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        font-size: 0.92rem;
+      }
+      .vocab-item strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        list-style: none;
+        padding-left: 0;
+      }
+      .sentence-frames li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: #fff;
+        border-left: 4px solid var(--green);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #263242;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .rep-card {
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rep-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .timer-section {
+        padding: 14px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 14px;
+      }
+      .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .phase-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .phase {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-toggle {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 12px 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .phase.is-open .phase-body {
+        display: block;
+      }
+      .phase-body .checkpoint {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .challenge-box {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .challenge-box h3 {
+        margin-top: 0;
+        color: var(--gold);
+      }
+      .whatif-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .whatif-list li {
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .whatif-list li::before {
+        content: "What if... ";
+        font-weight: 800;
+        color: var(--gold);
+      }
+      .defense-section {
+        margin-top: 18px;
+      }
+      .defense-section ol {
+        padding-left: 20px;
+      }
+      .defense-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .sentence-starters {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .sentence-starters li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: var(--soft-blue);
+        border-left: 4px solid var(--navy);
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .rubric-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.88rem;
+      }
+      .rubric-item strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .exit-product {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .exit-product h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        font-size: 0.95rem;
+      }
+      .checklist li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 4px;
+      }
+      .print-workspace {
+        display: none;
+        margin-top: 24px;
+        padding: 24px;
+        border: 2px solid #888;
+        border-radius: 8px;
+        min-height: 300px;
+      }
+      @media (max-width: 900px) {
+        .hero-mission {
+          grid-template-columns: 1fr;
+        }
+        .hero-illustration {
+          order: -1;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid,
+        .vocab-grid,
+        .rubric-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+        .representations {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-section,
+        .timer-controls,
+        .btn {
+          display: none !important;
+        }
+        .panel,
+        .hero-mission {
+          box-shadow: none;
+          border-color: #aaa;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="../">Back to Missions Hub</a>
+        <div>
+          <a href="../mission-4/">Previous Mission</a>
+          <a href="../mission-6/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="hero-mission" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 5 &middot; Unit 3</p>
+          <h1 id="mission-title">Ratios and Rates</h1>
+          <span class="standards"
+            >6.RP.A.1 &middot; 6.RP.A.3 &middot; Ratio Language &middot; Tables
+            &middot; Tape Diagrams</span
+          >
+          <p class="scenario">
+            The school is hosting a Smoothie Bar for the end-of-year
+            celebration. The recipe calls for
+            <strong>3 cups of strawberries for every 5 cups of yogurt</strong>.
+            The planning committee expects <strong>60 students</strong> and each
+            student gets one 8-oz cup. Your team must scale the recipe using
+            ratio tables, tape diagrams, and equivalent ratios to figure out
+            exactly how many cups of each ingredient to buy.
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <svg
+            viewBox="0 0 360 420"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Smoothie bar with strawberry and yogurt containers and a tape diagram showing the 3 to 5 ratio"
+          >
+            <rect width="360" height="420" rx="16" fill="#edf5ff" />
+            <text
+              x="180"
+              y="30"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Smoothie Bar Recipe
+            </text>
+            <text
+              x="180"
+              y="50"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              3 cups strawberries : 5 cups yogurt
+            </text>
+
+            <!-- Blender -->
+            <rect
+              x="140"
+              y="65"
+              width="80"
+              height="100"
+              rx="6"
+              fill="#e0e0e0"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <rect
+              x="145"
+              y="58"
+              width="70"
+              height="12"
+              rx="4"
+              fill="#bbb"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <!-- Smoothie inside -->
+            <rect
+              x="144"
+              y="90"
+              width="72"
+              height="71"
+              rx="4"
+              fill="#e57373"
+              opacity="0.6"
+            />
+            <!-- Blender base -->
+            <rect
+              x="130"
+              y="165"
+              width="100"
+              height="20"
+              rx="4"
+              fill="#9e9e9e"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <circle cx="180" cy="175" r="5" fill="#4CAF50" />
+
+            <!-- Strawberry container -->
+            <rect
+              x="30"
+              y="80"
+              width="70"
+              height="90"
+              rx="8"
+              fill="#e57373"
+              stroke="#c62828"
+              stroke-width="2"
+            />
+            <text
+              x="65"
+              y="118"
+              text-anchor="middle"
+              font-size="22"
+              fill="#fff"
+            >
+              &#127827;
+            </text>
+            <text
+              x="65"
+              y="145"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#fff"
+            >
+              Strawberry
+            </text>
+            <text
+              x="65"
+              y="186"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#c62828"
+            >
+              3 cups
+            </text>
+
+            <!-- Yogurt container -->
+            <rect
+              x="260"
+              y="80"
+              width="70"
+              height="90"
+              rx="8"
+              fill="#f5f5f5"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="295"
+              y="118"
+              text-anchor="middle"
+              font-size="20"
+              fill="#23395d"
+            >
+              &#129371;
+            </text>
+            <text
+              x="295"
+              y="145"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Yogurt
+            </text>
+            <text
+              x="295"
+              y="186"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="800"
+              fill="#23395d"
+            >
+              5 cups
+            </text>
+
+            <!-- Tape Diagram -->
+            <text
+              x="180"
+              y="215"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Tape Diagram
+            </text>
+
+            <!-- Strawberry tape (3 parts) -->
+            <text
+              x="25"
+              y="240"
+              text-anchor="start"
+              font-size="11"
+              font-weight="800"
+              fill="#c62828"
+            >
+              Strawberry
+            </text>
+            <rect
+              x="100"
+              y="228"
+              width="73"
+              height="24"
+              rx="3"
+              fill="#e57373"
+              stroke="#c62828"
+              stroke-width="1.5"
+            />
+            <text
+              x="136"
+              y="245"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#fff"
+            >
+              1
+            </text>
+            <rect
+              x="173"
+              y="228"
+              width="73"
+              height="24"
+              rx="3"
+              fill="#e57373"
+              stroke="#c62828"
+              stroke-width="1.5"
+            />
+            <text
+              x="209"
+              y="245"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#fff"
+            >
+              1
+            </text>
+            <rect
+              x="246"
+              y="228"
+              width="73"
+              height="24"
+              rx="3"
+              fill="#e57373"
+              stroke="#c62828"
+              stroke-width="1.5"
+            />
+            <text
+              x="282"
+              y="245"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#fff"
+            >
+              1
+            </text>
+
+            <!-- Yogurt tape (5 parts) -->
+            <text
+              x="25"
+              y="278"
+              text-anchor="start"
+              font-size="11"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Yogurt
+            </text>
+            <rect
+              x="100"
+              y="266"
+              width="44"
+              height="24"
+              rx="3"
+              fill="#e0e0e0"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="122"
+              y="283"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#23395d"
+            >
+              1
+            </text>
+            <rect
+              x="144"
+              y="266"
+              width="44"
+              height="24"
+              rx="3"
+              fill="#e0e0e0"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="166"
+              y="283"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#23395d"
+            >
+              1
+            </text>
+            <rect
+              x="188"
+              y="266"
+              width="44"
+              height="24"
+              rx="3"
+              fill="#e0e0e0"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="210"
+              y="283"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#23395d"
+            >
+              1
+            </text>
+            <rect
+              x="232"
+              y="266"
+              width="44"
+              height="24"
+              rx="3"
+              fill="#e0e0e0"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="254"
+              y="283"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#23395d"
+            >
+              1
+            </text>
+            <rect
+              x="276"
+              y="266"
+              width="44"
+              height="24"
+              rx="3"
+              fill="#e0e0e0"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <text
+              x="298"
+              y="283"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#23395d"
+            >
+              1
+            </text>
+
+            <!-- Ratio table preview -->
+            <text
+              x="180"
+              y="318"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Ratio Table
+            </text>
+            <rect
+              x="60"
+              y="325"
+              width="240"
+              height="80"
+              rx="6"
+              fill="#fff"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <!-- Header row -->
+            <rect
+              x="60"
+              y="325"
+              width="240"
+              height="25"
+              rx="6"
+              fill="#23395d"
+            />
+            <text
+              x="120"
+              y="342"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#fff"
+            >
+              Strawberry
+            </text>
+            <text
+              x="240"
+              y="342"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#fff"
+            >
+              Yogurt
+            </text>
+            <line
+              x1="180"
+              y1="325"
+              x2="180"
+              y2="405"
+              stroke="#d9e1e8"
+              stroke-width="1"
+            />
+            <!-- Data rows -->
+            <text
+              x="120"
+              y="367"
+              text-anchor="middle"
+              font-size="12"
+              fill="#c62828"
+              font-weight="700"
+            >
+              3
+            </text>
+            <text
+              x="240"
+              y="367"
+              text-anchor="middle"
+              font-size="12"
+              fill="#23395d"
+              font-weight="700"
+            >
+              5
+            </text>
+            <line
+              x1="60"
+              y1="375"
+              x2="300"
+              y2="375"
+              stroke="#d9e1e8"
+              stroke-width="1"
+            />
+            <text
+              x="120"
+              y="393"
+              text-anchor="middle"
+              font-size="12"
+              fill="#c62828"
+              font-weight="700"
+            >
+              6
+            </text>
+            <text
+              x="240"
+              y="393"
+              text-anchor="middle"
+              font-size="12"
+              fill="#23395d"
+              font-weight="700"
+            >
+              10
+            </text>
+            <!-- Multiply arrows -->
+            <text
+              x="336"
+              y="367"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="800"
+            >
+              x2
+            </text>
+            <text
+              x="336"
+              y="393"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="800"
+            >
+              x2
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel" aria-labelledby="roles-title">
+            <h2 id="roles-title">Team Roles</h2>
+            <div class="role-grid">
+              <div class="role">
+                <strong>Facilitator</strong>
+                <span
+                  >Reads the smoothie recipe problem, ensures everyone uses
+                  ratio language ("for every," "per," "to"), and tracks the
+                  timer.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Model Builder</strong>
+                <span
+                  >Draws the tape diagram with equal-size parts, builds the
+                  ratio table, and labels each row with the multiplier
+                  used.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Precision Checker</strong>
+                <span
+                  >Checks that the tape diagram parts are equal size, verifies
+                  every row of the ratio table by multiplication, and confirms
+                  the final totals.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Reporter</strong>
+                <span
+                  >Prepares the defense: states the ratio in three ways (words,
+                  colon, fraction), explains the scaling strategy, and reads the
+                  final shopping list.</span
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- INVESTIGATION -->
+          <section class="panel" aria-labelledby="investigation-title">
+            <h2 id="investigation-title">Investigation</h2>
+
+            <div class="investigation-box">
+              <h3>The Problem</h3>
+              <p>
+                The smoothie recipe uses
+                <strong
+                  >3 cups of strawberries for every 5 cups of yogurt</strong
+                >. Each batch makes 8 cups total (3 + 5 = 8). The school needs
+                enough for <strong>60 students</strong>, each getting one 8-oz
+                cup (= 1 cup). That means <strong>60 cups total</strong>.
+              </p>
+              <p><strong>Your tasks:</strong></p>
+              <ol>
+                <li>
+                  Write the ratio of strawberries to yogurt in three ways:
+                  words, colon, and fraction.
+                </li>
+                <li>Draw a tape diagram showing the 3:5 relationship.</li>
+                <li>
+                  Build a ratio table from 1 batch (8 cups) up to 60 cups.
+                </li>
+                <li>
+                  Calculate: how many cups of strawberries and how many cups of
+                  yogurt for 60 students?
+                </li>
+                <li>Determine the number of batches needed.</li>
+              </ol>
+            </div>
+
+            <div class="visual-model">
+              <svg
+                viewBox="0 0 580 240"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Ratio table scaling from 3:5 up to the amount needed for 60 cups"
+              >
+                <!-- Ratio Table -->
+                <text
+                  x="290"
+                  y="22"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  Ratio Table: Scaling Up
+                </text>
+                <rect
+                  x="40"
+                  y="35"
+                  width="500"
+                  height="190"
+                  rx="8"
+                  fill="#fff"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <!-- Headers -->
+                <rect
+                  x="40"
+                  y="35"
+                  width="500"
+                  height="32"
+                  rx="8"
+                  fill="#23395d"
+                />
+                <text
+                  x="110"
+                  y="56"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#fff"
+                >
+                  Batches
+                </text>
+                <text
+                  x="220"
+                  y="56"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#fff"
+                >
+                  Strawberry
+                </text>
+                <text
+                  x="340"
+                  y="56"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#fff"
+                >
+                  Yogurt
+                </text>
+                <text
+                  x="460"
+                  y="56"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#fff"
+                >
+                  Total Cups
+                </text>
+                <!-- Vertical lines -->
+                <line
+                  x1="160"
+                  y1="35"
+                  x2="160"
+                  y2="225"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <line
+                  x1="280"
+                  y1="35"
+                  x2="280"
+                  y2="225"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <line
+                  x1="400"
+                  y1="35"
+                  x2="400"
+                  y2="225"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <!-- Row 1 -->
+                <text
+                  x="110"
+                  y="88"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                  font-weight="700"
+                >
+                  1
+                </text>
+                <text
+                  x="220"
+                  y="88"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#c62828"
+                  font-weight="700"
+                >
+                  3
+                </text>
+                <text
+                  x="340"
+                  y="88"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                  font-weight="700"
+                >
+                  5
+                </text>
+                <text
+                  x="460"
+                  y="88"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#5b6573"
+                >
+                  8
+                </text>
+                <line
+                  x1="40"
+                  y1="98"
+                  x2="540"
+                  y2="98"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <!-- Row 2 -->
+                <text
+                  x="110"
+                  y="118"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                  font-weight="700"
+                >
+                  2
+                </text>
+                <text
+                  x="220"
+                  y="118"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#c62828"
+                  font-weight="700"
+                >
+                  6
+                </text>
+                <text
+                  x="340"
+                  y="118"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                  font-weight="700"
+                >
+                  10
+                </text>
+                <text
+                  x="460"
+                  y="118"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#5b6573"
+                >
+                  16
+                </text>
+                <line
+                  x1="40"
+                  y1="128"
+                  x2="540"
+                  y2="128"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <!-- Row 3 -->
+                <text
+                  x="110"
+                  y="148"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                  font-weight="700"
+                >
+                  5
+                </text>
+                <text
+                  x="220"
+                  y="148"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#c62828"
+                  font-weight="700"
+                >
+                  15
+                </text>
+                <text
+                  x="340"
+                  y="148"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#23395d"
+                  font-weight="700"
+                >
+                  25
+                </text>
+                <text
+                  x="460"
+                  y="148"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#5b6573"
+                >
+                  40
+                </text>
+                <line
+                  x1="40"
+                  y1="158"
+                  x2="540"
+                  y2="158"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <!-- Row 4 (target) -->
+                <rect x="40" y="160" width="500" height="32" fill="#fff6df" />
+                <text
+                  x="110"
+                  y="181"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#b7791f"
+                  font-weight="900"
+                >
+                  ?
+                </text>
+                <text
+                  x="220"
+                  y="181"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#b7791f"
+                  font-weight="900"
+                >
+                  ?
+                </text>
+                <text
+                  x="340"
+                  y="181"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#b7791f"
+                  font-weight="900"
+                >
+                  ?
+                </text>
+                <text
+                  x="460"
+                  y="181"
+                  text-anchor="middle"
+                  font-size="13"
+                  fill="#b7791f"
+                  font-weight="900"
+                >
+                  60
+                </text>
+                <line
+                  x1="40"
+                  y1="192"
+                  x2="540"
+                  y2="192"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <!-- Hint at bottom -->
+                <text
+                  x="290"
+                  y="215"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  How many batches make 60 cups? 60 / 8 = ?
+                </text>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Write the ratio three ways</strong>
+                Words: "3 cups of strawberries for every 5 cups of yogurt."
+                Colon: 3 : 5. Fraction: 3/5 (strawberries to yogurt). Also write
+                the part-to-whole ratios: 3/8 and 5/8.
+                <p class="guiding-q">
+                  What is the difference between a part-to-part ratio and a
+                  part-to-whole ratio?
+                </p>
+              </li>
+              <li>
+                <strong>Draw a tape diagram</strong>
+                Draw one tape with 3 equal parts for strawberries and another
+                tape (same-size parts) with 5 parts for yogurt. Each part
+                represents the same amount. Label the total as 8 parts.
+                <p class="guiding-q">
+                  If the parts are equal size, what does ONE part represent in
+                  the actual recipe?
+                </p>
+              </li>
+              <li>
+                <strong>Build a ratio table</strong>
+                Start with 1 batch: 3 strawberry, 5 yogurt, 8 total. Multiply
+                both by 2, 3, 4, and so on. Fill in rows until you find the one
+                where total = 60.
+                <p class="guiding-q">
+                  Why must you multiply BOTH columns by the same number? What
+                  happens if you only scale one?
+                </p>
+              </li>
+              <li>
+                <strong>Find the number of batches</strong>
+                60 total cups / 8 cups per batch = 7.5 batches. Since you cannot
+                make half a batch, discuss: do you round up to 8 batches (and
+                have leftovers) or find a way to make exactly 7.5 batches?
+                <p class="guiding-q">
+                  Is 7.5 batches a problem? Can you actually measure 1.5 cups of
+                  strawberries?
+                </p>
+              </li>
+              <li>
+                <strong>Calculate final amounts</strong>
+                For 7.5 batches: strawberries = 3 x 7.5 = 22.5 cups. Yogurt = 5
+                x 7.5 = 37.5 cups. Check: 22.5 + 37.5 = 60 cups. OR for 8
+                batches: 24 + 40 = 64 cups (4 extra).
+                <p class="guiding-q">
+                  Which is better for the school: exact amounts with half-cups,
+                  or full batches with extra? Why?
+                </p>
+              </li>
+              <li>
+                <strong>Make a recommendation</strong>
+                Write a shopping list: how many cups of each ingredient? State
+                your reasoning. Consider: if strawberries come in 4-cup
+                containers and yogurt in 8-cup containers, how many of each do
+                they need to buy?
+                <p class="guiding-q">
+                  How does packaging size affect your recommendation?
+                </p>
+              </li>
+            </ol>
+
+            <!-- ESOL SUPPORT -->
+            <div class="esol-box">
+              <h3>ESOL Support</h3>
+              <h4>Key Vocabulary</h4>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Ratio:</strong> A comparison of two quantities (like 3
+                  to 5)
+                </div>
+                <div class="vocab-item">
+                  <strong>Equivalent ratio:</strong> A ratio with the same
+                  relationship but different numbers (6:10 = 3:5)
+                </div>
+                <div class="vocab-item">
+                  <strong>Rate:</strong> A ratio that compares different units
+                  (cups per batch)
+                </div>
+                <div class="vocab-item">
+                  <strong>Tape diagram:</strong> A drawing of bars (tapes)
+                  showing how quantities compare
+                </div>
+                <div class="vocab-item">
+                  <strong>Scale up:</strong> Multiply both parts of a ratio by
+                  the same number to make it bigger
+                </div>
+                <div class="vocab-item">
+                  <strong>For every:</strong> Ratio language meaning "each time
+                  you have ___, you also have ___"
+                </div>
+              </div>
+              <h4>Sentence Frames</h4>
+              <ul class="sentence-frames">
+                <li>
+                  "The ratio of strawberries to yogurt is ___ to ___, which
+                  means for every ___ cups of strawberries, there are ___ cups
+                  of yogurt."
+                </li>
+                <li>
+                  "To scale up, I multiplied both parts by ___, so the
+                  equivalent ratio is ___ : ___."
+                </li>
+                <li>
+                  "In the tape diagram, each part represents ___ cups because
+                  ___."
+                </li>
+                <li>
+                  "We recommend buying ___ cups of strawberries and ___ cups of
+                  yogurt because ___."
+                </li>
+              </ul>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="representations">
+              <div class="rep-card">
+                <h4>Tape Diagram</h4>
+                <p>
+                  Equal-size bars showing the 3:5 part-to-part relationship
+                  visually.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Ratio Table</h4>
+                <p>
+                  Organized columns showing equivalent ratios by multiplying
+                  both sides.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Equation</h4>
+                <p>
+                  Total = batches x 8. Strawberries = batches x 3. Yogurt =
+                  batches x 5.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <!-- TIMED PHASES -->
+          <section class="panel" aria-labelledby="phases-title">
+            <h2 id="phases-title">Timed Lab Phases</h2>
+            <div class="timer-section">
+              <div class="timer">
+                <div>
+                  <strong id="activePhaseLabel">Launch phase</strong>
+                  <div style="font-size: 0.9rem; color: var(--muted)">
+                    Click a phase, then press Start.
+                  </div>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">
+                  03:00
+                </div>
+              </div>
+              <div class="timer-controls">
+                <button class="btn btn-primary" id="startTimer">Start</button>
+                <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+                <button class="btn btn-secondary" id="resetTimer">Reset</button>
+              </div>
+            </div>
+            <div class="phase-list" id="phaseList">
+              <article class="phase is-open">
+                <button
+                  class="phase-toggle"
+                  data-phase="0"
+                  data-minutes="3"
+                  aria-expanded="true"
+                >
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Read the smoothie problem aloud. Assign roles. Underline the
+                    ratio (3:5), the total needed (60 cups), and the question.
+                    Write the ratio in three formats.
+                  </p>
+                  <p class="guiding-q">
+                    What two quantities are being compared? What are the units
+                    for each?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: everyone can say the ratio in words, with
+                    a colon, and as a fraction.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="1"
+                  data-minutes="6"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Model Builder draws the tape diagram (3 parts strawberry, 5
+                    parts yogurt, equal sizes). Build the ratio table from 1
+                    batch to at least 8 batches. Find the row where the total
+                    reaches 60.
+                  </p>
+                  <p class="guiding-q">
+                    In your tape diagram, are all parts the same size? Why is
+                    that important?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: tape diagram drawn, ratio table has at
+                    least 6 rows, and the 60-cup row is identified.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="2"
+                  data-minutes="5"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Calculate the exact amounts: strawberries and yogurt for 60
+                    cups. Decide: use 7.5 batches (exact) or 8 batches (extra).
+                    Write the shopping list. Precision Checker verifies the
+                    totals add up.
+                  </p>
+                  <p class="guiding-q">
+                    If containers come in fixed sizes, how does that affect your
+                    plan?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: final amounts calculated, shopping list
+                    written, and totals verified.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="3"
+                  data-minutes="4"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Reporter prepares: state the ratio, show the tape diagram
+                    and ratio table, present the shopping list, and explain why
+                    7.5 or 8 batches is the better choice.
+                  </p>
+                  <p class="guiding-q">
+                    If a student asks "Why not just double and double again?"
+                    can you explain the problem with that approach?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: Reporter can present in under 60 seconds
+                    with the tape diagram visible.
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <div class="challenge-box">
+              <h3>Extension Challenge</h3>
+              <p>
+                A second smoothie flavor uses
+                <strong
+                  >4 cups of banana for every 3 cups of milk and 1 cup of
+                  honey</strong
+                >. If you need to serve 40 cups of banana smoothie, how much of
+                each ingredient do you need? Build a three-column ratio table
+                and a tape diagram with three tapes.
+              </p>
+            </div>
+            <h3>"What If?" Variations</h3>
+            <ul class="whatif-list">
+              <li>
+                the recipe was 2 cups strawberries for every 3 cups yogurt
+                instead? How would the amounts change?
+              </li>
+              <li>
+                only 45 students came to the celebration? How many batches now?
+              </li>
+              <li>
+                strawberries cost $3 per cup and yogurt costs $1 per cup? What
+                is the total cost?
+              </li>
+            </ul>
+            <h3>Real-Life Connection</h3>
+            <p style="font-size: 0.95rem; color: var(--muted)">
+              Restaurants and cafeterias use ratio scaling every day. A chef
+              with a recipe for 4 servings who needs to feed 100 people must
+              scale every ingredient by the same factor, or the food will not
+              taste right.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel defense-section">
+            <h2>Defense Preparation</h2>
+            <h3>Defense Questions</h3>
+            <ol>
+              <li>
+                State the ratio of strawberries to yogurt in three different
+                ways.
+              </li>
+              <li>
+                Show your tape diagram. Why must every part be the same size?
+              </li>
+              <li>
+                Walk through your ratio table. What multiplier did you use for
+                each row?
+              </li>
+              <li>
+                How many cups of each ingredient does the school need? How did
+                you decide?
+              </li>
+              <li>
+                Why did you choose 7.5 batches or 8 batches? What are the
+                trade-offs?
+              </li>
+            </ol>
+            <h3>Sentence Starters for Your Defense</h3>
+            <ul class="sentence-starters">
+              <li>
+                "The ratio of strawberries to yogurt is 3 to 5, which means..."
+              </li>
+              <li>
+                "We scaled the recipe by multiplying both parts by ___
+                because..."
+              </li>
+              <li>
+                "The school needs ___ cups of strawberries and ___ cups of
+                yogurt."
+              </li>
+              <li>"We recommend ___ batches because..."</li>
+            </ul>
+            <h3>What Makes a Strong Defense</h3>
+            <div class="rubric-grid">
+              <div class="rubric-item">
+                <strong>Ratio Language</strong>Uses "for every," colon, and
+                fraction correctly
+              </div>
+              <div class="rubric-item">
+                <strong>Models</strong>Accurate tape diagram and complete ratio
+                table
+              </div>
+              <div class="rubric-item">
+                <strong>Recommendation</strong>Practical shopping list with
+                reasoning
+              </div>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <div class="exit-product">
+              <h3>Exit Product</h3>
+              <p>Submit a one-page lab note with:</p>
+              <ul class="checklist">
+                <li>Ratio written three ways (words, colon, fraction)</li>
+                <li>Tape diagram with 3 parts and 5 parts (equal sizes)</li>
+                <li>
+                  Ratio table with at least 5 rows, including the 60-cup row
+                </li>
+                <li>Final shopping list: cups of strawberries and yogurt</li>
+                <li>Explanation of batch decision (7.5 vs. 8)</li>
+                <li>
+                  Three-sentence defense: claim, table evidence, and practical
+                  reasoning
+                </li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="print-workspace" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Ratio (3 ways):</strong></p>
+        <br />
+        <p><strong>Tape Diagram:</strong></p>
+        <br /><br />
+        <p><strong>Ratio Table:</strong></p>
+        <br /><br /><br />
+        <p><strong>Calculations:</strong></p>
+        <br /><br />
+        <p><strong>Shopping List and Recommendation:</strong></p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var ai = 0,
+          rs = phases[0].minutes * 60,
+          tid = null;
+        var td = document.getElementById("timerDisplay"),
+          al = document.getElementById("activePhaseLabel"),
+          pl = document.getElementById("phaseList");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stop() {
+          if (tid) {
+            clearInterval(tid);
+            tid = null;
+          }
+        }
+        function sel(i) {
+          stop();
+          ai = i;
+          rs = phases[i].minutes * 60;
+          al.textContent = phases[i].title + " phase";
+          td.textContent = fmt(rs);
+          pl.querySelectorAll(".phase").forEach(function (a, x) {
+            a.classList.toggle("is-open", x === i);
+            a.querySelector(".phase-toggle").setAttribute(
+              "aria-expanded",
+              x === i ? "true" : "false",
+            );
+          });
+        }
+        pl.addEventListener("click", function (e) {
+          var t = e.target.closest(".phase-toggle");
+          if (t) sel(Number(t.dataset.phase));
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (tid) return;
+            tid = setInterval(function () {
+              rs = Math.max(0, rs - 1);
+              td.textContent = fmt(rs);
+              if (rs === 0) {
+                stop();
+                al.textContent = phases[ai].title + " phase - COMPLETE";
+              }
+            }, 1000);
+          });
+        document.getElementById("pauseTimer").addEventListener("click", stop);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            sel(ai);
+          });
+      })();
+    </script>
+  </body>
+</html>

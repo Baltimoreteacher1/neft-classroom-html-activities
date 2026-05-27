@@ -3,1351 +3,1210 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Volume Vault 🐠</title>
+    <title>Volume Vault — Museum Heist</title>
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
-      :root {
-        --primary: #0369a1;
-        --bg: #f0f9ff;
-        --text: #0c4a6e;
-        --accent: #fb923c;
-        --secondary: #06b6d4;
-        --correct: #16a34a;
-        --wrong: #dc2626;
-        --radius: 12px;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-      body {
-        font-family:
-          "Segoe UI",
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-size: 18px;
-        line-height: 1.5;
-      }
-      .container {
+      body,
+      html {
         width: 100%;
-        max-width: 680px;
-        padding: 16px;
-        flex: 1;
-      }
-      h1 {
-        text-align: center;
-        color: var(--primary);
-        font-size: 1.8rem;
-        margin: 12px 0;
-      }
-      .subtitle {
-        text-align: center;
-        color: var(--secondary);
-        font-size: 1rem;
-        margin-bottom: 16px;
-      }
-
-      /* LOGIN */
-      .login-box {
-        background: #fff;
-        border-radius: var(--radius);
-        padding: 32px;
-        box-shadow: 0 4px 20px rgba(3, 105, 161, 0.12);
-        text-align: center;
-        margin-top: 24px;
-      }
-      .login-box h2 {
-        color: var(--primary);
-        margin-bottom: 8px;
-        font-size: 1.4rem;
-      }
-      .login-box p {
-        margin-bottom: 20px;
-        color: var(--text);
-      }
-      .login-box input {
-        width: 100%;
-        max-width: 320px;
-        padding: 12px 16px;
-        border: 2px solid var(--secondary);
-        border-radius: var(--radius);
-        font-size: 1rem;
-        text-align: center;
-        color: var(--text);
-        outline: none;
-        transition: border-color 0.2s;
-      }
-      .login-box input:focus {
-        border-color: var(--primary);
-      }
-      .btn {
-        display: inline-block;
-        padding: 12px 32px;
-        border: none;
-        border-radius: var(--radius);
-        font-size: 1.05rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition:
-          transform 0.15s,
-          box-shadow 0.15s;
-        color: #fff;
-      }
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(3, 105, 161, 0.25);
-      }
-      .btn:active {
-        transform: translateY(0);
-      }
-      .btn:focus-visible {
-        outline: 3px solid var(--accent);
-        outline-offset: 2px;
-      }
-      .btn-primary {
-        background: var(--primary);
-      }
-      .btn-accent {
-        background: var(--accent);
-      }
-      .btn-secondary {
-        background: var(--secondary);
-      }
-      .login-box .btn {
-        margin-top: 16px;
-      }
-
-      /* HUD */
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #fff;
-        border-radius: var(--radius);
-        padding: 10px 16px;
-        margin-bottom: 12px;
-        box-shadow: 0 2px 8px rgba(3, 105, 161, 0.08);
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      .hud-item {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 0.95rem;
-        font-weight: 600;
-      }
-      .hud-label {
-        color: var(--secondary);
-      }
-      .hud-val {
-        color: var(--primary);
-      }
-      .lives {
-        color: var(--accent);
-        font-size: 1.1rem;
-        letter-spacing: 2px;
-      }
-      .streak-badge {
-        background: var(--accent);
-        color: #fff;
-        border-radius: 20px;
-        padding: 2px 10px;
-        font-size: 0.85rem;
-        animation: pulse 0.6s ease-in-out;
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.15);
-        }
-      }
-
-      /* PROGRESS BAR */
-      .progress-wrap {
-        background: #e0f2fe;
-        border-radius: 20px;
-        height: 10px;
-        margin-bottom: 16px;
-        overflow: hidden;
-      }
-      .progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, var(--secondary), var(--primary));
-        border-radius: 20px;
-        transition: width 0.4s ease;
-      }
-
-      /* QUESTION CARD */
-      .q-card {
-        background: #fff;
-        border-radius: var(--radius);
-        padding: 28px 24px;
-        box-shadow: 0 4px 20px rgba(3, 105, 161, 0.1);
-        margin-bottom: 16px;
-        animation: fadeIn 0.35s ease;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(12px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .q-number {
-        font-size: 0.85rem;
-        color: var(--secondary);
-        font-weight: 600;
-        margin-bottom: 4px;
-      }
-      .q-tier {
-        display: inline-block;
-        background: var(--secondary);
-        color: #fff;
-        border-radius: 20px;
-        padding: 2px 12px;
-        font-size: 0.75rem;
-        margin-left: 8px;
-      }
-      .q-tier.t2 {
-        background: var(--accent);
-      }
-      .q-tier.t3 {
-        background: var(--primary);
-      }
-      .q-text {
-        font-size: 1.15rem;
-        margin: 12px 0 20px;
-        line-height: 1.6;
-      }
-
-      /* OPTIONS */
-      .options {
-        display: grid;
-        gap: 10px;
-      }
-      .opt-btn {
-        width: 100%;
-        padding: 14px 18px;
-        border: 2px solid #bae6fd;
-        border-radius: var(--radius);
-        background: #f0f9ff;
-        font-size: 1rem;
-        text-align: left;
-        cursor: pointer;
-        transition:
-          border-color 0.2s,
-          background 0.2s;
-        color: var(--text);
-      }
-      .opt-btn:hover:not(.locked) {
-        border-color: var(--secondary);
-        background: #e0f2fe;
-      }
-      .opt-btn:focus-visible {
-        outline: 3px solid var(--accent);
-        outline-offset: 2px;
-      }
-      .opt-btn.selected {
-        border-color: var(--primary);
-        background: #dbeafe;
-      }
-      .opt-btn.correct-answer {
-        border-color: var(--correct);
-        background: #dcfce7;
-        color: #166534;
-        font-weight: 600;
-      }
-      .opt-btn.wrong-answer {
-        border-color: var(--wrong);
-        background: #fee2e2;
-        color: #991b1b;
-      }
-      .opt-btn.locked {
-        cursor: default;
-        opacity: 0.85;
-      }
-
-      /* FEEDBACK */
-      .feedback {
-        padding: 14px 18px;
-        border-radius: var(--radius);
-        margin-top: 12px;
-        font-weight: 600;
-        display: none;
-        animation: fadeIn 0.25s ease;
-      }
-      .feedback.show {
-        display: block;
-      }
-      .feedback.correct {
-        background: #dcfce7;
-        color: #166534;
-        border: 1px solid #86efac;
-      }
-      .feedback.wrong {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fca5a5;
-      }
-      .feedback .explain {
-        font-weight: 400;
-        font-size: 0.95rem;
-        margin-top: 6px;
-      }
-
-      /* NEXT BTN */
-      .next-wrap {
-        text-align: center;
-        margin-top: 14px;
-        display: none;
-      }
-      .next-wrap.show {
-        display: block;
-      }
-
-      /* RESULTS */
-      .results {
-        background: #fff;
-        border-radius: var(--radius);
-        padding: 32px;
-        box-shadow: 0 4px 20px rgba(3, 105, 161, 0.12);
-        text-align: center;
-        animation: fadeIn 0.4s ease;
-      }
-      .results h2 {
-        color: var(--primary);
-        font-size: 1.6rem;
-        margin-bottom: 6px;
-      }
-      .score-big {
-        font-size: 3rem;
-        font-weight: 800;
-        color: var(--primary);
-        margin: 12px 0;
-      }
-      .stars {
-        font-size: 2.5rem;
-        margin: 8px 0 16px;
-        letter-spacing: 6px;
-      }
-      .stat-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin: 16px 0;
-      }
-      .stat-card {
-        background: var(--bg);
-        border-radius: var(--radius);
-        padding: 12px;
-        text-align: center;
-      }
-      .stat-card .val {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
-      }
-      .stat-card .lbl {
-        font-size: 0.8rem;
-        color: var(--secondary);
-      }
-      .results .btn {
-        margin: 8px;
-      }
-
-      /* REVIEW */
-      .review-section {
-        margin-top: 20px;
-        text-align: left;
-      }
-      .review-item {
-        background: var(--bg);
-        border-radius: var(--radius);
-        padding: 14px;
-        margin-bottom: 10px;
-        border-left: 4px solid var(--correct);
-      }
-      .review-item.missed {
-        border-left-color: var(--wrong);
-      }
-      .review-item .ri-q {
-        font-weight: 600;
-        margin-bottom: 4px;
-      }
-      .review-item .ri-a {
-        font-size: 0.95rem;
-        color: #166534;
-      }
-      .review-item.missed .ri-a {
-        color: #991b1b;
-      }
-      .review-item .ri-correct {
-        font-size: 0.9rem;
-        color: #166534;
-        margin-top: 2px;
-      }
-
-      /* FOOTER */
-      footer {
-        text-align: center;
-        padding: 12px;
-        font-size: 0.8rem;
-        color: var(--secondary);
-        margin-top: auto;
-      }
-
-      /* TIMER TOGGLE */
-      .timer-toggle {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.85rem;
-        color: var(--secondary);
-        margin-bottom: 8px;
-        justify-content: flex-end;
-      }
-      .timer-toggle input {
-        accent-color: var(--secondary);
-      }
-
-      /* SCREEN VISIBILITY */
-      .screen {
-        display: none;
-      }
-      .screen.active {
-        display: block;
-      }
-
-      /* BUBBLES */
-      .bubble {
-        position: fixed;
-        border-radius: 50%;
-        background: rgba(6, 182, 212, 0.08);
-        pointer-events: none;
-        z-index: 0;
-      }
-      .b1 {
-        width: 120px;
-        height: 120px;
-        top: 10%;
-        left: -30px;
-        animation: float 8s ease-in-out infinite;
-      }
-      .b2 {
-        width: 80px;
-        height: 80px;
-        bottom: 20%;
-        right: -20px;
-        animation: float 6s ease-in-out infinite 1s;
-      }
-      .b3 {
-        width: 60px;
-        height: 60px;
-        top: 50%;
-        left: 80%;
-        animation: float 7s ease-in-out infinite 2s;
-      }
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-20px);
-        }
-      }
-
-      /* HIGH CONTRAST */
-      .high-contrast {
-        --bg: #000;
-        --text: #fff;
-        --primary: #7dd3fc;
-        --secondary: #67e8f9;
-        --accent: #fdba74;
-      }
-      .high-contrast .q-card,
-      .high-contrast .login-box,
-      .high-contrast .hud,
-      .high-contrast .results,
-      .high-contrast .stat-card,
-      .high-contrast .review-item {
-        background: #111;
-        color: #fff;
-      }
-      .high-contrast .opt-btn {
-        background: #1a1a1a;
-        color: #fff;
-        border-color: #444;
-      }
-      .high-contrast footer {
-        color: #aaa;
-      }
-
-      /* SETTINGS BAR */
-      .settings-bar {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        align-items: center;
-        margin-bottom: 4px;
-        flex-wrap: wrap;
-      }
-      .settings-bar label {
-        font-size: 0.8rem;
-        color: var(--secondary);
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        cursor: pointer;
-      }
-      .settings-bar input[type="checkbox"] {
-        accent-color: var(--secondary);
+        overflow: hidden;
+        background: #0a0a0a;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
   </head>
   <body>
-    <div class="bubble b1" aria-hidden="true"></div>
-    <div class="bubble b2" aria-hidden="true"></div>
-    <div class="bubble b3" aria-hidden="true"></div>
-
-    <div class="container" role="main">
-      <h1>🐠 Volume Vault</h1>
-      <p class="subtitle">Volume &amp; Surface Area | Grade 6 Unit 10</p>
-
-      <!-- SETTINGS -->
-      <div class="settings-bar" id="settingsBar" style="display: none">
-        <label
-          ><input
-            type="checkbox"
-            id="toggleHC"
-            aria-label="Toggle high contrast"
-          />
-          High Contrast</label
-        >
-        <label
-          ><input
-            type="checkbox"
-            id="toggleMotion"
-            aria-label="Toggle reduced motion"
-          />
-          Reduce Motion</label
-        >
-        <label
-          ><input type="checkbox" id="toggleTimer" aria-label="Toggle timer" />
-          Timer</label
-        >
-      </div>
-
-      <!-- LOGIN SCREEN -->
-      <div class="screen active" id="loginScreen">
-        <div class="login-box">
-          <h2>Welcome, Explorer! 🐠</h2>
-          <p>
-            Dive into the Volume Vault and master volume &amp; surface area.
-          </p>
-          <label
-            for="nameInput"
-            style="display: block; margin-bottom: 8px; font-weight: 600"
-            >Enter Your Name</label
-          >
-          <input
-            type="text"
-            id="nameInput"
-            maxlength="30"
-            placeholder="Your name"
-            aria-label="Enter your name"
-            autocomplete="off"
-          />
-          <br />
-          <button class="btn btn-primary" id="startBtn" aria-label="Start game">
-            Dive In!
-          </button>
-        </div>
-      </div>
-
-      <!-- GAME SCREEN -->
-      <div class="screen" id="gameScreen">
-        <div class="hud" aria-label="Game status">
-          <div class="hud-item">
-            <span class="hud-label">Q:</span
-            ><span class="hud-val" id="hudQ">1/15</span>
-          </div>
-          <div class="hud-item">
-            <span class="hud-label">Score:</span
-            ><span class="hud-val" id="hudScore">0</span>
-          </div>
-          <div class="hud-item">
-            <span class="lives" id="hudLives" aria-label="Lives remaining"
-              >🐠🐠🐠</span
-            >
-          </div>
-          <div class="hud-item" id="hudTimerWrap" style="display: none">
-            <span class="hud-label">Time:</span
-            ><span class="hud-val" id="hudTimer">0:30</span>
-          </div>
-          <div class="hud-item" id="hudStreakWrap" style="display: none">
-            <span class="streak-badge" id="hudStreak" aria-live="polite"></span>
-          </div>
-        </div>
-        <div
-          class="progress-wrap"
-          role="progressbar"
-          aria-valuenow="0"
-          aria-valuemin="0"
-          aria-valuemax="15"
-        >
-          <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-        </div>
-        <div class="q-card" id="qCard">
-          <div>
-            <span class="q-number" id="qNumber">Question 1</span
-            ><span class="q-tier" id="qTier">Easy</span>
-          </div>
-          <div class="q-text" id="qText" aria-live="polite"></div>
-          <div
-            class="options"
-            id="optionsWrap"
-            role="radiogroup"
-            aria-label="Answer choices"
-          ></div>
-          <div class="feedback" id="feedback" aria-live="assertive">
-            <span id="fbText"></span>
-            <div class="explain" id="fbExplain"></div>
-          </div>
-          <div class="next-wrap" id="nextWrap">
-            <button
-              class="btn btn-secondary"
-              id="nextBtn"
-              aria-label="Next question"
-            >
-              Next Question
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- RESULTS SCREEN -->
-      <div class="screen" id="resultsScreen">
-        <div class="results">
-          <h2>🐠 Mission Complete!</h2>
-          <p id="resultsName"></p>
-          <div class="score-big" id="resultsScore"></div>
-          <div class="stars" id="resultsStars" aria-label="Star rating"></div>
-          <div class="stat-grid">
-            <div class="stat-card">
-              <div class="val" id="statCorrect">0</div>
-              <div class="lbl">Correct</div>
-            </div>
-            <div class="stat-card">
-              <div class="val" id="statAccuracy">0%</div>
-              <div class="lbl">Accuracy</div>
-            </div>
-            <div class="stat-card">
-              <div class="val" id="statStreak">0</div>
-              <div class="lbl">Best Streak</div>
-            </div>
-            <div class="stat-card">
-              <div class="val" id="statTime">0s</div>
-              <div class="lbl">Total Time</div>
-            </div>
-          </div>
-          <button
-            class="btn btn-primary"
-            id="playAgainBtn"
-            aria-label="Play again"
-          >
-            Play Again
-          </button>
-          <button
-            class="btn btn-accent"
-            id="reviewBtn"
-            aria-label="Review answers"
-          >
-            Review Answers
-          </button>
-          <div
-            class="review-section"
-            id="reviewSection"
-            style="display: none"
-          ></div>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      Neft Teacher &bull; Volume &amp; Surface Area &bull; 6.G.2 / 6.G.4
-    </footer>
-
     <script>
-      (function () {
-        "use strict";
+      // Volume Vault — Museum Heist
+      // Grade 6: 6.G.2, 6.G.4 (Volume & Surface Area)
+      // Neft Teacher
 
-        /* ===== QUESTIONS ===== */
-        const QUESTIONS = [
-          // --- EASY: Volume of rectangular prisms, whole numbers ---
-          {
-            tier: 1,
-            text: "A fish tank is 8 ft long, 5 ft wide, and 3 ft tall. What is the volume?",
-            options: [
-              "120 cubic ft",
-              "116 cubic ft",
-              "126 cubic ft",
-              "110 cubic ft",
-            ],
-            correct: 0,
-            explain: "V = l × w × h = 8 × 5 × 3 = 120 cubic ft.",
-            misconceptions: [
-              "Added instead of multiplied",
-              "Multiplied two then added third",
-              "Arithmetic error",
-            ],
-          },
-          {
-            tier: 1,
-            text: "A rectangular prism has a length of 10 in, width of 4 in, and height of 6 in. Find the volume.",
-            options: [
-              "200 cubic in",
-              "240 cubic in",
-              "244 cubic in",
-              "260 cubic in",
-            ],
-            correct: 1,
-            explain: "V = 10 × 4 × 6 = 240 cubic in.",
-            misconceptions: [
-              "Forgot one dimension (10×4×5)",
-              "Arithmetic error",
-              "Used wrong operation",
-            ],
-          },
-          {
-            tier: 1,
-            text: "A cube-shaped aquarium has edges of 7 cm on the base and a height of 4 cm. What is the volume?",
-            options: [
-              "196 cubic cm",
-              "198 cubic cm",
-              "182 cubic cm",
-              "176 cubic cm",
-            ],
-            correct: 0,
-            explain: "V = 7 × 7 × 4 = 196 cubic cm.",
-            misconceptions: [
-              "7×7 error",
-              "Used 7×4×4 instead",
-              "Subtracted instead of multiplied",
-            ],
-          },
-          {
-            tier: 1,
-            text: "A storage box is 12 m long, 3 m wide, and 5 m high. What is its volume?",
-            options: [
-              "175 cubic m",
-              "180 cubic m",
-              "185 cubic m",
-              "160 cubic m",
-            ],
-            correct: 1,
-            explain: "V = 12 × 3 × 5 = 180 cubic m.",
-            misconceptions: [
-              "Used 12+3×5",
-              "Rounded error",
-              "Swapped dimension with 4",
-            ],
-          },
-          {
-            tier: 1,
-            text: "A reef habitat measures 9 ft by 6 ft by 2 ft. What is the volume?",
-            options: [
-              "102 cubic ft",
-              "108 cubic ft",
-              "96 cubic ft",
-              "112 cubic ft",
-            ],
-            correct: 1,
-            explain: "V = 9 × 6 × 2 = 108 cubic ft.",
-            misconceptions: [
-              "Added dimensions then multiplied",
-              "9×6=52 error",
-              "Used perimeter formula",
-            ],
-          },
+      const W = 1024,
+        H = 768;
 
-          // --- MEDIUM: Decimal volumes + Surface Area of rectangular prisms ---
-          {
-            tier: 2,
-            text: "A small tank is 4.5 in long, 3 in wide, and 2 in tall. What is the volume?",
-            options: [
-              "24 cubic in",
-              "27 cubic in",
-              "30 cubic in",
-              "25.5 cubic in",
-            ],
-            correct: 1,
-            explain: "V = 4.5 × 3 × 2 = 27 cubic in.",
-            misconceptions: [
-              "Rounded 4.5 to 4",
-              "Multiplied wrong pair first",
-              "Decimal placement error",
-            ],
-          },
-          {
-            tier: 2,
-            text: "Find the volume of a prism that is 6 cm long, 2.5 cm wide, and 4 cm high.",
-            options: [
-              "50 cubic cm",
-              "55 cubic cm",
-              "60 cubic cm",
-              "65 cubic cm",
-            ],
-            correct: 2,
-            explain: "V = 6 × 2.5 × 4 = 60 cubic cm.",
-            misconceptions: [
-              "6×2=12, 12×4=48 (missed .5)",
-              "Added instead of multiplied",
-              "6×2.5=15, 15×4=60 but picked 55",
-            ],
-          },
-          {
-            tier: 2,
-            text: "Find the surface area of a rectangular prism: l = 5 in, w = 3 in, h = 4 in.",
-            options: ["94 sq in", "60 sq in", "80 sq in", "47 sq in"],
-            correct: 0,
-            explain: "SA = 2(5×3) + 2(5×4) + 2(3×4) = 30 + 40 + 24 = 94 sq in.",
-            misconceptions: [
-              "Found volume instead",
-              "Forgot to multiply by 2",
-              "Found half the SA",
-            ],
-          },
-          {
-            tier: 2,
-            text: "What is the surface area of a box that is 8 cm long, 6 cm wide, and 2 cm tall?",
-            options: ["148 sq cm", "152 sq cm", "96 sq cm", "132 sq cm"],
-            correct: 1,
-            explain:
-              "SA = 2(8×6) + 2(8×2) + 2(6×2) = 96 + 32 + 24 = 152 sq cm.",
-            misconceptions: [
-              "Missed one pair of faces",
-              "Found volume",
-              "Only computed 3 faces (not doubled)",
-            ],
-          },
-          {
-            tier: 2,
-            text: "A container is 3.5 ft long, 2 ft wide, and 5 ft tall. What is its volume?",
-            options: [
-              "30 cubic ft",
-              "35 cubic ft",
-              "32.5 cubic ft",
-              "37.5 cubic ft",
-            ],
-            correct: 1,
-            explain: "V = 3.5 × 2 × 5 = 35 cubic ft.",
-            misconceptions: [
-              "Rounded 3.5 to 3",
-              "Decimal placement error",
-              "Added instead of multiplied",
-            ],
-          },
-
-          // --- HARD: Fractions, triangular prism SA, missing dimension ---
-          {
-            tier: 3,
-            text: "A box has edges of ½ ft, ¾ ft, and 2 ft. What is the volume?",
-            options: ["¾ cubic ft", "½ cubic ft", "1 cubic ft", "1½ cubic ft"],
-            correct: 0,
-            explain: "V = ½ × ¾ × 2 = ⁶⁄₈ = ¾ cubic ft.",
-            misconceptions: [
-              "Multiplied numerators only, forgot denominators",
-              "Added fractions",
-              "Multiplied wrong",
-            ],
-          },
-          {
-            tier: 3,
-            text: "A triangular prism has a triangular base with base 6 cm, height 4 cm, and equal sides of 5 cm each. The prism is 10 cm long. What is the surface area?",
-            options: ["184 sq cm", "160 sq cm", "200 sq cm", "174 sq cm"],
-            correct: 0,
-            explain:
-              "Two triangles: 2(½×6×4)=24. Three rectangles: 6×10=60, 5×10=50, 5×10=50. Total = 24+60+50+50 = 184 sq cm.",
-            misconceptions: [
-              "Forgot triangular faces",
-              "Only computed lateral area",
-              "Used wrong triangle area formula",
-            ],
-          },
-          {
-            tier: 3,
-            text: "A rectangular prism has a volume of 360 cubic ft. Its length is 12 ft and width is 6 ft. What is the height?",
-            options: ["4 ft", "5 ft", "6 ft", "3 ft"],
-            correct: 1,
-            explain: "V = l × w × h → 360 = 12 × 6 × h → h = 360 ÷ 72 = 5 ft.",
-            misconceptions: [
-              "Divided 360÷12 only",
-              "Divided by sum instead of product",
-              "Arithmetic error",
-            ],
-          },
-          {
-            tier: 3,
-            text: "Find the volume of a prism with edges 2½ in, 1⅓ in, and 3 in.",
-            options: ["8 cubic in", "10 cubic in", "9 cubic in", "12 cubic in"],
-            correct: 1,
-            explain:
-              "2½ = ⁵⁄₂, 1⅓ = ⁴⁄₃. V = ⁵⁄₂ × ⁴⁄₃ × 3 = ⁶⁰⁄₆ = 10 cubic in.",
-            misconceptions: [
-              "Converted fractions wrong",
-              "Forgot to multiply by 3",
-              "Multiplied whole numbers only (2×1×3=6)",
-            ],
-          },
-          {
-            tier: 3,
-            text: "A square pyramid has a base edge of 8 m and a slant height of 5 m. What is the total surface area?",
-            options: ["128 sq m", "144 sq m", "160 sq m", "112 sq m"],
-            correct: 1,
-            explain:
-              "Base = 8×8 = 64. Four triangular faces = 4(½×8×5) = 80. SA = 64 + 80 = 144 sq m.",
-            misconceptions: [
-              "Forgot the base",
-              "Used full base×height for triangles",
-              "Only calculated lateral area",
-            ],
-          },
-        ];
-
-        /* ===== STATE ===== */
-        const STORAGE_KEY = "volumeVault_v1";
-        let state = {
-          name: "",
-          qIndex: 0,
-          score: 0,
-          lives: 3,
-          streak: 0,
-          bestStreak: 0,
-          answered: [],
-          timerOn: false,
-          timeLeft: 30,
-          totalTime: 0,
-          startTime: 0,
-          locked: false,
-        };
-        let timerInterval = null;
-
-        /* ===== STORAGE ===== */
-        function saveState() {
-          try {
-            localStorage.setItem(
-              STORAGE_KEY,
-              JSON.stringify({
-                name: state.name,
-                bestScore: Math.max(state.score, getBest().bestScore),
-                bestStreak: Math.max(state.bestStreak, getBest().bestStreak),
-                gamesPlayed: (getBest().gamesPlayed || 0) + 0,
-              }),
-            );
-          } catch (e) {}
+      // --- SFX ---
+      class SFX {
+        constructor() {
+          this.ctx = null;
         }
-        function getBest() {
-          try {
-            return (
-              JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-                bestScore: 0,
-                bestStreak: 0,
-                gamesPlayed: 0,
-              }
-            );
-          } catch (e) {
-            return { bestScore: 0, bestStreak: 0, gamesPlayed: 0 };
-          }
-        }
-        function saveCompletion() {
-          try {
-            const d = getBest();
-            d.bestScore = Math.max(d.bestScore, state.score);
-            d.bestStreak = Math.max(d.bestStreak, state.bestStreak);
-            d.gamesPlayed = (d.gamesPlayed || 0) + 1;
-            d.name = state.name;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-          } catch (e) {}
-        }
-
-        /* ===== DOM ===== */
-        const $ = (id) => document.getElementById(id);
-        const screens = {
-          login: $("loginScreen"),
-          game: $("gameScreen"),
-          results: $("resultsScreen"),
-        };
-        function showScreen(name) {
-          Object.values(screens).forEach((s) => s.classList.remove("active"));
-          screens[name].classList.add("active");
-        }
-
-        /* ===== AUDIO (Web Audio API) ===== */
-        let audioCtx = null;
-        function beep(freq, dur, type = "sine") {
-          try {
-            if (!audioCtx)
-              audioCtx = new (
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
                 window.AudioContext || window.webkitAudioContext
               )();
-            const o = audioCtx.createOscillator(),
-              g = audioCtx.createGain();
-            o.type = type;
-            o.frequency.value = freq;
-            g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            } catch (e) {}
+        }
+        tone(f, d, t = "sine", v = 0.08) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
             g.gain.exponentialRampToValueAtTime(
               0.001,
-              audioCtx.currentTime + dur,
+              this.ctx.currentTime + d,
             );
             o.connect(g);
-            g.connect(audioCtx.destination);
+            g.connect(this.ctx.destination);
             o.start();
-            o.stop(audioCtx.currentTime + dur);
+            o.stop(this.ctx.currentTime + d);
           } catch (e) {}
         }
-        function playCorrect() {
-          beep(523, 0.15);
-          setTimeout(() => beep(659, 0.15), 100);
-          setTimeout(() => beep(784, 0.2), 200);
+        crack() {
+          [600, 800, 1000, 1200].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.08), i * 40),
+          );
         }
-        function playWrong() {
-          beep(220, 0.3, "sawtooth");
+        alarm() {
+          this.tone(400, 0.15, "square");
+          setTimeout(() => this.tone(600, 0.15, "square"), 120);
+          setTimeout(() => this.tone(400, 0.15, "square"), 240);
         }
-        function playComplete() {
-          beep(523, 0.1);
-          setTimeout(() => beep(659, 0.1), 120);
-          setTimeout(() => beep(784, 0.1), 240);
-          setTimeout(() => beep(1047, 0.25), 360);
+        click() {
+          this.tone(500, 0.04);
         }
+        laser() {
+          this.tone(1200, 0.05);
+          setTimeout(() => this.tone(800, 0.08), 40);
+        }
+        vault() {
+          this.tone(200, 0.2, "triangle");
+          setTimeout(() => this.tone(300, 0.2, "triangle"), 150);
+          setTimeout(() => this.tone(500, 0.3, "triangle"), 300);
+        }
+        grab() {
+          this.tone(880, 0.06);
+          setTimeout(() => this.tone(1100, 0.08), 50);
+          setTimeout(() => this.tone(1320, 0.1), 100);
+        }
+        win() {
+          [523, 659, 784, 880, 1047, 1319].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.1), i * 60),
+          );
+        }
+        lose() {
+          [500, 400, 300, 200, 150].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "sawtooth"), i * 100),
+          );
+        }
+        stealth() {
+          this.tone(150, 0.1, "triangle", 0.03);
+        }
+      }
+      const sfx = new SFX();
 
-        /* ===== SETTINGS ===== */
-        $("toggleHC").addEventListener("change", function () {
-          document.body.classList.toggle("high-contrast", this.checked);
-        });
-        $("toggleMotion").addEventListener("change", function () {
-          document.body.style.setProperty(
-            "--anim",
-            this.checked ? "0.01ms" : "",
+      // --- QUESTIONS ---
+      function genQuestions() {
+        const qs = [];
+        function shuf(a) {
+          const b = [...a];
+          for (let i = b.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [b[i], b[j]] = [b[j], b[i]];
+          }
+          return b;
+        }
+        function mk(text, correct, wrongs, explain, tier, floor) {
+          const opts = shuf([correct, ...wrongs]);
+          return { text, correct, options: opts, explain, tier, floor };
+        }
+        // FLOOR 1 (Tier 1): Basic volume of rectangular prisms
+        const f1dims = [
+          [8, 5, 3, 120],
+          [10, 4, 6, 240],
+          [7, 7, 4, 196],
+          [12, 3, 5, 180],
+          [9, 6, 2, 108],
+        ];
+        f1dims.forEach((d) => {
+          const [l, w, h, v] = d;
+          const w1 = v + Phaser.Math.Between(-10, 10);
+          const w2 = v + Phaser.Math.Between(5, 20);
+          const w3 = v - Phaser.Math.Between(5, 15);
+          qs.push(
+            mk(
+              `Vault is ${l}ft × ${w}ft × ${h}ft. Volume?`,
+              `${v} cubic ft`,
+              [
+                `${w1 === v ? w1 + 4 : w1} cubic ft`,
+                `${w2} cubic ft`,
+                `${Math.abs(w3)} cubic ft`,
+              ],
+              `V = ${l} × ${w} × ${h} = ${v} cubic ft`,
+              1,
+              "Lobby",
+            ),
           );
         });
-        $("toggleTimer").addEventListener("change", function () {
-          state.timerOn = this.checked;
-          $("hudTimerWrap").style.display = this.checked ? "flex" : "none";
-        });
+        // FLOOR 2 (Tier 2): Decimals + Surface Area
+        qs.push(
+          mk(
+            "Display case: 4.5in × 3in × 2in. Volume?",
+            "27 cubic in",
+            ["24 cubic in", "30 cubic in", "25.5 cubic in"],
+            "V = 4.5 × 3 × 2 = 27 cubic in",
+            2,
+            "Gallery",
+          ),
+        );
+        qs.push(
+          mk(
+            "Crate: 6cm × 2.5cm × 4cm. Volume?",
+            "60 cubic cm",
+            ["50 cubic cm", "55 cubic cm", "65 cubic cm"],
+            "V = 6 × 2.5 × 4 = 60 cubic cm",
+            2,
+            "Gallery",
+          ),
+        );
+        qs.push(
+          mk(
+            "Wrap a box: l=5in, w=3in, h=4in. Surface area?",
+            "94 sq in",
+            ["60 sq in", "80 sq in", "47 sq in"],
+            "SA = 2(5×3) + 2(5×4) + 2(3×4) = 30+40+24 = 94",
+            2,
+            "Gallery",
+          ),
+        );
+        qs.push(
+          mk(
+            "Laser grid box: 8cm × 6cm × 2cm. Surface area?",
+            "152 sq cm",
+            ["148 sq cm", "96 sq cm", "132 sq cm"],
+            "SA = 2(48) + 2(16) + 2(12) = 96+32+24 = 152",
+            2,
+            "Gallery",
+          ),
+        );
+        qs.push(
+          mk(
+            "Getaway container: 3.5ft × 2ft × 5ft. Volume?",
+            "35 cubic ft",
+            ["30 cubic ft", "32.5 cubic ft", "37.5 cubic ft"],
+            "V = 3.5 × 2 × 5 = 35 cubic ft",
+            2,
+            "Gallery",
+          ),
+        );
+        // FLOOR 3 (Tier 3): Fractions, missing dimensions, pyramids
+        qs.push(
+          mk(
+            "Jewel box: ½ft × ¾ft × 2ft. Volume?",
+            "¾ cubic ft",
+            ["½ cubic ft", "1 cubic ft", "1½ cubic ft"],
+            "V = ½ × ¾ × 2 = 6/8 = ¾ cubic ft",
+            3,
+            "Vault",
+          ),
+        );
+        qs.push(
+          mk(
+            "Prism volume = 360 ft³. l=12ft, w=6ft. Height?",
+            "5 ft",
+            ["4 ft", "6 ft", "3 ft"],
+            "360 = 12 × 6 × h → h = 360/72 = 5 ft",
+            3,
+            "Vault",
+          ),
+        );
+        qs.push(
+          mk(
+            "Prism edges: 2½in × 1⅓in × 3in. Volume?",
+            "10 cubic in",
+            ["8 cubic in", "9 cubic in", "12 cubic in"],
+            "5/2 × 4/3 × 3 = 60/6 = 10 cubic in",
+            3,
+            "Vault",
+          ),
+        );
+        qs.push(
+          mk(
+            "Triangular prism: base 6cm, height 4cm, sides 5cm, length 10cm. Surface area?",
+            "184 sq cm",
+            ["160 sq cm", "200 sq cm", "174 sq cm"],
+            "2 triangles: 24. 3 rects: 60+50+50. Total = 184",
+            3,
+            "Vault",
+          ),
+        );
+        qs.push(
+          mk(
+            "Square pyramid: base 8m, slant height 5m. Total surface area?",
+            "144 sq m",
+            ["128 sq m", "160 sq m", "112 sq m"],
+            "Base: 64. 4 triangles: 4(½×8×5)=80. SA=144",
+            3,
+            "Vault",
+          ),
+        );
+        return shuf(qs).slice(0, 15);
+      }
 
-        /* ===== LOGIN ===== */
-        $("startBtn").addEventListener("click", startGame);
-        $("nameInput").addEventListener("keydown", function (e) {
-          if (e.key === "Enter") startGame();
-        });
-
-        function startGame() {
-          const name = $("nameInput").value.trim();
-          if (!name) {
-            $("nameInput").focus();
-            return;
-          }
-          state = {
-            name,
-            qIndex: 0,
-            score: 0,
-            lives: 3,
-            streak: 0,
-            bestStreak: 0,
-            answered: [],
-            timerOn: $("toggleTimer").checked,
-            timeLeft: 30,
-            totalTime: 0,
-            startTime: Date.now(),
-            locked: false,
-          };
-          $("settingsBar").style.display = "flex";
-          showScreen("game");
-          renderQuestion();
-        }
-
-        /* ===== RENDER QUESTION ===== */
-        function renderQuestion() {
-          if (state.qIndex >= QUESTIONS.length || state.lives <= 0) {
-            endGame();
-            return;
-          }
-          const q = QUESTIONS[state.qIndex];
-          state.locked = false;
-          $("hudQ").textContent = `${state.qIndex + 1}/15`;
-          $("hudScore").textContent = state.score;
-          $("hudLives").textContent =
-            "🐠".repeat(state.lives) + "  ".repeat(3 - state.lives);
-          $("hudLives").setAttribute(
-            "aria-label",
-            state.lives + " lives remaining",
-          );
-          if (state.streak >= 2) {
-            $("hudStreakWrap").style.display = "flex";
-            $("hudStreak").textContent = `🔥 ${state.streak}`;
-          } else {
-            $("hudStreakWrap").style.display = "none";
-          }
-          const pct = Math.round((state.qIndex / 15) * 100);
-          $("progressBar").style.width = pct + "%";
-          $("progressBar").parentElement.setAttribute(
-            "aria-valuenow",
-            state.qIndex,
-          );
-
-          $("qNumber").textContent = `Question ${state.qIndex + 1}`;
-          const tierLabels = ["Easy", "Medium", "Hard"];
-          const tierClasses = ["", "t2", "t3"];
-          $("qTier").textContent = tierLabels[q.tier - 1];
-          $("qTier").className = "q-tier " + tierClasses[q.tier - 1];
-          $("qText").textContent = q.text;
-
-          const wrap = $("optionsWrap");
-          wrap.innerHTML = "";
-          q.options.forEach((opt, i) => {
-            const btn = document.createElement("button");
-            btn.className = "opt-btn";
-            btn.textContent = opt;
-            btn.setAttribute("role", "radio");
-            btn.setAttribute("aria-checked", "false");
-            btn.setAttribute("tabindex", i === 0 ? "0" : "-1");
-            btn.addEventListener("click", () => selectAnswer(i));
-            btn.addEventListener("keydown", handleOptionKey);
-            wrap.appendChild(btn);
+      // --- LASER GRID ---
+      function drawLasers(scene, count, depth) {
+        const lasers = [];
+        for (let i = 0; i < count; i++) {
+          const y = Phaser.Math.Between(200, H - 200);
+          const laser = scene.add
+            .rectangle(W / 2, y, W - 100, 2, 0xef4444, 0.4)
+            .setDepth(depth);
+          scene.tweens.add({
+            targets: laser,
+            alpha: 0.15,
+            duration: Phaser.Math.Between(500, 1500),
+            yoyo: true,
+            repeat: -1,
           });
-
-          $("feedback").className = "feedback";
-          $("feedback").classList.remove("show");
-          $("nextWrap").classList.remove("show");
-
-          if (state.timerOn) {
-            startTimer();
-          }
-
-          // Focus first option
-          wrap.children[0]?.focus();
+          lasers.push(laser);
         }
+        return lasers;
+      }
 
-        /* ===== KEYBOARD NAV FOR OPTIONS ===== */
-        function handleOptionKey(e) {
-          const btns = Array.from($("optionsWrap").children);
-          const idx = btns.indexOf(e.target);
-          let next = -1;
-          if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-            next = (idx + 1) % btns.length;
-            e.preventDefault();
-          } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-            next = (idx - 1 + btns.length) % btns.length;
-            e.preventDefault();
-          } else if (e.key === " " || e.key === "Enter") {
-            e.preventDefault();
-            selectAnswer(idx);
-            return;
-          } else if (e.key === "Escape") {
-            e.preventDefault();
-            $("nextBtn").focus();
-            return;
-          }
-          if (next >= 0) {
-            btns.forEach((b) => {
-              b.setAttribute("tabindex", "-1");
-              b.setAttribute("aria-checked", "false");
-            });
-            btns[next].setAttribute("tabindex", "0");
-            btns[next].focus();
-          }
+      // --- BOOT ---
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
         }
+        create() {
+          this.scene.start("Title");
+        }
+      }
 
-        /* ===== TIMER ===== */
-        function startTimer() {
-          clearInterval(timerInterval);
-          state.timeLeft = 30;
-          $("hudTimerWrap").style.display = "flex";
-          updateTimerDisplay();
-          timerInterval = setInterval(() => {
-            state.timeLeft--;
-            updateTimerDisplay();
-            if (state.timeLeft <= 0) {
-              clearInterval(timerInterval);
-              autoTimeout();
+      // --- TITLE ---
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          sfx.init();
+          const cx = W / 2;
+          this.cameras.main.setBackgroundColor("#0a0a0a");
+          // Museum architecture
+          // Columns
+          for (let i = 0; i < 6; i++) {
+            const x = 100 + i * 170;
+            this.add.rectangle(x, H / 2, 20, H, 0x1e293b).setDepth(0);
+            this.add.rectangle(x, 60, 30, 15, 0x334155).setDepth(0);
+            this.add.rectangle(x, H - 40, 30, 15, 0x334155).setDepth(0);
+          }
+          // Floor tiles
+          for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 15; c++) {
+              const checker = (r + c) % 2 === 0 ? 0x1a1a2e : 0x111827;
+              this.add
+                .rectangle(c * 75 + 37, H - 100 + r * 40, 72, 37, checker)
+                .setDepth(0);
             }
-          }, 1000);
-        }
-        function updateTimerDisplay() {
-          const s = Math.max(0, state.timeLeft);
-          $("hudTimer").textContent = `0:${s < 10 ? "0" : ""}${s}`;
-          $("hudTimer").style.color =
-            s <= 5 ? "var(--wrong)" : "var(--primary)";
-        }
-        function autoTimeout() {
-          if (state.locked) return;
-          state.locked = true;
-          const q = QUESTIONS[state.qIndex];
-          const btns = $("optionsWrap").children;
-          Array.from(btns).forEach((b) => b.classList.add("locked"));
-          btns[q.correct].classList.add("correct-answer");
-          state.lives--;
-          state.streak = 0;
-          state.answered.push({ qi: state.qIndex, chosen: -1, correct: false });
-          showFeedback(false, "Time’s up! " + q.explain);
-          playWrong();
-        }
-
-        /* ===== SELECT ANSWER ===== */
-        function selectAnswer(idx) {
-          if (state.locked) return;
-          state.locked = true;
-          clearInterval(timerInterval);
-          const q = QUESTIONS[state.qIndex];
-          const btns = $("optionsWrap").children;
-          Array.from(btns).forEach((b) => b.classList.add("locked"));
-
-          const isCorrect = idx === q.correct;
-          btns[idx].classList.add(
-            isCorrect ? "correct-answer" : "wrong-answer",
-          );
-          btns[idx].setAttribute("aria-checked", "true");
-          if (!isCorrect) btns[q.correct].classList.add("correct-answer");
-
-          if (isCorrect) {
-            const tierBonus = [10, 20, 30];
-            let pts = tierBonus[q.tier - 1];
-            if (state.streak >= 2) pts += 5;
-            if (state.timerOn && state.timeLeft >= 20) pts += 5;
-            state.score += pts;
-            state.streak++;
-            state.bestStreak = Math.max(state.bestStreak, state.streak);
-            state.answered.push({
-              qi: state.qIndex,
-              chosen: idx,
-              correct: true,
-            });
-            showFeedback(true, "Correct! +" + pts + " pts. " + q.explain);
-            playCorrect();
-          } else {
-            state.lives--;
-            state.streak = 0;
-            state.answered.push({
-              qi: state.qIndex,
-              chosen: idx,
-              correct: false,
-            });
-            showFeedback(false, "Not quite. " + q.explain);
-            playWrong();
           }
-        }
-
-        function showFeedback(correct, msg) {
-          const fb = $("feedback");
-          fb.className = "feedback show " + (correct ? "correct" : "wrong");
-          $("fbText").textContent = correct ? "🎉 " : "❌ ";
-          $("fbExplain").textContent = msg;
-          $("nextWrap").classList.add("show");
-          $("nextBtn").focus();
-        }
-
-        /* ===== NEXT ===== */
-        $("nextBtn").addEventListener("click", () => {
-          state.qIndex++;
-          renderQuestion();
-        });
-        $("nextBtn").addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            state.qIndex++;
-            renderQuestion();
+          // Laser beams (decorative)
+          for (let i = 0; i < 4; i++) {
+            const y = 250 + i * 80;
+            const laser = this.add
+              .rectangle(cx, y, W - 200, 1.5, 0xef4444, 0.25)
+              .setDepth(1);
+            this.tweens.add({
+              targets: laser,
+              alpha: 0.08,
+              duration: 1000 + i * 300,
+              yoyo: true,
+              repeat: -1,
+            });
           }
-        });
-
-        /* ===== END GAME ===== */
-        function endGame() {
-          clearInterval(timerInterval);
-          const elapsed = Math.round((Date.now() - state.startTime) / 1000);
-          const correct = state.answered.filter((a) => a.correct).length;
-          const total = state.answered.length;
-          const accuracy = total ? Math.round((correct / total) * 100) : 0;
-          const stars =
-            accuracy >= 90 ? 3 : accuracy >= 70 ? 2 : accuracy >= 50 ? 1 : 0;
-
-          saveCompletion();
-          showScreen("results");
-
-          $("resultsName").textContent = `Great work, ${state.name}!`;
-          $("resultsScore").textContent = state.score;
-          $("resultsStars").textContent =
-            (stars >= 1 ? "⭐" : "☆") +
-            (stars >= 2 ? "⭐" : "☆") +
-            (stars >= 3 ? "⭐" : "☆");
-          $("resultsStars").setAttribute(
-            "aria-label",
-            stars + " out of 3 stars",
-          );
-          $("statCorrect").textContent = `${correct}/${total}`;
-          $("statAccuracy").textContent = accuracy + "%";
-          $("statStreak").textContent = state.bestStreak;
-          const mins = Math.floor(elapsed / 60);
-          const secs = elapsed % 60;
-          $("statTime").textContent =
-            mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-
-          playComplete();
-          buildReview();
-        }
-
-        /* ===== REVIEW ===== */
-        function buildReview() {
-          const section = $("reviewSection");
-          section.innerHTML =
-            "<h3 style='margin-bottom:12px;color:var(--primary)'>Answer Review</h3>";
-          state.answered.forEach((a) => {
-            const q = QUESTIONS[a.qi];
-            const div = document.createElement("div");
-            div.className = "review-item" + (a.correct ? "" : " missed");
-            const chosen =
-              a.chosen >= 0 ? q.options[a.chosen] : "No answer (timed out)";
-            div.innerHTML = `<div class="ri-q">Q${a.qi + 1}: ${q.text}</div>
-      <div class="ri-a">${a.correct ? "✓" : "✗"} Your answer: ${chosen}</div>
-      ${a.correct ? "" : `<div class="ri-correct">Correct answer: ${q.options[q.correct]}</div>`}`;
-            section.appendChild(div);
+          // Vault door
+          const vault = this.add.graphics().setPosition(cx, 380).setDepth(2);
+          vault.fillStyle(0x475569);
+          vault.fillRoundedRect(-70, -80, 140, 160, 12);
+          vault.lineStyle(3, 0x64748b);
+          vault.strokeRoundedRect(-70, -80, 140, 160, 12);
+          vault.fillStyle(0x334155);
+          vault.fillCircle(0, 0, 40);
+          vault.lineStyle(2, 0x94a3b8);
+          vault.strokeCircle(0, 0, 40);
+          // Dial
+          for (let i = 0; i < 12; i++) {
+            const a = (i * Math.PI) / 6;
+            vault.fillStyle(0x94a3b8);
+            vault.fillCircle(Math.cos(a) * 30, Math.sin(a) * 30, 3);
+          }
+          vault.fillStyle(0xfbbf24);
+          vault.fillCircle(0, 0, 8);
+          this.tweens.add({
+            targets: vault,
+            angle: 360,
+            duration: 8000,
+            repeat: -1,
+            ease: "Linear",
+          });
+          // Title
+          this.add
+            .text(cx, 60, "VOLUME", {
+              fontSize: "58px",
+              fontFamily: "monospace",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 125, "VAULT", {
+              fontSize: "72px",
+              fontFamily: "monospace",
+              color: "#ef4444",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 180, "Museum Heist", {
+              fontSize: "24px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 210, "6.G.2 / 6.G.4 | Neft Teacher", {
+              fontSize: "13px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5);
+          // Spy character
+          const spy = this.add
+            .graphics()
+            .setPosition(cx - 180, 420)
+            .setDepth(3);
+          spy.fillStyle(0x1e293b);
+          spy.fillRoundedRect(-15, -35, 30, 50, 5);
+          spy.fillStyle(0x374151);
+          spy.fillCircle(0, -45, 14);
+          spy.fillStyle(0xe2e8f0);
+          spy.fillCircle(-4, -47, 3);
+          spy.fillCircle(4, -47, 3);
+          // Hat
+          spy.fillStyle(0x111827);
+          spy.fillRect(-18, -58, 36, 8);
+          spy.fillRect(-12, -65, 24, 10);
+          spy.fillStyle(0x475569);
+          spy.fillRect(-10, 15, 8, 20);
+          spy.fillRect(2, 15, 8, 20);
+          this.tweens.add({
+            targets: spy,
+            y: spy.y - 6,
+            duration: 900,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          // Floors preview
+          const floors = [
+            { name: "LOBBY", sub: "Volume basics", color: 0x22c55e },
+            { name: "GALLERY", sub: "SA + decimals", color: 0xf59e0b },
+            { name: "THE VAULT", sub: "Boss puzzles", color: 0xef4444 },
+          ];
+          floors.forEach((f, i) => {
+            const fx = cx - 280 + i * 280,
+              fy = 540;
+            this.add
+              .rectangle(fx, fy, 220, 65, 0x1e293b)
+              .setStrokeStyle(2, f.color);
+            this.add
+              .text(fx, fy - 10, "Floor " + (i + 1) + ": " + f.name, {
+                fontSize: "14px",
+                color: "#" + f.color.toString(16).padStart(6, "0"),
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(fx, fy + 12, f.sub, { fontSize: "11px", color: "#94a3b8" })
+              .setOrigin(0.5);
+          });
+          // Start
+          const btn = this.add
+            .rectangle(cx, 630, 260, 60, 0xfbbf24)
+            .setStrokeStyle(2, 0xf59e0b)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx, 630, "BEGIN HEIST", {
+              fontSize: "26px",
+              color: "#0a0a0a",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => btn.setFillStyle(0xf59e0b));
+          btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+          btn.on("pointerdown", () => {
+            sfx.vault();
+            this.scene.start("Game");
+          });
+          this.add
+            .text(cx, 685, "Keys 1-4 or click answers | Arrows + Enter", {
+              fontSize: "12px",
+              color: "#475569",
+            })
+            .setOrigin(0.5);
+          this.input.keyboard.on("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              sfx.vault();
+              this.scene.start("Game");
+            }
           });
         }
-        $("reviewBtn").addEventListener("click", () => {
-          const s = $("reviewSection");
-          s.style.display = s.style.display === "none" ? "block" : "none";
-        });
+      }
 
-        /* ===== PLAY AGAIN ===== */
-        $("playAgainBtn").addEventListener("click", () => {
-          $("nameInput").value = state.name;
-          $("reviewSection").style.display = "none";
-          showScreen("login");
-        });
-      })();
+      // --- GAME ---
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        create() {
+          sfx.init();
+          this.questions = genQuestions();
+          this.qIndex = 0;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          this.bestStreak = 0;
+          this.totalQ = Math.min(15, this.questions.length);
+          this.answered = false;
+          this.startTime = Date.now();
+          this.selectedIdx = -1;
+          this.loot = 0;
+          this.cameras.main.setBackgroundColor("#0a0a0a");
+          this.buildHUD();
+          this.loadQuestion();
+          this.input.keyboard.on("keydown", this.handleKey, this);
+        }
+
+        buildFloor(floorName) {
+          if (this.floorGroup) this.floorGroup.destroy(true);
+          this.floorGroup = this.add.group();
+          const colors = {
+            Lobby: { bg: 0x0f172a, wall: 0x1e293b, accent: 0x22c55e },
+            Gallery: { bg: 0x1a0a00, wall: 0x2d1b00, accent: 0xf59e0b },
+            Vault: { bg: 0x0a0a1a, wall: 0x1a1a2e, accent: 0xef4444 },
+          };
+          const c = colors[floorName] || colors.Lobby;
+          // Floor
+          this.cameras.main.setBackgroundColor(c.bg);
+          // Checker tiles
+          for (let r = 0; r < 4; r++) {
+            for (let col = 0; col < 20; col++) {
+              const checker = (r + col) % 2 === 0 ? c.wall : c.bg;
+              const tile = this.add
+                .rectangle(col * 55 + 27, H - 60 + r * 20, 52, 18, checker)
+                .setDepth(0);
+              this.floorGroup.add(tile);
+            }
+          }
+          // Columns
+          for (let i = 0; i < 4; i++) {
+            const x = 80 + i * 300;
+            const col = this.add
+              .rectangle(x, H / 2 - 50, 16, 400, c.wall)
+              .setDepth(0);
+            this.floorGroup.add(col);
+          }
+          // Floor label
+          const floorLabel = this.add
+            .text(W / 2, 60, floorName.toUpperCase(), {
+              fontSize: "16px",
+              color: "#" + c.accent.toString(16).padStart(6, "0"),
+              fontStyle: "bold",
+              letterSpacing: 6,
+            })
+            .setOrigin(0.5)
+            .setDepth(5);
+          this.floorGroup.add(floorLabel);
+          // Lasers for Gallery and Vault
+          if (floorName === "Gallery" || floorName === "Vault") {
+            const laserCount = floorName === "Vault" ? 5 : 3;
+            for (let i = 0; i < laserCount; i++) {
+              const ly = 180 + i * 80 + Phaser.Math.Between(-20, 20);
+              const lx1 = Phaser.Math.Between(50, 200),
+                lx2 = Phaser.Math.Between(W - 200, W - 50);
+              const laser = this.add
+                .line(0, 0, lx1, ly, lx2, ly, 0xef4444, 0.3)
+                .setDepth(1);
+              this.tweens.add({
+                targets: laser,
+                alpha: 0.08,
+                duration: 800 + i * 200,
+                yoyo: true,
+                repeat: -1,
+              });
+              this.floorGroup.add(laser);
+            }
+          }
+          // Spy character
+          if (this.spy) this.spy.destroy();
+          this.spy = this.add
+            .graphics()
+            .setPosition(80, H - 130)
+            .setDepth(4);
+          this.drawSpy(this.spy);
+          this.tweens.add({
+            targets: this.spy,
+            y: this.spy.y - 4,
+            duration: 700,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          // Display cases / vault elements
+          if (floorName === "Lobby") {
+            // Info desk
+            const desk = this.add
+              .rectangle(W - 150, H - 120, 120, 40, c.wall)
+              .setStrokeStyle(1, c.accent, 0.3)
+              .setDepth(1);
+            this.floorGroup.add(desk);
+          }
+          if (floorName === "Gallery") {
+            // Painting frames
+            for (let i = 0; i < 3; i++) {
+              const fx = 250 + i * 220,
+                fy = 160;
+              const frame = this.add
+                .rectangle(fx, fy, 80, 60, c.wall)
+                .setStrokeStyle(2, 0xfbbf24, 0.4)
+                .setDepth(1);
+              this.floorGroup.add(frame);
+              const gem = this.add
+                .circle(fx, fy, 10, 0xfbbf24, 0.3)
+                .setDepth(2);
+              this.tweens.add({
+                targets: gem,
+                alpha: 0.1,
+                duration: 1500,
+                yoyo: true,
+                repeat: -1,
+              });
+              this.floorGroup.add(gem);
+            }
+          }
+          if (floorName === "Vault") {
+            // Vault door background
+            const vd = this.add
+              .graphics()
+              .setPosition(W - 120, 300)
+              .setDepth(1);
+            vd.fillStyle(0x475569, 0.3);
+            vd.fillRoundedRect(-50, -60, 100, 120, 8);
+            vd.lineStyle(2, 0x64748b, 0.3);
+            vd.strokeCircle(0, 0, 30);
+            this.floorGroup.add(vd);
+          }
+        }
+
+        drawSpy(g) {
+          g.clear();
+          g.fillStyle(0x1e293b);
+          g.fillRoundedRect(-12, -30, 24, 42, 4);
+          g.fillStyle(0x374151);
+          g.fillCircle(0, -38, 12);
+          g.fillStyle(0xe2e8f0);
+          g.fillCircle(-3, -40, 2.5);
+          g.fillCircle(3, -40, 2.5);
+          g.fillStyle(0x111827);
+          g.fillRect(-15, -50, 30, 7);
+          g.fillRect(-10, -56, 20, 8);
+          g.fillStyle(0x475569);
+          g.fillRect(-8, 12, 7, 18);
+          g.fillRect(1, 12, 7, 18);
+        }
+
+        drawSpyAlert(g) {
+          g.clear();
+          g.fillStyle(0xef4444);
+          g.fillRoundedRect(-12, -30, 24, 42, 4);
+          g.fillStyle(0x991b1b);
+          g.fillCircle(0, -38, 12);
+          g.fillStyle(0xfbbf24);
+          g.fillCircle(-3, -40, 2.5);
+          g.fillCircle(3, -40, 2.5);
+          g.fillStyle(0x111827);
+          g.fillRect(-15, -50, 30, 7);
+          g.fillRect(-10, -56, 20, 8);
+          g.fillStyle(0x7f1d1d);
+          g.fillRect(-8, 12, 7, 18);
+          g.fillRect(1, 12, 7, 18);
+        }
+
+        buildHUD() {
+          this.hudBg = this.add
+            .rectangle(W / 2, 22, W, 44, 0x000000, 0.85)
+            .setDepth(10);
+          this.hudQ = this.add
+            .text(15, 10, "", {
+              fontSize: "14px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+          this.hudScore = this.add
+            .text(170, 10, "", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+          this.hudLives = this.add
+            .text(340, 10, "", { fontSize: "14px", color: "#ef4444" })
+            .setDepth(11);
+          this.hudStreak = this.add
+            .text(510, 10, "", { fontSize: "14px", color: "#f59e0b" })
+            .setDepth(11);
+          this.hudFloor = this.add
+            .text(660, 10, "", { fontSize: "14px", color: "#a78bfa" })
+            .setDepth(11);
+          this.hudTimer = this.add
+            .text(W - 100, 10, "", { fontSize: "14px", color: "#94a3b8" })
+            .setDepth(11);
+          this.hudLoot = this.add
+            .text(820, 10, "", { fontSize: "14px", color: "#fbbf24" })
+            .setDepth(11);
+          this.progBg = this.add
+            .rectangle(W / 2, 44, W - 20, 4, 0x1e293b)
+            .setDepth(10);
+          this.progFill = this.add
+            .rectangle(10, 44, 0, 4, 0xfbbf24)
+            .setOrigin(0, 0.5)
+            .setDepth(10);
+        }
+
+        loadQuestion() {
+          if (this.qIndex >= this.totalQ || this.lives <= 0) {
+            this.endGame();
+            return;
+          }
+          this.answered = false;
+          this.selectedIdx = -1;
+          const q = this.questions[this.qIndex];
+          // Build floor if changed
+          const prevFloor =
+            this.qIndex > 0 ? this.questions[this.qIndex - 1].floor : "";
+          if (q.floor !== prevFloor || this.qIndex === 0)
+            this.buildFloor(q.floor);
+          this.updateHUD();
+          this.progFill.width = (this.qIndex / this.totalQ) * (W - 20);
+          // Clean old question elements
+          if (this.qGroup) this.qGroup.destroy(true);
+          this.qGroup = this.add.group();
+          const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
+          const tierNames = ["Floor 1", "Floor 2", "Floor 3"];
+          // 3D prism visualization
+          this.draw3DPrism(q);
+          // Question panel
+          const panelW = 500,
+            panelH = 80;
+          const panel = this.add
+            .rectangle(W / 2 + 50, 140, panelW, panelH, 0x000000, 0.85)
+            .setStrokeStyle(2, 0xfbbf24)
+            .setDepth(5);
+          this.qGroup.add(panel);
+          const badge = this.add
+            .text(W / 2 + 50 - panelW / 2 + 10, 110, tierNames[q.tier - 1], {
+              fontSize: "11px",
+              color: tierColors[q.tier - 1],
+              backgroundColor: "#1e293b",
+              padding: { x: 6, y: 2 },
+              fontStyle: "bold",
+            })
+            .setDepth(6);
+          this.qGroup.add(badge);
+          const qt = this.add
+            .text(W / 2 + 50, 145, q.text, {
+              fontSize: "16px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: panelW - 30 },
+            })
+            .setOrigin(0.5)
+            .setDepth(6);
+          this.qGroup.add(qt);
+          // Answer options (2x2 grid)
+          this.answerBtns = [];
+          q.options.forEach((opt, i) => {
+            const col = i % 2,
+              row = Math.floor(i / 2);
+            const bx = W / 2 - 100 + col * 280,
+              by = 230 + row * 60;
+            const bg = this.add
+              .rectangle(bx, by, 250, 48, 0x1e293b)
+              .setStrokeStyle(2, 0x334155)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(6);
+            const num = this.add
+              .text(bx - 115, by - 6, String(i + 1), {
+                fontSize: "10px",
+                color: "#64748b",
+              })
+              .setDepth(7);
+            const txt = this.add
+              .text(bx, by, opt, {
+                fontSize: "15px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(7);
+            bg.on("pointerover", () => {
+              if (!this.answered) {
+                bg.setStrokeStyle(3, 0xfbbf24);
+                sfx.click();
+              }
+            });
+            bg.on("pointerout", () => {
+              if (!this.answered && this.selectedIdx !== i)
+                bg.setStrokeStyle(2, 0x334155);
+            });
+            bg.on("pointerdown", () => {
+              if (!this.answered) this.submitAnswer(i);
+            });
+            this.qGroup.add(bg);
+            this.qGroup.add(txt);
+            this.qGroup.add(num);
+            this.answerBtns.push({ bg, txt, num, optText: opt });
+          });
+          // Feedback
+          this.fbObj = this.add
+            .text(W / 2, 380, "", {
+              fontSize: "14px",
+              color: "#94a3b8",
+              align: "center",
+              wordWrap: { width: 600 },
+            })
+            .setOrigin(0.5)
+            .setDepth(8);
+          this.qGroup.add(this.fbObj);
+          this.hintObj = this.add
+            .text(W / 2, 410, "", {
+              fontSize: "11px",
+              color: "#64748b",
+              align: "center",
+              wordWrap: { width: 600 },
+            })
+            .setOrigin(0.5)
+            .setDepth(8);
+          this.qGroup.add(this.hintObj);
+        }
+
+        draw3DPrism(q) {
+          // Parse dimensions from question text if possible
+          const dimMatch = q.text.match(
+            /(\d+\.?\d*)\s*(?:ft|in|cm|m)\s*[×x]\s*(\d+\.?\d*)\s*(?:ft|in|cm|m)\s*[×x]\s*(\d+\.?\d*)/i,
+          );
+          if (!dimMatch) return;
+          const l = parseFloat(dimMatch[1]),
+            w = parseFloat(dimMatch[2]),
+            h = parseFloat(dimMatch[3]);
+          // Isometric 3D box
+          const bx = W / 2 + 50,
+            by = 500;
+          const scale = 8;
+          const sl = l * scale,
+            sw = w * scale,
+            sh = h * scale;
+          const iso = { x: 0.7, y: 0.4 };
+          const g = this.add.graphics().setDepth(3);
+          // Front face
+          g.fillStyle(0x3b82f6, 0.5);
+          g.fillRect(bx - sl / 2, by - sh, sl, sh);
+          g.lineStyle(2, 0x60a5fa);
+          g.strokeRect(bx - sl / 2, by - sh, sl, sh);
+          // Top face
+          g.fillStyle(0x60a5fa, 0.3);
+          g.beginPath();
+          g.moveTo(bx - sl / 2, by - sh);
+          g.lineTo(bx - sl / 2 + sw * iso.x, by - sh - sw * iso.y);
+          g.lineTo(bx + sl / 2 + sw * iso.x, by - sh - sw * iso.y);
+          g.lineTo(bx + sl / 2, by - sh);
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+          // Right face
+          g.fillStyle(0x2563eb, 0.4);
+          g.beginPath();
+          g.moveTo(bx + sl / 2, by - sh);
+          g.lineTo(bx + sl / 2 + sw * iso.x, by - sh - sw * iso.y);
+          g.lineTo(bx + sl / 2 + sw * iso.x, by - sw * iso.y);
+          g.lineTo(bx + sl / 2, by);
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+          // Dimension labels
+          this.add
+            .text(bx, by + 15, `${l}`, {
+              fontSize: "12px",
+              color: "#60a5fa",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(4);
+          this.add
+            .text(
+              bx + sl / 2 + sw * iso.x + 12,
+              by - sh / 2 - (sw * iso.y) / 2,
+              `${h}`,
+              { fontSize: "12px", color: "#60a5fa", fontStyle: "bold" },
+            )
+            .setOrigin(0.5)
+            .setDepth(4);
+          this.add
+            .text(
+              bx + sl / 4 + (sw * iso.x) / 2,
+              by - sh - (sw * iso.y) / 2 - 10,
+              `${w}`,
+              { fontSize: "12px", color: "#60a5fa", fontStyle: "bold" },
+            )
+            .setOrigin(0.5)
+            .setDepth(4);
+          this.qGroup.add(g);
+        }
+
+        submitAnswer(idx) {
+          if (this.answered) return;
+          this.answered = true;
+          const q = this.questions[this.qIndex];
+          const chosen = this.answerBtns[idx].optText;
+          const correct = chosen === q.correct;
+          if (correct) {
+            const pts = q.tier * 15 + Math.min(this.streak, 5) * 5;
+            this.score += pts;
+            this.loot++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            this.answerBtns[idx].bg.setFillStyle(0x22c55e);
+            this.answerBtns[idx].bg.setStrokeStyle(3, 0x22c55e);
+            this.fbObj.setText(
+              "VAULT CRACKED! +" +
+                pts +
+                " pts" +
+                (this.streak >= 3 ? " HEIST COMBO x" + this.streak + "!" : ""),
+            );
+            this.fbObj.setColor("#22c55e");
+            sfx.crack();
+            sfx.grab();
+            // Loot sparkle
+            const spark = this.add
+              .particles(
+                this.answerBtns[idx].bg.x,
+                this.answerBtns[idx].bg.y,
+                "__WHITE",
+                {
+                  speed: { min: 40, max: 150 },
+                  angle: { min: 0, max: 360 },
+                  scale: { start: 0.3, end: 0 },
+                  lifespan: 500,
+                  tint: [0xfbbf24, 0x22c55e],
+                  quantity: 15,
+                  emitting: false,
+                  blendMode: "ADD",
+                },
+              )
+              .setDepth(9);
+            spark.explode(18);
+            this.cameras.main.shake(100, 0.003);
+            // Spy sneaks forward
+            this.tweens.add({
+              targets: this.spy,
+              x: this.spy.x + 30,
+              duration: 400,
+              ease: "Power2",
+            });
+          } else {
+            this.lives--;
+            this.streak = 0;
+            this.answerBtns[idx].bg.setFillStyle(0xef4444);
+            this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
+            const ci = this.answerBtns.findIndex(
+              (b) => b.optText === q.correct,
+            );
+            if (ci >= 0) {
+              this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
+              this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
+            }
+            this.fbObj.setText("ALARM! Security alerted! Answer: " + q.correct);
+            this.fbObj.setColor("#ef4444");
+            this.hintObj.setText(q.explain);
+            sfx.alarm();
+            this.cameras.main.shake(250, 0.015);
+            this.cameras.main.flash(200, 255, 0, 0);
+            // Spy alert pose
+            this.drawSpyAlert(this.spy);
+            this.time.delayedCall(500, () => this.drawSpy(this.spy));
+          }
+          this.updateHUD();
+          this.time.delayedCall(correct ? 1500 : 2500, () => {
+            this.qIndex++;
+            this.loadQuestion();
+          });
+        }
+
+        handleKey(e) {
+          if (this.answered) return;
+          if (e.key >= "1" && e.key <= "4") {
+            const i = parseInt(e.key) - 1;
+            if (i < this.answerBtns.length) this.submitAnswer(i);
+          }
+          if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+            this.selectedIdx = Math.min(
+              this.selectedIdx + 1,
+              this.answerBtns.length - 1,
+            );
+            if (this.selectedIdx < 0) this.selectedIdx = 0;
+            this.highlightSel();
+          }
+          if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+            this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            this.highlightSel();
+          }
+          if (e.key === "Enter" && this.selectedIdx >= 0)
+            this.submitAnswer(this.selectedIdx);
+        }
+
+        highlightSel() {
+          this.answerBtns.forEach((b, i) => {
+            b.bg.setStrokeStyle(
+              i === this.selectedIdx ? 3 : 2,
+              i === this.selectedIdx ? 0xfbbf24 : 0x334155,
+            );
+          });
+          sfx.click();
+        }
+
+        updateHUD() {
+          const q = this.questions[Math.min(this.qIndex, this.totalQ - 1)];
+          this.hudQ.setText(`PUZZLE ${this.qIndex + 1}/${this.totalQ}`);
+          this.hudScore.setText(`SCORE: ${this.score}`);
+          this.hudLives.setText(
+            "LIVES: " + "■".repeat(this.lives) + "□".repeat(3 - this.lives),
+          );
+          this.hudStreak.setText(
+            this.streak >= 2 ? `COMBO x${this.streak}` : "",
+          );
+          this.hudFloor.setText(q ? q.floor.toUpperCase() : "");
+          this.hudLoot.setText(`LOOT: ${this.loot}`);
+          const el = Math.floor((Date.now() - this.startTime) / 1000);
+          const m = Math.floor(el / 60),
+            s = el % 60;
+          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
+        }
+
+        update() {
+          this.updateHUD();
+        }
+
+        endGame() {
+          const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+          const correct = this.loot;
+          this.scene.start("Results", {
+            score: this.score,
+            total: this.totalQ,
+            correct,
+            bestStreak: this.bestStreak,
+            time: elapsed,
+            loot: this.loot,
+          });
+        }
+      }
+
+      // --- RESULTS ---
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(data) {
+          this.d = data;
+        }
+        create() {
+          sfx.init();
+          const d = this.d,
+            cx = W / 2;
+          this.cameras.main.setBackgroundColor("#0a0a0a");
+          const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
+          const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+          if (stars >= 2) {
+            sfx.win();
+            for (let i = 0; i < 5; i++) {
+              this.time.delayedCall(i * 150, () => {
+                this.add
+                  .particles(
+                    Phaser.Math.Between(100, W - 100),
+                    Phaser.Math.Between(30, 150),
+                    "__WHITE",
+                    {
+                      speed: { min: 60, max: 200 },
+                      angle: { min: 0, max: 360 },
+                      scale: { start: 0.35, end: 0 },
+                      lifespan: 1000,
+                      tint: [0xfbbf24, 0xef4444, 0x22c55e, 0xa78bfa],
+                      quantity: 12,
+                      emitting: false,
+                      blendMode: "ADD",
+                    },
+                  )
+                  .explode(16);
+              });
+            }
+          } else sfx.lose();
+          const titles = [
+            "Caught by Security!",
+            "Amateur Thief",
+            "Expert Burglar!",
+            "MASTER THIEF!",
+          ];
+          this.add
+            .text(cx, 55, titles[stars], {
+              fontSize: "40px",
+              color: stars >= 2 ? "#fbbf24" : "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          let starStr = "";
+          for (let i = 0; i < 3; i++) starStr += i < stars ? "★ " : "☆ ";
+          this.add
+            .text(cx, 110, starStr, { fontSize: "48px", color: "#fbbf24" })
+            .setOrigin(0.5);
+          // Loot display
+          this.add
+            .rectangle(cx, 195, 250, 55, 0x1e293b)
+            .setStrokeStyle(2, 0xfbbf24);
+          this.add
+            .text(cx, 185, `LOOT: ${d.loot} items`, {
+              fontSize: "22px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 210, "secured from the museum", {
+              fontSize: "11px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5);
+          // Score
+          this.add.circle(cx, 290, 55, 0x1e293b).setStrokeStyle(3, 0xfbbf24);
+          this.add
+            .text(cx, 280, pct + "%", {
+              fontSize: "30px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 305, "Accuracy", { fontSize: "12px", color: "#64748b" })
+            .setOrigin(0.5);
+          const stats = [
+            { l: "Score", v: d.score, c: "#fbbf24" },
+            { l: "Vaults", v: `${d.correct}/${d.total}`, c: "#22c55e" },
+            { l: "Best Combo", v: d.bestStreak, c: "#f59e0b" },
+            {
+              l: "Time",
+              v: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
+              c: "#94a3b8",
+            },
+          ];
+          stats.forEach((s, i) => {
+            const x = cx - 240 + i * 165,
+              y = 400;
+            this.add
+              .rectangle(x, y, 135, 60, 0x1e293b)
+              .setStrokeStyle(1, 0x334155);
+            this.add
+              .text(x, y - 8, String(s.v), {
+                fontSize: "22px",
+                color: s.c,
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, y + 14, s.l, { fontSize: "11px", color: "#64748b" })
+              .setOrigin(0.5);
+          });
+          // Floor progress
+          const floorsReached =
+            d.correct <= 5
+              ? "Lobby"
+              : d.correct <= 10
+                ? "Gallery"
+                : "The Vault";
+          this.add
+            .text(cx, 455, `Deepest floor reached: ${floorsReached}`, {
+              fontSize: "14px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5);
+          // Buttons
+          const btn1 = this.add
+            .rectangle(cx - 110, 530, 190, 50, 0xfbbf24)
+            .setStrokeStyle(2, 0xf59e0b)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx - 110, 530, "HEIST AGAIN", {
+              fontSize: "17px",
+              color: "#0a0a0a",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn1.on("pointerdown", () => {
+            sfx.click();
+            this.scene.start("Game");
+          });
+          btn1.on("pointerover", () => btn1.setFillStyle(0xf59e0b));
+          btn1.on("pointerout", () => btn1.setFillStyle(0xfbbf24));
+          const btn2 = this.add
+            .rectangle(cx + 110, 530, 190, 50, 0x1e293b)
+            .setStrokeStyle(2, 0x334155)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx + 110, 530, "MAIN MENU", {
+              fontSize: "17px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          btn2.on("pointerdown", () => {
+            sfx.click();
+            this.scene.start("Title");
+          });
+          btn2.on("pointerover", () => btn2.setFillStyle(0x334155));
+          btn2.on("pointerout", () => btn2.setFillStyle(0x1e293b));
+          this.add
+            .text(cx, H - 25, "Volume Vault — Neft Teacher — 6.G.2 / 6.G.4", {
+              fontSize: "11px",
+              color: "#475569",
+            })
+            .setOrigin(0.5);
+          this.input.keyboard.on("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") this.scene.start("Game");
+            if (e.key === "Escape") this.scene.start("Title");
+          });
+        }
+      }
+
+      // --- CONFIG ---
+      new Phaser.Game({
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#0a0a0a",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 0 }, debug: false },
+        },
+        input: { keyboard: true, mouse: true, touch: true },
+      });
     </script>
   </body>
 </html>

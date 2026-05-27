@@ -2,1143 +2,1293 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Fraction Kitchen | Grade 6 Unit 2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Fraction Kitchen — Cooking Tycoon | Unit 2</title>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      :root {
-        --primary: #d97706;
-        --bg: #fffbeb;
-        --text: #78350f;
-        --green: #16a34a;
-        --red: #dc2626;
-        --gray: #92400e;
-        --light: #fef3c7;
-        --card: #ffffff;
-        --shadow: 0 2px 8px rgba(120, 53, 15, 0.12);
-      }
       body {
-        font-family:
-          "Segoe UI",
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .container {
-        max-width: 560px;
-        width: 100%;
-        padding: 16px;
-        flex: 1;
-      }
-
-      /* Header */
-      .header {
-        text-align: center;
-        padding: 12px 0;
-      }
-      .header h1 {
-        font-size: 1.6rem;
-        color: var(--primary);
-      }
-      .header .subtitle {
-        font-size: 0.85rem;
-        color: var(--gray);
-        margin-top: 2px;
-      }
-
-      /* Screens */
-      .screen {
-        display: none;
-        animation: fadeIn 0.3s ease;
-      }
-      .screen.active {
-        display: block;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* Login */
-      .login-card {
-        background: var(--card);
-        border-radius: 16px;
-        padding: 32px 24px;
-        box-shadow: var(--shadow);
-        text-align: center;
-        margin-top: 24px;
-      }
-      .login-card .emoji-big {
-        font-size: 3.5rem;
-        margin-bottom: 12px;
-      }
-      .login-card h2 {
-        font-size: 1.3rem;
-        color: var(--primary);
-        margin-bottom: 4px;
-      }
-      .login-card p {
-        font-size: 0.85rem;
-        color: var(--gray);
-        margin-bottom: 20px;
-      }
-      .login-card input {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #e5e7eb;
-        border-radius: 10px;
-        font-size: 1rem;
-        color: var(--text);
-        outline: none;
-        transition: border 0.2s;
-      }
-      .login-card input:focus {
-        border-color: var(--primary);
-      }
-      .login-card button {
-        margin-top: 16px;
-        width: 100%;
-        padding: 13px;
-        background: var(--primary);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.05rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-      .login-card button:hover {
-        background: #b45309;
-      }
-
-      /* Instructions */
-      .instructions {
-        background: var(--card);
-        border-radius: 16px;
-        padding: 28px 24px;
-        box-shadow: var(--shadow);
-        margin-top: 20px;
-      }
-      .instructions h2 {
-        color: var(--primary);
-        margin-bottom: 12px;
-        font-size: 1.2rem;
-      }
-      .instructions ul {
-        list-style: none;
-        padding: 0;
-      }
-      .instructions li {
-        padding: 8px 0;
-        font-size: 0.92rem;
-        border-bottom: 1px solid #fde68a;
-      }
-      .instructions li:last-child {
-        border: none;
-      }
-      .instructions li span {
-        margin-right: 8px;
-      }
-      .btn-start {
-        margin-top: 20px;
-        width: 100%;
-        padding: 13px;
-        background: var(--primary);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.05rem;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      .btn-start:hover {
-        background: #b45309;
-      }
-
-      /* HUD */
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 4px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: var(--gray);
-      }
-      .hud-item {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-      .lives {
-        color: var(--red);
-      }
-      .streak-badge {
-        background: var(--primary);
-        color: #fff;
-        padding: 2px 8px;
-        border-radius: 8px;
-        font-size: 0.75rem;
-      }
-      .timer-bar {
-        width: 100%;
-        height: 6px;
-        background: #fde68a;
-        border-radius: 3px;
-        margin-bottom: 8px;
+        background: #1a0a00;
         overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      .timer-fill {
-        height: 100%;
-        background: var(--primary);
-        border-radius: 3px;
-        transition: width 0.25s linear;
-      }
-      .timer-fill.danger {
-        background: var(--red);
-      }
-
-      /* Question */
-      .question-card {
-        background: var(--card);
-        border-radius: 16px;
-        padding: 24px 20px;
-        box-shadow: var(--shadow);
-      }
-      .q-difficulty {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        padding: 3px 10px;
-        border-radius: 6px;
-        display: inline-block;
-        margin-bottom: 10px;
-      }
-      .q-difficulty.easy {
-        background: #d1fae5;
-        color: #065f46;
-      }
-      .q-difficulty.medium {
-        background: #fef3c7;
-        color: #92400e;
-      }
-      .q-difficulty.hard {
-        background: #fee2e2;
-        color: #991b1b;
-      }
-      .q-text {
-        font-size: 1.25rem;
-        font-weight: 700;
-        text-align: center;
-        margin: 12px 0 20px;
-        color: var(--text);
-        line-height: 1.4;
-      }
-      .q-context {
-        font-size: 0.82rem;
-        color: var(--gray);
-        text-align: center;
-        margin-bottom: 16px;
-        font-style: italic;
-      }
-
-      /* Choices */
-      .choices {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      .choice-btn {
-        padding: 14px 10px;
-        background: var(--light);
-        border: 2px solid transparent;
-        border-radius: 12px;
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: var(--text);
-        cursor: pointer;
-        transition: all 0.15s;
-        text-align: center;
-      }
-      .choice-btn:hover:not(.disabled) {
-        border-color: var(--primary);
-        background: #fef3c7;
-      }
-      .choice-btn.correct {
-        background: #d1fae5;
-        border-color: var(--green);
-        color: #065f46;
-      }
-      .choice-btn.wrong {
-        background: #fee2e2;
-        border-color: var(--red);
-        color: #991b1b;
-      }
-      .choice-btn.disabled {
-        cursor: default;
-        opacity: 0.7;
-      }
-      .choice-btn.reveal-correct {
-        background: #d1fae5;
-        border-color: var(--green);
-        color: #065f46;
-      }
-
-      /* Feedback */
-      .feedback {
-        margin-top: 14px;
-        padding: 14px 16px;
-        border-radius: 12px;
-        font-size: 0.88rem;
-        display: none;
-        line-height: 1.5;
-      }
-      .feedback.correct {
-        background: #d1fae5;
-        color: #065f46;
+      canvas {
         display: block;
-      }
-      .feedback.wrong {
-        background: #fee2e2;
-        color: #991b1b;
-        display: block;
-      }
-      .feedback strong {
-        display: block;
-        margin-bottom: 4px;
-        font-size: 0.95rem;
-      }
-      .btn-next {
-        margin-top: 14px;
-        width: 100%;
-        padding: 12px;
-        background: var(--primary);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: none;
-      }
-      .btn-next:hover {
-        background: #b45309;
-      }
-
-      /* Results */
-      .results-card {
-        background: var(--card);
-        border-radius: 16px;
-        padding: 28px 24px;
-        box-shadow: var(--shadow);
-        text-align: center;
-        margin-top: 20px;
-      }
-      .results-card .emoji-big {
-        font-size: 3rem;
-        margin-bottom: 8px;
-      }
-      .results-card h2 {
-        color: var(--primary);
-        margin-bottom: 16px;
-        font-size: 1.3rem;
-      }
-      .stat-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 20px;
-      }
-      .stat-box {
-        background: var(--light);
-        border-radius: 12px;
-        padding: 14px 8px;
-      }
-      .stat-box .stat-val {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
-      }
-      .stat-box .stat-label {
-        font-size: 0.75rem;
-        color: var(--gray);
-        margin-top: 2px;
-      }
-      .badge-box {
-        background: var(--light);
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 18px;
-      }
-      .badge-box .badge-emoji {
-        font-size: 2rem;
-      }
-      .badge-box .badge-name {
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--primary);
-        margin-top: 4px;
-      }
-      .btn-row {
-        display: flex;
-        gap: 10px;
-      }
-      .btn-row button {
-        flex: 1;
-        padding: 12px;
-        border: none;
-        border-radius: 10px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      .btn-export {
-        background: var(--primary);
-        color: #fff;
-      }
-      .btn-export:hover {
-        background: #b45309;
-      }
-      .btn-retry {
-        background: var(--light);
-        color: var(--primary);
-        border: 2px solid var(--primary) !important;
-      }
-      .btn-retry:hover {
-        background: #fef3c7;
-      }
-
-      /* Game Over */
-      .gameover-card {
-        background: var(--card);
-        border-radius: 16px;
-        padding: 28px 24px;
-        box-shadow: var(--shadow);
-        text-align: center;
-        margin-top: 40px;
-      }
-      .gameover-card .emoji-big {
-        font-size: 3rem;
-        margin-bottom: 8px;
-      }
-      .gameover-card h2 {
-        color: var(--red);
-        margin-bottom: 8px;
-      }
-      .gameover-card p {
-        color: var(--gray);
-        margin-bottom: 20px;
-        font-size: 0.9rem;
-      }
-
-      /* Footer */
-      .footer {
-        text-align: center;
-        padding: 16px;
-        font-size: 0.72rem;
-        color: var(--gray);
-        opacity: 0.7;
-      }
-
-      /* Toast */
-      .toast {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--primary);
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        z-index: 100;
-        animation: toastIn 0.3s ease;
-      }
-      @keyframes toastIn {
-        from {
-          opacity: 0;
-          transform: translateX(-50%) translateY(-12px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(-50%) translateY(0);
-        }
-      }
-
-      /* Responsive */
-      @media (max-width: 400px) {
-        .choices {
-          grid-template-columns: 1fr;
-        }
-        .q-text {
-          font-size: 1.1rem;
-        }
-        .container {
-          padding: 10px;
-        }
+        margin: 0 auto;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
   </head>
   <body>
-    <div class="container">
-      <div class="header">
-        <h1>🍳 Fraction Kitchen</h1>
-        <div class="subtitle">
-          Grade 6 &middot; Unit 2 &middot; Dividing Fractions (6.NS.1)
-        </div>
-      </div>
-
-      <!-- LOGIN -->
-      <div id="loginScreen" class="screen active">
-        <div class="login-card">
-          <div class="emoji-big">🍳</div>
-          <h2>Welcome, Chef!</h2>
-          <p>Enter your name to start cooking with fractions.</p>
-          <input
-            type="text"
-            id="nameInput"
-            placeholder="Your name"
-            maxlength="24"
-            autocomplete="off"
-          />
-          <button id="btnLogin" onclick="login()">Enter the Kitchen</button>
-        </div>
-      </div>
-
-      <!-- INSTRUCTIONS -->
-      <div id="instructionsScreen" class="screen">
-        <div class="instructions">
-          <h2>🍳 How to Play</h2>
-          <ul>
-            <li>
-              <span>📋</span> Answer 15 fraction division questions (easy,
-              medium, hard)
-            </li>
-            <li><span>⏱️</span> You have 30 seconds per question</li>
-            <li>
-              <span>❤️</span> You start with 3 lives &mdash; wrong answers cost
-              1 life
-            </li>
-            <li>
-              <span>🔥</span> Streak bonus: 2+ in a row = 2&times; points, 4+ =
-              3&times;
-            </li>
-            <li>
-              <span>🏆</span> Earn a chef badge based on your final score!
-            </li>
-            <li><span>📊</span> Export your results when you finish</li>
-          </ul>
-          <button class="btn-start" onclick="startGame()">
-            Start Cooking! 🍳
-          </button>
-        </div>
-      </div>
-
-      <!-- GAME -->
-      <div id="gameScreen" class="screen">
-        <div class="hud">
-          <div class="hud-item">Q: <span id="qNum">1</span>/15</div>
-          <div class="hud-item lives">❤️ <span id="livesDisplay">3</span></div>
-          <div class="hud-item">
-            🔥 <span id="streakDisplay">0</span>
-            <span id="streakBadge" class="streak-badge" style="display: none"
-              >1&times;</span
-            >
-          </div>
-          <div class="hud-item">⭐ <span id="scoreDisplay">0</span></div>
-        </div>
-        <div class="timer-bar">
-          <div class="timer-fill" id="timerFill"></div>
-        </div>
-        <div class="question-card">
-          <span class="q-difficulty" id="qDifficulty">Easy</span>
-          <div class="q-context" id="qContext"></div>
-          <div class="q-text" id="qText"></div>
-          <div class="choices" id="choices"></div>
-          <div class="feedback" id="feedback"></div>
-          <button class="btn-next" id="btnNext" onclick="nextQuestion()">
-            Next Question &rarr;
-          </button>
-        </div>
-      </div>
-
-      <!-- RESULTS -->
-      <div id="resultsScreen" class="screen">
-        <div class="results-card">
-          <div class="emoji-big" id="resultsEmoji">🍳</div>
-          <h2 id="resultsTitle">Kitchen Closed!</h2>
-          <div class="badge-box">
-            <div class="badge-emoji" id="badgeEmoji">👨‍🍳</div>
-            <div class="badge-name" id="badgeName">Sous Chef</div>
-          </div>
-          <div class="stat-grid">
-            <div class="stat-box">
-              <div class="stat-val" id="finalScore">0</div>
-              <div class="stat-label">Score</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-val" id="finalAccuracy">0%</div>
-              <div class="stat-label">Accuracy</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-val" id="finalCorrect">0/15</div>
-              <div class="stat-label">Correct</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-val" id="finalStreak">0</div>
-              <div class="stat-label">Best Streak</div>
-            </div>
-          </div>
-          <div class="btn-row">
-            <button class="btn-export" onclick="exportResults()">
-              📊 Export
-            </button>
-            <button class="btn-retry" onclick="retry()">🔄 Retry</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- GAME OVER -->
-      <div id="gameoverScreen" class="screen">
-        <div class="gameover-card">
-          <div class="emoji-big">😵</div>
-          <h2>Out of Lives!</h2>
-          <p id="goMessage">
-            You answered <span id="goCorrect">0</span> out of
-            <span id="goTotal">0</span> correctly.
-          </p>
-          <div class="stat-grid" style="margin-top: 16px">
-            <div class="stat-box">
-              <div class="stat-val" id="goScore">0</div>
-              <div class="stat-label">Score</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-val" id="goAccuracy">0%</div>
-              <div class="stat-label">Accuracy</div>
-            </div>
-          </div>
-          <div class="btn-row" style="margin-top: 16px">
-            <button class="btn-export" onclick="exportResults()">
-              📊 Export
-            </button>
-            <button class="btn-retry" onclick="retry()">🔄 Try Again</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="footer">
-      Neft Teacher &middot; Fraction Kitchen v1 &middot; Grade 6 Unit 2
-    </div>
-
     <script>
-      /* ── Question Bank ─────────────────────────────────── */
-      const questions = [
-        // EASY (5)
-        {
-          difficulty: "easy",
-          context:
-            "A recipe needs 3 cups of flour, measured in quarter-cup scoops.",
-          question: "3 ÷ ¼ = ?",
-          choices: ["8", "10", "12", "6"],
-          answer: "12",
-          explanation:
-            "3 ÷ ¼ = 3 × 4 = 12. You need 12 quarter-cup scoops to measure 3 cups.",
-        },
-        {
-          difficulty: "easy",
-          context:
-            "You have half a gallon of milk split into sixth-gallon glasses.",
-          question: "½ ÷ ⅙ = ?",
-          choices: ["2", "3", "6", "4"],
-          answer: "3",
-          explanation: "½ ÷ ⅙ = ½ × 6 = 3. Half a gallon fills 3 glasses.",
-        },
-        {
-          difficulty: "easy",
-          context: "Two-thirds of a pie divided into third-size slices.",
-          question: "⅔ ÷ ⅓ = ?",
-          choices: ["3", "1", "2", "4"],
-          answer: "2",
-          explanation: "⅔ ÷ ⅓ = ⅔ × 3 = 2. You get 2 slices.",
-        },
-        {
-          difficulty: "easy",
-          context: "4 sticks of butter, each cut in half.",
-          question: "4 ÷ ½ = ?",
-          choices: ["2", "6", "8", "4"],
-          answer: "8",
-          explanation:
-            "4 ÷ ½ = 4 × 2 = 8. Four sticks make 8 half-stick pieces.",
-        },
-        {
-          difficulty: "easy",
-          context: "Three-quarters of a cup split into quarter-cup portions.",
-          question: "¾ ÷ ¼ = ?",
-          choices: ["4", "2", "3", "1"],
-          answer: "3",
-          explanation:
-            "¾ ÷ ¼ = ¾ × 4 = 3. Three quarters make 3 quarter-portions.",
-        },
-        // MEDIUM (5)
-        {
-          difficulty: "medium",
-          context:
-            "A chef has ⅚ of a bag of sugar, split into third-bag portions.",
-          question: "⅚ ÷ ⅓ = ?",
-          choices: ["5/2", "5/3", "2", "3"],
-          answer: "5/2",
-          explanation: "⅚ ÷ ⅓ = ⅚ × 3 = 15/6 = 5/2. That's 2½ portions.",
-        },
-        {
-          difficulty: "medium",
-          context:
-            "Seven-eighths of a pound of dough divided into quarter-pound balls.",
-          question: "⅞ ÷ ¼ = ?",
-          choices: ["7/4", "7/2", "3", "4"],
-          answer: "7/2",
-          explanation: "⅞ ÷ ¼ = ⅞ × 4 = 35/8 = 7/2. That's 3½ dough balls.",
-        },
-        {
-          difficulty: "medium",
-          context:
-            "Two-thirds of a bottle of vanilla, measured in sixth-bottle doses.",
-          question: "⅔ ÷ ⅙ = ?",
-          choices: ["3", "4", "5", "2"],
-          answer: "4",
-          explanation: "⅔ ÷ ⅙ = ⅔ × 6 = 4. That's 4 doses of vanilla.",
-        },
-        {
-          difficulty: "medium",
-          context:
-            "Three-quarters of a bag of chocolate chips, split into eighth-bag portions.",
-          question: "¾ ÷ ⅛ = ?",
-          choices: ["4", "5", "6", "8"],
-          answer: "6",
-          explanation: "¾ ÷ ⅛ = ¾ × 8 = 6. You get 6 portions.",
-        },
-        {
-          difficulty: "medium",
-          context: "Four-fifths of a jar of jam divided into two-fifth jars.",
-          question: "⅘ ÷ ⅖ = ?",
-          choices: ["3", "4", "2", "5/2"],
-          answer: "2",
-          explanation: "⅘ ÷ ⅖ = ⅘ × 5/2 = 20/10 = 2. That fills 2 small jars.",
-        },
-        // HARD (5)
-        {
-          difficulty: "hard",
-          context:
-            "A baker has 1½ pounds of flour, scooping quarter-pound at a time.",
-          question: "1½ ÷ ¼ = ?",
-          choices: ["4", "5", "6", "8"],
-          answer: "6",
-          explanation: "1½ = 3/2. So 3/2 ÷ ¼ = 3/2 × 4 = 6 scoops.",
-        },
-        {
-          difficulty: "hard",
-          context:
-            "A pot holds 2⅓ liters of soup. Each bowl gets a third of a liter.",
-          question: "2⅓ ÷ ⅓ = ?",
-          choices: ["6", "7", "8", "5"],
-          answer: "7",
-          explanation: "2⅓ = 7/3. So 7/3 ÷ ⅓ = 7/3 × 3 = 7 bowls.",
-        },
-        {
-          difficulty: "hard",
-          context:
-            "Five-sixths of a cake divided into pieces that are each 5/12 of the cake.",
-          question: "⅚ ÷ 5/12 = ?",
-          choices: ["1", "3", "2", "5/6"],
-          answer: "2",
-          explanation: "⅚ ÷ 5/12 = ⅚ × 12/5 = 60/30 = 2 pieces.",
-        },
-        {
-          difficulty: "hard",
-          context:
-            "Three-eighths of a block of cheese, cut into quarter-block slices.",
-          question: "⅜ ÷ ¼ = ?",
-          choices: ["3/4", "3/2", "2", "1"],
-          answer: "3/2",
-          explanation: "⅜ ÷ ¼ = ⅜ × 4 = 12/8 = 3/2. That's 1½ slices.",
-        },
-        {
-          difficulty: "hard",
-          context:
-            "Seven-tenths of a container of spice, split into 7/20 portions.",
-          question: "7/10 ÷ 7/20 = ?",
-          choices: ["1", "3", "2", "7/10"],
-          answer: "2",
-          explanation: "7/10 ÷ 7/20 = 7/10 × 20/7 = 140/70 = 2 portions.",
-        },
-      ];
+      // ── FRACTION KITCHEN — Cooking Tycoon ──
+      // Phaser 3 single-file game for Grade 6 ESOL — Fraction Operations
 
-      /* ── State ─────────────────────────────────────────── */
-      const LS_KEY = "fractionKitchen_v1";
-      let state = {
-        playerName: "",
-        currentQ: 0,
-        score: 0,
-        lives: 3,
-        streak: 0,
-        bestStreak: 0,
-        correctCount: 0,
-        answered: 0,
-        history: [],
-        shuffledQuestions: [],
-        timerInterval: null,
-        timeLeft: 30,
-        gameActive: false,
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        },
+        play(type, freq, dur, vol = 0.25) {
+          this.init();
+          const c = this.ctx,
+            o = c.createOscillator(),
+            g = c.createGain();
+          o.type = type;
+          o.frequency.value = freq;
+          g.gain.setValueAtTime(vol, c.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+          o.connect(g);
+          g.connect(c.destination);
+          o.start();
+          o.stop(c.currentTime + dur);
+        },
+        ding() {
+          this.play("sine", 880, 0.15, 0.3);
+          this.play("sine", 1100, 0.2, 0.25);
+        },
+        wrong() {
+          this.play("sawtooth", 200, 0.25, 0.2);
+        },
+        sizzle() {
+          this.play("noise", 800, 0.12, 0.08);
+        },
+        serve() {
+          this.play("sine", 523, 0.08);
+          this.play("sine", 659, 0.08);
+          this.play("sine", 784, 0.12);
+        },
+        bell() {
+          this.play("sine", 1200, 0.3, 0.2);
+        },
+        tick() {
+          this.play("square", 600, 0.03, 0.1);
+        },
+        upgrade() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.25), i * 80),
+          );
+        },
+        win() {
+          [523, 659, 784, 880, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.2, 0.3), i * 120),
+          );
+        },
+        lose() {
+          [400, 350, 300, 250].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.15), i * 180),
+          );
+        },
+        chop() {
+          this.play("noise", 2000, 0.05, 0.15);
+        },
       };
 
-      /* ── Utility ───────────────────────────────────────── */
-      function $(id) {
-        return document.getElementById(id);
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
       }
-      function showScreen(id) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("active"));
-        $(id).classList.add("active");
-      }
-      function shuffle(arr) {
-        const a = [...arr];
-        for (let i = a.length - 1; i > 0; i--) {
+      function shuffle(a) {
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [a[i], a[j]] = [a[j], a[i]];
+          [r[i], r[j]] = [r[j], r[i]];
         }
-        return a;
+        return r;
       }
-      function toast(msg) {
-        const t = document.createElement("div");
-        t.className = "toast";
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 1800);
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+      function simplify(n, d) {
+        const g = gcd(Math.abs(n), Math.abs(d));
+        return [n / g, d / g];
+      }
+      function fracStr(n, d) {
+        const [sn, sd] = simplify(n, d);
+        if (sd === 1) return `${sn}`;
+        return `${sn}/${sd}`;
       }
 
-      /* ── Login ─────────────────────────────────────────── */
-      function login() {
-        const name = $("nameInput").value.trim();
-        if (!name) {
-          $("nameInput").focus();
+      // ── Question Generator ──
+      function generateOrders(difficulty) {
+        const orders = [];
+        const recipes = [
+          { name: "Pancakes", emoji: "🥞", color: 0xf5d6a0 },
+          { name: "Pizza", emoji: "🍕", color: 0xe84040 },
+          { name: "Cookies", emoji: "🍪", color: 0xc8956e },
+          { name: "Tacos", emoji: "🌮", color: 0xf0c040 },
+          { name: "Smoothie", emoji: "🥤", color: 0xd060d0 },
+          { name: "Soup", emoji: "🍲", color: 0x60b060 },
+          { name: "Cake", emoji: "🎂", color: 0xff88cc },
+          { name: "Salad", emoji: "🥗", color: 0x40c040 },
+          { name: "Pasta", emoji: "🍝", color: 0xf0a040 },
+          { name: "Sandwich", emoji: "🥪", color: 0xd4a050 },
+        ];
+
+        const easyDenoms = [2, 3, 4, 6];
+        const medDenoms = [2, 3, 4, 5, 6, 8];
+        const hardDenoms = [2, 3, 4, 5, 6, 8, 10, 12];
+
+        for (let i = 0; i < 18; i++) {
+          const recipe = recipes[i % recipes.length];
+          let q, answer, choices, operation;
+          const denoms =
+            difficulty === "easy"
+              ? easyDenoms
+              : difficulty === "medium"
+                ? medDenoms
+                : hardDenoms;
+
+          const opType = randInt(0, 3);
+          const d1 = denoms[randInt(0, denoms.length - 1)];
+          const d2 = denoms[randInt(0, denoms.length - 1)];
+          const n1 = randInt(1, d1 - 1);
+          const n2 = randInt(1, d2 - 1);
+
+          if (opType === 0) {
+            // Division
+            const ansN = n1 * d2;
+            const ansD = d1 * n2;
+            answer = fracStr(ansN, ansD);
+            operation = "divide";
+            q = `${fracStr(n1, d1)} ÷ ${fracStr(n2, d2)} = ?`;
+            const wrong1 = fracStr(n1 * n2, d1 * d2);
+            const wrong2 = fracStr(n1 + n2, d1);
+            const wrong3 = fracStr(Math.abs(n1 * d2 - d1 * n2), d1 * d2);
+            choices = shuffle(
+              [answer, wrong1, wrong2, wrong3].filter(
+                (v, i, a) => a.indexOf(v) === i,
+              ),
+            );
+            while (choices.length < 4)
+              choices.push(fracStr(randInt(1, 12), randInt(2, 8)));
+            choices = choices.slice(0, 4);
+            if (!choices.includes(answer)) {
+              choices[3] = answer;
+              choices = shuffle(choices);
+            }
+          } else if (opType === 1) {
+            // Multiplication
+            const ansN = n1 * n2;
+            const ansD = d1 * d2;
+            answer = fracStr(ansN, ansD);
+            operation = "multiply";
+            q = `${fracStr(n1, d1)} × ${fracStr(n2, d2)} = ?`;
+            const wrong1 = fracStr(n1 + n2, d1 + d2);
+            const wrong2 = fracStr(n1 * d2 + n2 * d1, d1 * d2);
+            const wrong3 = fracStr(n1 * n2 + 1, d1 * d2);
+            choices = shuffle(
+              [answer, wrong1, wrong2, wrong3].filter(
+                (v, i, a) => a.indexOf(v) === i,
+              ),
+            );
+            while (choices.length < 4)
+              choices.push(fracStr(randInt(1, 10), randInt(2, 8)));
+            choices = choices.slice(0, 4);
+            if (!choices.includes(answer)) {
+              choices[3] = answer;
+              choices = shuffle(choices);
+            }
+          } else if (opType === 2) {
+            // Addition
+            const lcd = (d1 * d2) / gcd(d1, d2);
+            const ansN = n1 * (lcd / d1) + n2 * (lcd / d2);
+            answer = fracStr(ansN, lcd);
+            operation = "add";
+            q = `${fracStr(n1, d1)} + ${fracStr(n2, d2)} = ?`;
+            const wrong1 = fracStr(n1 + n2, d1 + d2);
+            const wrong2 = fracStr(ansN + 1, lcd);
+            const wrong3 = fracStr(Math.abs(ansN - 2), lcd);
+            choices = shuffle(
+              [answer, wrong1, wrong2, wrong3].filter(
+                (v, i, a) => a.indexOf(v) === i,
+              ),
+            );
+            while (choices.length < 4)
+              choices.push(fracStr(randInt(1, 12), randInt(2, 8)));
+            choices = choices.slice(0, 4);
+            if (!choices.includes(answer)) {
+              choices[3] = answer;
+              choices = shuffle(choices);
+            }
+          } else {
+            // Subtraction
+            const lcd = (d1 * d2) / gcd(d1, d2);
+            const big = Math.max(n1 * (lcd / d1), n2 * (lcd / d2));
+            const small = Math.min(n1 * (lcd / d1), n2 * (lcd / d2));
+            const ansN = big - small;
+            answer = fracStr(ansN, lcd);
+            operation = "subtract";
+            const bfn = big === n1 * (lcd / d1) ? n1 : n2;
+            const bfd = big === n1 * (lcd / d1) ? d1 : d2;
+            const sfn = big === n1 * (lcd / d1) ? n2 : n1;
+            const sfd = big === n1 * (lcd / d1) ? d2 : d1;
+            q = `${fracStr(bfn, bfd)} − ${fracStr(sfn, sfd)} = ?`;
+            const wrong1 = fracStr(bfn + sfn, bfd + sfd);
+            const wrong2 = fracStr(ansN + 1, lcd);
+            const wrong3 = fracStr(bfn * sfn, bfd * sfd);
+            choices = shuffle(
+              [answer, wrong1, wrong2, wrong3].filter(
+                (v, i, a) => a.indexOf(v) === i,
+              ),
+            );
+            while (choices.length < 4)
+              choices.push(fracStr(randInt(1, 10), randInt(2, 8)));
+            choices = choices.slice(0, 4);
+            if (!choices.includes(answer)) {
+              choices[3] = answer;
+              choices = shuffle(choices);
+            }
+          }
+
+          const opLabels = {
+            divide: "Divide",
+            multiply: "Multiply",
+            add: "Add",
+            subtract: "Subtract",
+          };
+          orders.push({
+            recipe,
+            q,
+            answer,
+            choices,
+            operation,
+            context: `${recipe.emoji} ${recipe.name}: ${opLabels[operation]} the fractions`,
+            timeLimit:
+              difficulty === "easy" ? 35 : difficulty === "medium" ? 28 : 22,
+          });
+        }
+        return orders;
+      }
+
+      const W = 800,
+        H = 600;
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: document.body,
+        backgroundColor: "#2d1508",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [
+          BootScene,
+          TitleScene,
+          DifficultyScene,
+          GameScene,
+          UpgradeScene,
+          ResultScene,
+        ],
+      };
+
+      // ── BOOT ──
+      function BootScene() {
+        return new Phaser.Scene("Boot");
+      }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+
+        // Kitchen counter
+        g.fillStyle(0x8b4513);
+        g.fillRect(0, 0, W, 200);
+        g.generateTexture("counter", W, 200);
+        g.clear();
+
+        // Bowl
+        g.fillStyle(0xdddddd);
+        g.fillCircle(40, 40, 40);
+        g.fillStyle(0xcccccc);
+        g.fillCircle(40, 40, 32);
+        g.generateTexture("bowl", 80, 80);
+        g.clear();
+
+        // Stove
+        g.fillStyle(0x444444);
+        g.fillRoundedRect(0, 0, 120, 80, 8);
+        g.fillStyle(0xff3300);
+        g.fillCircle(30, 40, 15);
+        g.fillCircle(90, 40, 15);
+        g.generateTexture("stove", 120, 80);
+        g.clear();
+
+        // Ingredient
+        g.fillStyle(0xff8844);
+        g.fillRoundedRect(0, 0, 50, 50, 6);
+        g.generateTexture("ingredient", 50, 50);
+        g.clear();
+
+        // Plate
+        g.fillStyle(0xffffff);
+        g.fillCircle(30, 30, 30);
+        g.fillStyle(0xeeeeee);
+        g.fillCircle(30, 30, 22);
+        g.generateTexture("plate", 60, 60);
+        g.clear();
+
+        // Order ticket
+        g.fillStyle(0xfff8e0);
+        g.fillRoundedRect(0, 0, 180, 90, 6);
+        g.lineStyle(2, 0xd4a050);
+        g.strokeRoundedRect(0, 0, 180, 90, 6);
+        g.generateTexture("ticket", 180, 90);
+        g.clear();
+
+        // Button
+        g.fillStyle(0xd97706);
+        g.fillRoundedRect(0, 0, 160, 48, 10);
+        g.generateTexture("btn", 160, 48);
+        g.clear();
+
+        // Particle
+        g.fillStyle(0xffffff);
+        g.fillCircle(3, 3, 3);
+        g.generateTexture("particle", 6, 6);
+        g.clear();
+
+        // Star
+        g.fillStyle(0xffdd00);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("star", 8, 8);
+        g.clear();
+
+        // Timer bar bg
+        g.fillStyle(0x333333);
+        g.fillRoundedRect(0, 0, 300, 14, 4);
+        g.generateTexture("timerBg", 300, 14);
+        g.clear();
+
+        g.destroy();
+        this.scene.start("Title");
+      };
+
+      // ── TITLE ──
+      function TitleScene() {
+        return new Phaser.Scene("Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+
+        // Warm kitchen background
+        this.add.rectangle(cx, H / 2, W, H, 0x2d1508);
+        // Gradient top
+        for (let i = 0; i < 20; i++) {
+          this.add.rectangle(cx, i * 8, W, 8, 0xd97706, 0.03 * (20 - i));
+        }
+
+        // Floating food emojis
+        const foods = [
+          "🥞",
+          "🍕",
+          "🍪",
+          "🌮",
+          "🥤",
+          "🍲",
+          "🎂",
+          "🥗",
+          "🍝",
+          "🥪",
+        ];
+        for (let i = 0; i < 12; i++) {
+          const txt = this.add
+            .text(
+              randInt(40, W - 40),
+              randInt(60, H - 60),
+              foods[i % foods.length],
+              { fontSize: randInt(28, 48) + "px" },
+            )
+            .setAlpha(0.3);
+          this.tweens.add({
+            targets: txt,
+            y: txt.y - 20,
+            alpha: { from: 0.15, to: 0.4 },
+            duration: randInt(2000, 4000),
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
+        // Title
+        this.add.text(cx, 80, "🍳", { fontSize: "72px" }).setOrigin(0.5);
+        this.add
+          .text(cx, 150, "FRACTION", {
+            fontSize: "56px",
+            fontFamily: "Impact,sans-serif",
+            color: "#f59e0b",
+            stroke: "#5c3a0a",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 210, "KITCHEN", {
+            fontSize: "56px",
+            fontFamily: "Impact,sans-serif",
+            color: "#ef4444",
+            stroke: "#5c0a0a",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 260, "COOKING TYCOON", {
+            fontSize: "18px",
+            color: "#d4a050",
+            letterSpacing: 6,
+          })
+          .setOrigin(0.5);
+
+        this.add
+          .text(cx, 310, "Add  •  Subtract  •  Multiply  •  Divide Fractions", {
+            fontSize: "15px",
+            color: "#aa8855",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 340, "Fill orders by solving fraction problems!", {
+            fontSize: "14px",
+            color: "#886644",
+          })
+          .setOrigin(0.5);
+
+        // Animated plate
+        const plate = this.add.image(cx - 100, 420, "plate").setScale(1.5);
+        const bowl = this.add.image(cx + 100, 420, "bowl").setScale(1.2);
+        this.tweens.add({
+          targets: plate,
+          angle: { from: -5, to: 5 },
+          duration: 2000,
+          yoyo: true,
+          repeat: -1,
+        });
+        this.tweens.add({
+          targets: bowl,
+          y: bowl.y - 8,
+          duration: 1500,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        // Start
+        const btn = this.add
+          .rectangle(cx, 510, 260, 56, 0xd97706)
+          .setInteractive({ useHandCursor: true });
+        const btnTxt = this.add
+          .text(cx, 510, "START COOKING", {
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#fff",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnTxt],
+          scaleX: { from: 1, to: 1.05 },
+          scaleY: { from: 1, to: 1.05 },
+          duration: 900,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        btn.on("pointerdown", () => {
+          SFX.init();
+          SFX.bell();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
+        });
+        this.input.keyboard.on("keydown-SPACE", () => {
+          SFX.init();
+          SFX.bell();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
+        });
+
+        this.cameras.main.fadeIn(500);
+      };
+
+      // ── DIFFICULTY ──
+      function DifficultyScene() {
+        return new Phaser.Scene("DiffSelect");
+      }
+      DifficultyScene.prototype = Object.create(Phaser.Scene.prototype);
+      DifficultyScene.prototype.constructor = DifficultyScene;
+      DifficultyScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x2d1508);
+
+        this.add
+          .text(cx, 60, "CHOOSE YOUR KITCHEN", {
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#f59e0b",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 100, "Harder kitchens = tougher fractions + less time", {
+            fontSize: "14px",
+            color: "#aa8855",
+          })
+          .setOrigin(0.5);
+
+        const diffs = [
+          {
+            key: "easy",
+            label: "HOME KITCHEN",
+            sub: "Simple fractions, 35s timer",
+            emoji: "🏠",
+            color: 0x22c55e,
+            y: 200,
+          },
+          {
+            key: "medium",
+            label: "RESTAURANT",
+            sub: "Mixed operations, 28s timer",
+            emoji: "🍽️",
+            color: 0xf59e0b,
+            y: 320,
+          },
+          {
+            key: "hard",
+            label: "MASTER CHEF",
+            sub: "Complex fractions, 22s timer",
+            emoji: "👨‍🍳",
+            color: 0xef4444,
+            y: 440,
+          },
+        ];
+
+        diffs.forEach((d) => {
+          const btn = this.add
+            .rectangle(cx, d.y, 360, 90, d.color, 0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx - 140, d.y - 14, d.emoji, { fontSize: "36px" })
+            .setOrigin(0, 0.5);
+          this.add
+            .text(cx + 10, d.y - 14, d.label, {
+              fontSize: "26px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx + 10, d.y + 16, d.sub, {
+              fontSize: "13px",
+              color: "#ffffffcc",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => btn.setFillStyle(d.color, 1));
+          btn.on("pointerout", () => btn.setFillStyle(d.color, 0.9));
+          btn.on("pointerdown", () => {
+            SFX.bell();
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () =>
+              this.scene.start("Game", { difficulty: d.key }),
+            );
+          });
+        });
+        this.cameras.main.fadeIn(400);
+      };
+
+      // ── GAME SCENE ──
+      function GameScene() {
+        return new Phaser.Scene("Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
+
+      GameScene.prototype.init = function (data) {
+        this.difficulty = data.difficulty || "easy";
+        this.orders = generateOrders(this.difficulty);
+        this.currentOrder = 0;
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.lives = 3;
+        this.satisfaction = 100;
+        this.ordersComplete = 0;
+        this.totalCorrect = 0;
+        this.totalWrong = 0;
+        this.timerRunning = false;
+        this.timeLeft = 0;
+        this.kitchenLevel = data.kitchenLevel || 1;
+        this.timerBonus = data.timerBonus || 0;
+      };
+
+      GameScene.prototype.create = function () {
+        const scene = this;
+
+        // Kitchen background
+        this.add.rectangle(W / 2, H / 2, W, H, 0x3d2010);
+        // Counter
+        this.add.rectangle(W / 2, H - 60, W, 120, 0x8b4513);
+        this.add.rectangle(W / 2, H - 120, W, 4, 0x6b3410);
+        // Wall tiles
+        for (let x = 0; x < W; x += 40) {
+          for (let y = 0; y < H - 130; y += 40) {
+            this.add.rectangle(
+              x + 20,
+              y + 20,
+              38,
+              38,
+              (x + y) % 80 === 0 ? 0x5a3018 : 0x4d2812,
+              0.5,
+            );
+          }
+        }
+        // Stove burners
+        for (let i = 0; i < 3; i++) {
+          this.add
+            .image(150 + i * 250, H - 80, "stove")
+            .setScale(1.2)
+            .setAlpha(0.6);
+          const flame = this.add.circle(
+            150 + i * 250,
+            H - 95,
+            10,
+            0xff4400,
+            0.6,
+          );
+          this.tweens.add({
+            targets: flame,
+            scaleX: { from: 0.8, to: 1.2 },
+            scaleY: { from: 1, to: 1.4 },
+            alpha: { from: 0.4, to: 0.7 },
+            duration: 300,
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
+        // HUD top bar
+        this.add.rectangle(W / 2, 0, W, 50, 0x000000, 0.6).setOrigin(0.5, 0);
+        this.scoreText = this.add.text(16, 12, "Score: 0", {
+          fontSize: "18px",
+          color: "#f59e0b",
+          fontStyle: "bold",
+        });
+        this.livesText = this.add
+          .text(W - 16, 12, "", { fontSize: "18px", color: "#ef4444" })
+          .setOrigin(1, 0);
+        this.comboText = this.add
+          .text(W / 2, 12, "", { fontSize: "16px", color: "#ffdd00" })
+          .setOrigin(0.5, 0);
+
+        // Satisfaction meter
+        this.add.rectangle(W / 2, 42, 204, 10, 0x333333).setOrigin(0.5);
+        this.satBar = this.add
+          .rectangle(W / 2 - 100, 42, 200, 8, 0x22c55e)
+          .setOrigin(0, 0.5);
+        this.add
+          .text(W / 2 - 120, 42, "😊", { fontSize: "14px" })
+          .setOrigin(1, 0.5);
+
+        // Order ticket area
+        this.orderBg = this.add
+          .rectangle(W / 2, 110, 500, 100, 0xfff8e0, 0.95)
+          .setStrokeStyle(2, 0xd4a050);
+        this.contextText = this.add
+          .text(W / 2, 75, "", {
+            fontSize: "16px",
+            color: "#78350f",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.questionText = this.add
+          .text(W / 2, 105, "", {
+            fontSize: "28px",
+            color: "#1a0a00",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.orderNumText = this.add
+          .text(W / 2, 140, "", { fontSize: "12px", color: "#92400e" })
+          .setOrigin(0.5);
+
+        // Timer bar
+        this.timerBg = this.add.rectangle(W / 2, 165, 400, 12, 0x333333);
+        this.timerBar = this.add
+          .rectangle(W / 2 - 200, 165, 400, 10, 0x22c55e)
+          .setOrigin(0, 0.5);
+        this.timerText = this.add
+          .text(W / 2 + 220, 165, "", { fontSize: "13px", color: "#ffdd00" })
+          .setOrigin(0, 0.5);
+
+        // Answer bowls (4 choices)
+        this.bowls = [];
+        this.bowlTexts = [];
+        const bowlY = 280;
+        for (let i = 0; i < 4; i++) {
+          const x = 110 + i * 200;
+          const bowl = this.add
+            .image(x, bowlY, "bowl")
+            .setScale(1.4)
+            .setInteractive({ useHandCursor: true });
+          const label = this.add
+            .text(x, bowlY, "", {
+              fontSize: "22px",
+              color: "#333",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          const letterBg = this.add.circle(x - 35, bowlY - 35, 14, 0xd97706);
+          const letter = this.add
+            .text(x - 35, bowlY - 35, String.fromCharCode(65 + i), {
+              fontSize: "14px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          bowl.on("pointerover", () => {
+            bowl.setScale(1.55);
+            this.tweens.add({
+              targets: bowl,
+              angle: { from: -3, to: 3 },
+              duration: 100,
+              yoyo: true,
+            });
+          });
+          bowl.on("pointerout", () => bowl.setScale(1.4));
+          bowl.on("pointerdown", () => this.selectAnswer(i));
+
+          this.bowls.push(bowl);
+          this.bowlTexts.push(label);
+        }
+
+        // Keyboard shortcuts 1-4
+        this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
+        this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
+        this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
+        this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
+
+        // Feedback area
+        this.feedbackText = this.add
+          .text(W / 2, 370, "", {
+            fontSize: "22px",
+            color: "#fff",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Particles
+        this.sparkles = this.add.particles(0, 0, "star", {
+          speed: { min: 40, max: 180 },
+          scale: { start: 1.5, end: 0 },
+          lifespan: 600,
+          emitting: false,
+          quantity: 10,
+          tint: [0xf59e0b, 0xef4444, 0x22c55e, 0xffffff],
+        });
+
+        this.steamParticles = this.add.particles(0, 0, "particle", {
+          speed: { min: 10, max: 40 },
+          scale: { start: 0.8, end: 0 },
+          lifespan: 800,
+          emitting: false,
+          quantity: 5,
+          tint: [0xffffff, 0xdddddd],
+          angle: { min: -100, to: -80 },
+        });
+
+        // Load first order
+        this.answered = false;
+        this.loadOrder();
+        this.updateHUD();
+        this.cameras.main.fadeIn(500);
+      };
+
+      GameScene.prototype.loadOrder = function () {
+        if (this.currentOrder >= this.orders.length || this.lives <= 0) {
+          this.endGame();
           return;
         }
-        state.playerName = name;
-        showScreen("instructionsScreen");
-      }
-      $("nameInput").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") login();
-      });
-
-      /* ── Start Game ────────────────────────────────────── */
-      function startGame() {
-        // Shuffle within each tier, then concatenate easy→medium→hard
-        const easy = shuffle(questions.filter((q) => q.difficulty === "easy"));
-        const medium = shuffle(
-          questions.filter((q) => q.difficulty === "medium"),
+        const o = this.orders[this.currentOrder];
+        this.contextText.setText(o.context);
+        this.questionText.setText(o.q);
+        this.orderNumText.setText(
+          `Order ${this.currentOrder + 1} of ${this.orders.length}`,
         );
-        const hard = shuffle(questions.filter((q) => q.difficulty === "hard"));
-        state.shuffledQuestions = [...easy, ...medium, ...hard];
-        state.currentQ = 0;
-        state.score = 0;
-        state.lives = 3;
-        state.streak = 0;
-        state.bestStreak = 0;
-        state.correctCount = 0;
-        state.answered = 0;
-        state.history = [];
-        state.gameActive = true;
-        showScreen("gameScreen");
-        renderQuestion();
-      }
 
-      /* ── Render Question ───────────────────────────────── */
-      function renderQuestion() {
-        const q = state.shuffledQuestions[state.currentQ];
-        $("qNum").textContent = state.currentQ + 1;
-        $("livesDisplay").textContent = state.lives;
-        $("scoreDisplay").textContent = state.score;
-        $("streakDisplay").textContent = state.streak;
-        updateStreakBadge();
-
-        // Difficulty tag
-        const dEl = $("qDifficulty");
-        dEl.textContent =
-          q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1);
-        dEl.className = "q-difficulty " + q.difficulty;
-
-        // Context & question
-        $("qContext").textContent = q.context;
-        $("qText").textContent = q.question;
-
-        // Shuffle choices for this question
-        const shuffledChoices = shuffle(q.choices);
-
-        // Choices
-        const cDiv = $("choices");
-        cDiv.innerHTML = "";
-        shuffledChoices.forEach((c) => {
-          const btn = document.createElement("button");
-          btn.className = "choice-btn";
-          btn.textContent = c;
-          btn.onclick = () => selectAnswer(btn, c, q);
-          cDiv.appendChild(btn);
+        o.choices.forEach((c, i) => {
+          if (i < 4) this.bowlTexts[i].setText(c);
         });
 
-        // Reset feedback & next
-        $("feedback").className = "feedback";
-        $("feedback").style.display = "none";
-        $("feedback").innerHTML = "";
-        $("btnNext").style.display = "none";
+        // Reset bowls
+        this.bowls.forEach((b) => {
+          b.setTint(0xffffff);
+          b.setScale(1.4);
+          b.setAlpha(1);
+        });
+        this.feedbackText.setAlpha(0);
+        this.answered = false;
 
         // Timer
-        startTimer();
-      }
+        this.timeLeft = o.timeLimit + this.timerBonus;
+        this.maxTime = this.timeLeft;
+        this.timerRunning = true;
+        this.timerBar.setDisplaySize(400, 10);
+        this.timerBar.setFillStyle(0x22c55e);
+        this.timerText.setText(`${this.timeLeft}s`);
 
-      /* ── Timer ─────────────────────────────────────────── */
-      function startTimer() {
-        clearInterval(state.timerInterval);
-        state.timeLeft = 30;
-        const fill = $("timerFill");
-        fill.style.width = "100%";
-        fill.classList.remove("danger");
-        state.timerInterval = setInterval(() => {
-          state.timeLeft -= 0.25;
-          const pct = Math.max(0, (state.timeLeft / 30) * 100);
-          fill.style.width = pct + "%";
-          if (state.timeLeft <= 8) fill.classList.add("danger");
-          if (state.timeLeft <= 0) {
-            clearInterval(state.timerInterval);
-            timeUp();
-          }
-        }, 250);
-      }
-
-      function timeUp() {
-        if (!state.gameActive) return;
-        const q = state.shuffledQuestions[state.currentQ];
-        state.lives--;
-        state.streak = 0;
-        state.answered++;
-        state.history.push({
-          question: q.question,
-          chosen: "(time up)",
-          correct: q.answer,
-          isCorrect: false,
+        // Entrance animation
+        this.tweens.add({
+          targets: this.orderBg,
+          scaleX: { from: 0.8, to: 1 },
+          scaleY: { from: 0.8, to: 1 },
+          duration: 300,
+          ease: "Back.easeOut",
         });
-        disableChoices();
-        highlightCorrect(q.answer);
-        showFeedback(false, "⏱️ Time's up!", q.explanation, q.answer);
-        $("livesDisplay").textContent = state.lives;
-        updateStreakBadge();
-        if (state.lives <= 0) {
-          setTimeout(() => endGame(true), 1500);
-        } else {
-          $("btnNext").style.display = "block";
-        }
-      }
 
-      /* ── Answer Selection ──────────────────────────────── */
-      function selectAnswer(btn, chosen, q) {
-        if (!state.gameActive) return;
-        clearInterval(state.timerInterval);
-        disableChoices();
+        // Steam effect
+        this.steamParticles.emitParticleAt(150 + randInt(0, 2) * 250, H - 100);
 
-        const isCorrect = chosen === q.answer;
-        state.answered++;
+        SFX.bell();
+      };
+
+      GameScene.prototype.selectAnswer = function (idx) {
+        if (this.answered || !this.timerRunning) return;
+        this.answered = true;
+        this.timerRunning = false;
+
+        const o = this.orders[this.currentOrder];
+        const chosen = o.choices[idx];
+        const isCorrect = chosen === o.answer;
 
         if (isCorrect) {
-          btn.classList.add("correct");
-          state.streak++;
-          if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-          state.correctCount++;
-          const mult = state.streak >= 4 ? 3 : state.streak >= 2 ? 2 : 1;
-          const pts = 10 * mult;
-          state.score += pts;
-          showFeedback(
-            true,
-            mult > 1
-              ? `🔥 Correct! ${mult}× streak bonus (+${pts} pts)`
-              : `✅ Correct! (+${pts} pts)`,
-            q.explanation,
-            q.answer,
+          SFX.serve();
+          this.combo++;
+          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+          this.totalCorrect++;
+          this.ordersComplete++;
+
+          let pts = 100 + Math.floor(this.timeLeft * 5);
+          if (this.combo >= 3) pts = Math.floor(pts * 1.5);
+          if (this.combo >= 5) pts = Math.floor(pts * 2);
+          this.score += pts;
+
+          this.satisfaction = Math.min(100, this.satisfaction + 5);
+          this.bowls[idx].setTint(0x22cc66);
+          this.feedbackText
+            .setText(`✓ Correct! +${pts}`)
+            .setColor("#22c55e")
+            .setAlpha(1);
+          this.sparkles.emitParticleAt(this.bowls[idx].x, this.bowls[idx].y);
+          this.cameras.main.shake(80, 0.005);
+
+          if (this.combo >= 3) {
+            this.comboText.setText(`🔥 Combo x${this.combo}!`);
+            this.tweens.add({
+              targets: this.comboText,
+              scale: { from: 1.3, to: 1 },
+              duration: 300,
+            });
+          }
+        } else {
+          SFX.wrong();
+          this.combo = 0;
+          this.comboText.setText("");
+          this.totalWrong++;
+          this.lives--;
+          this.satisfaction = Math.max(0, this.satisfaction - 15);
+          this.bowls[idx].setTint(0xff3333);
+
+          // Highlight correct
+          const correctIdx = o.choices.indexOf(o.answer);
+          if (correctIdx >= 0) this.bowls[correctIdx].setTint(0x22cc66);
+
+          this.feedbackText
+            .setText(`✗ Answer: ${o.answer}`)
+            .setColor("#ef4444")
+            .setAlpha(1);
+          this.cameras.main.shake(200, 0.015);
+        }
+
+        this.updateHUD();
+
+        // Next order after delay
+        this.time.delayedCall(1500, () => {
+          this.currentOrder++;
+          if (this.lives <= 0) {
+            this.endGame();
+          } else if (
+            this.currentOrder > 0 &&
+            this.currentOrder % 6 === 0 &&
+            this.currentOrder < this.orders.length
+          ) {
+            // Upgrade screen every 6 orders
+            this.scene.start("Upgrade", {
+              difficulty: this.difficulty,
+              score: this.score,
+              combo: this.maxCombo,
+              lives: this.lives,
+              satisfaction: this.satisfaction,
+              ordersComplete: this.ordersComplete,
+              totalCorrect: this.totalCorrect,
+              totalWrong: this.totalWrong,
+              currentOrder: this.currentOrder,
+              orders: this.orders,
+              kitchenLevel: this.kitchenLevel,
+              timerBonus: this.timerBonus,
+            });
+          } else {
+            this.loadOrder();
+          }
+        });
+      };
+
+      GameScene.prototype.endGame = function () {
+        this.timerRunning = false;
+        if (this.lives <= 0) SFX.lose();
+        else SFX.win();
+        this.time.delayedCall(500, () => {
+          this.scene.start("Results", {
+            score: this.score,
+            maxCombo: this.maxCombo,
+            lives: this.lives,
+            satisfaction: this.satisfaction,
+            ordersComplete: this.ordersComplete,
+            totalCorrect: this.totalCorrect,
+            totalWrong: this.totalWrong,
+            difficulty: this.difficulty,
+            kitchenLevel: this.kitchenLevel,
+          });
+        });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText(`Score: ${this.score}`);
+        this.livesText.setText(
+          "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
+        );
+        const satPct = this.satisfaction / 100;
+        this.satBar.setDisplaySize(200 * satPct, 8);
+        this.satBar.setFillStyle(
+          satPct > 0.6 ? 0x22c55e : satPct > 0.3 ? 0xf59e0b : 0xef4444,
+        );
+      };
+
+      GameScene.prototype.update = function (time, delta) {
+        if (this.timerRunning && this.timeLeft > 0) {
+          this.timeLeft -= delta / 1000;
+          if (this.timeLeft <= 0) {
+            this.timeLeft = 0;
+            this.timerRunning = false;
+            // Time's up
+            this.answered = true;
+            SFX.wrong();
+            this.combo = 0;
+            this.comboText.setText("");
+            this.totalWrong++;
+            this.lives--;
+            this.satisfaction = Math.max(0, this.satisfaction - 20);
+            const o = this.orders[this.currentOrder];
+            const correctIdx = o.choices.indexOf(o.answer);
+            if (correctIdx >= 0) this.bowls[correctIdx].setTint(0x22cc66);
+            this.feedbackText
+              .setText(`⏱ Time up! Answer: ${o.answer}`)
+              .setColor("#f59e0b")
+              .setAlpha(1);
+            this.cameras.main.shake(150, 0.01);
+            this.updateHUD();
+            this.time.delayedCall(1500, () => {
+              this.currentOrder++;
+              if (this.lives <= 0) this.endGame();
+              else this.loadOrder();
+            });
+          }
+          const pct = this.timeLeft / this.maxTime;
+          this.timerBar.setDisplaySize(400 * pct, 10);
+          this.timerBar.setFillStyle(
+            pct > 0.5 ? 0x22c55e : pct > 0.25 ? 0xf59e0b : 0xef4444,
           );
-          toast(`+${pts} pts`);
-        } else {
-          btn.classList.add("wrong");
-          highlightCorrect(q.answer);
-          state.lives--;
-          state.streak = 0;
-          showFeedback(false, "❌ Not quite.", q.explanation, q.answer);
-        }
+          this.timerText.setText(`${Math.ceil(this.timeLeft)}s`);
 
-        state.history.push({
-          question: q.question,
-          chosen,
-          correct: q.answer,
-          isCorrect,
+          // Tick sound in last 5 seconds
+          if (
+            this.timeLeft <= 5 &&
+            this.timeLeft > 0 &&
+            Math.floor(this.timeLeft * 2) % 2 === 0
+          ) {
+            // Visual pulse
+            this.timerBar.setAlpha(this.timerBar.alpha > 0.7 ? 0.5 : 1);
+          }
+        }
+      };
+
+      // ── UPGRADE SCENE ──
+      function UpgradeScene() {
+        return new Phaser.Scene("Upgrade");
+      }
+      UpgradeScene.prototype = Object.create(Phaser.Scene.prototype);
+      UpgradeScene.prototype.constructor = UpgradeScene;
+      UpgradeScene.prototype.init = function (data) {
+        this.gd = data;
+      };
+      UpgradeScene.prototype.create = function () {
+        const cx = W / 2,
+          d = this.gd;
+        SFX.upgrade();
+
+        this.add.rectangle(cx, H / 2, W, H, 0x2d1508);
+        this.add
+          .text(cx, 50, "⬆ KITCHEN UPGRADE!", {
+            fontSize: "36px",
+            fontStyle: "bold",
+            color: "#f59e0b",
+            stroke: "#5c3a0a",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            95,
+            `Round ${Math.floor(d.currentOrder / 6) + 1} Complete!`,
+            { fontSize: "18px", color: "#d4a050" },
+          )
+          .setOrigin(0.5);
+
+        // Stats
+        this.add
+          .text(
+            cx,
+            140,
+            `Score: ${d.score}  |  Orders: ${d.ordersComplete}  |  Lives: ${"♥".repeat(d.lives)}`,
+            { fontSize: "16px", color: "#aa8855" },
+          )
+          .setOrigin(0.5);
+
+        // Upgrade options
+        const upgrades = [
+          {
+            label: "Faster Stove",
+            sub: "+3 seconds per order",
+            emoji: "🔥",
+            action: () => {
+              d.timerBonus += 3;
+            },
+          },
+          {
+            label: "Extra Life",
+            sub: "+1 heart",
+            emoji: "❤️",
+            action: () => {
+              d.lives = Math.min(5, d.lives + 1);
+            },
+          },
+          {
+            label: "Score Boost",
+            sub: "+200 bonus points",
+            emoji: "⭐",
+            action: () => {
+              d.score += 200;
+            },
+          },
+        ];
+
+        shuffle(upgrades).forEach((u, i) => {
+          const y = 240 + i * 110;
+          const btn = this.add
+            .rectangle(cx, y, 380, 85, 0x5c3a0a, 0.9)
+            .setInteractive({ useHandCursor: true })
+            .setStrokeStyle(2, 0xd97706);
+          this.add
+            .text(cx - 150, y - 10, u.emoji, { fontSize: "36px" })
+            .setOrigin(0, 0.5);
+          this.add
+            .text(cx, y - 12, u.label, {
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#f59e0b",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, y + 14, u.sub, { fontSize: "14px", color: "#d4a050" })
+            .setOrigin(0.5);
+
+          btn.on("pointerover", () => btn.setFillStyle(0x7c5a2a, 1));
+          btn.on("pointerout", () => btn.setFillStyle(0x5c3a0a, 0.9));
+          btn.on("pointerdown", () => {
+            SFX.upgrade();
+            u.action();
+            d.kitchenLevel++;
+            this.cameras.main.fadeOut(400);
+            this.time.delayedCall(400, () => this.scene.start("Game", d));
+          });
         });
-        $("livesDisplay").textContent = state.lives;
-        $("scoreDisplay").textContent = state.score;
-        $("streakDisplay").textContent = state.streak;
-        updateStreakBadge();
 
-        if (state.lives <= 0) {
-          setTimeout(() => endGame(true), 1500);
-        } else {
-          $("btnNext").style.display = "block";
+        this.cameras.main.fadeIn(500);
+      };
+
+      // ── RESULTS ──
+      function ResultScene() {
+        return new Phaser.Scene("Results");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.d = data;
+      };
+      ResultScene.prototype.create = function () {
+        const cx = W / 2,
+          d = this.d;
+        this.add.rectangle(cx, H / 2, W, H, 0x2d1508);
+
+        const won = d.lives > 0;
+
+        // Celebration particles
+        if (won) {
+          for (let i = 0; i < 6; i++) {
+            this.time.delayedCall(i * 300, () => {
+              const p = this.add.particles(0, 0, "star", {
+                speed: { min: 60, max: 200 },
+                scale: { start: 1.5, end: 0 },
+                lifespan: 700,
+                quantity: 12,
+                tint: [0xf59e0b, 0xef4444, 0x22c55e],
+              });
+              p.emitParticleAt(randInt(100, W - 100), randInt(80, 250));
+              this.time.delayedCall(800, () => p.destroy());
+            });
+          }
         }
-      }
 
-      function disableChoices() {
-        document
-          .querySelectorAll(".choice-btn")
-          .forEach((b) => b.classList.add("disabled"));
-        document
-          .querySelectorAll(".choice-btn")
-          .forEach((b) => (b.onclick = null));
-      }
+        this.add
+          .text(cx, 40, won ? "SHIFT COMPLETE!" : "KITCHEN CLOSED!", {
+            fontSize: "38px",
+            fontStyle: "bold",
+            color: won ? "#22c55e" : "#ef4444",
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            80,
+            won ? "Great cooking today!" : "Better luck next time!",
+            { fontSize: "16px", color: "#d4a050" },
+          )
+          .setOrigin(0.5);
 
-      function highlightCorrect(answer) {
-        document.querySelectorAll(".choice-btn").forEach((b) => {
-          if (b.textContent === answer) b.classList.add("reveal-correct");
+        const stats = [
+          { label: "Final Score", val: String(d.score), color: "#f59e0b" },
+          {
+            label: "Orders Served",
+            val: `${d.ordersComplete}/${d.totalCorrect + d.totalWrong}`,
+            color: "#22c55e",
+          },
+          { label: "Correct", val: String(d.totalCorrect), color: "#22c55e" },
+          { label: "Wrong", val: String(d.totalWrong), color: "#ef4444" },
+          { label: "Max Combo", val: `x${d.maxCombo}`, color: "#ffdd00" },
+          {
+            label: "Satisfaction",
+            val: `${d.satisfaction}%`,
+            color: d.satisfaction > 60 ? "#22c55e" : "#ef4444",
+          },
+          {
+            label: "Kitchen Level",
+            val: String(d.kitchenLevel),
+            color: "#d97706",
+          },
+        ];
+
+        stats.forEach((s, i) => {
+          const y = 125 + i * 48;
+          this.add.rectangle(cx, y, 380, 38, 0x3d2010, 0.8);
+          this.add
+            .text(cx - 160, y, s.label, { fontSize: "16px", color: "#aa8855" })
+            .setOrigin(0, 0.5);
+          const v = this.add
+            .text(cx + 160, y, s.val, {
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: s.color,
+            })
+            .setOrigin(1, 0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: v,
+            alpha: 1,
+            x: { from: cx + 200, to: cx + 160 },
+            duration: 350,
+            delay: i * 120,
+          });
         });
-      }
 
-      function showFeedback(correct, title, explanation, answer) {
-        const fb = $("feedback");
-        fb.className = "feedback " + (correct ? "correct" : "wrong");
-        fb.style.display = "block";
-        fb.innerHTML = `<strong>${title}</strong>${explanation}`;
-      }
+        // Grade
+        const pct =
+          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const grade =
+          pct >= 90
+            ? "A+"
+            : pct >= 80
+              ? "A"
+              : pct >= 70
+                ? "B"
+                : pct >= 60
+                  ? "C"
+                  : "D";
+        this.add
+          .text(cx, 480, grade, {
+            fontSize: "56px",
+            fontStyle: "bold",
+            color: pct >= 80 ? "#22c55e" : pct >= 60 ? "#f59e0b" : "#ef4444",
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 516, `${Math.round(pct)}% Accuracy`, {
+            fontSize: "16px",
+            color: "#d4a050",
+          })
+          .setOrigin(0.5);
 
-      function updateStreakBadge() {
-        const badge = $("streakBadge");
-        const mult = state.streak >= 4 ? 3 : state.streak >= 2 ? 2 : 1;
-        if (mult > 1) {
-          badge.style.display = "inline";
-          badge.textContent = mult + "×";
-        } else {
-          badge.style.display = "none";
-        }
-      }
-
-      /* ── Next Question ─────────────────────────────────── */
-      function nextQuestion() {
-        state.currentQ++;
-        if (state.currentQ >= state.shuffledQuestions.length) {
-          endGame(false);
-        } else {
-          renderQuestion();
-        }
-      }
-
-      /* ── End Game ──────────────────────────────────────── */
-      function endGame(outOfLives) {
-        state.gameActive = false;
-        clearInterval(state.timerInterval);
-        const accuracy =
-          state.answered > 0
-            ? Math.round((state.correctCount / state.answered) * 100)
-            : 0;
-        const badge = getBadge(state.score, accuracy);
-
-        // Save to localStorage
-        saveResults();
-
-        if (outOfLives) {
-          $("goCorrect").textContent = state.correctCount;
-          $("goTotal").textContent = state.answered;
-          $("goScore").textContent = state.score;
-          $("goAccuracy").textContent = accuracy + "%";
-          showScreen("gameoverScreen");
-        } else {
-          $("resultsEmoji").textContent = badge.emoji;
-          $("resultsTitle").textContent = `Great job, ${state.playerName}!`;
-          $("badgeEmoji").textContent = badge.emoji;
-          $("badgeName").textContent = badge.name;
-          $("finalScore").textContent = state.score;
-          $("finalAccuracy").textContent = accuracy + "%";
-          $("finalCorrect").textContent =
-            state.correctCount + "/" + state.shuffledQuestions.length;
-          $("finalStreak").textContent = state.bestStreak;
-          showScreen("resultsScreen");
-        }
-      }
-
-      function getBadge(score, accuracy) {
-        if (accuracy >= 90 && score >= 130)
-          return { emoji: "👨‍🍳", name: "Master Chef" };
-        if (accuracy >= 75 && score >= 90)
-          return { emoji: "🧑‍🍳", name: "Head Chef" };
-        if (accuracy >= 60 && score >= 50)
-          return { emoji: "🍳", name: "Sous Chef" };
-        return { emoji: "🥄", name: "Kitchen Apprentice" };
-      }
-
-      /* ── Save / Export ─────────────────────────────────── */
-      function saveResults() {
-        const data = {
-          playerName: state.playerName,
-          score: state.score,
-          correctCount: state.correctCount,
-          answered: state.answered,
-          accuracy:
-            state.answered > 0
-              ? Math.round((state.correctCount / state.answered) * 100)
-              : 0,
-          bestStreak: state.bestStreak,
-          lives: state.lives,
-          history: state.history,
-          timestamp: new Date().toISOString(),
-        };
-        try {
-          localStorage.setItem(LS_KEY, JSON.stringify(data));
-        } catch (e) {}
-      }
-
-      function exportResults() {
-        const accuracy =
-          state.answered > 0
-            ? Math.round((state.correctCount / state.answered) * 100)
-            : 0;
-        let csv = "Question,Chosen,Correct Answer,Result\n";
-        state.history.forEach((h) => {
-          csv += `"${h.question}","${h.chosen}","${h.correct}",${h.isCorrect ? "Correct" : "Wrong"}\n`;
+        // Buttons
+        const retry = this.add
+          .rectangle(cx - 100, 560, 170, 44, 0xd97706)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx - 100, 560, "COOK AGAIN", {
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#fff",
+          })
+          .setOrigin(0.5);
+        retry.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () =>
+            this.scene.start("Game", { difficulty: d.difficulty }),
+          );
         });
-        csv += `\nPlayer,${state.playerName}\nScore,${state.score}\nAccuracy,${accuracy}%\nBest Streak,${state.bestStreak}\n`;
 
-        const blob = new Blob([csv], { type: "text/csv" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `fraction-kitchen-${state.playerName.replace(/\s+/g, "_")}.csv`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-        toast("Results exported!");
-      }
+        const menu = this.add
+          .rectangle(cx + 100, 560, 170, 44, 0x5c3a0a)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx + 100, 560, "MAIN MENU", {
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#d4a050",
+          })
+          .setOrigin(0.5);
+        menu.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () => this.scene.start("Title"));
+        });
 
-      function retry() {
-        showScreen("instructionsScreen");
-      }
+        this.cameras.main.fadeIn(600);
+      };
+
+      new Phaser.Game(config);
     </script>
   </body>
 </html>

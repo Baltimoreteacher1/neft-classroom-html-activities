@@ -1,0 +1,1684 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 4: Fraction Operations | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #135f60;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ed;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+      }
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg, var(--paper));
+      }
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal-dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 160ms;
+      }
+      .mission-nav a:hover {
+        border-color: var(--teal);
+      }
+      .mission-nav a.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .hero-mission {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: clamp(22px, 4vw, 38px);
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .hero-text .eyebrow {
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 8px;
+        color: var(--navy);
+      }
+      .hero-text .standards {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-blue);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-illustration svg {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+      }
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: 22px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+      }
+      .panel h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        margin-top: 18px;
+      }
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .role {
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal-dark);
+      }
+      .role span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .investigation-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .investigation-box h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 14px 14px 14px 52px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .step-list li strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        margin-top: 6px;
+      }
+      .esol-box {
+        padding: 18px;
+        background: var(--soft-green);
+        border: 1px solid #b2d8b4;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .esol-box h3 {
+        margin-top: 0;
+        color: var(--green);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        font-size: 0.92rem;
+      }
+      .vocab-item strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        list-style: none;
+        padding-left: 0;
+      }
+      .sentence-frames li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: #fff;
+        border-left: 4px solid var(--green);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #263242;
+      }
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .rep-card {
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rep-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .timer-section {
+        padding: 14px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 14px;
+      }
+      .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .phase-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .phase {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-toggle {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 12px 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .phase.is-open .phase-body {
+        display: block;
+      }
+      .phase-body .checkpoint {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .challenge-box {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .challenge-box h3 {
+        margin-top: 0;
+        color: var(--gold);
+      }
+      .whatif-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .whatif-list li {
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .whatif-list li::before {
+        content: "What if... ";
+        font-weight: 800;
+        color: var(--gold);
+      }
+      .defense-section {
+        margin-top: 18px;
+      }
+      .defense-section ol {
+        padding-left: 20px;
+      }
+      .defense-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .sentence-starters {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .sentence-starters li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: var(--soft-blue);
+        border-left: 4px solid var(--navy);
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .rubric-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.88rem;
+      }
+      .rubric-item strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .exit-product {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .exit-product h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        font-size: 0.95rem;
+      }
+      .checklist li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 4px;
+      }
+      .print-workspace {
+        display: none;
+        margin-top: 24px;
+        padding: 24px;
+        border: 2px solid #888;
+        border-radius: 8px;
+        min-height: 300px;
+      }
+      @media (max-width: 900px) {
+        .hero-mission {
+          grid-template-columns: 1fr;
+        }
+        .hero-illustration {
+          order: -1;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid,
+        .vocab-grid,
+        .rubric-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+        .representations {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-section,
+        .timer-controls,
+        .btn {
+          display: none !important;
+        }
+        .panel,
+        .hero-mission {
+          box-shadow: none;
+          border-color: #aaa;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="../">Back to Missions Hub</a>
+        <div>
+          <a href="../mission-3/">Previous Mission</a>
+          <a href="../mission-5/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="hero-mission" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 4 &middot; Unit 2</p>
+          <h1 id="mission-title">Fraction Operations</h1>
+          <span class="standards"
+            >6.NS.A.1 &middot; Multiply &amp; Divide Fractions</span
+          >
+          <p class="scenario">
+            The school garden club is building a raised flower bed that is
+            <strong>3/4 of a meter</strong> wide. They need to fill
+            <strong>2/3 of the bed</strong> with sunflowers and divide the rest
+            equally among <strong>3 types of herbs</strong>. Your team must
+            figure out how much space the sunflowers get (multiply fractions),
+            how much is left for herbs, and how wide each herb strip is (divide
+            a fraction by a whole number). Use area models to prove every
+            answer.
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <svg
+            viewBox="0 0 360 420"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="A raised garden bed divided into sunflower and herb sections with fraction labels"
+          >
+            <rect width="360" height="420" rx="16" fill="#edf5ff" />
+            <text
+              x="180"
+              y="30"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#23395d"
+            >
+              School Garden Bed
+            </text>
+            <text
+              x="180"
+              y="50"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              3/4 meter wide - split between sunflowers and herbs
+            </text>
+
+            <!-- Garden bed frame -->
+            <rect
+              x="40"
+              y="70"
+              width="280"
+              height="200"
+              rx="8"
+              fill="#8B6914"
+              opacity="0.3"
+              stroke="#6B4F12"
+              stroke-width="2"
+            />
+            <!-- Soil background -->
+            <rect
+              x="48"
+              y="78"
+              width="264"
+              height="184"
+              rx="4"
+              fill="#5D4037"
+              opacity="0.2"
+            />
+
+            <!-- Sunflower section (2/3 of the bed) -->
+            <rect
+              x="48"
+              y="78"
+              width="176"
+              height="184"
+              rx="4"
+              fill="#FFD54F"
+              opacity="0.5"
+            />
+            <!-- Sunflower icons -->
+            <circle
+              cx="90"
+              cy="130"
+              r="16"
+              fill="#FFD54F"
+              stroke="#F9A825"
+              stroke-width="2"
+            />
+            <circle cx="90" cy="130" r="7" fill="#795548" />
+            <circle
+              cx="150"
+              cy="130"
+              r="16"
+              fill="#FFD54F"
+              stroke="#F9A825"
+              stroke-width="2"
+            />
+            <circle cx="150" cy="130" r="7" fill="#795548" />
+            <circle
+              cx="120"
+              cy="180"
+              r="16"
+              fill="#FFD54F"
+              stroke="#F9A825"
+              stroke-width="2"
+            />
+            <circle cx="120" cy="180" r="7" fill="#795548" />
+            <circle
+              cx="180"
+              cy="180"
+              r="16"
+              fill="#FFD54F"
+              stroke="#F9A825"
+              stroke-width="2"
+            />
+            <circle cx="180" cy="180" r="7" fill="#795548" />
+            <circle
+              cx="90"
+              cy="230"
+              r="16"
+              fill="#FFD54F"
+              stroke="#F9A825"
+              stroke-width="2"
+            />
+            <circle cx="90" cy="230" r="7" fill="#795548" />
+            <circle
+              cx="150"
+              cy="230"
+              r="16"
+              fill="#FFD54F"
+              stroke="#F9A825"
+              stroke-width="2"
+            />
+            <circle cx="150" cy="230" r="7" fill="#795548" />
+
+            <!-- Herb sections (1/3 of bed, split into 3) -->
+            <rect
+              x="224"
+              y="78"
+              width="88"
+              height="61"
+              rx="3"
+              fill="#66BB6A"
+              opacity="0.5"
+            />
+            <text
+              x="268"
+              y="115"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#1B5E20"
+            >
+              Basil
+            </text>
+            <rect
+              x="224"
+              y="140"
+              width="88"
+              height="61"
+              rx="3"
+              fill="#81C784"
+              opacity="0.5"
+            />
+            <text
+              x="268"
+              y="177"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#1B5E20"
+            >
+              Mint
+            </text>
+            <rect
+              x="224"
+              y="202"
+              width="88"
+              height="60"
+              rx="3"
+              fill="#A5D6A7"
+              opacity="0.5"
+            />
+            <text
+              x="268"
+              y="237"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="700"
+              fill="#1B5E20"
+            >
+              Cilantro
+            </text>
+
+            <!-- Division lines -->
+            <line
+              x1="224"
+              y1="78"
+              x2="224"
+              y2="262"
+              stroke="#23395d"
+              stroke-width="2"
+              stroke-dasharray="6,3"
+            />
+            <line
+              x1="224"
+              y1="140"
+              x2="312"
+              y2="140"
+              stroke="#23395d"
+              stroke-width="1"
+              stroke-dasharray="4,3"
+            />
+            <line
+              x1="224"
+              y1="202"
+              x2="312"
+              y2="202"
+              stroke="#23395d"
+              stroke-width="1"
+              stroke-dasharray="4,3"
+            />
+
+            <!-- Labels -->
+            <text
+              x="136"
+              y="72"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#F9A825"
+            >
+              Sunflowers: 2/3 of bed
+            </text>
+            <text
+              x="268"
+              y="72"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#2E7D32"
+            >
+              Herbs: 1/3 of bed
+            </text>
+
+            <!-- Width label -->
+            <line
+              x1="40"
+              y1="290"
+              x2="320"
+              y2="290"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <line
+              x1="40"
+              y1="284"
+              x2="40"
+              y2="296"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <line
+              x1="320"
+              y1="284"
+              x2="320"
+              y2="296"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="180"
+              y="308"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#23395d"
+            >
+              3/4 meter wide
+            </text>
+
+            <!-- Area model preview -->
+            <text
+              x="180"
+              y="340"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="900"
+              fill="#23395d"
+            >
+              Area Model: 2/3 x 3/4
+            </text>
+            <rect
+              x="80"
+              y="350"
+              width="200"
+              height="50"
+              rx="4"
+              fill="#fff"
+              stroke="#23395d"
+              stroke-width="1.5"
+            />
+            <!-- Thirds (vertical) -->
+            <line
+              x1="147"
+              y1="350"
+              x2="147"
+              y2="400"
+              stroke="#23395d"
+              stroke-width="1"
+            />
+            <line
+              x1="213"
+              y1="350"
+              x2="213"
+              y2="400"
+              stroke="#23395d"
+              stroke-width="1"
+            />
+            <!-- Fourths (horizontal) -->
+            <line
+              x1="80"
+              y1="362.5"
+              x2="280"
+              y2="362.5"
+              stroke="#b7791f"
+              stroke-width="1"
+            />
+            <line
+              x1="80"
+              y1="375"
+              x2="280"
+              y2="375"
+              stroke="#b7791f"
+              stroke-width="1"
+            />
+            <line
+              x1="80"
+              y1="387.5"
+              x2="280"
+              y2="387.5"
+              stroke="#b7791f"
+              stroke-width="1"
+            />
+            <!-- Overlap shaded (2/3 x 3/4 = 6/12) -->
+            <rect
+              x="80"
+              y="350"
+              width="133"
+              height="37.5"
+              rx="0"
+              fill="#207a7a"
+              opacity="0.35"
+            />
+            <text
+              x="180"
+              y="415"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              2/3 x 3/4 = 6/12 = 1/2 meter
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel" aria-labelledby="roles-title">
+            <h2 id="roles-title">Team Roles</h2>
+            <div class="role-grid">
+              <div class="role">
+                <strong>Facilitator</strong>
+                <span
+                  >Reads the garden problem aloud, ensures the team tackles
+                  multiplication first and then division, and tracks the
+                  timer.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Model Builder</strong>
+                <span
+                  >Draws area models for the multiplication (2/3 x 3/4), labels
+                  rows and columns, shades the overlap, and sketches the
+                  division model.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Precision Checker</strong>
+                <span
+                  >Verifies that the area model has the correct number of rows
+                  and columns, checks that fractions are simplified, and
+                  confirms the herb strip width.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Reporter</strong>
+                <span
+                  >Prepares the defense: explains what 2/3 x 3/4 means in
+                  context, shows both models, and describes how division by 3
+                  splits the leftover strip.</span
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- INVESTIGATION -->
+          <section class="panel" aria-labelledby="investigation-title">
+            <h2 id="investigation-title">Investigation</h2>
+
+            <div class="investigation-box">
+              <h3>The Problem</h3>
+              <p>
+                The garden bed is <strong>3/4 meter</strong> wide. The sunflower
+                section is <strong>2/3 of the bed</strong>. The remaining space
+                is split equally among <strong>3 herb types</strong>.
+              </p>
+              <p><strong>Your tasks:</strong></p>
+              <ol>
+                <li>
+                  Multiply: 2/3 x 3/4 = ? (How wide is the sunflower section?)
+                </li>
+                <li>Subtract: 3/4 - sunflower width = herb section width.</li>
+                <li>
+                  Divide: herb section width / 3 = width of each herb strip.
+                </li>
+                <li>Draw an area model for the multiplication.</li>
+                <li>
+                  Draw a diagram showing the division of the herb section.
+                </li>
+              </ol>
+            </div>
+
+            <div class="visual-model">
+              <svg
+                viewBox="0 0 560 280"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Area model showing 2/3 times 3/4 with rows for fourths and columns for thirds"
+              >
+                <!-- Area model -->
+                <text
+                  x="280"
+                  y="25"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  Area Model: 2/3 x 3/4
+                </text>
+                <text
+                  x="280"
+                  y="45"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#5b6573"
+                >
+                  "2/3 of 3/4" means 2 out of 3 columns, 3 out of 4 rows
+                </text>
+
+                <!-- Grid -->
+                <rect
+                  x="120"
+                  y="60"
+                  width="300"
+                  height="200"
+                  rx="4"
+                  fill="#f5f5f5"
+                  stroke="#23395d"
+                  stroke-width="2"
+                />
+                <!-- Column lines (thirds) -->
+                <line
+                  x1="220"
+                  y1="60"
+                  x2="220"
+                  y2="260"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="320"
+                  y1="60"
+                  x2="320"
+                  y2="260"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+                <!-- Row lines (fourths) -->
+                <line
+                  x1="120"
+                  y1="110"
+                  x2="420"
+                  y2="110"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="120"
+                  y1="160"
+                  x2="420"
+                  y2="160"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="120"
+                  y1="210"
+                  x2="420"
+                  y2="210"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+
+                <!-- Shade 3/4 (first 3 rows) in light blue -->
+                <rect
+                  x="120"
+                  y="60"
+                  width="300"
+                  height="150"
+                  fill="#4a90d9"
+                  opacity="0.15"
+                />
+                <!-- Shade 2/3 (first 2 columns) in light yellow -->
+                <rect
+                  x="120"
+                  y="60"
+                  width="200"
+                  height="200"
+                  fill="#f0c040"
+                  opacity="0.15"
+                />
+                <!-- Overlap: 2/3 x 3/4 = 6 of 12 cells -->
+                <rect
+                  x="120"
+                  y="60"
+                  width="200"
+                  height="150"
+                  fill="#207a7a"
+                  opacity="0.35"
+                />
+
+                <!-- Column labels -->
+                <text
+                  x="170"
+                  y="278"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  1/3
+                </text>
+                <text
+                  x="270"
+                  y="278"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  1/3
+                </text>
+                <text
+                  x="370"
+                  y="278"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#aaa"
+                >
+                  1/3
+                </text>
+                <!-- Row labels -->
+                <text
+                  x="108"
+                  y="90"
+                  text-anchor="end"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#4a90d9"
+                >
+                  1/4
+                </text>
+                <text
+                  x="108"
+                  y="140"
+                  text-anchor="end"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#4a90d9"
+                >
+                  1/4
+                </text>
+                <text
+                  x="108"
+                  y="190"
+                  text-anchor="end"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#4a90d9"
+                >
+                  1/4
+                </text>
+                <text
+                  x="108"
+                  y="240"
+                  text-anchor="end"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#aaa"
+                >
+                  1/4
+                </text>
+
+                <!-- Count -->
+                <text
+                  x="60"
+                  y="165"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="900"
+                  fill="#23395d"
+                  transform="rotate(-90,60,165)"
+                >
+                  3/4 (width)
+                </text>
+                <text
+                  x="270"
+                  y="55"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  2/3 (of the bed)
+                </text>
+
+                <!-- Result -->
+                <rect
+                  x="140"
+                  y="120"
+                  width="160"
+                  height="30"
+                  rx="15"
+                  fill="#207a7a"
+                  opacity="0.9"
+                />
+                <text
+                  x="220"
+                  y="140"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="900"
+                  fill="#fff"
+                >
+                  6 of 12 = 6/12 = 1/2
+                </text>
+              </svg>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Set up the area model for 2/3 x 3/4</strong>
+                Draw a rectangle. Divide it into 4 rows (for fourths) and 3
+                columns (for thirds). This gives you 12 equal cells.
+                <p class="guiding-q">
+                  Why do we use rows for one fraction and columns for the other?
+                </p>
+              </li>
+              <li>
+                <strong>Shade the overlap</strong>
+                Shade the first 3 rows (that is 3/4 of the rectangle). Shade the
+                first 2 columns (that is 2/3 of the rectangle). The overlap
+                (dark area) shows 2/3 x 3/4.
+                <p class="guiding-q">
+                  How many cells are in the overlap? How many cells are there
+                  total? What fraction is that?
+                </p>
+              </li>
+              <li>
+                <strong>Multiply with the algorithm and simplify</strong>
+                2/3 x 3/4 = (2 x 3)/(3 x 4) = 6/12 = 1/2. The sunflower section
+                is 1/2 meter wide. Does the area model match?
+                <p class="guiding-q">
+                  What shortcut could you use before multiplying? (Hint: cancel
+                  common factors.)
+                </p>
+              </li>
+              <li>
+                <strong>Find the herb section width</strong>
+                Total bed width - sunflower width = herb width. So 3/4 - 1/2 =
+                3/4 - 2/4 = 1/4 meter for herbs.
+                <p class="guiding-q">
+                  How did you convert 1/2 to fourths? Why is a common
+                  denominator needed for subtraction?
+                </p>
+              </li>
+              <li>
+                <strong>Divide the herb section by 3</strong>
+                Each herb gets: 1/4 / 3 = 1/4 x 1/3 = 1/12 meter wide. Draw the
+                herb strip divided into 3 equal parts and label each 1/12.
+                <p class="guiding-q">
+                  Why does dividing by 3 become multiplying by 1/3? Can you show
+                  this on a diagram?
+                </p>
+              </li>
+              <li>
+                <strong>Check: do all parts add up?</strong>
+                Sunflower (1/2) + 3 herbs (3 x 1/12 = 3/12 = 1/4) = 1/2 + 1/4 =
+                2/4 + 1/4 = 3/4. That matches the total bed width!
+                <p class="guiding-q">
+                  Why is checking that parts add up to the whole a good way to
+                  verify your work?
+                </p>
+              </li>
+            </ol>
+
+            <!-- ESOL SUPPORT -->
+            <div class="esol-box">
+              <h3>ESOL Support</h3>
+              <h4>Key Vocabulary</h4>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Multiply fractions:</strong> Find a part of a part
+                  (2/3 of 3/4 means 2/3 x 3/4)
+                </div>
+                <div class="vocab-item">
+                  <strong>Area model:</strong> A rectangle divided into rows and
+                  columns to show multiplication
+                </div>
+                <div class="vocab-item">
+                  <strong>Simplify:</strong> Write a fraction in its smallest
+                  form (6/12 = 1/2)
+                </div>
+                <div class="vocab-item">
+                  <strong>Reciprocal:</strong> The fraction flipped upside down
+                  (reciprocal of 3 is 1/3)
+                </div>
+                <div class="vocab-item">
+                  <strong>Divide fractions:</strong> Multiply by the reciprocal
+                  (1/4 / 3 = 1/4 x 1/3)
+                </div>
+                <div class="vocab-item">
+                  <strong>Of:</strong> In math, "of" often means multiply (2/3
+                  OF 3/4 = 2/3 x 3/4)
+                </div>
+              </div>
+              <h4>Sentence Frames</h4>
+              <ul class="sentence-frames">
+                <li>
+                  "2/3 of 3/4 means I need to find 2/3 x 3/4, which equals ___."
+                </li>
+                <li>
+                  "In the area model, the overlap has ___ cells out of ___
+                  total, so the answer is ___."
+                </li>
+                <li>
+                  "To divide ___ by 3, I multiply by the reciprocal: ___ x 1/3 =
+                  ___."
+                </li>
+                <li>
+                  "I know my answer is correct because all the parts add up to
+                  ___."
+                </li>
+              </ul>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="representations">
+              <div class="rep-card">
+                <h4>Area Model</h4>
+                <p>
+                  Rectangle with rows and columns. The overlap shows the product
+                  of two fractions.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Equation</h4>
+                <p>
+                  2/3 x 3/4 = 6/12 = 1/2. Show the algorithm and simplification.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Strip Diagram</h4>
+                <p>
+                  Draw the bed as a strip. Mark the sunflower section, then
+                  divide the rest into 3 herbs.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <!-- TIMED PHASES -->
+          <section class="panel" aria-labelledby="phases-title">
+            <h2 id="phases-title">Timed Lab Phases</h2>
+            <div class="timer-section">
+              <div class="timer">
+                <div>
+                  <strong id="activePhaseLabel">Launch phase</strong>
+                  <div style="font-size: 0.9rem; color: var(--muted)">
+                    Click a phase, then press Start.
+                  </div>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">
+                  03:00
+                </div>
+              </div>
+              <div class="timer-controls">
+                <button class="btn btn-primary" id="startTimer">Start</button>
+                <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+                <button class="btn btn-secondary" id="resetTimer">Reset</button>
+              </div>
+            </div>
+            <div class="phase-list" id="phaseList">
+              <article class="phase is-open">
+                <button
+                  class="phase-toggle"
+                  data-phase="0"
+                  data-minutes="3"
+                  aria-expanded="true"
+                >
+                  <span class="phase-time">3 min</span
+                  ><span class="phase-title">Launch</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Read the garden problem aloud. Assign roles. Underline the
+                    key numbers: 3/4 meter, 2/3 of the bed, 3 herb types.
+                    Discuss: what operations will you need?
+                  </p>
+                  <p class="guiding-q">
+                    What does "2/3 of the bed" mean? Is "of" telling us to add,
+                    subtract, multiply, or divide?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: every team member knows the three
+                    calculations needed (multiply, subtract, divide).
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="1"
+                  data-minutes="6"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">6 min</span
+                  ><span class="phase-title">Build</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Model Builder draws the area model for 2/3 x 3/4: rectangle
+                    with 4 rows and 3 columns. Shade the overlap. Count the
+                    shaded cells and write the fraction.
+                  </p>
+                  <p class="guiding-q">
+                    How many total cells? How many in the overlap? Does your
+                    count match the algorithm?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: area model drawn, labeled, and the product
+                    written as a simplified fraction.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="2"
+                  data-minutes="5"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">5 min</span
+                  ><span class="phase-title">Solve</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Subtract to find herb width (3/4 - 1/2). Divide herb width
+                    by 3 to find each strip. Draw the strip diagram. Precision
+                    Checker verifies: do all parts add to 3/4?
+                  </p>
+                  <p class="guiding-q">
+                    What is 1/4 divided by 3? Show why dividing by 3 is the same
+                    as multiplying by 1/3.
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: all three answers found, strip diagram
+                    complete, and sum-check verified.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="3"
+                  data-minutes="4"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">4 min</span
+                  ><span class="phase-title">Defend</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Reporter prepares: explain what 2/3 x 3/4 means in the
+                    garden context, walk through the area model, show the strip
+                    diagram for division, and present the sum-check.
+                  </p>
+                  <p class="guiding-q">
+                    Why is the sunflower section (1/2 m) less than the total bed
+                    (3/4 m)? Does that make sense?
+                  </p>
+                  <div class="checkpoint">
+                    Before moving on: Reporter can present in under 60 seconds
+                    with both models shown.
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <div class="challenge-box">
+              <h3>Extension Challenge</h3>
+              <p>
+                The garden club decides to add a second bed that is
+                <strong>5/6 meter</strong> wide. They want
+                <strong>3/5 of it</strong> for tomatoes. How wide is the tomato
+                section? Draw the area model (5 columns, 6 rows) and simplify.
+                Then find each herb strip if the remaining space is split among
+                4 herb types.
+              </p>
+            </div>
+            <h3>"What If?" Variations</h3>
+            <ul class="whatif-list">
+              <li>
+                the bed was 1 full meter wide instead of 3/4? How would the
+                sunflower width change?
+              </li>
+              <li>
+                they wanted 3/4 of the bed for sunflowers instead of 2/3? Would
+                the herb strips get wider or narrower?
+              </li>
+              <li>
+                there were 4 herb types instead of 3? How would each strip width
+                change?
+              </li>
+            </ul>
+            <h3>Real-Life Connection</h3>
+            <p style="font-size: 0.95rem; color: var(--muted)">
+              Carpenters multiply fractions when cutting wood. If a board is 3/4
+              foot wide and you need 2/3 of it, you calculate 2/3 x 3/4 to know
+              exactly where to cut. Getting the fraction wrong wastes material.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel defense-section">
+            <h2>Defense Preparation</h2>
+            <h3>Defense Questions</h3>
+            <ol>
+              <li>
+                Show your area model. How many cells are in the overlap, and
+                what fraction does that represent?
+              </li>
+              <li>
+                What does 2/3 x 3/4 mean in the garden story? Explain in words,
+                not just numbers.
+              </li>
+              <li>
+                How did you find each herb strip width? Show the division step.
+              </li>
+              <li>How did you verify that all parts add back to 3/4?</li>
+              <li>
+                What shortcut could simplify 2/3 x 3/4 before multiplying?
+                (Cross-canceling)
+              </li>
+            </ol>
+            <h3>Sentence Starters for Your Defense</h3>
+            <ul class="sentence-starters">
+              <li>
+                "The sunflower section is ___ meter wide because 2/3 of 3/4
+                equals ___."
+              </li>
+              <li>
+                "In the area model, the overlap has ___ out of ___ cells, which
+                simplifies to ___."
+              </li>
+              <li>
+                "Each herb strip is ___ meter wide because we divided ___ by 3."
+              </li>
+              <li>
+                "We verified by adding: ___ + ___ = ___, which matches the total
+                bed width."
+              </li>
+            </ul>
+            <h3>What Makes a Strong Defense</h3>
+            <div class="rubric-grid">
+              <div class="rubric-item">
+                <strong>Area Model</strong>Correct rows, columns, and overlap
+                shaded
+              </div>
+              <div class="rubric-item">
+                <strong>Division</strong>Clear reciprocal step with diagram
+              </div>
+              <div class="rubric-item">
+                <strong>Verification</strong>Parts add back to the whole
+              </div>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <div class="exit-product">
+              <h3>Exit Product</h3>
+              <p>Submit a one-page lab note with:</p>
+              <ul class="checklist">
+                <li>
+                  Area model for 2/3 x 3/4 with cells labeled and overlap shaded
+                </li>
+                <li>
+                  Multiplication algorithm with simplification (6/12 = 1/2)
+                </li>
+                <li>Subtraction step: 3/4 - 1/2 = 1/4</li>
+                <li>Division: 1/4 / 3 = 1/12, with strip diagram</li>
+                <li>Verification: 1/2 + 3(1/12) = 1/2 + 1/4 = 3/4</li>
+                <li>
+                  Three-sentence defense: claim, model evidence, and
+                  verification check
+                </li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="print-workspace" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Area Model (2/3 x 3/4):</strong></p>
+        <br /><br /><br />
+        <p><strong>Multiplication and Simplification:</strong></p>
+        <br />
+        <p><strong>Subtraction (herb section):</strong></p>
+        <br />
+        <p><strong>Division (each herb strip):</strong></p>
+        <br />
+        <p><strong>Verification (parts add to whole):</strong></p>
+        <br />
+        <p><strong>Defense:</strong></p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var ai = 0,
+          rs = phases[0].minutes * 60,
+          tid = null;
+        var td = document.getElementById("timerDisplay"),
+          al = document.getElementById("activePhaseLabel"),
+          pl = document.getElementById("phaseList");
+        function fmt(s) {
+          return (
+            String(Math.floor(s / 60)).padStart(2, "0") +
+            ":" +
+            String(s % 60).padStart(2, "0")
+          );
+        }
+        function stop() {
+          if (tid) {
+            clearInterval(tid);
+            tid = null;
+          }
+        }
+        function sel(i) {
+          stop();
+          ai = i;
+          rs = phases[i].minutes * 60;
+          al.textContent = phases[i].title + " phase";
+          td.textContent = fmt(rs);
+          pl.querySelectorAll(".phase").forEach(function (a, x) {
+            a.classList.toggle("is-open", x === i);
+            a.querySelector(".phase-toggle").setAttribute(
+              "aria-expanded",
+              x === i ? "true" : "false",
+            );
+          });
+        }
+        pl.addEventListener("click", function (e) {
+          var t = e.target.closest(".phase-toggle");
+          if (t) sel(Number(t.dataset.phase));
+        });
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (tid) return;
+            tid = setInterval(function () {
+              rs = Math.max(0, rs - 1);
+              td.textContent = fmt(rs);
+              if (rs === 0) {
+                stop();
+                al.textContent = phases[ai].title + " phase - COMPLETE";
+              }
+            }, 1000);
+          });
+        document.getElementById("pauseTimer").addEventListener("click", stop);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            sel(ai);
+          });
+      })();
+    </script>
+  </body>
+</html>

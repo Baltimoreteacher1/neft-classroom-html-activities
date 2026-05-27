@@ -1,0 +1,1838 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 21: Center and Spread | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #115e59;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #eef7ee;
+        --line: #d9e1e8;
+        --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+      }
+
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg);
+      }
+
+      /* NAV */
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        color: var(--teal-dark);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .mission-nav a:hover {
+        text-decoration: underline;
+      }
+
+      /* HERO */
+      .mission-hero {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 28px;
+        align-items: center;
+        padding: clamp(28px, 5vw, 48px);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--navy);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+      .mission-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 12px;
+        color: var(--navy);
+      }
+      .mission-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .standard-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-teal);
+        color: var(--teal-dark);
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-left: 6px;
+      }
+      .hero-scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+      .hero-svg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* SECTIONS */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+        border-bottom: 2px solid var(--soft-blue);
+        padding-bottom: 8px;
+      }
+      .panel h3 {
+        color: var(--teal-dark);
+        font-size: 1.12rem;
+        margin-top: 18px;
+        margin-bottom: 8px;
+      }
+      .full-width {
+        grid-column: 1/-1;
+      }
+
+      /* INVESTIGATION */
+      .problem-box {
+        padding: 18px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 1.05rem;
+      }
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: steps;
+        padding: 12px 14px 12px 48px;
+        margin-bottom: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(steps);
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        display: block;
+        margin-top: 4px;
+      }
+
+      /* ESOL */
+      .esol-box {
+        padding: 18px;
+        background: #f0faf9;
+        border: 2px dashed #8bbab3;
+        border-radius: 8px;
+        margin: 18px 0;
+      }
+      .esol-box h3 {
+        color: var(--teal-dark);
+        margin-top: 0;
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      .vocab-item strong {
+        color: var(--navy);
+      }
+      .vocab-item .def {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .sentence-frames {
+        padding: 12px 16px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .sentence-frames p {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+
+      /* ROLES */
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .role-card {
+        padding: 14px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+        border-radius: 8px;
+      }
+      .role-card strong {
+        display: block;
+        color: #115e60;
+        margin-bottom: 4px;
+      }
+      .role-card .task {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      /* TIMER */
+      .timer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.6rem;
+        font-weight: 900;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .timer-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        min-height: 42px;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn-ghost {
+        background: var(--soft-teal);
+        border-color: #a7d8d0;
+        color: #135f60;
+      }
+      .btn:focus-visible {
+        outline: 3px solid rgba(32, 122, 122, 0.35);
+        outline-offset: 2px;
+      }
+
+      /* PHASES */
+      .phase-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .phase-header {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 4px 14px 14px;
+        color: var(--muted);
+      }
+      .phase-body ul {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .phase-card.open .phase-body {
+        display: block;
+      }
+
+      /* CHALLENGE */
+      .challenge-box {
+        padding: 16px;
+        background: var(--soft-gold);
+        border-left: 5px solid var(--gold);
+        border-radius: 6px;
+        margin-bottom: 16px;
+      }
+      .whatif {
+        padding: 12px 16px;
+        background: var(--soft-blue);
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+
+      /* DEFENSE */
+      .defense-list li {
+        margin-bottom: 8px;
+      }
+      .sentence-starter {
+        display: block;
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.92rem;
+        margin-top: 2px;
+      }
+
+      /* EXIT */
+      .exit-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+      }
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: "☐";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        font-size: 1.1rem;
+      }
+
+      /* SVG MODEL */
+      .svg-container {
+        display: flex;
+        justify-content: center;
+        margin: 18px 0;
+      }
+      .svg-container svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* REPRESENTATIONS */
+      .rep-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .rep-tab {
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .rep-tab.active {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .rep-content {
+        display: none;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .rep-content.active {
+        display: block;
+      }
+
+      /* PRINT */
+      .print-only {
+        display: none;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-bar,
+        .timer-buttons,
+        .btn,
+        .rep-tabs {
+          display: none !important;
+        }
+        .panel,
+        .mission-hero {
+          box-shadow: none;
+          border-color: #999;
+          break-inside: avoid;
+        }
+        .phase-body,
+        .rep-content {
+          display: block !important;
+        }
+        .print-only {
+          display: block;
+        }
+        .content-grid {
+          display: block;
+        }
+        .content-grid > * {
+          margin-bottom: 18px;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .mission-hero,
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-svg {
+          order: -1;
+        }
+      }
+      @media (max-width: 620px) {
+        .timer-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <!-- NAV -->
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-20/">&#8592; Mission 20</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-22/">Mission 22 &#8594;</a>
+      </nav>
+
+      <!-- HERO -->
+      <section class="mission-hero" aria-labelledby="hero-title">
+        <div>
+          <span class="mission-badge">Mission 21</span>
+          <span
+            class="mission-badge"
+            style="background: var(--soft-teal); color: var(--teal-dark)"
+            >Unit 8</span
+          >
+          <span class="standard-tag"
+            >6.SP.A.2 &middot; 6.SP.A.3 &middot; 6.SP.B.5c</span
+          >
+          <h1 id="hero-title">Center and Spread</h1>
+          <p class="hero-scenario">
+            Two sixth-grade classes at Riverside Middle School held a
+            read-a-thon. Class A has 24 students who read
+            <strong
+              >8, 12, 15, 15, 18, 20, 22, 22, 24, 25, 25, 26, 27, 28, 30, 30,
+              32, 34, 35, 36, 38, 40, 42, 45</strong
+            >
+            books. Class B has 24 students who read
+            <strong
+              >5, 10, 12, 14, 16, 18, 20, 20, 22, 24, 24, 25, 25, 26, 28, 30,
+              32, 35, 38, 40, 45, 48, 50, 55</strong
+            >
+            books. The principal wants to give an award to the class that "read
+            better overall." Your team must use mean, median, range, and IQR to
+            build a fair comparison and recommend which class earns the award.
+          </p>
+        </div>
+        <div class="hero-svg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 380 420"
+            width="380"
+            height="420"
+            aria-label="Two box-and-whisker plots comparing book counts for Class A and Class B"
+          >
+            <!-- Background -->
+            <rect width="380" height="420" rx="12" fill="#edf5ff" />
+            <!-- Title -->
+            <text
+              x="190"
+              y="30"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="800"
+              fill="#23395d"
+            >
+              Read-a-Thon Results
+            </text>
+            <!-- Number line -->
+            <line
+              x1="40"
+              y1="380"
+              x2="360"
+              y2="380"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <!-- Tick marks and labels -->
+            <g font-size="11" fill="#5b6573" text-anchor="middle">
+              <line
+                x1="40"
+                y1="375"
+                x2="40"
+                y2="385"
+                stroke="#23395d"
+                stroke-width="1.5"
+              />
+              <text x="40" y="398">0</text>
+              <line
+                x1="104"
+                y1="375"
+                x2="104"
+                y2="385"
+                stroke="#23395d"
+                stroke-width="1.5"
+              />
+              <text x="104" y="398">10</text>
+              <line
+                x1="168"
+                y1="375"
+                x2="168"
+                y2="385"
+                stroke="#23395d"
+                stroke-width="1.5"
+              />
+              <text x="168" y="398">20</text>
+              <line
+                x1="232"
+                y1="375"
+                x2="232"
+                y2="385"
+                stroke="#23395d"
+                stroke-width="1.5"
+              />
+              <text x="232" y="398">30</text>
+              <line
+                x1="296"
+                y1="375"
+                x2="296"
+                y2="385"
+                stroke="#23395d"
+                stroke-width="1.5"
+              />
+              <text x="296" y="398">40</text>
+              <line
+                x1="360"
+                y1="375"
+                x2="360"
+                y2="385"
+                stroke="#23395d"
+                stroke-width="1.5"
+              />
+              <text x="360" y="398">50</text>
+            </g>
+            <text
+              x="200"
+              y="414"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#23395d"
+            >
+              Books Read
+            </text>
+
+            <!-- CLASS A box plot: min=8, Q1=18, med=25.5, Q3=34, max=45 -->
+            <text
+              x="30"
+              y="140"
+              font-size="13"
+              font-weight="800"
+              fill="#207a7a"
+              text-anchor="end"
+              transform="rotate(-90,30,140)"
+            >
+              Class A
+            </text>
+            <!-- whiskers -->
+            <line
+              x1="91"
+              y1="160"
+              x2="155"
+              y2="160"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <line
+              x1="258"
+              y1="160"
+              x2="328"
+              y2="160"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <!-- min/max caps -->
+            <line
+              x1="91"
+              y1="148"
+              x2="91"
+              y2="172"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <line
+              x1="328"
+              y1="148"
+              x2="328"
+              y2="172"
+              stroke="#207a7a"
+              stroke-width="2"
+            />
+            <!-- box -->
+            <rect
+              x="155"
+              y="138"
+              width="103"
+              height="44"
+              rx="3"
+              fill="rgba(32,122,122,0.15)"
+              stroke="#207a7a"
+              stroke-width="2.5"
+            />
+            <!-- median line -->
+            <line
+              x1="203"
+              y1="138"
+              x2="203"
+              y2="182"
+              stroke="#207a7a"
+              stroke-width="3"
+            />
+            <!-- labels -->
+            <text
+              x="91"
+              y="132"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              8
+            </text>
+            <text
+              x="155"
+              y="132"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              Q1=18
+            </text>
+            <text
+              x="203"
+              y="132"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              Med=25.5
+            </text>
+            <text
+              x="258"
+              y="132"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              Q3=34
+            </text>
+            <text
+              x="328"
+              y="132"
+              text-anchor="middle"
+              font-size="10"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              45
+            </text>
+
+            <!-- CLASS B box plot: min=5, Q1=17, med=24.5, Q3=36.5, max=55 -->
+            <text
+              x="30"
+              y="270"
+              font-size="13"
+              font-weight="800"
+              fill="#b7791f"
+              text-anchor="end"
+              transform="rotate(-90,30,270)"
+            >
+              Class B
+            </text>
+            <!-- whiskers -->
+            <line
+              x1="72"
+              y1="280"
+              x2="149"
+              y2="280"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <line
+              x1="274"
+              y1="280"
+              x2="352"
+              y2="280"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <!-- min/max caps -->
+            <line
+              x1="72"
+              y1="268"
+              x2="72"
+              y2="292"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <line
+              x1="352"
+              y1="268"
+              x2="352"
+              y2="292"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <!-- box -->
+            <rect
+              x="149"
+              y="258"
+              width="125"
+              height="44"
+              rx="3"
+              fill="rgba(183,121,31,0.15)"
+              stroke="#b7791f"
+              stroke-width="2.5"
+            />
+            <!-- median line -->
+            <line
+              x1="197"
+              y1="258"
+              x2="197"
+              y2="302"
+              stroke="#b7791f"
+              stroke-width="3"
+            />
+            <!-- labels -->
+            <text
+              x="72"
+              y="252"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              5
+            </text>
+            <text
+              x="149"
+              y="252"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              Q1=17
+            </text>
+            <text
+              x="197"
+              y="252"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              Med=24.5
+            </text>
+            <text
+              x="274"
+              y="252"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              Q3=36.5
+            </text>
+            <text
+              x="352"
+              y="252"
+              text-anchor="middle"
+              font-size="10"
+              fill="#b7791f"
+              font-weight="700"
+            >
+              55
+            </text>
+
+            <!-- Legend -->
+            <rect
+              x="100"
+              y="50"
+              width="180"
+              height="60"
+              rx="6"
+              fill="#fff"
+              stroke="#d9e1e8"
+              stroke-width="1"
+            />
+            <rect
+              x="112"
+              y="62"
+              width="16"
+              height="10"
+              rx="2"
+              fill="rgba(32,122,122,0.3)"
+              stroke="#207a7a"
+              stroke-width="1.5"
+            />
+            <text x="134" y="72" font-size="11" fill="#23395d">
+              Class A (n=24)
+            </text>
+            <rect
+              x="112"
+              y="82"
+              width="16"
+              height="10"
+              rx="2"
+              fill="rgba(183,121,31,0.3)"
+              stroke="#b7791f"
+              stroke-width="1.5"
+            />
+            <text x="134" y="92" font-size="11" fill="#23395d">
+              Class B (n=24)
+            </text>
+
+            <!-- Books icon -->
+            <g transform="translate(310,50)">
+              <rect
+                x="0"
+                y="5"
+                width="20"
+                height="28"
+                rx="2"
+                fill="#207a7a"
+                opacity="0.7"
+              />
+              <rect
+                x="8"
+                y="2"
+                width="20"
+                height="28"
+                rx="2"
+                fill="#b7791f"
+                opacity="0.7"
+              />
+              <rect
+                x="16"
+                y="8"
+                width="20"
+                height="28"
+                rx="2"
+                fill="#23395d"
+                opacity="0.5"
+              />
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <!-- MAIN CONTENT GRID -->
+      <div class="content-grid">
+        <!-- LEFT COLUMN: Investigation -->
+        <div>
+          <!-- THE PROBLEM -->
+          <section class="panel">
+            <h2>The Problem</h2>
+            <div class="problem-box">
+              <strong>Which class "read better overall"?</strong> The principal
+              says the winning class gets a pizza party. But "better" could mean
+              different things. Use mean, median, range, and IQR to build your
+              case. Your recommendation must explain which measure(s) you chose
+              and why they are the fairest way to compare.
+            </div>
+
+            <!-- VISUAL MODEL -->
+            <h3>Visual Model: Side-by-Side Data</h3>
+            <div class="svg-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 520 300"
+                width="520"
+                height="300"
+                aria-label="Dot plot showing both classes' reading data"
+              >
+                <rect width="520" height="300" rx="8" fill="#f8fffd" />
+                <text
+                  x="260"
+                  y="22"
+                  text-anchor="middle"
+                  font-size="13"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  Books Read — Dot Plot Comparison
+                </text>
+                <!-- Number line -->
+                <line
+                  x1="30"
+                  y1="180"
+                  x2="500"
+                  y2="180"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+                <g font-size="10" fill="#5b6573" text-anchor="middle">
+                  <text x="30" y="198">0</text>
+                  <line x1="30" y1="176" x2="30" y2="184" stroke="#aaa" />
+                  <text x="117" y="198">10</text>
+                  <line x1="117" y1="176" x2="117" y2="184" stroke="#aaa" />
+                  <text x="204" y="198">20</text>
+                  <line x1="204" y1="176" x2="204" y2="184" stroke="#aaa" />
+                  <text x="291" y="198">25</text>
+                  <line x1="291" y1="176" x2="291" y2="184" stroke="#aaa" />
+                  <text x="378" y="198">35</text>
+                  <line x1="378" y1="176" x2="378" y2="184" stroke="#aaa" />
+                  <text x="465" y="198">45</text>
+                  <line x1="465" y1="176" x2="465" y2="184" stroke="#aaa" />
+                  <text x="500" y="198">55</text>
+                  <line x1="500" y1="176" x2="500" y2="184" stroke="#aaa" />
+                </g>
+                <!-- Class A dots (teal) stacked above line -->
+                <g fill="#207a7a">
+                  <circle cx="100" cy="168" r="5" />
+                  <circle cx="130" cy="168" r="5" />
+                  <circle cx="156" cy="168" r="5" />
+                  <circle cx="156" cy="156" r="5" />
+                  <circle cx="187" cy="168" r="5" />
+                  <circle cx="204" cy="168" r="5" />
+                  <circle cx="222" cy="168" r="5" />
+                  <circle cx="222" cy="156" r="5" />
+                  <circle cx="243" cy="168" r="5" />
+                  <circle cx="260" cy="168" r="5" />
+                  <circle cx="260" cy="156" r="5" />
+                  <circle cx="274" cy="168" r="5" />
+                  <circle cx="287" cy="168" r="5" />
+                  <circle cx="300" cy="168" r="5" />
+                  <circle cx="317" cy="168" r="5" />
+                  <circle cx="317" cy="156" r="5" />
+                  <circle cx="335" cy="168" r="5" />
+                  <circle cx="352" cy="168" r="5" />
+                  <circle cx="365" cy="168" r="5" />
+                  <circle cx="378" cy="168" r="5" />
+                  <circle cx="396" cy="168" r="5" />
+                  <circle cx="418" cy="168" r="5" />
+                  <circle cx="440" cy="168" r="5" />
+                  <circle cx="465" cy="168" r="5" />
+                </g>
+                <!-- Class B dots (gold) below line -->
+                <g fill="#b7791f">
+                  <circle cx="74" cy="210" r="5" />
+                  <circle cx="117" cy="210" r="5" />
+                  <circle cx="130" cy="210" r="5" />
+                  <circle cx="148" cy="210" r="5" />
+                  <circle cx="165" cy="210" r="5" />
+                  <circle cx="187" cy="210" r="5" />
+                  <circle cx="204" cy="210" r="5" />
+                  <circle cx="204" cy="222" r="5" />
+                  <circle cx="222" cy="210" r="5" />
+                  <circle cx="243" cy="210" r="5" />
+                  <circle cx="243" cy="222" r="5" />
+                  <circle cx="260" cy="210" r="5" />
+                  <circle cx="260" cy="222" r="5" />
+                  <circle cx="274" cy="210" r="5" />
+                  <circle cx="300" cy="210" r="5" />
+                  <circle cx="317" cy="210" r="5" />
+                  <circle cx="335" cy="210" r="5" />
+                  <circle cx="365" cy="210" r="5" />
+                  <circle cx="396" cy="210" r="5" />
+                  <circle cx="418" cy="210" r="5" />
+                  <circle cx="465" cy="210" r="5" />
+                  <circle cx="483" cy="210" r="5" />
+                  <circle cx="491" cy="210" r="5" />
+                  <circle cx="500" cy="210" r="5" />
+                </g>
+                <!-- Legend -->
+                <circle cx="140" cy="250" r="5" fill="#207a7a" />
+                <text x="150" y="254" font-size="11" fill="#23395d">
+                  Class A
+                </text>
+                <circle cx="220" cy="250" r="5" fill="#b7791f" />
+                <text x="230" y="254" font-size="11" fill="#23395d">
+                  Class B
+                </text>
+                <!-- Mean markers -->
+                <line
+                  x1="275"
+                  y1="148"
+                  x2="275"
+                  y2="175"
+                  stroke="#207a7a"
+                  stroke-width="2"
+                  stroke-dasharray="4,3"
+                />
+                <text
+                  x="275"
+                  y="144"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#207a7a"
+                  font-weight="700"
+                >
+                  Mean A ≈ 27
+                </text>
+                <line
+                  x1="280"
+                  y1="230"
+                  x2="280"
+                  y2="205"
+                  stroke="#b7791f"
+                  stroke-width="2"
+                  stroke-dasharray="4,3"
+                />
+                <text
+                  x="280"
+                  y="244"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#b7791f"
+                  font-weight="700"
+                >
+                  Mean B ≈ 27
+                </text>
+              </svg>
+            </div>
+
+            <!-- STEP-BY-STEP -->
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Organize the data.</strong> Both data sets are already
+                in order from least to greatest. Count to confirm each class has
+                24 values.
+                <span class="guiding-q"
+                  >Why does ordering the data first help you find the median and
+                  quartiles?</span
+                >
+              </li>
+              <li>
+                <strong>Find the median of each class.</strong> With 24 values,
+                the median is the average of the 12th and 13th values. For Class
+                A: (26+27)/2 = 26.5. For Class B: (25+25)/2 = 25.
+                <span class="guiding-q"
+                  >What does the median tell you that the mean does not?</span
+                >
+              </li>
+              <li>
+                <strong>Calculate the mean of each class.</strong> Add all
+                values and divide by 24. Class A total = 633, mean ≈ 26.4. Class
+                B total = 646, mean ≈ 26.9.
+                <span class="guiding-q"
+                  >The means are very close. Does that mean the classes
+                  performed the same?</span
+                >
+              </li>
+              <li>
+                <strong>Find the range.</strong> Range = max - min. Class A: 45
+                - 8 = 37. Class B: 55 - 5 = 50.
+                <span class="guiding-q"
+                  >Class B has a bigger range. What does that tell you about how
+                  spread out its data is?</span
+                >
+              </li>
+              <li>
+                <strong>Find Q1, Q3, and the IQR.</strong> Split each half (12
+                values) and find the median of each half. Class A: Q1=18, Q3=34,
+                IQR=16. Class B: Q1=17, Q3=36.5, IQR=19.5.
+                <span class="guiding-q"
+                  >Which class has scores that are more "bunched together" in
+                  the middle 50%?</span
+                >
+              </li>
+              <li>
+                <strong>Make your recommendation.</strong> Compare the four
+                measures side by side. Decide which measure(s) are fairest for
+                choosing the "better" class and explain why.
+                <span class="guiding-q"
+                  >Could you argue either class deserves the award? What makes
+                  your choice stronger?</span
+                >
+              </li>
+            </ol>
+
+            <!-- ESOL SUPPORT -->
+            <div class="esol-box">
+              <h3>ESOL Support: Key Vocabulary</h3>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Mean</strong>
+                  <div class="def">
+                    The average. Add all numbers, then divide by how many
+                    numbers there are.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Median</strong>
+                  <div class="def">
+                    The middle number when data is in order. If two middle
+                    numbers, find their average.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Range</strong>
+                  <div class="def">
+                    The difference between the highest and lowest values. Shows
+                    total spread.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>IQR (Interquartile Range)</strong>
+                  <div class="def">
+                    Q3 minus Q1. It shows the spread of the middle 50% of the
+                    data.
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Quartile</strong>
+                  <div class="def">
+                    Values that split ordered data into four equal parts (Q1,
+                    Q2=median, Q3).
+                  </div>
+                </div>
+                <div class="vocab-item">
+                  <strong>Outlier</strong>
+                  <div class="def">
+                    A value that is much higher or much lower than most of the
+                    data.
+                  </div>
+                </div>
+              </div>
+              <div class="sentence-frames">
+                <strong>Sentence Frames:</strong>
+                <p>
+                  "The mean of Class ___ is ___, which is [higher/lower] than
+                  Class ___."
+                </p>
+                <p>
+                  "The IQR of Class ___ is ___, so the middle 50% of scores are
+                  [more/less] spread out."
+                </p>
+                <p>"I recommend Class ___ because ___."</p>
+              </div>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="rep-tabs" role="tablist">
+              <button
+                class="rep-tab active"
+                role="tab"
+                data-target="rep1"
+                aria-selected="true"
+              >
+                Box Plots
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep2"
+                aria-selected="false"
+              >
+                Summary Table
+              </button>
+              <button
+                class="rep-tab"
+                role="tab"
+                data-target="rep3"
+                aria-selected="false"
+              >
+                Written Comparison
+              </button>
+            </div>
+            <div class="rep-content active" id="rep1">
+              <p>
+                Use the box-and-whisker plots in the hero image above. Compare
+                where the boxes overlap and where they differ. Notice that Class
+                A's box is narrower (smaller IQR) while Class B's whiskers
+                stretch further (larger range).
+              </p>
+            </div>
+            <div class="rep-content" id="rep2">
+              <table
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 0.95rem;
+                "
+              >
+                <thead>
+                  <tr style="background: var(--soft-blue)">
+                    <th
+                      style="
+                        padding: 8px;
+                        text-align: left;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      Measure
+                    </th>
+                    <th
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      Class A
+                    </th>
+                    <th
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      Class B
+                    </th>
+                    <th
+                      style="
+                        padding: 8px;
+                        text-align: left;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      What it shows
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        border: 1px solid var(--line);
+                        font-weight: 700;
+                      "
+                    >
+                      Mean
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      ≈ 26.4
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      ≈ 26.9
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Typical value (affected by extremes)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        border: 1px solid var(--line);
+                        font-weight: 700;
+                      "
+                    >
+                      Median
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      26.5
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      25
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Middle value (not pulled by extremes)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        border: 1px solid var(--line);
+                        font-weight: 700;
+                      "
+                    >
+                      Range
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      37
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      50
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Total spread of all values
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding: 8px;
+                        border: 1px solid var(--line);
+                        font-weight: 700;
+                      "
+                    >
+                      IQR
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      16
+                    </td>
+                    <td
+                      style="
+                        padding: 8px;
+                        text-align: center;
+                        border: 1px solid var(--line);
+                      "
+                    >
+                      19.5
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--line)">
+                      Spread of middle 50%
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="rep-content" id="rep3">
+              <p>
+                <strong>Approach:</strong> Write a paragraph comparing the two
+                classes using all four measures. Example start:
+              </p>
+              <p
+                style="
+                  background: var(--soft-gold);
+                  padding: 12px;
+                  border-radius: 6px;
+                  font-style: italic;
+                "
+              >
+                "Both classes have very similar means (Class A ≈ 26.4, Class B ≈
+                26.9), so the average student read about the same number of
+                books. However, Class A has a higher median (26.5 vs. 25), which
+                means more students in Class A read above 25 books. Class B has
+                a much larger range (50 vs. 37) and a larger IQR (19.5 vs. 16),
+                which tells us..."
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel">
+            <h2>Team Roles</h2>
+            <div class="role-grid">
+              <div class="role-card">
+                <strong>Facilitator</strong>
+                <div class="task">
+                  Read the data sets aloud. Make sure everyone understands the
+                  question: "Which class read better?" Keep the team moving
+                  through each measure.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Model Builder</strong>
+                <div class="task">
+                  Draw the box-and-whisker plots or dot plots on paper. Label
+                  min, Q1, median, Q3, and max for both classes.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Precision Checker</strong>
+                <div class="task">
+                  Verify every calculation: check the sums for the mean, confirm
+                  the median position (12th and 13th values), double-check Q1
+                  and Q3.
+                </div>
+              </div>
+              <div class="role-card">
+                <strong>Reporter</strong>
+                <div class="task">
+                  Prepare the defense statement: "We recommend Class ___ because
+                  ___." Include at least two measures as evidence.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- TIMED PHASES -->
+          <section class="panel">
+            <h2>Timed Lab Phases</h2>
+            <div class="timer-bar">
+              <div>
+                <strong id="activePhaseLabel">Ready</strong>
+                <div style="font-size: 0.9rem; color: var(--muted)">
+                  Click a phase, then press Start.
+                </div>
+              </div>
+              <div class="timer-display" id="timerDisplay" aria-live="polite">
+                03:00
+              </div>
+            </div>
+            <div class="timer-buttons">
+              <button class="btn btn-primary" id="startTimer">Start</button>
+              <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+              <button class="btn btn-secondary" id="resetTimer">Reset</button>
+            </div>
+
+            <div style="margin-top: 14px">
+              <article class="phase-card open">
+                <button class="phase-header" data-phase="0" data-minutes="3">
+                  <span class="phase-time">3 min</span>
+                  <span class="phase-title">Launch</span>
+                  <span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Read both data sets and the scenario.</li>
+                    <li>Assign roles.</li>
+                    <li>
+                      Underline the key question: What does "read better
+                      overall" mean?
+                    </li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can every team member explain
+                      what you need to find?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="1" data-minutes="6">
+                  <span class="phase-time">6 min</span>
+                  <span class="phase-title">Build</span>
+                  <span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>
+                      Calculate mean, median, range, and IQR for BOTH classes.
+                    </li>
+                    <li>Model Builder: create box plots or dot plots.</li>
+                    <li>Precision Checker: verify each calculation step.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Do you have all 4 measures
+                      for both classes written down?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="2" data-minutes="5">
+                  <span class="phase-time">5 min</span>
+                  <span class="phase-title">Solve</span>
+                  <span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Compare the four measures side by side.</li>
+                    <li>Decide: Which measure(s) best answer the question?</li>
+                    <li>Write your recommendation with evidence.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Does your recommendation use
+                      at least two different measures?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="phase-card">
+                <button class="phase-header" data-phase="3" data-minutes="4">
+                  <span class="phase-time">4 min</span>
+                  <span class="phase-title">Defend</span>
+                  <span>+</span>
+                </button>
+                <div class="phase-body">
+                  <ul>
+                    <li>Reporter: practice the defense statement aloud.</li>
+                    <li>Team: ask each other the defense questions below.</li>
+                    <li>Revise if any answer is unclear.</li>
+                    <li>
+                      <strong>Checkpoint:</strong> Can the Reporter explain WHY
+                      you chose those measures?
+                    </li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <h2>Challenge</h2>
+            <div class="challenge-box">
+              <strong>Extension:</strong> A new student joins Class B and read
+              100 books. Recalculate the mean, median, and range for Class B.
+              How does one extreme value change your recommendation?
+            </div>
+            <div class="whatif">
+              <strong>What If...?</strong>
+              <ul>
+                <li>
+                  What if you removed the highest and lowest score from each
+                  class? Would your recommendation change?
+                </li>
+                <li>
+                  What if the principal said "the class where most students read
+                  above 25 books"? Which measure helps most?
+                </li>
+              </ul>
+            </div>
+            <p>
+              <strong>Real-Life Connection:</strong> Sports analysts use mean,
+              median, and IQR to compare players. A player with a high mean but
+              huge range is "inconsistent." Coaches prefer consistent performers
+              — just like you might argue one class is "more consistently
+              strong."
+            </p>
+          </section>
+
+          <!-- DEFENSE PREPARATION -->
+          <section class="panel">
+            <h2>Defense Preparation</h2>
+            <ol class="defense-list">
+              <li>
+                Which statistical measure did you rely on most, and why?
+                <span class="sentence-starter"
+                  >"We focused on ___ because it shows ___."</span
+                >
+              </li>
+              <li>
+                The means are almost the same. How did you break the tie?
+                <span class="sentence-starter"
+                  >"Even though the means are close, the ___ tells us
+                  ___."</span
+                >
+              </li>
+              <li>
+                How does the IQR help you understand consistency?
+                <span class="sentence-starter"
+                  >"A smaller IQR means the middle 50% of students scored
+                  between ___ and ___, which shows ___."</span
+                >
+              </li>
+              <li>
+                Could someone argue for the other class? How would you respond?
+                <span class="sentence-starter"
+                  >"Someone might say Class ___ is better because ___, but we
+                  disagree because ___."</span
+                >
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 12px;
+                padding: 12px;
+                background: var(--soft-green);
+                border-radius: 6px;
+              "
+            >
+              <strong>Rubric Quick-Check:</strong>
+              <ul style="margin: 6px 0 0; padding-left: 18px">
+                <li>All 4 measures calculated correctly for both classes</li>
+                <li>Visual model (box plot or dot plot) is labeled</li>
+                <li>Recommendation uses at least 2 measures as evidence</li>
+                <li>
+                  Defense answers explain "why this measure" not just "what the
+                  number is"
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <h2>Exit Product</h2>
+            <div class="exit-box">
+              <strong>Submit a one-page Lab Report that includes:</strong>
+              <ul class="checklist">
+                <li>A summary table with all 4 measures for both classes</li>
+                <li>
+                  At least one visual model (box plot, dot plot, or histogram)
+                </li>
+                <li>
+                  A 2-3 sentence recommendation naming which class "read better"
+                  and why
+                </li>
+                <li>
+                  One sentence about what would change if an outlier were added
+                </li>
+              </ul>
+            </div>
+            <div style="margin-top: 12px">
+              <strong>Self-Assessment:</strong>
+              <ul class="checklist">
+                <li>
+                  I can explain what mean, median, range, and IQR each measure
+                </li>
+                <li>I can compare two data sets using center AND spread</li>
+                <li>
+                  I can explain why different measures might lead to different
+                  conclusions
+                </li>
+                <li>I can show my thinking with a visual model</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+        <!-- end right column -->
+      </div>
+      <!-- end content-grid -->
+
+      <!-- PRINT WORKSPACE -->
+      <section class="print-only" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Calculations:</strong></p>
+        <br /><br />
+        <p><strong>Visual Model:</strong></p>
+        <br /><br />
+        <p><strong>Recommendation and Defense:</strong></p>
+        <br /><br />
+      </section>
+
+      <!-- BOTTOM NAV -->
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="/math-lab-missions/mission-20/">&#8592; Mission 20</a>
+        <a href="/math-lab-missions/">All Missions</a>
+        <a href="/math-lab-missions/mission-22/">Mission 22 &#8594;</a>
+      </nav>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // Tab switching
+        document.querySelectorAll(".rep-tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            document.querySelectorAll(".rep-tab").forEach(function (t) {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            document.querySelectorAll(".rep-content").forEach(function (c) {
+              c.classList.remove("active");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            var target = document.getElementById(tab.dataset.target);
+            if (target) target.classList.add("active");
+          });
+        });
+
+        // Phase accordion
+        var phases = [
+          { title: "Launch", minutes: 3 },
+          { title: "Build", minutes: 6 },
+          { title: "Solve", minutes: 5 },
+          { title: "Defend", minutes: 4 },
+        ];
+        var activePhaseIndex = 0;
+        var remainingSeconds = phases[0].minutes * 60;
+        var timerId = null;
+
+        var timerDisplay = document.getElementById("timerDisplay");
+        var activePhaseLabel = document.getElementById("activePhaseLabel");
+
+        function formatTime(s) {
+          var m = Math.floor(s / 60);
+          var sec = s % 60;
+          return (
+            String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0")
+          );
+        }
+
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+
+        document.querySelectorAll(".phase-header").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.phase);
+            activePhaseIndex = idx;
+            remainingSeconds = parseInt(btn.dataset.minutes) * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent = phases[idx].title + " phase";
+            document.querySelectorAll(".phase-card").forEach(function (c, i) {
+              if (i === idx) c.classList.add("open");
+              else c.classList.remove("open");
+            });
+            stopTimer();
+          });
+        });
+
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent = "Phase complete!";
+              }
+            }, 1000);
+          });
+
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            stopTimer();
+            remainingSeconds = phases[activePhaseIndex].minutes * 60;
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            activePhaseLabel.textContent =
+              phases[activePhaseIndex].title + " phase";
+          });
+      })();
+    </script>
+  </body>
+</html>

@@ -2,1018 +2,1505 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Factor Frenzy - Unit 1</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Factor Frenzy — Brick Breaker | Unit 1</title>
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
+      * {
         margin: 0;
         padding: 0;
-      }
-      :root {
-        --primary: #17324d;
-        --accent: #94a3b8;
-        --bg: #0f172a;
-        --bg-card: #1e293b;
-        --green: #22c55e;
-        --red: #ef4444;
-        --gold: #f59e0b;
-        --white: #f8fafc;
+        box-sizing: border-box;
       }
       body {
-        font-family:
-          "Segoe UI",
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: var(--bg);
-        color: var(--white);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        overflow-x: hidden;
-      }
-      .screen {
-        display: none;
-        width: 100%;
-        max-width: 640px;
-        padding: 24px;
-      }
-      .screen.active {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      h1 {
-        font-size: 2rem;
-        margin-bottom: 8px;
-      }
-      h2 {
-        font-size: 1.4rem;
-        color: var(--accent);
-        margin-bottom: 16px;
-      }
-
-      /* Stars background */
-      .stars {
-        position: fixed;
-        inset: 0;
-        z-index: -1;
+        background: #0a0a2e;
         overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
       }
-      .stars span {
-        position: absolute;
-        background: #fff;
-        border-radius: 50%;
-        animation: twinkle 3s ease-in-out infinite alternate;
+      #game-container {
+        margin: 0 auto;
+        position: relative;
       }
-      @keyframes twinkle {
-        0% {
-          opacity: 0.2;
-        }
-        100% {
-          opacity: 1;
-        }
-      }
-
-      /* LOGIN */
-      #login {
-        gap: 16px;
-        text-align: center;
-      }
-      #login .logo {
-        font-size: 4rem;
-        margin-bottom: 8px;
-      }
-      #login input,
-      #login select {
-        width: 100%;
-        max-width: 320px;
-        padding: 12px 16px;
-        border: 2px solid var(--accent);
-        border-radius: 10px;
-        background: var(--bg-card);
-        color: var(--white);
-        font-size: 1rem;
-        outline: none;
-        transition: border-color 0.2s;
-      }
-      #login input:focus,
-      #login select:focus {
-        border-color: var(--gold);
-      }
-      #login select option {
-        background: var(--bg-card);
-      }
-      .btn {
-        padding: 14px 40px;
-        border: none;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition:
-          transform 0.15s,
-          box-shadow 0.15s;
-        color: var(--white);
-      }
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-      }
-      .btn:active {
-        transform: translateY(0);
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--primary), #1d4e7c);
-      }
-      .btn-gold {
-        background: linear-gradient(135deg, var(--gold), #d97706);
-      }
-      .btn-green {
-        background: linear-gradient(135deg, var(--green), #16a34a);
-      }
-
-      /* INSTRUCTIONS */
-      #instructions {
-        gap: 20px;
-        text-align: center;
-      }
-      .rules-box {
-        background: var(--bg-card);
-        border: 1px solid var(--accent);
-        border-radius: 14px;
-        padding: 24px;
-        text-align: left;
-        line-height: 1.7;
-        width: 100%;
-      }
-      .rules-box li {
-        margin-left: 20px;
-        margin-bottom: 6px;
-      }
-
-      /* GAMEPLAY */
-      #gameplay {
-        gap: 14px;
-      }
-      .hud {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .hud-item {
-        background: var(--bg-card);
-        border-radius: 10px;
-        padding: 8px 14px;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .hearts {
-        font-size: 1.3rem;
-        letter-spacing: 4px;
-      }
-      .progress-bar-wrap {
-        width: 100%;
-        height: 8px;
-        background: var(--bg-card);
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, var(--gold), var(--green));
-        border-radius: 4px;
-        transition: width 0.4s;
-      }
-      .timer-bar-wrap {
-        width: 100%;
-        height: 6px;
-        background: var(--bg-card);
-        border-radius: 3px;
-        overflow: hidden;
-      }
-      .timer-bar {
-        height: 100%;
-        background: var(--green);
-        border-radius: 3px;
-        transition:
-          width 0.1s linear,
-          background 0.3s;
-      }
-      .timer-bar.warning {
-        background: var(--gold);
-      }
-      .timer-bar.danger {
-        background: var(--red);
-      }
-      .question-card {
-        background: var(--bg-card);
-        border: 2px solid var(--primary);
-        border-radius: 16px;
-        padding: 32px 24px;
-        width: 100%;
-        text-align: center;
-        min-height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .question-card.correct-flash {
-        animation: flashGreen 0.5s;
-      }
-      .question-card.wrong-shake {
-        animation: shake 0.5s;
-      }
-      @keyframes flashGreen {
-        0%,
-        100% {
-          border-color: var(--primary);
-          background: var(--bg-card);
-        }
-        50% {
-          border-color: var(--green);
-          background: rgba(34, 197, 94, 0.15);
-        }
-      }
-      @keyframes shake {
-        0%,
-        100% {
-          transform: translateX(0);
-          border-color: var(--red);
-        }
-        20% {
-          transform: translateX(-8px);
-        }
-        40% {
-          transform: translateX(8px);
-        }
-        60% {
-          transform: translateX(-6px);
-        }
-        80% {
-          transform: translateX(6px);
-        }
-      }
-      .question-text {
-        font-size: 1.35rem;
-        font-weight: 600;
-        line-height: 1.5;
-      }
-      .difficulty-badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-      }
-      .difficulty-badge.easy {
-        background: var(--green);
-        color: #000;
-      }
-      .difficulty-badge.medium {
-        background: var(--gold);
-        color: #000;
-      }
-      .difficulty-badge.hard {
-        background: var(--red);
-        color: #fff;
-      }
-      .choices {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        width: 100%;
-      }
-      .choice-btn {
-        padding: 16px 12px;
-        border: 2px solid var(--accent);
-        border-radius: 12px;
-        background: var(--bg-card);
-        color: var(--white);
-        font-size: 1.05rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: center;
-        line-height: 1.4;
-      }
-      .choice-btn:hover:not(.locked) {
-        border-color: var(--gold);
-        background: rgba(245, 158, 11, 0.1);
-      }
-      .choice-btn.correct-pick {
-        border-color: var(--green);
-        background: rgba(34, 197, 94, 0.2);
-      }
-      .choice-btn.wrong-pick {
-        border-color: var(--red);
-        background: rgba(239, 68, 68, 0.2);
-      }
-      .choice-btn.reveal-correct {
-        border-color: var(--green);
-        background: rgba(34, 197, 94, 0.15);
-      }
-      .choice-btn.locked {
-        cursor: default;
-        opacity: 0.7;
-      }
-      .explanation-box {
-        background: rgba(148, 163, 184, 0.1);
-        border-left: 4px solid var(--accent);
-        border-radius: 8px;
-        padding: 12px 16px;
-        width: 100%;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        opacity: 0;
-        transition: opacity 0.3s;
-        min-height: 50px;
-      }
-      .explanation-box.visible {
-        opacity: 1;
-      }
-
-      /* RESULTS */
-      #results {
-        gap: 18px;
-        text-align: center;
-      }
-      .badge-display {
-        font-size: 5rem;
-        margin: 8px 0;
-      }
-      .badge-label {
-        font-size: 1.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, var(--gold), #fbbf24);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        width: 100%;
-      }
-      .stat-card {
-        background: var(--bg-card);
-        border-radius: 12px;
-        padding: 16px;
-        text-align: center;
-      }
-      .stat-card .val {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: var(--gold);
-      }
-      .stat-card .lbl {
-        font-size: 0.8rem;
-        color: var(--accent);
-        margin-top: 4px;
-      }
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      footer {
-        position: fixed;
-        bottom: 8px;
-        font-size: 0.75rem;
-        color: var(--accent);
-        opacity: 0.6;
-      }
-
-      /* Game Over overlay */
-      #gameover-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        background: rgba(15, 23, 42, 0.92);
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
-        padding: 24px;
-      }
-      #gameover-overlay.active {
-        display: flex;
-      }
-      #gameover-overlay h2 {
-        font-size: 2rem;
-        color: var(--red);
+      canvas {
+        display: block;
+        margin: 0 auto;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
   </head>
   <body>
-    <div class="stars" id="stars"></div>
-
-    <!-- LOGIN SCREEN -->
-    <div class="screen active" id="login">
-      <div class="logo">🚀</div>
-      <h1>Factor Frenzy</h1>
-      <h2>GCF, LCM &amp; Prime Factorization</h2>
-      <input
-        type="text"
-        id="playerName"
-        placeholder="Enter your name"
-        maxlength="30"
-        autocomplete="off"
-      />
-      <select id="playerPeriod">
-        <option value="" disabled selected>Select your period</option>
-        <option value="1">Period 1</option>
-        <option value="2">Period 2</option>
-        <option value="3">Period 3</option>
-        <option value="4">Period 4</option>
-        <option value="5">Period 5</option>
-        <option value="6">Period 6</option>
-        <option value="7">Period 7</option>
-      </select>
-      <button class="btn btn-primary" id="btnStart">Launch Mission</button>
-      <p
-        id="loginError"
-        style="color: var(--red); font-size: 0.85rem; min-height: 1.2em"
-      ></p>
-    </div>
-
-    <!-- INSTRUCTIONS SCREEN -->
-    <div class="screen" id="instructions">
-      <div class="logo" style="font-size: 3rem">🚀</div>
-      <h1>Mission Briefing</h1>
-      <div class="rules-box">
-        <ul>
-          <li>
-            <strong>15 questions</strong> on GCF, LCM, and Prime Factorization
-          </li>
-          <li>
-            <strong>30 seconds</strong> per question &mdash; answer before time
-            runs out
-          </li>
-          <li>Pick the correct answer from <strong>4 choices (A-D)</strong></li>
-          <li>
-            You have <strong>3 hearts</strong> &mdash; wrong answers cost a
-            heart
-          </li>
-          <li>
-            <strong>Streak bonus:</strong> &times;2 after 3 correct, &times;3
-            after 5 correct
-          </li>
-          <li>Earn a badge based on your final score</li>
-        </ul>
-      </div>
-      <button class="btn btn-gold" id="btnBegin">Begin Mission</button>
-    </div>
-
-    <!-- GAMEPLAY SCREEN -->
-    <div class="screen" id="gameplay">
-      <div class="hud">
-        <div class="hud-item">🚀 <span id="hudScore">0</span> pts</div>
-        <div class="hud-item">
-          🔥 <span id="hudStreak">0</span> &times;<span id="hudMultiplier"
-            >1</span
-          >
-        </div>
-        <div class="hud-item hearts" id="hudHearts">❤️❤️❤️</div>
-      </div>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-      </div>
-      <div class="timer-bar-wrap">
-        <div class="timer-bar" id="timerBar" style="width: 100%"></div>
-      </div>
-      <p style="font-size: 0.85rem; color: var(--accent)" id="questionLabel">
-        Question 1 of 15
-      </p>
-      <div class="question-card" id="questionCard">
-        <div>
-          <div class="difficulty-badge easy" id="diffBadge">Easy</div>
-          <br />
-          <span class="question-text" id="questionText"></span>
-        </div>
-      </div>
-      <div class="choices" id="choicesContainer"></div>
-      <div class="explanation-box" id="explanationBox"></div>
-    </div>
-
-    <!-- GAME OVER OVERLAY -->
-    <div id="gameover-overlay">
-      <h2>Mission Failed</h2>
-      <p style="font-size: 1.2rem">You ran out of hearts!</p>
-      <p id="goScore" style="font-size: 1.1rem; color: var(--accent)"></p>
-      <div class="btn-row">
-        <button class="btn btn-gold" onclick="showResults()">
-          See Results
-        </button>
-      </div>
-    </div>
-
-    <!-- RESULTS SCREEN -->
-    <div class="screen" id="results">
-      <div class="badge-display" id="resBadgeEmoji">🏅</div>
-      <div class="badge-label" id="resBadgeLabel">Pro</div>
-      <h1 id="resTitle">Great Job!</h1>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="val" id="resScore">0</div>
-          <div class="lbl">Score</div>
-        </div>
-        <div class="stat-card">
-          <div class="val" id="resAccuracy">0%</div>
-          <div class="lbl">Accuracy</div>
-        </div>
-        <div class="stat-card">
-          <div class="val" id="resCorrect">0/15</div>
-          <div class="lbl">Correct</div>
-        </div>
-        <div class="stat-card">
-          <div class="val" id="resTime">0s</div>
-          <div class="lbl">Time</div>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" id="btnCopy">Copy Results</button>
-        <button class="btn btn-green" id="btnReplay">Play Again</button>
-      </div>
-      <p
-        id="copyMsg"
-        style="color: var(--green); font-size: 0.85rem; min-height: 1.2em"
-      ></p>
-    </div>
-
-    <footer>Neft Teacher &bull; Grade 6 &bull; Unit 1</footer>
-
+    <div id="game-container"></div>
     <script>
-      (function () {
-        "use strict";
+      // ── FACTOR FRENZY — Brick Breaker (GCF & LCM) ──
+      // Phaser 3 single-file game for Grade 6 ESOL
 
-        // ─── STARS ───
-        const starsEl = document.getElementById("stars");
+      // ── Sound synthesizer ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        },
+        play(type, freq, dur, vol = 0.3) {
+          this.init();
+          const c = this.ctx,
+            o = c.createOscillator(),
+            g = c.createGain();
+          o.type = type;
+          o.frequency.value = freq;
+          g.gain.setValueAtTime(vol, c.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+          o.connect(g);
+          g.connect(c.destination);
+          o.start();
+          o.stop(c.currentTime + dur);
+        },
+        hit() {
+          this.play("square", 440, 0.08, 0.2);
+        },
+        correct() {
+          this.play("sine", 660, 0.12);
+          this.play("sine", 880, 0.15);
+        },
+        wrong() {
+          this.play("sawtooth", 180, 0.25, 0.2);
+        },
+        powerup() {
+          this.play("sine", 523, 0.1);
+          this.play("sine", 659, 0.1);
+          this.play("sine", 784, 0.15);
+        },
+        explode() {
+          this.play("noise", 100, 0.3, 0.15);
+        },
+        launch() {
+          this.play("triangle", 330, 0.15, 0.2);
+        },
+        combo() {
+          this.play("sine", 784, 0.08);
+          this.play("sine", 988, 0.1);
+          this.play("sine", 1175, 0.15);
+        },
+        boss() {
+          this.play("square", 120, 0.5, 0.25);
+        },
+        win() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.2, 0.3), i * 120),
+          );
+        },
+        lose() {
+          [400, 350, 300, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.2), i * 200),
+          );
+        },
+      };
+
+      // ── Math utilities ──
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+      function lcm(a, b) {
+        return (a * b) / gcd(a, b);
+      }
+      function getFactors(n) {
+        const f = [];
+        for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
+        return f;
+      }
+      function isPrime(n) {
+        if (n < 2) return false;
+        for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
+        return true;
+      }
+      function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      // ── Question generator ──
+      function generateQuestions(difficulty) {
+        const qs = [];
+        const numQs = 20;
+
+        for (let i = 0; i < numQs; i++) {
+          const type = randInt(0, 4);
+          let q;
+          if (type === 0 || type === 1) {
+            // Factor identification
+            const n =
+              difficulty === "easy"
+                ? randInt(6, 20)
+                : difficulty === "medium"
+                  ? randInt(12, 36)
+                  : randInt(20, 60);
+            const factors = getFactors(n);
+            const target = factors[randInt(0, factors.length - 1)];
+            // Generate brick numbers: mix of factors and non-factors
+            const brickNums = [];
+            const usedFactors = shuffle(factors).slice(
+              0,
+              Math.min(4, factors.length),
+            );
+            usedFactors.forEach((f) =>
+              brickNums.push({ val: f, isCorrect: true }),
+            );
+            while (brickNums.length < 8) {
+              let r = randInt(2, n + 10);
+              if (n % r !== 0 && !brickNums.find((b) => b.val === r)) {
+                brickNums.push({ val: r, isCorrect: false });
+              }
+            }
+            q = {
+              type: "factors",
+              target: n,
+              prompt: `Break the FACTORS of ${n}`,
+              bricks: shuffle(brickNums),
+            };
+          } else if (type === 2) {
+            // GCF
+            const a = difficulty === "easy" ? randInt(4, 18) : randInt(12, 48);
+            const b = difficulty === "easy" ? randInt(4, 18) : randInt(12, 48);
+            const ans = gcd(a, b);
+            const brickNums = [{ val: ans, isCorrect: true }];
+            while (brickNums.length < 8) {
+              let r = randInt(1, Math.max(a, b));
+              if (r !== ans && !brickNums.find((b) => b.val === r)) {
+                brickNums.push({ val: r, isCorrect: false });
+              }
+            }
+            q = {
+              type: "gcf",
+              target: `GCF(${a},${b})=${ans}`,
+              prompt: `Hit the GCF of ${a} and ${b}`,
+              bricks: shuffle(brickNums),
+              answer: ans,
+            };
+          } else if (type === 3) {
+            // LCM
+            const a = difficulty === "easy" ? randInt(2, 8) : randInt(4, 15);
+            const b = difficulty === "easy" ? randInt(2, 8) : randInt(4, 15);
+            const ans = lcm(a, b);
+            const brickNums = [{ val: ans, isCorrect: true }];
+            while (brickNums.length < 8) {
+              let r = randInt(ans - 15, ans + 20);
+              if (r > 0 && r !== ans && !brickNums.find((b) => b.val === r)) {
+                brickNums.push({ val: r, isCorrect: false });
+              }
+            }
+            q = {
+              type: "lcm",
+              target: `LCM(${a},${b})=${ans}`,
+              prompt: `Hit the LCM of ${a} and ${b}`,
+              bricks: shuffle(brickNums),
+              answer: ans,
+            };
+          } else {
+            // Multiples
+            const base = difficulty === "easy" ? randInt(2, 6) : randInt(3, 12);
+            const brickNums = [];
+            const mults = [];
+            for (let m = 1; m <= 12; m++) mults.push(base * m);
+            const chosen = shuffle(mults).slice(0, 4);
+            chosen.forEach((m) => brickNums.push({ val: m, isCorrect: true }));
+            while (brickNums.length < 8) {
+              let r = randInt(base + 1, base * 13);
+              if (r % base !== 0 && !brickNums.find((b) => b.val === r)) {
+                brickNums.push({ val: r, isCorrect: false });
+              }
+            }
+            q = {
+              type: "multiples",
+              target: base,
+              prompt: `Break MULTIPLES of ${base}`,
+              bricks: shuffle(brickNums),
+            };
+          }
+          qs.push(q);
+        }
+        return qs;
+      }
+
+      // ── Phaser Config ──
+      const W = 800,
+        H = 600;
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game-container",
+        backgroundColor: "#0a0a2e",
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        physics: {
+          default: "arcade",
+          arcade: {
+            debug: false,
+            checkCollision: { up: true, down: false, left: true, right: true },
+          },
+        },
+        scene: [
+          BootScene,
+          TitleScene,
+          DifficultyScene,
+          GameScene,
+          BossScene,
+          ResultScene,
+        ],
+      };
+
+      // ── BOOT SCENE ──
+      function BootScene() {
+        return new Phaser.Scene("Boot");
+      }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        // Create textures procedurally
+        const g = this.make.graphics({ add: false });
+
+        // Paddle
+        g.clear();
+        g.fillStyle(0x00ccff);
+        g.fillRoundedRect(0, 0, 120, 18, 8);
+        g.generateTexture("paddle", 120, 18);
+        g.clear();
+
+        // Ball
+        g.fillStyle(0xffffff);
+        g.fillCircle(8, 8, 8);
+        g.generateTexture("ball", 16, 16);
+        g.clear();
+
+        // Brick
+        g.fillStyle(0xff6644);
+        g.fillRoundedRect(0, 0, 80, 30, 4);
+        g.generateTexture("brick", 80, 30);
+        g.clear();
+
+        // Correct brick
+        g.fillStyle(0x22cc66);
+        g.fillRoundedRect(0, 0, 80, 30, 4);
+        g.generateTexture("brick_correct", 80, 30);
+        g.clear();
+
+        // Wrong brick
+        g.fillStyle(0xcc3333);
+        g.fillRoundedRect(0, 0, 80, 30, 4);
+        g.generateTexture("brick_wrong", 80, 30);
+        g.clear();
+
+        // Boss brick
+        g.fillStyle(0xff00ff);
+        g.fillRoundedRect(0, 0, 160, 50, 8);
+        g.generateTexture("boss_brick", 160, 50);
+        g.clear();
+
+        // Power-up
+        g.fillStyle(0xffdd00);
+        g.fillCircle(10, 10, 10);
+        g.generateTexture("powerup", 20, 20);
+        g.clear();
+
+        // Particle
+        g.fillStyle(0xffffff);
+        g.fillCircle(3, 3, 3);
+        g.generateTexture("particle", 6, 6);
+        g.clear();
+
+        // Star particle
+        g.fillStyle(0xffdd00);
+        g.fillCircle(2, 2, 2);
+        g.generateTexture("star_particle", 4, 4);
+        g.clear();
+
+        g.destroy();
+        this.scene.start("Title");
+      };
+
+      // ── TITLE SCENE ──
+      function TitleScene() {
+        return new Phaser.Scene("Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2,
+          cy = H / 2;
+
+        // Starfield background
         for (let i = 0; i < 80; i++) {
-          const s = document.createElement("span");
-          const size = Math.random() * 2.5 + 1;
-          s.style.width = size + "px";
-          s.style.height = size + "px";
-          s.style.left = Math.random() * 100 + "%";
-          s.style.top = Math.random() * 100 + "%";
-          s.style.animationDelay = Math.random() * 3 + "s";
-          starsEl.appendChild(s);
+          const s = this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 2),
+            0xffffff,
+            Math.random() * 0.5 + 0.3,
+          );
+          this.tweens.add({
+            targets: s,
+            alpha: { from: 0.2, to: 1 },
+            duration: randInt(1000, 3000),
+            yoyo: true,
+            repeat: -1,
+          });
         }
 
-        // ─── QUESTIONS ───
-        const QUESTIONS = [
-          // EASY
+        // Title
+        this.add
+          .text(cx, 80, "FACTOR", {
+            fontSize: "72px",
+            fontFamily: "Impact, sans-serif",
+            color: "#00ccff",
+            stroke: "#003366",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 150, "FRENZY", {
+            fontSize: "72px",
+            fontFamily: "Impact, sans-serif",
+            color: "#ff6644",
+            stroke: "#660000",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 200, "BRICK BREAKER", {
+            fontSize: "20px",
+            color: "#aaccff",
+            letterSpacing: 8,
+          })
+          .setOrigin(0.5);
+
+        // Animated paddle + ball
+        const paddle = this.add.image(cx, 380, "paddle");
+        const ball = this.add.image(cx, 360, "ball");
+        this.tweens.add({
+          targets: paddle,
+          x: { from: cx - 100, to: cx + 100 },
+          duration: 2000,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+        this.tweens.add({
+          targets: ball,
+          x: { from: cx - 80, to: cx + 80 },
+          y: { from: 340, to: 280 },
+          duration: 1000,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+
+        // Floating bricks
+        for (let i = 0; i < 5; i++) {
+          const b = this.add
+            .image(100 + i * 150, 270, "brick")
+            .setAlpha(0.6)
+            .setScale(0.8);
+          this.add
+            .text(b.x, b.y, String(randInt(2, 36)), {
+              fontSize: "14px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: b,
+            y: b.y + 10,
+            duration: randInt(800, 1500),
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+        }
+
+        // Instructions
+        this.add
+          .text(cx, 440, "GCF  |  LCM  |  Factors  |  Multiples", {
+            fontSize: "16px",
+            color: "#88aacc",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 470, "Break the correct bricks with math!", {
+            fontSize: "14px",
+            color: "#6688aa",
+          })
+          .setOrigin(0.5);
+
+        // Start button
+        const startBtn = this.add
+          .rectangle(cx, 530, 240, 56, 0x00ccff, 1)
+          .setInteractive({ useHandCursor: true });
+        const startTxt = this.add
+          .text(cx, 530, "START GAME", {
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#001133",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [startBtn, startTxt],
+          scaleX: { from: 1, to: 1.05 },
+          scaleY: { from: 1, to: 1.05 },
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        startBtn.on("pointerdown", () => {
+          SFX.init();
+          SFX.launch();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("Difficulty"));
+        });
+
+        // Keyboard
+        this.input.keyboard.on("keydown-SPACE", () => {
+          SFX.init();
+          SFX.launch();
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => this.scene.start("Difficulty"));
+        });
+
+        this.cameras.main.fadeIn(500);
+      };
+
+      // ── DIFFICULTY SCENE ──
+      function DifficultyScene() {
+        return new Phaser.Scene("Difficulty");
+      }
+      DifficultyScene.prototype = Object.create(Phaser.Scene.prototype);
+      DifficultyScene.prototype.constructor = DifficultyScene;
+      DifficultyScene.prototype.create = function () {
+        const cx = W / 2;
+
+        for (let i = 0; i < 40; i++) {
+          this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 2),
+            0xffffff,
+            Math.random() * 0.3 + 0.2,
+          );
+        }
+
+        this.add
+          .text(cx, 80, "SELECT DIFFICULTY", {
+            fontSize: "36px",
+            fontStyle: "bold",
+            color: "#00ccff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 120, "Choose how tough the math gets!", {
+            fontSize: "16px",
+            color: "#88aacc",
+          })
+          .setOrigin(0.5);
+
+        const diffs = [
           {
-            q: "What is the GCF of 12 and 18?",
-            choices: ["3", "6", "9", "12"],
-            answer: 1,
-            diff: "easy",
-            explain:
-              "Factors of 12: 1,2,3,4,6,12. Factors of 18: 1,2,3,6,9,18. Greatest common: 6.",
+            key: "easy",
+            label: "EASY",
+            sub: "Small numbers, basic factors",
+            color: 0x22cc66,
+            y: 220,
           },
           {
-            q: "What is the LCM of 4 and 6?",
-            choices: ["12", "24", "8", "6"],
-            answer: 0,
-            diff: "easy",
-            explain:
-              "Multiples of 4: 4,8,12... Multiples of 6: 6,12... Least common: 12.",
+            key: "medium",
+            label: "MEDIUM",
+            sub: "Bigger numbers, GCF & LCM",
+            color: 0xffaa00,
+            y: 330,
           },
           {
-            q: "Is 17 prime or composite?",
-            choices: ["Prime", "Composite", "Neither", "Both"],
-            answer: 0,
-            diff: "easy",
-            explain:
-              "17 has only two factors: 1 and 17. That makes it a prime number.",
-          },
-          {
-            q: "Which list shows ALL the factors of 20?",
-            choices: [
-              "1, 2, 4, 5, 10, 20",
-              "1, 2, 5, 10, 20",
-              "1, 4, 5, 20",
-              "2, 4, 5, 10",
-            ],
-            answer: 0,
-            diff: "easy",
-            explain: "20 = 1×20 = 2×10 = 4×5. All factors: 1, 2, 4, 5, 10, 20.",
-          },
-          {
-            q: "What is the GCF of 8 and 12?",
-            choices: ["2", "8", "4", "6"],
-            answer: 2,
-            diff: "easy",
-            explain:
-              "Factors of 8: 1,2,4,8. Factors of 12: 1,2,3,4,6,12. Greatest common: 4.",
-          },
-          // MEDIUM
-          {
-            q: "What is the GCF of 24 and 36?",
-            choices: ["6", "8", "12", "18"],
-            answer: 2,
-            diff: "medium",
-            explain: "24 = 2³×3, 36 = 2²×3². GCF = 2²×3 = 12.",
-          },
-          {
-            q: "What is the LCM of 8 and 12?",
-            choices: ["48", "24", "96", "36"],
-            answer: 1,
-            diff: "medium",
-            explain: "8 = 2³, 12 = 2²×3. LCM = 2³×3 = 24.",
-          },
-          {
-            q: "What is the prime factorization of 36?",
-            choices: ["2² × 3²", "2 × 3³", "2³ × 3", "6²"],
-            answer: 0,
-            diff: "medium",
-            explain: "36 = 4 × 9 = 2² × 3².",
-          },
-          {
-            q: "What is the GCF of 16 and 28?",
-            choices: ["8", "2", "4", "14"],
-            answer: 2,
-            diff: "medium",
-            explain: "16 = 2⁴, 28 = 2²×7. GCF = 2² = 4.",
-          },
-          {
-            q: "What is the LCM of 6 and 15?",
-            choices: ["30", "45", "60", "90"],
-            answer: 0,
-            diff: "medium",
-            explain: "6 = 2×3, 15 = 3×5. LCM = 2×3×5 = 30.",
-          },
-          // HARD
-          {
-            q: "What is the GCF of 48 and 72?",
-            choices: ["12", "24", "36", "48"],
-            answer: 1,
-            diff: "hard",
-            explain: "48 = 2⁴×3, 72 = 2³×3². GCF = 2³×3 = 24.",
-          },
-          {
-            q: "What is the LCM of 12 and 18?",
-            choices: ["72", "36", "54", "48"],
-            answer: 1,
-            diff: "hard",
-            explain: "12 = 2²×3, 18 = 2×3². LCM = 2²×3² = 36.",
-          },
-          {
-            q: "What is the prime factorization of 60?",
-            choices: ["2² × 3 × 5", "2 × 3 × 10", "2³ × 15", "2 × 3² × 5"],
-            answer: 0,
-            diff: "hard",
-            explain: "60 = 4 × 15 = 2² × 3 × 5.",
-          },
-          {
-            q: "What is the GCF of 54 and 90?",
-            choices: ["9", "18", "27", "36"],
-            answer: 1,
-            diff: "hard",
-            explain: "54 = 2×3³, 90 = 2×3²×5. GCF = 2×3² = 18.",
-          },
-          {
-            q: "What is the LCM of 15 and 20?",
-            choices: ["120", "60", "80", "300"],
-            answer: 1,
-            diff: "hard",
-            explain: "15 = 3×5, 20 = 2²×5. LCM = 2²×3×5 = 60.",
+            key: "hard",
+            label: "HARD",
+            sub: "Large numbers, boss rounds!",
+            color: 0xff4444,
+            y: 440,
           },
         ];
 
-        const LABELS = ["A", "B", "C", "D"];
-        const STORAGE_KEY = "factorFrenzy_v1";
-        const TIMER_SECONDS = 30;
-        const TOTAL = QUESTIONS.length;
+        diffs.forEach((d) => {
+          const btn = this.add
+            .rectangle(cx, d.y, 320, 80, d.color, 0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx, d.y - 12, d.label, {
+              fontSize: "28px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, d.y + 18, d.sub, { fontSize: "14px", color: "#ffffffcc" })
+            .setOrigin(0.5);
 
-        // ─── STATE ───
-        let player = { name: "", period: "" };
-        let currentQ = 0;
-        let score = 0;
-        let streak = 0;
-        let multiplier = 1;
-        let hearts = 3;
-        let correctCount = 0;
-        let timerInterval = null;
-        let timeLeft = TIMER_SECONDS;
-        let startTime = 0;
-        let answered = false;
-        let gameOver = false;
-
-        // ─── DOM ───
-        const $ = (id) => document.getElementById(id);
-
-        function showScreen(id) {
-          document
-            .querySelectorAll(".screen")
-            .forEach((s) => s.classList.remove("active"));
-          $(id).classList.add("active");
-        }
-
-        // ─── LOGIN ───
-        $("btnStart").addEventListener("click", () => {
-          const name = $("playerName").value.trim();
-          const period = $("playerPeriod").value;
-          if (!name) {
-            $("loginError").textContent = "Please enter your name.";
-            return;
-          }
-          if (!period) {
-            $("loginError").textContent = "Please select your period.";
-            return;
-          }
-          player = { name, period };
-          $("loginError").textContent = "";
-          showScreen("instructions");
+          btn.on("pointerover", () => btn.setFillStyle(d.color, 1));
+          btn.on("pointerout", () => btn.setFillStyle(d.color, 0.9));
+          btn.on("pointerdown", () => {
+            SFX.launch();
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () =>
+              this.scene.start("Game", { difficulty: d.key }),
+            );
+          });
         });
 
-        $("playerName").addEventListener("keydown", (e) => {
-          if (e.key === "Enter") $("btnStart").click();
-        });
+        this.cameras.main.fadeIn(400);
+      };
 
-        // ─── INSTRUCTIONS → START ───
-        $("btnBegin").addEventListener("click", () => {
-          resetGame();
-          showScreen("gameplay");
-          loadQuestion();
-        });
+      // ── MAIN GAME SCENE ──
+      function GameScene() {
+        return new Phaser.Scene("Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
 
-        // ─── GAME LOGIC ───
-        function resetGame() {
-          currentQ = 0;
-          score = 0;
-          streak = 0;
-          multiplier = 1;
-          hearts = 3;
-          correctCount = 0;
-          answered = false;
-          gameOver = false;
-          startTime = Date.now();
-          updateHUD();
+      GameScene.prototype.init = function (data) {
+        this.difficulty = data.difficulty || "easy";
+        this.questions = generateQuestions(this.difficulty);
+        this.currentQ = 0;
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.lives = 3;
+        this.level = 1;
+        this.totalCorrect = 0;
+        this.totalWrong = 0;
+        this.ballLaunched = false;
+        this.activePowerUps = [];
+      };
+
+      GameScene.prototype.create = function () {
+        const scene = this;
+
+        // Background
+        this.add.rectangle(W / 2, H / 2, W, H, 0x0a0a2e);
+        for (let i = 0; i < 50; i++) {
+          const s = this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 2),
+            0xffffff,
+            Math.random() * 0.3 + 0.1,
+          );
+          this.tweens.add({
+            targets: s,
+            alpha: { from: 0.1, to: 0.6 },
+            duration: randInt(2000, 5000),
+            yoyo: true,
+            repeat: -1,
+          });
         }
 
-        function updateHUD() {
-          $("hudScore").textContent = score;
-          $("hudStreak").textContent = streak;
-          $("hudMultiplier").textContent = multiplier;
-          let h = "";
-          for (let i = 0; i < 3; i++) h += i < hearts ? "❤️" : "🩶";
-          $("hudHearts").textContent = h;
-          $("progressBar").style.width = (currentQ / TOTAL) * 100 + "%";
-          $("questionLabel").textContent =
-            "Question " + (currentQ + 1) + " of " + TOTAL;
-        }
+        // Walls (invisible physics boundaries)
+        this.physics.world.setBoundsCollision(true, true, true, false);
 
-        function loadQuestion() {
-          if (gameOver) return;
-          if (currentQ >= TOTAL) {
-            showResults();
+        // Paddle
+        this.paddle = this.physics.add
+          .image(W / 2, H - 40, "paddle")
+          .setImmovable(true);
+        this.paddle.body.allowGravity = false;
+        this.paddle.setCollideWorldBounds(true);
+
+        // Ball
+        this.ball = this.physics.add.image(W / 2, H - 60, "ball");
+        this.ball.setCollideWorldBounds(true);
+        this.ball.setBounce(1);
+        this.ball.body.allowGravity = false;
+
+        // Bricks group
+        this.bricks = this.physics.add.staticGroup();
+
+        // Power-ups group
+        this.powerUps = this.physics.add.group();
+
+        // Particle emitter
+        this.particles = this.add.particles(0, 0, "particle", {
+          speed: { min: 50, max: 200 },
+          scale: { start: 1, end: 0 },
+          lifespan: 400,
+          emitting: false,
+          quantity: 8,
+          tint: [0x00ccff, 0xff6644, 0x22cc66, 0xffdd00],
+        });
+
+        this.starParticles = this.add.particles(0, 0, "star_particle", {
+          speed: { min: 30, max: 150 },
+          scale: { start: 1.5, end: 0 },
+          lifespan: 600,
+          emitting: false,
+          quantity: 12,
+          tint: [0xffdd00, 0xff8800],
+        });
+
+        // HUD
+        this.scoreText = this.add.text(16, 10, "Score: 0", {
+          fontSize: "20px",
+          color: "#00ccff",
+          fontStyle: "bold",
+        });
+        this.comboText = this.add.text(16, 35, "", {
+          fontSize: "16px",
+          color: "#ffdd00",
+        });
+        this.livesText = this.add
+          .text(W - 16, 10, "", { fontSize: "20px", color: "#ff4444" })
+          .setOrigin(1, 0);
+        this.levelText = this.add
+          .text(W / 2, 10, "Level 1", { fontSize: "18px", color: "#aaccff" })
+          .setOrigin(0.5, 0);
+        this.promptText = this.add
+          .text(W / 2, 52, "", {
+            fontSize: "22px",
+            color: "#ffffff",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 3,
+            align: "center",
+          })
+          .setOrigin(0.5, 0);
+
+        this.updateHUD();
+
+        // Collisions
+        this.physics.add.collider(
+          this.ball,
+          this.paddle,
+          this.hitPaddle,
+          null,
+          this,
+        );
+        this.physics.add.collider(
+          this.ball,
+          this.bricks,
+          this.hitBrick,
+          null,
+          this,
+        );
+        this.physics.add.overlap(
+          this.paddle,
+          this.powerUps,
+          this.collectPowerUp,
+          null,
+          this,
+        );
+
+        // Input
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.spaceKey = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.SPACE,
+        );
+
+        // Touch/mouse
+        this.input.on("pointermove", (pointer) => {
+          this.paddle.x = Phaser.Math.Clamp(pointer.x, 60, W - 60);
+          if (!this.ballLaunched) this.ball.x = this.paddle.x;
+        });
+
+        this.input.on("pointerdown", () => {
+          if (!this.ballLaunched) this.launchBall();
+        });
+
+        // Load first question
+        this.loadQuestion();
+
+        this.cameras.main.fadeIn(500);
+      };
+
+      GameScene.prototype.launchBall = function () {
+        if (this.ballLaunched) return;
+        this.ballLaunched = true;
+        const speed = 300 + (this.level - 1) * 20;
+        const angle = Phaser.Math.Between(-60, -120);
+        this.physics.velocityFromAngle(angle, speed, this.ball.body.velocity);
+        SFX.launch();
+      };
+
+      GameScene.prototype.loadQuestion = function () {
+        if (this.currentQ >= this.questions.length || this.lives <= 0) {
+          // Check if boss round
+          if (
+            this.lives > 0 &&
+            this.difficulty !== "easy" &&
+            this.level % 3 === 0
+          ) {
+            this.scene.start("Boss", {
+              difficulty: this.difficulty,
+              score: this.score,
+              combo: this.maxCombo,
+              lives: this.lives,
+              level: this.level,
+              totalCorrect: this.totalCorrect,
+              totalWrong: this.totalWrong,
+              questions: this.questions,
+              currentQ: this.currentQ,
+            });
             return;
           }
+          this.scene.start("Results", {
+            score: this.score,
+            maxCombo: this.maxCombo,
+            lives: this.lives,
+            totalCorrect: this.totalCorrect,
+            totalWrong: this.totalWrong,
+            difficulty: this.difficulty,
+            level: this.level,
+          });
+          return;
+        }
 
-          answered = false;
-          const q = QUESTIONS[currentQ];
-          $("questionText").textContent = q.q;
+        const q = this.questions[this.currentQ];
+        this.promptText.setText(q.prompt);
+        this.currentBrickData = q.bricks;
 
-          const badge = $("diffBadge");
-          badge.textContent = q.diff.charAt(0).toUpperCase() + q.diff.slice(1);
-          badge.className = "difficulty-badge " + q.diff;
+        // Clear old bricks
+        this.bricks.clear(true, true);
 
-          const container = $("choicesContainer");
-          container.innerHTML = "";
-          q.choices.forEach((c, i) => {
-            const btn = document.createElement("button");
-            btn.className = "choice-btn";
-            btn.textContent = LABELS[i] + ". " + c;
-            btn.addEventListener("click", () => pickAnswer(i));
-            container.appendChild(btn);
+        // Layout bricks
+        const cols = 4,
+          rows = 2;
+        const brickW = 90,
+          brickH = 36,
+          padX = 10,
+          padY = 8;
+        const totalW = cols * (brickW + padX) - padX;
+        const startX = (W - totalW) / 2 + brickW / 2;
+        const startY = 90;
+
+        q.bricks.forEach((bd, idx) => {
+          const col = idx % cols,
+            row = Math.floor(idx / cols);
+          const x = startX + col * (brickW + padX);
+          const y = startY + row * (brickH + padY);
+          const brick = this.bricks
+            .create(x, y, "brick")
+            .setDisplaySize(brickW, brickH);
+          brick.brickData = bd;
+          brick.refreshBody();
+
+          // Number label on brick
+          const label = this.add
+            .text(x, y, String(bd.val), {
+              fontSize: "16px",
+              color: "#fff",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            })
+            .setOrigin(0.5);
+          brick.label = label;
+        });
+
+        // Reset ball
+        this.ballLaunched = false;
+        this.ball.setPosition(this.paddle.x, H - 60);
+        this.ball.setVelocity(0, 0);
+      };
+
+      GameScene.prototype.hitPaddle = function (ball, paddle) {
+        SFX.hit();
+        // Angle based on where ball hits paddle
+        let diff = ball.x - paddle.x;
+        let normalizedDiff = diff / 60; // paddle half-width
+        let angle = -70 + normalizedDiff * 50; // -120 to -20
+        const speed = ball.body.speed || 320;
+        this.physics.velocityFromAngle(angle, speed, ball.body.velocity);
+
+        // Screen shake
+        this.cameras.main.shake(50, 0.003);
+      };
+
+      GameScene.prototype.hitBrick = function (ball, brick) {
+        const bd = brick.brickData;
+        const q = this.questions[this.currentQ];
+
+        // Particles
+        this.particles.emitParticleAt(brick.x, brick.y);
+
+        // Determine if correct
+        let isCorrect = false;
+        if (q.type === "factors") {
+          isCorrect = bd.isCorrect;
+        } else if (q.type === "multiples") {
+          isCorrect = bd.isCorrect;
+        } else if (q.type === "gcf" || q.type === "lcm") {
+          isCorrect = bd.isCorrect;
+        }
+
+        if (isCorrect) {
+          SFX.correct();
+          this.combo++;
+          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+          this.totalCorrect++;
+
+          let pts = 100 * Math.min(this.combo, 5);
+          this.score += pts;
+
+          // Flash brick green briefly
+          brick.setTexture("brick_correct");
+          this.time.delayedCall(100, () => {
+            if (brick.label) brick.label.destroy();
+            brick.destroy();
           });
 
-          $("explanationBox").textContent = "";
-          $("explanationBox").classList.remove("visible");
-          $("questionCard").classList.remove("correct-flash", "wrong-shake");
-
-          updateHUD();
-          startTimer();
-        }
-
-        function startTimer() {
-          clearInterval(timerInterval);
-          timeLeft = TIMER_SECONDS;
-          const bar = $("timerBar");
-          bar.style.width = "100%";
-          bar.className = "timer-bar";
-          timerInterval = setInterval(() => {
-            timeLeft -= 0.1;
-            if (timeLeft <= 0) {
-              timeLeft = 0;
-              clearInterval(timerInterval);
-              timeUp();
-            }
-            const pct = (timeLeft / TIMER_SECONDS) * 100;
-            bar.style.width = pct + "%";
-            bar.className =
-              "timer-bar" +
-              (timeLeft <= 5 ? " danger" : timeLeft <= 10 ? " warning" : "");
-          }, 100);
-        }
-
-        function timeUp() {
-          if (answered) return;
-          answered = true;
-          hearts--;
-          streak = 0;
-          multiplier = 1;
-          updateHUD();
-          highlightCorrect();
-          showExplanation("Time's up! ");
-          if (hearts <= 0) {
-            endGameLoss();
-            return;
-          }
-          setTimeout(nextQuestion, 2500);
-        }
-
-        function pickAnswer(idx) {
-          if (answered) return;
-          answered = true;
-          clearInterval(timerInterval);
-
-          const q = QUESTIONS[currentQ];
-          const btns = $("choicesContainer").children;
-          const card = $("questionCard");
-
-          // Lock all buttons
-          Array.from(btns).forEach((b) => b.classList.add("locked"));
-
-          if (idx === q.answer) {
-            // CORRECT
-            btns[idx].classList.add("correct-pick");
-            card.classList.add("correct-flash");
-            streak++;
-            if (streak >= 5) multiplier = 3;
-            else if (streak >= 3) multiplier = 2;
-            else multiplier = 1;
-            const pts = 100 * multiplier;
-            score += pts;
-            correctCount++;
-            showExplanation("✅ Correct! +" + pts + " pts. ");
-          } else {
-            // WRONG
-            btns[idx].classList.add("wrong-pick");
-            card.classList.add("wrong-shake");
-            highlightCorrect();
-            hearts--;
-            streak = 0;
-            multiplier = 1;
-            showExplanation("❌ Incorrect. ");
-          }
-
-          updateHUD();
-
-          if (hearts <= 0) {
-            endGameLoss();
-            return;
-          }
-          setTimeout(nextQuestion, 2500);
-        }
-
-        function highlightCorrect() {
-          const q = QUESTIONS[currentQ];
-          const btns = $("choicesContainer").children;
-          Array.from(btns).forEach((b) => b.classList.add("locked"));
-          btns[q.answer].classList.add("reveal-correct");
-        }
-
-        function showExplanation(prefix) {
-          const box = $("explanationBox");
-          box.textContent = prefix + QUESTIONS[currentQ].explain;
-          box.classList.add("visible");
-        }
-
-        function nextQuestion() {
-          currentQ++;
-          loadQuestion();
-        }
-
-        function endGameLoss() {
-          clearInterval(timerInterval);
-          gameOver = true;
-          $("goScore").textContent =
-            "You answered " +
-            correctCount +
-            " of " +
-            (currentQ + 1) +
-            " questions correctly.";
-          document.getElementById("gameover-overlay").classList.add("active");
-        }
-
-        // ─── RESULTS ───
-        window.showResults = function () {
-          document
-            .getElementById("gameover-overlay")
-            .classList.remove("active");
-          const elapsed = Math.round((Date.now() - startTime) / 1000);
-          const attempted = gameOver ? currentQ + 1 : TOTAL;
-          const accuracy =
-            attempted > 0 ? Math.round((correctCount / attempted) * 100) : 0;
-
-          let badge, emoji, title;
-          if (score >= 1200) {
-            badge = "Legend";
-            emoji = "🏆";
-            title = "Legendary Commander!";
-          } else if (score >= 800) {
-            badge = "Master";
-            emoji = "🥇";
-            title = "Mission Master!";
-          } else if (score >= 500) {
-            badge = "Pro";
-            emoji = "🥈";
-            title = "Great Job, Pilot!";
-          } else {
-            badge = "Rookie";
-            emoji = "🚀";
-            title = "Keep Practicing!";
-          }
-
-          $("resBadgeEmoji").textContent = emoji;
-          $("resBadgeLabel").textContent = badge;
-          $("resTitle").textContent = title;
-          $("resScore").textContent = score;
-          $("resAccuracy").textContent = accuracy + "%";
-          $("resCorrect").textContent = correctCount + "/" + attempted;
-          $("resTime").textContent = elapsed + "s";
-
-          // Save to localStorage
-          try {
-            const record = {
-              name: player.name,
-              period: player.period,
-              score,
-              accuracy,
-              correct: correctCount,
-              attempted,
-              badge,
-              time: elapsed,
-              date: new Date().toISOString(),
-            };
-            const history = JSON.parse(
-              localStorage.getItem(STORAGE_KEY) || "[]",
-            );
-            history.push(record);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-          } catch (e) {}
-
-          showScreen("results");
-        };
-
-        // ─── COPY ───
-        $("btnCopy").addEventListener("click", () => {
-          const elapsed = $("resTime").textContent;
-          const text = [
-            "🚀 Factor Frenzy — Results",
-            "Name: " + player.name,
-            "Period: " + player.period,
-            "Score: " + score,
-            "Accuracy: " + $("resAccuracy").textContent,
-            "Correct: " + $("resCorrect").textContent,
-            "Time: " + elapsed,
-            "Badge: " + $("resBadgeLabel").textContent,
-          ].join("\n");
-          navigator.clipboard
-            .writeText(text)
-            .then(() => {
-              $("copyMsg").textContent = "Copied to clipboard!";
-              setTimeout(() => ($("copyMsg").textContent = ""), 2000);
-            })
-            .catch(() => {
-              $("copyMsg").textContent = "Copy failed. Try again.";
+          // Combo text
+          if (this.combo >= 3) {
+            SFX.combo();
+            this.comboText.setText(`COMBO x${this.combo}!`);
+            this.tweens.add({
+              targets: this.comboText,
+              scale: { from: 1.3, to: 1 },
+              duration: 300,
             });
+            this.starParticles.emitParticleAt(brick.x, brick.y);
+          }
+
+          // Score popup
+          const popup = this.add
+            .text(brick.x, brick.y, `+${pts}`, {
+              fontSize: "18px",
+              color: "#22cc66",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: popup,
+            y: popup.y - 40,
+            alpha: 0,
+            duration: 600,
+            onComplete: () => popup.destroy(),
+          });
+
+          // Drop power-up chance
+          if (Math.random() < 0.15) this.spawnPowerUp(brick.x, brick.y);
+
+          // Check if all correct bricks destroyed
+          const remaining = this.bricks
+            .getChildren()
+            .filter((b) => b.brickData && b.brickData.isCorrect);
+          if (remaining.length === 0) {
+            // Level clear
+            this.currentQ++;
+            this.time.delayedCall(600, () => this.loadQuestion());
+          }
+        } else {
+          SFX.wrong();
+          this.combo = 0;
+          this.comboText.setText("");
+          this.lives--;
+          this.totalWrong++;
+
+          // Flash brick red
+          brick.setTexture("brick_wrong");
+          this.cameras.main.shake(200, 0.01);
+
+          // Show X on wrong brick
+          const xMark = this.add
+            .text(brick.x, brick.y, "X", {
+              fontSize: "24px",
+              color: "#ff0000",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: xMark,
+            alpha: 0,
+            scale: 2,
+            duration: 500,
+            onComplete: () => xMark.destroy(),
+          });
+
+          if (brick.label) brick.label.destroy();
+          brick.destroy();
+
+          if (this.lives <= 0) {
+            SFX.lose();
+            this.time.delayedCall(1000, () => {
+              this.scene.start("Results", {
+                score: this.score,
+                maxCombo: this.maxCombo,
+                lives: 0,
+                totalCorrect: this.totalCorrect,
+                totalWrong: this.totalWrong,
+                difficulty: this.difficulty,
+                level: this.level,
+              });
+            });
+          }
+        }
+
+        this.updateHUD();
+      };
+
+      GameScene.prototype.spawnPowerUp = function (x, y) {
+        const types = ["wide", "multi", "slow"];
+        const type = types[randInt(0, types.length - 1)];
+        const pu = this.powerUps.create(x, y, "powerup");
+        pu.puType = type;
+        pu.setVelocityY(120);
+        pu.body.allowGravity = false;
+
+        const labels = { wide: "W", multi: "M", slow: "S" };
+        const puLabel = this.add
+          .text(x, y, labels[type], {
+            fontSize: "12px",
+            color: "#000",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        pu.puLabel = puLabel;
+
+        // Update label position
+        this.time.addEvent({
+          delay: 16,
+          repeat: 300,
+          callback: () => {
+            if (pu.active) puLabel.setPosition(pu.x, pu.y);
+            else puLabel.destroy();
+          },
+        });
+      };
+
+      GameScene.prototype.collectPowerUp = function (paddle, pu) {
+        SFX.powerup();
+        const type = pu.puType;
+        if (pu.puLabel) pu.puLabel.destroy();
+        pu.destroy();
+
+        const popup = this.add
+          .text(
+            paddle.x,
+            paddle.y - 30,
+            type === "wide"
+              ? "WIDE PADDLE!"
+              : type === "multi"
+                ? "MULTI-BALL!"
+                : "SLOW MOTION!",
+            {
+              fontSize: "16px",
+              color: "#ffdd00",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            },
+          )
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: popup,
+          y: popup.y - 40,
+          alpha: 0,
+          duration: 800,
+          onComplete: () => popup.destroy(),
         });
 
-        // ─── REPLAY ───
-        $("btnReplay").addEventListener("click", () => {
-          showScreen("instructions");
+        if (type === "wide") {
+          this.paddle.setDisplaySize(180, 18);
+          this.time.delayedCall(8000, () => {
+            if (this.paddle.active) this.paddle.setDisplaySize(120, 18);
+          });
+        } else if (type === "slow") {
+          this.physics.world.timeScale = 2;
+          this.time.delayedCall(5000, () => {
+            this.physics.world.timeScale = 1;
+          });
+        } else if (type === "multi") {
+          // Spawn extra ball
+          const extra = this.physics.add.image(
+            this.ball.x,
+            this.ball.y,
+            "ball",
+          );
+          extra.setCollideWorldBounds(true).setBounce(1);
+          extra.body.allowGravity = false;
+          extra.setVelocity(
+            -this.ball.body.velocity.x,
+            this.ball.body.velocity.y,
+          );
+          this.physics.add.collider(extra, this.paddle, (b, p) => {
+            SFX.hit();
+          });
+          this.physics.add.collider(extra, this.bricks, (b, brick) => {
+            this.hitBrick(b, brick);
+          });
+          // Auto-destroy after 10s
+          this.time.delayedCall(10000, () => {
+            if (extra.active) extra.destroy();
+          });
+        }
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText(`Score: ${this.score}`);
+        this.livesText.setText(
+          "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
+        );
+        this.levelText.setText(
+          `Level ${this.level} - Q${this.currentQ + 1}/${this.questions.length}`,
+        );
+      };
+
+      GameScene.prototype.update = function () {
+        // Paddle keyboard movement
+        const speed = 500;
+        if (this.cursors.left.isDown) {
+          this.paddle.x = Math.max(
+            60,
+            this.paddle.x - (speed * this.game.loop.delta) / 1000,
+          );
+        } else if (this.cursors.right.isDown) {
+          this.paddle.x = Math.min(
+            W - 60,
+            this.paddle.x + (speed * this.game.loop.delta) / 1000,
+          );
+        }
+        this.paddle.body.updateFromGameObject();
+
+        // Ball follows paddle before launch
+        if (!this.ballLaunched) {
+          this.ball.x = this.paddle.x;
+          this.ball.y = H - 60;
+          if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) this.launchBall();
+        }
+
+        // Ball out of bounds
+        if (this.ball.y > H + 20 && this.ballLaunched) {
+          this.ballLaunched = false;
+          this.ball.setPosition(this.paddle.x, H - 60);
+          this.ball.setVelocity(0, 0);
+          // No life lost for dropping ball — it just resets
+        }
+
+        // Ensure ball speed doesn't go too slow
+        if (this.ballLaunched) {
+          const spd = this.ball.body.speed;
+          if (spd > 0 && spd < 200) {
+            const factor = 250 / spd;
+            this.ball.body.velocity.x *= factor;
+            this.ball.body.velocity.y *= factor;
+          }
+          // Cap max speed
+          if (spd > 600) {
+            const factor = 500 / spd;
+            this.ball.body.velocity.x *= factor;
+            this.ball.body.velocity.y *= factor;
+          }
+        }
+
+        // Remove power-ups that fall off screen
+        this.powerUps.getChildren().forEach((p) => {
+          if (p.y > H + 20) {
+            if (p.puLabel) p.puLabel.destroy();
+            p.destroy();
+          }
         });
-      })();
+      };
+
+      // ── BOSS SCENE ──
+      function BossScene() {
+        return new Phaser.Scene("Boss");
+      }
+      BossScene.prototype = Object.create(Phaser.Scene.prototype);
+      BossScene.prototype.constructor = BossScene;
+
+      BossScene.prototype.init = function (data) {
+        this.gameData = data;
+      };
+
+      BossScene.prototype.create = function () {
+        const scene = this;
+        const cx = W / 2;
+
+        // Background
+        this.add.rectangle(cx, H / 2, W, H, 0x1a0033);
+        for (let i = 0; i < 30; i++) {
+          this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 3),
+            0xff00ff,
+            Math.random() * 0.3,
+          );
+        }
+
+        SFX.boss();
+
+        this.add
+          .text(cx, 40, "BOSS ROUND", {
+            fontSize: "40px",
+            fontStyle: "bold",
+            color: "#ff00ff",
+            stroke: "#330033",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+
+        // Generate boss question
+        const a = randInt(12, 48),
+          b = randInt(12, 48);
+        const isgcf = Math.random() < 0.5;
+        const answer = isgcf ? gcd(a, b) : lcm(a, b);
+        const qText = isgcf
+          ? `What is the GCF of ${a} and ${b}?`
+          : `What is the LCM of ${a} and ${b}?`;
+
+        this.add
+          .text(cx, 120, qText, {
+            fontSize: "26px",
+            color: "#ffffff",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5);
+
+        // Boss brick
+        const boss = this.add.image(cx, 220, "boss_brick");
+        this.add
+          .text(cx, 220, "???", {
+            fontSize: "24px",
+            color: "#fff",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: boss,
+          scaleX: { from: 1, to: 1.1 },
+          scaleY: { from: 1, to: 1.1 },
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+
+        // Health bar for boss
+        const hpBg = this.add.rectangle(cx, 270, 300, 16, 0x333333);
+        const hpBar = this.add
+          .rectangle(cx - 150, 270, 300, 16, 0xff00ff)
+          .setOrigin(0, 0.5);
+        let bossHP = 3;
+
+        // Answer choices
+        const choices = [answer];
+        while (choices.length < 4) {
+          const wrong = answer + randInt(-10, 10);
+          if (wrong > 0 && wrong !== answer && !choices.includes(wrong))
+            choices.push(wrong);
+        }
+        const shuffled = shuffle(choices);
+
+        shuffled.forEach((c, i) => {
+          const x = 140 + i * 150;
+          const btn = this.add
+            .rectangle(x, 380, 120, 50, 0x4400aa)
+            .setInteractive({ useHandCursor: true });
+          const txt = this.add
+            .text(x, 380, String(c), {
+              fontSize: "22px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          btn.on("pointerover", () => btn.setFillStyle(0x6600cc));
+          btn.on("pointerout", () => btn.setFillStyle(0x4400aa));
+          btn.on("pointerdown", () => {
+            if (c === answer) {
+              SFX.correct();
+              bossHP--;
+              hpBar.setDisplaySize(100 * bossHP, 16);
+              this.cameras.main.shake(300, 0.02);
+
+              if (bossHP <= 0) {
+                // Boss defeated
+                SFX.win();
+                this.gameData.score += 500;
+
+                // Explosion
+                this.starParticles = this.add.particles(0, 0, "star_particle", {
+                  speed: { min: 100, max: 400 },
+                  scale: { start: 2, end: 0 },
+                  lifespan: 800,
+                  quantity: 30,
+                  tint: [0xff00ff, 0xffdd00, 0x00ccff],
+                });
+                this.starParticles.emitParticleAt(cx, 220);
+
+                const winText = this.add
+                  .text(cx, 220, "BOSS DEFEATED!\n+500 POINTS", {
+                    fontSize: "32px",
+                    color: "#ffdd00",
+                    fontStyle: "bold",
+                    align: "center",
+                    stroke: "#000",
+                    strokeThickness: 3,
+                  })
+                  .setOrigin(0.5)
+                  .setAlpha(0);
+                this.tweens.add({
+                  targets: winText,
+                  alpha: 1,
+                  scale: { from: 0.5, to: 1 },
+                  duration: 500,
+                });
+
+                boss.destroy();
+
+                this.time.delayedCall(2000, () => {
+                  this.scene.start("Results", {
+                    score: this.gameData.score,
+                    maxCombo: this.gameData.combo,
+                    lives: this.gameData.lives,
+                    totalCorrect: this.gameData.totalCorrect + 1,
+                    totalWrong: this.gameData.totalWrong,
+                    difficulty: this.gameData.difficulty,
+                    level: this.gameData.level,
+                    bossDefeated: true,
+                  });
+                });
+              } else {
+                // Generate new question for remaining hits
+                btn.setFillStyle(0x22cc66);
+                txt.setText("✓");
+              }
+            } else {
+              SFX.wrong();
+              btn.setFillStyle(0xff0000);
+              this.cameras.main.shake(200, 0.015);
+              this.gameData.lives--;
+              this.gameData.totalWrong++;
+              if (this.gameData.lives <= 0) {
+                this.time.delayedCall(1000, () => {
+                  this.scene.start("Results", {
+                    score: this.gameData.score,
+                    maxCombo: this.gameData.combo,
+                    lives: 0,
+                    totalCorrect: this.gameData.totalCorrect,
+                    totalWrong: this.gameData.totalWrong,
+                    difficulty: this.gameData.difficulty,
+                    level: this.gameData.level,
+                  });
+                });
+              }
+            }
+          });
+        });
+
+        // Hint
+        this.add
+          .text(cx, 450, "Click the correct answer to damage the boss!", {
+            fontSize: "14px",
+            color: "#cc88ff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 475, `Lives: ${"♥".repeat(this.gameData.lives)}`, {
+            fontSize: "18px",
+            color: "#ff4444",
+          })
+          .setOrigin(0.5);
+
+        this.cameras.main.fadeIn(500);
+      };
+
+      // ── RESULTS SCENE ──
+      function ResultScene() {
+        return new Phaser.Scene("Results");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+
+      ResultScene.prototype.init = function (data) {
+        this.data = data;
+      };
+
+      ResultScene.prototype.create = function () {
+        const cx = W / 2,
+          d = this.data;
+
+        // Background
+        this.add.rectangle(cx, H / 2, W, H, 0x0a0a2e);
+        for (let i = 0; i < 50; i++) {
+          this.add.circle(
+            randInt(0, W),
+            randInt(0, H),
+            randInt(1, 2),
+            0xffffff,
+            Math.random() * 0.3 + 0.1,
+          );
+        }
+
+        const won = d.lives > 0;
+        if (won) SFX.win();
+        else SFX.lose();
+
+        // Victory/defeat particles
+        if (won) {
+          for (let i = 0; i < 5; i++) {
+            this.time.delayedCall(i * 400, () => {
+              const p = this.add.particles(0, 0, "star_particle", {
+                speed: { min: 50, max: 200 },
+                scale: { start: 1.5, end: 0 },
+                lifespan: 800,
+                quantity: 15,
+                tint: [0xffdd00, 0x00ccff, 0x22cc66],
+              });
+              p.emitParticleAt(randInt(100, W - 100), randInt(100, 300));
+              this.time.delayedCall(1000, () => p.destroy());
+            });
+          }
+        }
+
+        // Title
+        this.add
+          .text(cx, 50, won ? "LEVEL COMPLETE!" : "GAME OVER", {
+            fontSize: "42px",
+            fontStyle: "bold",
+            color: won ? "#22cc66" : "#ff4444",
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+
+        if (d.bossDefeated) {
+          this.add
+            .text(cx, 95, "BOSS DEFEATED!", {
+              fontSize: "22px",
+              color: "#ff00ff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+        }
+
+        // Stats
+        const stats = [
+          { label: "Final Score", value: String(d.score), color: "#00ccff" },
+          {
+            label: "Correct Hits",
+            value: String(d.totalCorrect),
+            color: "#22cc66",
+          },
+          {
+            label: "Wrong Hits",
+            value: String(d.totalWrong),
+            color: "#ff4444",
+          },
+          { label: "Max Combo", value: `x${d.maxCombo}`, color: "#ffdd00" },
+          {
+            label: "Difficulty",
+            value: d.difficulty.toUpperCase(),
+            color: "#aaccff",
+          },
+        ];
+
+        stats.forEach((s, i) => {
+          const y = 150 + i * 55;
+          this.add.rectangle(cx, y, 350, 42, 0x1a2a4a, 0.8);
+          this.add
+            .text(cx - 140, y, s.label, { fontSize: "18px", color: "#88aacc" })
+            .setOrigin(0, 0.5);
+          const valText = this.add
+            .text(cx + 140, y, s.value, {
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: s.color,
+            })
+            .setOrigin(1, 0.5);
+          // Animate in
+          valText.setAlpha(0);
+          this.tweens.add({
+            targets: valText,
+            alpha: 1,
+            x: { from: cx + 180, to: cx + 140 },
+            duration: 400,
+            delay: i * 150,
+          });
+        });
+
+        // Grade
+        const pct =
+          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const grade =
+          pct >= 90
+            ? "A+"
+            : pct >= 80
+              ? "A"
+              : pct >= 70
+                ? "B"
+                : pct >= 60
+                  ? "C"
+                  : "D";
+        const gradeColor =
+          pct >= 80 ? "#22cc66" : pct >= 60 ? "#ffaa00" : "#ff4444";
+
+        this.add
+          .text(cx, 440, grade, {
+            fontSize: "60px",
+            fontStyle: "bold",
+            color: gradeColor,
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 480, `${Math.round(pct)}% Accuracy`, {
+            fontSize: "18px",
+            color: "#aaccff",
+          })
+          .setOrigin(0.5);
+
+        // Buttons
+        const retryBtn = this.add
+          .rectangle(cx - 90, 540, 160, 46, 0x00ccff)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx - 90, 540, "PLAY AGAIN", {
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#001133",
+          })
+          .setOrigin(0.5);
+        retryBtn.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () =>
+            this.scene.start("Game", { difficulty: d.difficulty }),
+          );
+        });
+
+        const menuBtn = this.add
+          .rectangle(cx + 90, 540, 160, 46, 0x334466)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx + 90, 540, "MAIN MENU", {
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#aaccff",
+          })
+          .setOrigin(0.5);
+        menuBtn.on("pointerdown", () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () => this.scene.start("Title"));
+        });
+
+        this.cameras.main.fadeIn(600);
+      };
+
+      // ── Launch ──
+      const game = new Phaser.Game(config);
     </script>
   </body>
 </html>

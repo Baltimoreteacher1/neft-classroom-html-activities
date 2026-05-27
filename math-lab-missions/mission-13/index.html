@@ -1,0 +1,2220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Mission 13: Expressions | Math Lab Missions</title>
+    <style>
+      :root {
+        --navy: #23395d;
+        --teal: #207a7a;
+        --teal-dark: #135f60;
+        --gold: #b7791f;
+        --green: #2f7d32;
+        --red: #b42318;
+        --soft-blue: #edf5ff;
+        --soft-teal: #ecf8f6;
+        --soft-gold: #fff6df;
+        --soft-green: #edf7ed;
+        --soft-red: #fef2f2;
+        --line: #d9e1e8;
+        --muted: #5b6573;
+        --ink: #17202a;
+        --paper: #fffdf8;
+      }
+
+      body {
+        background:
+          linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+          linear-gradient(315deg, rgba(183, 121, 31, 0.1), transparent 24rem),
+          var(--bg, var(--paper));
+      }
+
+      .mission-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .mission-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal-dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 160ms;
+      }
+      .mission-nav a:hover {
+        border-color: var(--teal);
+      }
+      .mission-nav a.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .hero-mission {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: clamp(22px, 4vw, 38px);
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .hero-text .eyebrow {
+        margin-bottom: 4px;
+      }
+      .hero-text h1 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        margin-bottom: 8px;
+        color: var(--navy);
+      }
+      .hero-text .standards {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--soft-blue);
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .hero-text .scenario {
+        font-size: 1.08rem;
+        color: #263242;
+        line-height: 1.6;
+      }
+
+      .hero-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-illustration svg {
+        width: 100%;
+        max-width: 340px;
+        height: auto;
+      }
+
+      .student-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+      .student-info label {
+        display: block;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .student-info input {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font: inherit;
+        font-size: 0.95rem;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 22px;
+        align-items: start;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+        padding: 22px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.4rem;
+        margin-bottom: 14px;
+      }
+      .panel h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        margin-top: 18px;
+      }
+
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .role {
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--soft-teal);
+        border: 1px solid #b9ddd8;
+      }
+      .role strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--teal-dark);
+      }
+      .role span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .investigation-box {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .investigation-box h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+
+      .visual-model {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .visual-model svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .step-list {
+        counter-reset: step;
+        list-style: none;
+        padding-left: 0;
+      }
+      .step-list li {
+        counter-increment: step;
+        padding: 14px 14px 14px 52px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        position: relative;
+      }
+      .step-list li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .step-list li strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .guiding-q {
+        color: var(--teal-dark);
+        font-style: italic;
+        font-size: 0.95rem;
+        margin-top: 6px;
+      }
+
+      .esol-box {
+        padding: 18px;
+        background: var(--soft-green);
+        border: 1px solid #b2d8b4;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .esol-box h3 {
+        margin-top: 0;
+        color: var(--green);
+      }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .vocab-item {
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #c8e6c9;
+        border-radius: 6px;
+        font-size: 0.92rem;
+      }
+      .vocab-item strong {
+        color: var(--green);
+      }
+      .sentence-frames {
+        list-style: none;
+        padding-left: 0;
+      }
+      .sentence-frames li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: #fff;
+        border-left: 4px solid var(--green);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #263242;
+      }
+
+      .representations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .rep-card {
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .rep-card h4 {
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rep-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .timer-section {
+        padding: 14px;
+        background: var(--soft-gold);
+        border: 1px solid #ead39d;
+        border-radius: 8px;
+        margin-bottom: 14px;
+      }
+      .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-size: 2.4rem;
+        line-height: 1;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .timer-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: #aeb9c5;
+        color: var(--navy);
+      }
+      .btn-ghost {
+        background: var(--soft-teal);
+        border-color: #a7d8d0;
+        color: var(--teal-dark);
+      }
+
+      .phase-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .phase {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .phase-toggle {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .phase-time {
+        min-width: 54px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--navy);
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+      }
+      .phase-title {
+        font-weight: 900;
+      }
+      .phase-body {
+        display: none;
+        padding: 0 12px 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .phase.is-open .phase-body {
+        display: block;
+      }
+      .phase-body .checkpoint {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--soft-gold);
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      .challenge-box {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-left: 5px solid var(--gold);
+        background: var(--soft-gold);
+        border-radius: 6px;
+      }
+      .challenge-box h3 {
+        margin-top: 0;
+        color: var(--gold);
+      }
+
+      .whatif-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .whatif-list li {
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .whatif-list li::before {
+        content: "What if... ";
+        font-weight: 800;
+        color: var(--gold);
+      }
+
+      .defense-section {
+        margin-top: 18px;
+      }
+      .defense-section ol {
+        padding-left: 20px;
+      }
+      .defense-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      .sentence-starters {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .sentence-starters li {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        background: var(--soft-blue);
+        border-left: 4px solid var(--navy);
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .rubric-item {
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.88rem;
+      }
+      .rubric-item strong {
+        display: block;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+
+      .exit-product {
+        padding: 18px;
+        background: var(--soft-blue);
+        border: 1px solid #bed4ea;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .exit-product h3 {
+        margin-top: 0;
+        color: var(--navy);
+      }
+
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+      .checklist li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        font-size: 0.95rem;
+      }
+      .checklist li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--navy);
+        border-radius: 4px;
+      }
+
+      .hint-toggle-box {
+        margin: 16px 0;
+        padding: 14px;
+        border: 1px dashed #8bbab3;
+        border-radius: 8px;
+        background: #f8fffd;
+      }
+      .hint-toggle-box .hint-content {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .hint-toggle-box .hint-content[hidden] {
+        display: none;
+      }
+
+      .evaluator-box {
+        padding: 18px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      .evaluator-box h4 {
+        color: var(--navy);
+        margin: 0 0 10px;
+      }
+      .eval-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .eval-row label {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--ink);
+        min-width: 100px;
+      }
+      .eval-row input {
+        width: 200px;
+        padding: 6px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font: inherit;
+        font-size: 0.95rem;
+      }
+      .eval-row .result {
+        font-weight: 800;
+        color: var(--teal-dark);
+        font-size: 0.95rem;
+      }
+
+      .expression-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .expr-card {
+        padding: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+      .expr-card h4 {
+        color: var(--navy);
+        margin: 0 0 6px;
+        font-size: 1rem;
+      }
+      .expr-card .expr-formula {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--teal-dark);
+        margin: 8px 0;
+        font-family: "Courier New", monospace;
+      }
+      .expr-card p {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .part-label {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        margin-right: 4px;
+      }
+      .part-variable {
+        background: var(--soft-teal);
+        color: var(--teal-dark);
+      }
+      .part-coefficient {
+        background: var(--soft-blue);
+        color: var(--navy);
+      }
+      .part-constant {
+        background: var(--soft-gold);
+        color: var(--gold);
+      }
+      .part-operator {
+        background: var(--soft-red);
+        color: var(--red);
+      }
+
+      .print-workspace {
+        display: none;
+        margin-top: 24px;
+        padding: 24px;
+        border: 2px solid #888;
+        border-radius: 8px;
+        min-height: 300px;
+      }
+
+      @media (max-width: 900px) {
+        .hero-mission {
+          grid-template-columns: 1fr;
+        }
+        .hero-illustration {
+          order: -1;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .role-grid {
+          grid-template-columns: 1fr;
+        }
+        .vocab-grid {
+          grid-template-columns: 1fr;
+        }
+        .rubric-grid {
+          grid-template-columns: 1fr;
+        }
+        .student-info {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .timer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer-display {
+          font-size: 2rem;
+        }
+        .representations {
+          grid-template-columns: 1fr;
+        }
+        .expression-cards {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .mission-nav,
+        .timer-section,
+        .timer-controls,
+        .btn,
+        .evaluator-box button {
+          display: none !important;
+        }
+        .panel,
+        .hero-mission {
+          box-shadow: none;
+          border-color: #aaa;
+          break-inside: avoid;
+        }
+        .phase-body {
+          display: block !important;
+        }
+        .print-workspace {
+          display: block;
+        }
+        .hint-toggle-box .hint-content {
+          display: block !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="mission-nav" aria-label="Mission navigation">
+        <a href="../">Back to Missions Hub</a>
+        <div>
+          <a href="../mission-12/">Previous Mission</a>
+          <a href="../mission-14/">Next Mission</a>
+        </div>
+      </nav>
+
+      <!-- STUDENT INFO -->
+      <div class="student-info panel" id="studentInfo">
+        <div>
+          <label for="studentName">Student Name</label>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="First and Last"
+            autocomplete="off"
+          />
+        </div>
+        <div>
+          <label for="studentPeriod">Period</label>
+          <input
+            type="text"
+            id="studentPeriod"
+            placeholder="e.g. 3"
+            autocomplete="off"
+          />
+        </div>
+        <div>
+          <label for="studentDate">Date</label>
+          <input type="date" id="studentDate" />
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <section class="hero-mission" aria-labelledby="mission-title">
+        <div class="hero-text">
+          <p class="eyebrow">Mission 13 &middot; Unit 6</p>
+          <h1 id="mission-title">Expressions</h1>
+          <span class="standards"
+            >6.EE.A.1 &middot; 6.EE.A.2 &middot; 6.EE.A.3</span
+          >
+          <p class="scenario">
+            The sixth-grade class is running a school store that sells notebooks
+            for
+            <strong>$3 each</strong> and pens for <strong>$1.50 each</strong>.
+            There is also a flat <strong>$2 daily table rental fee</strong> to
+            set up the store. Your team must write expressions for the daily
+            revenue, total costs, and profit. Then evaluate each expression for
+            specific customer scenarios, interpret what each part means in
+            context, and recommend whether the store is worth running on days
+            with different sales volumes.
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <svg
+            viewBox="0 0 340 400"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="School store scene with expression labels showing 3n + 1.5p - 2"
+          >
+            <!-- Background -->
+            <rect width="340" height="400" rx="16" fill="#edf5ff" />
+            <!-- Title -->
+            <text
+              x="170"
+              y="32"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="900"
+              fill="#23395d"
+            >
+              School Store Expressions
+            </text>
+            <!-- Store table -->
+            <rect
+              x="30"
+              y="200"
+              width="280"
+              height="12"
+              rx="4"
+              fill="#c49a5e"
+            />
+            <rect x="40" y="212" width="8" height="80" fill="#a07840" />
+            <rect x="292" y="212" width="8" height="80" fill="#a07840" />
+            <!-- Notebooks on table -->
+            <rect x="50" y="155" width="50" height="45" rx="4" fill="#23395d" />
+            <text
+              x="75"
+              y="183"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#fff"
+            >
+              $3
+            </text>
+            <rect
+              x="55"
+              y="160"
+              width="40"
+              height="4"
+              rx="2"
+              fill="#fff"
+              opacity="0.3"
+            />
+            <rect
+              x="110"
+              y="155"
+              width="50"
+              height="45"
+              rx="4"
+              fill="#23395d"
+            />
+            <text
+              x="135"
+              y="183"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#fff"
+            >
+              $3
+            </text>
+            <rect
+              x="115"
+              y="160"
+              width="40"
+              height="4"
+              rx="2"
+              fill="#fff"
+              opacity="0.3"
+            />
+            <!-- Pens on table -->
+            <rect x="185" y="170" width="6" height="30" rx="2" fill="#207a7a" />
+            <rect x="197" y="170" width="6" height="30" rx="2" fill="#207a7a" />
+            <rect x="209" y="170" width="6" height="30" rx="2" fill="#207a7a" />
+            <rect x="221" y="170" width="6" height="30" rx="2" fill="#207a7a" />
+            <rect x="233" y="170" width="6" height="30" rx="2" fill="#207a7a" />
+            <text
+              x="212"
+              y="162"
+              text-anchor="middle"
+              font-size="10"
+              font-weight="800"
+              fill="#207a7a"
+            >
+              $1.50 each
+            </text>
+            <!-- Price sign -->
+            <rect
+              x="255"
+              y="130"
+              width="70"
+              height="65"
+              rx="6"
+              fill="#fff"
+              stroke="#b7791f"
+              stroke-width="2"
+            />
+            <text
+              x="290"
+              y="150"
+              text-anchor="middle"
+              font-size="9"
+              font-weight="800"
+              fill="#b7791f"
+            >
+              DAILY FEE
+            </text>
+            <text
+              x="290"
+              y="175"
+              text-anchor="middle"
+              font-size="20"
+              font-weight="900"
+              fill="#b42318"
+            >
+              $2
+            </text>
+            <!-- Expression box -->
+            <rect
+              x="40"
+              y="60"
+              width="260"
+              height="70"
+              rx="10"
+              fill="#fff"
+              stroke="#23395d"
+              stroke-width="2"
+            />
+            <text
+              x="170"
+              y="85"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="800"
+              fill="#5b6573"
+            >
+              Profit Expression
+            </text>
+            <text
+              x="170"
+              y="115"
+              text-anchor="middle"
+              font-size="22"
+              font-weight="900"
+              fill="#23395d"
+            >
+              3n + 1.5p - 2
+            </text>
+            <!-- Labels with arrows -->
+            <line
+              x1="115"
+              y1="120"
+              x2="80"
+              y2="145"
+              stroke="#207a7a"
+              stroke-width="1.5"
+              stroke-dasharray="4,3"
+            />
+            <text x="55" y="150" font-size="9" fill="#207a7a" font-weight="700">
+              notebooks
+            </text>
+            <line
+              x1="195"
+              y1="120"
+              x2="210"
+              y2="145"
+              stroke="#207a7a"
+              stroke-width="1.5"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="210"
+              y="150"
+              font-size="9"
+              fill="#207a7a"
+              font-weight="700"
+            >
+              pens
+            </text>
+            <line
+              x1="240"
+              y1="115"
+              x2="275"
+              y2="135"
+              stroke="#b42318"
+              stroke-width="1.5"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="275"
+              y="148"
+              font-size="9"
+              fill="#b42318"
+              font-weight="700"
+            >
+              rental
+            </text>
+            <!-- Decorative math symbols -->
+            <text
+              x="30"
+              y="320"
+              font-size="28"
+              fill="#23395d"
+              opacity="0.15"
+              font-weight="900"
+            >
+              n
+            </text>
+            <text
+              x="150"
+              y="340"
+              font-size="28"
+              fill="#207a7a"
+              opacity="0.15"
+              font-weight="900"
+            >
+              p
+            </text>
+            <text
+              x="280"
+              y="320"
+              font-size="24"
+              fill="#b7791f"
+              opacity="0.15"
+              font-weight="900"
+            >
+              =
+            </text>
+            <!-- Bottom note -->
+            <text
+              x="170"
+              y="370"
+              text-anchor="middle"
+              font-size="11"
+              fill="#5b6573"
+            >
+              n = notebooks sold, p = pens sold
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <div>
+          <!-- TEAM ROLES -->
+          <section class="panel" aria-labelledby="roles-title">
+            <h2 id="roles-title">Team Roles</h2>
+            <div class="role-grid">
+              <div class="role">
+                <strong>Facilitator</strong>
+                <span
+                  >Reads the school store scenario aloud, ensures everyone
+                  identifies the quantities before writing expressions, and
+                  watches the timer.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Model Builder</strong>
+                <span
+                  >Writes the expressions using correct notation, labels each
+                  part (variable, coefficient, constant, operator), and draws a
+                  diagram connecting math to the story.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Precision Checker</strong>
+                <span
+                  >Evaluates each expression by substituting values, checks the
+                  order of operations, and verifies that results make sense in
+                  dollars and cents.</span
+                >
+              </div>
+              <div class="role">
+                <strong>Reporter</strong>
+                <span
+                  >Prepares the defense: states the profit expression, shows two
+                  evaluations, and explains what each part of the expression
+                  means in context.</span
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- INVESTIGATION -->
+          <section class="panel" aria-labelledby="investigation-title">
+            <h2 id="investigation-title">Investigation</h2>
+
+            <div class="investigation-box">
+              <h3>The Problem</h3>
+              <p>
+                The sixth-grade school store sells
+                <strong>notebooks for $3 each</strong> and
+                <strong>pens for $1.50 each</strong>. Every day, there is a
+                <strong>$2 table rental fee</strong> the store must pay.
+              </p>
+              <p><strong>Your tasks:</strong></p>
+              <ol>
+                <li>Define variables for the unknown quantities.</li>
+                <li>
+                  Write an expression for the
+                  <strong>total revenue</strong> (money coming in from sales).
+                </li>
+                <li>
+                  Write an expression for the <strong>total cost</strong> (the
+                  daily fee).
+                </li>
+                <li>
+                  Write an expression for the
+                  <strong>daily profit</strong> (revenue minus cost).
+                </li>
+                <li>Evaluate each expression for three different scenarios.</li>
+                <li>
+                  Identify and label every part of your expressions: variables,
+                  coefficients, constants, and operators.
+                </li>
+              </ol>
+            </div>
+
+            <!-- EXPRESSION ANATOMY DIAGRAM -->
+            <div class="visual-model">
+              <svg
+                viewBox="0 0 560 300"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Diagram labeling the parts of the expression 3n + 1.5p - 2 with color-coded annotations"
+              >
+                <!-- Main expression -->
+                <text
+                  x="280"
+                  y="50"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="800"
+                  fill="#5b6573"
+                >
+                  Anatomy of an Expression
+                </text>
+                <!-- The expression in large text -->
+                <text
+                  x="100"
+                  y="120"
+                  font-size="48"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  3
+                </text>
+                <text
+                  x="138"
+                  y="120"
+                  font-size="48"
+                  font-weight="900"
+                  fill="#207a7a"
+                  font-style="italic"
+                >
+                  n
+                </text>
+                <text
+                  x="185"
+                  y="120"
+                  font-size="36"
+                  font-weight="900"
+                  fill="#b42318"
+                >
+                  +
+                </text>
+                <text
+                  x="220"
+                  y="120"
+                  font-size="48"
+                  font-weight="900"
+                  fill="#23395d"
+                >
+                  1.5
+                </text>
+                <text
+                  x="300"
+                  y="120"
+                  font-size="48"
+                  font-weight="900"
+                  fill="#207a7a"
+                  font-style="italic"
+                >
+                  p
+                </text>
+                <text
+                  x="345"
+                  y="120"
+                  font-size="36"
+                  font-weight="900"
+                  fill="#b42318"
+                >
+                  -
+                </text>
+                <text
+                  x="380"
+                  y="120"
+                  font-size="48"
+                  font-weight="900"
+                  fill="#b7791f"
+                >
+                  2
+                </text>
+
+                <!-- Coefficient label for 3 -->
+                <rect
+                  x="70"
+                  y="135"
+                  width="100"
+                  height="24"
+                  rx="6"
+                  fill="#edf5ff"
+                  stroke="#23395d"
+                  stroke-width="1"
+                />
+                <text
+                  x="120"
+                  y="152"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  coefficient
+                </text>
+                <line
+                  x1="112"
+                  y1="125"
+                  x2="112"
+                  y2="135"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+
+                <!-- Variable label for n -->
+                <rect
+                  x="115"
+                  y="60"
+                  width="70"
+                  height="24"
+                  rx="6"
+                  fill="#ecf8f6"
+                  stroke="#207a7a"
+                  stroke-width="1"
+                />
+                <text
+                  x="150"
+                  y="77"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#207a7a"
+                >
+                  variable
+                </text>
+                <line
+                  x1="150"
+                  y1="84"
+                  x2="150"
+                  y2="95"
+                  stroke="#207a7a"
+                  stroke-width="1.5"
+                />
+
+                <!-- Term label: 3n -->
+                <rect
+                  x="88"
+                  y="168"
+                  width="70"
+                  height="24"
+                  rx="6"
+                  fill="#fff6df"
+                  stroke="#b7791f"
+                  stroke-width="1"
+                />
+                <text
+                  x="123"
+                  y="185"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  term
+                </text>
+
+                <!-- Operator label for + -->
+                <rect
+                  x="170"
+                  y="60"
+                  width="70"
+                  height="24"
+                  rx="6"
+                  fill="#fef2f2"
+                  stroke="#b42318"
+                  stroke-width="1"
+                />
+                <text
+                  x="205"
+                  y="77"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#b42318"
+                >
+                  operator
+                </text>
+                <line
+                  x1="195"
+                  y1="84"
+                  x2="195"
+                  y2="100"
+                  stroke="#b42318"
+                  stroke-width="1.5"
+                />
+
+                <!-- Coefficient label for 1.5 -->
+                <rect
+                  x="210"
+                  y="135"
+                  width="100"
+                  height="24"
+                  rx="6"
+                  fill="#edf5ff"
+                  stroke="#23395d"
+                  stroke-width="1"
+                />
+                <text
+                  x="260"
+                  y="152"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  coefficient
+                </text>
+                <line
+                  x1="248"
+                  y1="125"
+                  x2="248"
+                  y2="135"
+                  stroke="#23395d"
+                  stroke-width="1.5"
+                />
+
+                <!-- Variable label for p -->
+                <rect
+                  x="275"
+                  y="60"
+                  width="70"
+                  height="24"
+                  rx="6"
+                  fill="#ecf8f6"
+                  stroke="#207a7a"
+                  stroke-width="1"
+                />
+                <text
+                  x="310"
+                  y="77"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#207a7a"
+                >
+                  variable
+                </text>
+                <line
+                  x1="310"
+                  y1="84"
+                  x2="310"
+                  y2="95"
+                  stroke="#207a7a"
+                  stroke-width="1.5"
+                />
+
+                <!-- Constant label for 2 -->
+                <rect
+                  x="355"
+                  y="135"
+                  width="80"
+                  height="24"
+                  rx="6"
+                  fill="#fff6df"
+                  stroke="#b7791f"
+                  stroke-width="1"
+                />
+                <text
+                  x="395"
+                  y="152"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="800"
+                  fill="#b7791f"
+                >
+                  constant
+                </text>
+                <line
+                  x1="392"
+                  y1="125"
+                  x2="392"
+                  y2="135"
+                  stroke="#b7791f"
+                  stroke-width="1.5"
+                />
+
+                <!-- Summary row -->
+                <rect
+                  x="30"
+                  y="210"
+                  width="500"
+                  height="80"
+                  rx="8"
+                  fill="#fff"
+                  stroke="#d9e1e8"
+                  stroke-width="1"
+                />
+                <text
+                  x="280"
+                  y="232"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="800"
+                  fill="#23395d"
+                >
+                  Key: What each part tells us
+                </text>
+                <text x="50" y="255" font-size="11" fill="#23395d">
+                  <tspan font-weight="800">3</tspan>
+                  = price per notebook
+                </text>
+                <text x="50" y="275" font-size="11" fill="#207a7a">
+                  <tspan font-weight="800">n</tspan>
+                  = number of notebooks sold
+                </text>
+                <text x="220" y="255" font-size="11" fill="#23395d">
+                  <tspan font-weight="800">1.5</tspan>
+                  = price per pen ($1.50)
+                </text>
+                <text x="220" y="275" font-size="11" fill="#207a7a">
+                  <tspan font-weight="800">p</tspan>
+                  = number of pens sold
+                </text>
+                <text x="420" y="255" font-size="11" fill="#b7791f">
+                  <tspan font-weight="800">2</tspan>
+                  = daily rental fee
+                </text>
+                <text x="420" y="275" font-size="11" fill="#b42318">
+                  <tspan font-weight="800">-</tspan>
+                  = subtract (cost)
+                </text>
+              </svg>
+            </div>
+
+            <!-- EXPRESSION CARDS -->
+            <h3>The Three Expressions</h3>
+            <div class="expression-cards">
+              <div class="expr-card">
+                <h4>Revenue (money in)</h4>
+                <div class="expr-formula">3n + 1.5p</div>
+                <p>
+                  Total dollars earned from selling <em>n</em> notebooks and
+                  <em>p</em> pens.
+                </p>
+              </div>
+              <div class="expr-card">
+                <h4>Cost (money out)</h4>
+                <div class="expr-formula">2</div>
+                <p>
+                  The fixed daily table rental fee -- it does not change with
+                  sales.
+                </p>
+              </div>
+              <div class="expr-card">
+                <h4>Profit (what's left)</h4>
+                <div class="expr-formula">3n + 1.5p - 2</div>
+                <p>
+                  Revenue minus cost. Positive = the store earned money.
+                  Negative = the store lost money.
+                </p>
+              </div>
+            </div>
+
+            <h3>Step-by-Step Investigation Guide</h3>
+            <ol class="step-list">
+              <li>
+                <strong>Identify the quantities and define variables</strong>
+                What quantities change each day? What stays the same? Let
+                <em>n</em> = number of notebooks sold and <em>p</em> = number of
+                pens sold. The $3, $1.50, and $2 are fixed values.
+                <p class="guiding-q">
+                  Why do we use variables for notebooks and pens but not for the
+                  rental fee?
+                </p>
+              </li>
+              <li>
+                <strong>Write the revenue expression</strong>
+                Revenue = (price per notebook)(notebooks sold) + (price per
+                pen)(pens sold) = 3n + 1.5p.
+                <p class="guiding-q">
+                  What does 3n mean in words? What does 1.5p mean? Why do we add
+                  them together?
+                </p>
+              </li>
+              <li>
+                <strong>Write the profit expression</strong>
+                Profit = Revenue - Cost = 3n + 1.5p - 2. The -2 represents the
+                daily rental fee being subtracted.
+                <p class="guiding-q">
+                  Is the "-2" part of a term, or is it a separate constant? How
+                  can you tell?
+                </p>
+              </li>
+              <li>
+                <strong>Label every part of the expression</strong>
+                Identify:
+                <span class="part-label part-variable">variables</span>
+                <span class="part-label part-coefficient">coefficients</span>
+                <span class="part-label part-constant">constants</span>
+                <span class="part-label part-operator">operators</span> and
+                terms.
+                <p class="guiding-q">
+                  How many terms does the profit expression have? Can you name
+                  each one?
+                </p>
+              </li>
+              <li>
+                <strong>Evaluate for Scenario A: n = 10, p = 8</strong>
+                Substitute: 3(10) + 1.5(8) - 2. Follow order of operations:
+                multiply first, then add and subtract. Profit = 30 + 12 - 2 =
+                $40.
+                <p class="guiding-q">
+                  Does $40 profit seem reasonable for selling 10 notebooks and 8
+                  pens? How can you check?
+                </p>
+              </li>
+              <li>
+                <strong>Evaluate for Scenario B: n = 0, p = 1</strong>
+                Substitute: 3(0) + 1.5(1) - 2 = 0 + 1.50 - 2 = -$0.50. A
+                negative profit means the store LOST money.
+                <p class="guiding-q">
+                  What does it mean in the real world when profit is negative?
+                  How many items must the store sell to at least break even?
+                </p>
+              </li>
+              <li>
+                <strong
+                  >Find the break-even point and make a recommendation</strong
+                >
+                Find combinations of n and p where 3n + 1.5p - 2 = 0 (break
+                even) or greater than 0 (profit). Write a recommendation: is the
+                store worth running?
+                <p class="guiding-q">
+                  What is the minimum number of notebooks only (p = 0) needed to
+                  break even? What about pens only (n = 0)?
+                </p>
+              </li>
+            </ol>
+
+            <!-- INTERACTIVE EXPRESSION EVALUATOR -->
+            <div class="evaluator-box" id="exprEval">
+              <h4>Expression Evaluator Tool</h4>
+              <p
+                style="
+                  font-size: 0.9rem;
+                  color: var(--muted);
+                  margin-bottom: 12px;
+                "
+              >
+                Enter values for n and p to evaluate the profit expression. Use
+                this to check your work.
+              </p>
+              <div class="eval-row">
+                <label for="evalN">Notebooks (n):</label>
+                <input type="number" id="evalN" min="0" step="1" value="10" />
+              </div>
+              <div class="eval-row">
+                <label for="evalP">Pens (p):</label>
+                <input type="number" id="evalP" min="0" step="1" value="8" />
+              </div>
+              <div class="eval-row">
+                <label>Revenue:</label>
+                <span class="result" id="evalRevenue">$42.00</span>
+              </div>
+              <div class="eval-row">
+                <label>Cost:</label>
+                <span class="result" id="evalCost">$2.00</span>
+              </div>
+              <div class="eval-row">
+                <label>Profit:</label>
+                <span class="result" id="evalProfit" style="font-size: 1.1rem"
+                  >$40.00</span
+                >
+              </div>
+              <div class="eval-row">
+                <label>Substitution:</label>
+                <span
+                  class="result"
+                  id="evalWork"
+                  style="font-family: monospace; font-size: 0.9rem"
+                  >3(10) + 1.5(8) - 2 = 40</span
+                >
+              </div>
+              <button class="btn btn-ghost" type="button" id="evalBtn">
+                Evaluate
+              </button>
+            </div>
+
+            <!-- HINTS -->
+            <div class="hint-toggle-box">
+              <button
+                class="btn btn-ghost"
+                type="button"
+                id="hintToggle1"
+                aria-expanded="false"
+                aria-controls="hintContent1"
+              >
+                Reveal Hint: Identifying Parts
+              </button>
+              <div class="hint-content" id="hintContent1" hidden>
+                <p>In the expression <strong>3n + 1.5p - 2</strong>:</p>
+                <ul>
+                  <li>
+                    <strong>Terms:</strong> 3n, 1.5p, and 2 (there are 3 terms)
+                  </li>
+                  <li><strong>Variables:</strong> n and p (they change)</li>
+                  <li>
+                    <strong>Coefficients:</strong> 3 (in front of n) and 1.5 (in
+                    front of p)
+                  </li>
+                  <li><strong>Constant:</strong> 2 (it never changes)</li>
+                  <li>
+                    <strong>Operators:</strong> + (add revenue from pens) and -
+                    (subtract cost)
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="hint-toggle-box">
+              <button
+                class="btn btn-ghost"
+                type="button"
+                id="hintToggle2"
+                aria-expanded="false"
+                aria-controls="hintContent2"
+              >
+                Reveal Hint: Break-Even
+              </button>
+              <div class="hint-content" id="hintContent2" hidden>
+                <p>To break even, profit must equal 0:</p>
+                <p>
+                  <strong>3n + 1.5p - 2 = 0</strong>, which means
+                  <strong>3n + 1.5p = 2</strong>
+                </p>
+                <ul>
+                  <li>
+                    If only notebooks (p = 0): 3n = 2, so n = 2/3. You cannot
+                    sell 2/3 of a notebook, so you need at least
+                    <strong>1 notebook</strong> to make a profit.
+                  </li>
+                  <li>
+                    If only pens (n = 0): 1.5p = 2, so p = 4/3. You need at
+                    least <strong>2 pens</strong> to make a profit.
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- ESOL SUPPORT -->
+            <div class="esol-box" id="esolSupport">
+              <h3>ESOL Support</h3>
+              <h4>Key Vocabulary</h4>
+              <div class="vocab-grid">
+                <div class="vocab-item">
+                  <strong>Expression:</strong> A math phrase with numbers,
+                  variables, and operations (no equal sign)
+                </div>
+                <div class="vocab-item">
+                  <strong>Variable:</strong> A letter that stands for a number
+                  that can change
+                </div>
+                <div class="vocab-item">
+                  <strong>Coefficient:</strong> The number multiplied by a
+                  variable (the "3" in 3n)
+                </div>
+                <div class="vocab-item">
+                  <strong>Constant:</strong> A number that stays the same and
+                  has no variable
+                </div>
+                <div class="vocab-item">
+                  <strong>Term:</strong> A single piece of an expression (like
+                  3n or 1.5p or 2)
+                </div>
+                <div class="vocab-item">
+                  <strong>Evaluate:</strong> Substitute numbers for variables
+                  and calculate the answer
+                </div>
+                <div class="vocab-item">
+                  <strong>Revenue:</strong> Total money received from selling
+                  items
+                </div>
+                <div class="vocab-item">
+                  <strong>Profit:</strong> Money left after subtracting costs
+                  from revenue
+                </div>
+              </div>
+              <h4>Sentence Frames</h4>
+              <ul class="sentence-frames">
+                <li>
+                  "The variable ___ represents ___ because it can change each
+                  day."
+                </li>
+                <li>
+                  "The coefficient ___ tells me the price of each ___, which is
+                  $___."
+                </li>
+                <li>
+                  "When I substitute n = ___ and p = ___, the profit is $___
+                  because..."
+                </li>
+                <li>
+                  "The expression 3n + 1.5p - 2 means: earn $3 for each ___,
+                  plus $1.50 for each ___, minus $2 for ___."
+                </li>
+              </ul>
+            </div>
+
+            <!-- MULTIPLE REPRESENTATIONS -->
+            <h3>Multiple Representations</h3>
+            <div class="representations">
+              <div class="rep-card">
+                <h4>Algebraic</h4>
+                <p>
+                  Write the expression using variables, coefficients, and
+                  operations: 3n + 1.5p - 2
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Table</h4>
+                <p>
+                  Make a table with columns for n, p, revenue, cost, and profit
+                  for at least 3 scenarios.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Verbal</h4>
+                <p>
+                  Describe the expression in complete sentences using the school
+                  store context.
+                </p>
+              </div>
+              <div class="rep-card">
+                <h4>Diagram</h4>
+                <p>
+                  Draw the store scene and label parts with the matching
+                  expression pieces.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <!-- TIMED PHASES -->
+          <section class="panel" aria-labelledby="phases-title">
+            <h2 id="phases-title">Timed Lab Phases</h2>
+            <div class="timer-section">
+              <div class="timer">
+                <div>
+                  <strong id="activePhaseLabel">Explore phase</strong>
+                  <div style="font-size: 0.9rem; color: var(--muted)">
+                    Click a phase, then press Start.
+                  </div>
+                </div>
+                <div class="timer-display" id="timerDisplay" aria-live="polite">
+                  04:00
+                </div>
+              </div>
+              <div class="timer-controls">
+                <button class="btn btn-primary" id="startTimer">Start</button>
+                <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+                <button class="btn btn-secondary" id="resetTimer">Reset</button>
+              </div>
+            </div>
+
+            <div class="phase-list" id="phaseList">
+              <article class="phase is-open">
+                <button
+                  class="phase-toggle"
+                  data-phase="0"
+                  data-minutes="4"
+                  aria-expanded="true"
+                >
+                  <span class="phase-time">4 min</span>
+                  <span class="phase-title">Explore</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Read the school store problem aloud. Assign roles. Underline
+                    the three dollar amounts ($3, $1.50, $2) and the unknown
+                    quantities (notebooks sold, pens sold). Discuss: what
+                    changes day to day and what stays the same?
+                  </p>
+                  <p class="guiding-q">
+                    How do you decide which quantities need a variable and which
+                    are constants?
+                  </p>
+                  <div class="checkpoint">
+                    Checkpoint: every team member can name the two variables and
+                    three fixed dollar amounts.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="1"
+                  data-minutes="6"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">6 min</span>
+                  <span class="phase-title">Investigate</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Model Builder writes the revenue, cost, and profit
+                    expressions. The team labels each part: variables,
+                    coefficients, constants, operators, and terms. Draw a
+                    diagram that connects each part of the expression to the
+                    real-world store.
+                  </p>
+                  <p class="guiding-q">
+                    Why is 3n one term but 3 + n would be two separate terms?
+                  </p>
+                  <div class="checkpoint">
+                    Checkpoint: all three expressions written, every part
+                    labeled, and at least one diagram drawn.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="2"
+                  data-minutes="5"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">5 min</span>
+                  <span class="phase-title">Analyze</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Evaluate the profit expression for three scenarios: (A)
+                    n=10, p=8; (B) n=0, p=1; (C) your team's choice. Show
+                    substitution work. Discuss: when does the store lose money?
+                    Find the break-even point.
+                  </p>
+                  <p class="guiding-q">
+                    When profit is negative, what does that mean for the school
+                    store? What is the smallest sale that makes money?
+                  </p>
+                  <div class="checkpoint">
+                    Checkpoint: three evaluations complete with work shown, and
+                    the break-even point identified.
+                  </div>
+                </div>
+              </article>
+              <article class="phase">
+                <button
+                  class="phase-toggle"
+                  data-phase="3"
+                  data-minutes="4"
+                  aria-expanded="false"
+                >
+                  <span class="phase-time">4 min</span>
+                  <span class="phase-title">Report</span>
+                  <span aria-hidden="true">+</span>
+                </button>
+                <div class="phase-body">
+                  <p>
+                    Reporter prepares the presentation. Show the expression,
+                    explain what each part means, present all three evaluation
+                    results, and give the recommendation: should the store run
+                    on slow days?
+                  </p>
+                  <p class="guiding-q">
+                    What is one mistake your team caught when substituting
+                    values?
+                  </p>
+                  <div class="checkpoint">
+                    Checkpoint: Reporter can explain the expression, show
+                    substitution for one scenario, and state the recommendation
+                    in under 90 seconds.
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- CHALLENGE -->
+          <section class="panel">
+            <div class="challenge-box">
+              <h3>Extension Challenge</h3>
+              <p>
+                The school store adds a third item:
+                <strong>erasers for $0.75 each</strong>. Let <em>e</em> =
+                erasers sold. Write the new profit expression. If the store
+                sells 10 notebooks, 8 pens, and 12 erasers, what is the profit
+                now? How does adding a cheap item affect the break-even
+                calculation?
+              </p>
+            </div>
+
+            <h3>"What If?" Variations</h3>
+            <ul class="whatif-list">
+              <li>
+                the rental fee increased to $5 per day? How many more items
+                would the store need to sell to break even?
+              </li>
+              <li>
+                notebooks were on sale for $2 instead of $3? Rewrite the
+                expression and evaluate for n=10, p=8.
+              </li>
+              <li>
+                the store had no rental fee at all? Would the profit ever be
+                negative?
+              </li>
+            </ul>
+
+            <h3>Real-Life Connection</h3>
+            <p style="font-size: 0.95rem; color: var(--muted)">
+              Every business uses expressions like these to calculate profit and
+              loss. A lemonade stand, a restaurant, and even a billion-dollar
+              company all start the same way: Revenue - Costs = Profit.
+              Understanding expressions helps you read financial statements,
+              plan budgets, and make smart decisions about money.
+            </p>
+          </section>
+
+          <!-- DEFENSE -->
+          <section class="panel defense-section">
+            <h2>Defense Preparation</h2>
+            <h3>Defense Questions</h3>
+            <ol>
+              <li>
+                What does each variable in your expression represent? Why did
+                you choose those letters?
+              </li>
+              <li>
+                Name the coefficient in the term 1.5p. What does it mean in the
+                context of the store?
+              </li>
+              <li>
+                Show the substitution work for Scenario A (n=10, p=8). What is
+                the profit?
+              </li>
+              <li>
+                When is the profit negative? What does that mean for the school
+                store?
+              </li>
+              <li>
+                How did your team find the break-even point? Explain your
+                reasoning.
+              </li>
+            </ol>
+
+            <h3>Sentence Starters for Your Defense</h3>
+            <ul class="sentence-starters">
+              <li>
+                "We let n represent ___ and p represent ___ because these
+                quantities..."
+              </li>
+              <li>"The coefficient 3 means ___ and the constant 2 means..."</li>
+              <li>
+                "When we substituted n = ___ and p = ___, we got a profit of
+                $___ because..."
+              </li>
+              <li>"The store breaks even when ___ because..."</li>
+            </ul>
+
+            <h3>What Makes a Strong Defense</h3>
+            <div class="rubric-grid">
+              <div class="rubric-item">
+                <strong>Correct Expression</strong>
+                All parts labeled: variables, coefficients, constant, operators
+              </div>
+              <div class="rubric-item">
+                <strong>Accurate Evaluation</strong>
+                Substitution shown for at least 2 scenarios with correct order
+                of operations
+              </div>
+              <div class="rubric-item">
+                <strong>Contextual Meaning</strong>
+                Every part of the expression explained in school store terms
+              </div>
+            </div>
+          </section>
+
+          <!-- EXIT PRODUCT -->
+          <section class="panel">
+            <div class="exit-product">
+              <h3>Exit Product</h3>
+              <p>Submit a one-page lab note with:</p>
+              <ul class="checklist">
+                <li>Variables defined (what n and p stand for)</li>
+                <li>
+                  Revenue expression, cost expression, and profit expression
+                </li>
+                <li>
+                  Every part of the profit expression labeled (terms, variables,
+                  coefficients, constant, operators)
+                </li>
+                <li>Three evaluation scenarios with full substitution work</li>
+                <li>Break-even analysis with explanation</li>
+                <li>Three-sentence defense: claim, evidence, recommendation</li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <!-- PRINT WORKSPACE -->
+      <section class="print-workspace" aria-label="Student work space">
+        <h2>Work Space</h2>
+        <p><strong>Variables:</strong></p>
+        <p>
+          Let n = _______________________ &nbsp;&nbsp; Let p =
+          _______________________
+        </p>
+        <br />
+        <p><strong>Revenue Expression:</strong> ___________________________</p>
+        <br />
+        <p><strong>Cost Expression:</strong> ___________________________</p>
+        <br />
+        <p><strong>Profit Expression:</strong> ___________________________</p>
+        <br />
+        <p><strong>Label the parts:</strong></p>
+        <p>
+          Terms: __________ &nbsp; Variables: __________ &nbsp; Coefficients:
+          __________ &nbsp; Constant: __________
+        </p>
+        <br />
+        <p><strong>Scenario A (n=10, p=8):</strong></p>
+        <p>Substitution: _____________________________ = $_______</p>
+        <br />
+        <p><strong>Scenario B (n=0, p=1):</strong></p>
+        <p>Substitution: _____________________________ = $_______</p>
+        <br />
+        <p><strong>Scenario C (your choice: n=___, p=___):</strong></p>
+        <p>Substitution: _____________________________ = $_______</p>
+        <br />
+        <p>
+          <strong>Break-even:</strong> The store breaks even when
+          ___________________________
+        </p>
+        <br />
+        <p><strong>Recommendation and Defense:</strong></p>
+        <br /><br />
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ── Auto-save / localStorage ── */
+        var STORAGE_KEY = "mathlab-mission-13";
+
+        function loadSaved() {
+          try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+          } catch (e) {
+            return {};
+          }
+        }
+
+        function save(data) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          } catch (e) {
+            /* storage full or blocked */
+          }
+        }
+
+        var saved = loadSaved();
+
+        var nameEl = document.getElementById("studentName");
+        var periodEl = document.getElementById("studentPeriod");
+        var dateEl = document.getElementById("studentDate");
+
+        if (saved.name) nameEl.value = saved.name;
+        if (saved.period) periodEl.value = saved.period;
+        if (saved.date) dateEl.value = saved.date;
+
+        function persistStudentInfo() {
+          saved.name = nameEl.value;
+          saved.period = periodEl.value;
+          saved.date = dateEl.value;
+          save(saved);
+        }
+
+        nameEl.addEventListener("input", persistStudentInfo);
+        periodEl.addEventListener("input", persistStudentInfo);
+        dateEl.addEventListener("input", persistStudentInfo);
+
+        /* ── Timer ── */
+        var phases = [
+          { title: "Explore", minutes: 4 },
+          { title: "Investigate", minutes: 6 },
+          { title: "Analyze", minutes: 5 },
+          { title: "Report", minutes: 4 },
+        ];
+        var activePhaseIndex = 0;
+        var remainingSeconds = phases[0].minutes * 60;
+        var timerId = null;
+        var timerDisplay = document.getElementById("timerDisplay");
+        var activePhaseLabel = document.getElementById("activePhaseLabel");
+        var phaseList = document.getElementById("phaseList");
+
+        function formatTime(s) {
+          var m = Math.floor(s / 60);
+          var r = s % 60;
+          return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+        }
+
+        function stopTimer() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+
+        function selectPhase(index) {
+          stopTimer();
+          activePhaseIndex = index;
+          remainingSeconds = phases[index].minutes * 60;
+          activePhaseLabel.textContent = phases[index].title + " phase";
+          timerDisplay.textContent = formatTime(remainingSeconds);
+          var articles = phaseList.querySelectorAll(".phase");
+          articles.forEach(function (a, i) {
+            a.classList.toggle("is-open", i === index);
+            a.querySelector(".phase-toggle").setAttribute(
+              "aria-expanded",
+              i === index ? "true" : "false",
+            );
+          });
+        }
+
+        phaseList.addEventListener("click", function (e) {
+          var toggle = e.target.closest(".phase-toggle");
+          if (toggle) selectPhase(Number(toggle.dataset.phase));
+        });
+
+        document
+          .getElementById("startTimer")
+          .addEventListener("click", function () {
+            if (timerId) return;
+            timerId = setInterval(function () {
+              remainingSeconds = Math.max(0, remainingSeconds - 1);
+              timerDisplay.textContent = formatTime(remainingSeconds);
+              if (remainingSeconds === 0) {
+                stopTimer();
+                activePhaseLabel.textContent =
+                  phases[activePhaseIndex].title + " phase - COMPLETE";
+              }
+            }, 1000);
+          });
+
+        document
+          .getElementById("pauseTimer")
+          .addEventListener("click", stopTimer);
+        document
+          .getElementById("resetTimer")
+          .addEventListener("click", function () {
+            selectPhase(activePhaseIndex);
+          });
+
+        /* ── Hint toggles ── */
+        function setupHint(toggleId, contentId) {
+          var toggle = document.getElementById(toggleId);
+          var content = document.getElementById(contentId);
+          if (!toggle || !content) return;
+          toggle.addEventListener("click", function () {
+            var showing = content.hidden;
+            content.hidden = !showing;
+            toggle.setAttribute("aria-expanded", String(showing));
+            toggle.textContent = showing
+              ? toggle.textContent.replace("Reveal", "Hide")
+              : toggle.textContent.replace("Hide", "Reveal");
+          });
+        }
+        setupHint("hintToggle1", "hintContent1");
+        setupHint("hintToggle2", "hintContent2");
+
+        /* ── Expression Evaluator ── */
+        function evalUpdate() {
+          var n = parseFloat(document.getElementById("evalN").value) || 0;
+          var p = parseFloat(document.getElementById("evalP").value) || 0;
+          var revenue = 3 * n + 1.5 * p;
+          var cost = 2;
+          var profit = revenue - cost;
+
+          document.getElementById("evalRevenue").textContent =
+            "$" + revenue.toFixed(2);
+          document.getElementById("evalCost").textContent =
+            "$" + cost.toFixed(2);
+
+          var profitEl = document.getElementById("evalProfit");
+          profitEl.textContent =
+            profit < 0
+              ? "-$" + Math.abs(profit).toFixed(2)
+              : "$" + profit.toFixed(2);
+          profitEl.style.color = profit < 0 ? "var(--red)" : "var(--green)";
+
+          document.getElementById("evalWork").textContent =
+            "3(" +
+            n +
+            ") + 1.5(" +
+            p +
+            ") - 2 = " +
+            3 * n +
+            " + " +
+            1.5 * p +
+            " - 2 = " +
+            profit;
+        }
+
+        document
+          .getElementById("evalBtn")
+          .addEventListener("click", evalUpdate);
+        document.getElementById("evalN").addEventListener("input", evalUpdate);
+        document.getElementById("evalP").addEventListener("input", evalUpdate);
+      })();
+    </script>
+  </body>
+</html>
