@@ -1,0 +1,1835 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equation Quest — Unit 8 Review Game</title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --navy-deep: #091c28;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --faint: #8a97a5;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --glow-teal: 0 0 20px rgba(14, 138, 125, 0.4);
+        --glow-gold: 0 0 20px rgba(212, 149, 42, 0.4);
+        --glow-coral: 0 0 20px rgba(196, 90, 60, 0.4);
+        --glow-green: 0 0 20px rgba(45, 135, 75, 0.5);
+        --glow-blue: 0 0 20px rgba(26, 111, 181, 0.4);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: #e0e8f0;
+        background: var(--navy-deep);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      /* ── SCREENS ── */
+      .screen {
+        display: none;
+        min-height: 100vh;
+      }
+      .screen.active {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── START SCREEN ── */
+      #startScreen {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 24px;
+        background: linear-gradient(
+          180deg,
+          var(--navy-deep) 0%,
+          #0d2636 50%,
+          var(--navy) 100%
+        );
+      }
+      .title-glow {
+        font-size: clamp(32px, 7vw, 56px);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        background: linear-gradient(
+          135deg,
+          var(--gold) 0%,
+          #f0c866 50%,
+          var(--gold) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0 0 8px;
+        text-shadow: none;
+        filter: drop-shadow(0 0 30px rgba(212, 149, 42, 0.3));
+      }
+      .subtitle {
+        font-size: 16px;
+        color: var(--faint);
+        margin: 0 0 6px;
+      }
+      .standards-line {
+        font-size: 13px;
+        color: var(--teal);
+        font-weight: 700;
+        margin: 0 0 32px;
+        letter-spacing: 0.04em;
+      }
+      .start-desc {
+        max-width: 480px;
+        font-size: 15px;
+        color: #a0b0c0;
+        margin: 0 auto 32px;
+        line-height: 1.6;
+      }
+      .pixel-border {
+        border: 3px solid var(--gold);
+        box-shadow:
+          inset 0 0 0 2px var(--navy-deep),
+          0 0 0 2px var(--navy-deep),
+          var(--glow-gold);
+      }
+
+      /* Level toggle on start */
+      .start-level-toggle {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+      .level-btn {
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 12px 28px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--faint);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        border-color: var(--teal);
+        background: rgba(14, 138, 125, 0.15);
+        color: #fff;
+        box-shadow: var(--glow-teal);
+      }
+      .level-btn:hover:not(.active) {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #ccc;
+      }
+      .level-hint {
+        font-size: 12px;
+        display: block;
+        margin-top: 4px;
+        font-weight: 500;
+        opacity: 0.7;
+      }
+
+      .start-btn {
+        border: none;
+        background: linear-gradient(135deg, var(--gold), #c08520);
+        color: var(--navy-deep);
+        font-size: 20px;
+        font-weight: 800;
+        padding: 16px 48px;
+        border-radius: 14px;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+        transition: all 0.2s;
+        box-shadow: var(--glow-gold);
+      }
+      .start-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 0 40px rgba(212, 149, 42, 0.5);
+      }
+      .start-btn:active {
+        transform: scale(0.97);
+      }
+
+      /* ── HUD ── */
+      .hud {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(9, 28, 40, 0.95);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 20px;
+      }
+      .hud-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .hud-lives {
+        display: flex;
+        gap: 4px;
+        font-size: 22px;
+      }
+      .hud-lives .heart {
+        transition: all 0.3s;
+      }
+      .hud-lives .heart.lost {
+        opacity: 0.2;
+        filter: grayscale(1);
+        transform: scale(0.8);
+      }
+      .hud-score {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--gold);
+      }
+      .hud-timer {
+        font-size: 16px;
+        font-weight: 700;
+        color: #e0e8f0;
+        font-variant-numeric: tabular-nums;
+      }
+      .hud-timer.warning {
+        color: var(--coral);
+        animation: pulse 0.5s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* ── DUNGEON MAP ── */
+      .dungeon-map {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        padding: 12px 20px 8px;
+        background: rgba(9, 28, 40, 0.6);
+      }
+      .map-node {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--faint);
+        background: rgba(255, 255, 255, 0.03);
+        transition: all 0.3s;
+        position: relative;
+      }
+      .map-node.current {
+        border-color: var(--teal);
+        background: rgba(14, 138, 125, 0.2);
+        color: #fff;
+        box-shadow: var(--glow-teal);
+      }
+      .map-node.completed {
+        border-color: var(--green);
+        background: rgba(45, 135, 75, 0.2);
+        color: var(--green);
+      }
+      .map-node.boss {
+        border-color: var(--coral);
+        width: 42px;
+      }
+      .map-node.boss.current {
+        border-color: var(--coral);
+        background: rgba(196, 90, 60, 0.2);
+        box-shadow: var(--glow-coral);
+      }
+      .map-connector {
+        width: 16px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.1);
+        align-self: center;
+      }
+      .map-connector.active {
+        background: var(--green);
+      }
+
+      /* ── ROOM ── */
+      .room-container {
+        flex: 1;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 20px 40px;
+        width: 100%;
+      }
+      .room-header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .room-icon {
+        font-size: 40px;
+        margin-bottom: 8px;
+      }
+      .room-title {
+        font-size: clamp(20px, 4vw, 28px);
+        font-weight: 800;
+        margin: 0 0 6px;
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .room-narrative {
+        font-size: 14px;
+        color: var(--faint);
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.5;
+      }
+
+      /* ── QUESTION CARD (game version) ── */
+      .game-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+      }
+      .game-card.glow-correct {
+        border-color: var(--green);
+        box-shadow: var(--glow-green);
+      }
+      .game-card.glow-wrong {
+        border-color: var(--coral);
+        box-shadow: var(--glow-coral);
+      }
+      .q-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--teal);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .q-text {
+        font-size: 17px;
+        font-weight: 600;
+        color: #e0e8f0;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .q-text .math {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-style: italic;
+        color: var(--gold);
+      }
+      .eq-box {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-size: 24px;
+        text-align: center;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        margin-bottom: 16px;
+        color: var(--gold);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      /* MC options dark theme */
+      .game-mc {
+        display: grid;
+        gap: 8px;
+      }
+      .game-mc-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+        font-size: 15px;
+        color: #c8d4e0;
+        line-height: 1.4;
+      }
+      .game-mc-btn:hover {
+        border-color: var(--blue);
+        background: rgba(26, 111, 181, 0.12);
+      }
+      .game-mc-btn .letter {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--faint);
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      .game-mc-btn:hover .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .game-mc-btn.selected {
+        border-color: var(--blue);
+        background: rgba(26, 111, 181, 0.15);
+      }
+      .game-mc-btn.selected .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .game-mc-btn.is-correct {
+        border-color: var(--green);
+        background: rgba(45, 135, 75, 0.15);
+      }
+      .game-mc-btn.is-correct .letter {
+        background: var(--green);
+        color: #fff;
+      }
+      .game-mc-btn.is-wrong {
+        border-color: var(--coral);
+        background: rgba(196, 90, 60, 0.15);
+      }
+      .game-mc-btn.is-wrong .letter {
+        background: var(--coral);
+        color: #fff;
+      }
+      .game-mc-btn.locked {
+        pointer-events: none;
+      }
+
+      /* Fill input dark */
+      .game-fill-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .game-fill-input {
+        width: 110px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 17px;
+        text-align: center;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .game-fill-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.2);
+      }
+      .game-fill-input.is-correct {
+        border-color: var(--green);
+        background: rgba(45, 135, 75, 0.15);
+      }
+      .game-fill-input.is-wrong {
+        border-color: var(--coral);
+        background: rgba(196, 90, 60, 0.15);
+      }
+      .game-fill-label {
+        font-size: 17px;
+        color: #c8d4e0;
+        font-weight: 600;
+      }
+
+      /* Submit button */
+      .submit-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 12px 28px;
+        font-size: 15px;
+        font-weight: 700;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .submit-btn:hover {
+        background: #1b7fc8;
+        transform: translateY(-1px);
+        box-shadow: var(--glow-blue);
+      }
+      .submit-btn:disabled {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--faint);
+        cursor: default;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Hint scroll */
+      .hint-scroll-btn {
+        border: 1px solid rgba(14, 138, 125, 0.3);
+        background: rgba(14, 138, 125, 0.08);
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--teal);
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 12px;
+      }
+      .hint-scroll-btn:hover {
+        background: rgba(14, 138, 125, 0.15);
+        border-color: var(--teal);
+      }
+      .hint-scroll-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .hint-content {
+        display: none;
+        background: rgba(14, 138, 125, 0.1);
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #80d4ca;
+        line-height: 1.5;
+      }
+      .hint-content.show {
+        display: block;
+      }
+
+      /* Feedback inline */
+      .feedback-msg {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 14px;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .feedback-msg.show {
+        display: flex;
+      }
+      .feedback-msg.correct {
+        background: rgba(45, 135, 75, 0.12);
+        border: 1px solid rgba(45, 135, 75, 0.25);
+        color: #80d4a0;
+      }
+      .feedback-msg.wrong {
+        background: rgba(196, 90, 60, 0.12);
+        border: 1px solid rgba(196, 90, 60, 0.25);
+        color: #e0a090;
+      }
+      .fb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      /* Door / Next */
+      .next-door-btn {
+        display: none;
+        margin: 24px auto 0;
+        border: 2px solid var(--gold);
+        background: rgba(212, 149, 42, 0.12);
+        color: var(--gold);
+        font-size: 16px;
+        font-weight: 800;
+        padding: 14px 36px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        letter-spacing: 0.02em;
+        box-shadow: var(--glow-gold);
+      }
+      .next-door-btn.show {
+        display: block;
+      }
+      .next-door-btn:hover {
+        background: rgba(212, 149, 42, 0.2);
+        transform: translateY(-2px);
+      }
+
+      /* ── BOSS ROOM ── */
+      .boss-header .room-title {
+        background: linear-gradient(135deg, var(--coral), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .boss-step {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .boss-step-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--coral);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+      }
+      .boss-step-text {
+        font-size: 15px;
+        color: #c8d4e0;
+        margin-bottom: 10px;
+        line-height: 1.5;
+      }
+
+      /* ── END SCREENS ── */
+      #victoryScreen,
+      #gameOverScreen {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 24px;
+        background: linear-gradient(
+          180deg,
+          var(--navy-deep) 0%,
+          #0d2636 50%,
+          var(--navy) 100%
+        );
+      }
+      .end-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+      }
+      .end-title {
+        font-size: clamp(28px, 6vw, 44px);
+        font-weight: 900;
+        margin: 0 0 12px;
+      }
+      .victory-title {
+        background: linear-gradient(135deg, var(--gold), #f0c866);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .gameover-title {
+        color: var(--coral);
+      }
+      .end-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        max-width: 360px;
+        margin: 24px auto;
+      }
+      .end-stat {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 16px 12px;
+      }
+      .end-stat-val {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--gold);
+      }
+      .end-stat-label {
+        font-size: 12px;
+        color: var(--faint);
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      .end-msg {
+        font-size: 15px;
+        color: #a0b0c0;
+        max-width: 400px;
+        margin: 16px auto 28px;
+        line-height: 1.6;
+      }
+      .play-again-btn {
+        border: 2px solid var(--teal);
+        background: rgba(14, 138, 125, 0.15);
+        color: #fff;
+        font-size: 17px;
+        font-weight: 800;
+        padding: 14px 40px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: var(--glow-teal);
+      }
+      .play-again-btn:hover {
+        background: rgba(14, 138, 125, 0.25);
+        transform: translateY(-2px);
+      }
+
+      /* ── SHAKE ANIMATION ── */
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-4px);
+        }
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(4px);
+        }
+      }
+      .shake {
+        animation: shake 0.5s ease;
+      }
+
+      /* ── CONFETTI ── */
+      .confetti-piece {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        z-index: 9999;
+        pointer-events: none;
+      }
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* ── DOOR TRANSITION ── */
+      .door-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: flex;
+        pointer-events: none;
+      }
+      .door-left,
+      .door-right {
+        width: 50%;
+        background: var(--navy-deep);
+        border: 3px solid var(--gold);
+        transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      .door-left {
+        border-right: none;
+        transform: translateX(-100%);
+      }
+      .door-right {
+        border-left: none;
+        transform: translateX(100%);
+      }
+      .door-overlay.closing .door-left {
+        transform: translateX(0);
+      }
+      .door-overlay.closing .door-right {
+        transform: translateX(0);
+      }
+      .door-overlay.opening .door-left {
+        transform: translateX(-100%);
+      }
+      .door-overlay.opening .door-right {
+        transform: translateX(100%);
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 600px) {
+        .hud {
+          padding: 8px 12px;
+        }
+        .room-container {
+          padding: 16px 14px 32px;
+        }
+        .game-card {
+          padding: 16px;
+        }
+        .end-stats {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+        }
+        .end-stat {
+          padding: 12px 8px;
+        }
+        .end-stat-val {
+          font-size: 22px;
+        }
+        .map-node {
+          width: 28px;
+          height: 28px;
+          font-size: 10px;
+        }
+        .map-node.boss {
+          width: 34px;
+        }
+        .map-connector {
+          width: 8px;
+        }
+        .dungeon-map {
+          gap: 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- DOOR TRANSITION OVERLAY -->
+    <div class="door-overlay" id="doorOverlay">
+      <div class="door-left"></div>
+      <div class="door-right"></div>
+    </div>
+
+    <!-- ════════════ START SCREEN ════════════ -->
+    <div class="screen active" id="startScreen">
+      <h1 class="title-glow">Equation Quest</h1>
+      <p class="subtitle">Unit 8 Review Game — Equations &amp; Inequalities</p>
+      <p class="standards-line">6.EE.B.5 &middot; 6.EE.B.7 &middot; 6.EE.B.8</p>
+      <p class="start-desc">
+        Enter the dungeon and solve equations and inequalities to unlock each
+        door. You have <strong>3 lives</strong> and a timer ticking in every
+        room. Answer fast for bonus gold. Defeat the Final Boss to claim
+        victory!
+      </p>
+      <div class="start-level-toggle">
+        <button class="level-btn active" data-level="1">
+          Level 1
+          <span class="level-hint">Hint scrolls available</span>
+        </button>
+        <button class="level-btn" data-level="2">
+          Level 2
+          <span class="level-hint">No hints &mdash; pure skill</span>
+        </button>
+      </div>
+      <button class="start-btn" id="startBtn">Enter the Dungeon</button>
+    </div>
+
+    <!-- ════════════ GAME SCREEN ════════════ -->
+    <div class="screen" id="gameScreen">
+      <!-- HUD -->
+      <div class="hud">
+        <div class="hud-inner">
+          <div class="hud-lives" id="hudLives">
+            <span class="heart">&#10084;&#65039;</span>
+            <span class="heart">&#10084;&#65039;</span>
+            <span class="heart">&#10084;&#65039;</span>
+          </div>
+          <div class="hud-score" id="hudScore">&#129689; 0</div>
+          <div class="hud-timer" id="hudTimer">&#9201; 60s</div>
+        </div>
+      </div>
+
+      <!-- DUNGEON MAP -->
+      <div class="dungeon-map" id="dungeonMap"></div>
+
+      <!-- ROOM CONTENT -->
+      <div class="room-container" id="roomContainer"></div>
+    </div>
+
+    <!-- ════════════ VICTORY SCREEN ════════════ -->
+    <div class="screen" id="victoryScreen">
+      <div class="end-icon">&#127942;</div>
+      <h1 class="end-title victory-title">Quest Complete!</h1>
+      <p class="end-msg">
+        You conquered every room and defeated the Final Boss. A true Equation
+        Champion!
+      </p>
+      <div class="end-stats">
+        <div class="end-stat">
+          <div class="end-stat-val" id="vScore">0</div>
+          <div class="end-stat-label">Score</div>
+        </div>
+        <div class="end-stat">
+          <div class="end-stat-val" id="vCorrect">0</div>
+          <div class="end-stat-label">Correct</div>
+        </div>
+        <div class="end-stat">
+          <div class="end-stat-val" id="vLives">0</div>
+          <div class="end-stat-label">Lives Left</div>
+        </div>
+      </div>
+      <button class="play-again-btn" id="playAgainV">Play Again</button>
+    </div>
+
+    <!-- ════════════ GAME OVER SCREEN ════════════ -->
+    <div class="screen" id="gameOverScreen">
+      <div class="end-icon">&#128128;</div>
+      <h1 class="end-title gameover-title">Game Over</h1>
+      <p class="end-msg">
+        You ran out of lives! Review the concepts and try again. You can do
+        this!
+      </p>
+      <div class="end-stats">
+        <div class="end-stat">
+          <div class="end-stat-val" id="goScore">0</div>
+          <div class="end-stat-label">Score</div>
+        </div>
+        <div class="end-stat">
+          <div class="end-stat-val" id="goCorrect">0</div>
+          <div class="end-stat-label">Correct</div>
+        </div>
+        <div class="end-stat">
+          <div class="end-stat-val" id="goRoom">0</div>
+          <div class="end-stat-label">Room Reached</div>
+        </div>
+      </div>
+      <button class="play-again-btn" id="playAgainGO">Play Again</button>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ── GAME STATE ──
+        let level = 1; // 1 = hints, 2 = no hints
+        let lives = 3;
+        let score = 0;
+        let correctCount = 0;
+        let currentRoom = 0;
+        let currentQ = 0;
+        let timerInterval = null;
+        let timeLeft = 60;
+        let roomPerfect = true; // track if room answered perfectly
+
+        const ROOM_TIME = 60;
+        const BASE_POINTS = 100;
+        const TIME_BONUS_MAX = 50;
+        const PERFECT_BONUS = 75;
+        const BOSS_POINTS = 200;
+
+        // ── ROOM DATA ──
+        const ROOMS = [
+          {
+            id: "room1",
+            icon: "\u{1F6AA}",
+            title: "The Equation Gate",
+            narrative:
+              "The first door stands before you. Prove you understand what it means for a value to be a solution.",
+            questions: [
+              {
+                type: "mc",
+                label: "Question 1 of 2",
+                text: "Is <span class='math'>x</span> = 9 a solution to the equation <span class='math'>x</span> + 5 = 14?",
+                eq: "x + 5 = 14",
+                options: [
+                  { letter: "A", text: "Yes — because 9 + 5 = 14", val: "a" },
+                  { letter: "B", text: "No — because 9 + 5 = 13", val: "b" },
+                  { letter: "C", text: "Yes — because 14 − 9 = 6", val: "c" },
+                  {
+                    letter: "D",
+                    text: "No — because 9 is too large",
+                    val: "d",
+                  },
+                ],
+                answer: "a",
+                hint: "<strong>Strategy:</strong> Substitute 9 for x. Calculate 9 + 5. Does the result equal 14?",
+                correctMsg: "Correct! 9 + 5 = 14, so x = 9 IS a solution.",
+                wrongMsg:
+                  "Substitute 9 for x: 9 + 5 = 14. Both sides match, so x = 9 IS a solution. The answer is A.",
+              },
+              {
+                type: "mc",
+                label: "Question 2 of 2",
+                text: "Which value of <span class='math'>n</span> makes the equation <span class='math'>3n</span> = 18 true?",
+                eq: "3n = 18",
+                options: [
+                  { letter: "A", text: "n = 3", val: "a" },
+                  { letter: "B", text: "n = 6", val: "b" },
+                  { letter: "C", text: "n = 15", val: "c" },
+                  { letter: "D", text: "n = 54", val: "d" },
+                ],
+                answer: "b",
+                hint: "<strong>Vocabulary:</strong> <em>3n</em> means 3 times n. Try each value: 3 × ? = 18.",
+                correctMsg:
+                  "Correct! 3 × 6 = 18. The value n = 6 is the solution!",
+                wrongMsg:
+                  "Substitute each value: 3 × 6 = 18. The answer is B, n = 6.",
+              },
+            ],
+          },
+          {
+            id: "room2",
+            icon: "⚔️",
+            title: "Addition & Subtraction Arena",
+            narrative:
+              "Swords of addition and shields of subtraction await. Solve to survive.",
+            questions: [
+              {
+                type: "fill",
+                label: "Question 1 of 2",
+                text: "Solve for <span class='math'>x</span>:",
+                eq: "x + 12 = 25",
+                answer: "13",
+                prefix: "x = ",
+                hint: "<strong>Strategy:</strong> To undo adding 12, subtract 12 from both sides. 25 − 12 = ?",
+                correctMsg: "Correct! x = 13. Check: 13 + 12 = 25.",
+                wrongMsg: "Subtract 12 from both sides: x = 25 − 12 = 13.",
+              },
+              {
+                type: "fill",
+                label: "Question 2 of 2",
+                text: "Solve for <span class='math'>y</span>:",
+                eq: "y − 8 = 15",
+                answer: "23",
+                prefix: "y = ",
+                hint: "<strong>Strategy:</strong> To undo subtracting 8, add 8 to both sides. 15 + 8 = ?",
+                correctMsg: "Correct! y = 23. Check: 23 − 8 = 15.",
+                wrongMsg: "Add 8 to both sides: y = 15 + 8 = 23.",
+              },
+            ],
+          },
+          {
+            id: "room3",
+            icon: "\u{1F5E1}️",
+            title: "Multiplication & Division Dungeon",
+            narrative:
+              "The walls close in. Only sharp division and strong multiplication will save you.",
+            questions: [
+              {
+                type: "fill",
+                label: "Question 1 of 2",
+                text: "Solve for <span class='math'>m</span>:",
+                eq: "4m = 36",
+                answer: "9",
+                prefix: "m = ",
+                hint: "<strong>Strategy:</strong> 4m means 4 × m. Divide both sides by 4. 36 ÷ 4 = ?",
+                correctMsg: "Correct! m = 9. Check: 4 × 9 = 36.",
+                wrongMsg: "Divide both sides by 4: m = 36 ÷ 4 = 9.",
+              },
+              {
+                type: "fill",
+                label: "Question 2 of 2",
+                text: "Solve for <span class='math'>k</span>:",
+                eq: "k ÷ 5 = 7",
+                answer: "35",
+                prefix: "k = ",
+                hint: "<strong>Strategy:</strong> To undo dividing by 5, multiply both sides by 5. 7 × 5 = ?",
+                correctMsg: "Correct! k = 35. Check: 35 ÷ 5 = 7.",
+                wrongMsg: "Multiply both sides by 5: k = 7 × 5 = 35.",
+              },
+            ],
+          },
+          {
+            id: "room4",
+            icon: "\u{1F6E1}️",
+            title: "Inequality Passage",
+            narrative:
+              "Not all answers are equal here. Some are greater, some are less. Choose wisely.",
+            questions: [
+              {
+                type: "mc",
+                label: "Question 1 of 2",
+                text: "A roller coaster requires riders to be <strong>at least 48 inches</strong> tall. Which inequality represents this?",
+                options: [
+                  { letter: "A", text: "h > 48", val: "a" },
+                  { letter: "B", text: "h ≥ 48", val: "b" },
+                  { letter: "C", text: "h < 48", val: "c" },
+                  { letter: "D", text: "h ≤ 48", val: "d" },
+                ],
+                answer: "b",
+                hint: '<strong>Vocabulary:</strong> "At least" means that value or more. The symbol ≥ means "greater than or equal to."',
+                correctMsg:
+                  'Correct! "At least 48" means 48 or more, which is h ≥ 48.',
+                wrongMsg:
+                  '"At least" means the height must be 48 or more. That\'s h ≥ 48 (answer B).',
+              },
+              {
+                type: "mc",
+                label: "Question 2 of 2",
+                text: "Which inequality means \"a number <span class='math'>n</span> is less than 20\"?",
+                options: [
+                  { letter: "A", text: "n > 20", val: "a" },
+                  { letter: "B", text: "n = 20", val: "b" },
+                  { letter: "C", text: "n < 20", val: "c" },
+                  { letter: "D", text: "n ≤ 20", val: "d" },
+                ],
+                answer: "c",
+                hint: '<strong>Vocabulary:</strong> "Less than" uses the < symbol. The number is smaller than 20 but NOT equal to 20.',
+                correctMsg: 'Correct! "Less than 20" is written as n < 20.',
+                wrongMsg:
+                  '"Less than" means strictly smaller, not equal. The answer is C: n < 20.',
+              },
+            ],
+          },
+          {
+            id: "room5",
+            icon: "\u{1F52E}",
+            title: "Solution Set Chamber",
+            narrative:
+              "The crystal ball reveals many possible answers. Identify which values belong in the solution set.",
+            questions: [
+              {
+                type: "mc",
+                label: "Question 1 of 2",
+                text: "Which of these values is a solution to the inequality <span class='math'>x</span> > 7?",
+                options: [
+                  { letter: "A", text: "x = 5", val: "a" },
+                  { letter: "B", text: "x = 7", val: "b" },
+                  { letter: "C", text: "x = 7.5", val: "c" },
+                  { letter: "D", text: "x = 3", val: "d" },
+                ],
+                answer: "c",
+                hint: "<strong>Strategy:</strong> x > 7 means x must be GREATER than 7 (not equal). Which value is bigger than 7?",
+                correctMsg:
+                  "Correct! 7.5 > 7 is true, so x = 7.5 is a solution.",
+                wrongMsg:
+                  "x > 7 means x must be strictly greater than 7. Only 7.5 is greater than 7. The answer is C.",
+              },
+              {
+                type: "mc",
+                label: "Question 2 of 2",
+                text: "Marcus has fewer than 15 stickers. Which inequality describes this, and which value could be the number of stickers he has?",
+                options: [
+                  { letter: "A", text: "s < 15; s could be 12", val: "a" },
+                  { letter: "B", text: "s > 15; s could be 12", val: "b" },
+                  { letter: "C", text: "s < 15; s could be 15", val: "c" },
+                  { letter: "D", text: "s ≤ 15; s could be 16", val: "d" },
+                ],
+                answer: "a",
+                hint: '<strong>Think:</strong> "Fewer than 15" means less than 15 (not including 15). Which option uses < and picks a number under 15?',
+                correctMsg:
+                  'Correct! "Fewer than 15" is s < 15, and 12 < 15 is true.',
+                wrongMsg:
+                  '"Fewer than" means less than: s < 15. 12 is less than 15, so the answer is A.',
+              },
+            ],
+          },
+        ];
+
+        // Boss room data
+        const BOSS = {
+          icon: "\u{1F409}",
+          title: "The Final Boss",
+          narrative:
+            "The dragon of equations guards the exit. Solve all four parts to defeat it!",
+          scenario:
+            "A school fundraiser sells candy bars for $3 each. The class needs to earn <strong>at least $120</strong> to pay for their field trip. Let <span class='math'>c</span> = the number of candy bars sold.",
+          steps: [
+            {
+              label: "Step 1 — Write the Equation",
+              text: "If they sell exactly enough, write an equation to find how many candy bars that is.",
+              type: "mc",
+              options: [
+                { letter: "A", text: "c + 3 = 120", val: "a" },
+                { letter: "B", text: "3c = 120", val: "b" },
+                { letter: "C", text: "c ÷ 3 = 120", val: "c" },
+                { letter: "D", text: "120c = 3", val: "d" },
+              ],
+              answer: "b",
+              hint: "Each candy bar is $3, so the total is 3 times the number of bars: 3 × c.",
+              correctMsg:
+                "Right! 3c = 120 represents $3 per bar times c bars equals $120.",
+              wrongMsg:
+                "$3 per bar × c bars = total. That's 3c = 120 (answer B).",
+            },
+            {
+              label: "Step 2 — Solve It",
+              text: "Solve 3c = 120. What is c?",
+              type: "fill",
+              answer: "40",
+              prefix: "c = ",
+              hint: "Divide both sides by 3: 120 ÷ 3 = ?",
+              correctMsg: "Correct! c = 40 candy bars.",
+              wrongMsg: "Divide both sides by 3: c = 120 ÷ 3 = 40.",
+            },
+            {
+              label: "Step 3 — Check Your Solution",
+              text: "Does 3 × 40 = 120?",
+              type: "mc",
+              options: [
+                { letter: "A", text: "Yes — 3 × 40 = 120", val: "a" },
+                { letter: "B", text: "No — 3 × 40 = 110", val: "b" },
+              ],
+              answer: "a",
+              hint: "Multiply: 3 × 40. Does it equal 120?",
+              correctMsg: "Confirmed! 3 × 40 = 120. The solution checks out.",
+              wrongMsg: "3 × 40 = 120. The solution is correct (answer A).",
+            },
+            {
+              label: "Step 4 — Write the Inequality",
+              text: "They need <strong>at least</strong> $120. Write an inequality for the total amount earned.",
+              type: "mc",
+              options: [
+                { letter: "A", text: "3c < 120", val: "a" },
+                { letter: "B", text: "3c > 120", val: "b" },
+                { letter: "C", text: "3c ≥ 120", val: "c" },
+                { letter: "D", text: "3c ≤ 120", val: "d" },
+              ],
+              answer: "c",
+              hint: '"At least $120" means $120 or more. Which symbol means "greater than or equal to"?',
+              correctMsg:
+                'You defeated the boss! "At least" means ≥, so 3c ≥ 120.',
+              wrongMsg:
+                '"At least $120" means the total must be $120 or more: 3c ≥ 120 (answer C).',
+            },
+          ],
+        };
+
+        // ── DOM REFS ──
+        const startScreen = document.getElementById("startScreen");
+        const gameScreen = document.getElementById("gameScreen");
+        const victoryScreen = document.getElementById("victoryScreen");
+        const gameOverScreen = document.getElementById("gameOverScreen");
+        const startBtn = document.getElementById("startBtn");
+        const hudLives = document.getElementById("hudLives");
+        const hudScore = document.getElementById("hudScore");
+        const hudTimer = document.getElementById("hudTimer");
+        const dungeonMap = document.getElementById("dungeonMap");
+        const roomContainer = document.getElementById("roomContainer");
+        const doorOverlay = document.getElementById("doorOverlay");
+
+        // ── HELPERS ──
+        function showScreen(screen) {
+          document
+            .querySelectorAll(".screen")
+            .forEach((s) => s.classList.remove("active"));
+          screen.classList.add("active");
+          window.scrollTo({ top: 0 });
+        }
+
+        function updateHUD() {
+          const hearts = hudLives.querySelectorAll(".heart");
+          hearts.forEach((h, i) => {
+            h.classList.toggle("lost", i >= lives);
+          });
+          hudScore.innerHTML = "&#129689; " + score;
+        }
+
+        function startTimer() {
+          timeLeft = ROOM_TIME;
+          updateTimerDisplay();
+          clearInterval(timerInterval);
+          timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft <= 0) {
+              clearInterval(timerInterval);
+            }
+          }, 1000);
+        }
+
+        function stopTimer() {
+          clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+          hudTimer.innerHTML = "&#9201; " + Math.max(0, timeLeft) + "s";
+          hudTimer.classList.toggle("warning", timeLeft <= 10 && timeLeft > 0);
+        }
+
+        function calcTimeBonus() {
+          if (timeLeft <= 0) return 0;
+          return Math.round((timeLeft / ROOM_TIME) * TIME_BONUS_MAX);
+        }
+
+        function shakeElement(el) {
+          el.classList.remove("shake");
+          void el.offsetWidth;
+          el.classList.add("shake");
+          setTimeout(() => el.classList.remove("shake"), 500);
+        }
+
+        function spawnConfetti(count) {
+          const colors = [
+            "#d4952a",
+            "#0e8a7d",
+            "#1a6fb5",
+            "#2d874b",
+            "#c45a3c",
+            "#f0c866",
+          ];
+          for (let i = 0; i < count; i++) {
+            const piece = document.createElement("div");
+            piece.className = "confetti-piece";
+            piece.style.left = Math.random() * 100 + "vw";
+            piece.style.top = "-10px";
+            piece.style.background =
+              colors[Math.floor(Math.random() * colors.length)];
+            piece.style.width = 6 + Math.random() * 8 + "px";
+            piece.style.height = 6 + Math.random() * 8 + "px";
+            piece.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+            piece.style.animation =
+              "confettiFall " + (1.5 + Math.random() * 2) + "s linear forwards";
+            piece.style.animationDelay = Math.random() * 0.5 + "s";
+            document.body.appendChild(piece);
+            setTimeout(() => piece.remove(), 4000);
+          }
+        }
+
+        function doorTransition(callback) {
+          doorOverlay.className = "door-overlay closing";
+          setTimeout(() => {
+            callback();
+            doorOverlay.className = "door-overlay opening";
+            setTimeout(() => {
+              doorOverlay.className = "door-overlay";
+            }, 800);
+          }, 800);
+        }
+
+        // ── DUNGEON MAP ──
+        function buildMap() {
+          dungeonMap.innerHTML = "";
+          const labels = ["1", "2", "3", "4", "5", "BOSS"];
+          for (let i = 0; i < 6; i++) {
+            if (i > 0) {
+              const conn = document.createElement("div");
+              conn.className =
+                "map-connector" + (i <= currentRoom ? " active" : "");
+              dungeonMap.appendChild(conn);
+            }
+            const node = document.createElement("div");
+            node.className = "map-node";
+            if (i === 5) node.classList.add("boss");
+            if (i === currentRoom) node.classList.add("current");
+            if (i < currentRoom) node.classList.add("completed");
+            node.textContent = labels[i];
+            dungeonMap.appendChild(node);
+          }
+        }
+
+        // ── RENDER ROOM ──
+        function renderRoom() {
+          roomContainer.innerHTML = "";
+          currentQ = 0;
+          roomPerfect = true;
+          buildMap();
+          startTimer();
+
+          if (currentRoom < ROOMS.length) {
+            renderNormalRoom(ROOMS[currentRoom]);
+          } else {
+            renderBossRoom();
+          }
+        }
+
+        function renderNormalRoom(room) {
+          let html = '<div class="room-header">';
+          html += '<div class="room-icon">' + room.icon + "</div>";
+          html += '<h2 class="room-title">' + room.title + "</h2>";
+          html += '<p class="room-narrative">' + room.narrative + "</p>";
+          html += "</div>";
+
+          room.questions.forEach((q, qi) => {
+            html += renderQuestion(q, qi, "room-q-" + qi);
+          });
+
+          html +=
+            '<button class="next-door-btn" id="nextDoorBtn">Open the Next Door &#128682;</button>';
+          roomContainer.innerHTML = html;
+          activateQuestion(0);
+        }
+
+        function renderBossRoom() {
+          let html = '<div class="room-header boss-header">';
+          html += '<div class="room-icon">' + BOSS.icon + "</div>";
+          html += '<h2 class="room-title">' + BOSS.title + "</h2>";
+          html += '<p class="room-narrative">' + BOSS.narrative + "</p>";
+          html += "</div>";
+
+          html +=
+            '<div class="game-card"><div class="q-text">' +
+            BOSS.scenario +
+            "</div></div>";
+
+          BOSS.steps.forEach((step, si) => {
+            html +=
+              '<div class="boss-step" id="boss-step-' +
+              si +
+              '" style="' +
+              (si > 0 ? "opacity:0.3;pointer-events:none;" : "") +
+              '">';
+            html += '<div class="boss-step-label">' + step.label + "</div>";
+            html += '<div class="boss-step-text">' + step.text + "</div>";
+
+            if (level === 1) {
+              html +=
+                '<button class="hint-scroll-btn" data-hint="boss-hint-' +
+                si +
+                '">&#128220; Hint Scroll</button>';
+              html +=
+                '<div class="hint-content" id="boss-hint-' +
+                si +
+                '">' +
+                step.hint +
+                "</div>";
+            }
+
+            if (step.type === "mc") {
+              html += '<div class="game-mc" id="boss-mc-' + si + '">';
+              step.options.forEach((o) => {
+                html += '<button class="game-mc-btn" data-val="' + o.val + '">';
+                html += '<span class="letter">' + o.letter + "</span>";
+                html += "<span>" + o.text + "</span></button>";
+              });
+              html += "</div>";
+            } else {
+              html += '<div class="game-fill-row">';
+              html +=
+                '<span class="game-fill-label">' +
+                (step.prefix || "") +
+                "</span>";
+              html +=
+                '<input class="game-fill-input" id="boss-fill-' +
+                si +
+                '" placeholder="?">';
+              html += "</div>";
+            }
+
+            html +=
+              '<button class="submit-btn" id="boss-submit-' +
+              si +
+              '">Submit</button>';
+            html +=
+              '<div class="feedback-msg correct" id="boss-fb-correct-' +
+              si +
+              '"><span class="fb-icon">&#10003;</span><span></span></div>';
+            html +=
+              '<div class="feedback-msg wrong" id="boss-fb-wrong-' +
+              si +
+              '"><span class="fb-icon">&#10007;</span><span></span></div>';
+            html += "</div>";
+          });
+
+          html +=
+            '<button class="next-door-btn" id="nextDoorBtn" style="display:none;">Claim Victory &#127942;</button>';
+          roomContainer.innerHTML = html;
+          activateBossStep(0);
+        }
+
+        function renderQuestion(q, qi, idPrefix) {
+          let html =
+            '<div class="game-card" id="' +
+            idPrefix +
+            '" style="' +
+            (qi > 0 ? "opacity:0.3;pointer-events:none;" : "") +
+            '">';
+          html += '<div class="q-label">' + q.label + "</div>";
+          html += '<div class="q-text">' + q.text + "</div>";
+
+          if (q.eq) {
+            html += '<div class="eq-box">' + q.eq + "</div>";
+          }
+
+          if (level === 1) {
+            html +=
+              '<button class="hint-scroll-btn" data-hint="' +
+              idPrefix +
+              '-hint">&#128220; Hint Scroll</button>';
+            html +=
+              '<div class="hint-content" id="' +
+              idPrefix +
+              '-hint">' +
+              q.hint +
+              "</div>";
+          }
+
+          if (q.type === "mc") {
+            html += '<div class="game-mc" id="' + idPrefix + '-mc">';
+            q.options.forEach((o) => {
+              html += '<button class="game-mc-btn" data-val="' + o.val + '">';
+              html += '<span class="letter">' + o.letter + "</span>";
+              html += "<span>" + o.text + "</span></button>";
+            });
+            html += "</div>";
+          } else if (q.type === "fill") {
+            html += '<div class="game-fill-row">';
+            html +=
+              '<span class="game-fill-label">' + (q.prefix || "") + "</span>";
+            html +=
+              '<input class="game-fill-input" id="' +
+              idPrefix +
+              '-fill" placeholder="?">';
+            html += "</div>";
+          }
+
+          html +=
+            '<button class="submit-btn" id="' +
+            idPrefix +
+            '-submit">Submit</button>';
+          html +=
+            '<div class="feedback-msg correct" id="' +
+            idPrefix +
+            '-fb-correct"><span class="fb-icon">&#10003;</span><span></span></div>';
+          html +=
+            '<div class="feedback-msg wrong" id="' +
+            idPrefix +
+            '-fb-wrong"><span class="fb-icon">&#10007;</span><span></span></div>';
+          html += "</div>";
+          return html;
+        }
+
+        // ── ACTIVATE NORMAL QUESTIONS ──
+        function activateQuestion(qi) {
+          const room = ROOMS[currentRoom];
+          if (!room) return;
+          const q = room.questions[qi];
+          if (!q) return;
+
+          const prefix = "room-q-" + qi;
+          const card = document.getElementById(prefix);
+          if (!card) return;
+
+          card.style.opacity = "1";
+          card.style.pointerEvents = "auto";
+
+          // Hint scrolls
+          const hintBtn = card.querySelector(".hint-scroll-btn");
+          if (hintBtn) {
+            hintBtn.addEventListener("click", function () {
+              const target = document.getElementById(this.dataset.hint);
+              if (target) target.classList.toggle("show");
+            });
+          }
+
+          const submitBtn = document.getElementById(prefix + "-submit");
+
+          if (q.type === "mc") {
+            const mcBtns = card.querySelectorAll(".game-mc-btn");
+            let selected = null;
+            mcBtns.forEach((btn) => {
+              btn.addEventListener("click", () => {
+                if (btn.classList.contains("locked")) return;
+                mcBtns.forEach((b) => b.classList.remove("selected"));
+                btn.classList.add("selected");
+                selected = btn.dataset.val;
+                submitBtn.disabled = false;
+              });
+            });
+
+            submitBtn.disabled = true;
+            submitBtn.addEventListener("click", () => {
+              if (!selected) return;
+              const isCorrect = selected === q.answer;
+              mcBtns.forEach((b) => {
+                b.classList.add("locked");
+                if (b.dataset.val === q.answer) b.classList.add("is-correct");
+              });
+              if (!isCorrect) {
+                card
+                  .querySelector(".game-mc-btn.selected")
+                  .classList.add("is-wrong");
+              }
+              handleAnswer(isCorrect, qi, prefix, q);
+            });
+          } else if (q.type === "fill") {
+            const fillInput = document.getElementById(prefix + "-fill");
+            submitBtn.disabled = false;
+
+            fillInput.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") submitBtn.click();
+            });
+
+            submitBtn.addEventListener("click", () => {
+              const val = fillInput.value.trim();
+              if (!val) return;
+              const isCorrect = val === q.answer;
+              fillInput.readOnly = true;
+              fillInput.classList.add(isCorrect ? "is-correct" : "is-wrong");
+              handleAnswer(isCorrect, qi, prefix, q);
+            });
+          }
+        }
+
+        function handleAnswer(isCorrect, qi, prefix, q) {
+          const card = document.getElementById(prefix);
+          const submitBtn = document.getElementById(prefix + "-submit");
+          submitBtn.disabled = true;
+          submitBtn.style.display = "none";
+
+          if (isCorrect) {
+            card.classList.add("glow-correct");
+            const fb = document.getElementById(prefix + "-fb-correct");
+            fb.querySelector("span:last-child").innerHTML = q.correctMsg;
+            fb.classList.add("show");
+            correctCount++;
+            const bonus = calcTimeBonus();
+            score += BASE_POINTS + bonus;
+            updateHUD();
+            spawnConfetti(20);
+          } else {
+            card.classList.add("glow-wrong");
+            const fb = document.getElementById(prefix + "-fb-wrong");
+            fb.querySelector("span:last-child").innerHTML = q.wrongMsg;
+            fb.classList.add("show");
+            roomPerfect = false;
+            lives--;
+            updateHUD();
+            shakeElement(card);
+
+            if (lives <= 0) {
+              stopTimer();
+              setTimeout(() => endGame(false), 1200);
+              return;
+            }
+          }
+
+          // Next question or next room
+          const room = ROOMS[currentRoom];
+          if (qi + 1 < room.questions.length) {
+            setTimeout(() => activateQuestion(qi + 1), 800);
+          } else {
+            stopTimer();
+            if (roomPerfect) {
+              score += PERFECT_BONUS;
+              updateHUD();
+            }
+            setTimeout(() => {
+              const btn = document.getElementById("nextDoorBtn");
+              if (btn) btn.classList.add("show");
+            }, 1000);
+          }
+        }
+
+        // ── BOSS STEP LOGIC ──
+        function activateBossStep(si) {
+          const step = BOSS.steps[si];
+          if (!step) return;
+
+          const stepEl = document.getElementById("boss-step-" + si);
+          stepEl.style.opacity = "1";
+          stepEl.style.pointerEvents = "auto";
+
+          // Hint scrolls
+          const hintBtn = stepEl.querySelector(".hint-scroll-btn");
+          if (hintBtn) {
+            hintBtn.addEventListener("click", function () {
+              const target = document.getElementById(this.dataset.hint);
+              if (target) target.classList.toggle("show");
+            });
+          }
+
+          const submitBtn = document.getElementById("boss-submit-" + si);
+
+          if (step.type === "mc") {
+            const mcBtns = stepEl.querySelectorAll(".game-mc-btn");
+            let selected = null;
+            mcBtns.forEach((btn) => {
+              btn.addEventListener("click", () => {
+                if (btn.classList.contains("locked")) return;
+                mcBtns.forEach((b) => b.classList.remove("selected"));
+                btn.classList.add("selected");
+                selected = btn.dataset.val;
+                submitBtn.disabled = false;
+              });
+            });
+
+            submitBtn.disabled = true;
+            submitBtn.addEventListener("click", () => {
+              if (!selected) return;
+              const isCorrect = selected === step.answer;
+              mcBtns.forEach((b) => {
+                b.classList.add("locked");
+                if (b.dataset.val === step.answer)
+                  b.classList.add("is-correct");
+              });
+              if (!isCorrect) {
+                stepEl
+                  .querySelector(".game-mc-btn.selected")
+                  .classList.add("is-wrong");
+              }
+              handleBossAnswer(isCorrect, si, step);
+            });
+          } else if (step.type === "fill") {
+            const fillInput = document.getElementById("boss-fill-" + si);
+            submitBtn.disabled = false;
+
+            fillInput.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") submitBtn.click();
+            });
+
+            submitBtn.addEventListener("click", () => {
+              const val = fillInput.value.trim();
+              if (!val) return;
+              const isCorrect = val === step.answer;
+              fillInput.readOnly = true;
+              fillInput.classList.add(isCorrect ? "is-correct" : "is-wrong");
+              handleBossAnswer(isCorrect, si, step);
+            });
+          }
+        }
+
+        function handleBossAnswer(isCorrect, si, step) {
+          const submitBtn = document.getElementById("boss-submit-" + si);
+          submitBtn.disabled = true;
+          submitBtn.style.display = "none";
+
+          const stepEl = document.getElementById("boss-step-" + si);
+
+          if (isCorrect) {
+            const fb = document.getElementById("boss-fb-correct-" + si);
+            fb.querySelector("span:last-child").innerHTML = step.correctMsg;
+            fb.classList.add("show");
+            correctCount++;
+            score +=
+              Math.round(BOSS_POINTS / BOSS.steps.length) + calcTimeBonus();
+            updateHUD();
+            spawnConfetti(15);
+          } else {
+            const fb = document.getElementById("boss-fb-wrong-" + si);
+            fb.querySelector("span:last-child").innerHTML = step.wrongMsg;
+            fb.classList.add("show");
+            roomPerfect = false;
+            lives--;
+            updateHUD();
+            shakeElement(stepEl);
+
+            if (lives <= 0) {
+              stopTimer();
+              setTimeout(() => endGame(false), 1200);
+              return;
+            }
+          }
+
+          if (si + 1 < BOSS.steps.length) {
+            setTimeout(() => activateBossStep(si + 1), 800);
+          } else {
+            stopTimer();
+            if (roomPerfect) {
+              score += PERFECT_BONUS;
+              updateHUD();
+            }
+            setTimeout(() => {
+              const btn = document.getElementById("nextDoorBtn");
+              if (btn) {
+                btn.style.display = "block";
+                btn.classList.add("show");
+              }
+            }, 1000);
+          }
+        }
+
+        // ── NEXT ROOM ──
+        function goNextRoom() {
+          currentRoom++;
+          if (currentRoom > ROOMS.length) {
+            endGame(true);
+          } else {
+            doorTransition(() => {
+              renderRoom();
+              window.scrollTo({ top: 0 });
+            });
+          }
+        }
+
+        // ── END GAME ──
+        function endGame(victory) {
+          stopTimer();
+          if (victory) {
+            spawnConfetti(60);
+            document.getElementById("vScore").textContent = score;
+            document.getElementById("vCorrect").textContent = correctCount;
+            document.getElementById("vLives").textContent = lives;
+            setTimeout(() => showScreen(victoryScreen), 400);
+          } else {
+            document.getElementById("goScore").textContent = score;
+            document.getElementById("goCorrect").textContent = correctCount;
+            document.getElementById("goRoom").textContent = currentRoom + 1;
+            setTimeout(() => showScreen(gameOverScreen), 400);
+          }
+        }
+
+        // ── START GAME ──
+        function startGame() {
+          lives = 3;
+          score = 0;
+          correctCount = 0;
+          currentRoom = 0;
+          currentQ = 0;
+          updateHUD();
+          doorTransition(() => {
+            showScreen(gameScreen);
+            renderRoom();
+          });
+        }
+
+        // ── EVENT LISTENERS ──
+        // Level toggle
+        document.querySelectorAll(".level-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll(".level-btn")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            level = parseInt(btn.dataset.level);
+          });
+        });
+
+        startBtn.addEventListener("click", startGame);
+
+        // Delegated click for next door and hint scrolls
+        roomContainer.addEventListener("click", (e) => {
+          if (
+            e.target.id === "nextDoorBtn" ||
+            e.target.closest("#nextDoorBtn")
+          ) {
+            goNextRoom();
+          }
+        });
+
+        // Play again
+        document.getElementById("playAgainV").addEventListener("click", () => {
+          showScreen(startScreen);
+        });
+        document.getElementById("playAgainGO").addEventListener("click", () => {
+          showScreen(startScreen);
+        });
+      })();
+    </script>
+  </body>
+</html>

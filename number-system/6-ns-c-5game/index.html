@@ -1,553 +1,1683 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<title>6.NS.C.5 Premier Interactive Review</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  :root {
-    --primary: #4f46e5;
-    --primary-dark: #3730a3;
-    --primary-light: #eef2ff;
-    --success: #10b981;
-    --success-light: #d1fae5;
-    --danger: #ef4444;
-    --danger-light: #fee2e2;
-    --warning: #f59e0b;
-    --warning-light: #fef3c7;
-    --neutral: #f8fafc;
-    --border: #e2e8f0;
-    --text: #1e293b;
-    --text-muted: #64748b;
-    --radius: 12px;
-    --shadow: 0 4px 24px rgba(79,70,229,.10);
-    --shadow-lg: 0 20px 40px rgba(79,70,229,.15);
-    --tab-h: 44px;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', -apple-system, Arial, sans-serif;
-    background: linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 100%);
-    min-height: 100vh;
-    padding: 24px 16px 48px;
-    color: var(--text);
-  }
-  .app {
-    max-width: 900px;
-    margin: auto;
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-  }
-  /* HEADER */
-  .app-header {
-    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
-    padding: 32px 36px 24px;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-  }
-  .app-header::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><pattern id='grain' width='100' height='100' patternUnits='userSpaceOnUse'><circle cx='25' cy='25' r='1' fill='rgba(255,255,255,0.1)'/><circle cx='75' cy='75' r='0.5' fill='rgba(255,255,255,0.05)'/></pattern></defs><rect width='100' height='100' fill='url(%23grain)'/></svg>");
-  }
-  .app-header > * { position: relative; z-index: 1; }
-  .app-header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.4px; }
-  .app-header p { font-size: .92rem; opacity: .9; margin-top: 6px; }
-  .progress-container { display: flex; gap: 16px; margin-top: 20px; }
-  .progress-bar-wrap { flex: 1; background: rgba(255,255,255,.25); border-radius: 99px; height: 10px; }
-  .progress-bar { height: 10px; border-radius: 99px; background: linear-gradient(90deg, #a5f3fc, #67e8f9); transition: width .5s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 10px rgba(101,232,249,.5); }
-  .score-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,.22); border-radius: 99px;
-    padding: 8px 18px; font-size: .9rem; font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0,0,0,.1);
-  }
-  .score-badge .star { font-size: 1.1rem; animation: sparkle 2s infinite; }
-  @keyframes sparkle { 0%,100%{opacity:1} 50%{opacity:.6; transform: scale(1.1)} }
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Temperature Explorer — 6.NS.C.5</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #0b1628;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      #game-container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      // ============================================================
+      //  TEMPERATURE EXPLORER — 6.NS.C.5
+      //  Understand positive/negative numbers in real-world contexts
+      // ============================================================
 
-  /* TABS */
-  .tabs {
-    display: flex;
-    overflow-x: auto;
-    scrollbar-width: none;
-    background: #f1f5f9;
-    border-bottom: 2px solid var(--border);
-    padding: 0 12px;
-    gap: 6px;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab {
-    flex-shrink: 0;
-    padding: 0 20px;
-    height: var(--tab-h);
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-weight: 700;
-    font-size: .85rem;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all .25s cubic-bezier(0.4,0,0.2,1);
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: -2px;
-    white-space: nowrap;
-    position: relative;
-  }
-  .tab:hover { color: var(--primary); }
-  .tab.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
-    background: var(--primary-light);
-    box-shadow: 0 -2px 8px rgba(79,70,229,.1);
-  }
-  .tab .icon { font-size: 1.1rem; }
-  .tab .check {
-    font-size: .7rem;
-    background: var(--success);
-    color: #fff;
-    border-radius: 50%;
-    width: 20px; height: 20px;
-    display: flex; align-items: center; justify-content: center;
-    display: none;
-    animation: checkPop .3s ease;
-  }
-  @keyframes checkPop { from{transform:scale(0)} to{transform:scale(1)} }
-  .tab.done .check { display: flex; }
+      const W = 800,
+        H = 600;
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  /* SECTIONS */
-  .section { display: none; padding: 32px 36px 36px; animation: slideUp .4s ease; }
-  .section.active { display: block; }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .section-title {
-    font-size: 1.4rem;
-    font-weight: 800;
-    margin-bottom: 8px;
-    color: var(--primary-dark);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .section-sub { font-size: .92rem; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6; }
-  .section-intro {
-    background: var(--neutral);
-    border-left: 4px solid var(--primary);
-    padding: 20px 24px;
-    border-radius: 0 var(--radius) var(--radius) 0;
-    margin-bottom: 28px; font-size: .9rem; line-height: 1.7;
-  }
+      function synth(freq, dur, type = "square", vol = 0.1) {
+        try {
+          const o = audioCtx.createOscillator(),
+            g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.frequency.value = freq;
+          o.type = type;
+          g.gain.setValueAtTime(vol, audioCtx.currentTime);
+          g.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + dur,
+          );
+          o.start();
+          o.stop(audioCtx.currentTime + dur);
+        } catch (e) {}
+      }
+      function sndMove() {
+        synth(300, 0.05);
+      }
+      function sndCollect() {
+        synth(700, 0.08);
+        setTimeout(() => synth(900, 0.1), 60);
+      }
+      function sndCorrect() {
+        synth(523, 0.1);
+        setTimeout(() => synth(659, 0.1), 80);
+        setTimeout(() => synth(784, 0.15), 160);
+      }
+      function sndWrong() {
+        synth(180, 0.3, "sawtooth", 0.15);
+      }
+      function sndLevelUp() {
+        [523, 659, 784, 1047].forEach((f, i) =>
+          setTimeout(() => synth(f, 0.1), i * 80),
+        );
+      }
+      function sndFreeze() {
+        synth(1200, 0.2, "sine", 0.08);
+        synth(800, 0.3, "sine", 0.06);
+      }
+      function sndHeat() {
+        synth(200, 0.2, "sawtooth", 0.1);
+        synth(150, 0.3, "sawtooth", 0.08);
+      }
 
-  /* VOCAB MATCHING */
-  .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-  .vocab-pair {
-    background: #fff;
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    transition: border-color .2s;
-  }
-  .vocab-pair:hover { border-color: var(--primary); }
-  .vocab-term { font-weight: 800; color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; }
-  .vocab-def { color: var(--text-muted); line-height: 1.6; }
-  .vocab-match {
-    margin-top: 20px; padding: 12px 16px; border: 2px dashed #cbd5e1;
-    border-radius: 8px; background: #f8fafc;
-    display: flex; gap: 12px; align-items: center;
-  }
-  .vocab-match input[type="radio"] { display: none; }
-  .vocab-match label {
-    flex: 1; padding: 10px 14px; border: 2px solid transparent;
-    border-radius: 6px; cursor: pointer; font-weight: 600;
-    transition: all .2s; user-select: none;
-  }
-  .vocab-match input:checked + label {
-    background: var(--success-light); border-color: var(--success);
-    color: var(--success);
-  }
-  .vocab-match.correct label:checked { background: var(--success-light) !important; }
-  .vocab-match.incorrect label:checked { background: var(--danger-light) !important; border-color: var(--danger) !important; }
+      function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
 
-  /* Q-CARD ENHANCED */
-  .q-card {
-    background: var(--neutral);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px 28px;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .q-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 4px;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-  }
-  .q-card .q-num {
-    font-size: .78rem;
-    font-weight: 800;
-    color: var(--primary);
-    letter-spacing: .6px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .q-card .q-text {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 16px;
-    line-height: 1.55;
-  }
-  .q-card .context-chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: .78rem; font-weight: 700;
-    background: var(--warning-light); color: #92400e;
-    border-radius: 99px; padding: 4px 12px; margin-bottom: 12px;
-  }
-  .options { display: flex; flex-direction: column; gap: 10px; }
-  .option {
-    padding: 14px 18px;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    background: #fff;
-    font-size: .98rem;
-    font-weight: 600;
-    display: flex; align-items: center; gap: 14px;
-    transition: all .2s cubic-bezier(0.4,0,0.2,1);
-    user-select: none;
-  }
-  .option .opt-letter {
-    width: 30px; height: 30px; border-radius: 50%;
-    background: var(--primary-light); color: var(--primary);
-    font-size: .85rem; font-weight: 800;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .option:hover:not(.locked) {
-    border-color: var(--primary);
-    background: var(--primary-light);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(79,70,229,.15);
-  }
-  .option:hover:not(.locked) .opt-letter {
-    background: var(--primary); color: #fff;
-  }
-  .option.correct { border-color: var(--success); background: var(--success-light); }
-  .option.correct .opt-letter { background: var(--success); color: #fff; }
-  .option.incorrect { border-color: var(--danger); background: var(--danger-light); }
-  .option.incorrect .opt-letter { background: var(--danger); color: #fff; }
-  .option.locked { cursor: default; pointer-events: none; }
-  .feedback {
-    margin-top: 16px; padding: 14px 18px; border-radius: 10px;
-    font-size: .92rem; font-weight: 700; display: none;
-    align-items: flex-start; gap: 12px;
-  }
-  .feedback.show { display: flex; animation: feedbackSlide .3s ease; }
-  @keyframes feedbackSlide { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
-  .feedback.ok { background: var(--success-light); color: #065f46; }
-  .feedback.bad { background: var(--danger-light); color: #991b1b; }
-  .feedback .icon { font-size: 1.3rem; flex-shrink: 0; }
+      // Question bank for 6.NS.C.5
+      function genQuestions(level) {
+        const qs = [];
+        const pool = [
+          // Temperature
+          {
+            q: "It is 5 degrees BELOW zero. Which integer?",
+            ans: -5,
+            opts: [-5, 5, 0],
+            cat: "temp",
+            icon: "snowflake",
+          },
+          {
+            q: "The temperature is 12 degrees ABOVE zero.",
+            ans: 12,
+            opts: [12, -12, 0],
+            cat: "temp",
+            icon: "sun",
+          },
+          {
+            q: "A freezer is set to 18 degrees BELOW zero.",
+            ans: -18,
+            opts: [-18, 18, -8],
+            cat: "temp",
+            icon: "snowflake",
+          },
+          {
+            q: "A hot summer day: 35 degrees ABOVE zero.",
+            ans: 35,
+            opts: [35, -35, 53],
+            cat: "temp",
+            icon: "sun",
+          },
+          {
+            q: "Ice forms at how many degrees Celsius?",
+            ans: 0,
+            opts: [0, -1, 1],
+            cat: "temp",
+            icon: "snowflake",
+          },
+          {
+            q: "Water boils at 100 degrees. Positive or negative?",
+            ans: 100,
+            opts: [100, -100, 10],
+            cat: "temp",
+            icon: "sun",
+          },
+          // Elevation
+          {
+            q: "A submarine is 200 feet BELOW sea level.",
+            ans: -200,
+            opts: [-200, 200, -20],
+            cat: "elev",
+            icon: "down",
+          },
+          {
+            q: "A mountain peak is 3000 feet ABOVE sea level.",
+            ans: 3000,
+            opts: [3000, -3000, 300],
+            cat: "elev",
+            icon: "up",
+          },
+          {
+            q: "Death Valley is 282 feet BELOW sea level.",
+            ans: -282,
+            opts: [-282, 282, -28],
+            cat: "elev",
+            icon: "down",
+          },
+          {
+            q: "Sea level is the reference point. Its value is:",
+            ans: 0,
+            opts: [0, 1, -1],
+            cat: "elev",
+            icon: "zero",
+          },
+          {
+            q: "A diver goes 50 meters below the surface.",
+            ans: -50,
+            opts: [-50, 50, -5],
+            cat: "elev",
+            icon: "down",
+          },
+          // Money
+          {
+            q: "You deposit $75 into your bank account.",
+            ans: 75,
+            opts: [75, -75, 57],
+            cat: "money",
+            icon: "up",
+          },
+          {
+            q: "You spend $40 on supplies (withdrawal).",
+            ans: -40,
+            opts: [-40, 40, -4],
+            cat: "money",
+            icon: "down",
+          },
+          {
+            q: "You owe your friend $15 (a debt).",
+            ans: -15,
+            opts: [-15, 15, -51],
+            cat: "money",
+            icon: "down",
+          },
+          {
+            q: "You earn $120 from a job.",
+            ans: 120,
+            opts: [120, -120, 12],
+            cat: "money",
+            icon: "up",
+          },
+          {
+            q: "Your bank balance is exactly $0. That means:",
+            ans: 0,
+            opts: [0, -1, 1],
+            cat: "money",
+            icon: "zero",
+          },
+          // Opposites
+          {
+            q: "What is the OPPOSITE of +7?",
+            ans: -7,
+            opts: [-7, 7, 0],
+            cat: "opp",
+            icon: "swap",
+          },
+          {
+            q: "What is the OPPOSITE of -3?",
+            ans: 3,
+            opts: [3, -3, 0],
+            cat: "opp",
+            icon: "swap",
+          },
+          {
+            q: "What is the OPPOSITE of 0?",
+            ans: 0,
+            opts: [0, 1, -1],
+            cat: "opp",
+            icon: "zero",
+          },
+          {
+            q: "The opposite of -10 is:",
+            ans: 10,
+            opts: [10, -10, -1],
+            cat: "opp",
+            icon: "swap",
+          },
+          // True/False style
+          {
+            q: "Is -8 less than 0? (1=Yes, 0=No)",
+            ans: 1,
+            opts: [1, 0, -1],
+            cat: "tf",
+            icon: "check",
+          },
+          {
+            q: "Is 4 a positive number? (1=Yes, 0=No)",
+            ans: 1,
+            opts: [1, 0, -1],
+            cat: "tf",
+            icon: "check",
+          },
+          {
+            q: "Is 0 a negative number? (1=Yes, 0=No)",
+            ans: 0,
+            opts: [0, 1, -1],
+            cat: "tf",
+            icon: "check",
+          },
+          {
+            q: "Is -15 greater than -3? (1=Yes, 0=No)",
+            ans: 0,
+            opts: [0, 1, -1],
+            cat: "tf",
+            icon: "check",
+          },
+        ];
 
-  /* NUMBER LINE INTERACTIVE */
-  .nl-wrap {
-    background: var(--neutral);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px 28px 26px;
-    margin-bottom: 20px;
-    position: relative;
-  }
-  .nl-desc { font-size: .92rem; color: var(--text-muted); margin-bottom: 22px; line-height: 1.7; }
-  .nl-svg-wrap { width: 100%; overflow: hidden; }
-  svg.nl { width: 100%; max-width: 800px; display: block; margin: auto; cursor: grab; }
-  svg.nl:active { cursor: grabbing; }
-  .nl-point {
-    r: 8; fill: var(--warning); stroke: #fff; stroke-width: 3;
-    animation: pointPulse 2s infinite;
-  }
-  @keyframes pointPulse { 0%,100%{r:8} 50%{r:12} }
-  .nl-label { font-size: 14px; font-weight: 700; fill: var(--text); }
+        const selected = shuffle(pool).slice(0, 5 + Math.min(level, 5));
+        return selected;
+      }
 
-  /* ORDERING DRAG */
-  .order-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .order-line {
-    height: 80px; position: relative; border-top: 3px solid #cbd5e1;
-    border-radius: 0 0 var(--radius) var(--radius);
-    margin: 0 40px;
-  }
-  .order-slot {
-    position: absolute; top: -10px; width: 60px; height: 60px;
-    border: 3px dashed #94a3b8; border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem;
-    background: #fff; transition: all .3s;
-  }
-  .order-slot.drag-over { border-color: var(--primary); background: var(--primary-light); transform: scale(1.05); }
-  .order-item {
-    padding: 12px 20px; background: linear-gradient(135deg, var(--primary-light), #e0e7ff);
-    border: 2px solid var(--primary); border-radius: 99px;
-    cursor: grab; font-weight: 800; font-size: 1.1rem;
-    user-select: none; transition: all .2s;
-    box-shadow: 0 4px 12px rgba(79,70,229,.2);
-  }
-  .order-item:active { cursor: grabbing; transform: scale(.98); }
-  .order-item.placed { opacity: .6; cursor: default; }
+      // ============================================================
+      // BOOT
+      // ============================================================
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
 
-  /* DEFINITION HOVER */
-  .def-tooltip {
-    position: absolute; background: var(--text); color: #fff;
-    padding: 12px 16px; border-radius: 10px; font-size: .85rem;
-    white-space: nowrap; z-index: 10; opacity: 0; pointer-events: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,.3); transform: translateY(10px);
-    transition: all .2s;
-  }
-  .def-tooltip.show { opacity: 1; transform: translateY(0); }
-  .def-term {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; font-weight: 800;
-  }
+          // Thermometer character (20x40)
+          g.fillStyle(0xffffff);
+          g.fillRoundedRect(6, 0, 8, 30, 4);
+          g.fillStyle(0xef4444);
+          g.fillCircle(10, 34, 8);
+          g.fillStyle(0xef4444);
+          g.fillRect(7, 15, 6, 20);
+          g.generateTexture("thermo", 20, 42);
+          g.clear();
 
-  /* NAV & SUMMARY */
-  .nav-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 36px 24px;
-    border-top: 1px solid var(--border);
-    background: #f8fafc;
-  }
-  .nav-btn {
-    padding: 12px 24px; border-radius: 10px; border: 2px solid var(--border);
-    background: #fff; color: var(--text); font-size: .92rem; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; gap: 8px;
-    transition: all .2s;
-  }
-  .nav-btn:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary); transform: translateY(-1px); }
-  .nav-btn:disabled { opacity: .5; cursor: default; pointer-events: none; }
-  .nav-btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
-  .nav-btn.primary:hover { background: var(--primary-dark); }
-  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; margin-bottom: 32px; }
-  .stat-card {
-    background: linear-gradient(135deg, #fff, var(--neutral));
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    transition: transform .2s;
-  }
-  .stat-card:hover { transform: translateY(-4px); }
-  .stat-card .val { font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-card .lbl { font-size: .82rem; color: var(--text-muted); margin-top: 4px; font-weight: 700; letter-spacing: .5px; }
-  .restart-btn {
-    display: block; margin: auto;
-    padding: 16px 36px; background: linear-gradient(135deg, var(--success), #059669);
-    color: #fff; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800;
-    cursor: pointer; transition: all .3s; box-shadow: 0 8px 24px rgba(16,185,129,.3);
-  }
-  .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(16,185,129,.4); }
+          // Hot zone
+          g.fillStyle(0xef4444, 0.3);
+          g.fillRect(0, 0, 80, 80);
+          g.generateTexture("hot_zone", 80, 80);
+          g.clear();
 
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .section { padding: 24px 20px 28px; }
-    .nav-row { padding: 14px 20px 20px; }
-    .app-header { padding: 24px 20px 20px; }
-    .vocab-grid { grid-template-columns: 1fr; }
-    .order-wrap { gap: 16px; }
-  }
+          // Cold zone
+          g.fillStyle(0x38bdf8, 0.3);
+          g.fillRect(0, 0, 80, 80);
+          g.generateTexture("cold_zone", 80, 80);
+          g.clear();
 
-  /* TOAST */
-  #toast {
-    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--text); color: #fff; padding: 14px 28px; border-radius: 99px;
-    font-size: .92rem; font-weight: 700; opacity: 0; transition: all .4s cubic-bezier(0.4,0,0.2,1);
-    pointer-events: none; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,.2);
-  }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-</style>
-</head>
-<body>
+          // Coin
+          g.fillStyle(0xfbbf24);
+          g.fillCircle(8, 8, 8);
+          g.fillStyle(0xf59e0b);
+          g.fillCircle(8, 8, 5);
+          g.generateTexture("coin", 16, 16);
+          g.clear();
 
-<div class="app">
+          // Snowflake
+          g.fillStyle(0x93c5fd);
+          g.fillRect(4, 0, 4, 12);
+          g.fillRect(0, 4, 12, 4);
+          g.generateTexture("snow", 12, 12);
+          g.clear();
 
-  <!-- HEADER -->
-  <div class="app-header">
-    <h1><span class="def-term" onmouseenter="showDef(event,'opposite')">6.NS.C.5</span> — Positive &amp; Negative Numbers</h1>
-    <p>Premier Interactive Review • Grade 6 Common Core • <strong>45+</strong> Questions with Progressive Difficulty</p>
-    <div class="progress-container">
-      <div class="progress-bar-wrap">
-        <div class="progress-bar" id="progressBar" style="width:0%"></div>
-      </div>
-      <div class="score-badge" id="scoreBadge">
-        <span class="star">⭐</span> 0 pts
-      </div>
-    </div>
-  </div>
+          // Fire particle
+          g.fillStyle(0xfb923c);
+          g.fillCircle(4, 4, 4);
+          g.generateTexture("fire_p", 8, 8);
+          g.clear();
 
-  <!-- TABS -->
-  <div class="tabs" id="tabBar">
-    <button class="tab active" onclick="showTab(0)"><span class="icon">📚</span> Vocabulary <span class="check">✓</span></button>
-    <button class="tab" onclick="showTab(1)"><span class="icon">🌍</span> Real World <span class="check">✓</span></button>
-    <button class="tab" onclick="showTab(2)"><span class="icon">📏</span> Number Line <span class="check">✓</span></button>
-    <button class="tab" onclick="showTab(3)"><span class="icon">🔢</span> Ordering <span class="check">✓</span></button>
-    <button class="tab" onclick="showTab(4)"><span class="icon">🎯</span> Opposites <span class="check">✓</span></button>
-    <button class="tab" onclick="showTab(5)"><span class="icon">🧩</span> Misconceptions <span class="check">✓</span></button>
-    <button class="tab" onclick="showTab(6)"><span class="icon">🏆</span> Mastery <span class="check">✓</span></button>
-  </div>
+          // Platform
+          g.fillStyle(0x334155);
+          g.fillRoundedRect(0, 0, 80, 14, 4);
+          g.generateTexture("plat", 80, 14);
+          g.clear();
 
-  <!-- SECTION 0: VOCABULARY -->
-  <div class="section active" id="sec0">
-    <div class="section-title">📚 Vocabulary Foundations</div>
-    <div class="section-sub">Match terms to definitions, then test with multiple choice. <em>Key concepts bolded throughout.</em></div>
+          // Ice platform
+          g.fillStyle(0x7dd3fc, 0.7);
+          g.fillRoundedRect(0, 0, 80, 14, 4);
+          g.generateTexture("ice_plat", 80, 14);
+          g.clear();
 
-    <div class="section-intro">
-      <strong>Positive numbers</strong> are greater than zero (right of 0 on number line). <strong>Negative numbers</strong> are less than zero (left of 0). <strong>Zero</strong> is the reference point — neither positive nor negative.
-    </div>
+          // Lava platform
+          g.fillStyle(0xf97316, 0.7);
+          g.fillRoundedRect(0, 0, 80, 14, 4);
+          g.generateTexture("lava_plat", 80, 14);
+          g.clear();
 
-    <div class="vocab-grid">
-      <div class="vocab-pair">
-        <div class="vocab-term" onmouseenter="showDef(event,'integer')">Integer</div>
-        <div class="vocab-def">A <strong>whole number</strong> that includes positive numbers, negative numbers, and zero (e.g., ..., −3, −2, −1, <strong>0</strong>, 1, 2, 3, ...).</div>
-        <div class="vocab-match">
-          <input type="radio" id="v0a" name="v0" onclick="vocabCheck('v0',0)">
-          <label for="v0a">Decimal like 2.5</label>
-          <input type="radio" id="v0b" name="v0" onclick="vocabCheck('v0',1)">
-          <label for="v0b">Whole number including negatives & zero</label>
-        </div>
-      </div>
+          // Button
+          g.fillStyle(0x1e293b);
+          g.fillRoundedRect(0, 0, 220, 52, 14);
+          g.lineStyle(2, 0x38bdf8);
+          g.strokeRoundedRect(0, 0, 220, 52, 14);
+          g.generateTexture("btn", 220, 52);
+          g.clear();
 
-      <div class="vocab-pair">
-        <div class="vocab-term" onmouseenter="showDef(event,'positive')">Positive Number</div>
-        <div class="vocab-def">A number <strong>greater than zero</strong>. Often written with a + sign, but the + is optional (e.g., +5 or just 5).</div>
-        <div class="vocab-match">
-          <input type="radio" id="v1a" name="v1" onclick="vocabCheck('v1',0)">
-          <label for="v1a">Less than zero</label>
-          <input type="radio" id="v1b" name="v1" onclick="vocabCheck('v1',1)">
-          <label for="v1b">Greater than zero</label>
-        </div>
-      </div>
+          // Answer btn
+          g.fillStyle(0x0f172a);
+          g.fillRoundedRect(0, 0, 180, 48, 10);
+          g.lineStyle(2, 0x38bdf8);
+          g.strokeRoundedRect(0, 0, 180, 48, 10);
+          g.generateTexture("ans_btn", 180, 48);
+          g.clear();
 
-      <div class="vocab-pair">
-        <div class="vocab-term" onmouseenter="showDef(event,'negative')">Negative Number</div>
-        <div class="vocab-def">A number <strong>less than zero</strong>. Always written with a − sign (e.g., −7).</div>
-        <div class="vocab-match">
-          <input type="radio" id="v2a" name="v2" onclick="vocabCheck('v2',0)">
-          <label for="v2a">Right of zero</label>
-          <input type="radio" id="v2b" name="v2" onclick="vocabCheck('v2',1)">
-          <label for="v2b">Left of zero</label>
-        </div>
-      </div>
+          g.fillStyle(0x064e3b);
+          g.fillRoundedRect(0, 0, 180, 48, 10);
+          g.lineStyle(2, 0x4ade80);
+          g.strokeRoundedRect(0, 0, 180, 48, 10);
+          g.generateTexture("ans_ok", 180, 48);
+          g.clear();
 
-      <div class="vocab-pair">
-        <div class="vocab-term" onmouseenter="showDef(event,'zero')">Zero</div>
-        <div class="vocab-def">The <strong>origin</strong> on the number line. Represents no change, balance, or sea level. Neither positive nor negative.</div>
-        <div class="vocab-match">
-          <input type="radio" id="v3a" name="v3" onclick="vocabCheck('v3',0)">
-          <label for="v3a">A positive number</label>
-          <input type="radio" id="v3b" name="v3" onclick="vocabCheck('v3',1)">
-          <label for="v3b">Reference point — neither positive nor negative</label>
-        </div>
-      </div>
-    </div>
+          g.fillStyle(0x450a0a);
+          g.fillRoundedRect(0, 0, 180, 48, 10);
+          g.lineStyle(2, 0xf87171);
+          g.strokeRoundedRect(0, 0, 180, 48, 10);
+          g.generateTexture("ans_bad", 180, 48);
+          g.clear();
 
-    <!-- Vocab MC -->
-    <div class="q-card" id="qvocab1">
-      <div class="q-num">Test 1</div>
-      <div class="q-text">Which is an <span class="def-term" onmouseenter="showDef(event,'integer')">integer</span>?</div>
-      <div class="options">
-        <div class="option" onclick="mcCheck(this,'qvocab1',false,'a')"><span class="opt-letter">A</span> 3.14</div>
-        <div class="option" onclick="mcCheck(this,'qvocab1',true,'b')"><span class="opt-letter">B</span> −12</div>
-        <div class="option" onclick="mcCheck(this,'qvocab1',false,'c')"><span class="opt-letter">C</span> √2</div>
-      </div>
-      <div class="feedback" id="qvocab1-fb"><span class="icon"></span><span class="msg"></span></div>
-    </div>
-  </div>
+          // Heart
+          g.fillStyle(0xef4444);
+          g.fillRect(2, 2, 4, 4);
+          g.fillRect(8, 2, 4, 4);
+          g.fillRect(0, 4, 14, 4);
+          g.fillRect(2, 8, 10, 4);
+          g.fillRect(4, 12, 6, 2);
+          g.generateTexture("heart", 14, 14);
+          g.clear();
 
-  <!-- SECTION 1: REAL WORLD - EASY -->
-  <div class="section" id="sec1">
-    <div class="section-title">🌍 Real World • Level 1 (Easy)</div>
-    <div class="section-sub">Basic scenarios with temperature, elevation, and finance. Identify the correct integer.</div>
+          // Particle
+          g.fillStyle(0xffffff, 0.5);
+          g.fillCircle(2, 2, 2);
+          g.generateTexture("particle", 4, 4);
+          g.clear();
 
-    <div class="q-card" id="q1">
-      <span class="context-chip">🌡️ Temperature</span>
-      <div class="q-num">1 of 8</div>
-      <div class="q-text">It's <strong>5° below zero</strong>. Which integer?</div>
-      <div class="options">
-        <div class="option" onclick="mcCheck(this,'q1',false,'a')"><span class="opt-letter">A</span> +5</div>
-        <div class="option" onclick="mcCheck(this,'q1',true,'b')"><span class="opt-letter">B</span> −5</div>
-      </div>
-      <div class="feedback" id="q1-fb"><span class="icon"></span><span class="msg"></span></div>
-    </div>
+          // Thermometer bar bg
+          g.fillStyle(0x1e293b);
+          g.fillRoundedRect(0, 0, 30, 200, 8);
+          g.generateTexture("thermo_bg", 30, 200);
+          g.clear();
 
-    <div class="q-card" id="q2">
-      <span class="context-chip">⛰️ Elevation</span>
-      <div class="q-num">2 of 8</div>
-      <div class="q-text">Denver is <strong>5280 ft above sea level</strong>.</div>
-      <div class="options">
-        <div class="option" onclick="mcCheck(this,'q2',true,'a')"><span class="opt-letter">A</span> +5280</div>
-        <div class="option" onclick="mcCheck(this,'q2',false,'b')"><span class="opt-letter">B</span> −5280</div>
-      </div>
-      <div class="feedback" id="q2-fb"><span class="icon"></span><span class="msg"></span></div>
-    </div>
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
 
-    <!-- More easy questions... (abbreviated for space - full version has 8) -->
-    <div class="q-card" id="q3">
-      <span class="context-chip">🏦 Finance</span>
-      <div class="q-num">3 of 8</div>
-      <div class="q-text">$50 <strong>bank deposit</strong> (credit).</div>
-      <div class="options">
-        <div class="option" onclick="mcCheck(this,'q3',true,'a')"><span class="opt-letter">A</span> +50</div>
-        <div class="option" onclick="mcCheck(this,'q3',false,'b')"><span class="opt-letter">B</span> −50</div>
-      </div>
-      <div class="feedback" id="q3-fb"><span class="icon"></span><span class="msg"></span></div>
-    </div>
-    <!-- ... 5 more similar easy questions -->
-  </div>
+      // ============================================================
+      // TITLE
+      // ============================================================
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#0b1628");
 
-  <!-- Other sections follow similar pattern with increasing difficulty -->
-  <!-- For brevity, showing structure. Full HTML has 45+ questions across 7 sections -->
+          // Gradient bg effect
+          for (let i = 0; i < 80; i++) {
+            const c = this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 3),
+              i % 2 === 0 ? 0x38bdf8 : 0xef4444,
+              Phaser.Math.FloatBetween(0.02, 0.15),
+            );
+            this.tweens.add({
+              targets: c,
+              alpha: { from: c.alpha, to: 0.02 },
+              duration: Phaser.Math.Between(1500, 4000),
+              yoyo: true,
+              repeat: -1,
+            });
+          }
 
-  <!-- SUMMARY -->
-  <div class="section" id="sec6">
-    <div class="section-title">🏆 Mastery Achieved!</div>
-    <div class="section-sub">Review your performance across all levels.</div>
-    <div class="summary-grid">
-      <div class="stat-card"><div class="val" id="sumCorrect">0</div><div class="lbl">Correct</div></div>
-      <div class="stat-card"><div class="val" id="sumTotal">45</div><div class="lbl">Questions</div></div>
-      <div class="stat-card"><div class="val" id="sumPct">0%</div><div class="lbl">Accuracy</div></div>
-      <div class="stat-card"><div class="val" id="sumPts">0</div><div class="lbl">Points</div></div>
-    </div>
-    <button class="restart-btn" onclick="restartAll()">🔄 Master Again</button>
-  </div>
+          this.add
+            .text(W / 2, 80, "TEMPERATURE", {
+              fontSize: "48px",
+              fontStyle: "bold",
+              color: "#38bdf8",
+              stroke: "#0b1628",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 135, "EXPLORER", {
+              fontSize: "56px",
+              fontStyle: "bold",
+              color: "#ef4444",
+              stroke: "#0b1628",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              180,
+              "6.NS.C.5 — Positive & Negative in the Real World",
+              {
+                fontSize: "15px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5);
 
-  <!-- NAV -->
-  <div class="nav-row">
-    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)" disabled>← Previous</button>
-    <span id="sectionLabel" style="font-size:.9rem;color:var(--text-muted);font-weight:600">Section 1 of 7</span>
-    <button class="nav-btn primary" id="nextBtn" onclick="navigate(1)">Next →</button>
-  </div>
+          // Animated thermo
+          const th = this.add.image(W / 2, 280, "thermo").setScale(3);
+          this.tweens.add({
+            targets: th,
+            y: 270,
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.InOut",
+          });
 
-</div>
+          // Snow/fire particles
+          for (let i = 0; i < 6; i++) {
+            const sn = this.add
+              .image(
+                Phaser.Math.Between(50, 380),
+                Phaser.Math.Between(230, 340),
+                "snow",
+              )
+              .setScale(1.5)
+              .setAlpha(0.4);
+            this.tweens.add({
+              targets: sn,
+              y: sn.y + 20,
+              alpha: 0,
+              duration: 2000 + i * 300,
+              repeat: -1,
+            });
+          }
+          for (let i = 0; i < 6; i++) {
+            const fr = this.add
+              .image(
+                Phaser.Math.Between(420, 750),
+                Phaser.Math.Between(230, 340),
+                "fire_p",
+              )
+              .setScale(1.5)
+              .setAlpha(0.4);
+            this.tweens.add({
+              targets: fr,
+              y: fr.y - 20,
+              alpha: 0,
+              duration: 1500 + i * 200,
+              repeat: -1,
+            });
+          }
 
-<div id="tooltip" class="def-tooltip"></div>
-<div id="toast"></div>
+          // Mode select
+          this.add
+            .text(W / 2, 380, "Choose your mode:", {
+              fontSize: "18px",
+              color: "#e2e8f0",
+            })
+            .setOrigin(0.5);
 
-<script>
-// Full script with 45+ questions, vocab defs, interactive number line points, ordering drag-drop, progressive difficulty
-// Definitions data
-const definitions = {
-  opposite: 'Two numbers the <strong>same distance from zero</strong> but on opposite sides. e.g., +5 and −5. Their sum is always 0.',
-  integer: 'Whole numbers including <strong>positives, negatives, and zero</strong>. No decimals or fractions.',
-  positive: 'Greater than zero. Right of 0 on number line.',
-  negative: 'Less than zero. Left of 0 on number line.',
-  zero: 'The origin. Represents balance, sea level, no change.'
-};
+          const modes = [
+            {
+              name: "Explorer Mode",
+              desc: "Navigate hot & cold zones",
+              icon: "thermo",
+            },
+            {
+              name: "Challenge Mode",
+              desc: "Answer questions for speed",
+              icon: "coin",
+            },
+            {
+              name: "Survival Mode",
+              desc: "How long can you last?",
+              icon: "heart",
+            },
+          ];
 
-// Vocab check function, MC with detailed feedback, interactive NL with draggable points, ordering game, etc.
-// (Full 2000+ line script omitted for response length - implements all features)
+          this.selectedMode = 0;
+          this.modeButtons = [];
 
-console.log('Premier 6.NS.C.5 Review Loaded - 45+ Questions Ready!');
-</script>
-</body>
+          modes.forEach((m, i) => {
+            const x = W / 2 - 220 + i * 220;
+            const bg = this.add
+              .image(x, 440, "btn")
+              .setScale(0.9)
+              .setInteractive({ useHandCursor: true });
+            const txt = this.add
+              .text(x, 432, m.name, {
+                fontSize: "14px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            const desc = this.add
+              .text(x, 452, m.desc, { fontSize: "10px", color: "#94a3b8" })
+              .setOrigin(0.5);
+
+            bg.on("pointerdown", () => {
+              this.selectedMode = i;
+              this.modeButtons.forEach((b, j) =>
+                b.bg.setTint(j === i ? 0x4ade80 : 0xffffff),
+              );
+              synth(400 + i * 100, 0.1);
+            });
+            bg.on("pointerover", () => bg.setScale(0.95));
+            bg.on("pointerout", () => bg.setScale(0.9));
+            this.modeButtons.push({ bg, txt });
+          });
+          this.modeButtons[0].bg.setTint(0x4ade80);
+
+          // Start
+          const startBtn = this.add
+            .image(W / 2, 530, "btn")
+            .setScale(1.2)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 530, "START EXPLORING", {
+              fontSize: "20px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          this.tweens.add({
+            targets: startBtn,
+            scaleX: 1.25,
+            scaleY: 1.25,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.InOut",
+          });
+
+          startBtn.on("pointerdown", () => {
+            synth(600, 0.1);
+            setTimeout(() => synth(800, 0.15), 80);
+            this.cameras.main.fadeOut(400);
+            this.time.delayedCall(400, () => {
+              this.scene.start("Game", { mode: this.selectedMode });
+            });
+          });
+
+          this.add
+            .text(
+              W / 2,
+              580,
+              "Arrow keys or touch to move  |  Explore temperature zones!",
+              {
+                fontSize: "12px",
+                color: "#64748b",
+              },
+            )
+            .setOrigin(0.5);
+
+          this.cameras.main.fadeIn(500);
+        }
+      }
+
+      // ============================================================
+      // GAME SCENE
+      // ============================================================
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+
+        init(data) {
+          this.mode = data.mode || 0;
+          this.score = 0;
+          this.lives = 3;
+          this.level = 1;
+          this.combo = 0;
+          this.maxCombo = 0;
+          this.temperature = 0; // player's current temp
+          this.coinsCollected = 0;
+          this.questionsCorrect = 0;
+          this.questionsTotal = 0;
+          this.questionActive = false;
+          this.canMove = true;
+          this.timeLeft = 90;
+          this.zonesExplored = 0;
+        }
+
+        create() {
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          this.cameras.main.setBackgroundColor("#0b1628");
+
+          // World size
+          this.worldW = 2400;
+          this.worldH = H;
+
+          // BG particles
+          for (let i = 0; i < 40; i++) {
+            const c = this.add.circle(
+              Phaser.Math.Between(0, this.worldW),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 2),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.02, 0.12),
+            );
+          }
+
+          // Build temperature zones
+          this.buildWorld();
+
+          // Player
+          this.player = this.physics.add
+            .sprite(120, H - 100, "thermo")
+            .setScale(1.8);
+          this.player.setCollideWorldBounds(true);
+          this.player.body.setSize(14, 36);
+          this.player.setGravityY(400);
+          this.player.setDepth(10);
+
+          // Trail particles
+          this.trailEmitter = this.add.particles(0, 0, "particle", {
+            follow: this.player,
+            followOffset: { y: 18 },
+            lifespan: 400,
+            speed: { min: 5, max: 20 },
+            scale: { start: 0.8, end: 0 },
+            frequency: -1,
+            quantity: 3,
+          });
+
+          // Collisions
+          this.physics.add.collider(this.player, this.platforms);
+          this.physics.add.overlap(
+            this.player,
+            this.hotZones,
+            this.enterHotZone,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.player,
+            this.coldZones,
+            this.enterColdZone,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.player,
+            this.coins,
+            this.collectCoin,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.player,
+            this.checkpoints,
+            this.hitCheckpoint,
+            null,
+            this,
+          );
+
+          // Controls
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+          this.spaceBar = this.input.keyboard.addKey(
+            Phaser.Input.Keyboard.KeyCodes.SPACE,
+          );
+
+          // Camera
+          this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+          this.cameras.main.setBounds(0, 0, this.worldW, H);
+          this.physics.world.setBounds(0, 0, this.worldW, H);
+
+          // HUD
+          this.createHUD();
+
+          // Touch
+          this.createTouchControls();
+
+          // Timer
+          this.timerEvent = this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+              this.timeLeft--;
+              this.updateHUD();
+              if (this.timeLeft <= 0) this.endGame();
+            },
+            loop: true,
+          });
+
+          // Snowfall in cold areas, ember in hot areas (ambient)
+          this.snowEmitter = this.add.particles(0, 0, "snow", {
+            x: { min: 0, max: this.worldW },
+            y: -10,
+            lifespan: 4000,
+            speedY: { min: 20, max: 50 },
+            speedX: { min: -10, max: 10 },
+            scale: { start: 0.6, end: 0 },
+            alpha: { start: 0.4, end: 0 },
+            frequency: 300,
+            quantity: 1,
+          });
+
+          this.fireEmitter = this.add.particles(0, 0, "fire_p", {
+            x: { min: 0, max: this.worldW },
+            y: H + 10,
+            lifespan: 3000,
+            speedY: { min: -30, max: -60 },
+            scale: { start: 0.5, end: 0 },
+            alpha: { start: 0.3, end: 0 },
+            frequency: 500,
+            quantity: 1,
+          });
+
+          this.cameras.main.fadeIn(500);
+          this.showLevelIntro();
+        }
+
+        buildWorld() {
+          this.platforms = this.physics.add.staticGroup();
+          this.hotZones = this.physics.add.staticGroup();
+          this.coldZones = this.physics.add.staticGroup();
+          this.coins = this.physics.add.group();
+          this.checkpoints = this.physics.add.staticGroup();
+
+          // Ground
+          for (let x = 0; x < this.worldW; x += 80) {
+            const segType = Math.floor(x / 400);
+            const tex =
+              segType % 3 === 0
+                ? "plat"
+                : segType % 3 === 1
+                  ? "ice_plat"
+                  : "lava_plat";
+            this.platforms.create(x + 40, H - 10, tex);
+          }
+
+          // Temperature zones
+          const zoneCount = 8 + this.level * 2;
+          for (let i = 0; i < zoneCount; i++) {
+            const x = 200 + i * Phaser.Math.Between(150, 250);
+            const isHot = Math.random() > 0.5;
+            const zoneY = H - 60;
+
+            if (isHot) {
+              const z = this.hotZones.create(x, zoneY, "hot_zone");
+              z.setAlpha(0.5);
+              // Label
+              const temp = Phaser.Math.Between(10, 50);
+              this.add
+                .text(x, zoneY - 50, `+${temp}°`, {
+                  fontSize: "16px",
+                  color: "#ef4444",
+                  fontStyle: "bold",
+                  stroke: "#000",
+                  strokeThickness: 3,
+                })
+                .setOrigin(0.5);
+              z.tempValue = temp;
+            } else {
+              const z = this.coldZones.create(x, zoneY, "cold_zone");
+              z.setAlpha(0.5);
+              const temp = Phaser.Math.Between(-50, -5);
+              this.add
+                .text(x, zoneY - 50, `${temp}°`, {
+                  fontSize: "16px",
+                  color: "#38bdf8",
+                  fontStyle: "bold",
+                  stroke: "#000",
+                  strokeThickness: 3,
+                })
+                .setOrigin(0.5);
+              z.tempValue = temp;
+            }
+
+            // Platforms above
+            if (Math.random() > 0.4) {
+              const py = Phaser.Math.Between(H - 200, H - 100);
+              this.platforms.create(x, py, "plat");
+
+              // Coin on platform
+              if (Math.random() > 0.3) {
+                const c = this.coins.create(x, py - 24, "coin").setScale(1.5);
+                c.body.allowGravity = false;
+                c.value = Phaser.Math.Between(1, 5) * 10;
+                this.tweens.add({
+                  targets: c,
+                  y: c.y - 8,
+                  duration: 600 + Math.random() * 400,
+                  yoyo: true,
+                  repeat: -1,
+                  ease: "Sine.InOut",
+                });
+              }
+            }
+          }
+
+          // Checkpoints (question triggers)
+          const cpSpacing = this.worldW / 6;
+          for (let i = 1; i <= 4; i++) {
+            const cx = i * cpSpacing;
+            const cp = this.checkpoints.create(cx, H - 40, "coin").setScale(2);
+            cp.setTint(0xc084fc);
+            cp.triggered = false;
+            this.add
+              .text(cx, H - 80, "?", {
+                fontSize: "28px",
+                color: "#c084fc",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+
+            // Glow
+            const glow = this.add.circle(cx, H - 40, 20, 0xc084fc, 0.15);
+            this.tweens.add({
+              targets: glow,
+              scale: 2,
+              alpha: 0,
+              duration: 1200,
+              repeat: -1,
+            });
+          }
+        }
+
+        createHUD() {
+          const hudBg = this.add
+            .rectangle(W / 2, 24, W, 48, 0x0f172a, 0.85)
+            .setScrollFactor(0)
+            .setDepth(100);
+
+          this.scoreText = this.add
+            .text(16, 10, "Score: 0", {
+              fontSize: "15px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setScrollFactor(0)
+            .setDepth(101);
+
+          this.tempText = this.add
+            .text(16, 28, "Temp: 0°", {
+              fontSize: "13px",
+              color: "#e2e8f0",
+            })
+            .setScrollFactor(0)
+            .setDepth(101);
+
+          this.levelText = this.add
+            .text(W / 2, 10, `Level ${this.level}`, {
+              fontSize: "15px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5, 0)
+            .setScrollFactor(0)
+            .setDepth(101);
+
+          this.timerText = this.add
+            .text(W / 2, 28, `Time: ${this.timeLeft}s`, {
+              fontSize: "13px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5, 0)
+            .setScrollFactor(0)
+            .setDepth(101);
+
+          this.comboText = this.add
+            .text(W - 16, 10, "", {
+              fontSize: "14px",
+              color: "#c084fc",
+              fontStyle: "bold",
+            })
+            .setOrigin(1, 0)
+            .setScrollFactor(0)
+            .setDepth(101);
+
+          // Hearts
+          this.heartIcons = [];
+          for (let i = 0; i < 3; i++) {
+            const h = this.add
+              .image(W - 70 + i * 22, 36, "heart")
+              .setScale(1.3)
+              .setScrollFactor(0)
+              .setDepth(101);
+            this.heartIcons.push(h);
+          }
+
+          // Thermometer gauge on left
+          this.thermoGaugeBg = this.add
+            .image(W - 16, H / 2, "thermo_bg")
+            .setScrollFactor(0)
+            .setDepth(99);
+          this.thermoFill = this.add
+            .rectangle(W - 16, H / 2 + 90, 20, 0, 0xef4444)
+            .setScrollFactor(0)
+            .setDepth(100);
+          this.thermoLabel = this.add
+            .text(W - 16, H / 2 + 110, "0°", {
+              fontSize: "12px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(101);
+        }
+
+        createTouchControls() {
+          const a = 0.3,
+            s = 45;
+          this.touchLeft = this.add
+            .circle(55, H - 55, s, 0x38bdf8, a)
+            .setScrollFactor(0)
+            .setDepth(200)
+            .setInteractive();
+          this.add
+            .text(55, H - 55, "<", {
+              fontSize: "26px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(201);
+          this.touchRight = this.add
+            .circle(155, H - 55, s, 0x38bdf8, a)
+            .setScrollFactor(0)
+            .setDepth(200)
+            .setInteractive();
+          this.add
+            .text(155, H - 55, ">", {
+              fontSize: "26px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(201);
+          this.touchJump = this.add
+            .circle(W - 75, H - 55, s * 1.2, 0xfbbf24, a)
+            .setScrollFactor(0)
+            .setDepth(200)
+            .setInteractive();
+          this.add
+            .text(W - 75, H - 55, "JUMP", {
+              fontSize: "13px",
+              color: "#fff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(201);
+
+          this.tL = false;
+          this.tR = false;
+          this.tJ = false;
+          this.touchLeft.on("pointerdown", () => (this.tL = true));
+          this.touchLeft.on("pointerup", () => (this.tL = false));
+          this.touchLeft.on("pointerout", () => (this.tL = false));
+          this.touchRight.on("pointerdown", () => (this.tR = true));
+          this.touchRight.on("pointerup", () => (this.tR = false));
+          this.touchRight.on("pointerout", () => (this.tR = false));
+          this.touchJump.on("pointerdown", () => (this.tJ = true));
+          this.touchJump.on("pointerup", () => (this.tJ = false));
+          this.touchJump.on("pointerout", () => (this.tJ = false));
+        }
+
+        showLevelIntro() {
+          const ov = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.7)
+            .setScrollFactor(0)
+            .setDepth(500);
+          const t1 = this.add
+            .text(W / 2, H / 2 - 30, `Level ${this.level}`, {
+              fontSize: "44px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(501);
+          const t2 = this.add
+            .text(
+              W / 2,
+              H / 2 + 20,
+              "Explore hot and cold zones! Answer questions at checkpoints!",
+              {
+                fontSize: "15px",
+                color: "#94a3b8",
+                wordWrap: { width: 500 },
+                align: "center",
+              },
+            )
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(501);
+
+          this.canMove = false;
+          this.tweens.add({
+            targets: [ov, t1, t2],
+            alpha: 0,
+            delay: 1800,
+            duration: 500,
+            onComplete: () => {
+              ov.destroy();
+              t1.destroy();
+              t2.destroy();
+              this.canMove = true;
+            },
+          });
+        }
+
+        enterHotZone(player, zone) {
+          if (!zone.active) return;
+          const prev = this.temperature;
+          this.temperature = Math.min(100, this.temperature + 0.3);
+          if (
+            Math.floor(prev) !== Math.floor(this.temperature) &&
+            Math.floor(this.temperature) % 5 === 0
+          ) {
+            this.score += 5;
+          }
+          this.player.setTint(this.getTempTint());
+          this.trailEmitter.setParticleTint(0xef4444);
+          this.trailEmitter.explode(2);
+          this.updateHUD();
+        }
+
+        enterColdZone(player, zone) {
+          if (!zone.active) return;
+          const prev = this.temperature;
+          this.temperature = Math.max(-100, this.temperature - 0.3);
+          if (
+            Math.floor(prev) !== Math.floor(this.temperature) &&
+            Math.floor(this.temperature) % 5 === 0
+          ) {
+            this.score += 5;
+          }
+          this.player.setTint(this.getTempTint());
+          this.trailEmitter.setParticleTint(0x38bdf8);
+          this.trailEmitter.explode(2);
+          this.updateHUD();
+        }
+
+        getTempTint() {
+          if (this.temperature > 30) return 0xef4444;
+          if (this.temperature > 10) return 0xfb923c;
+          if (this.temperature > -10) return 0xffffff;
+          if (this.temperature > -30) return 0x93c5fd;
+          return 0x38bdf8;
+        }
+
+        collectCoin(player, coin) {
+          sndCollect();
+          this.coinsCollected++;
+          this.score += coin.value;
+          const ft = this.add
+            .text(coin.x, coin.y - 20, `+${coin.value}`, {
+              fontSize: "16px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(50);
+          this.tweens.add({
+            targets: ft,
+            y: ft.y - 30,
+            alpha: 0,
+            duration: 700,
+            onComplete: () => ft.destroy(),
+          });
+          this.add
+            .particles(coin.x, coin.y, "particle", {
+              speed: { min: 40, max: 120 },
+              scale: { start: 1, end: 0 },
+              lifespan: 300,
+              quantity: 8,
+              tint: 0xfbbf24,
+              emitting: false,
+            })
+            .explode(8);
+          coin.destroy();
+          this.updateHUD();
+        }
+
+        hitCheckpoint(player, cp) {
+          if (cp.triggered) return;
+          cp.triggered = true;
+          cp.setAlpha(0.3);
+          this.showQuestion();
+        }
+
+        showQuestion() {
+          this.questionActive = true;
+          this.canMove = false;
+          this.player.setVelocity(0, 0);
+
+          const questions = genQuestions(this.level);
+          const q = questions[0];
+
+          // Overlay
+          this.qOverlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
+            .setScrollFactor(0)
+            .setDepth(600);
+          this.qElements = [];
+
+          // Category icon
+          const catColors = {
+            temp: "#ef4444",
+            elev: "#38bdf8",
+            money: "#fbbf24",
+            opp: "#c084fc",
+            tf: "#4ade80",
+          };
+          const catNames = {
+            temp: "Temperature",
+            elev: "Elevation",
+            money: "Money",
+            opp: "Opposites",
+            tf: "True/False",
+          };
+
+          const catLabel = this.add
+            .text(W / 2, 100, catNames[q.cat] || "Question", {
+              fontSize: "14px",
+              color: catColors[q.cat] || "#94a3b8",
+              fontStyle: "bold",
+              letterSpacing: 2,
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(601);
+          this.qElements.push(catLabel);
+
+          // Thermometer visual
+          this.drawQuestionThermo(170, q, this.qElements);
+
+          // Question
+          const qText = this.add
+            .text(W / 2, 260, q.q, {
+              fontSize: "22px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              wordWrap: { width: 600 },
+              align: "center",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(601);
+          this.qElements.push(qText);
+
+          // Options
+          const opts = shuffle([...q.opts]);
+          opts.forEach((opt, i) => {
+            const bx = W / 2 - 200 + i * 200;
+            const by = 370;
+            const btn = this.add
+              .image(bx, by, "ans_btn")
+              .setScale(1.1)
+              .setScrollFactor(0)
+              .setDepth(601)
+              .setInteractive({ useHandCursor: true });
+            const txt = this.add
+              .text(bx, by, `${opt}`, {
+                fontSize: "22px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(602);
+            this.qElements.push(btn, txt);
+
+            btn.on("pointerdown", () => {
+              this.qElements.forEach((e) => {
+                if (e.input) e.disableInteractive();
+              });
+              this.questionsTotal++;
+
+              if (opt === q.ans) {
+                sndCorrect();
+                btn.setTexture("ans_ok");
+                txt.setColor("#4ade80");
+                this.questionsCorrect++;
+                this.combo++;
+                if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+                const pts = 200 * this.combo;
+                this.score += pts;
+
+                const fb = this.add
+                  .text(W / 2, 440, `Correct! +${pts}`, {
+                    fontSize: "20px",
+                    color: "#4ade80",
+                    fontStyle: "bold",
+                  })
+                  .setOrigin(0.5)
+                  .setScrollFactor(0)
+                  .setDepth(601);
+                this.qElements.push(fb);
+
+                // Explanation
+                const exp = this.add
+                  .text(W / 2, 480, this.getExplanation(q), {
+                    fontSize: "14px",
+                    color: "#94a3b8",
+                    wordWrap: { width: 500 },
+                    align: "center",
+                  })
+                  .setOrigin(0.5)
+                  .setScrollFactor(0)
+                  .setDepth(601);
+                this.qElements.push(exp);
+              } else {
+                sndWrong();
+                btn.setTexture("ans_bad");
+                txt.setColor("#f87171");
+                this.combo = 0;
+                this.lives--;
+
+                const fb = this.add
+                  .text(W / 2, 440, `Answer: ${q.ans}`, {
+                    fontSize: "20px",
+                    color: "#f87171",
+                    fontStyle: "bold",
+                  })
+                  .setOrigin(0.5)
+                  .setScrollFactor(0)
+                  .setDepth(601);
+                this.qElements.push(fb);
+
+                const exp = this.add
+                  .text(W / 2, 480, this.getExplanation(q), {
+                    fontSize: "14px",
+                    color: "#94a3b8",
+                    wordWrap: { width: 500 },
+                    align: "center",
+                  })
+                  .setOrigin(0.5)
+                  .setScrollFactor(0)
+                  .setDepth(601);
+                this.qElements.push(exp);
+              }
+
+              this.updateHUD();
+
+              this.time.delayedCall(2000, () => {
+                this.qElements.forEach((e) => e.destroy());
+                this.qOverlay.destroy();
+                this.questionActive = false;
+                this.canMove = true;
+                if (this.lives <= 0) this.endGame();
+              });
+            });
+
+            btn.on("pointerover", () => btn.setScale(1.15));
+            btn.on("pointerout", () => btn.setScale(1.1));
+          });
+        }
+
+        getExplanation(q) {
+          if (q.cat === "temp") {
+            if (q.ans < 0)
+              return '"Below zero" means NEGATIVE. Move LEFT on the number line.';
+            if (q.ans > 0)
+              return '"Above zero" means POSITIVE. Move RIGHT on the number line.';
+            return "Zero is the reference point between positive and negative.";
+          }
+          if (q.cat === "elev") {
+            if (q.ans < 0) return '"Below sea level" means NEGATIVE elevation.';
+            if (q.ans > 0) return '"Above sea level" means POSITIVE elevation.';
+            return "Sea level = 0. It separates above (+) from below (-).";
+          }
+          if (q.cat === "money") {
+            if (q.ans < 0)
+              return "Spending, debt, or withdrawal = NEGATIVE (money goes out).";
+            if (q.ans > 0)
+              return "Earning, deposit, or credit = POSITIVE (money comes in).";
+            return "Zero balance means no money owed and no money saved.";
+          }
+          if (q.cat === "opp")
+            return "Opposite numbers are the SAME distance from 0 but on different sides.";
+          return "";
+        }
+
+        drawQuestionThermo(y, q, container) {
+          // Simple horizontal thermometer
+          const tw = 400;
+          const bg = this.add
+            .rectangle(W / 2, y, tw, 12, 0x1e293b)
+            .setScrollFactor(0)
+            .setDepth(601);
+          container.push(bg);
+
+          // Zero marker
+          const zero = this.add
+            .rectangle(W / 2, y, 2, 20, 0xfbbf24)
+            .setScrollFactor(0)
+            .setDepth(601);
+          container.push(zero);
+          const zLabel = this.add
+            .text(W / 2, y + 16, "0°", { fontSize: "11px", color: "#fbbf24" })
+            .setOrigin(0.5, 0)
+            .setScrollFactor(0)
+            .setDepth(601);
+          container.push(zLabel);
+
+          // Answer marker
+          const maxAbs = Math.max(Math.abs(q.ans), 50);
+          const px = W / 2 + (q.ans / maxAbs) * (tw / 2 - 20);
+          const marker = this.add
+            .circle(px, y, 7, q.ans >= 0 ? 0xef4444 : 0x38bdf8)
+            .setScrollFactor(0)
+            .setDepth(601);
+          container.push(marker);
+
+          // -/+ labels
+          const neg = this.add
+            .text(W / 2 - tw / 2, y - 16, "NEGATIVE", {
+              fontSize: "10px",
+              color: "#38bdf8",
+            })
+            .setScrollFactor(0)
+            .setDepth(601);
+          const pos = this.add
+            .text(W / 2 + tw / 2, y - 16, "POSITIVE", {
+              fontSize: "10px",
+              color: "#ef4444",
+            })
+            .setOrigin(1, 0)
+            .setScrollFactor(0)
+            .setDepth(601);
+          container.push(neg, pos);
+        }
+
+        updateHUD() {
+          this.scoreText.setText(`Score: ${this.score}`);
+          this.tempText.setText(`Temp: ${Math.round(this.temperature)}°`);
+          this.timerText.setText(`Time: ${this.timeLeft}s`);
+          if (this.combo > 1) this.comboText.setText(`${this.combo}x Combo!`);
+          else this.comboText.setText("");
+
+          for (let i = 0; i < 3; i++)
+            this.heartIcons[i].setAlpha(i < this.lives ? 1 : 0.2);
+
+          // Thermometer gauge
+          const h = (Math.abs(this.temperature) / 100) * 160;
+          const col = this.temperature >= 0 ? 0xef4444 : 0x38bdf8;
+          this.thermoFill.setSize(16, h);
+          this.thermoFill.y = H / 2 + 90 - h;
+          this.thermoFill.fillColor = col;
+          this.thermoLabel.setText(`${Math.round(this.temperature)}°`);
+        }
+
+        endGame() {
+          this.canMove = false;
+          this.timerEvent.destroy();
+          this.cameras.main.fadeOut(500);
+          this.time.delayedCall(500, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              level: this.level,
+              coins: this.coinsCollected,
+              qCorrect: this.questionsCorrect,
+              qTotal: this.questionsTotal,
+              maxCombo: this.maxCombo,
+              tempReached: Math.round(this.temperature),
+              mode: this.mode,
+            });
+          });
+        }
+
+        update() {
+          if (!this.canMove || this.questionActive) {
+            this.player.setVelocityX(0);
+            return;
+          }
+
+          const onGround =
+            this.player.body.touching.down || this.player.body.blocked.down;
+          const speed = 200;
+          const left =
+            this.cursors.left.isDown || this.wasd.A.isDown || this.tL;
+          const right =
+            this.cursors.right.isDown || this.wasd.D.isDown || this.tR;
+          const jump =
+            Phaser.Input.Keyboard.JustDown(this.spaceBar) ||
+            Phaser.Input.Keyboard.JustDown(this.cursors.up) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.W);
+
+          if (left) {
+            this.player.setVelocityX(-speed);
+            this.player.setFlipX(true);
+          } else if (right) {
+            this.player.setVelocityX(speed);
+            this.player.setFlipX(false);
+          } else this.player.setVelocityX(0);
+
+          if ((jump || this.tJ) && onGround) {
+            this.player.setVelocityY(-400);
+            sndMove();
+            this.trailEmitter.explode(4);
+            this.tJ = false;
+          }
+
+          // Gradually normalize temperature
+          if (this.temperature > 0)
+            this.temperature = Math.max(0, this.temperature - 0.02);
+          if (this.temperature < 0)
+            this.temperature = Math.min(0, this.temperature + 0.02);
+          this.player.setTint(this.getTempTint());
+
+          // Auto-end when reaching far right
+          if (this.player.x > this.worldW - 80) {
+            sndLevelUp();
+            this.level++;
+            this.score += 500;
+            this.canMove = false;
+            this.cameras.main.fadeOut(500);
+            this.time.delayedCall(500, () => {
+              this.scene.restart({ mode: this.mode, level: this.level });
+            });
+          }
+        }
+
+        init(data) {
+          this.mode = data.mode || 0;
+          this.level = data.level || 1;
+          this.score = 0;
+          this.lives = 3;
+          this.combo = 0;
+          this.maxCombo = 0;
+          this.temperature = 0;
+          this.coinsCollected = 0;
+          this.questionsCorrect = 0;
+          this.questionsTotal = 0;
+          this.questionActive = false;
+          this.canMove = true;
+          this.timeLeft = 90 + this.level * 10;
+        }
+      }
+
+      // ============================================================
+      // RESULTS
+      // ============================================================
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(data) {
+          this.data = data;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#0b1628");
+
+          for (let i = 0; i < 50; i++) {
+            this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 2),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.03, 0.15),
+            );
+          }
+
+          this.add
+            .text(W / 2, 50, "RESULTS", {
+              fontSize: "44px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+
+          // Big thermometer visual
+          const temp = this.data.tempReached || 0;
+          const tempColor = temp >= 0 ? "#ef4444" : "#38bdf8";
+          this.add
+            .text(W / 2, 110, `Final Temp: ${temp}°`, {
+              fontSize: "28px",
+              color: tempColor,
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+          const stats = [
+            ["Score", this.data.score],
+            ["Level", this.data.level],
+            ["Coins", this.data.coins],
+            ["Questions", `${this.data.qCorrect}/${this.data.qTotal}`],
+            ["Best Combo", `${this.data.maxCombo}x`],
+            [
+              "Accuracy",
+              this.data.qTotal > 0
+                ? Math.round((this.data.qCorrect / this.data.qTotal) * 100) +
+                  "%"
+                : "N/A",
+            ],
+          ];
+
+          stats.forEach((s, i) => {
+            const y = 170 + i * 46;
+            this.add.text(W / 2 - 140, y, s[0], {
+              fontSize: "16px",
+              color: "#94a3b8",
+            });
+            this.add
+              .text(W / 2 + 140, y, `${s[1]}`, {
+                fontSize: "20px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(1, 0);
+            if (i < stats.length - 1)
+              this.add.rectangle(W / 2, y + 34, 320, 1, 0x1e293b);
+          });
+
+          // Stars
+          const pct =
+            this.data.qTotal > 0 ? this.data.qCorrect / this.data.qTotal : 0;
+          const stars = pct >= 0.85 ? 3 : pct >= 0.6 ? 2 : 1;
+          this.add
+            .text(W / 2, 460, "★".repeat(stars) + "☆".repeat(3 - stars), {
+              fontSize: "36px",
+              color: "#fbbf24",
+            })
+            .setOrigin(0.5);
+
+          // Key concepts recap
+          this.add
+            .text(
+              W / 2,
+              505,
+              "Remember: Positive = above/gain/right | Negative = below/loss/left | Zero = reference",
+              {
+                fontSize: "12px",
+                color: "#64748b",
+                wordWrap: { width: 600 },
+                align: "center",
+              },
+            )
+            .setOrigin(0.5);
+
+          // Buttons
+          const playBtn = this.add
+            .image(W / 2 - 120, 555, "btn")
+            .setScale(0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 - 120, 555, "Play Again", {
+              fontSize: "16px",
+              color: "#4ade80",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          playBtn.on("pointerdown", () =>
+            this.scene.start("Game", { mode: this.data.mode }),
+          );
+
+          const menuBtn = this.add
+            .image(W / 2 + 120, 555, "btn")
+            .setScale(0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 + 120, 555, "Main Menu", {
+              fontSize: "16px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          menuBtn.on("pointerdown", () => this.scene.start("Title"));
+
+          // Confetti
+          for (let i = 0; i < 20; i++) {
+            const c = this.add.circle(
+              Phaser.Math.Between(50, W - 50),
+              -10,
+              Phaser.Math.Between(3, 6),
+              Phaser.Math.RND.pick([
+                0x38bdf8, 0xef4444, 0xfbbf24, 0x4ade80, 0xc084fc,
+              ]),
+            );
+            this.tweens.add({
+              targets: c,
+              y: H + 20,
+              x: c.x + Phaser.Math.Between(-80, 80),
+              duration: Phaser.Math.Between(1500, 3000),
+              delay: Phaser.Math.Between(0, 400),
+            });
+          }
+
+          this.cameras.main.fadeIn(500);
+        }
+      }
+
+      // ============================================================
+      // CONFIG
+      // ============================================================
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game-container",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 500 }, debug: false },
+        },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        input: { activePointers: 3 },
+      };
+
+      new Phaser.Game(config);
+    </script>
+  </body>
 </html>

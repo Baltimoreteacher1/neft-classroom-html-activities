@@ -1,0 +1,2075 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Unit 3 Supplemental — Ratios &amp; Rates | Neft Teacher</title>
+    <style>
+      :root {
+        --esol-primary: #0891b2;
+        --esol-light: #ecfeff;
+        --esol-border: #a5f3fc;
+        --esol-dark: #155e75;
+        --enrich-primary: #7c3aed;
+        --enrich-light: #f5f3ff;
+        --enrich-border: #c4b5fd;
+        --enrich-dark: #5b21b6;
+        --enrich-gold: #d97706;
+        --enrich-gold-light: #fffbeb;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+      }
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        border-bottom: 3px solid var(--line);
+        margin-bottom: 28px;
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        background: transparent;
+        font-size: 1.05rem;
+        font-weight: 800;
+        cursor: pointer;
+        border-bottom: 4px solid transparent;
+        margin-bottom: -3px;
+        transition: all 180ms ease;
+        font-family: inherit;
+      }
+      .tab-btn[data-tab="esol"] {
+        color: var(--esol-dark);
+      }
+      .tab-btn[data-tab="enrichment"] {
+        color: var(--enrich-dark);
+      }
+      .tab-btn.active[data-tab="esol"] {
+        border-bottom-color: var(--esol-primary);
+        background: var(--esol-light);
+      }
+      .tab-btn.active[data-tab="enrichment"] {
+        border-bottom-color: var(--enrich-primary);
+        background: var(--enrich-light);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      .supp-section {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .supp-section h3 {
+        margin: 0 0 16px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .esol-panel .supp-section {
+        border-left: 5px solid var(--esol-primary);
+      }
+      .enrich-panel .supp-section {
+        border-left: 5px solid var(--enrich-primary);
+      }
+
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .vocab-card {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .vocab-card svg {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 10px;
+      }
+      .vocab-term {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--esol-dark);
+      }
+      .vocab-spanish {
+        font-size: 0.88rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 2px;
+      }
+      .vocab-def {
+        font-size: 0.92rem;
+        color: var(--ink);
+        margin-top: 6px;
+        line-height: 1.45;
+      }
+
+      .sentence-frame {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+      .sentence-frame .blank {
+        display: inline-block;
+        min-width: 80px;
+        border-bottom: 2px solid var(--esol-primary);
+        margin: 0 4px;
+      }
+
+      .step-guide {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .step-guide h4 {
+        margin: 0 0 14px;
+        color: var(--esol-dark);
+      }
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .step-num {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        background: var(--esol-primary);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+      .step-text {
+        flex: 1;
+        font-size: 0.98rem;
+        line-height: 1.5;
+      }
+      .step-text .highlight {
+        background: #fef3c7;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .step-arrow {
+        text-align: center;
+        color: var(--esol-primary);
+        font-size: 1.4rem;
+        margin: -4px 0 8px 50px;
+      }
+
+      .practice-list {
+        counter-reset: practice;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .practice-item {
+        counter-increment: practice;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        margin-bottom: 10px;
+      }
+      .practice-item::before {
+        content: counter(practice) ".";
+        font-weight: 800;
+        color: var(--esol-dark);
+        margin-right: 8px;
+      }
+      .enrich-panel .practice-item::before {
+        color: var(--enrich-dark);
+      }
+
+      .hint-btn,
+      .answer-btn {
+        padding: 6px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: inherit;
+        margin-top: 8px;
+        margin-right: 6px;
+        transition: all 150ms ease;
+      }
+      .hint-btn:hover {
+        border-color: var(--esol-primary);
+        color: var(--esol-primary);
+      }
+      .answer-btn:hover {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .enrich-panel .hint-btn:hover {
+        border-color: var(--enrich-primary);
+        color: var(--enrich-primary);
+      }
+      .enrich-panel .answer-btn:hover {
+        border-color: var(--enrich-primary);
+        color: var(--enrich-primary);
+      }
+      .hint-box,
+      .answer-box {
+        display: none;
+        margin-top: 10px;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+      .hint-box {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+      }
+      .answer-box {
+        background: var(--success-light);
+        border: 1px solid #bbf7d0;
+      }
+      .hint-box.show,
+      .answer-box.show {
+        display: block;
+      }
+
+      .rw-card {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .rw-card svg {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+      }
+      .rw-card h4 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+      }
+      .rw-card p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .challenge-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-left: 8px;
+      }
+      .badge-medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-hard {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .badge-expert {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+
+      .investigation-card {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .investigation-card h4 {
+        margin: 0 0 8px;
+        color: var(--enrich-dark);
+      }
+      .investigation-card p {
+        margin: 0 0 10px;
+        font-size: 0.95rem;
+      }
+      .investigation-steps {
+        padding-left: 20px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .investigation-steps li {
+        margin-bottom: 4px;
+      }
+
+      .brain-teaser {
+        background: var(--enrich-gold-light);
+        border: 1px solid #fde68a;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .brain-teaser h4 {
+        margin: 0 0 6px;
+        color: var(--enrich-gold);
+      }
+
+      .extension-box {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-left: 5px solid var(--enrich-primary);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .extension-box h4 {
+        margin: 0 0 6px;
+        color: var(--enrich-dark);
+      }
+
+      .self-assess {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .self-assess li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      .self-assess li:last-child {
+        border-bottom: none;
+      }
+      .rating-btns {
+        display: flex;
+        gap: 4px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .rating-btns button {
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 150ms ease;
+        font-family: inherit;
+      }
+      .rating-btns button.selected {
+        background: var(--enrich-primary);
+        color: #fff;
+        border-color: var(--enrich-primary);
+      }
+      .rating-btns button:hover:not(.selected) {
+        border-color: var(--enrich-primary);
+      }
+
+      .print-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 12px;
+      }
+      .print-btn {
+        padding: 8px 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+      }
+      .print-btn:hover {
+        border-color: var(--teal);
+      }
+
+      /* Ratio visual helper */
+      .ratio-visual {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 10px 0;
+        flex-wrap: wrap;
+      }
+      .ratio-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .ratio-dot.blue {
+        background: #0891b2;
+      }
+      .ratio-dot.orange {
+        background: #ea580c;
+      }
+      .ratio-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--muted);
+        margin-left: 4px;
+      }
+
+      @media print {
+        body {
+          background: #fff !important;
+        }
+        .tab-bar,
+        .print-bar,
+        .hint-btn,
+        .answer-btn,
+        .rating-btns {
+          display: none !important;
+        }
+        .tab-panel {
+          display: block !important;
+        }
+        .tab-panel::before {
+          content: attr(data-print-title);
+          display: block;
+          font-size: 1.4rem;
+          font-weight: 800;
+          margin-bottom: 16px;
+          padding-bottom: 8px;
+          border-bottom: 2px solid #000;
+        }
+        .hint-box,
+        .answer-box {
+          display: block !important;
+          border: 1px solid #ccc;
+        }
+        .supp-section {
+          break-inside: avoid;
+        }
+      }
+      @media (max-width: 620px) {
+        .vocab-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .tab-btn {
+          font-size: 0.92rem;
+          padding: 12px 10px;
+        }
+        .rw-card {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span
+        ><a href="/math/unit-3/">Unit 3</a><span>/</span
+        ><span>Supplemental</span>
+      </nav>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Reveal Math · Unit 3 · Supplemental</p>
+        <h1>Ratios &amp; Rates</h1>
+        <p class="hero-copy">
+          Extra support and enrichment for ratios, unit rates, equivalent
+          ratios, ratio tables, and proportional reasoning. Standards 6.RP.A.1,
+          6.RP.A.2, 6.RP.A.3.
+        </p>
+      </section>
+
+      <div class="print-bar">
+        <button class="print-btn" onclick="window.print()">
+          Print This Page
+        </button>
+      </div>
+
+      <div class="tab-bar">
+        <button
+          class="tab-btn active"
+          data-tab="esol"
+          onclick="switchTab('esol')"
+        >
+          ESOL Support
+        </button>
+        <button
+          class="tab-btn"
+          data-tab="enrichment"
+          onclick="switchTab('enrichment')"
+        >
+          Enrichment
+        </button>
+      </div>
+
+      <!-- ═══════════════════ ESOL TAB ═══════════════════ -->
+      <div
+        class="tab-panel esol-panel active"
+        id="esol-panel"
+        data-print-title="ESOL Support — Ratios &amp; Rates"
+      >
+        <!-- Visual Vocabulary -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="2"
+                y="4"
+                width="24"
+                height="20"
+                rx="3"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M9 11h10M9 15h7"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Visual Vocabulary
+          </h3>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <circle
+                  cx="16"
+                  cy="24"
+                  r="8"
+                  fill="#a5f3fc"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="36"
+                  cy="24"
+                  r="8"
+                  fill="#a5f3fc"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="48"
+                  cy="24"
+                  r="8"
+                  fill="#fed7aa"
+                  stroke="#ea580c"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="50"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  2 : 1
+                </text>
+              </svg>
+              <div class="vocab-term">Ratio</div>
+              <div class="vocab-spanish">Razon</div>
+              <div class="vocab-def">
+                A comparison of two numbers. "2 blue to 1 orange" can be written
+                as 2:1, 2 to 1, or 2/1.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="24"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  60 miles
+                </text>
+                <line
+                  x1="10"
+                  y1="30"
+                  x2="54"
+                  y2="30"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="44"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  1 hour
+                </text>
+              </svg>
+              <div class="vocab-term">Rate</div>
+              <div class="vocab-spanish">Tasa</div>
+              <div class="vocab-def">
+                A ratio that compares two different kinds of things. Example: 60
+                miles per 1 hour.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  $3.50
+                </text>
+                <line
+                  x1="12"
+                  y1="26"
+                  x2="52"
+                  y2="26"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="32"
+                  y="40"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  1 pound
+                </text>
+                <text
+                  x="32"
+                  y="54"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#155e75"
+                >
+                  per ONE
+                </text>
+              </svg>
+              <div class="vocab-term">Unit Rate</div>
+              <div class="vocab-spanish">Tasa unitaria</div>
+              <div class="vocab-def">
+                A rate where the second number is 1. Example: $3.50 per 1 pound.
+                Divide to find it.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="16"
+                  y="24"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  1:3
+                </text>
+                <text
+                  x="32"
+                  y="32"
+                  text-anchor="middle"
+                  font-size="14"
+                  fill="#155e75"
+                >
+                  =
+                </text>
+                <text
+                  x="48"
+                  y="40"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  2:6
+                </text>
+              </svg>
+              <div class="vocab-term">Equivalent Ratios</div>
+              <div class="vocab-spanish">Razones equivalentes</div>
+              <div class="vocab-def">
+                Ratios that show the same comparison. 1:3 and 2:6 are equivalent
+                (multiply both parts by 2).
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="6"
+                  y="10"
+                  width="52"
+                  height="44"
+                  rx="3"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="6"
+                  y1="24"
+                  x2="58"
+                  y2="24"
+                  stroke="#0891b2"
+                  stroke-width="1"
+                />
+                <line
+                  x1="32"
+                  y1="10"
+                  x2="32"
+                  y2="54"
+                  stroke="#0891b2"
+                  stroke-width="1"
+                />
+                <text
+                  x="19"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="8"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  cups
+                </text>
+                <text
+                  x="45"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="8"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  servings
+                </text>
+                <text
+                  x="19"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#0891b2"
+                >
+                  2
+                </text>
+                <text
+                  x="45"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#0891b2"
+                >
+                  4
+                </text>
+                <text
+                  x="19"
+                  y="48"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#0891b2"
+                >
+                  4
+                </text>
+                <text
+                  x="45"
+                  y="48"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#0891b2"
+                >
+                  8
+                </text>
+              </svg>
+              <div class="vocab-term">Ratio Table</div>
+              <div class="vocab-spanish">Tabla de razones</div>
+              <div class="vocab-def">
+                A table that lists pairs of equivalent ratios. Multiply or
+                divide both columns by the same number.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  part
+                </text>
+                <line
+                  x1="16"
+                  y1="26"
+                  x2="48"
+                  y2="26"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="40"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  whole
+                </text>
+                <text
+                  x="32"
+                  y="54"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#0891b2"
+                >
+                  part-to-whole
+                </text>
+              </svg>
+              <div class="vocab-term">Part-to-Whole</div>
+              <div class="vocab-spanish">Parte al todo</div>
+              <div class="vocab-def">
+                A ratio comparing one part to the total. Example: 3 girls out of
+                10 students = 3:10.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <circle
+                  cx="20"
+                  cy="28"
+                  r="10"
+                  fill="#a5f3fc"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="44"
+                  cy="28"
+                  r="10"
+                  fill="#fed7aa"
+                  stroke="#ea580c"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#155e75"
+                >
+                  part-to-part
+                </text>
+              </svg>
+              <div class="vocab-term">Part-to-Part</div>
+              <div class="vocab-spanish">Parte a parte</div>
+              <div class="vocab-def">
+                A ratio comparing one part to another part. Example: 3 girls to
+                7 boys = 3:7.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  12 inches
+                </text>
+                <text
+                  x="32"
+                  y="32"
+                  text-anchor="middle"
+                  font-size="14"
+                  fill="#0891b2"
+                >
+                  =
+                </text>
+                <text
+                  x="32"
+                  y="44"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  1 foot
+                </text>
+              </svg>
+              <div class="vocab-term">Conversion Factor</div>
+              <div class="vocab-spanish">Factor de conversion</div>
+              <div class="vocab-def">
+                A ratio that equals 1, used to change units. 12 inches = 1 foot,
+                so 12 in./1 ft = 1.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence Frames -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 6h20v16H4z"
+                stroke="#0891b2"
+                stroke-width="2"
+                rx="2"
+              />
+              <path
+                d="M8 11h12M8 15h8M8 19h10"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Sentence Frames
+          </h3>
+          <div class="sentence-frame">
+            The ratio of <span class="blank">&nbsp;</span> to
+            <span class="blank">&nbsp;</span> is
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            The unit rate is <span class="blank">&nbsp;</span> per
+            <span class="blank">&nbsp;</span> because I divided
+            <span class="blank">&nbsp;</span> by
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            These ratios are equivalent because I multiplied both parts by
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            To find the missing value, I can
+            <span class="blank">&nbsp;</span> both parts of the ratio by
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            The better buy is <span class="blank">&nbsp;</span> because its unit
+            price is <span class="blank">&nbsp;</span>, which is less than
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            To convert <span class="blank">&nbsp;</span> to
+            <span class="blank">&nbsp;</span>, I multiply by
+            <span class="blank">&nbsp;</span>.
+          </div>
+        </div>
+
+        <!-- Step-by-Step Visual Guides -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M14 8v6l4 3"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Step-by-Step Visual Guides
+          </h3>
+
+          <div class="step-guide">
+            <h4>How to Write a Ratio</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 12px">
+              A bag has 4 red marbles and 6 blue marbles.
+            </p>
+            <div class="ratio-visual">
+              <span class="ratio-dot" style="background: #ef4444"></span>
+              <span class="ratio-dot" style="background: #ef4444"></span>
+              <span class="ratio-dot" style="background: #ef4444"></span>
+              <span class="ratio-dot" style="background: #ef4444"></span>
+              <span class="ratio-label">red</span>
+              <span style="margin: 0 6px; font-weight: 800; color: var(--muted)"
+                >to</span
+              >
+              <span class="ratio-dot blue"></span>
+              <span class="ratio-dot blue"></span>
+              <span class="ratio-dot blue"></span>
+              <span class="ratio-dot blue"></span>
+              <span class="ratio-dot blue"></span>
+              <span class="ratio-dot blue"></span>
+              <span class="ratio-label">blue</span>
+            </div>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                ><span class="highlight">Identify</span> the two groups: 4 red
+                and 6 blue.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                ><span class="highlight">Write</span> it three ways: 4 to 6,
+                4:6, or 4/6.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                ><span class="highlight">Simplify</span> if you can. Both divide
+                by 2: <strong>2:3</strong>.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">!</span>
+              <span class="step-text"
+                ><span class="highlight">Order matters!</span> "Red to blue" =
+                4:6. "Blue to red" = 6:4. Read carefully.</span
+              >
+            </div>
+          </div>
+
+          <div class="step-guide">
+            <h4>How to Find a Unit Rate</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 12px">
+              A car drives 150 miles in 3 hours. What is the speed?
+            </p>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                ><span class="highlight">Write</span> the rate as a fraction:
+                150 miles / 3 hours</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                ><span class="highlight">Divide</span> the top by the bottom:
+                150 / 3 = <strong>50</strong></span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                ><span class="highlight">Write</span> with units:
+                <strong>50 miles per hour</strong> (or 50 mph)</span
+              >
+            </div>
+          </div>
+
+          <div class="step-guide">
+            <h4>How to Find Equivalent Ratios with a Table</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 12px">
+              A recipe uses 2 cups of flour for every 3 eggs.
+            </p>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                >Start with the <span class="highlight">given ratio</span>:
+                Flour 2, Eggs 3.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                ><span class="highlight">Multiply both</span> by the same
+                number: x2 &rarr; 4:6. x3 &rarr; 6:9. x4 &rarr; 8:12.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                ><span class="highlight">Check:</span> All ratios simplify back
+                to 2:3. They are all equivalent!</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Simplified Practice -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M6 4h16v20H6z"
+                stroke="#0891b2"
+                stroke-width="2"
+                rx="2"
+              />
+              <path
+                d="M10 10h8M10 14h6M10 18h7"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Simplified Practice
+          </h3>
+          <ol class="practice-list">
+            <li class="practice-item">
+              <span
+                >A class has 12 boys and 18 girls. Write the ratio of boys to
+                girls in simplest form.</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Write 12:18. What number divides evenly into both 12 and 18?
+              </div>
+              <div class="answer-box">
+                12:18. Both divide by 6. Simplified: 2:3.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A pack of 8 pencils costs $4. What is the cost per
+                pencil?</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Divide the total cost by the number of pencils: $4 / 8.
+              </div>
+              <div class="answer-box">$4 / 8 = $0.50 per pencil.</div>
+            </li>
+            <li class="practice-item">
+              <span>Are these ratios equivalent? 3:5 and 9:15</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Multiply both parts of 3:5 by 3. What do you get?
+              </div>
+              <div class="answer-box">
+                3 x 3 = 9 and 5 x 3 = 15. So 3:5 = 9:15. Yes, they are
+                equivalent!
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Complete the ratio table: Apples: 3, 6, 9, __ | Oranges: 5, 10,
+                15, __</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                The pattern: multiply the original ratio (3:5) by 1, 2, 3, and
+                then by 4.
+              </div>
+              <div class="answer-box">
+                3 x 4 = 12 apples, 5 x 4 = 20 oranges. The next pair is 12:20.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A car drives 180 miles in 4 hours. What is the unit rate (miles
+                per hour)?</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Divide 180 by 4 to get the miles for 1 hour.
+              </div>
+              <div class="answer-box">180 / 4 = 45 miles per hour.</div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Which is the better buy? 6 cans for $3 or 10 cans for
+                $4.50?</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Find the price per can for each: $3/6 and $4.50/10. Compare
+                them.
+              </div>
+              <div class="answer-box">
+                Option 1: $3 / 6 = $0.50/can. Option 2: $4.50 / 10 = $0.45/can.
+                The 10-can pack is the better buy ($0.45 &lt; $0.50).
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >The ratio of dogs to cats at a shelter is 2:5. If there are 10
+                dogs, how many cats are there?</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                The dogs went from 2 to 10. What did you multiply by? Do the
+                same to the cats.
+              </div>
+              <div class="answer-box">2 x 5 = 10 dogs. So 5 x 5 = 25 cats.</div>
+            </li>
+            <li class="practice-item">
+              <span>Convert 3 feet to inches. (1 foot = 12 inches)</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Multiply the number of feet by 12 (inches per foot).
+              </div>
+              <div class="answer-box">3 x 12 = 36 inches.</div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A recipe for 4 servings uses 6 cups of rice. How many cups for
+                12 servings?</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                12 servings is 3 times as many as 4 servings (12 / 4 = 3).
+                Multiply the rice by the same number.
+              </div>
+              <div class="answer-box">6 x 3 = 18 cups of rice.</div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Write the ratio of vowels to consonants in the word
+                MATHEMATICS.</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Count the vowels (A, E, I, O, U) and consonants in
+                M-A-T-H-E-M-A-T-I-C-S.
+              </div>
+              <div class="answer-box">
+                Vowels: A, E, A, I = 4. Consonants: M, T, H, M, T, C, S = 7.
+                Ratio: 4:7.
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Real-World Connections -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="10"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M4 14h20M14 4c-3 3-5 6-5 10s2 7 5 10c3-3 5-6 5-10s-2-7-5-10z"
+                stroke="#0891b2"
+                stroke-width="1.5"
+              />
+            </svg>
+            Real-World Connections
+          </h3>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="40"
+                height="40"
+                rx="4"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <circle
+                cx="18"
+                cy="20"
+                r="6"
+                fill="none"
+                stroke="#0891b2"
+                stroke-width="1.5"
+              />
+              <circle
+                cx="30"
+                cy="20"
+                r="6"
+                fill="none"
+                stroke="#0891b2"
+                stroke-width="1.5"
+              />
+              <path
+                d="M14 32h20"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Cooking &amp; Recipes</h4>
+              <p>
+                A pancake recipe says: 2 cups of mix for every 1 cup of milk. If
+                you want to make pancakes for 8 people instead of 4, you double
+                everything. Ratios keep the flavor the same no matter how much
+                you make!
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="6"
+                y="10"
+                width="36"
+                height="28"
+                rx="3"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <text
+                x="24"
+                y="28"
+                text-anchor="middle"
+                font-size="10"
+                font-weight="bold"
+                fill="#0891b2"
+              >
+                $2.49/lb
+              </text>
+            </svg>
+            <div>
+              <h4>Grocery Shopping</h4>
+              <p>
+                Store A sells 5 pounds of chicken for $15. Store B sells 3
+                pounds for $8.40. Which is cheaper? Find the unit rate: Store A
+                = $3/lb, Store B = $2.80/lb. Store B is the better deal!
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <circle
+                cx="24"
+                cy="24"
+                r="16"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M24 12v12l6 6"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Speed &amp; Travel</h4>
+              <p>
+                Your family drives 240 miles in 4 hours. The unit rate is 60
+                miles per hour. At that speed, how far can you go in 6 hours?
+                Multiply: 60 x 6 = 360 miles. Rates help you plan trips!
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="4"
+                y="8"
+                width="40"
+                height="32"
+                rx="4"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M12 32V22M20 32V16M28 32V24M36 32V18"
+                stroke="#0891b2"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Sports</h4>
+              <p>
+                A soccer player scores 8 goals in 20 games. That is a rate of
+                8/20 = 0.4 goals per game. Another player scores 6 goals in 12
+                games = 0.5 goals per game. Unit rates help compare players
+                fairly!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ ENRICHMENT TAB ═══════════════════ -->
+      <div
+        class="tab-panel enrich-panel"
+        id="enrichment-panel"
+        data-print-title="Enrichment — Ratios &amp; Rates"
+      >
+        <!-- Challenge Problems -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <polygon
+                points="14,3 17,10 25,11 19,17 21,25 14,21 7,25 9,17 3,11 11,10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+            </svg>
+            Challenge Problems
+          </h3>
+          <ol class="practice-list">
+            <li class="practice-item">
+              <span
+                >The ratio of cats to dogs at a pet store is 3:4. There are 35
+                animals total (only cats and dogs). How many cats are
+                there?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                The ratio 3:4 means there are 3+4 = 7 parts total. Divide 35 by
+                7 to find the value of one part.
+              </div>
+              <div class="answer-box">
+                7 parts = 35 animals. 1 part = 5. Cats = 3 x 5 = 15 cats.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A map scale says 1 inch = 25 miles. Two cities are 3.5 inches
+                apart on the map. How far apart are they in real life?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Multiply the map distance by the scale factor: 3.5 x 25.
+              </div>
+              <div class="answer-box">3.5 x 25 = 87.5 miles apart.</div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Runner A finishes a 5K race in 22 minutes. Runner B finishes a
+                10K race in 48 minutes. Who has the faster pace (minutes per
+                kilometer)?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Find minutes per km for each: 22/5 and 48/10. Lower is faster.
+              </div>
+              <div class="answer-box">
+                Runner A: 22/5 = 4.4 min/km. Runner B: 48/10 = 4.8 min/km.
+                Runner A is faster (lower time per km).
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A paint mixture uses red, blue, and white in the ratio 2:3:5.
+                If you need 40 gallons total, how many gallons of each
+                color?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Total parts = 2+3+5 = 10. Find what one part equals: 40/10 = 4
+                gallons per part.
+              </div>
+              <div class="answer-box">
+                Red: 2 x 4 = 8 gallons. Blue: 3 x 4 = 12 gallons. White: 5 x 4 =
+                20 gallons. Check: 8+12+20 = 40.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A faucet leaks 3 cups of water every 2 hours. At this rate, how
+                many gallons leak in one week? (16 cups = 1 gallon)</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                First find cups per hour: 3/2 = 1.5. Then multiply by hours in a
+                week: 24 x 7 = 168. Then convert cups to gallons.
+              </div>
+              <div class="answer-box">
+                Rate: 1.5 cups/hour. Hours in a week: 168. Total cups: 1.5 x 168
+                = 252 cups. Gallons: 252 / 16 = 15.75 gallons.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Car A gets 32 miles per gallon and gas costs $3.50/gallon. Car
+                B gets 24 mpg and gas costs $3.20/gallon. Which car costs less
+                to drive 480 miles?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Find gallons needed for each: 480/mpg. Then multiply gallons by
+                price.
+              </div>
+              <div class="answer-box">
+                Car A: 480/32 = 15 gal, cost = 15 x $3.50 = $52.50. Car B:
+                480/24 = 20 gal, cost = 20 x $3.20 = $64.00. Car A costs less.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >The ratio of boys to girls in a school is 5:6. If 24 more girls
+                join, the ratio becomes 5:8. How many boys are in the
+                school?</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Let boys = 5x, original girls = 6x. After 24 more girls:
+                5x/(6x+24) = 5/8. Cross multiply to solve.
+              </div>
+              <div class="answer-box">
+                5x/(6x+24) = 5/8. Cross multiply: 40x = 30x + 120. 10x = 120. x
+                = 12. Boys = 5 x 12 = 60.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >You can buy pens in packs of 5 for $3.75 or packs of 12 for
+                $8.40. You need exactly 60 pens. What is the cheapest way to buy
+                them?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Unit price: $3.75/5 = $0.75/pen vs $8.40/12 = $0.70/pen. But you
+                need exactly 60 — check different combinations.
+              </div>
+              <div class="answer-box">
+                5-packs: 60/5 = 12 packs, cost = 12 x $3.75 = $45.00. 12-packs:
+                60/12 = 5 packs, cost = 5 x $8.40 = $42.00. Cheapest: five
+                12-packs for $42.00.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A recipe calls for flour and sugar in the ratio 4:1. Maria
+                accidentally put in 3 cups of sugar. How much flour does she
+                need to keep the ratio correct?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                If sugar is 1 part and she used 3 cups, each part = 3 cups.
+                Flour is 4 parts.
+              </div>
+              <div class="answer-box">4 x 3 = 12 cups of flour.</div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A gear with 20 teeth is connected to a gear with 50 teeth. When
+                the small gear makes 10 full turns, how many turns does the
+                large gear make?</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                The teeth mesh, so total teeth engaged must be equal. Small
+                gear: 20 teeth x 10 turns = 200 teeth. Large gear: 200 / 50
+                teeth per turn.
+              </div>
+              <div class="answer-box">
+                Small gear pushes 20 x 10 = 200 teeth. Large gear: 200 / 50 = 4
+                turns.
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Real-World Investigations -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M18 18l6 6"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Real-World Investigations
+          </h3>
+          <div class="investigation-card">
+            <h4>Best Value Grocery Challenge</h4>
+            <p>
+              Compare unit prices at two different stores or brands to find the
+              best deals.
+            </p>
+            <ol class="investigation-steps">
+              <li>Choose 5 common products (juice, cereal, pasta, etc.)</li>
+              <li>Find two different sizes or brands for each product</li>
+              <li>Calculate the unit price for every option</li>
+              <li>
+                Create a comparison table showing product, size, total price,
+                and unit price
+              </li>
+              <li>
+                Determine the best buy for each and calculate how much you save
+                per year if you buy that product weekly
+              </li>
+            </ol>
+          </div>
+          <div class="investigation-card">
+            <h4>Scale Model Project</h4>
+            <p>
+              Create a scale drawing of your classroom, bedroom, or dream house.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                Measure the real dimensions of the room (length, width,
+                furniture)
+              </li>
+              <li>Choose a scale ratio (e.g., 1 inch = 2 feet)</li>
+              <li>
+                Convert all real measurements to scale measurements using your
+                ratio
+              </li>
+              <li>Draw the scale model on graph paper, including furniture</li>
+              <li>
+                Calculate the real area and the scale area — how do they
+                compare?
+              </li>
+            </ol>
+          </div>
+          <div class="investigation-card">
+            <h4>Party Planning with Ratios</h4>
+            <p>
+              Plan a class party for 30 people using ratio reasoning for all
+              quantities.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                A punch recipe serves 6 people. Scale it up for 30 people
+                (multiply by 5)
+              </li>
+              <li>
+                Pizza comes in boxes of 8 slices. If each person eats 3 slices,
+                how many boxes?
+              </li>
+              <li>
+                Decorations come in packs of 12. You want 2 per person. How many
+                packs?
+              </li>
+              <li>
+                Budget: $150 total. Create a ratio for food vs. decorations vs.
+                supplies
+              </li>
+              <li>
+                Present your complete plan with all ratio calculations shown
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Brain Teasers -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="12"
+                r="8"
+                stroke="#d97706"
+                stroke-width="2"
+                fill="#fffbeb"
+              />
+              <path
+                d="M11 22h6M12 20v2M16 20v2"
+                stroke="#d97706"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Brain Teasers
+          </h3>
+          <div class="brain-teaser">
+            <h4>The Shrinking Ratio</h4>
+            <p>
+              A bag has red and blue marbles in the ratio 3:2. You add 5 red
+              marbles and the ratio becomes 4:2. How many blue marbles are in
+              the bag?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Let blue = 2x. Original red = 3x. After adding 5 red: (3x+5)/(2x)
+              = 4/2 = 2. So 3x+5 = 4x. x = 5. Blue marbles = 2 x 5 = 10.
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>The Speed Puzzle</h4>
+            <p>
+              You drive to school at 30 mph and drive home at 50 mph on the same
+              route. Is your average speed for the round trip 40 mph? (Careful!)
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              No! Average speed = total distance / total time. If the distance
+              is d miles each way: Time to school = d/30. Time home = d/50.
+              Total time = d/30 + d/50 = 5d/150 + 3d/150 = 8d/150. Average speed
+              = 2d / (8d/150) = 300/8 = 37.5 mph. The average is less than 40
+              because you spend more time at the slower speed.
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>The Lemonade Dilemma</h4>
+            <p>
+              Mix A is lemon juice and water in ratio 1:4. Mix B is 1:6. You
+              combine equal amounts of Mix A and Mix B. What is the ratio of
+              lemon juice to water in the combined mix?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Take 1 cup of each mix. Mix A (1 cup): 1/5 lemon, 4/5 water. Mix B
+              (1 cup): 1/7 lemon, 6/7 water. Combined lemon: 1/5 + 1/7 = 12/35.
+              Combined water: 4/5 + 6/7 = 28/35 + 30/35 = 58/35. Ratio: 12:58 =
+              6:29.
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>The Growing Garden</h4>
+            <p>
+              A garden has flowers and vegetables in the ratio 2:3. If you
+              triple the number of flowers and double the number of vegetables,
+              what is the new ratio?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Start with flowers = 2x, vegetables = 3x. After changes: flowers =
+              3(2x) = 6x, vegetables = 2(3x) = 6x. New ratio: 6x:6x = 1:1. They
+              are equal!
+            </div>
+          </div>
+        </div>
+
+        <!-- Extension Topics -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 24L14 4l10 20H4z"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M14 12v5M14 20v1"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Extension Topics
+          </h3>
+          <div class="extension-box">
+            <h4>Where This Leads: Proportional Relationships (7th Grade)</h4>
+            <p>
+              In 7th grade, you will study proportional relationships in depth.
+              You will learn that y = kx represents a proportional relationship
+              where k is the constant of proportionality (the unit rate). Every
+              ratio table, unit rate, and equivalent ratio you learn now is
+              building toward this big idea.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Where This Leads: Scale Factor &amp; Similar Figures</h4>
+            <p>
+              When you use a map scale like 1 inch = 10 miles, you are using a
+              scale factor. In geometry, similar figures have the same shape but
+              different sizes, connected by a constant ratio. Architects,
+              engineers, and artists all use scale factors daily.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Where This Leads: Slope &amp; Linear Equations</h4>
+            <p>
+              The unit rate in a ratio (like 50 mph) becomes the slope of a line
+              in algebra. The equation y = 50x means distance = 50 x time.
+              Understanding rates now means you already understand slope — the
+              steepness of a line on a graph.
+            </p>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M9 14l3 3 7-7"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Self-Assessment
+          </h3>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 14px"
+          >
+            Rate your confidence: 1 = Need help, 2 = Getting there, 3 = Got it,
+            4 = Can teach it
+          </p>
+          <ul class="self-assess">
+            <li>
+              <span>I can write a ratio in three forms (a to b, a:b, a/b)</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can simplify ratios to lowest terms</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can find a unit rate by dividing</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can determine if two ratios are equivalent</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can use a ratio table to generate equivalent ratios</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I can solve "better buy" problems by comparing unit
+                prices</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can use ratios to convert between measurement units</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can solve ratio problems in real-world contexts</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Unit 3 Supplemental</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+
+    <script src="/assets/app.js" defer></script>
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelector(`.tab-btn[data-tab="${tab}"]`)
+          .classList.add("active");
+        document
+          .getElementById(tab === "esol" ? "esol-panel" : "enrichment-panel")
+          .classList.add("active");
+      }
+      function toggleHint(btn) {
+        const box = btn.parentElement.querySelector(".hint-box");
+        box.classList.toggle("show");
+        btn.textContent = box.classList.contains("show") ? "Hide Hint" : "Hint";
+      }
+      function toggleAnswer(btn) {
+        const box = btn.parentElement.querySelector(".answer-box");
+        box.classList.toggle("show");
+        btn.textContent = box.classList.contains("show")
+          ? "Hide Answer"
+          : "Show Answer";
+      }
+      function rate(btn) {
+        btn.parentElement
+          .querySelectorAll("button")
+          .forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      }
+    </script>
+  </body>
+</html>

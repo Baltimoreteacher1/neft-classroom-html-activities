@@ -1,37 +1,1152 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.SP.A.1 Game classroom activity.">
-  <title>6.SP.A.1 Game</title>
-  <link rel="stylesheet" href="/assets/shared.css">
-</head>
-<body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>6.SP.A.1 Game</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.SP.A.1 Game</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>News Reporter — 6.SP.A.1</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      (() => {
+        "use strict";
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.SP.A.1Game</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/statistics-data/6-sp-a-1game-2/</span></p>
-      </div>
-    </section>
+        /* =========================================================
+   NEWS REPORTER — 6.SP.A.1
+   Run a newsroom: identify good statistical questions for
+   stories, then publish articles. Phaser 3 single-file game.
+   ========================================================= */
 
-    <div class="button-row">
-      <a class="primary-button" href="/statistics-data/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
-    </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
-  </main>
-  <script src="/assets/app.js" defer></script>
-</body>
+        // ── Sound synthesizer ──
+        const SFX = {
+          ctx: null,
+          init() {
+            if (!this.ctx) {
+              const A = window.AudioContext || window.webkitAudioContext;
+              if (A) this.ctx = new A();
+            }
+          },
+          play(type) {
+            this.init();
+            if (!this.ctx) return;
+            if (this.ctx.state === "suspended") this.ctx.resume();
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain(),
+              t = this.ctx.currentTime;
+            const P = {
+              correct: { w: "sine", f: [520, 780], d: 0.18, v: 0.06 },
+              wrong: { w: "sawtooth", f: [300, 180], d: 0.22, v: 0.05 },
+              click: { w: "sine", f: [440, 480], d: 0.08, v: 0.04 },
+              combo: { w: "sine", f: [600, 900], d: 0.25, v: 0.06 },
+              publish: { w: "triangle", f: [440, 660, 880], d: 0.35, v: 0.06 },
+              whoosh: { w: "sine", f: [200, 600], d: 0.15, v: 0.03 },
+              type: { w: "sine", f: [800, 820], d: 0.04, v: 0.02 },
+              bell: { w: "triangle", f: [880, 1200], d: 0.2, v: 0.04 },
+            };
+            const p = P[type] || P.click;
+            o.type = p.w;
+            o.frequency.setValueAtTime(p.f[0], t);
+            if (p.f.length === 3) {
+              o.frequency.linearRampToValueAtTime(p.f[1], t + p.d * 0.5);
+              o.frequency.linearRampToValueAtTime(p.f[2], t + p.d);
+            } else o.frequency.linearRampToValueAtTime(p.f[1], t + p.d);
+            g.gain.setValueAtTime(0.001, t);
+            g.gain.linearRampToValueAtTime(p.v, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.001, t + p.d);
+            o.connect(g).connect(this.ctx.destination);
+            o.start(t);
+            o.stop(t + p.d + 0.01);
+          },
+        };
+
+        const W = 960,
+          H = 640;
+
+        // ── Question bank: 6.SP.A.1 — statistical vs non-statistical ──
+        const STORIES = [
+          // Story 1: School Life
+          {
+            headline: "SCHOOL LUNCH REPORT",
+            beat: "School Life",
+            icon: "🏫",
+            color: 0x2d6cdf,
+            questions: [
+              {
+                q: "How many minutes do students spend eating lunch?",
+                stat: true,
+                tip: "Every student eats at a different speed.",
+              },
+              {
+                q: "What time does lunch period start?",
+                stat: false,
+                tip: "One answer — check the schedule.",
+              },
+              {
+                q: "What is the most popular lunch choice this week?",
+                stat: true,
+                tip: "Students pick different foods — you must survey to find out.",
+              },
+              {
+                q: "How many tables are in the cafeteria?",
+                stat: false,
+                tip: "Count them — one exact number.",
+              },
+            ],
+          },
+          // Story 2: Sports
+          {
+            headline: "YOUTH SPORTS UPDATE",
+            beat: "Sports",
+            icon: "⚽",
+            color: 0x1b998b,
+            questions: [
+              {
+                q: "How many goals do players score per game?",
+                stat: true,
+                tip: "Each player scores differently each game.",
+              },
+              {
+                q: "What color is the home team jersey?",
+                stat: false,
+                tip: "One exact answer.",
+              },
+              {
+                q: "How fast can students run the 100-meter dash?",
+                stat: true,
+                tip: "Every runner has a different time.",
+              },
+              {
+                q: "How many players are on a basketball team?",
+                stat: false,
+                tip: "A fixed roster number.",
+              },
+            ],
+          },
+          // Story 3: Weather
+          {
+            headline: "WEEKLY WEATHER WATCH",
+            beat: "Weather",
+            icon: "🌤️",
+            color: 0x7b4cc2,
+            questions: [
+              {
+                q: "How much rain usually falls in our city each month?",
+                stat: true,
+                tip: "Rainfall changes month to month.",
+              },
+              {
+                q: "What is today's high temperature?",
+                stat: false,
+                tip: "One recorded thermometer reading.",
+              },
+              {
+                q: "How many hours of sunlight do we get per day this week?",
+                stat: true,
+                tip: "Different each day — data varies.",
+              },
+              {
+                q: "What season comes after winter?",
+                stat: false,
+                tip: "Spring — one fact.",
+              },
+            ],
+          },
+          // Story 4: Technology
+          {
+            headline: "TECH & GAMING REVIEW",
+            beat: "Technology",
+            icon: "🎮",
+            color: 0xf77f00,
+            questions: [
+              {
+                q: "How many hours do 6th graders spend on screens each day?",
+                stat: true,
+                tip: "Everyone is different.",
+              },
+              {
+                q: "What year was Minecraft released?",
+                stat: false,
+                tip: "2011 — one exact date.",
+              },
+              {
+                q: "What is the most popular app among students?",
+                stat: true,
+                tip: "Must survey students — answers will vary.",
+              },
+              {
+                q: "How many gigabytes is the latest iOS update?",
+                stat: false,
+                tip: "One exact number from Apple.",
+              },
+            ],
+          },
+          // Story 5: Community
+          {
+            headline: "COMMUNITY SPOTLIGHT",
+            beat: "Community",
+            icon: "🏘️",
+            color: 0xe63946,
+            questions: [
+              {
+                q: "How many books do students read per month?",
+                stat: true,
+                tip: "Every student reads a different amount.",
+              },
+              {
+                q: "What is the address of our school?",
+                stat: false,
+                tip: "One exact address.",
+              },
+              {
+                q: "How many pets do families in our neighborhood own?",
+                stat: true,
+                tip: "Each family is different.",
+              },
+              {
+                q: "What day is the school carnival?",
+                stat: false,
+                tip: "One exact calendar date.",
+              },
+            ],
+          },
+        ];
+
+        function shuffle(a) {
+          const b = [...a];
+          for (let i = b.length - 1; i > 0; i--) {
+            const j = (Math.random() * i + 1) | 0;
+            [b[i], b[j]] = [b[j], b[i]];
+          }
+          return b;
+        }
+
+        // ═══════════════════════════════════════════════════
+        //  BOOT SCENE
+        // ═══════════════════════════════════════════════════
+        class BootScene extends Phaser.Scene {
+          constructor() {
+            super("Boot");
+          }
+          create() {
+            const g = this.make.graphics({ add: false });
+
+            // Button textures
+            g.fillStyle(0xf77f00, 1);
+            g.fillRoundedRect(0, 0, 280, 54, 16);
+            g.generateTexture("btn_orange", 280, 54);
+            g.clear();
+            g.fillStyle(0x1b998b, 1);
+            g.fillRoundedRect(0, 0, 280, 54, 16);
+            g.generateTexture("btn_teal", 280, 54);
+            g.clear();
+            g.fillStyle(0x14213d, 1);
+            g.fillRoundedRect(0, 0, 280, 54, 16);
+            g.generateTexture("btn_dark", 280, 54);
+            g.clear();
+            g.fillStyle(0x2a9d5c, 1);
+            g.fillRoundedRect(0, 0, 340, 60, 16);
+            g.generateTexture("btn_green", 340, 60);
+            g.clear();
+            g.fillStyle(0xe63946, 1);
+            g.fillRoundedRect(0, 0, 340, 60, 16);
+            g.generateTexture("btn_red", 340, 60);
+            g.clear();
+
+            // Dot particle
+            g.fillStyle(0xffffff, 1);
+            g.fillCircle(4, 4, 4);
+            g.generateTexture("dot", 8, 8);
+            g.clear();
+
+            // Newspaper texture
+            g.fillStyle(0xfffdf7, 1);
+            g.fillRoundedRect(0, 0, 700, 400, 12);
+            g.lineStyle(3, 0x1e1e1e, 1);
+            g.strokeRoundedRect(0, 0, 700, 400, 12);
+            g.generateTexture("newspaper", 700, 400);
+            g.clear();
+
+            g.destroy();
+            this.scene.start("Title");
+          }
+        }
+
+        // ═══════════════════════════════════════════════════
+        //  TITLE SCENE
+        // ═══════════════════════════════════════════════════
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+
+          create() {
+            const cx = W / 2;
+            this.cameras.main.setBackgroundColor(0x14213d);
+
+            // Gradient bg
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x1a2744, 0x1a2744, 0x14213d, 0x14213d, 1);
+            bg.fillRect(0, 0, W, H);
+
+            // Floating particles
+            this.add.particles(0, 0, "dot", {
+              x: { min: 0, max: W },
+              y: { min: 0, max: H },
+              scale: { start: 0.3, end: 0 },
+              alpha: { start: 0.3, end: 0 },
+              speed: { min: 8, max: 25 },
+              lifespan: 3500,
+              frequency: 250,
+              blendMode: "ADD",
+            });
+
+            // Newspaper icon
+            this.add.text(cx, 100, "📰", { fontSize: "72px" }).setOrigin(0.5);
+
+            // Title
+            this.add
+              .text(cx, 180, "NEWS REPORTER", {
+                fontSize: "48px",
+                fontFamily: "Georgia, serif",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                stroke: "#14213d",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+
+            this.add
+              .text(cx, 230, "STATISTICAL QUESTIONS EDITION", {
+                fontSize: "14px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#f9d98a",
+                letterSpacing: 4,
+              })
+              .setOrigin(0.5);
+
+            // Standard
+            this.add
+              .text(cx, 270, "6.SP.A.1 — Recognize Statistical Questions", {
+                fontSize: "13px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#14213d",
+                backgroundColor: "#fbbf24",
+                padding: { x: 12, y: 6 },
+              })
+              .setOrigin(0.5);
+
+            // Description
+            this.add
+              .text(
+                cx,
+                320,
+                "You are a news reporter! Review questions for each story.\nOnly STATISTICAL questions make good surveys.\nClassify each question to publish your article.",
+                {
+                  fontSize: "15px",
+                  fontFamily: "Trebuchet MS",
+                  color: "#e0d6c2",
+                  align: "center",
+                  lineSpacing: 6,
+                },
+              )
+              .setOrigin(0.5);
+
+            // Role select
+            this.add
+              .text(cx, 395, "Choose Your Reporter Role", {
+                fontSize: "16px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+
+            const roles = [
+              {
+                label: "📝 Cub Reporter (3 stories)",
+                stories: 3,
+                y: 440,
+                key: "btn_teal",
+              },
+              {
+                label: "🎙️ Lead Reporter (4 stories)",
+                stories: 4,
+                y: 500,
+                key: "btn_orange",
+              },
+              {
+                label: "📺 News Anchor (5 stories)",
+                stories: 5,
+                y: 560,
+                key: "btn_dark",
+              },
+            ];
+
+            roles.forEach((r) => {
+              const btn = this.add
+                .image(cx, r.y, r.key)
+                .setInteractive({ useHandCursor: true })
+                .setScale(1, 0.9);
+              this.add
+                .text(cx, r.y, r.label, {
+                  fontSize: "17px",
+                  fontFamily: "Trebuchet MS",
+                  fontStyle: "bold",
+                  color: "#fff",
+                })
+                .setOrigin(0.5);
+              btn.on("pointerover", () => {
+                btn.setScale(1.05, 0.95);
+                SFX.play("click");
+              });
+              btn.on("pointerout", () => btn.setScale(1, 0.9));
+              btn.on("pointerdown", () => {
+                SFX.play("whoosh");
+                this.cameras.main.fade(400);
+                this.time.delayedCall(400, () =>
+                  this.scene.start("Game", { storyCount: r.stories }),
+                );
+              });
+            });
+
+            this.cameras.main.fadeIn(500);
+          }
+        }
+
+        // ═══════════════════════════════════════════════════
+        //  GAME SCENE
+        // ═══════════════════════════════════════════════════
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("Game");
+          }
+
+          init(data) {
+            this.storyCount = data.storyCount || 4;
+            this.stories = shuffle(STORIES).slice(0, this.storyCount);
+            // Shuffle questions within each story
+            this.stories.forEach((s) => {
+              s.questions = shuffle(s.questions);
+            });
+            this.storyIdx = 0;
+            this.qIdx = 0;
+            this.score = 0;
+            this.combo = 0;
+            this.maxCombo = 0;
+            this.lives = 4;
+            this.totalCorrect = 0;
+            this.totalWrong = 0;
+            this.totalQs = this.stories.reduce(
+              (a, s) => a + s.questions.length,
+              0,
+            );
+            this.questionsAnswered = 0;
+            this.articlesPublished = 0;
+            this.storyCorrectCount = 0;
+            this.answering = false;
+          }
+
+          create() {
+            this.cameras.main.setBackgroundColor(0x14213d);
+
+            // Background
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x1a2744, 0x1a2744, 0x14213d, 0x14213d, 1);
+            bg.fillRect(0, 0, W, H);
+
+            // HUD
+            this.createHUD();
+
+            // Story header
+            this.storyBg = this.add.graphics();
+            this.storyIcon = this.add
+              .text(100, 88, "", { fontSize: "30px" })
+              .setOrigin(0.5);
+            this.storyTitle = this.add.text(135, 80, "", {
+              fontSize: "20px",
+              fontFamily: "Georgia, serif",
+              fontStyle: "bold",
+              color: "#fbbf24",
+            });
+            this.storyBeat = this.add.text(135, 105, "", {
+              fontSize: "12px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#f9d98a",
+              letterSpacing: 2,
+            });
+
+            // Question card
+            this.cardBg = this.add.graphics();
+            this.qLabel = this.add
+              .text(W / 2, 155, "", {
+                fontSize: "11px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                letterSpacing: 3,
+              })
+              .setOrigin(0.5);
+            this.qText = this.add
+              .text(W / 2, 210, "", {
+                fontSize: "20px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                wordWrap: { width: W - 200 },
+                lineSpacing: 6,
+              })
+              .setOrigin(0.5);
+
+            // Choice buttons
+            this.statBtn = this.makeBtn(
+              W / 2 - 185,
+              310,
+              "✅ STATISTICAL\nGood for a survey",
+              true,
+              0x2a9d5c,
+            );
+            this.nonstatBtn = this.makeBtn(
+              W / 2 + 185,
+              310,
+              "❌ NOT STATISTICAL\nOne exact answer",
+              false,
+              0xe63946,
+            );
+
+            // Feedback area
+            this.fbBg = this.add.graphics().setAlpha(0);
+            this.fbTitle = this.add
+              .text(W / 2, 400, "", {
+                fontSize: "20px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.fbBody = this.add
+              .text(W / 2, 435, "", {
+                fontSize: "14px",
+                fontFamily: "sans-serif",
+                color: "#f9d98a",
+                align: "center",
+                wordWrap: { width: 600 },
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+
+            // Progress
+            this.progBg = this.add.graphics();
+            this.progBg.fillStyle(0xffffff, 0.08);
+            this.progBg.fillRoundedRect(80, 505, W - 160, 14, 7);
+            this.progFill = this.add.graphics();
+            this.progLabel = this.add
+              .text(W / 2, 535, "", {
+                fontSize: "12px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#f9d98a",
+              })
+              .setOrigin(0.5);
+
+            // Next button
+            this.nextBtn = this.add
+              .image(W / 2, 580, "btn_teal")
+              .setScale(0.7, 0.8)
+              .setInteractive({ useHandCursor: true })
+              .setAlpha(0);
+            this.nextTxt = this.add
+              .text(W / 2, 580, "Next Question →", {
+                fontSize: "15px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.nextBtn.on("pointerdown", () => this.advance());
+
+            // Particles
+            this.goodParts = this.add.particles(W / 2, 310, "dot", {
+              speed: { min: 80, max: 250 },
+              scale: { start: 0.8, end: 0 },
+              alpha: { start: 1, end: 0 },
+              lifespan: 600,
+              tint: [0xfbbf24, 0x2a9d5c],
+              blendMode: "ADD",
+              emitting: false,
+              quantity: 18,
+            });
+            this.badParts = this.add.particles(W / 2, 310, "dot", {
+              speed: { min: 60, max: 180 },
+              scale: { start: 0.6, end: 0 },
+              alpha: { start: 0.7, end: 0 },
+              lifespan: 500,
+              tint: [0xe63946, 0xfb7185],
+              blendMode: "ADD",
+              emitting: false,
+              quantity: 10,
+            });
+
+            this.cameras.main.fadeIn(500);
+            this.showQuestion();
+          }
+
+          createHUD() {
+            this.add.text(30, 15, "📰 SCORE", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              letterSpacing: 2,
+            });
+            this.scoreTxt = this.add.text(30, 32, "0", {
+              fontSize: "24px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#fff",
+            });
+            this.add.text(170, 15, "🔥 COMBO", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#f77f00",
+              letterSpacing: 2,
+            });
+            this.comboTxt = this.add.text(170, 32, "0x", {
+              fontSize: "24px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#f77f00",
+            });
+            this.add.text(W - 200, 15, "❤️ LIVES", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#fb7185",
+              letterSpacing: 2,
+            });
+            this.livesTxt = this.add.text(W - 200, 32, "", {
+              fontSize: "20px",
+            });
+            this.add.text(W - 80, 15, "STORY", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#1b998b",
+              letterSpacing: 2,
+            });
+            this.storyNumTxt = this.add
+              .text(W - 60, 32, "1", {
+                fontSize: "24px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#1b998b",
+              })
+              .setOrigin(0.5, 0);
+            this.pubLabel = this.add.text(330, 15, "📄 PUBLISHED", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#7b4cc2",
+              letterSpacing: 2,
+            });
+            this.pubTxt = this.add.text(330, 32, "0", {
+              fontSize: "24px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#7b4cc2",
+            });
+          }
+
+          updateHUD() {
+            this.scoreTxt.setText(this.score.toString());
+            this.comboTxt.setText(this.combo + "x");
+            this.comboTxt.setColor(this.combo >= 3 ? "#fbbf24" : "#f77f00");
+            let h = "";
+            for (let i = 0; i < 4; i++) h += i < this.lives ? "❤️" : "🖤";
+            this.livesTxt.setText(h);
+            this.storyNumTxt.setText((this.storyIdx + 1).toString());
+            this.pubTxt.setText(this.articlesPublished.toString());
+            const pct = this.questionsAnswered / this.totalQs;
+            this.progFill.clear();
+            this.progFill.fillStyle(0xfbbf24, 1);
+            if (pct > 0)
+              this.progFill.fillRoundedRect(80, 505, (W - 160) * pct, 14, 7);
+            this.progLabel.setText(
+              `Question ${this.questionsAnswered} / ${this.totalQs}`,
+            );
+          }
+
+          makeBtn(x, y, label, isStat, tint) {
+            const c = this.add.container(x, y);
+            const bg = this.add.graphics();
+            bg.fillStyle(tint, 0.15);
+            bg.fillRoundedRect(-160, -40, 320, 80, 18);
+            bg.lineStyle(3, tint, 0.8);
+            bg.strokeRoundedRect(-160, -40, 320, 80, 18);
+            const txt = this.add
+              .text(0, 0, label, {
+                fontSize: "15px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5);
+            c.add([bg, txt]);
+            c.setSize(320, 80).setInteractive({ useHandCursor: true });
+            c.on("pointerover", () =>
+              this.tweens.add({
+                targets: c,
+                scaleX: 1.04,
+                scaleY: 1.04,
+                duration: 100,
+              }),
+            );
+            c.on("pointerout", () =>
+              this.tweens.add({
+                targets: c,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 100,
+              }),
+            );
+            c.on("pointerdown", () => {
+              if (this.answering) return;
+              this.checkAnswer(isStat);
+            });
+            return c;
+          }
+
+          currentStory() {
+            return this.stories[this.storyIdx];
+          }
+          currentQ() {
+            return this.currentStory().questions[this.qIdx];
+          }
+
+          showQuestion() {
+            if (this.storyIdx >= this.stories.length) {
+              this.endGame();
+              return;
+            }
+            const story = this.currentStory();
+            if (this.qIdx >= story.questions.length) {
+              // Story complete
+              if (this.storyCorrectCount >= 3) {
+                this.articlesPublished++;
+                SFX.play("publish");
+                this.showBanner(
+                  "📰 ARTICLE PUBLISHED!",
+                  "Your story had enough good survey questions!",
+                );
+              } else {
+                this.showBanner(
+                  "📝 Story filed (draft)",
+                  "Not enough statistical questions found.",
+                );
+              }
+              this.storyIdx++;
+              this.qIdx = 0;
+              this.storyCorrectCount = 0;
+              this.time.delayedCall(1600, () => this.showQuestion());
+              return;
+            }
+
+            this.answering = false;
+            const q = this.currentQ();
+
+            // Update story header
+            this.storyBg.clear();
+            this.storyBg.fillStyle(story.color, 0.12);
+            this.storyBg.fillRoundedRect(70, 68, W - 140, 55, 14);
+            this.storyBg.lineStyle(2, story.color, 0.4);
+            this.storyBg.strokeRoundedRect(70, 68, W - 140, 55, 14);
+            this.storyIcon.setText(story.icon);
+            this.storyTitle.setText(story.headline);
+            this.storyBeat.setText("BEAT: " + story.beat.toUpperCase());
+
+            // Question card
+            this.cardBg.clear();
+            this.cardBg.fillStyle(0xffffff, 0.06);
+            this.cardBg.fillRoundedRect(80, 135, W - 160, 120, 18);
+            this.cardBg.lineStyle(2, 0xfbbf24, 0.3);
+            this.cardBg.strokeRoundedRect(80, 135, W - 160, 120, 18);
+            this.qLabel.setText(
+              "QUESTION " +
+                (this.qIdx + 1) +
+                " OF " +
+                this.currentStory().questions.length,
+            );
+            this.qText.setText('"' + q.q + '"').setAlpha(0);
+            this.tweens.add({ targets: this.qText, alpha: 1, duration: 300 });
+
+            // Reset feedback / next
+            this.fbBg.setAlpha(0);
+            this.fbTitle.setAlpha(0);
+            this.fbBody.setAlpha(0);
+            this.nextBtn.setAlpha(0).disableInteractive();
+            this.nextTxt.setAlpha(0);
+            this.statBtn.setAlpha(1).setInteractive();
+            this.nonstatBtn.setAlpha(1).setInteractive();
+            this.updateHUD();
+          }
+
+          showBanner(title, sub) {
+            const t = this.add
+              .text(W / 2, H / 2 - 20, title, {
+                fontSize: "32px",
+                fontFamily: "Georgia, serif",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                stroke: "#14213d",
+                strokeThickness: 4,
+                align: "center",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            const s = this.add
+              .text(W / 2, H / 2 + 25, sub, {
+                fontSize: "16px",
+                fontFamily: "Trebuchet MS",
+                color: "#f9d98a",
+                align: "center",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: [t, s],
+              alpha: 1,
+              duration: 300,
+              yoyo: true,
+              hold: 800,
+              onComplete: () => {
+                t.destroy();
+                s.destroy();
+              },
+            });
+          }
+
+          checkAnswer(playerSaidStat) {
+            if (this.answering) return;
+            this.answering = true;
+            const q = this.currentQ();
+            const isCorrect = playerSaidStat === q.stat;
+            this.questionsAnswered++;
+
+            this.statBtn.disableInteractive().setAlpha(0.4);
+            this.nonstatBtn.disableInteractive().setAlpha(0.4);
+            (playerSaidStat ? this.statBtn : this.nonstatBtn).setAlpha(1);
+
+            if (isCorrect) {
+              SFX.play("correct");
+              this.combo++;
+              this.maxCombo = Math.max(this.maxCombo, this.combo);
+              this.totalCorrect++;
+              this.storyCorrectCount++;
+              const bonus = this.combo >= 5 ? 50 : this.combo >= 3 ? 25 : 0;
+              const pts = 100 + bonus;
+              this.score += pts;
+              this.goodParts.explode(18, W / 2, 310);
+              if (this.combo >= 3) {
+                SFX.play("combo");
+                this.cameras.main.shake(100, 0.005);
+              }
+              this.showFB(
+                true,
+                this.combo >= 3 ? "🔥 GREAT! +" + pts : "✅ Correct! +" + pts,
+                q.tip,
+              );
+              const pop = this.add
+                .text(W / 2, 340, "+" + pts, {
+                  fontSize: "26px",
+                  fontFamily: "Trebuchet MS",
+                  fontStyle: "bold",
+                  color: "#fbbf24",
+                })
+                .setOrigin(0.5);
+              this.tweens.add({
+                targets: pop,
+                y: 280,
+                alpha: 0,
+                duration: 800,
+                onComplete: () => pop.destroy(),
+              });
+            } else {
+              SFX.play("wrong");
+              this.combo = 0;
+              this.lives--;
+              this.totalWrong++;
+              this.badParts.explode(10, W / 2, 310);
+              this.cameras.main.shake(200, 0.012);
+              const explain =
+                q.tip +
+                "\n\n" +
+                (q.stat
+                  ? "👉 This IS statistical — different people give different answers."
+                  : "👉 This is NOT statistical — one exact answer exists.");
+              this.showFB(false, "❌ Not quite!", explain);
+              if (this.lives <= 0) {
+                this.time.delayedCall(1800, () => this.endGame());
+                return;
+              }
+            }
+
+            this.qIdx++;
+            this.updateHUD();
+
+            this.time.delayedCall(600, () => {
+              this.nextBtn.setAlpha(1).setInteractive();
+              this.nextTxt.setAlpha(1);
+            });
+          }
+
+          showFB(good, title, body) {
+            this.fbBg.clear();
+            this.fbBg.fillStyle(good ? 0x2a9d5c : 0xe63946, 0.12);
+            this.fbBg.fillRoundedRect(80, 375, W - 160, 105, 16);
+            this.fbBg.lineStyle(2, good ? 0x2a9d5c : 0xe63946, 0.5);
+            this.fbBg.strokeRoundedRect(80, 375, W - 160, 105, 16);
+            this.fbBg.setAlpha(1);
+            this.fbTitle
+              .setText(title)
+              .setAlpha(1)
+              .setColor(good ? "#2a9d5c" : "#fb7185");
+            this.fbBody.setText(body).setAlpha(1);
+          }
+
+          advance() {
+            SFX.play("click");
+            if (this.lives <= 0 || this.storyIdx >= this.stories.length) {
+              this.endGame();
+            } else this.showQuestion();
+          }
+
+          endGame() {
+            this.cameras.main.fade(500);
+            this.time.delayedCall(500, () => {
+              this.scene.start("Results", {
+                score: this.score,
+                correct: this.totalCorrect,
+                wrong: this.totalWrong,
+                total: this.totalQs,
+                combo: this.maxCombo,
+                lives: this.lives,
+                published: this.articlesPublished,
+                storyCount: this.storyCount,
+              });
+            });
+          }
+        }
+
+        // ═══════════════════════════════════════════════════
+        //  RESULTS SCENE
+        // ═══════════════════════════════════════════════════
+        class ResultsScene extends Phaser.Scene {
+          constructor() {
+            super("Results");
+          }
+          init(data) {
+            this.d = data;
+          }
+
+          create() {
+            const d = this.d,
+              cx = W / 2;
+            this.cameras.main.setBackgroundColor(0x14213d);
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x1a2744, 0x1a2744, 0x14213d, 0x14213d, 1);
+            bg.fillRect(0, 0, W, H);
+
+            const pct = Math.round((d.correct / d.total) * 100);
+            if (pct >= 70) {
+              this.add.particles(W / 2, -10, "dot", {
+                x: { min: -W / 2, max: W / 2 },
+                speed: { min: 50, max: 200 },
+                angle: { min: 80, max: 100 },
+                scale: { start: 0.6, end: 0 },
+                lifespan: 3000,
+                tint: [0xfbbf24, 0xf77f00, 0x2a9d5c, 0x7b4cc2],
+                frequency: 100,
+                quantity: 3,
+                blendMode: "ADD",
+              });
+            }
+
+            let rank = "Cub Reporter",
+              emoji = "📝";
+            if (pct >= 90) {
+              rank = "News Anchor";
+              emoji = "📺";
+            } else if (pct >= 75) {
+              rank = "Lead Reporter";
+              emoji = "🎙️";
+            } else if (pct >= 60) {
+              rank = "Staff Reporter";
+              emoji = "🗞️";
+            }
+
+            this.add.text(cx, 50, emoji, { fontSize: "60px" }).setOrigin(0.5);
+            this.add
+              .text(cx, 110, "EDITION COMPLETE", {
+                fontSize: "36px",
+                fontFamily: "Georgia, serif",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                stroke: "#14213d",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx, 155, rank, {
+                fontSize: "20px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#f9d98a",
+              })
+              .setOrigin(0.5);
+
+            this.add
+              .text(cx, 200, d.score.toString(), {
+                fontSize: "52px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx, 240, "POINTS", {
+                fontSize: "12px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#f9d98a",
+                letterSpacing: 3,
+              })
+              .setOrigin(0.5);
+
+            const stats = [
+              { label: "Correct", val: d.correct + "/" + d.total, x: cx - 250 },
+              { label: "Accuracy", val: pct + "%", x: cx - 80 },
+              { label: "Best Combo", val: d.combo + "x", x: cx + 80 },
+              { label: "Published", val: d.published.toString(), x: cx + 250 },
+            ];
+            stats.forEach((s) => {
+              const g = this.add.graphics();
+              g.fillStyle(0xffffff, 0.06);
+              g.fillRoundedRect(s.x - 70, 265, 140, 75, 14);
+              this.add
+                .text(s.x, 290, s.val, {
+                  fontSize: "26px",
+                  fontFamily: "Trebuchet MS",
+                  fontStyle: "bold",
+                  color: "#fff",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(s.x, 320, s.label, {
+                  fontSize: "10px",
+                  fontFamily: "sans-serif",
+                  fontStyle: "bold",
+                  color: "#f9d98a",
+                  letterSpacing: 2,
+                })
+                .setOrigin(0.5);
+            });
+
+            // Stars
+            const sc =
+              pct >= 90 ? 5 : pct >= 75 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1;
+            let ss = "";
+            for (let i = 0; i < 5; i++) ss += i < sc ? "⭐" : "☆";
+            this.add.text(cx, 370, ss, { fontSize: "30px" }).setOrigin(0.5);
+
+            // Tip box
+            const g2 = this.add.graphics();
+            g2.fillStyle(0xfbbf24, 0.1);
+            g2.fillRoundedRect(80, 400, W - 160, 100, 18);
+            g2.lineStyle(2, 0xfbbf24, 0.4);
+            g2.strokeRoundedRect(80, 400, W - 160, 100, 18);
+            this.add
+              .text(cx, 420, "💡 REMEMBER", {
+                fontSize: "12px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                letterSpacing: 2,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(
+                cx,
+                455,
+                "A STATISTICAL question expects variability — different answers from different sources.\nA NON-STATISTICAL question has one exact, fixed answer.",
+                {
+                  fontSize: "14px",
+                  fontFamily: "Trebuchet MS",
+                  color: "#f9d98a",
+                  align: "center",
+                  lineSpacing: 4,
+                },
+              )
+              .setOrigin(0.5);
+
+            // Replay
+            const btn = this.add
+              .image(cx, 555, "btn_orange")
+              .setScale(0.85, 0.85)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(cx, 555, "🔄 Play Again", {
+                fontSize: "17px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerdown", () => {
+              SFX.play("whoosh");
+              this.cameras.main.fade(400);
+              this.time.delayedCall(400, () => this.scene.start("Title"));
+            });
+
+            this.cameras.main.fadeIn(600);
+            if (pct >= 70) SFX.play("publish");
+          }
+        }
+
+        // ═══════════════════════════════════════════════════
+        //  CONFIG
+        // ═══════════════════════════════════════════════════
+        new Phaser.Game({
+          type: Phaser.AUTO,
+          width: W,
+          height: H,
+          parent: document.body,
+          backgroundColor: "#14213d",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          scene: [BootScene, TitleScene, GameScene, ResultsScene],
+          input: { touch: true },
+        });
+      })();
+    </script>
+  </body>
 </html>

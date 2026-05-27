@@ -1,0 +1,2044 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Unit 2 Supplemental — Statistics &amp; Data | Neft Teacher</title>
+    <style>
+      :root {
+        --esol-primary: #0891b2;
+        --esol-light: #ecfeff;
+        --esol-border: #a5f3fc;
+        --esol-dark: #155e75;
+        --enrich-primary: #7c3aed;
+        --enrich-light: #f5f3ff;
+        --enrich-border: #c4b5fd;
+        --enrich-dark: #5b21b6;
+        --enrich-gold: #d97706;
+        --enrich-gold-light: #fffbeb;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+      }
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        border-bottom: 3px solid var(--line);
+        margin-bottom: 28px;
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        background: transparent;
+        font-size: 1.05rem;
+        font-weight: 800;
+        cursor: pointer;
+        border-bottom: 4px solid transparent;
+        margin-bottom: -3px;
+        transition: all 180ms ease;
+        font-family: inherit;
+      }
+      .tab-btn[data-tab="esol"] {
+        color: var(--esol-dark);
+      }
+      .tab-btn[data-tab="enrichment"] {
+        color: var(--enrich-dark);
+      }
+      .tab-btn.active[data-tab="esol"] {
+        border-bottom-color: var(--esol-primary);
+        background: var(--esol-light);
+      }
+      .tab-btn.active[data-tab="enrichment"] {
+        border-bottom-color: var(--enrich-primary);
+        background: var(--enrich-light);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      .supp-section {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .supp-section h3 {
+        margin: 0 0 16px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .esol-panel .supp-section {
+        border-left: 5px solid var(--esol-primary);
+      }
+      .enrich-panel .supp-section {
+        border-left: 5px solid var(--enrich-primary);
+      }
+
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .vocab-card {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .vocab-card svg {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 10px;
+      }
+      .vocab-term {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--esol-dark);
+      }
+      .vocab-spanish {
+        font-size: 0.88rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 2px;
+      }
+      .vocab-def {
+        font-size: 0.92rem;
+        color: var(--ink);
+        margin-top: 6px;
+        line-height: 1.45;
+      }
+
+      .sentence-frame {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+      .sentence-frame .blank {
+        display: inline-block;
+        min-width: 80px;
+        border-bottom: 2px solid var(--esol-primary);
+        margin: 0 4px;
+      }
+
+      .step-guide {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .step-guide h4 {
+        margin: 0 0 14px;
+        color: var(--esol-dark);
+      }
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .step-num {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        background: var(--esol-primary);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+      .step-text {
+        flex: 1;
+        font-size: 0.98rem;
+        line-height: 1.5;
+      }
+      .step-text .highlight {
+        background: #fef3c7;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .step-arrow {
+        text-align: center;
+        color: var(--esol-primary);
+        font-size: 1.4rem;
+        margin: -4px 0 8px 50px;
+      }
+
+      .practice-list {
+        counter-reset: practice;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .practice-item {
+        counter-increment: practice;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        margin-bottom: 10px;
+      }
+      .practice-item::before {
+        content: counter(practice) ".";
+        font-weight: 800;
+        color: var(--esol-dark);
+        margin-right: 8px;
+      }
+      .enrich-panel .practice-item::before {
+        color: var(--enrich-dark);
+      }
+
+      .hint-btn,
+      .answer-btn,
+      .check-btn {
+        padding: 6px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: inherit;
+        margin-top: 8px;
+        margin-right: 6px;
+        transition: all 150ms ease;
+      }
+      .hint-btn:hover {
+        border-color: var(--esol-primary);
+        color: var(--esol-primary);
+      }
+      .answer-btn:hover {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .enrich-panel .hint-btn:hover {
+        border-color: var(--enrich-primary);
+        color: var(--enrich-primary);
+      }
+      .enrich-panel .answer-btn:hover {
+        border-color: var(--enrich-primary);
+        color: var(--enrich-primary);
+      }
+      .hint-box,
+      .answer-box {
+        display: none;
+        margin-top: 10px;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+      .hint-box {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+      }
+      .answer-box {
+        background: var(--success-light);
+        border: 1px solid #bbf7d0;
+      }
+      .hint-box.show,
+      .answer-box.show {
+        display: block;
+      }
+
+      .rw-card {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .rw-card svg {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+      }
+      .rw-card h4 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+      }
+      .rw-card p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .challenge-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-left: 8px;
+      }
+      .badge-medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-hard {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .badge-expert {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+
+      .investigation-card {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .investigation-card h4 {
+        margin: 0 0 8px;
+        color: var(--enrich-dark);
+      }
+      .investigation-card p {
+        margin: 0 0 10px;
+        font-size: 0.95rem;
+      }
+      .investigation-steps {
+        padding-left: 20px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .investigation-steps li {
+        margin-bottom: 4px;
+      }
+
+      .brain-teaser {
+        background: var(--enrich-gold-light);
+        border: 1px solid #fde68a;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .brain-teaser h4 {
+        margin: 0 0 6px;
+        color: var(--enrich-gold);
+      }
+
+      .extension-box {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-left: 5px solid var(--enrich-primary);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .extension-box h4 {
+        margin: 0 0 6px;
+        color: var(--enrich-dark);
+      }
+
+      .self-assess {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .self-assess li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      .self-assess li:last-child {
+        border-bottom: none;
+      }
+      .rating-btns {
+        display: flex;
+        gap: 4px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .rating-btns button {
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 150ms ease;
+        font-family: inherit;
+      }
+      .rating-btns button.selected {
+        background: var(--enrich-primary);
+        color: #fff;
+        border-color: var(--enrich-primary);
+      }
+      .rating-btns button:hover:not(.selected) {
+        border-color: var(--enrich-primary);
+      }
+
+      .print-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 12px;
+      }
+      .print-btn {
+        padding: 8px 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+      }
+      .print-btn:hover {
+        border-color: var(--teal);
+      }
+
+      /* Visual data display helpers */
+      .mini-dot-plot {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        padding: 12px 0;
+      }
+      .dot-col {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 3px;
+      }
+      .dot-col .dot {
+        width: 14px;
+        height: 14px;
+        background: var(--esol-primary);
+        border-radius: 50%;
+      }
+      .dot-col .dot-label {
+        font-size: 0.7rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .mini-bar-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 100px;
+        padding: 12px 0;
+      }
+      .bar-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .bar-item .bar {
+        width: 32px;
+        background: var(--esol-primary);
+        border-radius: 4px 4px 0 0;
+        transition: height 300ms ease;
+      }
+      .bar-item .bar-label {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+
+      @media print {
+        body {
+          background: #fff !important;
+        }
+        .tab-bar,
+        .print-bar,
+        .hint-btn,
+        .answer-btn,
+        .check-btn,
+        .rating-btns {
+          display: none !important;
+        }
+        .tab-panel {
+          display: block !important;
+        }
+        .tab-panel::before {
+          content: attr(data-print-title);
+          display: block;
+          font-size: 1.4rem;
+          font-weight: 800;
+          margin-bottom: 16px;
+          padding-bottom: 8px;
+          border-bottom: 2px solid #000;
+        }
+        .hint-box,
+        .answer-box {
+          display: block !important;
+          border: 1px solid #ccc;
+        }
+        .supp-section {
+          break-inside: avoid;
+        }
+      }
+      @media (max-width: 620px) {
+        .vocab-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .tab-btn {
+          font-size: 0.92rem;
+          padding: 12px 10px;
+        }
+        .rw-card {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span
+        ><a href="/math/unit-2/">Unit 2</a><span>/</span
+        ><span>Supplemental</span>
+      </nav>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Reveal Math · Unit 2 · Supplemental</p>
+        <h1>Statistics &amp; Data</h1>
+        <p class="hero-copy">
+          Extra support and enrichment for statistical questions, data displays,
+          measures of center (mean, median, mode), measures of variation, and
+          data interpretation. Standards 6.SP.A.1, 6.SP.B.5.
+        </p>
+      </section>
+
+      <div class="print-bar">
+        <button class="print-btn" onclick="window.print()">
+          Print This Page
+        </button>
+      </div>
+
+      <div class="tab-bar">
+        <button
+          class="tab-btn active"
+          data-tab="esol"
+          onclick="switchTab('esol')"
+        >
+          ESOL Support
+        </button>
+        <button
+          class="tab-btn"
+          data-tab="enrichment"
+          onclick="switchTab('enrichment')"
+        >
+          Enrichment
+        </button>
+      </div>
+
+      <!-- ═══════════════════ ESOL TAB ═══════════════════ -->
+      <div
+        class="tab-panel esol-panel active"
+        id="esol-panel"
+        data-print-title="ESOL Support — Statistics &amp; Data"
+      >
+        <!-- Visual Vocabulary -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="2"
+                y="4"
+                width="24"
+                height="20"
+                rx="3"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M9 11h10M9 15h7"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Visual Vocabulary
+          </h3>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="6"
+                  y="8"
+                  width="52"
+                  height="48"
+                  rx="4"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  How many pets
+                </text>
+                <text
+                  x="32"
+                  y="38"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  do students
+                </text>
+                <text
+                  x="32"
+                  y="48"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  have?
+                </text>
+                <text
+                  x="32"
+                  y="18"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#0891b2"
+                >
+                  ?
+                </text>
+              </svg>
+              <div class="vocab-term">Statistical Question</div>
+              <div class="vocab-spanish">Pregunta estadistica</div>
+              <div class="vocab-def">
+                A question where the answers will be different (vary). Example:
+                "How tall are the students in our class?"
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text x="10" y="30" font-size="10" fill="#0891b2">
+                  3, 5, 5, 7, 8
+                </text>
+                <line
+                  x1="8"
+                  y1="38"
+                  x2="56"
+                  y2="38"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="32"
+                  y="50"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  data
+                </text>
+              </svg>
+              <div class="vocab-term">Data</div>
+              <div class="vocab-spanish">Datos</div>
+              <div class="vocab-def">
+                Numbers or information you collect. Example: the test scores of
+                every student.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text x="10" y="20" font-size="9" fill="#155e75">
+                  add all, then divide
+                </text>
+                <text
+                  x="32"
+                  y="38"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  5.6
+                </text>
+                <text
+                  x="32"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#155e75"
+                >
+                  average
+                </text>
+              </svg>
+              <div class="vocab-term">Mean</div>
+              <div class="vocab-spanish">Media / Promedio</div>
+              <div class="vocab-def">
+                The average. Add all the numbers, then divide by how many
+                numbers there are.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text x="6" y="30" font-size="10" fill="#muted">2 4</text>
+                <text
+                  x="26"
+                  y="30"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  6
+                </text>
+                <text x="37" y="30" font-size="10" fill="#5b6773">8 10</text>
+                <path d="M32 34 L32 42" stroke="#0891b2" stroke-width="2" />
+                <text
+                  x="32"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  middle number
+                </text>
+              </svg>
+              <div class="vocab-term">Median</div>
+              <div class="vocab-spanish">Mediana</div>
+              <div class="vocab-def">
+                The middle number when data is in order from least to greatest.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text x="6" y="30" font-size="10" fill="#5b6773">2 4</text>
+                <text
+                  x="24"
+                  y="30"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  7 7
+                </text>
+                <text x="46" y="30" font-size="10" fill="#5b6773">9</text>
+                <text
+                  x="32"
+                  y="50"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  most common
+                </text>
+              </svg>
+              <div class="vocab-term">Mode</div>
+              <div class="vocab-spanish">Moda</div>
+              <div class="vocab-def">
+                The number that appears the most in a data set. There can be
+                more than one mode.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <line
+                  x1="10"
+                  y1="40"
+                  x2="54"
+                  y2="40"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <circle cx="14" cy="36" r="4" fill="#0891b2" />
+                <circle cx="22" cy="36" r="4" fill="#0891b2" />
+                <circle cx="22" cy="28" r="4" fill="#0891b2" />
+                <circle cx="30" cy="36" r="4" fill="#0891b2" />
+                <circle cx="38" cy="36" r="4" fill="#0891b2" />
+                <circle cx="38" cy="28" r="4" fill="#0891b2" />
+                <circle cx="38" cy="20" r="4" fill="#0891b2" />
+                <text
+                  x="32"
+                  y="55"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#155e75"
+                >
+                  dot plot
+                </text>
+              </svg>
+              <div class="vocab-term">Dot Plot</div>
+              <div class="vocab-spanish">Diagrama de puntos</div>
+              <div class="vocab-def">
+                A graph with dots stacked above a number line. Each dot is one
+                piece of data.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="8"
+                  y="30"
+                  width="10"
+                  height="16"
+                  fill="#a5f3fc"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <rect
+                  x="20"
+                  y="18"
+                  width="10"
+                  height="28"
+                  fill="#a5f3fc"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <rect
+                  x="32"
+                  y="24"
+                  width="10"
+                  height="22"
+                  fill="#a5f3fc"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <rect
+                  x="44"
+                  y="34"
+                  width="10"
+                  height="12"
+                  fill="#a5f3fc"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="6"
+                  y1="46"
+                  x2="58"
+                  y2="46"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+              </svg>
+              <div class="vocab-term">Histogram</div>
+              <div class="vocab-spanish">Histograma</div>
+              <div class="vocab-def">
+                A bar graph that shows how often data falls in different ranges
+                (intervals). Bars touch each other.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <line
+                  x1="10"
+                  y1="20"
+                  x2="10"
+                  y2="44"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <line
+                  x1="8"
+                  y1="24"
+                  x2="12"
+                  y2="24"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <line
+                  x1="8"
+                  y1="40"
+                  x2="12"
+                  y2="40"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text x="14" y="28" font-size="8" fill="#155e75">max</text>
+                <text x="14" y="44" font-size="8" fill="#155e75">min</text>
+                <text
+                  x="40"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  range = max - min
+                </text>
+                <path
+                  d="M30 24 L50 24 L50 40 L30 40 Z"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+              </svg>
+              <div class="vocab-term">Range</div>
+              <div class="vocab-spanish">Rango</div>
+              <div class="vocab-def">
+                The difference between the biggest and smallest number. Range =
+                Maximum - Minimum.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence Frames -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 6h20v16H4z"
+                stroke="#0891b2"
+                stroke-width="2"
+                rx="2"
+              />
+              <path
+                d="M8 11h12M8 15h8M8 19h10"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Sentence Frames
+          </h3>
+          <div class="sentence-frame">
+            This is a statistical question because the answers will
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            The mean of the data is <span class="blank">&nbsp;</span> because I
+            added <span class="blank">&nbsp;</span> and divided by
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            The median is <span class="blank">&nbsp;</span> because it is the
+            <span class="blank">&nbsp;</span> number when the data is in order.
+          </div>
+          <div class="sentence-frame">
+            The mode is <span class="blank">&nbsp;</span> because it appears
+            <span class="blank">&nbsp;</span> times, more than any other number.
+          </div>
+          <div class="sentence-frame">
+            The range is <span class="blank">&nbsp;</span> because
+            <span class="blank">&nbsp;</span> minus
+            <span class="blank">&nbsp;</span> equals
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            The data is spread out / clustered because
+            <span class="blank">&nbsp;</span>.
+          </div>
+        </div>
+
+        <!-- Step-by-Step Visual Guides -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M14 8v6l4 3"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Step-by-Step Visual Guides
+          </h3>
+
+          <div class="step-guide">
+            <h4>How to Find the Mean (Average)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 12px">
+              Data: 4, 8, 6, 10, 7
+            </p>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                ><span class="highlight">Add</span> all the numbers together: 4
+                + 8 + 6 + 10 + 7 = <strong>35</strong></span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                ><span class="highlight">Count</span> how many numbers there
+                are: <strong>5</strong> numbers</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                ><span class="highlight">Divide</span> the total by the count:
+                35 / 5 = <strong>7</strong></span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">4</span>
+              <span class="step-text"
+                ><span class="highlight">Check:</span> The mean (7) should be
+                between the smallest (4) and largest (10). It is!</span
+              >
+            </div>
+          </div>
+
+          <div class="step-guide">
+            <h4>How to Find the Median (Middle Number)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 12px">
+              Data: 12, 5, 9, 3, 8, 15, 7
+            </p>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                ><span class="highlight">Order</span> the numbers from least to
+                greatest: 3, 5, 7, 8, 9, 12, 15</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                ><span class="highlight">Count</span> the numbers: 7 values (odd
+                number)</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                ><span class="highlight">Find the middle:</span> Cross off one
+                from each end: 3, <s>5</s>, <s>7</s>, <strong>8</strong>,
+                <s>9</s>, <s>12</s>, 15. The 4th number is
+                <strong>8</strong>.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">!</span>
+              <span class="step-text"
+                ><span class="highlight">Even count?</span> If there are 6
+                numbers, find the two middle numbers and take their average.
+                Example: 3, 5, <strong>7, 8</strong>, 9, 12 &rarr; (7+8)/2 =
+                <strong>7.5</strong></span
+              >
+            </div>
+          </div>
+
+          <div class="step-guide">
+            <h4>How to Read a Dot Plot</h4>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                >Look at the <span class="highlight">number line</span> on the
+                bottom — these are the data values.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                >Each <span class="highlight">dot</span> above a number means
+                one data point. Count the dots to find the frequency.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                >The tallest stack shows the
+                <span class="highlight">mode</span>. Look for
+                <span class="highlight">clusters</span> (groups) and
+                <span class="highlight">gaps</span> (empty spaces).</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Simplified Practice -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M6 4h16v20H6z"
+                stroke="#0891b2"
+                stroke-width="2"
+                rx="2"
+              />
+              <path
+                d="M10 10h8M10 14h6M10 18h7"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Simplified Practice
+          </h3>
+          <ol class="practice-list">
+            <li class="practice-item">
+              <span
+                >Is this a statistical question? "How old is the principal?"
+                (Yes or No)</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                A statistical question expects different answers from different
+                people or sources. Does this question have just one answer?
+              </div>
+              <div class="answer-box">
+                No. The principal has one specific age, so there is no variation
+                in the answer.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Is this a statistical question? "How many siblings do students
+                in our class have?"</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Will different students give different answers?
+              </div>
+              <div class="answer-box">
+                Yes! Different students have different numbers of siblings, so
+                the answers vary.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Find the mean: 3, 5, 7, 9, 6</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Add all the numbers: 3 + 5 + 7 + 9 + 6 = ? Then divide by 5
+                (there are 5 numbers).
+              </div>
+              <div class="answer-box">30 / 5 = 6. The mean is 6.</div>
+            </li>
+            <li class="practice-item">
+              <span>Find the median: 2, 8, 4, 10, 6</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                First put them in order: 2, 4, 6, 8, 10. Then find the middle
+                number.
+              </div>
+              <div class="answer-box">
+                In order: 2, 4, 6, 8, 10. The middle (3rd) number is 6. The
+                median is 6.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Find the mode: 4, 7, 2, 7, 5, 3, 7, 5</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Count how many times each number appears. Which number shows up
+                the most?
+              </div>
+              <div class="answer-box">
+                7 appears 3 times (more than any other number). The mode is 7.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Find the range: 15, 22, 8, 31, 12</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Range = biggest number - smallest number. What is the biggest?
+                The smallest?
+              </div>
+              <div class="answer-box">
+                Biggest: 31. Smallest: 8. Range = 31 - 8 = 23.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Find the median: 10, 4, 8, 6, 12, 2</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Order them first: 2, 4, 6, 8, 10, 12. There are 6 numbers
+                (even!), so find the two middle numbers and average them.
+              </div>
+              <div class="answer-box">
+                In order: 2, 4, 6, 8, 10, 12. The two middle numbers are 6 and
+                8. Median = (6 + 8) / 2 = 7.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A dot plot shows: 3 dots above 5, 1 dot above 6, 4 dots above
+                7, 2 dots above 8. How many data points total? What is the
+                mode?</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Add all the dots: 3 + 1 + 4 + 2. The mode is the value with the
+                most dots.
+              </div>
+              <div class="answer-box">
+                Total: 3 + 1 + 4 + 2 = 10 data points. Mode: 7 (it has 4 dots,
+                the most).
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Test scores: 80, 90, 70, 85, 95. Find the mean and the
+                range.</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Mean: add all scores, divide by 5. Range: biggest minus
+                smallest.
+              </div>
+              <div class="answer-box">
+                Mean: (80 + 90 + 70 + 85 + 95) / 5 = 420 / 5 = 84. Range: 95 -
+                70 = 25.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Which measure of center changes the most if you add one very
+                large number (an outlier) to a data set: mean or median?</span
+              >
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Think about what happens to the sum when you add a very big
+                number. Does the middle position change a lot?
+              </div>
+              <div class="answer-box">
+                The mean changes the most. An outlier is added into the total,
+                which pulls the mean up (or down). The median stays near the
+                center because it only depends on position, not value.
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Real-World Connections -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="10"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M4 14h20M14 4c-3 3-5 6-5 10s2 7 5 10c3-3 5-6 5-10s-2-7-5-10z"
+                stroke="#0891b2"
+                stroke-width="1.5"
+              />
+            </svg>
+            Real-World Connections
+          </h3>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="40"
+                height="40"
+                rx="4"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M12 36V22M20 36V16M28 36V26M36 36V20"
+                stroke="#0891b2"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Sports Stats</h4>
+              <p>
+                Basketball players track points per game. If a player scores 12,
+                18, 15, 22, and 8, the coach finds the mean (15) to see the
+                average performance and the range (14) to see how consistent the
+                player is.
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <circle
+                cx="24"
+                cy="20"
+                r="10"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M12 36h24M16 32h16"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M24 10v2M19 12l1 2M29 12l-1 2"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Weather Forecasting</h4>
+              <p>
+                Weather stations collect daily temperatures. The mean
+                temperature for a week tells you the typical temperature. A big
+                range means the weather changed a lot!
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="6"
+                y="10"
+                width="36"
+                height="28"
+                rx="3"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path d="M6 18h36" stroke="#0891b2" stroke-width="1.5" />
+              <text
+                x="24"
+                y="30"
+                text-anchor="middle"
+                font-size="8"
+                fill="#0891b2"
+                font-weight="bold"
+              >
+                A B+ A- B A
+              </text>
+            </svg>
+            <div>
+              <h4>Report Cards</h4>
+              <p>
+                Teachers use the mean of your test scores to calculate your
+                grade. If your scores are 85, 90, 78, and 92, your average is
+                (85+90+78+92)/4 = 86.25. That is your overall grade!
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="4"
+                y="8"
+                width="40"
+                height="32"
+                rx="4"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <circle
+                cx="24"
+                cy="24"
+                r="10"
+                fill="none"
+                stroke="#0891b2"
+                stroke-width="1.5"
+              />
+              <path
+                d="M24 24L24 16M24 24L30 28"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <h4>Screen Time</h4>
+              <p>
+                You track how many minutes you spend on your phone each day for
+                a week. Finding the median helps you know your typical day — it
+                is not pulled up by one day you used your phone a lot.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ ENRICHMENT TAB ═══════════════════ -->
+      <div
+        class="tab-panel enrich-panel"
+        id="enrichment-panel"
+        data-print-title="Enrichment — Statistics &amp; Data"
+      >
+        <!-- Challenge Problems -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <polygon
+                points="14,3 17,10 25,11 19,17 21,25 14,21 7,25 9,17 3,11 11,10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+            </svg>
+            Challenge Problems
+          </h3>
+          <ol class="practice-list">
+            <li class="practice-item">
+              <span
+                >The mean of five numbers is 12. Four of the numbers are 10, 15,
+                8, and 14. What is the fifth number?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                If the mean is 12 and there are 5 numbers, the total must be 12
+                x 5 = 60. Subtract the four known numbers.
+              </div>
+              <div class="answer-box">
+                Total = 12 x 5 = 60. Known sum = 10 + 15 + 8 + 14 = 47. Fifth
+                number = 60 - 47 = 13.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A data set has a median of 20 and a mean of 25. Explain how
+                this is possible. Give an example of 5 numbers that fit.</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                The mean is bigger than the median. That happens when there are
+                large outliers pulling the mean up.
+              </div>
+              <div class="answer-box">
+                Example: 10, 15, 20, 25, 55. Median = 20 (middle). Mean =
+                (10+15+20+25+55)/5 = 125/5 = 25. The outlier 55 pulls the mean
+                above the median.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Create a data set of 6 numbers where the mean is 10, the median
+                is 9, and the mode is 8.</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Total must be 60 (mean 10 x 6 numbers). Mode is 8, so use 8 at
+                least twice. Median of 6 numbers = average of 3rd and 4th values
+                = 9.
+              </div>
+              <div class="answer-box">
+                One answer: 5, 8, 8, 10, 13, 16. Check: Sum = 60, mean = 10.
+                Ordered: 5,8,8,10,13,16. Median = (8+10)/2 = 9. Mode = 8.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A student's test scores are 72, 85, 91, 68, and 79. She has one
+                more test. What score does she need to get a mean of 80?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                With 6 tests and a mean of 80, the total must be 80 x 6 = 480.
+                Subtract the sum of the first 5 tests.
+              </div>
+              <div class="answer-box">
+                Needed total: 480. Current sum: 72+85+91+68+79 = 395. Needed
+                score: 480 - 395 = 85.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Two classes took the same test. Class A (20 students) had a
+                mean of 78. Class B (30 students) had a mean of 84. What is the
+                overall mean for all 50 students?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                You cannot just average 78 and 84 because the classes have
+                different sizes. Find the total points for each class first.
+              </div>
+              <div class="answer-box">
+                Class A total: 20 x 78 = 1,560. Class B total: 30 x 84 = 2,520.
+                Combined: (1,560 + 2,520) / 50 = 4,080 / 50 = 81.6.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A histogram shows: 0-10 (frequency 3), 10-20 (frequency 7),
+                20-30 (frequency 12), 30-40 (frequency 5), 40-50 (frequency 3).
+                Estimate the mean of the data.</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Use the midpoint of each interval: 5, 15, 25, 35, 45. Multiply
+                each midpoint by its frequency, add them, and divide by total
+                frequency.
+              </div>
+              <div class="answer-box">
+                Sum = (5x3)+(15x7)+(25x12)+(35x5)+(45x3) = 15+105+300+175+135 =
+                730. Total frequency = 30. Estimated mean = 730/30 = 24.3.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Removing one number from the set {4, 6, 7, 9, 10, 12, 15}
+                changes the mean from 9 to 9.5. Which number was removed?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Original sum = 9 x 7 = 63. After removing one number, there are
+                6 numbers with mean 9.5, so new sum = 9.5 x 6 = 57.
+              </div>
+              <div class="answer-box">Removed number = 63 - 57 = 6.</div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A dot plot shows quiz scores: two 6s, three 7s, five 8s, four
+                9s, and one 10. Find the mean, median, and mode.</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Total values = 2+3+5+4+1 = 15. Sum =
+                (6x2)+(7x3)+(8x5)+(9x4)+(10x1). Median is the 8th value.
+              </div>
+              <div class="answer-box">
+                Sum = 12+21+40+36+10 = 119. Mean = 119/15 = 7.93. In order, the
+                8th value is 8. Median = 8. Mode = 8 (highest frequency of 5).
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >True or false: A data set can have a mean of 50 and every value
+                in the set is less than 50. Explain.</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Think: if every value is less than 50, what is the maximum
+                possible average?
+              </div>
+              <div class="answer-box">
+                False. If every value is less than 50, the sum divided by the
+                count must also be less than 50. The mean can only equal 50 if
+                at least one value is 50 or greater.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Design a data set of 8 values where the mean, median, and mode
+                are all equal to 15.</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                The total must be 15 x 8 = 120. Use 15 at least twice for the
+                mode. The 4th and 5th values must average to 15 for the median.
+              </div>
+              <div class="answer-box">
+                One answer: 10, 12, 14, 15, 15, 16, 18, 20. Sum = 120, mean =
+                15. Median = (15+15)/2 = 15. Mode = 15.
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Real-World Investigations -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M18 18l6 6"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Real-World Investigations
+          </h3>
+          <div class="investigation-card">
+            <h4>Classroom Survey &amp; Analysis</h4>
+            <p>
+              Design and conduct a statistical investigation about your
+              classmates.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                Write a statistical question (e.g., "How many hours of sleep did
+                you get last night?")
+              </li>
+              <li>Collect data from at least 20 classmates</li>
+              <li>Create a dot plot AND a histogram of the data</li>
+              <li>Calculate the mean, median, mode, and range</li>
+              <li>
+                Write a paragraph describing what the data shows — mention
+                clusters, gaps, and outliers
+              </li>
+              <li>
+                Explain which measure of center best represents the data and why
+              </li>
+            </ol>
+          </div>
+          <div class="investigation-card">
+            <h4>Does Practice Make Perfect?</h4>
+            <p>
+              Investigate whether practice time affects performance using data
+              you collect.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                Choose a simple skill (free throws, typing speed, paper airplane
+                distance)
+              </li>
+              <li>Record 10 attempts on Day 1 and calculate the mean</li>
+              <li>Practice for 15 minutes each day for 5 days</li>
+              <li>Record 10 more attempts and calculate the new mean</li>
+              <li>Compare the two data sets: means, medians, and ranges</li>
+              <li>
+                Write a conclusion: Did practice improve performance? How do the
+                statistics show it?
+              </li>
+            </ol>
+          </div>
+          <div class="investigation-card">
+            <h4>Media Fact Check</h4>
+            <p>
+              Find a news article that uses statistics (average salary, test
+              scores, etc.) and analyze whether the data is presented fairly.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                Find an article that states an average or other statistical
+                claim
+              </li>
+              <li>
+                Identify which measure of center was used (mean, median, or
+                mode)
+              </li>
+              <li>
+                Discuss: could a different measure tell a different story?
+              </li>
+              <li>
+                Look for: Is the sample size given? Could there be outliers?
+              </li>
+              <li>
+                Write your own fair summary of what the data actually shows
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Brain Teasers -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="12"
+                r="8"
+                stroke="#d97706"
+                stroke-width="2"
+                fill="#fffbeb"
+              />
+              <path
+                d="M11 22h6M12 20v2M16 20v2"
+                stroke="#d97706"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Brain Teasers
+          </h3>
+          <div class="brain-teaser">
+            <h4>The Disappearing Mean</h4>
+            <p>
+              Five friends have a mean height of 60 inches. When a sixth friend
+              joins, the mean drops to 58 inches. How tall is the sixth friend?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Original total: 5 x 60 = 300 inches. New total: 6 x 58 = 348
+              inches. Sixth friend: 348 - 300 = 48 inches (4 feet tall).
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>Same Mean, Different Data</h4>
+            <p>
+              Find two different data sets of 4 numbers each that both have a
+              mean of 20 and a range of 10, but different medians.
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Set 1: 15, 18, 22, 25. Mean = 80/4 = 20, Range = 10, Median = 20.
+              Set 2: 15, 16, 24, 25. Mean = 80/4 = 20, Range = 10, Median = 20.
+              Actually try: Set 1: 15, 19, 21, 25. Median = 20. Set 2: 15, 17,
+              23, 25. Median = 20. Hmm — with range 10 (min 15, max 25), we need
+              two middle numbers summing to 40. Try: Set A: 15, 20, 20, 25
+              (median = 20). Set B: 15, 15, 25, 25 (median = 20). Same median
+              again. This is tricky because range = max - min constrains us.
+              Answer: it is very hard when range is fixed — great discovery!
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>The Tricky Outlier</h4>
+            <p>
+              Data set: 10, 12, 11, 13, 12, 11, 100. Without calculating, which
+              measure of center would you use to describe the "typical" value,
+              and why?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Use the median (12). The outlier (100) would pull the mean way up
+              to about 24.1, which does not represent the typical value. The
+              median ignores extreme values and stays near the cluster of 10-13.
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>The Impossibility Puzzle</h4>
+            <p>
+              Can a data set of 5 whole numbers have a mean of 10, a median of
+              10, and a range of 0? If yes, give an example. If no, explain why.
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Yes! If the range is 0, all numbers are the same. The set {10, 10,
+              10, 10, 10} has mean = 10, median = 10, and range = 0.
+            </div>
+          </div>
+        </div>
+
+        <!-- Extension Topics -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 24L14 4l10 20H4z"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M14 12v5M14 20v1"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Extension Topics
+          </h3>
+          <div class="extension-box">
+            <h4>Where This Leads: Sampling &amp; Bias</h4>
+            <p>
+              In 7th grade, you will learn how the way you collect data matters.
+              Surveying only your friends gives biased data. Random sampling
+              gives results that represent the whole population. Understanding
+              mean, median, and mode now prepares you to evaluate whether data
+              is trustworthy.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Where This Leads: Probability</h4>
+            <p>
+              Statistics and probability are closely connected. Once you
+              understand how data is distributed, you can start predicting
+              outcomes. If the mean score on a test is 80 with a small range,
+              you can predict most students scored near 80. This leads to
+              probability distributions in high school.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Where This Leads: Interquartile Range (IQR)</h4>
+            <p>
+              The range can be misleading if there are outliers. In 7th grade,
+              you will learn about quartiles (Q1, Q2, Q3) and the IQR, which
+              measures the spread of the middle 50% of data. You will also learn
+              to build box plots, which show the five-number summary visually.
+            </p>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M9 14l3 3 7-7"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Self-Assessment
+          </h3>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 14px"
+          >
+            Rate your confidence: 1 = Need help, 2 = Getting there, 3 = Got it,
+            4 = Can teach it
+          </p>
+          <ul class="self-assess">
+            <li>
+              <span>I can tell if a question is a statistical question</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can calculate the mean of a data set</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I can find the median (including with an even number of
+                values)</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can identify the mode and range</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can read and interpret a dot plot</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can read and interpret a histogram</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can explain how outliers affect the mean vs. median</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I can choose the best measure of center for a data set</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Unit 2 Supplemental</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+
+    <script src="/assets/app.js" defer></script>
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelector(`.tab-btn[data-tab="${tab}"]`)
+          .classList.add("active");
+        document
+          .getElementById(tab === "esol" ? "esol-panel" : "enrichment-panel")
+          .classList.add("active");
+      }
+      function toggleHint(btn) {
+        const box = btn.parentElement.querySelector(".hint-box");
+        box.classList.toggle("show");
+        btn.textContent = box.classList.contains("show") ? "Hide Hint" : "Hint";
+      }
+      function toggleAnswer(btn) {
+        const box = btn.parentElement.querySelector(".answer-box");
+        box.classList.toggle("show");
+        btn.textContent = box.classList.contains("show")
+          ? "Hide Answer"
+          : "Show Answer";
+      }
+      function rate(btn) {
+        btn.parentElement
+          .querySelectorAll("button")
+          .forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      }
+    </script>
+  </body>
+</html>
