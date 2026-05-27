@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lesson 5-2: Determine the Area of Triangles</title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --faint: #8a97a5;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .header h1 {
+        font-size: clamp(22px, 4vw, 30px);
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      .header p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.78);
+        margin: 0;
+        max-width: 600px;
+      }
+      .standard-badge {
+        display: inline-block;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      .level-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .level-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .level-toggle {
+        display: inline-flex;
+        background: var(--line);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+      .level-btn {
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        background: var(--card);
+        color: var(--navy);
+        box-shadow: 0 1px 4px rgba(15, 43, 60, 0.12);
+      }
+      .level-btn:hover:not(.active) {
+        color: var(--navy);
+      }
+      .level-desc {
+        font-size: 13px;
+        color: var(--faint);
+        margin-left: auto;
+      }
+      .progress-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .progress-track {
+        height: 4px;
+        background: var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--teal), var(--blue));
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+
+      .main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 20px 24px 80px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 32px 0 16px;
+      }
+      .section-header:first-child {
+        margin-top: 8px;
+      }
+      .section-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .section-icon.warmup {
+        background: var(--gold);
+      }
+      .section-icon.practice {
+        background: var(--blue);
+      }
+      .section-icon.challenge {
+        background: var(--coral);
+      }
+      .section-header h2 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0;
+      }
+      .section-header .count {
+        font-size: 13px;
+        color: var(--faint);
+        font-weight: 600;
+      }
+
+      .q-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 22px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: border-color 0.2s;
+      }
+      .q-card.correct {
+        border-color: var(--green);
+      }
+      .q-card.incorrect {
+        border-color: var(--coral);
+      }
+      .q-card.correct .q-status {
+        display: flex;
+      }
+      .q-card.incorrect .q-status-wrong {
+        display: flex;
+      }
+      .q-num {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.45;
+      }
+      .q-prompt .math {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-style: italic;
+      }
+
+      .scaffold {
+        background: var(--teal-light);
+        border: 1px solid rgba(14, 138, 125, 0.15);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #1a5c54;
+        line-height: 1.45;
+        display: none;
+      }
+      .scaffold strong {
+        color: var(--teal);
+      }
+      .scaffold .vocab {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-weight: 700;
+        margin: 2px;
+      }
+      body.level-1 .scaffold {
+        display: block;
+      }
+
+      .mc-options {
+        display: grid;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--bg);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        font-size: 15px;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+      .mc-btn:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn .letter {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: var(--line);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--muted);
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mc-btn:hover .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn.selected .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .mc-btn.is-correct .letter {
+        background: var(--green);
+        color: #fff;
+      }
+      .mc-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .mc-btn.is-wrong .letter {
+        background: var(--coral);
+        color: #fff;
+      }
+      .mc-btn.locked {
+        pointer-events: none;
+      }
+
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fill-input {
+        width: 100px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 16px;
+        text-align: center;
+        font-weight: 600;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .fill-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.12);
+      }
+      .fill-input.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .fill-input.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .fill-text {
+        font-size: 16px;
+        color: var(--ink);
+      }
+
+      .tf-options {
+        display: flex;
+        gap: 8px;
+      }
+      .tf-btn {
+        flex: 1;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .tf-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .tf-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .tf-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .tf-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        color: var(--coral);
+      }
+      .tf-btn.locked {
+        pointer-events: none;
+      }
+
+      .check-btn {
+        margin-top: 12px;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .check-btn:hover {
+        background: #155fa0;
+        transform: translateY(-1px);
+      }
+      .check-btn:active {
+        transform: scale(0.98);
+      }
+      .check-btn:disabled {
+        background: var(--line);
+        color: var(--faint);
+        cursor: default;
+        transform: none;
+      }
+
+      .q-status,
+      .q-status-wrong {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .q-status {
+        background: var(--green-light);
+        color: #1a5c36;
+        border: 1px solid rgba(45, 135, 75, 0.15);
+      }
+      .q-status-wrong {
+        background: var(--coral-light);
+        color: #8a3322;
+        border: 1px solid rgba(196, 90, 60, 0.15);
+      }
+      .fb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .explain-section {
+        display: none;
+        margin-top: 12px;
+      }
+      body.level-2 .explain-section {
+        display: block;
+      }
+      .explain-prompt {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .explain-input {
+        width: 100%;
+        min-height: 60px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        resize: vertical;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        line-height: 1.4;
+      }
+      .explain-input:focus {
+        border-color: var(--blue);
+      }
+
+      .sentence-frame {
+        display: none;
+      }
+      body.level-1 .sentence-frame {
+        display: block;
+      }
+      .sentence-frame p {
+        font-size: 13px;
+        color: var(--teal);
+        font-weight: 600;
+        margin: 6px 0 0;
+        font-style: italic;
+      }
+
+      .diagram-wrap {
+        text-align: center;
+        margin: 14px 0;
+      }
+      .diagram-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .eq-display {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-size: 22px;
+        text-align: center;
+        padding: 14px;
+        background: var(--bg);
+        border-radius: 10px;
+        margin-bottom: 12px;
+        color: var(--navy);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      .drag-zone {
+        min-height: 52px;
+        border: 2px dashed var(--line);
+        border-radius: 10px;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        transition: border-color 0.15s;
+        background: var(--bg);
+      }
+      .drag-zone.over {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .drag-zone.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        border-style: solid;
+      }
+      .drag-zone.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        border-style: solid;
+      }
+      .drag-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: grab;
+        user-select: none;
+        transition: all 0.15s;
+        color: var(--ink);
+      }
+      .drag-item:active {
+        cursor: grabbing;
+        opacity: 0.7;
+      }
+      .drag-item.placed {
+        background: var(--blue-light);
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .drag-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .drop-grid {
+        display: grid;
+        gap: 10px;
+      }
+      .drop-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+      .drop-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      .score-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--line);
+        padding: 10px 24px;
+      }
+      .score-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .score-text {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .score-text span {
+        color: var(--teal);
+      }
+      .reset-btn {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .reset-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      @media (max-width: 600px) {
+        .header {
+          padding: 20px 16px 16px;
+        }
+        .level-bar {
+          padding: 12px 16px;
+        }
+        .main {
+          padding: 16px 16px 80px;
+        }
+        .q-card {
+          padding: 16px;
+        }
+        .drop-row {
+          grid-template-columns: 1fr;
+        }
+        .level-desc {
+          display: none;
+        }
+      }
+
+      @media print {
+        .score-bar,
+        .level-bar,
+        .progress-bar {
+          display: none;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+  </head>
+  <body class="level-1">
+    <header class="header">
+      <div class="header-inner">
+        <div class="breadcrumb">
+          <a href="/math/">Math</a> › <a href="/math/unit-5/">Unit 5</a> ›
+          Lesson 5-2
+        </div>
+        <h1>Determine the Area of Triangles</h1>
+        <p>
+          Understand a triangle as half a parallelogram and apply the formula A
+          = &frac12;bh to find the area of triangles.
+        </p>
+        <span class="standard-badge"
+          >6.G.A.1 &middot; Area, Surface Area &amp; Volume</span
+        >
+      </div>
+    </header>
+
+    <div class="level-bar">
+      <span class="level-label">Level</span>
+      <div class="level-toggle">
+        <button class="level-btn active" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+      </div>
+      <span class="level-desc" id="levelDesc"
+        >Guided practice with vocabulary support</span
+      >
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <main class="main">
+      <!-- WARM-UP -->
+      <div class="section-header">
+        <div class="section-icon warmup">W</div>
+        <h2>Warm-Up</h2>
+        <span class="count">2 questions</span>
+      </div>
+
+      <!-- W1 -->
+      <article class="q-card" data-q="w1">
+        <div class="q-num">Warm-Up 1</div>
+        <div class="q-prompt">
+          A triangle is <strong>half</strong> of what shape?
+        </div>
+        <div class="scaffold">
+          <strong>Key idea:</strong> If you copy a
+          <span class="vocab">triangle</span> and flip it, the two triangles
+          form a <span class="vocab">parallelogram</span>. So a triangle is
+          exactly half a parallelogram.
+        </div>
+        <div class="diagram-wrap">
+          <svg width="280" height="130" viewBox="0 0 280 130">
+            <polygon
+              points="30,110 170,110 100,20"
+              fill="#e8f2fc"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <polygon
+              points="170,110 240,20 100,20"
+              fill="#fdf3e0"
+              stroke="#d4952a"
+              stroke-width="2"
+              stroke-dasharray="5,3"
+            />
+            <text
+              x="140"
+              y="85"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#1a6fb5"
+            >
+              triangle
+            </text>
+            <text
+              x="180"
+              y="55"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#d4952a"
+            >
+              copy
+            </text>
+          </svg>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>Rectangle</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>Parallelogram</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>Trapezoid</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>Pentagon</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! A triangle is exactly half of a parallelogram. That is why
+            the area formula has &frac12;.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Two copies of the same triangle fit together to make a
+            <strong>parallelogram</strong>. The answer is
+            <strong>B</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- W2 -->
+      <article class="q-card" data-q="w2">
+        <div class="q-num">Warm-Up 2</div>
+        <div class="q-prompt">
+          Which formula gives the area of a <strong>triangle</strong>?
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong> The <span class="vocab">area</span> of a
+          triangle is half the area of a parallelogram with the same
+          <span class="vocab">base</span> and <span class="vocab">height</span>.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>A = b &times; h</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span
+            ><span>A = &frac12; &times; b &times; h</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>A = b + h</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>A = 2 &times; b &times; h</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! The area of a triangle is A = &frac12; &times; b &times;
+            h.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Since a triangle is half a parallelogram, its area is
+            <strong>A = &frac12;bh</strong>. The answer is
+            <strong>B</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- PRACTICE -->
+      <div class="section-header">
+        <div class="section-icon practice">P</div>
+        <h2>Practice</h2>
+        <span class="count">5 questions</span>
+      </div>
+
+      <!-- P1 -->
+      <article class="q-card" data-q="p1">
+        <div class="q-num">Practice 1</div>
+        <div class="q-prompt">Find the area of the triangle below.</div>
+        <div class="scaffold">
+          <strong>Formula:</strong>
+          <span class="vocab">A = &frac12; &times; b &times; h</span>. Identify
+          the base and the perpendicular height, then multiply and divide by 2.
+        </div>
+        <div class="diagram-wrap">
+          <svg width="260" height="150" viewBox="0 0 260 150">
+            <polygon
+              points="30,130 230,130 130,20"
+              fill="#e4f5f3"
+              stroke="#0e8a7d"
+              stroke-width="2"
+            />
+            <line
+              x1="30"
+              y1="130"
+              x2="230"
+              y2="130"
+              stroke="#0f2b3c"
+              stroke-width="2.5"
+            />
+            <text
+              x="130"
+              y="146"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#0f2b3c"
+            >
+              10 cm
+            </text>
+            <line
+              x1="130"
+              y1="20"
+              x2="130"
+              y2="130"
+              stroke="#c45a3c"
+              stroke-width="2"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="142"
+              y="80"
+              font-size="13"
+              font-weight="700"
+              fill="#c45a3c"
+            >
+              7 cm
+            </text>
+          </svg>
+        </div>
+        <div class="fill-row">
+          <span class="fill-text">A =</span>
+          <input
+            class="fill-input"
+            data-answer="35"
+            placeholder="?"
+            aria-label="area answer"
+          />
+          <span class="fill-text">cm&sup2;</span>
+        </div>
+        <button class="check-btn" id="p1-check">Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show your work:</div>
+          <textarea
+            class="explain-input"
+            placeholder="A = ½ × b × h = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "A = &frac12; &times; ___ &times; ___ = ___
+            cm&sup2;."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! A = &frac12; &times; 10 &times; 7 = 35 cm&sup2;.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Use A = &frac12; &times; 10 &times; 7 = &frac12; &times; 70 =
+            <strong>35 cm&sup2;</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- P2 -->
+      <article class="q-card" data-q="p2">
+        <div class="q-num">Practice 2</div>
+        <div class="q-prompt">
+          A right triangle has legs of 6 in. and 8 in. What is the area?
+        </div>
+        <div class="scaffold">
+          <strong>Hint:</strong> In a right triangle, the two
+          <span class="vocab">legs</span> are the base and the height (they meet
+          at a right angle). Use <span class="vocab">A = &frac12;bh</span>.
+        </div>
+        <div class="diagram-wrap">
+          <svg width="200" height="160" viewBox="0 0 200 160">
+            <polygon
+              points="30,140 30,30 150,140"
+              fill="#e8f2fc"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <line
+              x1="30"
+              y1="140"
+              x2="30"
+              y2="30"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <text
+              x="18"
+              y="90"
+              text-anchor="end"
+              font-size="13"
+              font-weight="700"
+              fill="#c45a3c"
+            >
+              8 in.
+            </text>
+            <line
+              x1="30"
+              y1="140"
+              x2="150"
+              y2="140"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <text
+              x="90"
+              y="156"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#0f2b3c"
+            >
+              6 in.
+            </text>
+            <rect
+              x="30"
+              y="124"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="#5e6e7e"
+              stroke-width="1.5"
+            />
+          </svg>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>48 in.&sup2;</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>24 in.&sup2;</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>14 in.&sup2;</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>28 in.&sup2;</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show your substitution:</div>
+          <textarea
+            class="explain-input"
+            placeholder="A = ½ × 6 × 8 = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "The legs are ___ and ___, so A = &frac12; &times;
+            ___ &times; ___ = ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! A = &frac12; &times; 6 &times; 8 = 24 in.&sup2;.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >A = &frac12; &times; 6 &times; 8 = &frac12; &times; 48 =
+            <strong>24 in.&sup2;</strong>. The answer is
+            <strong>B</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- P3 -->
+      <article class="q-card" data-q="p3">
+        <div class="q-num">Practice 3</div>
+        <div class="q-prompt">
+          Which line segment represents the <strong>height</strong> of this
+          triangle?
+        </div>
+        <div class="scaffold">
+          <strong>Remember:</strong> The <span class="vocab">height</span> is
+          the perpendicular distance from the <span class="vocab">base</span> to
+          the opposite vertex. It forms a right angle with the base.
+        </div>
+        <div class="diagram-wrap">
+          <svg width="280" height="160" viewBox="0 0 280 160">
+            <polygon
+              points="30,140 250,140 180,30"
+              fill="#fdf3e0"
+              stroke="#d4952a"
+              stroke-width="2"
+            />
+            <line
+              x1="30"
+              y1="140"
+              x2="250"
+              y2="140"
+              stroke="#0f2b3c"
+              stroke-width="2"
+            />
+            <text
+              x="140"
+              y="156"
+              text-anchor="middle"
+              font-size="12"
+              fill="#5e6e7e"
+            >
+              base
+            </text>
+            <!-- height (correct) -->
+            <line
+              x1="180"
+              y1="30"
+              x2="180"
+              y2="140"
+              stroke="#c45a3c"
+              stroke-width="2"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="192"
+              y="90"
+              font-size="12"
+              font-weight="700"
+              fill="#c45a3c"
+            >
+              Line A
+            </text>
+            <rect
+              x="174"
+              y="126"
+              width="12"
+              height="12"
+              fill="none"
+              stroke="#c45a3c"
+              stroke-width="1.5"
+            />
+            <!-- slant side -->
+            <text x="95" y="80" font-size="12" font-weight="700" fill="#1a6fb5">
+              Line B
+            </text>
+            <!-- top to far right -->
+            <text
+              x="222"
+              y="80"
+              font-size="12"
+              font-weight="700"
+              fill="#0e8a7d"
+            >
+              Line C
+            </text>
+          </svg>
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span
+            ><span
+              >Line A &mdash; the dashed segment from vertex to base at a right
+              angle</span
+            >
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span
+            ><span>Line B &mdash; the left slant side of the triangle</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span
+            ><span>Line C &mdash; the right slant side of the triangle</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>The base of the triangle</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! The height is the perpendicular segment from the top
+            vertex straight down to the base (Line A). Notice the right-angle
+            mark.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >The height must be perpendicular to the base.
+            <strong>Line A</strong> is the only segment that forms a right angle
+            with the base.</span
+          >
+        </div>
+      </article>
+
+      <!-- P4 -->
+      <article class="q-card" data-q="p4">
+        <div class="q-num">Practice 4</div>
+        <div class="q-prompt">
+          A triangle has a base of 16 m and a height of 9 m. What is its area?
+        </div>
+        <div class="scaffold">
+          <strong>Steps:</strong> 1) Write the formula:
+          <span class="vocab">A = &frac12;bh</span>. 2) Substitute: A = &frac12;
+          &times; 16 &times; 9. 3) Calculate.
+        </div>
+        <div class="fill-row">
+          <span class="fill-text">A =</span>
+          <input
+            class="fill-input"
+            data-answer="72"
+            placeholder="?"
+            aria-label="area answer"
+          />
+          <span class="fill-text">m&sup2;</span>
+        </div>
+        <button class="check-btn" id="p4-check">Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show your work:</div>
+          <textarea
+            class="explain-input"
+            placeholder="A = ½ × 16 × 9 = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>Sentence frame: "A = &frac12; &times; ___ &times; ___ = ___."</p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! A = &frac12; &times; 16 &times; 9 = &frac12; &times; 144 =
+            72 m&sup2;.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >A = &frac12; &times; 16 &times; 9 = &frac12; &times; 144 =
+            <strong>72 m&sup2;</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- P5 -->
+      <article class="q-card" data-q="p5">
+        <div class="q-num">Practice 5</div>
+        <div class="q-prompt">
+          A triangular banner has an area of 60 in.&sup2; and a base of 12 in.
+          What is the height of the banner?
+        </div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> Start with
+          <span class="vocab">A = &frac12;bh</span>. Substitute what you know:
+          60 = &frac12; &times; 12 &times; h. Solve for h.
+        </div>
+        <div class="fill-row">
+          <span class="fill-text">h =</span>
+          <input
+            class="fill-input"
+            data-answer="10"
+            placeholder="?"
+            aria-label="height answer"
+          />
+          <span class="fill-text">in.</span>
+        </div>
+        <button class="check-btn" id="p5-check">Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show your work:</div>
+          <textarea
+            class="explain-input"
+            placeholder="60 = ½ × 12 × h, so..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "60 = &frac12; &times; 12 &times; h, so 60 = ___
+            &times; h, and h = ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! 60 = &frac12; &times; 12 &times; h &rarr; 60 = 6h &rarr; h
+            = 10 in.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >60 = &frac12; &times; 12 &times; h &rarr; 60 = 6h &rarr; h = 60
+            &divide; 6 = <strong>10 in.</strong></span
+          >
+        </div>
+      </article>
+
+      <!-- CHALLENGE -->
+      <div class="section-header">
+        <div class="section-icon challenge">&#9733;</div>
+        <h2>Challenge</h2>
+        <span class="count">1 question</span>
+      </div>
+
+      <article class="q-card" data-q="c1">
+        <div class="q-num">Challenge</div>
+        <div class="q-prompt">
+          A parallelogram has a base of 14 ft and a height of 10 ft. A diagonal
+          divides it into two equal triangles. What is the area of
+          <strong>one</strong> triangle?
+        </div>
+        <div class="scaffold">
+          <strong>Think about it:</strong> First find the area of the
+          <span class="vocab">parallelogram</span> (A = bh). Then, since the
+          diagonal splits it into two equal
+          <span class="vocab">triangles</span>, divide by 2.
+        </div>
+        <div class="diagram-wrap">
+          <svg width="280" height="140" viewBox="0 0 280 140">
+            <polygon
+              points="40,120 200,120 240,20 80,20"
+              fill="#e4f5f3"
+              stroke="#0e8a7d"
+              stroke-width="2"
+            />
+            <line
+              x1="40"
+              y1="120"
+              x2="240"
+              y2="20"
+              stroke="#c45a3c"
+              stroke-width="2"
+              stroke-dasharray="5,3"
+            />
+            <polygon
+              points="40,120 200,120 240,20"
+              fill="rgba(26,111,181,0.1)"
+            />
+            <text
+              x="150"
+              y="100"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="700"
+              fill="#1a6fb5"
+            >
+              one triangle
+            </text>
+            <text
+              x="130"
+              y="136"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="700"
+              fill="#0f2b3c"
+            >
+              14 ft
+            </text>
+            <line
+              x1="80"
+              y1="20"
+              x2="80"
+              y2="120"
+              stroke="#5e6e7e"
+              stroke-width="1.5"
+              stroke-dasharray="4,3"
+            />
+            <text
+              x="68"
+              y="74"
+              text-anchor="end"
+              font-size="13"
+              font-weight="700"
+              fill="#5e6e7e"
+            >
+              10 ft
+            </text>
+          </svg>
+        </div>
+        <div class="fill-row">
+          <span class="fill-text">Area of one triangle =</span>
+          <input
+            class="fill-input"
+            data-answer="70"
+            placeholder="?"
+            aria-label="area of one triangle"
+          />
+          <span class="fill-text">ft&sup2;</span>
+        </div>
+        <button class="check-btn" id="c1-check">Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Explain your reasoning:</div>
+          <textarea
+            class="explain-input"
+            placeholder="The parallelogram's area is... so one triangle is..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "The parallelogram has area ___ &times; ___ = ___.
+            One triangle is half: ___ &divide; 2 = ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Excellent! Parallelogram area = 14 &times; 10 = 140 ft&sup2;. One
+            triangle = 140 &divide; 2 = 70 ft&sup2;.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Parallelogram area = 14 &times; 10 = 140 ft&sup2;. One triangle =
+            140 &divide; 2 = <strong>70 ft&sup2;</strong>.</span
+          >
+        </div>
+      </article>
+    </main>
+
+    <footer class="score-bar">
+      <div class="score-inner">
+        <span class="score-text"
+          ><span id="scoreCount">0</span> of
+          <span id="scoreTotal">8</span> correct</span
+        >
+        <button class="reset-btn" id="resetBtn">Start Over</button>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const ANSWERS = {
+          w1: "b",
+          w2: "b",
+          p2: "b",
+          p3: "a",
+        };
+
+        let score = 0;
+        let total = 0;
+        const totalQ = 8;
+
+        // Level toggle
+        const levelBtns = document.querySelectorAll(".level-btn");
+        const levelDesc = document.getElementById("levelDesc");
+        const descs = {
+          1: "Guided practice with vocabulary support",
+          2: "Grade-level practice with explanations",
+        };
+        levelBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            levelBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.body.className = "level-" + btn.dataset.level;
+            levelDesc.textContent = descs[btn.dataset.level];
+          });
+        });
+
+        function updateProgress() {
+          const pct = Math.round((total / totalQ) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("scoreCount").textContent = score;
+        }
+
+        // MC questions
+        document.querySelectorAll(".mc-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".mc-btn");
+          let answered = false;
+
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".mc-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => {
+              b.classList.add("locked");
+              if (b.dataset.val === ANSWERS[qId]) b.classList.add("is-correct");
+            });
+            if (!correct) selected.classList.add("is-wrong");
+            if (correct) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // Fill-in questions (P1, P4, P5, C1)
+        ["p1-check", "p4-check", "p5-check", "c1-check"].forEach((id) => {
+          const btn = document.getElementById(id);
+          if (btn) {
+            btn.addEventListener("click", function () {
+              const card = this.closest(".q-card");
+              const inputs = card.querySelectorAll(".fill-input");
+              let allCorrect = true;
+              inputs.forEach((inp) => {
+                const val = inp.value.trim();
+                const ans = inp.dataset.answer;
+                if (val === ans) {
+                  inp.classList.add("is-correct");
+                } else {
+                  inp.classList.add("is-wrong");
+                  allCorrect = false;
+                }
+                inp.readOnly = true;
+              });
+              total++;
+              if (allCorrect) {
+                score++;
+                card.classList.add("correct");
+              } else {
+                card.classList.add("incorrect");
+              }
+              this.disabled = true;
+              updateProgress();
+            });
+          }
+        });
+
+        // Reset
+        document.getElementById("resetBtn").addEventListener("click", () => {
+          score = 0;
+          total = 0;
+          document.querySelectorAll(".q-card").forEach((card) => {
+            card.classList.remove("correct", "incorrect");
+          });
+          document.querySelectorAll(".mc-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".tf-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".fill-input").forEach((inp) => {
+            inp.classList.remove("is-correct", "is-wrong");
+            inp.value = "";
+            inp.readOnly = false;
+          });
+          document
+            .querySelectorAll(".check-btn")
+            .forEach((b) => (b.disabled = false));
+          document
+            .querySelectorAll(".explain-input")
+            .forEach((t) => (t.value = ""));
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        updateProgress();
+      })();
+    </script>
+  </body>
+</html>

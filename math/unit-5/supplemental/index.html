@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/shared.css" />
+  <title>Unit 5 Supplemental — Geometry &amp; Measurement | Neft Teacher</title>
+  <style>
+    :root {
+      --esol-primary: #0891b2;
+      --esol-light: #ecfeff;
+      --esol-border: #a5f3fc;
+      --esol-dark: #155e75;
+      --enrich-primary: #7c3aed;
+      --enrich-light: #faf5ff;
+      --enrich-border: #c4b5fd;
+      --enrich-dark: #4c1d95;
+      --enrich-gold: #d97706;
+      --enrich-gold-light: #fffbeb;
+    }
+
+    .supp-shell {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    .supp-header {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--line);
+      border-top: 6px solid var(--teal);
+      border-radius: var(--radius);
+      padding: clamp(24px, 4vw, 40px);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .supp-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 8px; }
+    .supp-header .standards { color: var(--muted); font-size: 0.95rem; }
+
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 28px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 2px solid var(--line);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 800;
+      text-align: center;
+      transition: background 0.2s, color 0.2s;
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .tab-btn.esol-btn.active {
+      background: var(--esol-primary);
+      color: #fff;
+    }
+
+    .tab-btn.enrich-btn.active {
+      background: var(--enrich-primary);
+      color: #fff;
+    }
+
+    .tab-btn:hover:not(.active) { background: var(--surface-soft); }
+
+    .tab-panel { display: none; animation: fadeUp 0.3s ease; }
+    .tab-panel.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-block {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 6px 18px rgba(23,32,42,0.06);
+    }
+
+    .esol-section { border-left: 5px solid var(--esol-primary); }
+    .enrich-section { border-left: 5px solid var(--enrich-primary); }
+
+    .section-block h2 {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .esol-section h2 { color: var(--esol-dark); }
+    .enrich-section h2 { color: var(--enrich-dark); }
+
+    /* Visual vocabulary cards */
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .vocab-card {
+      background: var(--esol-light);
+      border: 1px solid var(--esol-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      text-align: center;
+    }
+
+    .vocab-card svg { display: block; margin: 0 auto 10px; }
+    .vocab-term { font-size: 1.15rem; font-weight: 800; color: var(--esol-dark); }
+    .vocab-spanish { font-size: 0.88rem; color: var(--esol-primary); font-style: italic; margin: 2px 0 6px; }
+    .vocab-def { font-size: 0.92rem; color: var(--ink); }
+
+    /* Sentence frames */
+    .sentence-frame {
+      background: var(--esol-light);
+      border: 1px solid var(--esol-border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .sentence-frame .blank {
+      display: inline-block;
+      min-width: 80px;
+      border-bottom: 2px dashed var(--esol-primary);
+      margin: 0 4px;
+    }
+
+    /* Step-by-step guide */
+    .step-guide {
+      counter-reset: step;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .step:last-child { border-bottom: none; }
+
+    .step-num {
+      counter-increment: step;
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .esol-section .step-num { background: var(--esol-primary); }
+    .enrich-section .step-num { background: var(--enrich-primary); }
+
+    .step-content { flex: 1; }
+    .step-content p { margin-bottom: 6px; }
+
+    /* Practice problems */
+    .problem {
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .problem-num {
+      font-weight: 800;
+      color: var(--esol-dark);
+      margin-bottom: 6px;
+    }
+
+    .enrich-section .problem-num { color: var(--enrich-dark); }
+
+    .hint-toggle, .answer-toggle {
+      display: inline-block;
+      padding: 6px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-top: 8px;
+      margin-right: 6px;
+      transition: background 0.15s;
+    }
+
+    .hint-toggle:hover, .answer-toggle:hover { background: #e2e8f0; }
+
+    .hint-content, .answer-content {
+      display: none;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+    }
+
+    .hint-content {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+    }
+
+    .answer-content {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    .hint-content.show, .answer-content.show { display: block; }
+
+    /* Real-world connections */
+    .scenario-card {
+      background: linear-gradient(135deg, var(--esol-light), #fff);
+      border: 1px solid var(--esol-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 14px;
+    }
+
+    .enrich-section .scenario-card {
+      background: linear-gradient(135deg, var(--enrich-light), #fff);
+      border-color: var(--enrich-border);
+    }
+
+    .scenario-card h4 { margin-bottom: 8px; color: var(--ink); }
+    .scenario-card p { font-size: 0.95rem; color: var(--muted); margin-bottom: 0; }
+
+    /* Brain teasers */
+    .teaser-card {
+      background: linear-gradient(135deg, var(--enrich-gold-light), #fff);
+      border: 1px solid #fbbf24;
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 14px;
+    }
+
+    .teaser-card h4 { color: var(--enrich-gold); margin-bottom: 8px; }
+
+    /* Self-assessment checklist */
+    .checklist label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .checklist label:last-child { border-bottom: none; }
+
+    .checklist input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--enrich-primary);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 99px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--enrich-primary), var(--enrich-gold));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* Extension topics */
+    .extension-card {
+      background: var(--enrich-light);
+      border: 1px solid var(--enrich-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .extension-card h4 { color: var(--enrich-dark); margin-bottom: 6px; }
+    .extension-card p { font-size: 0.92rem; margin-bottom: 0; }
+
+    /* Print button */
+    .print-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .print-btn:hover { background: var(--teal-dark); }
+
+    /* SVG inside worked examples */
+    .worked-svg { display: block; margin: 12px auto; max-width: 100%; }
+
+    @media print {
+      .tab-bar, .print-btn, .hint-toggle, .answer-toggle { display: none; }
+      .tab-panel { display: block !important; }
+      .hint-content, .answer-content { display: block !important; }
+      .section-block { break-inside: avoid; }
+    }
+
+    @media (max-width: 620px) {
+      .vocab-grid { grid-template-columns: 1fr; }
+      .tab-btn { font-size: 0.88rem; padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="supp-shell">
+    <nav class="breadcrumb">
+      <a href="/">Home</a><span> / </span><a href="/math/">Math</a><span> / </span><a href="/math/unit-5/">Unit 5</a><span> / </span><span>Supplemental</span>
+    </nav>
+
+    <div class="supp-header">
+      <p class="eyebrow">Reveal Math &middot; Unit 5 &middot; Supplemental Resources</p>
+      <h1>Geometry &amp; Measurement</h1>
+      <p class="standards">Standards: 6.G.A.1 (Area of polygons) &middot; 6.G.A.2 (Volume) &middot; 6.G.A.4 (Surface Area)</p>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print
+    </button>
+
+    <div class="tab-bar">
+      <button class="tab-btn esol-btn active" data-tab="esol" onclick="switchTab('esol')">ESOL Support</button>
+      <button class="tab-btn enrich-btn" data-tab="enrich" onclick="switchTab('enrich')">Enrichment</button>
+    </div>
+
+    <!-- =========================================== -->
+    <!--              ESOL SUPPORT TAB               -->
+    <!-- =========================================== -->
+    <div id="esol-panel" class="tab-panel active">
+
+      <!-- Visual Vocabulary -->
+      <div class="section-block esol-section">
+        <h2>Visual Vocabulary</h2>
+        <div class="vocab-grid">
+
+          <div class="vocab-card">
+            <svg width="120" height="80" viewBox="0 0 120 80">
+              <polygon points="10,70 110,70 90,10 30,10" fill="#cffafe" stroke="#0891b2" stroke-width="2"/>
+              <line x1="30" y1="10" x2="30" y2="70" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3"/>
+              <text x="18" y="45" font-size="10" fill="#d97706">h</text>
+              <text x="50" y="78" font-size="10" fill="#0891b2">b</text>
+            </svg>
+            <div class="vocab-term">Parallelogram</div>
+            <div class="vocab-spanish">Paralelogramo</div>
+            <div class="vocab-def">A shape with 2 pairs of parallel sides. Area = base &times; height</div>
+          </div>
+
+          <div class="vocab-card">
+            <svg width="120" height="80" viewBox="0 0 120 80">
+              <polygon points="60,8 10,72 110,72" fill="#cffafe" stroke="#0891b2" stroke-width="2"/>
+              <line x1="60" y1="8" x2="60" y2="72" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3"/>
+              <text x="48" y="45" font-size="10" fill="#d97706">h</text>
+              <text x="50" y="80" font-size="10" fill="#0891b2">b</text>
+            </svg>
+            <div class="vocab-term">Triangle</div>
+            <div class="vocab-spanish">Tri&aacute;ngulo</div>
+            <div class="vocab-def">A shape with 3 sides. Area = &frac12; &times; base &times; height</div>
+          </div>
+
+          <div class="vocab-card">
+            <svg width="120" height="80" viewBox="0 0 120 80">
+              <polygon points="25,10 95,10 110,70 10,70" fill="#cffafe" stroke="#0891b2" stroke-width="2"/>
+              <line x1="25" y1="10" x2="25" y2="70" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3"/>
+              <text x="13" y="45" font-size="10" fill="#d97706">h</text>
+              <text x="52" y="7" font-size="9" fill="#0891b2">b&#8321;</text>
+              <text x="52" y="80" font-size="9" fill="#0891b2">b&#8322;</text>
+            </svg>
+            <div class="vocab-term">Trapezoid</div>
+            <div class="vocab-spanish">Trapecio</div>
+            <div class="vocab-def">A shape with exactly 1 pair of parallel sides. Area = &frac12;(b&#8321; + b&#8322;) &times; h</div>
+          </div>
+
+          <div class="vocab-card">
+            <svg width="120" height="80" viewBox="0 0 120 80">
+              <rect x="15" y="10" width="90" height="50" fill="none" stroke="#0891b2" stroke-width="2"/>
+              <rect x="15" y="10" width="90" height="50" fill="#cffafe" opacity="0.5"/>
+              <line x1="15" y1="60" x2="15" y2="10" stroke="#d97706" stroke-width="2"/>
+              <line x1="15" y1="60" x2="45" y2="75" stroke="#0891b2" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <line x1="105" y1="60" x2="105" y2="10" stroke="#0891b2" stroke-width="2"/>
+              <text x="7" y="40" font-size="10" fill="#d97706">h</text>
+              <text x="50" y="68" font-size="10" fill="#0891b2">w</text>
+              <text x="108" y="40" font-size="10" fill="#0891b2">l</text>
+            </svg>
+            <div class="vocab-term">Rectangular Prism</div>
+            <div class="vocab-spanish">Prisma rectangular</div>
+            <div class="vocab-def">A 3D box shape. Volume = length &times; width &times; height</div>
+          </div>
+
+          <div class="vocab-card">
+            <svg width="120" height="80" viewBox="0 0 120 80">
+              <text x="10" y="25" font-size="11" fill="#0891b2" font-weight="700">Volume</text>
+              <text x="10" y="42" font-size="11" fill="#155e75">= how much space</text>
+              <text x="10" y="56" font-size="11" fill="#155e75">inside a 3D shape</text>
+              <text x="10" y="73" font-size="10" fill="#d97706">units&#179;</text>
+            </svg>
+            <div class="vocab-term">Volume</div>
+            <div class="vocab-spanish">Volumen</div>
+            <div class="vocab-def">The space inside a 3D shape. Measured in cubic units.</div>
+          </div>
+
+          <div class="vocab-card">
+            <svg width="120" height="80" viewBox="0 0 120 80">
+              <rect x="20" y="20" width="40" height="30" fill="none" stroke="#0891b2" stroke-width="2"/>
+              <rect x="60" y="20" width="40" height="30" fill="none" stroke="#0891b2" stroke-width="2"/>
+              <rect x="20" y="50" width="40" height="30" fill="none" stroke="#0891b2" stroke-width="2"/>
+              <text x="30" y="40" font-size="9" fill="#d97706">face</text>
+              <text x="70" y="40" font-size="9" fill="#d97706">face</text>
+            </svg>
+            <div class="vocab-term">Surface Area</div>
+            <div class="vocab-spanish">&Aacute;rea de superficie</div>
+            <div class="vocab-def">The total area of all faces of a 3D shape. Measured in square units.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sentence Frames -->
+      <div class="section-block esol-section">
+        <h2>Sentence Frames</h2>
+        <div class="sentence-frame">The area of this parallelogram is <span class="blank">&nbsp;</span> because the base is <span class="blank">&nbsp;</span> and the height is <span class="blank">&nbsp;</span>.</div>
+        <div class="sentence-frame">To find the area of a triangle, I multiply <span class="blank">&nbsp;</span> &times; <span class="blank">&nbsp;</span> and then divide by <span class="blank">&nbsp;</span>.</div>
+        <div class="sentence-frame">A trapezoid has two bases. I add <span class="blank">&nbsp;</span> + <span class="blank">&nbsp;</span>, multiply by the height, then take <span class="blank">&nbsp;</span> of that.</div>
+        <div class="sentence-frame">The volume of this rectangular prism is <span class="blank">&nbsp;</span> cubic units because <span class="blank">&nbsp;</span> &times; <span class="blank">&nbsp;</span> &times; <span class="blank">&nbsp;</span> = <span class="blank">&nbsp;</span>.</div>
+        <div class="sentence-frame">Surface area is different from volume because surface area measures <span class="blank">&nbsp;</span> and volume measures <span class="blank">&nbsp;</span>.</div>
+        <div class="sentence-frame">This shape is a <span class="blank">&nbsp;</span> because it has <span class="blank">&nbsp;</span> sides and <span class="blank">&nbsp;</span> pair(s) of parallel sides.</div>
+      </div>
+
+      <!-- Step-by-Step Visual Guide -->
+      <div class="section-block esol-section">
+        <h2>Step-by-Step: Find the Area of a Triangle</h2>
+        <svg class="worked-svg" width="280" height="140" viewBox="0 0 280 140">
+          <polygon points="140,10 30,120 250,120" fill="#ecfeff" stroke="#0891b2" stroke-width="2.5"/>
+          <line x1="140" y1="10" x2="140" y2="120" stroke="#d97706" stroke-width="2" stroke-dasharray="6,4"/>
+          <text x="145" y="72" font-size="14" fill="#d97706" font-weight="700">h = 8 cm</text>
+          <text x="110" y="136" font-size="14" fill="#0891b2" font-weight="700">b = 12 cm</text>
+        </svg>
+        <div class="step-guide">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content"><p><strong>Find the base (b).</strong> The base is the bottom side. Here, b = 12 cm.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content"><p><strong>Find the height (h).</strong> The height goes straight up from the base. Here, h = 8 cm.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content"><p><strong>Use the formula:</strong> Area = &frac12; &times; b &times; h</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-content"><p><strong>Plug in numbers:</strong> Area = &frac12; &times; 12 &times; 8 = &frac12; &times; 96 = <strong>48 cm&sup2;</strong></p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step-by-step: Volume -->
+      <div class="section-block esol-section">
+        <h2>Step-by-Step: Find the Volume of a Rectangular Prism</h2>
+        <svg class="worked-svg" width="220" height="160" viewBox="0 0 220 160">
+          <polygon points="30,110 30,40 90,10 90,80" fill="#ecfeff" stroke="#0891b2" stroke-width="2"/>
+          <polygon points="30,110 90,80 190,80 130,110" fill="#cffafe" stroke="#0891b2" stroke-width="2"/>
+          <polygon points="90,10 190,10 190,80 90,80" fill="#e0f7fa" stroke="#0891b2" stroke-width="2"/>
+          <text x="50" y="100" font-size="12" fill="#d97706" font-weight="700">5 in</text>
+          <text x="130" y="100" font-size="12" fill="#0891b2" font-weight="700">10 in</text>
+          <text x="192" y="52" font-size="12" fill="#155e75" font-weight="700">3 in</text>
+        </svg>
+        <div class="step-guide">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content"><p><strong>Find length, width, height.</strong> l = 10 in, w = 5 in, h = 3 in.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content"><p><strong>Use the formula:</strong> V = l &times; w &times; h</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content"><p><strong>Multiply:</strong> V = 10 &times; 5 &times; 3 = <strong>150 in&sup3;</strong></p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simplified Practice -->
+      <div class="section-block esol-section">
+        <h2>Practice Problems</h2>
+
+        <div class="problem">
+          <div class="problem-num">Problem 1</div>
+          <p>A parallelogram has a base of 6 cm and a height of 4 cm. What is the area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Area = base &times; height. Multiply 6 &times; 4.</div>
+          <div class="answer-content"><strong>24 cm&sup2;</strong> &mdash; Area = 6 &times; 4 = 24</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 2</div>
+          <p>A triangle has a base of 10 in and a height of 6 in. What is the area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Area = &frac12; &times; base &times; height. First find 10 &times; 6, then divide by 2.</div>
+          <div class="answer-content"><strong>30 in&sup2;</strong> &mdash; &frac12; &times; 10 &times; 6 = &frac12; &times; 60 = 30</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 3</div>
+          <p>A trapezoid has bases of 8 m and 4 m, and a height of 5 m. What is the area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Area = &frac12;(b&#8321; + b&#8322;) &times; h. Add the two bases first: 8 + 4 = 12.</div>
+          <div class="answer-content"><strong>30 m&sup2;</strong> &mdash; &frac12;(8 + 4) &times; 5 = &frac12; &times; 12 &times; 5 = 30</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 4</div>
+          <p>A box is 4 cm long, 3 cm wide, and 2 cm tall. What is its volume?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">V = length &times; width &times; height. Multiply 4 &times; 3 &times; 2.</div>
+          <div class="answer-content"><strong>24 cm&sup3;</strong> &mdash; 4 &times; 3 &times; 2 = 24</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 5</div>
+          <p>A rectangular prism is 10 ft long, 5 ft wide, and 2 ft tall. What is its volume?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">V = l &times; w &times; h. Multiply all three numbers.</div>
+          <div class="answer-content"><strong>100 ft&sup3;</strong> &mdash; 10 &times; 5 &times; 2 = 100</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 6</div>
+          <p>A cube has sides of 3 inches. What is its surface area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">A cube has 6 equal faces. Each face is 3 &times; 3 = 9. Multiply 9 &times; 6.</div>
+          <div class="answer-content"><strong>54 in&sup2;</strong> &mdash; Each face = 3 &times; 3 = 9, and 9 &times; 6 = 54</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 7</div>
+          <p>A triangle has a base of 8 cm and a height of 3 cm. What is the area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Area = &frac12; &times; 8 &times; 3.</div>
+          <div class="answer-content"><strong>12 cm&sup2;</strong> &mdash; &frac12; &times; 8 &times; 3 = 12</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 8</div>
+          <p>A parallelogram has a base of 9 m and a height of 5 m. What is the area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Area = base &times; height.</div>
+          <div class="answer-content"><strong>45 m&sup2;</strong> &mdash; 9 &times; 5 = 45</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 9</div>
+          <p>A rectangular prism is 6 in long, 4 in wide, and 3 in tall. What is the surface area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Find area of each pair of faces: top/bottom = 6&times;4, front/back = 6&times;3, left/right = 4&times;3. Multiply each by 2 and add.</div>
+          <div class="answer-content"><strong>108 in&sup2;</strong> &mdash; 2(6&times;4) + 2(6&times;3) + 2(4&times;3) = 48 + 36 + 24 = 108</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Problem 10</div>
+          <p>A trapezoid has bases of 6 ft and 10 ft and a height of 4 ft. What is the area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Area = &frac12;(b&#8321; + b&#8322;) &times; h = &frac12;(6 + 10) &times; 4.</div>
+          <div class="answer-content"><strong>32 ft&sup2;</strong> &mdash; &frac12;(16) &times; 4 = 8 &times; 4 = 32</div>
+        </div>
+      </div>
+
+      <!-- Real-World Connections -->
+      <div class="section-block esol-section">
+        <h2>Real-World Connections</h2>
+
+        <div class="scenario-card">
+          <h4>Wrapping a Gift Box</h4>
+          <p>When you wrap a present, you need to cover all the faces. That is surface area! A box that is 12 in &times; 8 in &times; 6 in needs 2(12&times;8) + 2(12&times;6) + 2(8&times;6) = 432 in&sup2; of wrapping paper.</p>
+        </div>
+
+        <div class="scenario-card">
+          <h4>Painting a Wall</h4>
+          <p>A wall is shaped like a rectangle. If it is 10 ft wide and 8 ft tall, you need paint for 80 ft&sup2;. If the wall has a triangle-shaped window (base 3 ft, height 2 ft), subtract &frac12; &times; 3 &times; 2 = 3 ft&sup2;. You need 77 ft&sup2; of paint.</p>
+        </div>
+
+        <div class="scenario-card">
+          <h4>Filling a Fish Tank</h4>
+          <p>A fish tank is a rectangular prism. If it is 20 in long, 10 in wide, and 12 in tall, the volume = 20 &times; 10 &times; 12 = 2,400 in&sup3; of water.</p>
+        </div>
+
+        <div class="scenario-card">
+          <h4>Garden Bed</h4>
+          <p>A garden bed shaped like a trapezoid with bases 6 ft and 10 ft and height 4 ft has an area of &frac12;(6+10) &times; 4 = 32 ft&sup2; for planting.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =========================================== -->
+    <!--            ENRICHMENT TAB                   -->
+    <!-- =========================================== -->
+    <div id="enrich-panel" class="tab-panel">
+
+      <!-- Challenge Problems -->
+      <div class="section-block enrich-section">
+        <h2>Challenge Problems</h2>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 1</div>
+          <p>A composite figure is made of a rectangle (12 cm &times; 8 cm) with a triangle on top (base 12 cm, height 5 cm). Find the total area.</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Find each area separately and add them together.</div>
+          <div class="answer-content"><strong>126 cm&sup2;</strong> &mdash; Rectangle: 12 &times; 8 = 96. Triangle: &frac12; &times; 12 &times; 5 = 30. Total: 96 + 30 = 126.</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 2</div>
+          <p>A rectangular prism has a volume of 360 cm&sup3;. Its length is 10 cm and width is 6 cm. What is its height?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">V = l &times; w &times; h. Divide both sides by l &times; w to find h.</div>
+          <div class="answer-content"><strong>6 cm</strong> &mdash; 360 &divide; (10 &times; 6) = 360 &divide; 60 = 6</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 3</div>
+          <p>A triangular prism has a triangular face with base 6 in and height 4 in, and the prism is 10 in long. Find the volume.</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Volume of a triangular prism = area of triangle base &times; length.</div>
+          <div class="answer-content"><strong>120 in&sup3;</strong> &mdash; Triangle area = &frac12; &times; 6 &times; 4 = 12. Volume = 12 &times; 10 = 120.</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 4</div>
+          <p>A room is 15 ft long, 12 ft wide, and 9 ft tall. How much paint is needed to cover all four walls (ignore windows and doors)?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Find the area of each wall: two walls are 15 &times; 9 and two walls are 12 &times; 9.</div>
+          <div class="answer-content"><strong>486 ft&sup2;</strong> &mdash; 2(15 &times; 9) + 2(12 &times; 9) = 270 + 216 = 486</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 5</div>
+          <p>A box has a surface area of 214 cm&sup2;. Its length is 7 cm and width is 5 cm. Find the height.</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">SA = 2(lw + lh + wh). Plug in known values: 214 = 2(35 + 7h + 5h). Solve for h.</div>
+          <div class="answer-content"><strong>6 cm</strong> &mdash; 214 = 2(35 + 7h + 5h) = 70 + 24h. 144 = 24h. h = 6 cm.</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 6</div>
+          <p>Two rectangular prisms are glued together. Prism A is 4 &times; 3 &times; 2 and Prism B is 4 &times; 3 &times; 5. They share a 4 &times; 3 face. What is the total surface area of the combined shape?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Find each SA separately, then subtract 2 &times; the shared face area (one from each prism).</div>
+          <div class="answer-content"><strong>122 cm&sup2;</strong> &mdash; SA(A) = 2(4&times;3 + 4&times;2 + 3&times;2) = 2(12+8+6) = 52. SA(B) = 2(4&times;3 + 4&times;5 + 3&times;5) = 2(12+20+15) = 94. Subtract 2 shared faces: 52 + 94 &minus; 2(12) = 122.</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 7</div>
+          <p>A trapezoid has an area of 84 m&sup2;. One base is 10 m and the height is 7 m. What is the other base?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">84 = &frac12;(10 + b&#8322;) &times; 7. Solve for b&#8322;.</div>
+          <div class="answer-content"><strong>14 m</strong> &mdash; 84 = &frac12;(10 + b&#8322;)(7) &rarr; 84 = 3.5(10 + b&#8322;) &rarr; 24 = 10 + b&#8322; &rarr; b&#8322; = 14</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 8</div>
+          <p>A rectangular prism is made of unit cubes. It uses 120 cubes total. If the base is 6 cubes &times; 5 cubes, how many layers tall is it?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Each layer has 6 &times; 5 = 30 cubes. How many layers to reach 120?</div>
+          <div class="answer-content"><strong>4 layers</strong> &mdash; 120 &divide; 30 = 4</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 9</div>
+          <p>A square pyramid has a base edge of 8 cm and 4 triangular faces, each with a slant height of 10 cm. What is the total surface area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">SA = base area + 4 &times; triangle face area. Base = 8&sup2;. Each triangle = &frac12; &times; 8 &times; 10.</div>
+          <div class="answer-content"><strong>224 cm&sup2;</strong> &mdash; Base = 64. Each face = &frac12; &times; 8 &times; 10 = 40. Total = 64 + 4(40) = 64 + 160 = 224.</div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-num">Challenge 10</div>
+          <p>An L-shaped room can be split into two rectangles: 10 ft &times; 6 ft and 8 ft &times; 4 ft. What is the total floor area?</p>
+          <span class="hint-toggle" onclick="toggleHint(this)">Show Hint</span>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="hint-content">Find each area, then add.</div>
+          <div class="answer-content"><strong>92 ft&sup2;</strong> &mdash; 10 &times; 6 = 60, 8 &times; 4 = 32, Total = 60 + 32 = 92</div>
+        </div>
+      </div>
+
+      <!-- Real-World Investigations -->
+      <div class="section-block enrich-section">
+        <h2>Real-World Investigations</h2>
+
+        <div class="scenario-card">
+          <h4>Investigation 1: Design Your Dream Room</h4>
+          <p>Draw a floor plan of your dream bedroom on grid paper. Include at least one non-rectangular feature (triangular reading nook, trapezoid closet). Calculate the total floor area of your room. Then calculate how much carpet you would need, and how much paint for all walls (assume 8 ft ceilings). Present your calculations showing all formulas used.</p>
+        </div>
+
+        <div class="scenario-card">
+          <h4>Investigation 2: Package Design Challenge</h4>
+          <p>A cereal company wants to redesign their box. The current box is 12 in &times; 8 in &times; 2.5 in. Design a new box with the same volume but a different shape. Calculate the surface area of both boxes. Which design uses less cardboard? Which would be easier to stack on a shelf? Write a proposal to the company explaining your recommendation.</p>
+        </div>
+
+        <div class="scenario-card">
+          <h4>Investigation 3: School Mural</h4>
+          <p>Your school wants a mural on a wall that is 20 ft wide and 10 ft tall. The mural design includes 3 triangles, 2 parallelograms, and 1 trapezoid. Sketch a design, label all dimensions, and calculate the area of each shape. How much total area does the mural cover? If paint costs $0.50 per ft&sup2;, what is the total cost?</p>
+        </div>
+      </div>
+
+      <!-- Brain Teasers -->
+      <div class="section-block enrich-section">
+        <h2>Brain Teasers</h2>
+
+        <div class="teaser-card">
+          <h4>Teaser 1: The Doubling Puzzle</h4>
+          <p>If you double all three dimensions of a rectangular prism, how many times larger is the new volume? How many times larger is the new surface area? Explain why they scale differently.</p>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="answer-content">Volume increases by a factor of <strong>8</strong> (2&sup3;), while surface area increases by a factor of <strong>4</strong> (2&sup2;). Volume scales with the cube of the factor because it measures 3D space; surface area scales with the square because it measures 2D faces.</div>
+        </div>
+
+        <div class="teaser-card">
+          <h4>Teaser 2: Same Area, Different Shapes</h4>
+          <p>Find three different shapes (a rectangle, a triangle, and a parallelogram) that all have an area of exactly 36 cm&sup2;. Give the dimensions for each.</p>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="answer-content">Many answers work. Example: Rectangle 9 &times; 4, Triangle with base 12 and height 6 (&frac12; &times; 12 &times; 6 = 36), Parallelogram with base 6 and height 6.</div>
+        </div>
+
+        <div class="teaser-card">
+          <h4>Teaser 3: The Impossible Net</h4>
+          <p>A student drew a net with 6 squares arranged in a cross shape (+). Can this net fold into a cube? What if you move one square? How many different nets can make a cube? (There are exactly 11!)</p>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="answer-content">Yes, the cross-shaped net (a plus sign) is one valid net for a cube. There are exactly <strong>11 unique nets</strong> that fold into a cube. Try finding all 11!</div>
+        </div>
+
+        <div class="teaser-card">
+          <h4>Teaser 4: Maximum Volume</h4>
+          <p>You have a 24 cm &times; 18 cm sheet of cardboard. You cut equal squares from each corner and fold up the sides to make an open box. If you cut 3 cm squares, what is the volume? Can you find a cut size that gives a larger volume?</p>
+          <span class="answer-toggle" onclick="toggleAnswer(this)">Show Answer</span>
+          <div class="answer-content">With 3 cm cuts: l = 18, w = 12, h = 3, V = 648 cm&sup3;. With 4 cm cuts: l = 16, w = 10, h = 4, V = 640 cm&sup3;. With 2 cm cuts: l = 20, w = 14, h = 2, V = 560 cm&sup3;. The 3 cm cut gives the best integer solution at <strong>648 cm&sup3;</strong>.</div>
+        </div>
+      </div>
+
+      <!-- Extension Topics -->
+      <div class="section-block enrich-section">
+        <h2>Where This Math Leads Next</h2>
+
+        <div class="extension-card">
+          <h4>7th Grade: Cross Sections</h4>
+          <p>In 7th grade, you will slice 3D shapes and study the 2D cross-sections. Imagine cutting a rectangular prism at an angle &mdash; what shape do you get?</p>
+        </div>
+
+        <div class="extension-card">
+          <h4>7th Grade: Circles &amp; Cylinders</h4>
+          <p>You will learn the area of circles (A = &pi;r&sup2;) and use it to find the volume of cylinders (V = &pi;r&sup2;h) and surface area of curved shapes.</p>
+        </div>
+
+        <div class="extension-card">
+          <h4>8th Grade: Cones, Spheres, &amp; Pythagorean Theorem</h4>
+          <p>Area and volume extend to cones (V = &frac13;&pi;r&sup2;h) and spheres (V = &frac43;&pi;r&sup3;). The Pythagorean theorem connects to finding slant heights and diagonals of prisms.</p>
+        </div>
+
+        <div class="extension-card">
+          <h4>High School: Trigonometry &amp; Calculus</h4>
+          <p>The area formulas you learn now are the foundation for trigonometric area calculations and integral calculus, where you find areas of any curved shape.</p>
+        </div>
+      </div>
+
+      <!-- Self-Assessment -->
+      <div class="section-block enrich-section">
+        <h2>Self-Assessment Checklist</h2>
+        <div class="checklist" id="checklist-5">
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can find the area of a parallelogram using A = bh.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can find the area of a triangle using A = &frac12;bh.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can find the area of a trapezoid using A = &frac12;(b&#8321;+b&#8322;)h.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can decompose composite figures to find total area.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can find the volume of a rectangular prism using V = lwh.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can find the surface area of prisms by adding all face areas.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can find the surface area of a pyramid.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I understand the difference between area, surface area, and volume.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can work backward from volume or surface area to find a missing dimension.</label>
+          <label><input type="checkbox" onchange="updateProgress('checklist-5','progress-5')"> I can apply geometry to real-world problems.</label>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-5"></div></div>
+      </div>
+
+    </div>
+
+    <footer class="site-footer">
+      <span>Neft Teacher &middot; Unit 5 Supplemental</span>
+      <span><span data-current-year></span></span>
+    </footer>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tab + '-panel').classList.add('active');
+      document.querySelector('.tab-btn.' + tab + '-btn').classList.add('active');
+    }
+
+    function toggleHint(el) {
+      var content = el.parentElement.querySelector('.hint-content');
+      content.classList.toggle('show');
+      el.textContent = content.classList.contains('show') ? 'Hide Hint' : 'Show Hint';
+    }
+
+    function toggleAnswer(el) {
+      var content = el.parentElement.querySelector('.answer-content');
+      content.classList.toggle('show');
+      el.textContent = content.classList.contains('show') ? 'Hide Answer' : 'Show Answer';
+    }
+
+    function updateProgress(checklistId, progressId) {
+      var cl = document.getElementById(checklistId);
+      var boxes = cl.querySelectorAll('input[type="checkbox"]');
+      var checked = cl.querySelectorAll('input[type="checkbox"]:checked').length;
+      var pct = Math.round((checked / boxes.length) * 100);
+      document.getElementById(progressId).style.width = pct + '%';
+    }
+
+    // Set current year
+    document.querySelectorAll('[data-current-year]').forEach(function(el) {
+      el.textContent = new Date().getFullYear();
+    });
+  </script>
+</body>
+</html>

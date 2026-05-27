@@ -1,0 +1,2308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 9 Supplemental — Relationships Between Variables | Neft Teacher
+    </title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --esol-primary: #0e8a7d;
+        --esol-light: #e4f5f3;
+        --esol-dark: #0a6b61;
+        --esol-accent: #1a6fb5;
+        --esol-accent-light: #e8f2fc;
+        --enrich-primary: #7c3aed;
+        --enrich-light: #f3eeff;
+        --enrich-dark: #5b21b6;
+        --enrich-accent: #d4952a;
+        --enrich-accent-light: #fdf3e0;
+        --navy: #0f2b3c;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --green: #2d874b;
+        --coral: #c45a3c;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: #fff;
+      }
+      .header h1 {
+        font-size: 1.8rem;
+        margin: 0 0 4px;
+      }
+      .header .subtitle {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 1rem;
+        margin: 0;
+      }
+
+      .shell {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px 16px 60px;
+      }
+
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        margin-bottom: 0;
+        border-bottom: 3px solid var(--line);
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        background: var(--card);
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.2s;
+        border-radius: var(--radius) var(--radius) 0 0;
+        position: relative;
+      }
+      .tab-btn.esol-tab.active {
+        color: var(--esol-primary);
+        border-top: 3px solid var(--esol-primary);
+        background: var(--esol-light);
+      }
+      .tab-btn.enrich-tab.active {
+        color: var(--enrich-primary);
+        border-top: 3px solid var(--enrich-primary);
+        background: var(--enrich-light);
+      }
+      .tab-btn:not(.active) {
+        border-top: 3px solid transparent;
+      }
+      .tab-btn:hover:not(.active) {
+        background: #f0f2f4;
+      }
+
+      .tab-panel {
+        display: none;
+        animation: fadeUp 0.3s ease;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 20px 0;
+        box-shadow: var(--shadow);
+      }
+      .esol-section .section-card {
+        border-left: 4px solid var(--esol-primary);
+      }
+      .enrich-section .section-card {
+        border-left: 4px solid var(--enrich-primary);
+      }
+      .section-card h2 {
+        font-size: 1.3rem;
+        margin: 0 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .esol-section h2 {
+        color: var(--esol-dark);
+      }
+      .enrich-section h2 {
+        color: var(--enrich-dark);
+      }
+      .section-card h3 {
+        font-size: 1.05rem;
+        margin: 16px 0 8px;
+        color: var(--ink);
+      }
+
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+      }
+      .vocab-card {
+        background: var(--esol-light);
+        border: 1px solid #c4e6e2;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+      }
+      .vocab-card svg {
+        display: block;
+        margin: 0 auto 10px;
+      }
+      .vocab-term {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--esol-dark);
+      }
+      .vocab-spanish {
+        font-size: 0.85rem;
+        color: var(--esol-primary);
+        font-style: italic;
+        margin: 2px 0;
+      }
+      .vocab-def {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .frame-list {
+        list-style: none;
+        padding: 0;
+      }
+      .frame-list li {
+        background: var(--esol-accent-light);
+        border: 1px solid #c8ddf0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 8px 0;
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+      .frame-list .blank {
+        display: inline-block;
+        min-width: 80px;
+        border-bottom: 2px solid var(--esol-accent);
+        color: var(--esol-accent);
+        font-weight: 600;
+        text-align: center;
+        padding: 0 4px;
+      }
+
+      .step-guide {
+        counter-reset: step;
+      }
+      .step-item {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .step-item:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        counter-increment: step;
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--esol-primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+      .step-num::after {
+        content: counter(step);
+      }
+      .step-content {
+        flex: 1;
+      }
+      .step-content .math-display {
+        background: var(--esol-light);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 8px 0;
+        font-size: 1.05rem;
+        font-family: "Courier New", monospace;
+      }
+      .color-ind {
+        color: var(--esol-accent);
+        font-weight: 700;
+      }
+      .color-dep {
+        color: var(--esol-primary);
+        font-weight: 700;
+      }
+      .color-result {
+        color: var(--green);
+        font-weight: 700;
+      }
+
+      .table-display {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.95rem;
+      }
+      .table-display th {
+        background: var(--esol-primary);
+        color: #fff;
+        padding: 10px 14px;
+        text-align: center;
+      }
+      .table-display td {
+        border: 1px solid var(--line);
+        padding: 10px 14px;
+        text-align: center;
+      }
+      .table-display tr:nth-child(even) td {
+        background: #f8fafb;
+      }
+      .enrich-section .table-display th {
+        background: var(--enrich-primary);
+      }
+
+      .practice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
+      }
+      .practice-item {
+        background: #fafbfc;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .practice-item .problem {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .practice-item .hint-toggle,
+      .practice-item .answer-toggle {
+        font-size: 0.85rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        font-weight: 600;
+        display: inline-block;
+        margin-right: 12px;
+      }
+      .esol-section .hint-toggle,
+      .esol-section .answer-toggle {
+        color: var(--esol-primary);
+      }
+      .enrich-section .hint-toggle,
+      .enrich-section .answer-toggle {
+        color: var(--enrich-primary);
+      }
+      .practice-item .hint-content,
+      .practice-item .answer-content {
+        display: none;
+        margin-top: 8px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      .practice-item .hint-content {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+      }
+      .practice-item .answer-content {
+        background: #e8f5e9;
+        border: 1px solid #a5d6a7;
+      }
+      .practice-item .hint-content.show,
+      .practice-item .answer-content.show {
+        display: block;
+      }
+
+      .rw-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      .rw-card {
+        border-radius: 12px;
+        padding: 20px;
+      }
+      .esol-section .rw-card {
+        background: var(--esol-accent-light);
+        border: 1px solid #c8ddf0;
+      }
+      .enrich-section .rw-card {
+        background: var(--enrich-accent-light);
+        border: 1px solid #e8d5a8;
+      }
+      .rw-card h4 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+      .rw-card p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .challenge-item {
+        background: var(--enrich-light);
+        border: 1px solid #ddd0f5;
+        border-radius: 10px;
+        padding: 16px;
+        margin: 10px 0;
+      }
+      .challenge-item .difficulty {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .difficulty.medium {
+        background: #fdf3e0;
+        color: #b8860b;
+      }
+      .difficulty.hard {
+        background: #fce4ec;
+        color: #c62828;
+      }
+      .difficulty.expert {
+        background: #ede7f6;
+        color: #4a148c;
+      }
+
+      .investigation {
+        background: var(--card);
+        border: 2px solid var(--enrich-primary);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin: 14px 0;
+      }
+      .investigation h4 {
+        color: var(--enrich-dark);
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+      .investigation p {
+        margin: 4px 0;
+        font-size: 0.92rem;
+      }
+      .investigation .materials {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      .teaser {
+        background: linear-gradient(135deg, #fdf3e0, #fff8e1);
+        border: 1px solid #ffe082;
+        border-radius: 12px;
+        padding: 18px;
+        margin: 12px 0;
+      }
+      .teaser h4 {
+        color: #b8860b;
+        margin: 0 0 6px;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .check-box {
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--enrich-primary);
+        border-radius: 6px;
+        cursor: pointer;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        background: #fff;
+      }
+      .check-box.checked {
+        background: var(--enrich-primary);
+        border-color: var(--enrich-primary);
+      }
+      .check-box.checked::after {
+        content: "\2713";
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .extension-box {
+        background: linear-gradient(135deg, var(--enrich-light), #f3eeff);
+        border-radius: var(--radius);
+        padding: 20px;
+        border: 1px solid #ddd0f5;
+        margin-top: 12px;
+      }
+      .extension-box:first-of-type {
+        margin-top: 0;
+      }
+      .extension-box h4 {
+        color: var(--enrich-dark);
+        margin: 0 0 6px;
+      }
+      .extension-box p {
+        font-size: 0.92rem;
+        margin: 4px 0;
+        color: var(--muted);
+      }
+
+      .print-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin: 16px 0;
+      }
+      .print-btn {
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+      }
+      .print-btn:hover {
+        background: #1a4a6b;
+      }
+
+      .graph-container {
+        background: #fafbfc;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        margin: 12px 0;
+        text-align: center;
+      }
+
+      @media (max-width: 600px) {
+        .header h1 {
+          font-size: 1.4rem;
+        }
+        .vocab-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .practice-grid {
+          grid-template-columns: 1fr;
+        }
+        .rw-cards {
+          grid-template-columns: 1fr;
+        }
+        .tab-btn {
+          font-size: 0.85rem;
+          padding: 10px 12px;
+        }
+      }
+
+      @media print {
+        .tab-bar,
+        .print-bar,
+        .hint-toggle,
+        .answer-toggle {
+          display: none !important;
+        }
+        .tab-panel {
+          display: block !important;
+        }
+        .tab-panel::before {
+          content: attr(data-tab-title);
+          display: block;
+          font-size: 1.4rem;
+          font-weight: 700;
+          margin: 20px 0 10px;
+          page-break-before: always;
+        }
+        .tab-panel:first-of-type::before {
+          page-break-before: auto;
+        }
+        .hint-content,
+        .answer-content {
+          display: block !important;
+        }
+        .section-card {
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <nav class="breadcrumb">
+          <a href="/">Home</a> / <a href="/math/">Math</a> /
+          <a href="/math/unit-9/">Unit 9</a> / Supplemental
+        </nav>
+        <h1>Unit 9 Supplemental Resources</h1>
+        <p class="subtitle">
+          Relationships Between Variables &mdash; Standard 6.EE.C.9
+        </p>
+      </div>
+    </header>
+
+    <div class="shell">
+      <div class="print-bar">
+        <button class="print-btn" onclick="window.print()">
+          &#128424; Print This Page
+        </button>
+      </div>
+
+      <div class="tab-bar">
+        <button
+          class="tab-btn esol-tab active"
+          data-tab="esol"
+          onclick="switchTab('esol')"
+        >
+          &#127759; ESOL Support
+        </button>
+        <button
+          class="tab-btn enrich-tab"
+          data-tab="enrich"
+          onclick="switchTab('enrich')"
+        >
+          &#127775; Enrichment
+        </button>
+      </div>
+
+      <!-- ======================== ESOL TAB ======================== -->
+      <div
+        class="tab-panel esol-section active"
+        id="tab-esol"
+        data-tab-title="ESOL Support"
+      >
+        <!-- Visual Vocabulary -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="2"
+                y="4"
+                width="24"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="8"
+                y1="10"
+                x2="20"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="8"
+                y1="14"
+                x2="17"
+                y2="14"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+              <line
+                x1="8"
+                y1="18"
+                x2="14"
+                y2="18"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+            </svg>
+            Visual Vocabulary
+          </h2>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <rect
+                  x="6"
+                  y="14"
+                  width="24"
+                  height="36"
+                  rx="3"
+                  fill="#e8f2fc"
+                  stroke="#1a6fb5"
+                  stroke-width="2"
+                />
+                <text
+                  x="18"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#1a6fb5"
+                >
+                  hours
+                </text>
+                <text
+                  x="18"
+                  y="26"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#5e6e7e"
+                >
+                  you choose
+                </text>
+                <path
+                  d="M34 32 L42 32"
+                  stroke="#5e6e7e"
+                  stroke-width="2"
+                  marker-end="url(#arrowG)"
+                />
+                <rect
+                  x="34"
+                  y="14"
+                  width="24"
+                  height="36"
+                  rx="3"
+                  fill="#e4f5f3"
+                  stroke="#0e8a7d"
+                  stroke-width="2"
+                />
+                <text
+                  x="46"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="700"
+                  fill="#0e8a7d"
+                >
+                  pay
+                </text>
+                <text
+                  x="46"
+                  y="26"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#5e6e7e"
+                >
+                  changes
+                </text>
+              </svg>
+              <div class="vocab-term">Independent Variable</div>
+              <div class="vocab-spanish">Variable independiente</div>
+              <div class="vocab-def">
+                The variable YOU choose or control. It goes on the x-axis.
+                Example: hours worked.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <rect
+                  x="6"
+                  y="14"
+                  width="52"
+                  height="36"
+                  rx="3"
+                  fill="#e4f5f3"
+                  stroke="#0e8a7d"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="11"
+                  fill="#5e6e7e"
+                >
+                  depends on input
+                </text>
+                <text
+                  x="32"
+                  y="44"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="700"
+                  fill="#0e8a7d"
+                >
+                  y = 5x
+                </text>
+              </svg>
+              <div class="vocab-term">Dependent Variable</div>
+              <div class="vocab-spanish">Variable dependiente</div>
+              <div class="vocab-def">
+                The variable that CHANGES based on the independent variable. It
+                goes on the y-axis. Example: total pay.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <rect
+                  x="4"
+                  y="10"
+                  width="56"
+                  height="44"
+                  rx="3"
+                  fill="#fff"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="4"
+                  y1="24"
+                  x2="60"
+                  y2="24"
+                  stroke="#0e8a7d"
+                  stroke-width="1"
+                />
+                <line
+                  x1="30"
+                  y1="10"
+                  x2="30"
+                  y2="54"
+                  stroke="#0e8a7d"
+                  stroke-width="1"
+                />
+                <text
+                  x="16"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="700"
+                  fill="#1a6fb5"
+                >
+                  x
+                </text>
+                <text
+                  x="45"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="700"
+                  fill="#0e8a7d"
+                >
+                  y
+                </text>
+                <text
+                  x="16"
+                  y="35"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5e6e7e"
+                >
+                  1
+                </text>
+                <text
+                  x="45"
+                  y="35"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5e6e7e"
+                >
+                  3
+                </text>
+                <text
+                  x="16"
+                  y="48"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5e6e7e"
+                >
+                  2
+                </text>
+                <text
+                  x="45"
+                  y="48"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5e6e7e"
+                >
+                  6
+                </text>
+              </svg>
+              <div class="vocab-term">Input-Output Table</div>
+              <div class="vocab-spanish">Tabla de entrada-salida</div>
+              <div class="vocab-def">
+                A table showing x-values (input) and y-values (output). It helps
+                you see the pattern.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <line
+                  x1="10"
+                  y1="54"
+                  x2="10"
+                  y2="8"
+                  stroke="#0a6b61"
+                  stroke-width="2"
+                />
+                <line
+                  x1="10"
+                  y1="54"
+                  x2="56"
+                  y2="54"
+                  stroke="#0a6b61"
+                  stroke-width="2"
+                />
+                <line
+                  x1="10"
+                  y1="54"
+                  x2="50"
+                  y2="14"
+                  stroke="#c45a3c"
+                  stroke-width="2.5"
+                />
+                <circle cx="20" cy="44" r="3" fill="#1a6fb5" />
+                <circle cx="30" cy="34" r="3" fill="#1a6fb5" />
+                <circle cx="40" cy="24" r="3" fill="#1a6fb5" />
+              </svg>
+              <div class="vocab-term">Coordinate Graph</div>
+              <div class="vocab-spanish">Gr&aacute;fico de coordenadas</div>
+              <div class="vocab-def">
+                A picture that shows the relationship between two variables.
+                Points are plotted as (x, y).
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <rect
+                  x="6"
+                  y="16"
+                  width="52"
+                  height="32"
+                  rx="4"
+                  fill="#e8f2fc"
+                  stroke="#1a6fb5"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="10"
+                  fill="#5e6e7e"
+                >
+                  rule
+                </text>
+                <text
+                  x="32"
+                  y="44"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="700"
+                  fill="#1a6fb5"
+                >
+                  y = 3x + 2
+                </text>
+              </svg>
+              <div class="vocab-term">Equation (Rule)</div>
+              <div class="vocab-spanish">Ecuaci&oacute;n (Regla)</div>
+              <div class="vocab-def">
+                A math sentence showing the relationship. You plug in x to find
+                y.
+              </div>
+            </div>
+
+            <div class="vocab-card">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <text x="10" y="24" font-size="10" fill="#5e6e7e">x=1</text>
+                <text x="10" y="40" font-size="10" fill="#5e6e7e">x=2</text>
+                <text x="10" y="56" font-size="10" fill="#5e6e7e">x=3</text>
+                <text x="40" y="24" font-size="10" fill="#0e8a7d">+4</text>
+                <text x="40" y="40" font-size="10" fill="#0e8a7d">+4</text>
+                <path
+                  d="M36 18 L36 30"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                  stroke-dasharray="3,3"
+                />
+                <path
+                  d="M36 34 L36 46"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                  stroke-dasharray="3,3"
+                />
+              </svg>
+              <div class="vocab-term">Pattern / Rate</div>
+              <div class="vocab-spanish">Patr&oacute;n / Tasa</div>
+              <div class="vocab-def">
+                The amount that y changes each time x goes up by 1. It stays the
+                same in a linear relationship.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence Frames -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="3"
+                y="5"
+                width="22"
+                height="18"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="7"
+                y1="10"
+                x2="15"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <line
+                x1="17"
+                y1="10"
+                x2="21"
+                y2="10"
+                stroke="#0e8a7d"
+                stroke-width="1"
+                stroke-dasharray="2,2"
+              />
+            </svg>
+            Sentence Frames
+          </h2>
+          <ul class="frame-list">
+            <li>
+              The <span class="blank">independent</span> variable is
+              <span class="blank">___</span> because I can choose its value.
+            </li>
+            <li>
+              The <span class="blank">dependent</span> variable is
+              <span class="blank">___</span> because it changes based on the
+              other variable.
+            </li>
+            <li>
+              The equation y = <span class="blank">___</span> shows the
+              relationship between x and y.
+            </li>
+            <li>
+              When x increases by 1, y increases by
+              <span class="blank">___</span>. This is the
+              <span class="blank">rate of change</span>.
+            </li>
+            <li>
+              To fill in the table, I <span class="blank">substitute</span> the
+              x-value into the equation to find y.
+            </li>
+            <li>
+              On the graph, the point (<span class="blank">___</span>,
+              <span class="blank">___</span>) means that when x is
+              <span class="blank">___</span>, y is
+              <span class="blank">___</span>.
+            </li>
+            <li>
+              The graph goes <span class="blank">up / down</span> from left to
+              right, which means as x increases, y
+              <span class="blank">increases / decreases</span>.
+            </li>
+          </ul>
+        </div>
+
+        <!-- Step-by-Step Visual Guides -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M14 8 L14 14 L19 14"
+                stroke="#0e8a7d"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Step-by-Step Visual Guides
+          </h2>
+
+          <h3>Example 1: Identify Independent &amp; Dependent Variables</h3>
+          <p
+            style="color: var(--muted); font-size: 0.95rem; margin-bottom: 8px"
+          >
+            <em
+              >Scenario: A baker earns $8 per hour. How does the number of hours
+              affect total pay?</em
+            >
+          </p>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Ask: Which variable do YOU choose?</strong>
+                <div class="math-display">
+                  <span class="color-ind">Hours worked (h)</span> &larr; You
+                  decide how many hours to work.
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong
+                  >Ask: Which variable CHANGES because of the other?</strong
+                >
+                <div class="math-display">
+                  <span class="color-dep">Total pay (p)</span> &larr; It depends
+                  on the hours you work.
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Write the equation:</strong>
+                <div class="math-display">
+                  <span class="color-dep">p</span> = 8 &times;
+                  <span class="color-ind">h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 24px">
+            Example 2: Complete a Table and Graph the Relationship
+          </h3>
+          <p
+            style="color: var(--muted); font-size: 0.95rem; margin-bottom: 8px"
+          >
+            <em>Equation: y = 2x + 1</em>
+          </p>
+          <div class="step-guide">
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Make a table.</strong> Choose x-values and plug them in.
+                <table class="table-display">
+                  <tr>
+                    <th>x (input)</th>
+                    <th>y = 2x + 1</th>
+                    <th>y (output)</th>
+                    <th>(x, y)</th>
+                  </tr>
+                  <tr>
+                    <td>0</td>
+                    <td>2(0) + 1</td>
+                    <td>1</td>
+                    <td>(0, 1)</td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>2(1) + 1</td>
+                    <td>3</td>
+                    <td>(1, 3)</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>2(2) + 1</td>
+                    <td>5</td>
+                    <td>(2, 5)</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>2(3) + 1</td>
+                    <td>7</td>
+                    <td>(3, 7)</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>2(4) + 1</td>
+                    <td>9</td>
+                    <td>(4, 9)</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Plot each (x, y) point on the graph.</strong>
+                <div class="graph-container">
+                  <svg width="280" height="220" viewBox="0 0 280 220">
+                    <!-- Grid -->
+                    <line
+                      x1="40"
+                      y1="10"
+                      x2="40"
+                      y2="200"
+                      stroke="#e2e7ec"
+                      stroke-width="1"
+                    />
+                    <line
+                      x1="40"
+                      y1="200"
+                      x2="270"
+                      y2="200"
+                      stroke="#e2e7ec"
+                      stroke-width="1"
+                    />
+                    <!-- Y-axis labels -->
+                    <text
+                      x="30"
+                      y="200"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      0
+                    </text>
+                    <line
+                      x1="36"
+                      y1="180"
+                      x2="44"
+                      y2="180"
+                      stroke="#e2e7ec"
+                      stroke-width="1"
+                    />
+                    <text
+                      x="30"
+                      y="184"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      1
+                    </text>
+                    <line
+                      x1="36"
+                      y1="140"
+                      x2="270"
+                      y2="140"
+                      stroke="#f0f2f4"
+                      stroke-width="1"
+                    />
+                    <text
+                      x="30"
+                      y="144"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      3
+                    </text>
+                    <line
+                      x1="36"
+                      y1="100"
+                      x2="270"
+                      y2="100"
+                      stroke="#f0f2f4"
+                      stroke-width="1"
+                    />
+                    <text
+                      x="30"
+                      y="104"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      5
+                    </text>
+                    <line
+                      x1="36"
+                      y1="60"
+                      x2="270"
+                      y2="60"
+                      stroke="#f0f2f4"
+                      stroke-width="1"
+                    />
+                    <text
+                      x="30"
+                      y="64"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      7
+                    </text>
+                    <line
+                      x1="36"
+                      y1="20"
+                      x2="270"
+                      y2="20"
+                      stroke="#f0f2f4"
+                      stroke-width="1"
+                    />
+                    <text
+                      x="30"
+                      y="24"
+                      text-anchor="end"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      9
+                    </text>
+                    <!-- X-axis labels -->
+                    <text
+                      x="90"
+                      y="215"
+                      text-anchor="middle"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      1
+                    </text>
+                    <text
+                      x="140"
+                      y="215"
+                      text-anchor="middle"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      2
+                    </text>
+                    <text
+                      x="190"
+                      y="215"
+                      text-anchor="middle"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      3
+                    </text>
+                    <text
+                      x="240"
+                      y="215"
+                      text-anchor="middle"
+                      font-size="10"
+                      fill="#5e6e7e"
+                    >
+                      4
+                    </text>
+                    <!-- Axes -->
+                    <line
+                      x1="40"
+                      y1="200"
+                      x2="40"
+                      y2="10"
+                      stroke="#0a6b61"
+                      stroke-width="2"
+                    />
+                    <line
+                      x1="40"
+                      y1="200"
+                      x2="270"
+                      y2="200"
+                      stroke="#0a6b61"
+                      stroke-width="2"
+                    />
+                    <!-- Line -->
+                    <line
+                      x1="40"
+                      y1="180"
+                      x2="240"
+                      y2="20"
+                      stroke="#c45a3c"
+                      stroke-width="2"
+                      stroke-dasharray="6,4"
+                    />
+                    <!-- Points -->
+                    <circle cx="40" cy="180" r="5" fill="#1a6fb5" />
+                    <circle cx="90" cy="140" r="5" fill="#1a6fb5" />
+                    <circle cx="140" cy="100" r="5" fill="#1a6fb5" />
+                    <circle cx="190" cy="60" r="5" fill="#1a6fb5" />
+                    <circle cx="240" cy="20" r="5" fill="#1a6fb5" />
+                    <!-- Labels -->
+                    <text
+                      x="150"
+                      y="215"
+                      text-anchor="middle"
+                      font-size="11"
+                      font-weight="700"
+                      fill="#1a6fb5"
+                    >
+                      x (independent)
+                    </text>
+                    <text
+                      x="12"
+                      y="105"
+                      text-anchor="middle"
+                      font-size="11"
+                      font-weight="700"
+                      fill="#0e8a7d"
+                      transform="rotate(-90,12,105)"
+                    >
+                      y (dependent)
+                    </text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num"></div>
+              <div class="step-content">
+                <strong>Connect the points.</strong> They form a straight line!
+                The <span class="color-dep">rate of change</span> is +2 (y goes
+                up by 2 each time x goes up by 1).
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simplified Practice -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M9 14 L12 17 L19 10"
+                stroke="#0e8a7d"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+            Simplified Practice
+          </h2>
+          <div class="practice-grid">
+            <div class="practice-item">
+              <div class="problem">
+                1. A taxi charges $3 per mile. Which is the independent
+                variable: miles or total cost?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                Which variable do you choose? You decide how far to ride.
+              </div>
+              <div class="answer-content">
+                Miles is the independent variable. Total cost is the dependent
+                variable.
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                2. Write an equation: You earn $6 for each lawn you mow.
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                Let x = number of lawns. Total money = $6 times the number of
+                lawns.
+              </div>
+              <div class="answer-content">
+                y = 6x (where x = lawns mowed, y = total money earned)
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">3. For y = 4x, find y when x = 3.</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                Replace x with 3 in the equation: y = 4(3).
+              </div>
+              <div class="answer-content">y = 12</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                4. Complete the table for y = x + 5:<br />x: 0, 1, 2, 3<br />y:
+                ?, ?, ?, ?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Add 5 to each x-value to get y.</div>
+              <div class="answer-content">y: 5, 6, 7, 8</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                5. What is the ordered pair when x = 2 and y = 10?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                An ordered pair is written as (x, y).
+              </div>
+              <div class="answer-content">(2, 10)</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                6. In y = 3x + 2, what is the rate of change?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                The rate of change is the number multiplied by x. It tells you
+                how much y goes up when x goes up by 1.
+              </div>
+              <div class="answer-content">
+                The rate of change is 3. Each time x goes up by 1, y goes up by
+                3.
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                7. A plant grows 2 inches each week. After 0 weeks it is 3
+                inches tall. Write the equation.
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                The starting height is 3. It grows 2 more inches per week (w).
+              </div>
+              <div class="answer-content">
+                h = 2w + 3 (where w = weeks, h = height in inches)
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                8. Plot the points (1, 4), (2, 6), (3, 8). What equation fits
+                these points?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                Look at the pattern: when x goes up by 1, y goes up by 2. When x
+                = 1, y = 4. Try y = 2x + ?.
+              </div>
+              <div class="answer-content">
+                y = 2x + 2. Check: 2(1)+2=4, 2(2)+2=6, 2(3)+2=8. All correct!
+              </div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">9. For y = 5x, find x when y = 35.</div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">
+                Replace y with 35: 35 = 5x. Divide both sides by 5.
+              </div>
+              <div class="answer-content">x = 7</div>
+            </div>
+
+            <div class="practice-item">
+              <div class="problem">
+                10. Does the point (3, 11) fit the equation y = 3x + 2?
+              </div>
+              <button class="hint-toggle" onclick="toggleHint(this)">
+                Show Hint
+              </button>
+              <button class="answer-toggle" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-content">Plug in x = 3. Does y equal 11?</div>
+              <div class="answer-content">
+                y = 3(3) + 2 = 11. Yes! The point (3, 11) fits the equation.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Connections -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="2"
+              />
+              <path
+                d="M8 14 Q14 6 20 14 Q14 22 8 14Z"
+                fill="none"
+                stroke="#0e8a7d"
+                stroke-width="1.5"
+              />
+              <line
+                x1="14"
+                y1="3"
+                x2="14"
+                y2="25"
+                stroke="#0e8a7d"
+                stroke-width="1"
+              />
+            </svg>
+            Real-World Connections
+          </h2>
+          <div class="rw-cards">
+            <div class="rw-card">
+              <h4>&#128664; Road Trip</h4>
+              <p>
+                A car drives 60 miles per hour. Distance = 60 &times; hours. The
+                hours you drive is independent. The distance traveled is
+                dependent. After 3 hours: d = 60(3) = 180 miles.
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#127853; Lemonade Stand</h4>
+              <p>
+                You sell cups of lemonade for $2 each. Total money = 2 &times;
+                cups sold. If you sell 15 cups: y = 2(15) = $30. You choose how
+                many cups to sell (independent). Money earned depends on that
+                (dependent).
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#128247; Phone Battery</h4>
+              <p>
+                Your phone loses 5% battery per hour. Battery left = 100 &minus;
+                5h. After 4 hours: 100 &minus; 5(4) = 80%. Hours is independent,
+                battery percentage is dependent.
+              </p>
+            </div>
+            <div class="rw-card">
+              <h4>&#127793; Growing Plants</h4>
+              <p>
+                A sunflower is 10 cm tall and grows 3 cm per week. Height = 3w +
+                10. After 6 weeks: 3(6) + 10 = 28 cm. Weeks is independent,
+                height is dependent.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================== ENRICHMENT TAB ======================== -->
+      <div
+        class="tab-panel enrich-section"
+        id="tab-enrich"
+        data-tab-title="Enrichment"
+      >
+        <!-- Challenge Problems -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <polygon
+                points="14,2 18,10 26,11 20,17 21,25 14,21 7,25 8,17 2,11 10,10"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+            </svg>
+            Challenge Problems
+          </h2>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <div class="problem">
+              1. A gym membership costs $25 per month plus a one-time $50 signup
+              fee. Write an equation for total cost (c) based on months (m). How
+              much do you pay after 8 months?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Total cost = monthly fee &times; months + signup fee.
+            </div>
+            <div class="answer-content">
+              c = 25m + 50. After 8 months: c = 25(8) + 50 = $250.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <div class="problem">
+              2. A table shows: x = {1, 2, 3, 4} and y = {7, 12, 17, 22}. Find
+              the equation relating x and y.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Find the rate of change (difference in y-values). Then figure out
+              the starting value.
+            </div>
+            <div class="answer-content">
+              Rate of change: +5. When x=1, y=7. Testing: 5(1) + 2 = 7.
+              Equation: y = 5x + 2.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty medium">Medium</span>
+            <div class="problem">
+              3. Two friends save money. Ali starts with $20 and saves $5/week.
+              Bri starts with $50 and saves $3/week. Write equations for both.
+              After how many weeks will they have the same amount?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Ali: a = 5w + 20. Bri: b = 3w + 50. Set them equal.
+            </div>
+            <div class="answer-content">
+              5w + 20 = 3w + 50 &rarr; 2w = 30 &rarr; w = 15. After 15 weeks,
+              both have $95.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <div class="problem">
+              4. A candle is 12 inches tall and burns 0.5 inches per hour. Write
+              an equation. When will the candle be completely gone? Graph the
+              relationship.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Height = starting height &minus; burn rate &times; hours. Set
+              height = 0 to find when it runs out.
+            </div>
+            <div class="answer-content">
+              h = 12 &minus; 0.5t. When h = 0: 12 &minus; 0.5t = 0 &rarr; t = 24
+              hours. The graph starts at (0, 12) and goes down to (24, 0).
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <div class="problem">
+              5. A pool is being filled at a rate of 50 gallons per minute. It
+              already has 200 gallons. The pool holds 3,200 gallons. Write an
+              equation and determine how long until it is full.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              g = 50m + 200 where g = gallons and m = minutes. Set g = 3200.
+            </div>
+            <div class="answer-content">
+              3200 = 50m + 200 &rarr; 3000 = 50m &rarr; m = 60 minutes (1 hour).
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty hard">Hard</span>
+            <div class="problem">
+              6. The graph of a relationship passes through (0, 4) and (3, 13).
+              Find the equation of the line.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Rate of change = (change in y) / (change in x) = (13 &minus; 4) /
+              (3 &minus; 0). The y-value when x = 0 is the starting value.
+            </div>
+            <div class="answer-content">
+              Rate = 9/3 = 3. Starting value = 4. Equation: y = 3x + 4.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <div class="problem">
+              7. A rental car costs $40/day plus $0.15 per mile. Another company
+              charges $60/day with unlimited miles. For what number of miles per
+              day is the first option cheaper?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Company 1: c = 40 + 0.15m. Company 2: c = 60. When is Company 1
+              less?
+            </div>
+            <div class="answer-content">
+              40 + 0.15m &lt; 60 &rarr; 0.15m &lt; 20 &rarr; m &lt; 133.3. The
+              first option is cheaper when driving fewer than 134 miles per day.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <div class="problem">
+              8. Create a table and equation for a relationship where: the
+              dependent variable starts at 100 and DECREASES by 8 each time the
+              independent variable increases by 1. When does the dependent
+              variable reach 0?
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Starts at 100, goes down by 8. Equation: y = 100 &minus; 8x. Set y
+              = 0.
+            </div>
+            <div class="answer-content">
+              y = 100 &minus; 8x. Table: (0,100), (1,92), (2,84)... When y = 0:
+              100 &minus; 8x = 0 &rarr; x = 12.5. It reaches 0 between x = 12
+              and x = 13.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <div class="problem">
+              9. A scientist records bacteria growth: Hour 0 = 10 bacteria, Hour
+              1 = 20, Hour 2 = 40, Hour 3 = 80. Is this a linear relationship?
+              Why or why not? Predict Hour 5.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Check if the DIFFERENCE between y-values is constant (linear) or
+              if the RATIO is constant (exponential).
+            </div>
+            <div class="answer-content">
+              NOT linear! Differences: 10, 20, 40 (not constant). The bacteria
+              DOUBLE each hour (ratio = 2). Hour 4 = 160, Hour 5 = 320. This is
+              exponential growth.
+            </div>
+          </div>
+
+          <div class="challenge-item">
+            <span class="difficulty expert">Expert</span>
+            <div class="problem">
+              10. Three relationships: y = 2x, y = 2x + 5, y = 2x &minus; 3.
+              Without graphing, explain what these three lines have in common
+              and how they differ.
+            </div>
+            <button class="hint-toggle" onclick="toggleHint(this)">
+              Show Hint
+            </button>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="hint-content">
+              Look at the rate of change (coefficient of x) and the starting
+              value (constant added).
+            </div>
+            <div class="answer-content">
+              All three have the same rate of change (2), so they are PARALLEL
+              lines (same steepness). They differ in where they cross the
+              y-axis: at 0, 5, and &minus;3 respectively. Same slope, different
+              y-intercepts.
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Investigations -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <line
+                x1="18"
+                y1="18"
+                x2="25"
+                y2="25"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Real-World Investigations
+          </h2>
+
+          <div class="investigation">
+            <h4>Investigation 1: School Fundraiser Comparison</h4>
+            <p>
+              Your school is choosing between two fundraiser options. Option A:
+              Sell candy bars for $2 each (no upfront cost). Option B: Sell
+              custom t-shirts for $10 each, but you must pay $120 for the
+              printing setup. Write equations for profit from each option.
+              Create tables for 0&ndash;30 items sold. Graph both on the same
+              coordinate plane. At what point does Option B become more
+              profitable? Present your recommendation with evidence.
+            </p>
+            <p class="materials">
+              Materials: graph paper, colored pencils, calculator
+            </p>
+          </div>
+
+          <div class="investigation">
+            <h4>Investigation 2: Climate Data Analyst</h4>
+            <p>
+              Research the average monthly temperature in your city (or use:
+              Jan=35, Feb=38, Mar=48, Apr=58, May=68, Jun=78, Jul=83, Aug=81,
+              Sep=74, Oct=62, Nov=50, Dec=39). Create a table with month number
+              (1&ndash;12) as the independent variable and temperature as the
+              dependent variable. Graph it. Is this relationship linear? Why
+              does this matter for understanding climate vs. weather? What
+              patterns do you notice?
+            </p>
+            <p class="materials">
+              Materials: graph paper, colored pencils, internet for local data
+              (optional)
+            </p>
+          </div>
+
+          <div class="investigation">
+            <h4>Investigation 3: Design Your Own Business</h4>
+            <p>
+              Create a small business concept. Determine: (a) your fixed costs
+              (startup expenses), (b) your variable cost per item, and (c) your
+              selling price per item. Write an equation for total cost, total
+              revenue, and profit. How many items must you sell to break even?
+              Create a complete table (0&ndash;50 items) and graph showing where
+              profit turns positive.
+            </p>
+            <p class="materials">
+              Materials: calculator, graph paper, presentation supplies
+            </p>
+          </div>
+        </div>
+
+        <!-- Brain Teasers -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <circle
+                cx="14"
+                cy="12"
+                r="9"
+                fill="none"
+                stroke="#d4952a"
+                stroke-width="2"
+              />
+              <path
+                d="M11 21 L11 25 L17 25 L17 21"
+                stroke="#d4952a"
+                stroke-width="2"
+                fill="none"
+              />
+              <line
+                x1="14"
+                y1="25"
+                x2="14"
+                y2="27"
+                stroke="#d4952a"
+                stroke-width="1.5"
+              />
+            </svg>
+            Brain Teasers
+          </h2>
+
+          <div class="teaser">
+            <h4>Teaser 1: The Function Machine</h4>
+            <p>
+              A function machine takes a number in and gives a number out. Input
+              3 &rarr; Output 11. Input 5 &rarr; Output 17. Input 10 &rarr;
+              Output 32. What is the rule? What output does input 100 give?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              Rule: y = 3x + 2. Check: 3(3)+2=11, 3(5)+2=17, 3(10)+2=32. For
+              input 100: 3(100)+2 = 302.
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 2: The Staircase Problem</h4>
+            <p>
+              You are building staircases with blocks. A 1-step staircase uses 1
+              block. A 2-step uses 3 blocks. A 3-step uses 6 blocks. How many
+              blocks for a 10-step staircase? Can you find the equation?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              Pattern: 1, 3, 6, 10, 15, 21, 28, 36, 45, 55. These are triangular
+              numbers! Equation: blocks = n(n+1)/2. For 10 steps: 10(11)/2 = 55
+              blocks. Note: This is NOT linear!
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 3: The Mystery Relationship</h4>
+            <p>
+              Two variables are related. When x = 0, y = 50. Each time x
+              increases by 1, y gets closer to 0 but NEVER reaches it. After
+              many steps, y is still positive but very tiny. Is this a linear
+              relationship? What type of relationship could this be?
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              NOT linear! A linear relationship would eventually reach 0 and go
+              negative. This describes exponential DECAY (like y = 50 &times;
+              0.5^x). Real examples: radioactive decay, cooling temperatures,
+              bouncing balls losing height.
+            </div>
+          </div>
+
+          <div class="teaser">
+            <h4>Teaser 4: The Table Detective</h4>
+            <p>
+              Someone spilled coffee on a table of values! You can only see: x =
+              {1, ?, 3, 4, ?} and y = {5, ?, 13, 17, ?}. The relationship is
+              linear. Fill in ALL missing values.
+            </p>
+            <button class="answer-toggle" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-content">
+              Rate of change: (13&minus;5)/(3&minus;1) = 8/2 = 4. So y goes up
+              by 4 for each x increase of 1. Missing x values: 2 and 5. y
+              values: 9 and 21. Equation: y = 4x + 1.
+            </div>
+          </div>
+        </div>
+
+        <!-- Extension Topics -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <path d="M14 4 L14 24" stroke="#7c3aed" stroke-width="2" />
+              <path
+                d="M14 4 L20 10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M14 4 L8 10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Where This Math Leads &mdash; 7th Grade Preview
+          </h2>
+          <div class="extension-box">
+            <h4>Proportional Relationships &amp; Slope</h4>
+            <p>
+              In 7th grade, you will study proportional relationships in depth.
+              The &quot;rate of change&quot; you learned becomes the formal
+              concept of <strong>slope</strong> (rise over run). You will learn
+              that y = mx means a proportional relationship always passes
+              through the origin (0, 0).
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Slope-Intercept Form: y = mx + b</h4>
+            <p>
+              The equations you wrote (like y = 3x + 2) are already in
+              slope-intercept form! In 7th&ndash;8th grade, you will formally
+              learn that <strong>m</strong> is the slope and
+              <strong>b</strong> is the y-intercept, and you will graph lines
+              quickly using these two values.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>Systems of Equations</h4>
+            <p>
+              Remember finding when two friends have the same savings? That is a
+              &quot;system of equations.&quot; In 8th grade, you will solve
+              these systematically using graphing, substitution, and elimination
+              methods.
+            </p>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="section-card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 28 28">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <path
+                d="M9 14 L12 17 L19 10"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+            Self-Assessment Checklist
+          </h2>
+          <p
+            style="color: var(--muted); font-size: 0.9rem; margin-bottom: 12px"
+          >
+            Click each box to track your understanding:
+          </p>
+          <ul class="checklist">
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can identify the independent and dependent variable in a
+              situation
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can write an equation showing the relationship between two
+              variables
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can create an input-output table from an equation
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can plot ordered pairs on a coordinate graph
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can find the rate of change from a table or graph
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can determine the equation from a table of values
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can connect equations, tables, and graphs to real-world
+              situations
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can compare two linear relationships and find where they
+              intersect
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can distinguish between linear and non-linear relationships
+            </li>
+            <li>
+              <div class="check-box" onclick="toggleCheck(this)"></div>
+              I can create my own real-world problem involving two-variable
+              relationships
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer
+      style="
+        text-align: center;
+        padding: 20px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border-top: 1px solid var(--line);
+      "
+    >
+      Neft Teacher &middot; Unit 9 Supplemental &middot;
+      <span data-current-year></span>
+    </footer>
+
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelector(`.tab-btn[data-tab="${tab}"]`)
+          .classList.add("active");
+        document.getElementById(`tab-${tab}`).classList.add("active");
+      }
+
+      function toggleHint(btn) {
+        const content = btn.parentElement.querySelector(".hint-content");
+        content.classList.toggle("show");
+        btn.textContent = content.classList.contains("show")
+          ? "Hide Hint"
+          : "Show Hint";
+      }
+
+      function toggleAnswer(btn) {
+        const content = btn.parentElement.querySelector(".answer-content");
+        content.classList.toggle("show");
+        btn.textContent = content.classList.contains("show")
+          ? "Hide Answer"
+          : "Show Answer";
+      }
+
+      function toggleCheck(box) {
+        box.classList.toggle("checked");
+      }
+
+      document.querySelectorAll("[data-current-year]").forEach((el) => {
+        el.textContent = new Date().getFullYear();
+      });
+    </script>
+  </body>
+</html>

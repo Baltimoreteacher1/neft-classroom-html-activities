@@ -1,0 +1,2209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <title>Unit 4 Supplemental — Decimals &amp; Percents | Neft Teacher</title>
+    <style>
+      :root {
+        --esol-primary: #0891b2;
+        --esol-light: #ecfeff;
+        --esol-border: #a5f3fc;
+        --esol-dark: #155e75;
+        --enrich-primary: #7c3aed;
+        --enrich-light: #f5f3ff;
+        --enrich-border: #c4b5fd;
+        --enrich-dark: #5b21b6;
+        --enrich-gold: #d97706;
+        --enrich-gold-light: #fffbeb;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+      }
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        border-bottom: 3px solid var(--line);
+        margin-bottom: 28px;
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        background: transparent;
+        font-size: 1.05rem;
+        font-weight: 800;
+        cursor: pointer;
+        border-bottom: 4px solid transparent;
+        margin-bottom: -3px;
+        transition: all 180ms ease;
+        font-family: inherit;
+      }
+      .tab-btn[data-tab="esol"] {
+        color: var(--esol-dark);
+      }
+      .tab-btn[data-tab="enrichment"] {
+        color: var(--enrich-dark);
+      }
+      .tab-btn.active[data-tab="esol"] {
+        border-bottom-color: var(--esol-primary);
+        background: var(--esol-light);
+      }
+      .tab-btn.active[data-tab="enrichment"] {
+        border-bottom-color: var(--enrich-primary);
+        background: var(--enrich-light);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      .supp-section {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .supp-section h3 {
+        margin: 0 0 16px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .esol-panel .supp-section {
+        border-left: 5px solid var(--esol-primary);
+      }
+      .enrich-panel .supp-section {
+        border-left: 5px solid var(--enrich-primary);
+      }
+
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .vocab-card {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        text-align: center;
+      }
+      .vocab-card svg {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 10px;
+      }
+      .vocab-term {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--esol-dark);
+      }
+      .vocab-spanish {
+        font-size: 0.88rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 2px;
+      }
+      .vocab-def {
+        font-size: 0.92rem;
+        color: var(--ink);
+        margin-top: 6px;
+        line-height: 1.45;
+      }
+
+      .sentence-frame {
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+      .sentence-frame .blank {
+        display: inline-block;
+        min-width: 80px;
+        border-bottom: 2px solid var(--esol-primary);
+        margin: 0 4px;
+      }
+
+      .step-guide {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .step-guide h4 {
+        margin: 0 0 14px;
+        color: var(--esol-dark);
+      }
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .step-num {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        background: var(--esol-primary);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+      .step-text {
+        flex: 1;
+        font-size: 0.98rem;
+        line-height: 1.5;
+      }
+      .step-text .highlight {
+        background: #fef3c7;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .step-arrow {
+        text-align: center;
+        color: var(--esol-primary);
+        font-size: 1.4rem;
+        margin: -4px 0 8px 50px;
+      }
+
+      .practice-list {
+        counter-reset: practice;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .practice-item {
+        counter-increment: practice;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        margin-bottom: 10px;
+      }
+      .practice-item::before {
+        content: counter(practice) ".";
+        font-weight: 800;
+        color: var(--esol-dark);
+        margin-right: 8px;
+      }
+      .enrich-panel .practice-item::before {
+        color: var(--enrich-dark);
+      }
+
+      .hint-btn,
+      .answer-btn {
+        padding: 6px 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: inherit;
+        margin-top: 8px;
+        margin-right: 6px;
+        transition: all 150ms ease;
+      }
+      .hint-btn:hover {
+        border-color: var(--esol-primary);
+        color: var(--esol-primary);
+      }
+      .answer-btn:hover {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .enrich-panel .hint-btn:hover {
+        border-color: var(--enrich-primary);
+        color: var(--enrich-primary);
+      }
+      .enrich-panel .answer-btn:hover {
+        border-color: var(--enrich-primary);
+        color: var(--enrich-primary);
+      }
+      .hint-box,
+      .answer-box {
+        display: none;
+        margin-top: 10px;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+      .hint-box {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+      }
+      .answer-box {
+        background: var(--success-light);
+        border: 1px solid #bbf7d0;
+      }
+      .hint-box.show,
+      .answer-box.show {
+        display: block;
+      }
+
+      .rw-card {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        background: var(--esol-light);
+        border: 1px solid var(--esol-border);
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .rw-card svg {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+      }
+      .rw-card h4 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+      }
+      .rw-card p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .challenge-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-left: 8px;
+      }
+      .badge-medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-hard {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .badge-expert {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+
+      .investigation-card {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .investigation-card h4 {
+        margin: 0 0 8px;
+        color: var(--enrich-dark);
+      }
+      .investigation-card p {
+        margin: 0 0 10px;
+        font-size: 0.95rem;
+      }
+      .investigation-steps {
+        padding-left: 20px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .investigation-steps li {
+        margin-bottom: 4px;
+      }
+
+      .brain-teaser {
+        background: var(--enrich-gold-light);
+        border: 1px solid #fde68a;
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .brain-teaser h4 {
+        margin: 0 0 6px;
+        color: var(--enrich-gold);
+      }
+
+      .extension-box {
+        background: var(--enrich-light);
+        border: 1px solid var(--enrich-border);
+        border-left: 5px solid var(--enrich-primary);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .extension-box h4 {
+        margin: 0 0 6px;
+        color: var(--enrich-dark);
+      }
+
+      .self-assess {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .self-assess li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      .self-assess li:last-child {
+        border-bottom: none;
+      }
+      .rating-btns {
+        display: flex;
+        gap: 4px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .rating-btns button {
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 150ms ease;
+        font-family: inherit;
+      }
+      .rating-btns button.selected {
+        background: var(--enrich-primary);
+        color: #fff;
+        border-color: var(--enrich-primary);
+      }
+      .rating-btns button:hover:not(.selected) {
+        border-color: var(--enrich-primary);
+      }
+
+      .print-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 12px;
+      }
+      .print-btn {
+        padding: 8px 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+      }
+      .print-btn:hover {
+        border-color: var(--teal);
+      }
+
+      /* Conversion triangle visual */
+      .conversion-tri {
+        display: flex;
+        justify-content: center;
+        margin: 16px 0;
+      }
+      .conversion-tri svg {
+        max-width: 280px;
+        width: 100%;
+      }
+
+      /* Percent bar visual */
+      .pct-bar-wrap {
+        margin: 12px 0;
+      }
+      .pct-bar {
+        height: 28px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+      }
+      .pct-fill {
+        height: 100%;
+        border-radius: 6px 0 0 6px;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .pct-bar-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      @media print {
+        body {
+          background: #fff !important;
+        }
+        .tab-bar,
+        .print-bar,
+        .hint-btn,
+        .answer-btn,
+        .rating-btns {
+          display: none !important;
+        }
+        .tab-panel {
+          display: block !important;
+        }
+        .tab-panel::before {
+          content: attr(data-print-title);
+          display: block;
+          font-size: 1.4rem;
+          font-weight: 800;
+          margin-bottom: 16px;
+          padding-bottom: 8px;
+          border-bottom: 2px solid #000;
+        }
+        .hint-box,
+        .answer-box {
+          display: block !important;
+          border: 1px solid #ccc;
+        }
+        .supp-section {
+          break-inside: avoid;
+        }
+      }
+      @media (max-width: 620px) {
+        .vocab-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .tab-btn {
+          font-size: 0.92rem;
+          padding: 12px 10px;
+        }
+        .rw-card {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span
+        ><a href="/math/unit-4/">Unit 4</a><span>/</span
+        ><span>Supplemental</span>
+      </nav>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Reveal Math · Unit 4 · Supplemental</p>
+        <h1>Decimals &amp; Percents</h1>
+        <p class="hero-copy">
+          Extra support and enrichment for decimal operations, long division,
+          fraction-decimal-percent conversions, and finding the percent of a
+          number. Standards 6.NS.B.2, 6.NS.B.3, 6.RP.A.3c.
+        </p>
+      </section>
+
+      <div class="print-bar">
+        <button class="print-btn" onclick="window.print()">
+          Print This Page
+        </button>
+      </div>
+
+      <div class="tab-bar">
+        <button
+          class="tab-btn active"
+          data-tab="esol"
+          onclick="switchTab('esol')"
+        >
+          ESOL Support
+        </button>
+        <button
+          class="tab-btn"
+          data-tab="enrichment"
+          onclick="switchTab('enrichment')"
+        >
+          Enrichment
+        </button>
+      </div>
+
+      <!-- ═══════════════════ ESOL TAB ═══════════════════ -->
+      <div
+        class="tab-panel esol-panel active"
+        id="esol-panel"
+        data-print-title="ESOL Support — Decimals &amp; Percents"
+      >
+        <!-- Visual Vocabulary -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="2"
+                y="4"
+                width="24"
+                height="20"
+                rx="3"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M9 11h10M9 15h7"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Visual Vocabulary
+          </h3>
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="34"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  3.75
+                </text>
+                <circle cx="24" cy="32" r="3" fill="#ea580c" />
+                <text
+                  x="32"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#155e75"
+                >
+                  decimal point
+                </text>
+              </svg>
+              <div class="vocab-term">Decimal</div>
+              <div class="vocab-spanish">Decimal</div>
+              <div class="vocab-def">
+                A number with a dot (decimal point) that shows parts smaller
+                than 1. The digits after the dot are tenths, hundredths, etc.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="6"
+                  y="10"
+                  width="52"
+                  height="44"
+                  rx="3"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="14"
+                  y="26"
+                  font-size="7"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  ones
+                </text>
+                <text
+                  x="28"
+                  y="26"
+                  font-size="7"
+                  font-weight="bold"
+                  fill="#ea580c"
+                >
+                  .
+                </text>
+                <text
+                  x="33"
+                  y="26"
+                  font-size="7"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  tenths
+                </text>
+                <text
+                  x="14"
+                  y="40"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  5
+                </text>
+                <text
+                  x="28"
+                  y="40"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#ea580c"
+                >
+                  .
+                </text>
+                <text
+                  x="38"
+                  y="40"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  3
+                </text>
+              </svg>
+              <div class="vocab-term">Place Value</div>
+              <div class="vocab-spanish">Valor posicional</div>
+              <div class="vocab-def">
+                Each spot in a number has a value. After the decimal: tenths
+                (0.1), hundredths (0.01), thousandths (0.001).
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="4"
+                  y="8"
+                  width="56"
+                  height="48"
+                  rx="3"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  75 out of 100
+                </text>
+                <text
+                  x="32"
+                  y="44"
+                  text-anchor="middle"
+                  font-size="18"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  75%
+                </text>
+              </svg>
+              <div class="vocab-term">Percent</div>
+              <div class="vocab-spanish">Porcentaje</div>
+              <div class="vocab-def">
+                A number out of 100. The symbol % means "per hundred." 75% means
+                75 out of every 100.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="16"
+                  y="28"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  3/4
+                </text>
+                <text
+                  x="32"
+                  y="36"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#155e75"
+                >
+                  =
+                </text>
+                <text
+                  x="48"
+                  y="28"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  0.75
+                </text>
+                <text
+                  x="32"
+                  y="50"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  = 75%
+                </text>
+              </svg>
+              <div class="vocab-term">Equivalent Forms</div>
+              <div class="vocab-spanish">Formas equivalentes</div>
+              <div class="vocab-def">
+                The same amount written as a fraction, decimal, or percent. 3/4
+                = 0.75 = 75%.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  dividend
+                </text>
+                <text
+                  x="32"
+                  y="52"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  divisor
+                </text>
+                <line
+                  x1="14"
+                  y1="34"
+                  x2="50"
+                  y2="34"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="32"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  845
+                </text>
+                <text
+                  x="8"
+                  y="46"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  5
+                </text>
+                <path
+                  d="M14 38 L14 26 L50 26"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+              </svg>
+              <div class="vocab-term">Long Division</div>
+              <div class="vocab-spanish">Division larga</div>
+              <div class="vocab-def">
+                A step-by-step method to divide large numbers. Steps: Divide,
+                Multiply, Subtract, Bring down. Repeat!
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <text
+                  x="32"
+                  y="24"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  multiply
+                </text>
+                <text
+                  x="14"
+                  y="40"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  2.5
+                </text>
+                <text
+                  x="30"
+                  y="40"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  x
+                </text>
+                <text
+                  x="46"
+                  y="40"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  0.3
+                </text>
+                <text
+                  x="32"
+                  y="56"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#ea580c"
+                >
+                  0.75
+                </text>
+              </svg>
+              <div class="vocab-term">Decimal Multiplication</div>
+              <div class="vocab-spanish">Multiplicacion decimal</div>
+              <div class="vocab-def">
+                Multiply without the decimals first, then count total decimal
+                places in both numbers and put the decimal point in the answer.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect
+                  x="4"
+                  y="8"
+                  width="56"
+                  height="48"
+                  rx="3"
+                  fill="#ecfeff"
+                  stroke="#0891b2"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  25% of 80
+                </text>
+                <text
+                  x="32"
+                  y="44"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  = 20
+                </text>
+              </svg>
+              <div class="vocab-term">Percent of a Number</div>
+              <div class="vocab-spanish">Porcentaje de un numero</div>
+              <div class="vocab-def">
+                To find a percent of a number, change the percent to a decimal
+                and multiply. 25% of 80 = 0.25 x 80 = 20.
+              </div>
+            </div>
+            <div class="vocab-card">
+              <svg viewBox="0 0 64 64" fill="none">
+                <circle
+                  cx="32"
+                  cy="20"
+                  r="8"
+                  fill="none"
+                  stroke="#0891b2"
+                  stroke-width="2"
+                />
+                <text
+                  x="32"
+                  y="24"
+                  text-anchor="middle"
+                  font-size="9"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  ~
+                </text>
+                <text
+                  x="32"
+                  y="44"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#155e75"
+                >
+                  estimate:
+                </text>
+                <text
+                  x="32"
+                  y="56"
+                  text-anchor="middle"
+                  font-size="10"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  about 25%
+                </text>
+              </svg>
+              <div class="vocab-term">Estimate Percent</div>
+              <div class="vocab-spanish">Estimar porcentaje</div>
+              <div class="vocab-def">
+                Use friendly percents (10%, 25%, 50%) to make quick guesses. 10%
+                = divide by 10. 50% = divide by 2.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentence Frames -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 6h20v16H4z"
+                stroke="#0891b2"
+                stroke-width="2"
+                rx="2"
+              />
+              <path
+                d="M8 11h12M8 15h8M8 19h10"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Sentence Frames
+          </h3>
+          <div class="sentence-frame">
+            The decimal <span class="blank">&nbsp;</span> is the same as the
+            fraction <span class="blank">&nbsp;</span> and the percent
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            To change a fraction to a decimal, I
+            <span class="blank">&nbsp;</span> the numerator by the
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            To change a decimal to a percent, I move the decimal point
+            <span class="blank">&nbsp;</span> places to the
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            <span class="blank">&nbsp;</span> percent of
+            <span class="blank">&nbsp;</span> is
+            <span class="blank">&nbsp;</span> because
+            <span class="blank">&nbsp;</span> x
+            <span class="blank">&nbsp;</span> =
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            When I multiply decimals, the answer has
+            <span class="blank">&nbsp;</span> decimal places because
+            <span class="blank">&nbsp;</span> +
+            <span class="blank">&nbsp;</span> =
+            <span class="blank">&nbsp;</span>.
+          </div>
+          <div class="sentence-frame">
+            I can estimate <span class="blank">&nbsp;</span>% of
+            <span class="blank">&nbsp;</span> by finding
+            <span class="blank">&nbsp;</span>% first, then
+            <span class="blank">&nbsp;</span>.
+          </div>
+        </div>
+
+        <!-- Step-by-Step Visual Guides -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="11"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M14 8v6l4 3"
+                stroke="#0891b2"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Step-by-Step Visual Guides
+          </h3>
+
+          <div class="step-guide">
+            <h4>How to Convert Between Fractions, Decimals, and Percents</h4>
+            <div class="conversion-tri">
+              <svg viewBox="0 0 280 200" fill="none">
+                <text
+                  x="140"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  Fraction
+                </text>
+                <text
+                  x="40"
+                  y="180"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  Decimal
+                </text>
+                <text
+                  x="240"
+                  y="180"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="bold"
+                  fill="#0891b2"
+                >
+                  Percent
+                </text>
+                <path d="M120 40 L60 155" stroke="#a5f3fc" stroke-width="2" />
+                <path d="M160 40 L220 155" stroke="#a5f3fc" stroke-width="2" />
+                <path d="M70 170 L210 170" stroke="#a5f3fc" stroke-width="2" />
+                <text
+                  x="75"
+                  y="95"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#155e75"
+                  transform="rotate(-55,75,95)"
+                >
+                  divide top by bottom
+                </text>
+                <text
+                  x="205"
+                  y="95"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#155e75"
+                  transform="rotate(55,205,95)"
+                >
+                  make denominator 100
+                </text>
+                <text
+                  x="140"
+                  y="165"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#155e75"
+                >
+                  x 100 and add %
+                </text>
+                <text
+                  x="140"
+                  y="185"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#155e75"
+                >
+                  / 100 to go back
+                </text>
+              </svg>
+            </div>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                ><span class="highlight">Fraction &rarr; Decimal:</span> Divide
+                the numerator by the denominator. Example: 3/8 = 3 / 8 =
+                <strong>0.375</strong></span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                ><span class="highlight">Decimal &rarr; Percent:</span> Multiply
+                by 100 (move decimal 2 places right) and add %. Example: 0.375 =
+                <strong>37.5%</strong></span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                ><span class="highlight">Percent &rarr; Decimal:</span> Divide
+                by 100 (move decimal 2 places left). Example: 37.5% =
+                <strong>0.375</strong></span
+              >
+            </div>
+          </div>
+
+          <div class="step-guide">
+            <h4>How to Find the Percent of a Number</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 12px">
+              Find 30% of 60.
+            </p>
+            <div class="step">
+              <span class="step-num">1</span>
+              <span class="step-text"
+                ><span class="highlight">Change</span> the percent to a decimal:
+                30% = 0.30</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-text"
+                ><span class="highlight">Multiply:</span> 0.30 x 60 =
+                <strong>18</strong></span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-text"
+                ><span class="highlight">Check:</span> 30% is a bit less than
+                one-third. One-third of 60 is 20. Is 18 close to 20? Yes!</span
+              >
+            </div>
+            <div class="pct-bar-wrap">
+              <div class="pct-bar">
+                <div
+                  class="pct-fill"
+                  style="width: 30%; background: var(--esol-primary)"
+                >
+                  30%
+                </div>
+              </div>
+              <div class="pct-bar-label">
+                <span>0</span><span>18</span><span>60</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-guide">
+            <h4>
+              How to Do Long Division (DMSB: Divide, Multiply, Subtract, Bring
+              down)
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 12px">
+              Solve: 846 / 6
+            </p>
+            <div class="step">
+              <span class="step-num">D</span>
+              <span class="step-text"
+                ><span class="highlight">Divide:</span> How many times does 6 go
+                into 8? <strong>1</strong> time. Write 1 above the 8.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">M</span>
+              <span class="step-text"
+                ><span class="highlight">Multiply:</span> 1 x 6 = 6. Write 6
+                under the 8.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">S</span>
+              <span class="step-text"
+                ><span class="highlight">Subtract:</span> 8 - 6 = 2.</span
+              >
+            </div>
+            <div class="step-arrow">&#8595;</div>
+            <div class="step">
+              <span class="step-num">B</span>
+              <span class="step-text"
+                ><span class="highlight">Bring down</span> the next digit (4) to
+                make 24. Now repeat: 24 / 6 = 4. Continue until done. Answer:
+                <strong>141</strong>.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Simplified Practice -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M6 4h16v20H6z"
+                stroke="#0891b2"
+                stroke-width="2"
+                rx="2"
+              />
+              <path
+                d="M10 10h8M10 14h6M10 18h7"
+                stroke="#0891b2"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Simplified Practice
+          </h3>
+          <ol class="practice-list">
+            <li class="practice-item">
+              <span>Write 0.6 as a fraction and a percent.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                0.6 means 6 tenths. As a fraction: 6/10 (simplify!). For
+                percent: move the decimal 2 places right.
+              </div>
+              <div class="answer-box">Fraction: 6/10 = 3/5. Percent: 60%.</div>
+            </li>
+            <li class="practice-item">
+              <span>Write 45% as a decimal and a fraction.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Decimal: divide by 100 (move decimal 2 places left). Fraction:
+                45/100, then simplify.
+              </div>
+              <div class="answer-box">
+                Decimal: 0.45. Fraction: 45/100 = 9/20.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Write 3/4 as a decimal and a percent.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Divide 3 by 4 to get the decimal. Then multiply by 100 for the
+                percent.
+              </div>
+              <div class="answer-box">Decimal: 3 / 4 = 0.75. Percent: 75%.</div>
+            </li>
+            <li class="practice-item">
+              <span>Find 50% of 84.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">50% means half. Divide 84 by 2.</div>
+              <div class="answer-box">84 / 2 = 42.</div>
+            </li>
+            <li class="practice-item">
+              <span>Find 10% of 250.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                10% means divide by 10. Just move the decimal point one place
+                left.
+              </div>
+              <div class="answer-box">250 / 10 = 25.</div>
+            </li>
+            <li class="practice-item">
+              <span>Find 25% of 120.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                25% means one quarter. Divide 120 by 4. Or: change 25% to 0.25
+                and multiply.
+              </div>
+              <div class="answer-box">0.25 x 120 = 30. (Or 120 / 4 = 30.)</div>
+            </li>
+            <li class="practice-item">
+              <span>Solve: 4.5 + 2.38</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Line up the decimal points. Write 4.5 as 4.50 so both have 2
+                decimal places. Add normally.
+              </div>
+              <div class="answer-box">4.50 + 2.38 = 6.88.</div>
+            </li>
+            <li class="practice-item">
+              <span>Solve: 0.6 x 0.4</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Multiply 6 x 4 = 24. Count decimal places: 1 + 1 = 2 decimal
+                places in the answer.
+              </div>
+              <div class="answer-box">
+                0.24 (6 x 4 = 24, then place the decimal to make 2 decimal
+                places).
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Solve: 156 / 12 using long division.</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                12 goes into 15 one time (12). Subtract: 15-12=3. Bring down 6
+                to make 36. 12 goes into 36 exactly 3 times.
+              </div>
+              <div class="answer-box">
+                13. (12 goes into 15 once with remainder 3, bring down 6 to get
+                36, 36/12 = 3.)
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>Estimate 19% of 50. (Use a friendly percent.)</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                19% is close to 20%. Find 20% of 50 (which is 10% doubled).
+              </div>
+              <div class="answer-box">
+                20% of 50 = 10. So 19% of 50 is about 10. (Exact: 9.5.)
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Real-World Connections -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="10"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M4 14h20M14 4c-3 3-5 6-5 10s2 7 5 10c3-3 5-6 5-10s-2-7-5-10z"
+                stroke="#0891b2"
+                stroke-width="1.5"
+              />
+            </svg>
+            Real-World Connections
+          </h3>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="6"
+                y="6"
+                width="36"
+                height="36"
+                rx="4"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <text
+                x="24"
+                y="22"
+                text-anchor="middle"
+                font-size="8"
+                font-weight="bold"
+                fill="#155e75"
+              >
+                SALE
+              </text>
+              <text
+                x="24"
+                y="34"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="bold"
+                fill="#ea580c"
+              >
+                20% OFF
+              </text>
+            </svg>
+            <div>
+              <h4>Shopping Discounts</h4>
+              <p>
+                A shirt costs $40 and is 20% off. Find 20% of $40: 0.20 x 40 =
+                $8 discount. Sale price: $40 - $8 = $32. Percents help you find
+                real sale prices!
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="4"
+                y="10"
+                width="40"
+                height="28"
+                rx="3"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <text
+                x="24"
+                y="28"
+                text-anchor="middle"
+                font-size="10"
+                font-weight="bold"
+                fill="#0891b2"
+              >
+                85 / 100
+              </text>
+            </svg>
+            <div>
+              <h4>Test Scores</h4>
+              <p>
+                You got 85 out of 100 on a test. That is 85%. Your friend got 17
+                out of 20. As a percent: 17/20 = 0.85 = 85%. You scored the
+                same! Percents help compare different totals.
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect
+                x="4"
+                y="8"
+                width="40"
+                height="32"
+                rx="4"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <text
+                x="24"
+                y="22"
+                text-anchor="middle"
+                font-size="8"
+                font-weight="bold"
+                fill="#155e75"
+              >
+                TIP
+              </text>
+              <text
+                x="24"
+                y="34"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="bold"
+                fill="#0891b2"
+              >
+                15%
+              </text>
+            </svg>
+            <div>
+              <h4>Restaurant Tips</h4>
+              <p>
+                A meal costs $24. You want to leave a 15% tip. Find 10%: $2.40.
+                Find 5% (half of 10%): $1.20. Add: $2.40 + $1.20 = $3.60 tip.
+                Estimating percents saves time!
+              </p>
+            </div>
+          </div>
+          <div class="rw-card">
+            <svg viewBox="0 0 48 48" fill="none">
+              <circle
+                cx="24"
+                cy="24"
+                r="16"
+                fill="#ecfeff"
+                stroke="#0891b2"
+                stroke-width="2"
+              />
+              <path
+                d="M24 10 A14 14 0 0 1 38 24"
+                fill="none"
+                stroke="#0891b2"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <text
+                x="24"
+                y="28"
+                text-anchor="middle"
+                font-size="10"
+                font-weight="bold"
+                fill="#0891b2"
+              >
+                75%
+              </text>
+            </svg>
+            <div>
+              <h4>Phone Battery</h4>
+              <p>
+                Your phone is at 75%. If the full battery is 4,000 mAh, you have
+                0.75 x 4,000 = 3,000 mAh left. Percents tell you what fraction
+                of a full amount you have.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ ENRICHMENT TAB ═══════════════════ -->
+      <div
+        class="tab-panel enrich-panel"
+        id="enrichment-panel"
+        data-print-title="Enrichment — Decimals &amp; Percents"
+      >
+        <!-- Challenge Problems -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <polygon
+                points="14,3 17,10 25,11 19,17 21,25 14,21 7,25 9,17 3,11 11,10"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+            </svg>
+            Challenge Problems
+          </h3>
+          <ol class="practice-list">
+            <li class="practice-item">
+              <span
+                >A store marks up items by 40%, then offers a 25% discount. If
+                the original price is $50, what is the final price? Is the final
+                price equal to the original price plus 15%?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                First apply the 40% markup to $50. Then take 25% off that new
+                price. Compare to $50 + 15%.
+              </div>
+              <div class="answer-box">
+                Markup: $50 x 1.40 = $70. Discount: $70 x 0.75 = $52.50.
+                Compare: $50 x 1.15 = $57.50. No! $52.50 is not equal to $57.50.
+                A 40% increase followed by a 25% decrease is not the same as a
+                15% increase.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Calculate: 3.14 x 2.5 without a calculator. Show your
+                work.</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Multiply 314 x 25 first (ignoring decimals), then place the
+                decimal. Total decimal places: 2 + 1 = 3.
+              </div>
+              <div class="answer-box">
+                314 x 25 = 314 x 20 + 314 x 5 = 6,280 + 1,570 = 7,850. Place
+                decimal (3 places): 7.850. Answer: 7.85.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A population of 8,000 grows by 5% each year. What is the
+                population after 1 year? After 2 years?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                After 1 year: multiply by 1.05. After 2 years: multiply the
+                year-1 population by 1.05 again.
+              </div>
+              <div class="answer-box">
+                Year 1: 8,000 x 1.05 = 8,400. Year 2: 8,400 x 1.05 = 8,820.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >You scored 72% on a test with 25 questions. How many questions
+                did you get right? How many more would you have needed for
+                80%?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                72% of 25 = 0.72 x 25. For 80%: 0.80 x 25. Find the difference.
+              </div>
+              <div class="answer-box">
+                Correct: 0.72 x 25 = 18 questions. For 80%: 0.80 x 25 = 20
+                questions. Needed 2 more correct answers.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A coat originally costs $120. It goes on sale for 30% off. Then
+                you have a coupon for 10% off the sale price. Sales tax is 8%.
+                What is the total you pay?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Apply discounts one at a time: 30% off first, then 10% off that
+                result. Then add 8% tax to the final discounted price.
+              </div>
+              <div class="answer-box">
+                After 30% off: $120 x 0.70 = $84. After 10% coupon: $84 x 0.90 =
+                $75.60. With 8% tax: $75.60 x 1.08 = $81.648 = $81.65.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >Divide 7 by 11. Write the answer as a decimal. What do you
+                notice about the pattern?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Use long division. Keep going past the decimal point for several
+                places.
+              </div>
+              <div class="answer-box">
+                7 / 11 = 0.636363... The digits 63 repeat forever. This is a
+                repeating decimal, written as 0.63 with a bar over the 63.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A basketball player makes 7 out of 20 free throws in the first
+                half and 9 out of 15 in the second half. What is her overall
+                free throw percentage?</span
+              >
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Add total makes and total attempts. Do NOT average the two
+                percentages — that would be wrong because the sample sizes
+                differ.
+              </div>
+              <div class="answer-box">
+                Total makes: 7 + 9 = 16. Total attempts: 20 + 15 = 35.
+                Percentage: 16/35 = 0.4571... = about 45.7%.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >A recipe calls for 2.75 cups of flour per batch. You have 10
+                cups. How many full batches can you make, and how much flour is
+                left over?</span
+              >
+              <span class="challenge-badge badge-medium">Medium</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Divide 10 by 2.75. The whole number part is the number of
+                batches. The remainder in cups is the leftover.
+              </div>
+              <div class="answer-box">
+                10 / 2.75 = 3.636... So 3 full batches. Flour used: 3 x 2.75 =
+                8.25 cups. Leftover: 10 - 8.25 = 1.75 cups.
+              </div>
+            </li>
+            <li class="practice-item">
+              <span>What is 0.1% of 5,000? What is 150% of 40?</span>
+              <span class="challenge-badge badge-hard">Hard</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                0.1% = 0.001. 150% = 1.5. Percents can be less than 1 or greater
+                than 100!
+              </div>
+              <div class="answer-box">
+                0.1% of 5,000 = 0.001 x 5,000 = 5. 150% of 40 = 1.5 x 40 = 60.
+                (Yes, a percent greater than 100% gives an answer bigger than
+                the original!)
+              </div>
+            </li>
+            <li class="practice-item">
+              <span
+                >In a school of 600 students, 55% are girls. 40% of the girls
+                play a sport, and 60% of the boys play a sport. How many total
+                students play a sport?</span
+              >
+              <span class="challenge-badge badge-expert">Expert</span>
+              <br />
+              <button class="hint-btn" onclick="toggleHint(this)">Hint</button>
+              <button class="answer-btn" onclick="toggleAnswer(this)">
+                Show Answer
+              </button>
+              <div class="hint-box">
+                Find the number of girls and boys first. Then find the percent
+                of each group that plays sports.
+              </div>
+              <div class="answer-box">
+                Girls: 0.55 x 600 = 330. Boys: 600 - 330 = 270. Girls who play
+                sports: 0.40 x 330 = 132. Boys who play sports: 0.60 x 270 =
+                162. Total: 132 + 162 = 294 students.
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Real-World Investigations -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="12"
+                cy="12"
+                r="8"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M18 18l6 6"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Real-World Investigations
+          </h3>
+          <div class="investigation-card">
+            <h4>Smart Shopper Challenge</h4>
+            <p>
+              Investigate which sales are truly the best deals by comparing
+              different discount strategies.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                Find 3 items you would like to buy (use real prices from ads or
+                websites)
+              </li>
+              <li>
+                Calculate the final price for each with: 30% off,
+                buy-one-get-one-50%-off, and $10 off $50
+              </li>
+              <li>Which discount saves the most money for each item?</li>
+              <li>
+                Does the "best" discount depend on the original price? Explain
+                with evidence
+              </li>
+              <li>
+                Create a "shopper's guide" explaining when each type of discount
+                is the best value
+              </li>
+            </ol>
+          </div>
+          <div class="investigation-card">
+            <h4>Nutrition Label Detective</h4>
+            <p>Analyze the percent daily values on food nutrition labels.</p>
+            <ol class="investigation-steps">
+              <li>Collect 5 nutrition labels from different foods</li>
+              <li>
+                Record the % Daily Value for sodium, sugar, fiber, and protein
+              </li>
+              <li>
+                If you ate 3 servings (not 1), recalculate each percentage
+              </li>
+              <li>
+                Create a "daily total" if these were your only foods — what % of
+                each nutrient did you consume?
+              </li>
+              <li>
+                Write recommendations: which foods are healthy choices based on
+                the percents?
+              </li>
+            </ol>
+          </div>
+          <div class="investigation-card">
+            <h4>Savings Account Simulator</h4>
+            <p>
+              Model how money grows with interest using decimals and percents.
+            </p>
+            <ol class="investigation-steps">
+              <li>
+                You start with $500 in a savings account earning 3% interest per
+                year
+              </li>
+              <li>
+                Calculate your balance at the end of each year for 5 years (add
+                3% of the current balance each year)
+              </li>
+              <li>
+                Create a table: Year, Starting Balance, Interest Earned, Ending
+                Balance
+              </li>
+              <li>How much total interest did you earn over 5 years?</li>
+              <li>
+                Compare: What if the interest rate were 5% instead? How much
+                more would you earn?
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Brain Teasers -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="12"
+                r="8"
+                stroke="#d97706"
+                stroke-width="2"
+                fill="#fffbeb"
+              />
+              <path
+                d="M11 22h6M12 20v2M16 20v2"
+                stroke="#d97706"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Brain Teasers
+          </h3>
+          <div class="brain-teaser">
+            <h4>The Shrinking Price</h4>
+            <p>
+              A price increases by 20%, then decreases by 20%. Is the final
+              price the same as the original? Prove it with a $100 example.
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Start: $100. After 20% increase: $100 x 1.20 = $120. After 20%
+              decrease: $120 x 0.80 = $96. The final price is $96, NOT $100. You
+              lose $4! This happens because the 20% decrease is applied to a
+              larger number ($120).
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>The Decimal Detective</h4>
+            <p>
+              I am a decimal between 0 and 1. When you multiply me by myself, I
+              get smaller. When you divide 1 by me, you get a number greater
+              than 1. My digits add up to 9, and I have exactly 2 decimal
+              places. What am I?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              A decimal between 0 and 1 with 2 decimal places: 0.__ __. The
+              digits after the decimal add to 9. Possibilities: 0.18, 0.27,
+              0.36, 0.45, 0.54, 0.63, 0.72, 0.81, 0.90. All satisfy the
+              multiplication property (any number between 0 and 1 gets smaller
+              when squared). Multiple answers work! Some examples: 0.45 x 0.45 =
+              0.2025 (smaller). 0.72 x 0.72 = 0.5184 (smaller).
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>The 99.9% Trap</h4>
+            <p>
+              A factory claims 99.9% of its products pass quality control. They
+              produce 10,000 items per day. How many defective items are made
+              each day? Each week (5 days)?
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              Defective rate = 100% - 99.9% = 0.1% = 0.001. Daily defects: 0.001
+              x 10,000 = 10 items. Weekly: 10 x 5 = 50 defective items. Even
+              99.9% is not perfect when the numbers are large!
+            </div>
+          </div>
+          <div class="brain-teaser">
+            <h4>The Tip Trick</h4>
+            <p>
+              To calculate a 15% tip mentally, you find 10% and then add half of
+              that. A meal costs $73.40. Without a calculator, estimate a 15%
+              tip to the nearest dollar.
+            </p>
+            <button class="answer-btn" onclick="toggleAnswer(this)">
+              Show Answer
+            </button>
+            <div class="answer-box">
+              10% of $73.40 = $7.34. Half of $7.34 = $3.67. Total 15% tip: $7.34
+              + $3.67 = $11.01. Rounded to the nearest dollar: about $11.
+            </div>
+          </div>
+        </div>
+
+        <!-- Extension Topics -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 24L14 4l10 20H4z"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M14 12v5M14 20v1"
+                stroke="#7c3aed"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Extension Topics
+          </h3>
+          <div class="extension-box">
+            <h4>Where This Leads: Percent Change (7th Grade)</h4>
+            <p>
+              In 7th grade, you will learn to calculate percent increase and
+              percent decrease using the formula: percent change = (amount of
+              change / original) x 100. You already know how to find the percent
+              of a number — this is the reverse: finding WHAT percent a change
+              represents.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>
+              Where This Leads: Proportional Relationships &amp; Equations
+            </h4>
+            <p>
+              Finding "25% of 80" is the same as solving 0.25 x 80 = n. In
+              algebra, you will solve problems like: "What percent of 80 is 20?"
+              This becomes n/100 x 80 = 20, and you solve for n. Percent
+              problems are really proportion problems in disguise.
+            </p>
+          </div>
+          <div class="extension-box">
+            <h4>
+              Where This Leads: Compound Interest &amp; Exponential Growth
+            </h4>
+            <p>
+              When a savings account earns 5% interest each year, the money
+              grows by multiplying by 1.05 each year. Over many years, this
+              creates exponential growth — the amount increases faster and
+              faster. This is a key concept in high school math and personal
+              finance.
+            </p>
+          </div>
+        </div>
+
+        <!-- Self-Assessment -->
+        <div class="supp-section">
+          <h3>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                stroke="#7c3aed"
+                stroke-width="2"
+                fill="#f5f3ff"
+              />
+              <path
+                d="M9 14l3 3 7-7"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Self-Assessment
+          </h3>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 14px"
+          >
+            Rate your confidence: 1 = Need help, 2 = Getting there, 3 = Got it,
+            4 = Can teach it
+          </p>
+          <ul class="self-assess">
+            <li>
+              <span
+                >I can add and subtract decimals by lining up the decimal
+                point</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I can multiply decimals and correctly place the decimal
+                point</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can perform long division with multi-digit numbers</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I can convert between fractions, decimals, and percents</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span>I can find the percent of a number (e.g., 25% of 80)</span>
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I can estimate percents using benchmarks (10%, 25%, 50%)</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I can solve real-world percent problems (discounts, tips,
+                tax)</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+            <li>
+              <span
+                >I understand that percent increase then decrease does not
+                cancel out</span
+              >
+              <div class="rating-btns">
+                <button onclick="rate(this)">1</button
+                ><button onclick="rate(this)">2</button
+                ><button onclick="rate(this)">3</button
+                ><button onclick="rate(this)">4</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Unit 4 Supplemental</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+
+    <script src="/assets/app.js" defer></script>
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelector(`.tab-btn[data-tab="${tab}"]`)
+          .classList.add("active");
+        document
+          .getElementById(tab === "esol" ? "esol-panel" : "enrichment-panel")
+          .classList.add("active");
+      }
+      function toggleHint(btn) {
+        const box = btn.parentElement.querySelector(".hint-box");
+        box.classList.toggle("show");
+        btn.textContent = box.classList.contains("show") ? "Hide Hint" : "Hint";
+      }
+      function toggleAnswer(btn) {
+        const box = btn.parentElement.querySelector(".answer-box");
+        box.classList.toggle("show");
+        btn.textContent = box.classList.contains("show")
+          ? "Hide Answer"
+          : "Show Answer";
+      }
+      function rate(btn) {
+        btn.parentElement
+          .querySelectorAll("button")
+          .forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      }
+    </script>
+  </body>
+</html>

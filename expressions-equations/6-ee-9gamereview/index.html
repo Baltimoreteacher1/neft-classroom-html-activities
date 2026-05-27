@@ -1,893 +1,1179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Variable Voyage — The Equation Expedition</title>
-<style>
-:root{
-  --void:#030614;--deep:#050d2e;--mid:#0a1a4a;
-  --cyan:#00e5ff;--cyan2:#00b8d4;--cyan3:rgba(0,229,255,.12);
-  --purple:#9c27ff;--pur2:#7b1fa2;
-  --orange:#ff6b35;--gold:#ffd700;
-  --green:#00e676;--red:#ff1744;
-  --text:#e8f4ff;--dim:#7a9dbf;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden}
-body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);user-select:none}
-
-/* ===== STARFIELD ===== */
-#stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.star{position:absolute;border-radius:50%;background:white;animation:twk var(--d) var(--dl) infinite alternate}
-@keyframes twk{from{opacity:var(--lo);transform:scale(.7)}to{opacity:1;transform:scale(1.3)}}
-
-/* ===== NEBULAE ===== */
-.neb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:ndrift 25s infinite alternate ease-in-out}
-@keyframes ndrift{0%{transform:translate(0,0)}100%{transform:translate(40px,-30px)}}
-
-/* ===== SCREEN SYSTEM ===== */
-.screen{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
-.screen.active{display:flex;animation:scIn .4s ease}
-@keyframes scIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-
-/* ===== HUD ===== */
-#hud{
-  position:fixed;top:0;left:0;right:0;z-index:60;
-  display:none;align-items:center;justify-content:space-between;
-  padding:10px 24px;background:rgba(3,6,20,.92);
-  border-bottom:1px solid rgba(0,229,255,.18);backdrop-filter:blur(12px);
-}
-#hud.vis{display:flex}
-.hud-score{font-family:'Orbitron',monospace;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:6px}
-.hud-level{font-family:'Orbitron',monospace;font-size:12px;color:var(--cyan);background:rgba(0,229,255,.1);padding:4px 14px;border:1px solid rgba(0,229,255,.3);border-radius:20px}
-.hud-hearts{font-size:22px;letter-spacing:3px}
-.streak-tag{font-size:11px;font-family:'Orbitron',monospace;background:linear-gradient(135deg,var(--orange),var(--gold));color:#000;padding:3px 10px;border-radius:12px;display:none}
-.streak-tag.vis{display:inline-block;animation:pop .3s ease}
-
-/* ===== SPLASH ===== */
-#splash{text-align:center}
-.game-logo{
-  font-family:'Orbitron',monospace;font-weight:900;
-  font-size:clamp(32px,7vw,76px);letter-spacing:4px;
-  color:var(--cyan);line-height:1;
-  text-shadow:0 0 30px rgba(0,229,255,.5),0 0 70px rgba(0,229,255,.2);
-  animation:logoPulse 3s infinite alternate;margin-bottom:4px
-}
-@keyframes logoPulse{from{text-shadow:0 0 20px rgba(0,229,255,.4)}to{text-shadow:0 0 60px rgba(0,229,255,.9),0 0 120px rgba(0,229,255,.3)}}
-.game-sub{font-size:14px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
-.game-tag{font-size:13px;color:var(--purple);font-style:italic;margin-bottom:40px}
-.ship-anim{font-size:72px;animation:shipFlt 3.5s infinite ease-in-out;display:block;margin:0 auto 32px}
-@keyframes shipFlt{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-22px) rotate(4deg)}}
-
-.btn-space{
-  font-family:'Orbitron',monospace;font-size:15px;font-weight:700;
-  letter-spacing:3px;text-transform:uppercase;background:transparent;
-  color:var(--cyan);border:2px solid var(--cyan);padding:15px 38px;
-  border-radius:4px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
-  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))
-}
-.btn-space::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:scaleX(0);transform-origin:left;transition:transform .25s;z-index:-1}
-.btn-space:hover{color:var(--void)}.btn-space:hover::before{transform:scaleX(1)}
-.btn-space.gold-btn{color:var(--gold);border-color:var(--gold)}.btn-space.gold-btn::before{background:var(--gold)}
-.btn-space.red-btn{color:var(--red);border-color:var(--red)}.btn-space.red-btn::before{background:var(--red)}
-.btn-space.purple-btn{color:var(--purple);border-color:var(--purple)}.btn-space.purple-btn::before{background:var(--purple)}
-
-.splash-info{margin-top:28px;display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
-.info-chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);padding:8px 18px;border-radius:8px;font-size:13px;color:var(--dim)}
-
-/* ===== GALAXY MAP ===== */
-#map{padding-top:70px}
-.map-title{font-family:'Orbitron',monospace;font-size:26px;color:var(--cyan);text-align:center;letter-spacing:2px;margin-bottom:4px}
-.map-sub{color:var(--dim);text-align:center;font-size:13px;margin-bottom:36px}
-.planets-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;max-width:950px}
-
-.planet-card{
-  width:148px;text-align:center;cursor:pointer;
-  transition:transform .25s;position:relative
-}
-.planet-card:hover:not(.locked){transform:scale(1.08)}
-.planet-orb{
-  width:100px;height:100px;border-radius:50%;margin:0 auto 12px;
-  display:flex;align-items:center;justify-content:center;font-size:34px;
-  transition:box-shadow .3s;position:relative;overflow:hidden
-}
-.planet-orb::after{content:'';position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.3),transparent 60%)}
-.p1 .planet-orb{background:radial-gradient(circle at 35% 35%,#e040fb,#4a148c);box-shadow:0 0 25px rgba(156,39,255,.4)}
-.p2 .planet-orb{background:radial-gradient(circle at 35% 35%,#40c4ff,#01579b);box-shadow:0 0 25px rgba(0,229,255,.4)}
-.p3 .planet-orb{background:radial-gradient(circle at 35% 35%,#ff7043,#bf360c);box-shadow:0 0 25px rgba(255,107,53,.4)}
-.p4 .planet-orb{background:radial-gradient(circle at 35% 35%,#69f0ae,#1b5e20);box-shadow:0 0 25px rgba(105,240,174,.4)}
-.pboss .planet-orb{background:radial-gradient(circle at 35% 35%,#ffd700,#e65100);box-shadow:0 0 35px rgba(255,215,0,.5);animation:bossGlow 2s infinite alternate}
-@keyframes bossGlow{from{box-shadow:0 0 25px rgba(255,215,0,.4)}to{box-shadow:0 0 60px rgba(255,215,0,.8),0 0 100px rgba(255,107,53,.3)}}
-
-.planet-name{font-family:'Orbitron',monospace;font-size:11.5px;color:var(--text);margin-bottom:3px;letter-spacing:.5px}
-.planet-type{font-size:11px;color:var(--dim);margin-bottom:6px}
-.planet-stars{font-size:17px;letter-spacing:3px;min-height:24px}
-
-.planet-card.locked .planet-orb{filter:grayscale(.8) brightness(.35)}
-.planet-card.locked{cursor:not-allowed;opacity:.55}
-.locked-badge{
-  position:absolute;top:-4px;right:10px;font-size:18px;
-  animation:lockBob .8s infinite alternate ease-in-out
-}
-@keyframes lockBob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
-
-/* ===== GAME SCREEN ===== */
-#game{padding:80px 16px 24px;width:100%;max-width:720px;margin:0 auto}
-.level-banner{text-align:center;margin-bottom:20px}
-.level-icon{font-size:44px;margin-bottom:6px}
-.level-name{font-family:'Orbitron',monospace;font-size:18px;color:var(--cyan);letter-spacing:1px}
-.q-dots{display:flex;gap:8px;justify-content:center;margin:12px 0}
-.qdot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);transition:all .3s}
-.qdot.cur{background:var(--cyan);border-color:var(--cyan);animation:dotPls 1s infinite alternate}
-.qdot.hit{background:var(--green);border-color:var(--green)}
-.qdot.miss{background:var(--red);border-color:var(--red)}
-@keyframes dotPls{from{transform:scale(1)}to{transform:scale(1.4)}}
-
-.q-card{
-  background:rgba(255,255,255,.035);border:1px solid rgba(0,229,255,.18);
-  border-radius:16px;padding:26px;backdrop-filter:blur(8px);margin-bottom:18px;
-  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))
-}
-.q-type-tag{font-size:10.5px;font-family:'Orbitron',monospace;letter-spacing:2px;color:var(--cyan2);text-transform:uppercase;margin-bottom:10px}
-.q-text{font-size:17px;line-height:1.55;color:var(--text)}
-.q-hl{color:var(--cyan);font-weight:700}
-
-.mini-tbl{border-collapse:collapse;margin:14px auto;font-size:14px}
-.mini-tbl th{background:rgba(0,229,255,.15);color:var(--cyan);padding:7px 14px;border:1px solid rgba(0,229,255,.2);font-family:'Orbitron',monospace;font-size:11px;text-align:center}
-.mini-tbl td{padding:6px 14px;border:1px solid rgba(255,255,255,.07);text-align:center;color:var(--text)}
-.mini-tbl tr:nth-child(even) td{background:rgba(255,255,255,.03)}
-.hl-row td{color:var(--gold);font-weight:800}
-
-/* MC options */
-.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-.opt{
-  background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.13);
-  color:var(--text);padding:14px 16px;border-radius:10px;cursor:pointer;
-  font-family:'Exo 2',sans-serif;font-size:15px;font-weight:600;
-  text-align:center;transition:all .18s;outline:none
-}
-.opt:hover:not(:disabled){border-color:var(--cyan);background:rgba(0,229,255,.07);color:var(--cyan)}
-.opt.right{border-color:var(--green)!important;background:rgba(0,230,118,.14)!important;color:var(--green)!important;animation:rightPop .45s}
-.opt.wrong{border-color:var(--red)!important;background:rgba(255,23,68,.13)!important;color:var(--red)!important;animation:wrongShk .4s}
-@keyframes rightPop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
-@keyframes wrongShk{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-
-/* Fill-in */
-.fill-row{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
-.sp-input{
-  background:rgba(255,255,255,.05);border:2px solid rgba(0,229,255,.4);
-  color:var(--text);padding:11px 18px;border-radius:8px;
-  font-family:'Orbitron',monospace;font-size:18px;width:170px;
-  text-align:center;outline:none;transition:border-color .2s
-}
-.sp-input:focus{border-color:var(--cyan);box-shadow:0 0 16px rgba(0,229,255,.2)}
-.sp-input.right{border-color:var(--green);box-shadow:0 0 14px rgba(0,230,118,.28)}
-.sp-input.wrong{border-color:var(--red);animation:wrongShk .4s}
-.sub-btn{
-  font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:2px;
-  background:var(--cyan);color:var(--void);border:none;padding:12px 22px;
-  border-radius:8px;cursor:pointer;transition:all .2s;text-transform:uppercase
-}
-.sub-btn:hover{background:white}
-.hint-text{font-size:12px;color:var(--dim);margin-top:6px;font-style:italic;display:none}
-.hint-text.vis{display:block}
-
-/* ===== FEEDBACK FLASH ===== */
-#fbFlash{
-  position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;
-  pointer-events:none;opacity:0;transition:opacity .2s
-}
-#fbFlash.show{opacity:1}
-.fb-msg{font-family:'Orbitron',monospace;font-size:clamp(36px,7vw,64px);font-weight:900;text-shadow:0 0 30px currentColor;animation:fbPop .4s ease}
-@keyframes fbPop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-.fb-correct{color:var(--green)}.fb-wrong{color:var(--red)}
-
-/* ===== PARTICLE ===== */
-.ptcl{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:400;animation:ptFly var(--td) ease-out forwards}
-@keyframes ptFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
-
-/* ===== LEVEL COMPLETE ===== */
-#lvlDone{text-align:center}
-.lvl-complete-title{font-family:'Orbitron',monospace;font-size:38px;color:var(--gold);text-shadow:0 0 30px rgba(255,215,0,.5);margin-bottom:8px}
-.stars-disp{font-size:54px;letter-spacing:8px;margin:18px 0}
-.lvl-stats{display:flex;gap:44px;justify-content:center;margin:18px 0}
-.stat-item{text-align:center}
-.stat-val{font-family:'Orbitron',monospace;font-size:34px;color:var(--cyan)}
-.stat-lbl{font-size:11.5px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
-.fact-box{background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);border-radius:12px;padding:14px 20px;margin:14px 0;font-size:14px;color:var(--dim);max-width:440px}
-.fact-box strong{color:var(--cyan)}
-
-/* ===== GAME OVER ===== */
-#gameOver{text-align:center}
-.go-title{font-family:'Orbitron',monospace;font-size:clamp(36px,7vw,60px);color:var(--red);text-shadow:0 0 30px rgba(255,23,68,.5);margin-bottom:12px}
-.go-ship{font-size:72px;animation:goShip 2s infinite ease-in-out}
-@keyframes goShip{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg) scale(.9)}}
-
-/* ===== VICTORY ===== */
-#victory{text-align:center;padding-top:70px}
-.v-title{font-family:'Orbitron',monospace;font-size:clamp(26px,5vw,52px);color:var(--gold);text-shadow:0 0 40px rgba(255,215,0,.6);letter-spacing:3px;margin-bottom:6px}
-.v-ship{font-size:80px;animation:vShip 2s infinite ease-in-out}
-@keyframes vShip{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
-.trophy-row{font-size:48px;margin:12px 0;animation:trPls 1s infinite alternate}
-@keyframes trPls{from{transform:scale(1)}to{transform:scale(1.08)}}
-.v-score{font-family:'Orbitron',monospace;font-size:56px;color:var(--gold);margin:10px 0}
-.v-grade{font-family:'Orbitron',monospace;font-size:24px;margin-bottom:24px}
-.v-breakdown{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:28px}
-.v-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 20px;text-align:center}
-.v-item-val{font-family:'Orbitron',monospace;font-size:22px;color:var(--cyan)}
-.v-item-lbl{font-size:11px;color:var(--dim);text-transform:uppercase;margin-top:3px}
-.confetti-bar{display:flex;gap:8px;justify-content:center;font-size:28px;margin:12px 0;animation:confBounce .5s infinite alternate}
-@keyframes confBounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
-
-/* ===== HINT OVERLAY ===== */
-#hintOverlay{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,.85);border:1px solid rgba(0,229,255,.3);
-  border-radius:12px;padding:12px 22px;font-size:13px;color:var(--dim);
-  z-index:80;max-width:500px;text-align:center;
-  opacity:0;transition:opacity .3s;pointer-events:none;
-}
-#hintOverlay.vis{opacity:1}
-
-/* ===== ANIMATIONS ===== */
-@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-</style>
-</head>
-<body>
-
-<!-- ===== BACKGROUND ===== -->
-<div id="stars"></div>
-<div class="neb" style="width:500px;height:500px;top:-100px;left:-100px;background:radial-gradient(circle,rgba(124,58,237,.6),transparent 70%);"></div>
-<div class="neb" style="width:400px;height:400px;bottom:-80px;right:-80px;background:radial-gradient(circle,rgba(0,183,212,.5),transparent 70%);animation-delay:5s"></div>
-<div class="neb" style="width:300px;height:300px;top:40%;left:55%;background:radial-gradient(circle,rgba(255,107,53,.35),transparent 70%);animation-delay:12s"></div>
-
-<!-- ===== HUD ===== -->
-<div id="hud">
-  <div class="hud-score">🏅 <span id="hudPts">0</span></div>
-  <div style="display:flex;align-items:center;gap:10px">
-    <div class="hud-level" id="hudLevel">PLANET 1</div>
-    <div class="streak-tag" id="streakTag">🔥 ×2</div>
-  </div>
-  <div class="hud-hearts" id="hudHearts">❤️❤️❤️</div>
-</div>
-
-<!-- ===== SCREENS ===== -->
-
-<!-- SPLASH -->
-<div class="screen active" id="splash">
-  <div class="game-logo">VARIABLE VOYAGE</div>
-  <div class="game-sub">The Equation Expedition</div>
-  <div class="game-tag">Journey through the Equation Galaxy • CCSS 6.EE.C.9</div>
-  <span class="ship-anim">🚀</span>
-  <button class="btn-space" onclick="showMap()">▶ BEGIN EXPEDITION</button>
-  <div class="splash-info">
-    <div class="info-chip">⭐ 5 Worlds to Conquer</div>
-    <div class="info-chip">❤️ 3 Lives per Run</div>
-    <div class="info-chip">🔥 Streak Multipliers</div>
-    <div class="info-chip">📊 Variables · Tables · Equations · Graphs</div>
-  </div>
-</div>
-
-<!-- MAP -->
-<div class="screen" id="map">
-  <div class="map-title">⚡ EQUATION GALAXY</div>
-  <div class="map-sub" id="mapSub">Select a planet to begin your mission</div>
-  <div class="planets-row" id="planetsRow"></div>
-  <div style="margin-top:28px;color:var(--dim);font-size:13px">Total Stars: <span id="totalStarsDisp" style="color:var(--gold);font-family:'Orbitron',monospace">0</span> / 15 · Score: <span id="mapScore" style="color:var(--cyan);font-family:'Orbitron',monospace">0</span></div>
-</div>
-
-<!-- GAME -->
-<div class="screen" id="game">
-  <div class="level-banner">
-    <div class="level-icon" id="lvlIcon">🪐</div>
-    <div class="level-name" id="lvlName">PLANET VARIABLOS</div>
-    <div class="q-dots" id="qDots"></div>
-  </div>
-  <div class="q-card" id="qCard">
-    <div class="q-type-tag" id="qTypeTag">MISSION BRIEF</div>
-    <div class="q-text" id="qText">Loading...</div>
-    <div id="qContent"></div>
-  </div>
-  <div style="display:flex;gap:10px;justify-content:center">
-    <button class="btn-space red-btn" onclick="returnToMap()" style="font-size:12px;padding:8px 18px;letter-spacing:1px">← ABORT MISSION</button>
-  </div>
-</div>
-
-<!-- LEVEL COMPLETE -->
-<div class="screen" id="lvlDone">
-  <div class="lvl-complete-title" id="lvlCompleteTitle">SECTOR CLEARED!</div>
-  <div id="lvlCompleteIcon" style="font-size:56px;margin:8px 0"></div>
-  <div class="stars-disp" id="starsDisp">⭐⭐⭐</div>
-  <div class="lvl-stats">
-    <div class="stat-item"><div class="stat-val" id="lcCorrect">5</div><div class="stat-lbl">Correct</div></div>
-    <div class="stat-item"><div class="stat-val" id="lcPts">+250</div><div class="stat-lbl">Points Earned</div></div>
-    <div class="stat-item"><div class="stat-val" id="lcStreak">5</div><div class="stat-lbl">Best Streak</div></div>
-  </div>
-  <div class="fact-box" id="factBox"></div>
-  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:8px">
-    <button class="btn-space gold-btn" id="nextLvlBtn" onclick="goNextLevel()">NEXT WORLD ▶</button>
-    <button class="btn-space" onclick="showMap()">◀ GALAXY MAP</button>
-  </div>
-</div>
-
-<!-- GAME OVER -->
-<div class="screen" id="gameOver">
-  <div class="go-ship">💫</div>
-  <div class="go-title">SHIP LOST IN SPACE</div>
-  <p style="color:var(--dim);margin-bottom:8px">Your navigator ran out of energy</p>
-  <p style="font-family:'Orbitron',monospace;font-size:22px;color:var(--gold);margin-bottom:28px">FINAL SCORE: <span id="goScore">0</span></p>
-  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
-    <button class="btn-space gold-btn" onclick="restartGame()">🔄 TRY AGAIN</button>
-    <button class="btn-space" onclick="showMap()">◀ GALAXY MAP</button>
-  </div>
-</div>
-
-<!-- VICTORY -->
-<div class="screen" id="victory">
-  <span class="v-ship">🚀</span>
-  <div class="v-title">MISSION COMPLETE!</div>
-  <p style="color:var(--dim);letter-spacing:2px;font-size:14px;margin-bottom:6px">THE EQUATION GALAXY IS SAVED</p>
-  <div class="confetti-bar">🎉🏆🌟✨🎊</div>
-  <div class="v-score" id="vScore">0</div>
-  <div class="v-grade" id="vGrade" style="color:var(--cyan)">EXPLORER RANK</div>
-  <div class="v-breakdown" id="vBreakdown"></div>
-  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
-    <button class="btn-space gold-btn" onclick="restartGame()">🔄 PLAY AGAIN</button>
-  </div>
-</div>
-
-<!-- FEEDBACK FLASH -->
-<div id="fbFlash"><div class="fb-msg" id="fbMsg"></div></div>
-
-<!-- HINT -->
-<div id="hintOverlay"></div>
-
-<script>
-/* ============================================================
-   STARFIELD GENERATOR
-============================================================ */
-(function(){
-  const c=document.getElementById('stars');
-  for(let i=0;i<180;i++){
-    const s=document.createElement('div');
-    s.className='star';
-    const sz=Math.random()*2.5+.5;
-    const lo=(Math.random()*.3+.1).toFixed(2);
-    const dur=(Math.random()*3+2).toFixed(1)+'s';
-    const del=(Math.random()*4).toFixed(1)+'s';
-    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${dur};--dl:${del};--lo:${lo}`;
-    c.appendChild(s);
-  }
-})();
-
-/* ============================================================
-   QUESTION BANKS
-   (Different scenarios from the original test)
-============================================================ */
-const LEVELS = [
-  {
-    id:1,
-    name:'PLANET VARIABLOS',
-    icon:'🪐',
-    theme:'Variable Identification',
-    color:'#e040fb',
-    questions:[
-      {type:'mc',tag:'IDENTIFY THE INDEPENDENT VARIABLE',
-       text:'A baker produces <span class="q-hl">5 loaves of bread per hour</span>. Let <em>h</em> = hours and <em>L</em> = loaves baked. Which variable is <strong>INDEPENDENT</strong>?',
-       options:['h (hours)','L (loaves)','5 (rate)','Both h and L'],correct:'h (hours)',
-       explain:'Hours are controlled by the baker — loaves depend on how many hours pass.'},
-      {type:'mc',tag:'IDENTIFY THE DEPENDENT VARIABLE',
-       text:'A swimming pool loses <span class="q-hl">4 inches of water per day</span> due to evaporation. Let <em>d</em> = days elapsed and <em>w</em> = water level remaining. Which is the <strong>DEPENDENT</strong> variable?',
-       options:['d (days)','w (water level)','4 (rate)','Neither'],correct:'w (water level)',
-       explain:'Water level depends on how many days pass — days are the independent input.'},
-      {type:'mc',tag:'IDENTIFY INDEPENDENT VS DEPENDENT',
-       text:'A store earns <span class="q-hl">$200 in revenue every day</span> it stays open. Let <em>d</em> = days open and <em>r</em> = total revenue. Which statement is TRUE?',
-       options:['d depends on r','r depends on d','Neither depends on the other','They\'re both independent'],correct:'r depends on d',
-       explain:'Revenue changes based on how many days the store is open — d is the independent (input) variable.'},
-      {type:'mc',tag:'OUTPUT OR INPUT?',
-       text:'A rocket travels <span class="q-hl">500 miles per minute</span>. Let <em>t</em> = minutes and <em>m</em> = miles covered. Which variable is the <strong>OUTPUT</strong> of this relationship?',
-       options:['t (time)','m (miles)','500 (speed)','m and t both'],correct:'m (miles)',
-       explain:'Miles covered is the output — it is produced by/depends on the input (time elapsed).'},
-      {type:'mc',tag:'NAME THE INDEPENDENT VARIABLE',
-       text:'During a road trip, temperature drops <span class="q-hl">2°F for every 1,000 feet</span> of altitude gained. Let <em>a</em> = altitude (in thousands of feet) and <em>t</em> = temperature. Which is the <strong>INDEPENDENT</strong> variable?',
-       options:['t (temperature)','a (altitude)','2 (rate)','Both a and t'],correct:'a (altitude)',
-       explain:'Altitude is what we control/observe — temperature changes as altitude changes.'},
-    ],
-    facts:['The INDEPENDENT variable is always plotted on the x-axis.','The DEPENDENT variable is always plotted on the y-axis.','Remember: DEPENDent = depends on the other variable!']
-  },
-  {
-    id:2,
-    name:'TABLE NEBULA',
-    icon:'🌌',
-    theme:'Completing Tables',
-    color:'#40c4ff',
-    questions:[
-      {type:'fill',tag:'COMPLETE THE TABLE',
-       text:'A storage unit costs <span class="q-hl">$75 per month</span>. The table shows total cost over time. How much does it cost after <strong>4 months</strong>?',
-       table:{headers:['Months','Total Cost'],rows:[['1','$75'],['2','$150'],['3','$225'],['4','?'],['5','$375']]},
-       inputLabel:'Cost after 4 months:',inputPrefix:'$',
-       correct:'300',alts:['$300','300.00','$300.00'],hint:'Multiply: 4 × $75',
-       explain:'4 months × $75/month = $300'},
-      {type:'fill',tag:'FIND THE MISSING VALUE',
-       text:'A librarian shelves <span class="q-hl">15 books per hour</span>. How many total books are shelved after <strong>7 hours</strong>?',
-       table:{headers:['Hours','Books Shelved'],rows:[['2','30'],['4','60'],['6','90'],['7','?'],['10','150']]},
-       inputLabel:'Books after 7 hours:',inputPrefix:'',
-       correct:'105',alts:['105 books','105'],hint:'Multiply: 7 × 15',
-       explain:'7 hours × 15 books/hour = 105 books'},
-      {type:'fill',tag:'FILL IN THE TABLE',
-       text:'Apples cost <span class="q-hl">$0.85 each</span> at the farmer\'s market. What is the cost for <strong>6 apples</strong>?',
-       table:{headers:['Apples','Total Cost'],rows:[['2','$1.70'],['4','$3.40'],['6','?'],['8','$6.80'],['10','$8.50']]},
-       inputLabel:'Cost of 6 apples:',inputPrefix:'$',
-       correct:'5.10',alts:['$5.10','5.10'],hint:'Multiply: 6 × $0.85',
-       explain:'6 × $0.85 = $5.10'},
-      {type:'mc',tag:'IDENTIFY THE RULE',
-       text:'A table shows input/output pairs: (1, 9), (2, 18), (3, 27), (4, 36). What is the <strong>rule</strong> for this table?',
-       options:['output = input + 8','output = 9 × input','output = input × input','output = input + 9'],correct:'output = 9 × input',
-       explain:'Each output equals 9 times the input: 1×9=9, 2×9=18, 3×9=27, 4×9=36.'},
-      {type:'fill',tag:'EXTEND THE PATTERN',
-       text:'A faucet drips at a rate of <span class="q-hl">25 mL per minute</span>. How many mL drip after <strong>8 minutes</strong>?',
-       table:{headers:['Minutes','mL Dripped'],rows:[['1','25'],['3','75'],['5','125'],['8','?'],['10','250']]},
-       inputLabel:'mL after 8 minutes:',inputPrefix:'',
-       correct:'200',alts:['200 mL','200'],hint:'Multiply: 8 × 25',
-       explain:'8 minutes × 25 mL/min = 200 mL'},
-    ],
-    facts:['Always look for what you multiply the input by to get the output.','The RULE for a proportional table is: output = rate × input.','If every output ÷ input gives the same number, it\'s a constant rate!']
-  },
-  {
-    id:3,
-    name:'EQUATION STAR',
-    icon:'⭐',
-    theme:'Writing Equations',
-    color:'#ff7043',
-    questions:[
-      {type:'mc',tag:'WRITE THE EQUATION',
-       text:'A painter can finish <span class="q-hl">3 rooms per day</span>. Let <em>d</em> = days and <em>r</em> = rooms painted. Which equation represents this relationship?',
-       options:['r = d + 3','r = 3d','d = 3r','r = 3 + d'],correct:'r = 3d',
-       explain:'Rooms = 3 × days. The dependent variable r equals 3 times the independent variable d.'},
-      {type:'mc',tag:'IDENTIFY THE CORRECT EQUATION',
-       text:'A library charges a fine of <span class="q-hl">$0.25 per day</span> for overdue books. Let <em>n</em> = days overdue and <em>f</em> = fine amount. Which equation is correct?',
-       options:['f = 0.25 + n','n = 0.25f','f = 0.25n','f = 25n'],correct:'f = 0.25n',
-       explain:'Fine = $0.25 × days. f = 0.25n. Notice the dependent variable is isolated on the left.'},
-      {type:'mc',tag:'MATCH SCENARIO TO EQUATION',
-       text:'A school bus carries <span class="q-hl">40 passengers per trip</span>. Let <em>t</em> = number of trips and <em>p</em> = total passengers transported. What is the correct equation?',
-       options:['t = 40p','p = t + 40','p = 40t','p = 40 ÷ t'],correct:'p = 40t',
-       explain:'Total passengers = 40 × trips. p is the dependent variable; t is independent.'},
-      {type:'mc',tag:'FIND THE EQUATION',
-       text:'Every week, Marcus adds <span class="q-hl">$20 to his savings account</span>. Let <em>w</em> = weeks and <em>s</em> = total savings. Which equation shows how savings grow?',
-       options:['w = 20s','s = 20 + w','s = w + 20','s = 20w'],correct:'s = 20w',
-       explain:'Savings = $20 × weeks elapsed. s = 20w. Each week adds exactly $20.'},
-      {type:'mc',tag:'WRITE AN EQUATION FROM CONTEXT',
-       text:'A water tower fills at <span class="q-hl">150 gallons per hour</span>. Let <em>h</em> = hours and <em>g</em> = gallons. A city needs <strong>exactly 900 gallons</strong>. Which equation can you use to find how many hours that takes?',
-       options:['g = 150h','150 = gh','h = 150g','g = h + 150'],correct:'g = 150h',
-       explain:'g = 150h. To find hours for 900 gallons: 900 = 150h, so h = 6 hours.'},
-    ],
-    facts:['The DEPENDENT variable goes on the LEFT side of the equation.','The COEFFICIENT (number multiplied by x) is always the RATE.','Check your equation: plug in a known value and verify the output matches!']
-  },
-  {
-    id:4,
-    name:'GRAPH COSMOS',
-    icon:'📡',
-    theme:'Reading Graphs',
-    color:'#69f0ae',
-    questions:[
-      {type:'mc',tag:'IDENTIFY THE EQUATION FROM A GRAPH',
-       text:'A coordinate graph shows these ordered pairs: <span class="q-hl">(1, 6), (2, 12), (3, 18), (4, 24)</span>. The x-axis shows hours driven (<em>h</em>) and the y-axis shows miles traveled (<em>m</em>). Which equation matches this graph?',
-       options:['m = h + 6','m = 6h','m = 3h','h = 6m'],correct:'m = 6h',
-       explain:'At each point: 6÷1=6, 12÷2=6, 18÷3=6. The rate is 6, so m = 6h.'},
-      {type:'mc',tag:'READ THE GRAPH',
-       text:'A savings graph shows points: <span class="q-hl">(1, $9), (2, $18), (3, $27), (4, $36)</span>. Weeks are on the x-axis and dollars saved on the y-axis. Which equation represents this?',
-       options:['d = 9 + w','w = 9d','d = 9w','d = w × w'],correct:'d = 9w',
-       explain:'Each week, $9 is saved: 9×1=9, 9×2=18, 9×3=27. The equation is d = 9w.'},
-      {type:'mc',tag:'INTERPRET THE GRAPH',
-       text:'A graph of boxes packed shows pairs: <span class="q-hl">(2, 8), (4, 16), (6, 24), (8, 32)</span>. Let <em>b</em> = boxes and <em>i</em> = items. How many items are in each box?',
-       options:['2 items','4 items','6 items','8 items'],correct:'4 items',
-       explain:'8÷2=4, 16÷4=4, 24÷6=4. The rate is 4 items per box.'},
-      {type:'mc',tag:'FIND THE EQUATION',
-       text:'A graph has points at <span class="q-hl">(2, 14), (4, 28), (6, 42)</span>. Let <em>x</em> = input and <em>y</em> = output. Which equation matches?',
-       options:['y = 7x','y = x + 7','y = 14x','y = 6x + 2'],correct:'y = 7x',
-       explain:'14÷2=7, 28÷4=7, 42÷6=7. The constant ratio is 7, so y = 7x.'},
-      {type:'mc',tag:'GRAPH INTERPRETATION',
-       text:'A speed graph passes through <span class="q-hl">(1, 45), (2, 90), (3, 135)</span>. Let <em>h</em> = hours and <em>m</em> = miles. What does the point <strong>(5, 225)</strong> mean?',
-       options:['After 225 hours you travel 5 miles','After 5 hours you travel 225 miles','Speed is 225 mph','You start at mile 225'],correct:'After 5 hours you travel 225 miles',
-       explain:'In (h, m) → (5, 225) means h=5 hours and m=225 miles. The vehicle travels 225 miles in 5 hours.'},
-    ],
-    facts:['The SLOPE (rate of change) tells you how steep the line is.','In proportional relationships, the line always passes through the origin (0,0).','To find the equation from a graph, divide any y-value by its x-value to get the rate.']
-  },
-  {
-    id:5,
-    name:'FINAL NEXUS',
-    icon:'💥',
-    theme:'Boss Challenge — Mixed',
-    color:'#ffd700',
-    questions:[
-      {type:'mc',tag:'BOSS: VARIABLE IDENTIFICATION',
-       text:'A drone delivers <span class="q-hl">12 packages per hour</span>. Let <em>h</em> = hours and <em>p</em> = packages delivered. Which of these statements is <strong>FALSE</strong>?',
-       options:['p depends on h','h is the independent variable','p = 12h is the equation','h depends on p'],correct:'h depends on p',
-       explain:'h does NOT depend on p. h is the independent input — p (packages) depends on h (hours).'},
-      {type:'fill',tag:'BOSS: COMPLETE THE TABLE',
-       text:'A taxi charges <span class="q-hl">$3.50 per mile</span>. How much does a <strong>9-mile</strong> ride cost?',
-       table:{headers:['Miles','Total Cost'],rows:[['2','$7.00'],['5','$17.50'],['9','?'],['12','$42.00']]},
-       inputLabel:'Cost of 9-mile ride:',inputPrefix:'$',
-       correct:'31.50',alts:['$31.50','31.50','$31.5'],hint:'Multiply: 9 × $3.50',
-       explain:'9 × $3.50 = $31.50'},
-      {type:'mc',tag:'BOSS: WRITE THE EQUATION',
-       text:'Every month, a phone plan uses <span class="q-hl">2 GB of data</span>. Let <em>m</em> = months and <em>g</em> = total GB used. Which equation AND which variable description is completely correct?',
-       options:['g = 2m; m is dependent','g = 2m; g is dependent','m = 2g; m is dependent','g = m + 2; g is dependent'],correct:'g = 2m; g is dependent',
-       explain:'g = 2m (total GB = 2 × months). g is the output — it depends on m (months), which is the independent variable.'},
-      {type:'mc',tag:'BOSS: GRAPH READING',
-       text:'A graph shows the cost of buying candles. Points: <span class="q-hl">(3, $12), (6, $24), (9, $36), (12, $48)</span>. How much does <strong>ONE</strong> candle cost?',
-       options:['$2','$3','$4','$6'],correct:'$4',
-       explain:'12÷3=4, 24÷6=4, 36÷9=4. Each candle costs $4. The equation is c = 4n.'},
-      {type:'mc',tag:'BOSS: APPLY YOUR KNOWLEDGE',
-       text:'Marcus earns <span class="q-hl">$12 per hour</span> at his job, but spends <span class="q-hl">$5 on lunch</span> every day he works. If he works <strong>8 hours today</strong>, what is his <em>net</em> earnings for today?',
-       options:['$96','$91','$86','$101'],correct:'$91',
-       explain:'Earnings = 8 × $12 = $96. Net = $96 − $5 = $91. This is a multi-step equation: e = 12h − 5.'},
-    ],
-    facts:['You\'ve mastered all 4 skills: Variables, Tables, Equations, and Graphs!','These skills all connect: a table shows a relationship, an equation describes it, a graph displays it.','You\'re ready for the test — Great work, Equation Explorer!']
-  }
-];
-
-/* ============================================================
-   GAME STATE
-============================================================ */
-const G = {
-  score:0, lives:3, currentLevel:0, currentQ:0,
-  streak:0, bestStreak:0, levelCorrect:0, levelPts:0,
-  levelStars:[0,0,0,0,0],
-  attempts:0, wrongThisQ:false,
-  locked:[false,false,false,false,false],
-};
-
-/* ============================================================
-   UTILS
-============================================================ */
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function setHUD(visible, levelName){
-  const h=document.getElementById('hud');
-  if(visible) h.classList.add('vis'); else h.classList.remove('vis');
-  if(levelName) document.getElementById('hudLevel').textContent=levelName;
-  updateHUD();
-}
-function updateHUD(){
-  document.getElementById('hudPts').textContent=G.score;
-  document.getElementById('hudHearts').textContent='❤️'.repeat(G.lives)+'🖤'.repeat(3-G.lives);
-  const st=document.getElementById('streakTag');
-  if(G.streak>=2){st.textContent='🔥 ×'+Math.min(G.streak,4);st.classList.add('vis')}
-  else st.classList.remove('vis');
-}
-function showHint(msg,dur=3000){
-  const h=document.getElementById('hintOverlay');
-  h.textContent=msg;h.classList.add('vis');
-  setTimeout(()=>h.classList.remove('vis'),dur);
-}
-function flashFeedback(correct){
-  const fl=document.getElementById('fbFlash');
-  const msg=document.getElementById('fbMsg');
-  msg.textContent=correct?'CORRECT!':'WRONG!';
-  msg.className='fb-msg '+(correct?'fb-correct':'fb-wrong');
-  fl.classList.add('show');
-  setTimeout(()=>fl.classList.remove('show'),900);
-}
-function spawnParticles(correct){
-  const colors=correct?[G.LEVELS?.[G.currentLevel]?.color||'#00e676','#ffd700','#00e5ff']:['#ff1744','#ff6b35'];
-  for(let i=0;i<18;i++){
-    const p=document.createElement('div');
-    p.className='ptcl';
-    const angle=Math.random()*Math.PI*2;
-    const dist=100+Math.random()*150;
-    const tx=(Math.cos(angle)*dist).toFixed(0)+'px';
-    const ty=(Math.sin(angle)*dist).toFixed(0)+'px';
-    const dur=(0.6+Math.random()*.5).toFixed(2)+'s';
-    const color=colors[Math.floor(Math.random()*colors.length)];
-    p.style.cssText=`background:${color};left:50%;top:50%;--tx:${tx};--ty:${ty};--td:${dur}`;
-    document.body.appendChild(p);
-    setTimeout(()=>p.remove(),800);
-  }
-}
-
-/* ============================================================
-   MAP
-============================================================ */
-function showMap(){
-  setHUD(false);
-  buildMap();
-  showScreen('map');
-  document.getElementById('mapScore').textContent=G.score;
-  const total=G.levelStars.reduce((a,b)=>a+b,0);
-  document.getElementById('totalStarsDisp').textContent=total;
-  const allDone=G.levelStars.every(s=>s>0);
-  document.getElementById('mapSub').textContent=allDone?'All sectors cleared! Select any planet to replay.':'Select a planet to begin your mission';
-}
-
-function buildMap(){
-  const row=document.getElementById('planetsRow');
-  row.innerHTML='';
-  LEVELS.forEach((lvl,i)=>{
-    const stars=G.levelStars[i];
-    const unlocked=i===0||G.levelStars[i-1]>0;
-    const div=document.createElement('div');
-    div.className='planet-card p'+(i<4?i+1:'boss')+' '+(unlocked?'':'locked');
-    div.innerHTML=`
-      ${!unlocked?'<div class="locked-badge">🔒</div>':''}
-      <div class="planet-orb">${lvl.icon}</div>
-      <div class="planet-name">${lvl.name}</div>
-      <div class="planet-type">${lvl.theme}</div>
-      <div class="planet-stars">${stars>0?'⭐'.repeat(stars)+'☆'.repeat(3-stars):'☆☆☆'}</div>
-    `;
-    if(unlocked) div.onclick=()=>startLevel(i);
-    row.appendChild(div);
-  });
-}
-
-/* ============================================================
-   LEVEL FLOW
-============================================================ */
-function startLevel(idx){
-  G.currentLevel=idx;
-  G.currentQ=0;
-  G.levelCorrect=0;
-  G.levelPts=0;
-  G.streak=0;
-  G.bestStreak=0;
-  G.lives=3;
-  const lvl=LEVELS[idx];
-  document.getElementById('lvlIcon').textContent=lvl.icon;
-  document.getElementById('lvlName').textContent=lvl.name;
-  setHUD(true, lvl.name);
-  buildQDots(lvl.questions.length);
-  showScreen('game');
-  renderQuestion();
-}
-
-function buildQDots(n){
-  const dots=document.getElementById('qDots');
-  dots.innerHTML='';
-  for(let i=0;i<n;i++){
-    const d=document.createElement('div');
-    d.className='qdot'+(i===0?' cur':'');
-    d.id='qdot'+i;
-    dots.appendChild(d);
-  }
-}
-
-function updateQDot(idx,result){
-  const d=document.getElementById('qdot'+idx);
-  if(d){d.classList.remove('cur');d.classList.add(result)}
-  const next=document.getElementById('qdot'+(idx+1));
-  if(next) next.classList.add('cur');
-}
-
-/* ============================================================
-   RENDER QUESTION
-============================================================ */
-function renderQuestion(){
-  const lvl=LEVELS[G.currentLevel];
-  const q=lvl.questions[G.currentQ];
-  G.wrongThisQ=false;
-  G.attempts=0;
-
-  document.getElementById('qTypeTag').textContent=q.tag||'MISSION BRIEF';
-  document.getElementById('qText').innerHTML=q.text;
-
-  const content=document.getElementById('qContent');
-  content.innerHTML='';
-
-  if(q.table) content.appendChild(buildMiniTable(q.table));
-
-  if(q.type==='mc'){
-    renderMC(content,q);
-  } else if(q.type==='fill'){
-    renderFill(content,q);
-  }
-}
-
-function buildMiniTable(tableData){
-  const wrap=document.createElement('div');
-  const tbl=document.createElement('table');
-  tbl.className='mini-tbl';
-  const thead=document.createElement('thead');
-  const hRow=document.createElement('tr');
-  tableData.headers.forEach(h=>{const th=document.createElement('th');th.textContent=h;hRow.appendChild(th)});
-  thead.appendChild(hRow);tbl.appendChild(thead);
-  const tbody=document.createElement('tbody');
-  tableData.rows.forEach(row=>{
-    const tr=document.createElement('tr');
-    const isHl=row.includes('?');
-    if(isHl) tr.className='hl-row';
-    row.forEach(cell=>{const td=document.createElement('td');td.textContent=cell;tr.appendChild(td)});
-    tbody.appendChild(tr);
-  });
-  tbl.appendChild(tbody);wrap.appendChild(tbl);
-  return wrap;
-}
-
-function renderMC(container,q){
-  const grid=document.createElement('div');
-  grid.className='opts-grid';
-  q.options.forEach(opt=>{
-    const btn=document.createElement('button');
-    btn.className='opt';btn.textContent=opt;
-    btn.onclick=()=>answerMC(opt,q.correct,q.explain,grid,btn);
-    grid.appendChild(btn);
-  });
-  container.appendChild(grid);
-}
-
-function renderFill(container,q){
-  const row=document.createElement('div');row.className='fill-row';
-  const label=document.createElement('span');label.textContent=q.inputLabel;label.style.color=G_dim;
-  label.style.fontSize='14px';
-  const inp=document.createElement('input');
-  inp.className='sp-input';inp.type='text';
-  inp.placeholder=q.inputPrefix?q.inputPrefix+'___':'___';
-  inp.id='fillInp';
-  const btn=document.createElement('button');
-  btn.className='sub-btn';btn.textContent='SUBMIT';
-  btn.onclick=()=>answerFill(inp,q,btn);
-  inp.addEventListener('keypress',e=>{if(e.key==='Enter')answerFill(inp,q,btn)});
-  const hint=document.createElement('div');hint.className='hint-text';hint.id='fillHint';hint.textContent='💡 Hint: '+q.hint;
-  row.appendChild(label);row.appendChild(inp);row.appendChild(btn);
-  container.appendChild(row);container.appendChild(hint);
-  setTimeout(()=>inp.focus(),100);
-}
-
-const G_dim='var(--dim)';
-
-/* ============================================================
-   ANSWER HANDLERS
-============================================================ */
-function answerMC(chosen,correct,explain,grid,btn){
-  grid.querySelectorAll('.opt').forEach(b=>b.disabled=true);
-  const isRight=chosen===correct;
-  btn.classList.add(isRight?'right':'wrong');
-  if(!isRight){
-    grid.querySelectorAll('.opt').forEach(b=>{if(b.textContent===correct)b.classList.add('right')});
-  }
-  processAnswer(isRight,explain);
-}
-
-function answerFill(inp,q,btn){
-  const raw=inp.value.trim();
-  const cleaned=raw.replace(/[$\s,]/g,'').toLowerCase();
-  const correctNum=parseFloat(q.correct);
-  const isRight=!isNaN(correctNum)?Math.abs(parseFloat(cleaned)-correctNum)<0.01:(q.alts||[]).map(a=>a.replace(/[$\s,]/g,'').toLowerCase()).includes(cleaned);
-  inp.classList.add(isRight?'right':'wrong');
-  inp.disabled=true;btn.disabled=true;
-  if(!isRight&&document.getElementById('fillHint')) document.getElementById('fillHint').classList.add('vis');
-  processAnswer(isRight,q.explain);
-}
-
-function processAnswer(correct,explain){
-  G.attempts++;
-  flashFeedback(correct);
-  spawnParticles(correct);
-
-  if(correct){
-    const bonus=G.streak>=3?50:G.streak>=2?30:0;
-    const pts=100+bonus;
-    G.score+=pts;G.levelPts+=pts;
-    G.levelCorrect++;G.streak++;
-    if(G.streak>G.bestStreak) G.bestStreak=G.streak;
-    if(explain) showHint('✅ '+explain,3000);
-  } else {
-    G.streak=0;
-    if(!G.wrongThisQ){G.lives--;G.wrongThisQ=true}
-    if(explain) showHint('💡 '+explain,3500);
-    if(G.lives<=0){
-      setTimeout(gameOver,1400);
-      updateHUD();return;
-    }
-  }
-  updateHUD();
-  updateQDot(G.currentQ,correct?'hit':'miss');
-
-  setTimeout(()=>{
-    G.currentQ++;
-    const lvl=LEVELS[G.currentLevel];
-    if(G.currentQ>=lvl.questions.length){
-      setTimeout(levelComplete,400);
-    } else {
-      renderQuestion();
-    }
-  },correct?1300:2200);
-}
-
-function returnToMap(){showMap()}
-
-/* ============================================================
-   LEVEL COMPLETE
-============================================================ */
-function levelComplete(){
-  setHUD(false);
-  const lvl=LEVELS[G.currentLevel];
-  const total=lvl.questions.length;
-  const pct=G.levelCorrect/total;
-  const stars=pct>=1?3:pct>=.8?2:pct>=.6?1:0;
-  if(stars>G.levelStars[G.currentLevel]) G.levelStars[G.currentLevel]=stars;
-
-  document.getElementById('lvlCompleteTitle').textContent=G.levelCorrect===total?'PERFECT MISSION!':'SECTOR CLEARED!';
-  document.getElementById('lvlCompleteIcon').textContent=lvl.icon;
-  document.getElementById('starsDisp').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
-  document.getElementById('lcCorrect').textContent=G.levelCorrect+'/'+total;
-  document.getElementById('lcPts').textContent='+'+G.levelPts;
-  document.getElementById('lcStreak').textContent=G.bestStreak;
-
-  const facts=lvl.facts||[];
-  const fact=facts[Math.floor(Math.random()*facts.length)];
-  document.getElementById('factBox').innerHTML=`<strong style="color:var(--cyan)">📚 Key Insight:</strong> ${fact}`;
-
-  const nextBtn=document.getElementById('nextLvlBtn');
-  const nextIdx=G.currentLevel+1;
-  if(nextIdx<LEVELS.length && stars>0){
-    nextBtn.style.display='inline-block';
-    nextBtn.textContent='NEXT WORLD ▶';
-  } else if(G.levelStars.every(s=>s>0)){
-    nextBtn.style.display='inline-block';
-    nextBtn.textContent='🏆 SEE FINAL SCORE';
-    nextBtn.onclick=showVictory;
-  } else {
-    nextBtn.style.display='none';
-  }
-
-  showScreen('lvlDone');
-  if(G.levelStars.every(s=>s>0)&&nextIdx>=LEVELS.length) setTimeout(showVictory,3000);
-}
-
-function goNextLevel(){
-  const next=G.currentLevel+1;
-  if(next<LEVELS.length) startLevel(next);
-  else showVictory();
-}
-
-/* ============================================================
-   GAME OVER
-============================================================ */
-function gameOver(){
-  setHUD(false);
-  document.getElementById('goScore').textContent=G.score;
-  showScreen('gameOver');
-}
-
-/* ============================================================
-   VICTORY
-============================================================ */
-function showVictory(){
-  setHUD(false);
-  document.getElementById('vScore').textContent=G.score;
-  const grade=G.score>=1800?'⚡ EQUATION MASTER':G.score>=1200?'🚀 GALAXY NAVIGATOR':G.score>=700?'🌟 SPACE EXPLORER':'🌌 CADET';
-  document.getElementById('vGrade').textContent=grade;
-  document.getElementById('vGrade').style.color=G.score>=1800?'#ffd700':G.score>=1200?'#00e5ff':'#69f0ae';
-
-  const bd=document.getElementById('vBreakdown');
-  bd.innerHTML='';
-  LEVELS.forEach((lvl,i)=>{
-    const div=document.createElement('div');div.className='v-item';
-    div.innerHTML=`<div class="v-item-val">${'⭐'.repeat(G.levelStars[i]||0)||'—'}</div><div class="v-item-lbl">${lvl.name}</div>`;
-    bd.appendChild(div);
-  });
-  const totalStars=G.levelStars.reduce((a,b)=>a+b,0);
-  const sc=document.createElement('div');sc.className='v-item';
-  sc.innerHTML=`<div class="v-item-val" style="color:var(--gold)">${totalStars}/15</div><div class="v-item-lbl">Total Stars</div>`;
-  bd.appendChild(sc);
-
-  showScreen('victory');
-  spawnParticles(true);spawnParticles(true);spawnParticles(true);
-}
-
-/* ============================================================
-   RESTART
-============================================================ */
-function restartGame(){
-  Object.assign(G,{score:0,lives:3,currentLevel:0,currentQ:0,streak:0,bestStreak:0,levelCorrect:0,levelPts:0,levelStars:[0,0,0,0,0],attempts:0,wrongThisQ:false});
-  setHUD(false);
-  showScreen('splash');
-}
-</script>
-</body>
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equation Fortress - Tower Defense | 6.EE.C.9</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+      #game-container {
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      // ============================================================
+      // EQUATION FORTRESS — Tower Defense (6.EE.C.9 Review)
+      // Solve equations to power/place towers. Enemies carry wrong answers.
+      // Waves of enemies march along a path; towers auto-fire.
+      // ============================================================
+
+      const QUESTIONS = [
+        {
+          q: "x + 3 = 8. Solve for x.",
+          choices: ["5", "11", "3", "8"],
+          correct: 0,
+          explain: "x = 8 - 3 = 5",
+        },
+        {
+          q: "2x = 10. Solve for x.",
+          choices: ["5", "20", "2", "10"],
+          correct: 0,
+          explain: "x = 10/2 = 5",
+        },
+        {
+          q: "x - 4 = 6. Solve for x.",
+          choices: ["10", "2", "6", "4"],
+          correct: 0,
+          explain: "x = 6 + 4 = 10",
+        },
+        {
+          q: "3x = 15. Solve for x.",
+          choices: ["5", "45", "3", "12"],
+          correct: 0,
+          explain: "x = 15/3 = 5",
+        },
+        {
+          q: "x / 4 = 2. Solve for x.",
+          choices: ["8", "2", "6", "0.5"],
+          correct: 0,
+          explain: "x = 2 x 4 = 8",
+        },
+        {
+          q: "5x = 25. Solve for x.",
+          choices: ["5", "125", "20", "30"],
+          correct: 0,
+          explain: "x = 25/5 = 5",
+        },
+        {
+          q: "2x + 3 = 11. Solve for x.",
+          choices: ["4", "7", "5.5", "8"],
+          correct: 0,
+          explain: "2x = 8, x = 4",
+        },
+        {
+          q: "3x - 2 = 10. Solve for x.",
+          choices: ["4", "6", "3", "8"],
+          correct: 0,
+          explain: "3x = 12, x = 4",
+        },
+        {
+          q: "4x + 5 = 21. Solve for x.",
+          choices: ["4", "6.5", "16", "5"],
+          correct: 0,
+          explain: "4x = 16, x = 4",
+        },
+        {
+          q: "5x - 7 = 3. Solve for x.",
+          choices: ["2", "10", "5", "1"],
+          correct: 0,
+          explain: "5x = 10, x = 2",
+        },
+        {
+          q: "2x + 3 = x + 8. Solve for x.",
+          choices: ["5", "11", "3", "8"],
+          correct: 0,
+          explain: "x + 3 = 8, x = 5",
+        },
+        {
+          q: "3x - 2 = x + 6. Solve for x.",
+          choices: ["4", "8", "2", "6"],
+          correct: 0,
+          explain: "2x = 8, x = 4",
+        },
+        {
+          q: "2(x + 1) = 10. Solve for x.",
+          choices: ["4", "5", "9", "6"],
+          correct: 0,
+          explain: "2x + 2 = 10, 2x = 8, x = 4",
+        },
+        {
+          q: "3(x - 2) = 9. Solve for x.",
+          choices: ["5", "3", "7", "11"],
+          correct: 0,
+          explain: "3x - 6 = 9, 3x = 15, x = 5",
+        },
+        {
+          q: "Maria has x books. After buying 5 more she has 23. x = ?",
+          choices: ["18", "28", "23", "5"],
+          correct: 0,
+          explain: "x + 5 = 23, x = 18",
+        },
+        {
+          q: "Table: x 1,2,3 | y 9,18,27. What is y when x = 5?",
+          choices: ["45", "36", "54", "27"],
+          correct: 0,
+          explain: "Rate = 9. y = 9 x 5 = 45",
+        },
+      ];
+
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        },
+        tone(f, d, t = "sine", v = 0.1) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        },
+        shoot() {
+          this.tone(600, 0.06, "square", 0.05);
+        },
+        correct() {
+          this.tone(660, 0.1);
+          setTimeout(() => this.tone(880, 0.12), 80);
+        },
+        wrong() {
+          this.tone(180, 0.25, "sawtooth", 0.08);
+        },
+        hit() {
+          this.tone(300, 0.08, "sawtooth", 0.06);
+        },
+        explode() {
+          this.tone(80, 0.3, "sawtooth", 0.12);
+        },
+        wave() {
+          this.tone(440, 0.1);
+          setTimeout(() => this.tone(550, 0.1), 100);
+          setTimeout(() => this.tone(660, 0.15), 200);
+        },
+        lose() {
+          this.tone(200, 0.3, "sawtooth", 0.1);
+          setTimeout(() => this.tone(150, 0.4, "sawtooth", 0.1), 200);
+        },
+      };
+
+      const W = 800,
+        H = 600;
+
+      // Path waypoints for enemies
+      const PATH = [
+        { x: 0, y: 200 },
+        { x: 150, y: 200 },
+        { x: 150, y: 350 },
+        { x: 350, y: 350 },
+        { x: 350, y: 150 },
+        { x: 550, y: 150 },
+        { x: 550, y: 400 },
+        { x: 750, y: 400 },
+        { x: 800, y: 400 },
+      ];
+
+      // Tower placement spots (near the path)
+      const TOWER_SPOTS = [
+        { x: 100, y: 140 },
+        { x: 200, y: 290 },
+        { x: 280, y: 400 },
+        { x: 400, y: 280 },
+        { x: 300, y: 100 },
+        { x: 500, y: 90 },
+        { x: 480, y: 340 },
+        { x: 600, y: 460 },
+        { x: 700, y: 340 },
+        { x: 650, y: 200 },
+      ];
+
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
+          // Tower
+          g.fillStyle(0x00ccff, 1);
+          g.fillRect(4, 8, 24, 24);
+          g.fillStyle(0x0088dd, 1);
+          g.fillRect(10, 0, 12, 12);
+          g.fillStyle(0x00ffcc, 0.6);
+          g.fillCircle(16, 4, 3);
+          g.generateTexture("tower", 32, 32);
+          g.clear();
+          // Tower spot
+          g.lineStyle(2, 0x446688, 0.5);
+          g.strokeCircle(16, 16, 14);
+          g.fillStyle(0x223344, 0.3);
+          g.fillCircle(16, 16, 14);
+          g.generateTexture("spot", 32, 32);
+          g.clear();
+          // Enemy
+          g.fillStyle(0xff4444, 1);
+          g.fillCircle(12, 12, 12);
+          g.fillStyle(0xcc0000, 1);
+          g.fillCircle(12, 12, 8);
+          g.fillStyle(0xff8888, 0.5);
+          g.fillCircle(9, 9, 3);
+          g.generateTexture("enemy", 24, 24);
+          g.clear();
+          // Fast enemy
+          g.fillStyle(0xff8800, 1);
+          g.fillCircle(10, 10, 10);
+          g.fillStyle(0xcc6600, 1);
+          g.fillCircle(10, 10, 6);
+          g.generateTexture("enemyFast", 20, 20);
+          g.clear();
+          // Tank enemy
+          g.fillStyle(0x8844ff, 1);
+          g.fillCircle(14, 14, 14);
+          g.fillStyle(0x6622cc, 1);
+          g.fillCircle(14, 14, 10);
+          g.generateTexture("enemyTank", 28, 28);
+          g.clear();
+          // Bullet
+          g.fillStyle(0x00ffcc, 1);
+          g.fillCircle(3, 3, 3);
+          g.generateTexture("tbullet", 6, 6);
+          g.clear();
+          // Spark
+          g.fillStyle(0xffcc00, 1);
+          g.fillCircle(3, 3, 3);
+          g.generateTexture("spark", 6, 6);
+          g.clear();
+          // Base
+          g.fillStyle(0x00ff88, 1);
+          g.fillRect(0, 0, 40, 40);
+          g.fillStyle(0x00cc66, 1);
+          g.fillRect(4, 4, 32, 32);
+          g.fillStyle(0xffffff, 0.5);
+          g.fillRect(12, 12, 16, 16);
+          g.generateTexture("base", 40, 40);
+          g.clear();
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          SFX.init();
+          this.cameras.main.setBackgroundColor(0x0a0e27);
+
+          for (let i = 0; i < 60; i++)
+            this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.FloatBetween(0.5, 1.5),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.1, 0.4),
+            );
+
+          this.add
+            .text(W / 2, 80, "EQUATION FORTRESS", {
+              fontSize: "44px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ff88",
+              stroke: "#003322",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 130, "Tower Defense Math Review", {
+              fontSize: "16px",
+              fontFamily: "Arial",
+              color: "#88ccaa",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 155, "6.EE.C.9 -- Equations Review", {
+              fontSize: "12px",
+              fontFamily: "Arial",
+              color: "#668877",
+            })
+            .setOrigin(0.5);
+
+          const tower = this.add.image(W / 2, 240, "tower").setScale(4);
+          this.tweens.add({
+            targets: tower,
+            y: 230,
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
+          this.add
+            .text(W / 2, 320, "Solve equations to place towers.", {
+              fontSize: "14px",
+              fontFamily: "Arial",
+              color: "#aaa",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 340, "Towers auto-fire at enemies on the path.", {
+              fontSize: "14px",
+              fontFamily: "Arial",
+              color: "#aaa",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 360, "Stop enemies from reaching your base!", {
+              fontSize: "14px",
+              fontFamily: "Arial",
+              color: "#aaa",
+            })
+            .setOrigin(0.5);
+
+          // Difficulty
+          this.add
+            .text(W / 2, 410, "Select Difficulty:", {
+              fontSize: "14px",
+              fontFamily: "Arial",
+              color: "#888",
+            })
+            .setOrigin(0.5);
+          const diffs = [
+            { name: "Easy", waves: 5, hp: 2 },
+            { name: "Normal", waves: 8, hp: 3 },
+            { name: "Hard", waves: 12, hp: 4 },
+          ];
+          this.selDiff = 1;
+          const cards = [];
+          diffs.forEach((d, i) => {
+            const x = W / 2 - 140 + i * 140;
+            const c = this.add
+              .rectangle(x, 450, 120, 50, 0x112244, 0.8)
+              .setStrokeStyle(2, 0x336699, 0.5)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, 445, d.name, {
+                fontSize: "14px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            c.on("pointerdown", () => {
+              this.selDiff = i;
+              cards.forEach((cc, j) =>
+                cc.setStrokeStyle(
+                  j === i ? 3 : 2,
+                  j === i ? 0x00ff88 : 0x336699,
+                  j === i ? 1 : 0.5,
+                ),
+              );
+            });
+            cards.push(c);
+          });
+          cards[1].setStrokeStyle(3, 0x00ff88, 1);
+
+          const btn = this.add
+            .text(W / 2, 520, "[ DEFEND THE BASE ]", {
+              fontSize: "22px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ffcc",
+              padding: { x: 20, y: 10 },
+              backgroundColor: "rgba(0,255,200,0.1)",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          btn.on("pointerover", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
+          );
+          btn.on("pointerout", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
+          );
+          btn.on("pointerdown", () => {
+            SFX.init();
+            this.scene.start("Defend", { diff: diffs[this.selDiff] });
+          });
+        }
+      }
+
+      class DefendScene extends Phaser.Scene {
+        constructor() {
+          super("Defend");
+        }
+        init(data) {
+          this.diff = data.diff || { name: "Normal", waves: 8, hp: 3 };
+          this.score = 0;
+          this.lives = 20;
+          this.wave = 0;
+          this.maxWaves = this.diff.waves;
+          this.towersPlaced = 0;
+          this.enemiesKilled = 0;
+          this.correct = 0;
+          this.total = 0;
+          this.streak = 0;
+          this.bestStreak = 0;
+          this.questionActive = false;
+          this.pendingSpot = null;
+          this.shuffledQs = Phaser.Utils.Array.Shuffle([...QUESTIONS]);
+          this.qIdx = 0;
+          this.waveActive = false;
+          this.enemiesInWave = 0;
+          this.enemiesSpawned = 0;
+          this.towerObjects = [];
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(0x1a2a1a);
+
+          // Draw path
+          const pathGfx = this.add.graphics();
+          pathGfx.lineStyle(30, 0x4a3a2a, 0.8);
+          pathGfx.beginPath();
+          pathGfx.moveTo(PATH[0].x, PATH[0].y);
+          for (let i = 1; i < PATH.length; i++)
+            pathGfx.lineTo(PATH[i].x, PATH[i].y);
+          pathGfx.strokePath();
+          // Path outline
+          pathGfx.lineStyle(2, 0x665544, 0.4);
+          pathGfx.beginPath();
+          pathGfx.moveTo(PATH[0].x, PATH[0].y);
+          for (let i = 1; i < PATH.length; i++)
+            pathGfx.lineTo(PATH[i].x, PATH[i].y);
+          pathGfx.strokePath();
+
+          // Phaser path for enemy following
+          this.enemyPath = new Phaser.Curves.Path(PATH[0].x, PATH[0].y);
+          for (let i = 1; i < PATH.length; i++)
+            this.enemyPath.lineTo(PATH[i].x, PATH[i].y);
+
+          // Base at end of path
+          const lastP = PATH[PATH.length - 1];
+          this.add.image(lastP.x - 20, lastP.y, "base").setScale(1.5);
+          this.add
+            .text(lastP.x - 20, lastP.y + 30, "BASE", {
+              fontSize: "10px",
+              fontFamily: "monospace",
+              color: "#00ff88",
+            })
+            .setOrigin(0.5);
+
+          // Tower spots
+          this.spotSprites = [];
+          TOWER_SPOTS.forEach((sp, i) => {
+            const s = this.add
+              .image(sp.x, sp.y, "spot")
+              .setScale(1.3)
+              .setInteractive({ useHandCursor: true })
+              .setAlpha(0.6);
+            s.spotIndex = i;
+            s.hasTower = false;
+            s.on("pointerdown", () => this.clickSpot(i));
+            s.on("pointerover", () => {
+              if (!s.hasTower) s.setAlpha(1);
+            });
+            s.on("pointerout", () => {
+              if (!s.hasTower) s.setAlpha(0.6);
+            });
+            this.spotSprites.push(s);
+          });
+
+          // Groups
+          this.enemies = this.add.group();
+          this.bullets = this.physics.add.group();
+
+          // Spark emitter
+          this.sparkEmitter = this.add.particles(0, 0, "spark", {
+            speed: { min: 60, max: 180 },
+            angle: { min: 0, max: 360 },
+            lifespan: 350,
+            scale: { start: 0.8, end: 0 },
+            alpha: { start: 1, end: 0 },
+            blendMode: "ADD",
+            emitting: false,
+          });
+
+          // HUD
+          this.add.rectangle(W / 2, 20, W, 40, 0x000000, 0.7).setDepth(100);
+          this.scoreText = this.add
+            .text(10, 6, "SCORE: 0", {
+              fontSize: "13px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc00",
+            })
+            .setDepth(101);
+          this.livesText = this.add
+            .text(W / 2, 6, "BASE HP: 20", {
+              fontSize: "13px",
+              fontFamily: "monospace",
+              color: "#00ff88",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+          this.waveText = this.add
+            .text(W - 10, 6, "WAVE 0/" + this.maxWaves, {
+              fontSize: "12px",
+              fontFamily: "monospace",
+              color: "#00ccff",
+            })
+            .setOrigin(1, 0)
+            .setDepth(101);
+          this.towersText = this.add
+            .text(W - 10, 22, "TOWERS: 0", {
+              fontSize: "10px",
+              fontFamily: "monospace",
+              color: "#888",
+            })
+            .setOrigin(1, 0)
+            .setDepth(101);
+          this.streakText = this.add
+            .text(W / 2, 22, "", {
+              fontSize: "10px",
+              fontFamily: "monospace",
+              color: "#ff8800",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+
+          // Question panel
+          this.qContainer = this.add
+            .container(W / 2, H / 2)
+            .setDepth(200)
+            .setVisible(false);
+          const qBg = this.add
+            .rectangle(0, 0, 620, 280, 0x0a1a2e, 0.96)
+            .setStrokeStyle(2, 0x00ff88, 0.6);
+          this.qText = this.add
+            .text(0, -110, "", {
+              fontSize: "16px",
+              fontFamily: "Arial",
+              fontStyle: "bold",
+              color: "#fff",
+              wordWrap: { width: 560 },
+              align: "center",
+            })
+            .setOrigin(0.5);
+          this.qContainer.add([qBg, this.qText]);
+          this.qBtns = [];
+          this.qTxts = [];
+          for (let i = 0; i < 4; i++) {
+            const y = -45 + i * 42;
+            const bg = this.add
+              .rectangle(0, y, 500, 36, 0x112244, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.6)
+              .setInteractive({ useHandCursor: true });
+            const txt = this.add
+              .text(0, y, "", {
+                fontSize: "14px",
+                fontFamily: "Arial",
+                color: "#ccddff",
+              })
+              .setOrigin(0.5);
+            const idx = i;
+            bg.on("pointerdown", () => this.answerQ(idx));
+            bg.on("pointerover", () => {
+              if (this.questionActive) bg.setStrokeStyle(2, 0x00ccff, 1);
+            });
+            bg.on("pointerout", () => {
+              if (this.questionActive) bg.setStrokeStyle(1, 0x336699, 0.6);
+            });
+            this.qContainer.add([bg, txt]);
+            this.qBtns.push(bg);
+            this.qTxts.push(txt);
+          }
+          this.qExplain = this.add
+            .text(0, 125, "", {
+              fontSize: "12px",
+              fontFamily: "Arial",
+              color: "#88ff88",
+              wordWrap: { width: 540 },
+              align: "center",
+            })
+            .setOrigin(0.5);
+          this.qContainer.add(this.qExplain);
+
+          // Keyboard answers
+          this.input.keyboard.on("keydown-ONE", () => this.answerQ(0));
+          this.input.keyboard.on("keydown-TWO", () => this.answerQ(1));
+          this.input.keyboard.on("keydown-THREE", () => this.answerQ(2));
+          this.input.keyboard.on("keydown-FOUR", () => this.answerQ(3));
+
+          // Wave button
+          this.waveBtn = this.add
+            .text(W / 2, H - 30, "[ SEND NEXT WAVE ]", {
+              fontSize: "16px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ffcc",
+              padding: { x: 14, y: 6 },
+              backgroundColor: "rgba(0,255,200,0.1)",
+            })
+            .setOrigin(0.5)
+            .setDepth(100)
+            .setInteractive({ useHandCursor: true });
+          this.waveBtn.on("pointerdown", () => this.startWave());
+
+          // Instructions
+          this.add
+            .text(
+              W / 2,
+              H - 55,
+              "Click empty spots to place towers (solve to build). Then send waves!",
+              {
+                fontSize: "11px",
+                fontFamily: "Arial",
+                color: "#668877",
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(99);
+
+          // Tower firing timer
+          this.time.addEvent({
+            delay: 800,
+            callback: () => this.towersFire(),
+            loop: true,
+          });
+        }
+
+        clickSpot(idx) {
+          if (this.questionActive) return;
+          const sp = this.spotSprites[idx];
+          if (sp.hasTower) return;
+          this.pendingSpot = idx;
+          this.showQuestion();
+        }
+
+        showQuestion() {
+          if (this.qIdx >= this.shuffledQs.length) this.qIdx = 0;
+          const q = this.shuffledQs[this.qIdx];
+          this.currentQ = q;
+          this.questionActive = true;
+          this.qContainer.setVisible(true);
+          this.qText.setText(q.q);
+          this.qExplain.setText("").setVisible(false);
+          q.choices.forEach((c, i) => {
+            this.qTxts[i]
+              .setText(String.fromCharCode(65 + i) + ". " + c)
+              .setStyle({ color: "#ccddff" });
+            this.qBtns[i]
+              .setFillStyle(0x112244, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.6)
+              .setInteractive();
+          });
+        }
+
+        answerQ(idx) {
+          if (!this.questionActive) return;
+          this.questionActive = false;
+          this.total++;
+          const q = this.currentQ;
+          const right = idx === q.correct;
+
+          this.qBtns.forEach((b, i) => {
+            b.disableInteractive();
+            if (i === q.correct) {
+              b.setFillStyle(0x004400, 0.9).setStrokeStyle(2, 0x00ff88, 1);
+              this.qTxts[i].setStyle({ color: "#00ff88" });
+            } else if (i === idx && !right) {
+              b.setFillStyle(0x440000, 0.9).setStrokeStyle(2, 0xff4444, 1);
+              this.qTxts[i].setStyle({ color: "#ff4444" });
+            }
+          });
+          this.qExplain.setText(q.explain).setVisible(true);
+
+          if (right) {
+            this.correct++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            this.score += 50 * (1 + Math.floor(this.streak / 3));
+            SFX.correct();
+            this.cameras.main.flash(100, 0, 60, 0);
+            // Place tower
+            if (this.pendingSpot !== null) {
+              this.placeTower(this.pendingSpot);
+            }
+          } else {
+            this.streak = 0;
+            SFX.wrong();
+            this.cameras.main.shake(200, 0.008);
+          }
+          this.pendingSpot = null;
+          this.qIdx++;
+          this.updateHUD();
+
+          this.time.delayedCall(1500, () => {
+            this.qContainer.setVisible(false);
+          });
+        }
+
+        placeTower(idx) {
+          const sp = this.spotSprites[idx];
+          sp.hasTower = true;
+          sp.setAlpha(0);
+          const t = this.add
+            .image(TOWER_SPOTS[idx].x, TOWER_SPOTS[idx].y, "tower")
+            .setScale(1.3);
+          t.range = 120 + this.towersPlaced * 5;
+          t.spotX = TOWER_SPOTS[idx].x;
+          t.spotY = TOWER_SPOTS[idx].y;
+          this.towerObjects.push(t);
+          this.towersPlaced++;
+          this.sparkEmitter.emitParticleAt(t.x, t.y, 12);
+          SFX.correct();
+          // Range circle
+          const rc = this.add
+            .circle(t.x, t.y, t.range, 0x00ccff, 0.05)
+            .setStrokeStyle(1, 0x00ccff, 0.15);
+          this.tweens.add({
+            targets: rc,
+            alpha: 0,
+            duration: 2000,
+            onComplete: () => rc.destroy(),
+          });
+        }
+
+        startWave() {
+          if (this.waveActive || this.wave >= this.maxWaves) return;
+          this.wave++;
+          this.waveActive = true;
+          this.waveBtn.setVisible(false);
+          SFX.wave();
+          this.updateHUD();
+
+          const count = 3 + this.wave * 2;
+          this.enemiesInWave = count;
+          this.enemiesSpawned = 0;
+          this.spawnTimer = this.time.addEvent({
+            delay: 800,
+            callback: () => {
+              if (this.enemiesSpawned < count) {
+                this.spawnEnemy();
+                this.enemiesSpawned++;
+              }
+            },
+            repeat: count - 1,
+          });
+        }
+
+        spawnEnemy() {
+          const types = ["normal", "normal", "fast", "tank"];
+          const type =
+            this.wave <= 2 ? "normal" : Phaser.Utils.Array.GetRandom(types);
+          const hp =
+            type === "tank"
+              ? this.diff.hp * 2
+              : type === "fast"
+                ? 1
+                : this.diff.hp;
+          const speed =
+            type === "fast" ? 0.004 : type === "tank" ? 0.0015 : 0.002;
+          const tex =
+            type === "tank"
+              ? "enemyTank"
+              : type === "fast"
+                ? "enemyFast"
+                : "enemy";
+
+          const follower = { t: 0, vec: new Phaser.Math.Vector2() };
+          const sprite = this.add.image(PATH[0].x, PATH[0].y, tex);
+          sprite.hp = hp;
+          sprite.maxHp = hp;
+          sprite.speed = speed + this.wave * 0.0002;
+          sprite.follower = follower;
+          sprite.alive = true;
+          sprite.enemyType = type;
+
+          // HP bar
+          const hpBg = this.add.rectangle(
+            sprite.x,
+            sprite.y - 16,
+            24,
+            4,
+            0x333333,
+            0.8,
+          );
+          const hpFill = this.add
+            .rectangle(sprite.x, sprite.y - 16, 24, 4, 0x00ff88, 1)
+            .setOrigin(0, 0.5);
+          hpFill.x = sprite.x - 12;
+          sprite.hpBg = hpBg;
+          sprite.hpFill = hpFill;
+
+          // Wrong answer label
+          const wrongAnswers = QUESTIONS[
+            this.qIdx % QUESTIONS.length
+          ].choices.filter((_, i) => i !== 0);
+          const label = Phaser.Utils.Array.GetRandom(wrongAnswers);
+          sprite.label = this.add
+            .text(sprite.x, sprite.y + 16, label, {
+              fontSize: "9px",
+              fontFamily: "monospace",
+              color: "#ff8888",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              padding: { x: 2, y: 1 },
+            })
+            .setOrigin(0.5);
+
+          this.enemies.add(sprite);
+        }
+
+        towersFire() {
+          this.towerObjects.forEach((tower) => {
+            let closest = null,
+              closestDist = tower.range;
+            this.enemies.children.iterate((e) => {
+              if (!e || !e.alive) return;
+              const d = Phaser.Math.Distance.Between(
+                tower.spotX,
+                tower.spotY,
+                e.x,
+                e.y,
+              );
+              if (d < closestDist) {
+                closestDist = d;
+                closest = e;
+              }
+            });
+            if (closest) {
+              const b = this.bullets.create(
+                tower.spotX,
+                tower.spotY,
+                "tbullet",
+              );
+              this.physics.moveToObject(b, closest, 300);
+              b.target = closest;
+              SFX.shoot();
+              // Rotate tower toward enemy
+              tower.angle =
+                Phaser.Math.RadToDeg(
+                  Phaser.Math.Angle.Between(
+                    tower.spotX,
+                    tower.spotY,
+                    closest.x,
+                    closest.y,
+                  ),
+                ) - 90;
+            }
+          });
+        }
+
+        updateHUD() {
+          this.scoreText.setText("SCORE: " + this.score);
+          this.livesText.setText("BASE HP: " + this.lives);
+          this.livesText.setStyle({
+            color:
+              this.lives > 10
+                ? "#00ff88"
+                : this.lives > 5
+                  ? "#ffcc00"
+                  : "#ff4444",
+          });
+          this.waveText.setText("WAVE " + this.wave + "/" + this.maxWaves);
+          this.towersText.setText("TOWERS: " + this.towersPlaced);
+          this.streakText.setText(
+            this.streak >= 2 ? "STREAK x" + this.streak : "",
+          );
+        }
+
+        update() {
+          // Move enemies along path
+          this.enemies.children.iterate((e) => {
+            if (!e || !e.alive) return;
+            e.follower.t += e.speed;
+            if (e.follower.t >= 1) {
+              // Reached base
+              e.alive = false;
+              this.lives--;
+              this.updateHUD();
+              if (e.label) e.label.destroy();
+              if (e.hpBg) e.hpBg.destroy();
+              if (e.hpFill) e.hpFill.destroy();
+              e.destroy();
+              if (this.lives <= 0) {
+                SFX.lose();
+                this.time.delayedCall(800, () =>
+                  this.scene.start("Results", {
+                    score: this.score,
+                    correct: this.correct,
+                    total: this.total,
+                    bestStreak: this.bestStreak,
+                    wave: this.wave,
+                    towers: this.towersPlaced,
+                    kills: this.enemiesKilled,
+                    won: false,
+                  }),
+                );
+              }
+              return;
+            }
+            this.enemyPath.getPoint(e.follower.t, e.follower.vec);
+            e.x = e.follower.vec.x;
+            e.y = e.follower.vec.y;
+            if (e.hpBg) {
+              e.hpBg.x = e.x;
+              e.hpBg.y = e.y - 16;
+            }
+            if (e.hpFill) {
+              e.hpFill.x = e.x - 12;
+              e.hpFill.y = e.y - 16;
+              e.hpFill.width = 24 * (e.hp / e.maxHp);
+            }
+            if (e.label) {
+              e.label.x = e.x;
+              e.label.y = e.y + 16;
+            }
+          });
+
+          // Bullet collision
+          this.bullets.children.iterate((b) => {
+            if (!b || !b.active) return;
+            // Check distance to any enemy
+            this.enemies.children.iterate((e) => {
+              if (!e || !e.alive) return;
+              if (Phaser.Math.Distance.Between(b.x, b.y, e.x, e.y) < 16) {
+                b.setActive(false).setVisible(false).destroy();
+                e.hp--;
+                SFX.hit();
+                if (e.hp <= 0) {
+                  e.alive = false;
+                  this.enemiesKilled++;
+                  this.score += 20;
+                  this.sparkEmitter.emitParticleAt(e.x, e.y, 8);
+                  SFX.explode();
+                  if (e.label) e.label.destroy();
+                  if (e.hpBg) e.hpBg.destroy();
+                  if (e.hpFill) e.hpFill.destroy();
+                  e.destroy();
+                  this.updateHUD();
+                }
+              }
+            });
+            // Remove if off screen
+            if (
+              b.active &&
+              (b.x < -20 || b.x > W + 20 || b.y < -20 || b.y > H + 20)
+            ) {
+              b.setActive(false).setVisible(false).destroy();
+            }
+          });
+
+          // Check wave complete
+          if (this.waveActive) {
+            let aliveCount = 0;
+            this.enemies.children.iterate((e) => {
+              if (e && e.alive) aliveCount++;
+            });
+            if (this.enemiesSpawned >= this.enemiesInWave && aliveCount === 0) {
+              this.waveActive = false;
+              if (this.wave >= this.maxWaves) {
+                // Victory!
+                SFX.wave();
+                this.time.delayedCall(1000, () =>
+                  this.scene.start("Results", {
+                    score: this.score,
+                    correct: this.correct,
+                    total: this.total,
+                    bestStreak: this.bestStreak,
+                    wave: this.wave,
+                    towers: this.towersPlaced,
+                    kills: this.enemiesKilled,
+                    won: true,
+                  }),
+                );
+              } else {
+                this.waveBtn.setVisible(true);
+                this.score += this.wave * 25;
+                this.updateHUD();
+              }
+            }
+          }
+        }
+      }
+
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(data) {
+          this.finalScore = data.score || 0;
+          this.correct = data.correct || 0;
+          this.total = data.total || 0;
+          this.bestStreak = data.bestStreak || 0;
+          this.wave = data.wave || 0;
+          this.towers = data.towers || 0;
+          this.kills = data.kills || 0;
+          this.won = data.won || false;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(0x0a0e27);
+          for (let i = 0; i < 50; i++)
+            this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.FloatBetween(0.5, 1.5),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.1, 0.4),
+            );
+
+          const pct =
+            this.total > 0 ? Math.round((this.correct / this.total) * 100) : 0;
+          const title = this.won ? "FORTRESS DEFENDED!" : "BASE DESTROYED";
+          const tc = this.won ? "#00ff88" : "#ff4444";
+
+          this.add
+            .text(W / 2, 50, title, {
+              fontSize: "38px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: tc,
+              stroke: "#222",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 110, String(this.finalScore), {
+              fontSize: "56px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc00",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 148, "POINTS", {
+              fontSize: "13px",
+              fontFamily: "monospace",
+              color: "#888",
+            })
+            .setOrigin(0.5);
+
+          let grade, gc;
+          if (pct >= 90 && this.won) {
+            grade = "S RANK";
+            gc = "#ffcc00";
+          } else if (pct >= 80) {
+            grade = "A RANK";
+            gc = "#00ff88";
+          } else if (pct >= 70) {
+            grade = "B RANK";
+            gc = "#00ccff";
+          } else if (pct >= 60) {
+            grade = "C RANK";
+            gc = "#ff8800";
+          } else {
+            grade = "KEEP PRACTICING";
+            gc = "#ff4444";
+          }
+          this.add
+            .text(W / 2, 185, grade, {
+              fontSize: "20px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: gc,
+            })
+            .setOrigin(0.5);
+
+          [
+            { l: "Correct", v: this.correct + "/" + this.total },
+            { l: "Accuracy", v: pct + "%" },
+            { l: "Towers", v: String(this.towers) },
+            { l: "Enemies Defeated", v: String(this.kills) },
+            { l: "Wave", v: this.wave + "/" + this.wave },
+          ].forEach((s, i) => {
+            const x = W / 2 - 240 + i * 120;
+            this.add
+              .rectangle(x, 270, 105, 60, 0x112233, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.5);
+            this.add
+              .text(x, 258, s.v, {
+                fontSize: "20px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#00ff88",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, 282, s.l, {
+                fontSize: "9px",
+                fontFamily: "Arial",
+                color: "#888",
+              })
+              .setOrigin(0.5);
+          });
+
+          const btn = this.add
+            .text(W / 2, 370, "[ DEFEND AGAIN ]", {
+              fontSize: "22px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ffcc",
+              padding: { x: 20, y: 10 },
+              backgroundColor: "rgba(0,255,200,0.1)",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          btn.on("pointerover", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
+          );
+          btn.on("pointerout", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
+          );
+          btn.on("pointerdown", () => this.scene.start("Title"));
+
+          this.add
+            .text(W / 2, 460, "6.EE.C.9 -- Equations Review", {
+              fontSize: "12px",
+              fontFamily: "Arial",
+              color: "#556677",
+            })
+            .setOrigin(0.5);
+        }
+      }
+
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game-container",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 0 }, debug: false },
+        },
+        scene: [BootScene, TitleScene, DefendScene, ResultsScene],
+        backgroundColor: "#0a0e27",
+      };
+      new Phaser.Game(config);
+    </script>
+  </body>
 </html>

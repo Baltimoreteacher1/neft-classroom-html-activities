@@ -1,640 +1,1633 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>COORD BLASTER — 6.NS.C.8</title>
-<script src="/assets/vendor/gsap-3.12.2.min.js"></script>
-<style>
-:root{
-  --black:#000;--dark:#050a05;--panel:#0a1a0a;--green:#00ff41;--green-d:#00a028;--green-l:#80ffb0;--amber:#ffb000;--amber-l:#ffd060;--red:#ff2020;--cyan:#00ffff;--magenta:#ff00ff;--white:#e8ffe8;--border:rgba(0,255,65,.25);--shadow:0 0 20px rgba(0,255,65,.15)
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow-x:hidden}
-body{font-family:'VT323',monospace;background:var(--black);color:var(--green);min-height:100vh}
-/* CRT EFFECTS */
-body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:9999}
-body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.6) 100%);pointer-events:none;z-index:9998}
-.crt-border{border:3px solid var(--green-d);box-shadow:0 0 0 6px #000,0 0 0 8px var(--green-d),0 0 40px rgba(0,255,65,.3),inset 0 0 40px rgba(0,255,65,.05)}
-/* SCREENS */
-.screen{position:relative;z-index:10;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px}
-.screen.active{display:flex}
-/* PIXEL DECORATIONS */
-.pixel-border{border:2px solid var(--green-d);position:relative}
-.pixel-border::before{content:'█';position:absolute;top:-8px;left:-8px;color:var(--green-d);font-size:8px}
-.pixel-border::after{content:'█';position:absolute;bottom:-8px;right:-8px;color:var(--green-d);font-size:8px}
-/* BLINK */
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.blink{animation:blink 1s step-end infinite}
-/* SCANLINE FLASH */
-@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
-.scanline-flash{position:fixed;top:0;left:0;width:100%;height:4px;background:rgba(0,255,65,.4);animation:scanline 3s linear infinite;z-index:9997;pointer-events:none}
-/* GLOW TEXT */
-.glow{text-shadow:0 0 10px var(--green),0 0 20px var(--green),0 0 40px rgba(0,255,65,.5)}
-.glow-amber{text-shadow:0 0 10px var(--amber),0 0 20px var(--amber)}
-.glow-red{text-shadow:0 0 10px var(--red),0 0 20px var(--red)}
-.glow-cyan{text-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan)}
-
-/* TITLE */
-.game-title{font-family:'Press Start 2P',monospace;font-size:clamp(16px,4vw,36px);line-height:1.4;text-align:center;color:var(--green);margin-bottom:8px}
-.game-title .highlight{color:var(--amber)}
-.title-std{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--green-d);text-align:center;margin-bottom:4px;letter-spacing:2px}
-.title-sub{font-family:'VT323',monospace;font-size:22px;color:var(--green-l);text-align:center;margin-bottom:24px;letter-spacing:1px}
-.insert-coin{font-family:'Press Start 2P',monospace;font-size:12px;color:var(--amber);text-align:center;margin-top:16px}
-.pixel-menu{background:var(--panel);border:2px solid var(--green-d);padding:24px 32px;max-width:440px;width:100%;margin:16px 0;box-shadow:var(--shadow)}
-.menu-item{display:block;font-family:'VT323',monospace;font-size:22px;color:var(--green);padding:10px 16px;cursor:pointer;transition:all .15s;border:1px solid transparent;width:100%;text-align:left;background:none;letter-spacing:1px;border-bottom:1px solid rgba(0,255,65,.1)}
-.menu-item:hover,.menu-item.selected{background:rgba(0,255,65,.08);border-color:var(--green);color:var(--amber);padding-left:28px}
-.menu-item:hover::before,.menu-item.selected::before{content:'► ';color:var(--amber)}
-/* ZONE SELECT */
-.zone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:640px;width:100%;margin:16px 0}
-.zone-card{background:var(--panel);border:2px solid var(--green-d);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
-.zone-card:hover:not(.locked){border-color:var(--amber);background:rgba(255,176,0,.06);box-shadow:0 0 20px rgba(255,176,0,.2)}
-.zone-card.locked{opacity:.35;cursor:not-allowed}
-.zone-card.complete{border-color:var(--cyan)}
-.zone-icon{font-size:24px;display:block;margin-bottom:6px}
-.zone-label{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--green-d);margin-bottom:4px;letter-spacing:1px}
-.zone-name{font-family:'VT323',monospace;font-size:18px;color:var(--white);margin-bottom:4px}
-.zone-stars{font-size:12px;margin-top:4px}
-.lock-icon{position:absolute;top:6px;right:6px;font-size:12px;opacity:.6}
-
-/* HUD */
-.hud{background:var(--black);border-bottom:2px solid var(--green-d);padding:8px 16px;display:flex;justify-content:space-between;align-items:center;position:fixed;top:0;left:0;width:100%;z-index:100;box-shadow:0 4px 20px rgba(0,255,65,.1)}
-.hud-block{text-align:center}
-.hud-val{font-family:'Press Start 2P',monospace;font-size:12px;color:var(--amber)}
-.hud-lbl{font-family:'VT323',monospace;font-size:14px;color:var(--green-d);letter-spacing:1px}
-.lives-row{display:flex;gap:4px;justify-content:center}
-.life{font-size:14px}
-.life.lost{opacity:.15}
-.streak-badge{background:var(--black);border:1px solid var(--amber);color:var(--amber);font-family:'Press Start 2P',monospace;font-size:9px;padding:3px 8px;box-shadow:0 0 8px rgba(255,176,0,.3)}
-
-/* GAME */
-.game-main{width:100%;max-width:760px;padding-top:72px;padding-bottom:20px}
-
-/* COORDINATE DISPLAY */
-.coord-theater{background:var(--panel);border:2px solid var(--green-d);padding:16px;margin-bottom:16px;position:relative;overflow:hidden}
-.coord-theater::before{content:'COORDINATE PLANE';position:absolute;top:6px;left:10px;font-family:'Press Start 2P',monospace;font-size:7px;color:var(--green-d);letter-spacing:1px}
-.mini-grid{display:block;margin:20px auto 0}
-
-/* PROBLEM CARD */
-.problem-card{background:var(--panel);border:2px solid var(--green-d);padding:20px 24px;margin-bottom:14px;position:relative;box-shadow:var(--shadow)}
-.problem-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(to right,transparent,var(--green),transparent);opacity:.5}
-.prob-zone{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--green-d);margin-bottom:10px;letter-spacing:1px}
-.prob-txt{font-family:'VT323',monospace;font-size:24px;color:var(--white);line-height:1.4;margin-bottom:16px}
-.answer-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.ans-input{background:var(--black);border:2px solid var(--green-d);color:var(--green);font-family:'VT323',monospace;font-size:24px;padding:10px 16px;width:120px;outline:none;text-align:center;caret-color:var(--green);transition:border-color .2s}
-.ans-input:focus{border-color:var(--green);box-shadow:0 0 12px rgba(0,255,65,.3)}
-.ans-unit-txt{font-family:'VT323',monospace;font-size:18px;color:var(--green-d)}
-.fire-btn{background:var(--black);border:2px solid var(--amber);color:var(--amber);font-family:'Press Start 2P',monospace;font-size:10px;padding:12px 20px;cursor:pointer;transition:all .2s;letter-spacing:1px}
-.fire-btn:hover{background:var(--amber);color:var(--black);box-shadow:0 0 20px rgba(255,176,0,.5)}
-.attempt-row{display:flex;gap:6px;margin-top:10px;align-items:center}
-.attempt-sq{width:16px;height:16px;border:2px solid var(--green-d);display:inline-block;transition:all .3s}
-.attempt-sq.active{background:var(--green);border-color:var(--green);box-shadow:0 0 6px var(--green)}
-.attempt-sq.used{background:var(--red);border-color:var(--red)}
-
-/* HINT */
-.hint-panel{background:rgba(255,176,0,.04);border:1px solid var(--amber);padding:14px;margin-top:12px;display:none}
-.hint-panel.show{display:block}
-.hint-type{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--amber);margin-bottom:8px;letter-spacing:1px}
-.hint-txt{font-family:'VT323',monospace;font-size:19px;color:var(--amber-l);line-height:1.4}
-
-/* TWR */
-.twr-panel{background:rgba(0,255,255,.03);border:1px solid rgba(0,255,255,.3);padding:14px;margin-top:12px;display:none}
-.twr-panel.show{display:block}
-.twr-label{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--cyan);margin-bottom:8px;letter-spacing:1px}
-.twr-txt{font-family:'VT323',monospace;font-size:19px;color:var(--green-l);line-height:1.6}
-.twr-inp{background:transparent;border:none;border-bottom:1px solid var(--cyan);color:var(--cyan);font-family:'VT323',monospace;font-size:19px;width:70px;outline:none;text-align:center}
-
-/* FEEDBACK */
-.feedback-blast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;pointer-events:none;font-family:'Press Start 2P',monospace;font-size:clamp(20px,5vw,40px);opacity:0;text-align:center}
-
-/* COMBO */
-.combo-box{position:fixed;top:80px;right:16px;z-index:200;text-align:right;pointer-events:none}
-.combo-n{font-family:'Press Start 2P',monospace;font-size:20px;color:var(--amber);opacity:0}
-.combo-t{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--amber);opacity:0;letter-spacing:2px}
-
-/* ACHIEVEMENT */
-.ach-popup{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--black);border:2px solid var(--amber);padding:12px 20px;z-index:300;transition:transform .4s cubic-bezier(.34,1.56,.64,1);text-align:center;max-width:320px;width:90%;box-shadow:0 0 30px rgba(255,176,0,.3)}
-.ach-popup.show{transform:translateX(-50%) translateY(0)}
-.ach-title-txt{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--amber);margin-bottom:6px}
-.ach-name-txt{font-family:'VT323',monospace;font-size:20px;color:var(--white)}
-
-/* STATS */
-.stat-table{background:var(--panel);border:2px solid var(--green-d);padding:0;width:100%;max-width:440px;margin:16px 0}
-.stat-row{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(0,255,65,.1);font-family:'VT323',monospace;font-size:22px}
-.stat-row:last-child{border-bottom:none}
-.stat-k{color:var(--green-d)}.stat-v{color:var(--amber)}
-.final-stars{font-size:28px;text-align:center;margin:12px 0;letter-spacing:6px}
-
-/* ZONE COMPLETE */
-.zc-box{background:var(--panel);border:2px solid var(--cyan);padding:28px;max-width:440px;width:100%;text-align:center;box-shadow:0 0 30px rgba(0,255,255,.2)}
-
-/* MUTE */
-.mute-btn{position:fixed;bottom:16px;right:16px;z-index:200;background:var(--black);border:2px solid var(--green-d);color:var(--green);font-size:16px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'VT323',monospace;transition:all .2s}
-.mute-btn:hover{border-color:var(--green)}
-
-/* LANG */
-.lang-row{display:flex;gap:8px;margin-bottom:16px;justify-content:center}
-.lang-btn{background:var(--black);border:2px solid var(--green-d);color:var(--green-d);font-family:'Press Start 2P',monospace;font-size:8px;padding:6px 12px;cursor:pointer;transition:all .2s}
-.lang-btn.active{border-color:var(--green);color:var(--green);box-shadow:0 0 8px rgba(0,255,65,.3)}
-
-/* PROGRESS BAR */
-.prog-wrap{height:6px;background:rgba(0,255,65,.1);border:1px solid var(--green-d);margin:6px 0}
-.prog-fill{height:100%;background:var(--green);transition:width .5s;box-shadow:0 0 8px var(--green)}
-
-@media(max-width:540px){.zone-grid{grid-template-columns:repeat(2,1fr)}}
-</style>
-</head>
-<body>
-<div class="scanline-flash"></div>
-
-<!-- TITLE -->
-<div class="screen active" id="screen-title">
-  <div class="game-title glow">COORD<br><span class="highlight">BLASTER</span></div>
-  <div class="title-std">CCSS · 6.NS.C.8 · GRADE 6</div>
-  <div class="title-sub">[ GRAPH. CALCULATE. BLAST. ]</div>
-  <div class="lang-row">
-    <button class="lang-btn active" onclick="setLang('en')" id="lb-en">ENG</button>
-    <button class="lang-btn" onclick="setLang('es')" id="lb-es">ESP</button>
-  </div>
-  <div class="pixel-menu">
-    <button class="menu-item" onclick="showScreen('screen-zones')">► START GAME</button>
-    <button class="menu-item" onclick="showScreen('screen-howto')">► HOW TO PLAY</button>
-    <button class="menu-item" onclick="showScreen('screen-stats')">► HIGH SCORES</button>
-  </div>
-  <div class="insert-coin blink">[ INSERT COIN TO CONTINUE ]</div>
-  <div style="font-family:'VT323',monospace;font-size:16px;color:var(--green-d);margin-top:12px;text-align:center">EduWonderLab · Neft.Alba · 2 ATTEMPTS · 6 ZONES</div>
-</div>
-
-<!-- HOW TO PLAY -->
-<div class="screen" id="screen-howto">
-  <div style="font-family:'Press Start 2P',monospace;font-size:14px;color:var(--amber);margin-bottom:16px" class="glow-amber">HOW TO PLAY</div>
-  <div class="pixel-menu" style="max-width:520px">
-    <div style="font-family:'VT323',monospace;font-size:20px;color:var(--white);padding:8px 0;line-height:1.6">
-      ► FIND DISTANCE between two points<br>
-      ► Same X-coord → subtract Y values<br>
-      ► Same Y-coord → subtract X values<br>
-      ► ALWAYS use absolute value |n|<br>
-      ► 2 attempts per question<br>
-      ► Hints unlock after 1st miss<br>
-      ► Build COMBO streaks for bonus XP<br>
-      ► Complete 6 zones to win!
-    </div>
-    <div style="margin-top:12px;padding:12px;background:rgba(0,255,65,.04);border:1px solid var(--green-d)">
-      <div style="font-family:'Press Start 2P',monospace;font-size:8px;color:var(--amber);margin-bottom:8px">KEY FORMULA</div>
-      <div style="font-family:'VT323',monospace;font-size:22px;color:var(--green)">d = |coord₁ − coord₂|</div>
-      <div style="font-family:'VT323',monospace;font-size:16px;color:var(--green-d);margin-top:4px">Same x → subtract y's · Same y → subtract x's</div>
-    </div>
-  </div>
-  <button class="fire-btn" onclick="showScreen('screen-title')">◄ BACK</button>
-</div>
-
-<!-- ZONES -->
-<div class="screen" id="screen-zones">
-  <div style="font-family:'Press Start 2P',monospace;font-size:12px;color:var(--green);margin-bottom:4px" class="glow">SELECT ZONE</div>
-  <div style="font-family:'VT323',monospace;font-size:18px;color:var(--green-d);margin-bottom:16px">CLEAR EACH ZONE TO UNLOCK THE NEXT</div>
-  <div class="zone-grid" id="zone-grid">
-    <div class="zone-card" id="zn0" onclick="startZone(0)"><div class="zone-icon">🗺</div><div class="zone-label">ZONE 1</div><div class="zone-name">Plot It</div><div style="font-family:'VT323',monospace;font-size:14px;color:var(--green-d)">Identify coordinates</div><div class="zone-stars" id="zst0">★★★</div></div>
-    <div class="zone-card locked" id="zn1" onclick="startZone(1)"><div class="zone-icon">📏</div><div class="zone-label">ZONE 2</div><div class="zone-name">Vertical</div><div style="font-family:'VT323',monospace;font-size:14px;color:var(--green-d)">Same x-coord</div><div class="zone-stars" id="zst1">🔒</div></div>
-    <div class="zone-card locked" id="zn2" onclick="startZone(2)"><div class="zone-icon">↔</div><div class="zone-label">ZONE 3</div><div class="zone-name">Horizontal</div><div style="font-family:'VT323',monospace;font-size:14px;color:var(--green-d)">Same y-coord</div><div class="zone-stars" id="zst2">🔒</div></div>
-    <div class="zone-card locked" id="zn3" onclick="startZone(3)"><div class="zone-icon">🏙️</div><div class="zone-label">ZONE 4</div><div class="zone-name">City Grid</div><div style="font-family:'VT323',monospace;font-size:14px;color:var(--green-d)">Real-world maps</div><div class="zone-stars" id="zst3">🔒</div></div>
-    <div class="zone-card locked" id="zn4" onclick="startZone(4)"><div class="zone-icon">🔢</div><div class="zone-label">ZONE 5</div><div class="zone-name">Mixed</div><div style="font-family:'VT323',monospace;font-size:14px;color:var(--green-d)">All types</div><div class="zone-stars" id="zst4">🔒</div></div>
-    <div class="zone-card locked" id="zn5" onclick="startZone(5)"><div class="zone-icon">👾</div><div class="zone-label">BOSS</div><div class="zone-name">FINAL WAVE</div><div style="font-family:'VT323',monospace;font-size:14px;color:var(--green-d)">All challenges</div><div class="zone-stars" id="zst5">🔒</div></div>
-  </div>
-  <button class="fire-btn" onclick="showScreen('screen-title')">◄ BACK</button>
-</div>
-
-<!-- GAME -->
-<div class="screen" id="screen-game" style="justify-content:flex-start;padding-top:0">
-  <div class="hud">
-    <div class="hud-block"><div class="hud-val" id="h-score">0</div><div class="hud-lbl">SCORE</div></div>
-    <div class="hud-block">
-      <div class="lives-row" id="lives-row">
-        <span class="life" id="l0">♥</span><span class="life" id="l1">♥</span><span class="life" id="l2">♥</span>
-      </div>
-      <div class="hud-lbl">LIVES</div>
-    </div>
-    <div class="hud-block"><div class="streak-badge" id="h-streak">0x</div><div class="hud-lbl">STREAK</div></div>
-    <div class="hud-block" style="min-width:80px">
-      <div class="prog-wrap"><div class="prog-fill" id="h-prog" style="width:0%"></div></div>
-      <div class="hud-lbl" id="h-q">Q 1/5</div>
-    </div>
-  </div>
-
-  <div class="game-main" id="game-main">
-    <!-- MINI COORDINATE DISPLAY -->
-    <div class="coord-theater">
-      <svg id="mini-grid-svg" width="100%" viewBox="0 0 320 220" style="max-height:180px">
-        <!-- grid -->
-        <rect width="320" height="220" fill="#050a05"/>
-        <g stroke="rgba(0,255,65,.12)" stroke-width="0.5">
-          <line x1="0" y1="110" x2="320" y2="110"/>
-          <line x1="160" y1="0" x2="160" y2="220"/>
-          <line x1="0" y1="88" x2="320" y2="88"/><line x1="0" y1="66" x2="320" y2="66"/><line x1="0" y1="44" x2="320" y2="44"/><line x1="0" y1="22" x2="320" y2="22"/>
-          <line x1="0" y1="132" x2="320" y2="132"/><line x1="0" y1="154" x2="320" y2="154"/><line x1="0" y1="176" x2="320" y2="176"/><line x1="0" y1="198" x2="320" y2="198"/>
-          <line x1="138" y1="0" x2="138" y2="220"/><line x1="116" y1="0" x2="116" y2="220"/><line x1="94" y1="0" x2="94" y2="220"/><line x1="72" y1="0" x2="72" y2="220"/><line x1="50" y1="0" x2="50" y2="220"/><line x1="28" y1="0" x2="28" y2="220"/>
-          <line x1="182" y1="0" x2="182" y2="220"/><line x1="204" y1="0" x2="204" y2="220"/><line x1="226" y1="0" x2="226" y2="220"/><line x1="248" y1="0" x2="248" y2="220"/><line x1="270" y1="0" x2="270" y2="220"/><line x1="292" y1="0" x2="292" y2="220"/>
-        </g>
-        <!-- axes -->
-        <line x1="0" y1="110" x2="320" y2="110" stroke="#00ff41" stroke-width="1.5"/>
-        <line x1="160" y1="0" x2="160" y2="220" stroke="#00ff41" stroke-width="1.5"/>
-        <!-- axis labels -->
-        <text x="308" y="105" font-size="10" fill="#00ff41" font-family="VT323">x</text>
-        <text x="164" y="14" font-size="10" fill="#00ff41" font-family="VT323">y</text>
-        <!-- tick labels -->
-        <g font-size="9" fill="rgba(0,255,65,.5)" font-family="VT323" text-anchor="middle">
-          <text x="182" y="120">1</text><text x="204" y="120">2</text><text x="226" y="120">3</text><text x="248" y="120">4</text><text x="270" y="120">5</text>
-          <text x="138" y="120">-1</text><text x="116" y="120">-2</text><text x="94" y="120">-3</text><text x="72" y="120">-4</text><text x="50" y="120">-5</text>
-          <text x="154" y="91">1</text><text x="154" y="69">2</text><text x="154" y="47">3</text><text x="154" y="25">4</text>
-          <text x="154" y="135">-1</text><text x="154" y="157">-2</text><text x="154" y="179">-3</text><text x="154" y="201">-4</text>
-        </g>
-        <!-- Dynamic points will be injected here -->
-        <g id="svg-points"></g>
-      </svg>
-    </div>
-
-    <div class="problem-card" id="prob-card">
-      <div class="prob-zone" id="prob-zone">ZONE 1 · PLOT IT</div>
-      <div class="prob-txt" id="prob-txt">Loading...</div>
-      <div class="attempt-row">
-        <div class="attempt-sq active" id="sq0"></div>
-        <div class="attempt-sq active" id="sq1"></div>
-        <span style="font-family:'VT323',monospace;font-size:16px;color:var(--green-d);margin-left:6px">ATTEMPTS</span>
-      </div>
-      <div class="answer-row" style="margin-top:12px">
-        <input class="ans-input" type="number" step="any" id="ans" placeholder="?" onkeydown="if(event.key==='Enter')fireAns()">
-        <span class="ans-unit-txt" id="ans-unit">units</span>
-        <button class="fire-btn" onclick="fireAns()">FIRE ⚡</button>
-      </div>
-      <div class="hint-panel" id="hint-panel">
-        <div class="hint-type" id="hint-type">▶ HINT — ATTEMPT 1</div>
-        <div class="hint-txt" id="hint-txt"></div>
-      </div>
-      <div class="twr-panel" id="twr-panel">
-        <div class="twr-label">▶ TWR: EXPLAIN YOUR ANSWER</div>
-        <div class="twr-txt">Distance = |<input class="twr-inp" id="tw1" placeholder="?"> − <input class="twr-inp" id="tw2" placeholder="?">| = <input class="twr-inp" id="tw3" placeholder="?"> units</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button class="fire-btn" onclick="showScreen('screen-zones')" style="font-size:9px;padding:8px 14px">◄ ZONES</button>
-      <button class="fire-btn" onclick="skipQ()" style="font-size:9px;padding:8px 14px">SKIP ►</button>
-    </div>
-  </div>
-</div>
-
-<!-- ZONE COMPLETE -->
-<div class="screen" id="screen-zc">
-  <div class="zc-box">
-    <div style="font-family:'Press Start 2P',monospace;font-size:10px;color:var(--cyan);margin-bottom:8px" class="glow-cyan">ZONE CLEARED!</div>
-    <div class="final-stars" id="zc-stars">★★★</div>
-    <div style="font-family:'VT323',monospace;font-size:22px;color:var(--white);margin-bottom:16px" id="zc-name">Zone 1</div>
-    <div style="border:1px solid var(--cyan);padding:12px;margin-bottom:16px">
-      <div style="font-family:'VT323',monospace;font-size:20px;color:var(--green)">SCORE: <span id="zc-score" style="color:var(--amber)">0</span></div>
-      <div style="font-family:'VT323',monospace;font-size:20px;color:var(--green)">ACCURACY: <span id="zc-acc" style="color:var(--amber)">0%</span></div>
-      <div style="font-family:'VT323',monospace;font-size:20px;color:var(--green)">BEST STREAK: <span id="zc-streak" style="color:var(--amber)">0x</span></div>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-      <button class="fire-btn" onclick="replayZone()">↺ REPLAY</button>
-      <button class="fire-btn" onclick="nextZone()">NEXT ZONE ►</button>
-      <button class="fire-btn" onclick="showScreen('screen-zones')" style="font-size:9px">MAP</button>
-    </div>
-  </div>
-</div>
-
-<!-- STATS -->
-<div class="screen" id="screen-stats">
-  <div style="font-family:'Press Start 2P',monospace;font-size:12px;color:var(--amber);margin-bottom:12px" class="glow-amber">HIGH SCORES</div>
-  <div class="final-stars" id="final-stars">☆☆☆</div>
-  <div class="stat-table">
-    <div class="stat-row"><span class="stat-k">TOTAL SCORE</span><span class="stat-v" id="st-score">---</span></div>
-    <div class="stat-row"><span class="stat-k">CORRECT</span><span class="stat-v" id="st-correct">---</span></div>
-    <div class="stat-row"><span class="stat-k">BEST STREAK</span><span class="stat-v" id="st-streak">---</span></div>
-    <div class="stat-row"><span class="stat-k">ZONES DONE</span><span class="stat-v" id="st-zones">0/6</span></div>
-    <div class="stat-row"><span class="stat-k">PERSONAL BEST</span><span class="stat-v" id="st-pb">---</span></div>
-  </div>
-  <div style="display:flex;gap:10px;margin-top:12px">
-    <button class="fire-btn" onclick="showScreen('screen-zones')">► PLAY</button>
-    <button class="fire-btn" onclick="showScreen('screen-title')">◄ MENU</button>
-  </div>
-</div>
-
-<!-- FEEDBACK / COMBO -->
-<div class="feedback-blast" id="fb-blast"></div>
-<div class="combo-box"><div class="combo-n" id="cn"></div><div class="combo-t" id="ct">COMBO!</div></div>
-<div class="ach-popup" id="ach"><div class="ach-title-txt">★ ACHIEVEMENT UNLOCKED ★</div><div class="ach-name-txt" id="ach-n">First Blast!</div></div>
-<button class="mute-btn" onclick="toggleMute()" id="mute-btn">♫</button>
-
-<script>
-// ═══ AUDIO ═══
-let muted=false;
-const AC=new(window.AudioContext||window.webkitAudioContext)();
-function beep(f=440,d=0.15,t='square',v=0.15){
-  if(muted)return;
-  try{
-    const o=AC.createOscillator(),g=AC.createGain();
-    o.connect(g);g.connect(AC.destination);
-    o.frequency.value=f;o.type=t;
-    g.gain.setValueAtTime(v,AC.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+d);
-    o.start();o.stop(AC.currentTime+d);
-  }catch(e){}
-}
-function sndCorrect(){beep(440,.08,'square');setTimeout(()=>beep(660,.08,'square'),80);setTimeout(()=>beep(880,.15,'square'),160)}
-function sndWrong(){beep(180,.3,'square',.2)}
-function sndLevelUp(){[330,440,550,660,880].forEach((f,i)=>setTimeout(()=>beep(f,.1,'square'),i*80))}
-function toggleMute(){
-  muted=!muted;
-  if(AC.state==='suspended')AC.resume();
-  document.getElementById('mute-btn').textContent=muted?'♪':'♫';
-}
-
-// ═══ LANG ═══
-let lang='en';
-function setLang(l){lang=l;document.getElementById('lb-en').classList.toggle('active',l==='en');document.getElementById('lb-es').classList.toggle('active',l==='es')}
-
-// ═══ QUESTION BANK ═══
-const ZONES=[
-  {
-    id:0,name:'PLOT IT',label:'ZONE 1 · PLOT IT',icon:'🗺',
-    qs:[
-      {en:'Point A is at (3, 5). What is its x-coordinate?',es:'El punto A está en (3, 5). ¿Cuál es su coordenada x?',ans:3,unit:'x-value',hints:['In (x, y), the FIRST number is x.','(3, 5) → x = 3, y = 5'],twr:{a:'3',b:'0',c:'3'}},
-      {en:'Point B is at (−4, 7). What is its y-coordinate?',es:'El punto B está en (−4, 7). ¿Cuál es su coordenada y?',ans:7,unit:'y-value',hints:['In (x, y), the SECOND number is y.','(−4, 7) → x = −4, y = 7'],twr:{a:'7',b:'0',c:'7'}},
-      {en:'Point C is at (−2, −6). Which quadrant is it in? (Enter: 1, 2, 3, or 4)',es:'El punto C está en (−2, −6). ¿En qué cuadrante está? (1, 2, 3 o 4)',ans:3,unit:'quadrant',hints:['Negative x AND negative y → Quadrant III.','(−, −) = Quadrant 3'],twr:{a:'3',b:'0',c:'3'}},
-      {en:'A point is at (5, −3). What quadrant? (1, 2, 3, or 4)',es:'Un punto está en (5, −3). ¿Qué cuadrante? (1, 2, 3 o 4)',ans:4,unit:'quadrant',hints:['Positive x, negative y → Quadrant IV.','(+, −) = Quadrant 4'],twr:{a:'4',b:'0',c:'4'}},
-      {en:'Point D is at (0, −4). It lies ON the y-axis. What is its x-coordinate?',es:'El punto D está en (0, −4). Está en el eje y. ¿Cuál es su coordenada x?',ans:0,unit:'x-value',hints:['Points on the y-axis always have x = 0.','(0, −4) → x = 0'],twr:{a:'0',b:'0',c:'0'}},
-    ]
-  },
-  {
-    id:1,name:'VERTICAL',label:'ZONE 2 · VERTICAL DISTANCE',icon:'📏',
-    qs:[
-      {en:'Find the distance: A(−3, 4) and B(−3, −2). (Same x-coordinate)',es:'Distancia: A(−3, 4) y B(−3, −2). (Misma coordenada x)',ans:6,unit:'units',hints:['Same x = −3 → subtract y-values.','|4 − (−2)| = |4 + 2| = ?'],twr:{a:'4',b:'-2',c:'6'},pts:[[-3,4],[-3,-2]]},
-      {en:'Find the distance: P(2, 7) and Q(2, −3). (Same x-coordinate)',es:'Distancia: P(2, 7) y Q(2, −3). (Misma coordenada x)',ans:10,unit:'units',hints:['Same x = 2 → subtract y-values.','|7 − (−3)| = |10| = ?'],twr:{a:'7',b:'-3',c:'10'},pts:[[2,7],[2,-3]]},
-      {en:'Find the distance: R(0, 6) and S(0, −4). (On the y-axis)',es:'Distancia: R(0, 6) y S(0, −4). (En el eje y)',ans:10,unit:'units',hints:['Both on y-axis (x=0) → subtract y-values.','|6 − (−4)| = |10| = ?'],twr:{a:'6',b:'-4',c:'10'},pts:[[0,6],[0,-4]]},
-      {en:'Find the distance: T(4, −5) and U(4, 8).',es:'Distancia: T(4, −5) y U(4, 8).',ans:13,unit:'units',hints:['Same x = 4 → subtract y-values.','|−5 − 8| = |−13| = ?'],twr:{a:'-5',b:'8',c:'13'},pts:[[4,-5],[4,4]]},
-      {en:'Find the distance: V(−6, 3) and W(−6, −7).',es:'Distancia: V(−6, 3) y W(−6, −7).',ans:10,unit:'units',hints:['Same x = −6 → subtract y-values.','|3 − (−7)| = |10| = ?'],twr:{a:'3',b:'-7',c:'10'},pts:[[-6,3],[-6,-4]]},
-    ]
-  },
-  {
-    id:2,name:'HORIZONTAL',label:'ZONE 3 · HORIZONTAL DISTANCE',icon:'↔',
-    qs:[
-      {en:'Find the distance: C(2, 5) and D(7, 5). (Same y-coordinate)',es:'Distancia: C(2, 5) y D(7, 5). (Misma coordenada y)',ans:5,unit:'units',hints:['Same y = 5 → subtract x-values.','|2 − 7| = |−5| = ?'],twr:{a:'2',b:'7',c:'5'},pts:[[2,4],[4,4]]},
-      {en:'Find the distance: M(−5, 3) and N(2, 3).',es:'Distancia: M(−5, 3) y N(2, 3).',ans:7,unit:'units',hints:['Same y = 3 → subtract x-values.','|−5 − 2| = |−7| = ?'],twr:{a:'-5',b:'2',c:'7'},pts:[[-5,3],[2,3]]},
-      {en:'Find the distance: E(−8, −2) and F(1, −2).',es:'Distancia: E(−8, −2) y F(1, −2).',ans:9,unit:'units',hints:['Same y = −2 → subtract x-values.','|−8 − 1| = |−9| = ?'],twr:{a:'-8',b:'1',c:'9'},pts:[[-4,-2],[1,-2]]},
-      {en:'Find the distance: G(−3, 0) and H(6, 0). (On the x-axis)',es:'Distancia: G(−3, 0) y H(6, 0). (En el eje x)',ans:9,unit:'units',hints:['Both on x-axis (y=0) → subtract x-values.','|−3 − 6| = |−9| = ?'],twr:{a:'-3',b:'6',c:'9'},pts:[[-3,0],[4,0]]},
-      {en:'Find the distance: J(−6, −1) and K(6, −1).',es:'Distancia: J(−6, −1) y K(6, −1).',ans:12,unit:'units',hints:['Same y = −1 → subtract x-values.','|−6 − 6| = |−12| = ?'],twr:{a:'-6',b:'6',c:'12'},pts:[[-4,-1],[4,-1]]},
-    ]
-  },
-  {
-    id:3,name:'CITY GRID',label:'ZONE 4 · CITY GRID',icon:'🏙️',
-    qs:[
-      {en:'On a city map (1 unit = 1 block), school is at (−4, 2) and library is at (3, 2). How many blocks apart?',es:'En un mapa (1 unidad = 1 cuadra), escuela en (−4, 2) y biblioteca en (3, 2). ¿Cuántas cuadras?',ans:7,unit:'blocks',hints:['Same y = 2 → |−4 − 3| = ?','|−4 − 3| = |−7| = 7 blocks'],twr:{a:'-4',b:'3',c:'7'},pts:[[-4,2],[3,2]]},
-      {en:'Hospital is at (5, −3) and fire station is at (5, 4). How many blocks apart?',es:'Hospital en (5, −3) y estación en (5, 4). ¿Cuántas cuadras?',ans:7,unit:'blocks',hints:['Same x = 5 → subtract y-values.','|−3 − 4| = |−7| = 7'],twr:{a:'-3',b:'4',c:'7'},pts:[[5,-3],[5,4]]},
-      {en:'Two stores: Store A at (−6, −1) and Store B at (2, −1). How far?',es:'Tienda A en (−6, −1) y Tienda B en (2, −1). ¿Qué tan lejos?',ans:8,unit:'blocks',hints:['Same y = −1 → |−6 − 2| = ?','|−8| = 8 blocks'],twr:{a:'-6',b:'2',c:'8'},pts:[[-4,-1],[2,-1]]},
-      {en:'Park has two corners at (−3, 4) and (−3, −2). How long is that side?',es:'Parque tiene esquinas en (−3, 4) y (−3, −2). ¿Cuánto mide ese lado?',ans:6,unit:'units',hints:['Same x = −3 → subtract y-values.','|4 − (−2)| = 6'],twr:{a:'4',b:'-2',c:'6'},pts:[[-3,4],[-3,-2]]},
-      {en:'A rectangle has corners at (−4, 3) and (5, 3). How long is that horizontal side?',es:'Rectángulo tiene esquinas en (−4, 3) y (5, 3). ¿Cuánto mide el lado horizontal?',ans:9,unit:'units',hints:['Same y = 3 → |−4 − 5| = ?','|−9| = 9'],twr:{a:'-4',b:'5',c:'9'},pts:[[-4,3],[4,3]]},
-    ]
-  },
-  {
-    id:4,name:'MIXED',label:'ZONE 5 · MIXED DISTANCE',icon:'🔢',
-    qs:[
-      {en:'Distance between (−2, 8) and (−2, −7)?',es:'Distancia entre (−2, 8) y (−2, −7)?',ans:15,unit:'units',hints:['Same x = −2 → |8 − (−7)| = ?','|8 + 7| = 15'],twr:{a:'8',b:'-7',c:'15'},pts:[[-2,4],[-2,-4]]},
-      {en:'Distance between (−8, 3) and (1, 3)?',es:'Distancia entre (−8, 3) y (1, 3)?',ans:9,unit:'units',hints:['Same y = 3 → |−8 − 1| = ?','|−9| = 9'],twr:{a:'-8',b:'1',c:'9'},pts:[[-4,3],[1,3]]},
-      {en:'Point J is at (−7, y) and Point K is at (−7, 4). Distance = 9. J is below K. What is J\'s y-coordinate?',es:'J en (−7, y), K en (−7, 4). Distancia = 9. J está debajo. ¿Cuál es la y de J?',ans:-5,unit:'y-value',hints:['|4 − y| = 9. If J is below K, y < 4.','4 − y = 9 → y = 4 − 9 = −5'],twr:{a:'4',b:'-5',c:'9'}},
-      {en:'A rectangle: corners (−3, 4), (5, 4), (−3, −2), (5, −2). What is the PERIMETER?',es:'Rectángulo con esquinas (−3, 4), (5, 4), (−3, −2), (5, −2). ¿Cuál es el PERÍMETRO?',ans:28,unit:'units',hints:['Width = |−3−5| = 8. Height = |4−(−2)| = 6.','Perimeter = 2×8 + 2×6 = 16 + 12 = 28'],twr:{a:'8',b:'6',c:'28'}},
-      {en:'Distance between (0, −6) and (0, 5)?',es:'Distancia entre (0, −6) y (0, 5)?',ans:11,unit:'units',hints:['Both on y-axis → same x = 0 → |−6 − 5|.','|−11| = 11'],twr:{a:'-6',b:'5',c:'11'},pts:[[0,-4],[0,4]]},
-    ]
-  },
-  {
-    id:5,name:'FINAL WAVE',label:'BOSS · FINAL WAVE',icon:'👾',
-    qs:[
-      {en:'[BOSS] Distance between (−9, 2) and (6, 2)?',es:'[JEFE] Distancia entre (−9, 2) y (6, 2)?',ans:15,unit:'units',hints:['Same y = 2 → |−9 − 6| = ?','|−15| = 15'],twr:{a:'-9',b:'6',c:'15'},pts:[[-4,2],[4,2]]},
-      {en:'[BOSS] Distance between (3, −8) and (3, 7)?',es:'[JEFE] Distancia entre (3, −8) y (3, 7)?',ans:15,unit:'units',hints:['Same x = 3 → |−8 − 7| = ?','|−15| = 15'],twr:{a:'-8',b:'7',c:'15'},pts:[[3,-4],[3,4]]},
-      {en:'[BOSS] A rectangle has width = |(−5) − 4| and height = |7 − (−3)|. What is the AREA?',es:'[JEFE] Rectángulo: ancho = |(−5) − 4|, alto = |7 − (−3)|. ¿Cuál es el ÁREA?',ans:90,unit:'sq units',hints:['Width = 9, Height = 10.','Area = 9 × 10 = 90'],twr:{a:'9',b:'10',c:'90'}},
-      {en:'[BOSS] Point A(x, 5) and B(−3, 5) are 8 units apart. A is to the right of B. What is x?',es:'[JEFE] A(x, 5) y B(−3, 5) están a 8 unidades. A está a la derecha de B. ¿Cuál es x?',ans:5,unit:'x-value',hints:['|x − (−3)| = 8. A is right of B so x > −3.','x + 3 = 8 → x = 5'],twr:{a:'5',b:'-3',c:'8'}},
-      {en:'[BOSS] The distance from (−4, y) to (−4, 3) is 11. What are the two possible y-values? Enter the POSITIVE one.',es:'[JEFE] Distancia de (−4, y) a (−4, 3) es 11. ¿Cuáles son los dos posibles y? Escribe el POSITIVO.',ans:14,unit:'y-value',hints:['|y − 3| = 11 → y − 3 = 11 OR y − 3 = −11.','y = 14 or y = −8. The positive one is 14.'],twr:{a:'14',b:'3',c:'11'}},
-    ]
-  }
-];
-
-// ═══ GAME STATE ═══
-let gs={
-  zone:0,qIdx:0,qs:[],attempts:0,score:0,streak:0,bestStreak:0,
-  lives:3,correct:0,total:0,zoneScores:[],zonesComplete:0,
-  pb:parseInt(localStorage.getItem('cb_pb')||'0')
-};
-
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-
-function startZone(id){
-  const node=document.getElementById('zn'+id);
-  if(node.classList.contains('locked'))return;
-  gs.zone=id;gs.qIdx=0;gs.attempts=0;gs.score=0;gs.streak=0;gs.correct=0;gs.total=0;gs.lives=3;gs.bestStreak=0;
-  gs.qs=shuffle([...ZONES[id].qs]).slice(0,5);
-  updateLives();updateHUD();
-  showScreen('screen-game');
-  loadQ();
-}
-
-function loadQ(){
-  if(gs.qIdx>=gs.qs.length){zoneComplete();return;}
-  const q=gs.qs[gs.qIdx];
-  gs.attempts=0;
-  document.getElementById('prob-zone').textContent=ZONES[gs.zone].label;
-  document.getElementById('prob-txt').textContent=lang==='es'&&q.es?q.es:q.en;
-  document.getElementById('ans-unit').textContent=q.unit;
-  document.getElementById('ans').value='';
-  document.getElementById('hint-panel').classList.remove('show');
-  document.getElementById('twr-panel').style.display='none';
-  document.getElementById('sq0').className='attempt-sq active';
-  document.getElementById('sq1').className='attempt-sq active';
-  document.getElementById('h-q').textContent='Q '+(gs.qIdx+1)+'/'+gs.qs.length;
-  document.getElementById('h-prog').style.width=(gs.qIdx/gs.qs.length*100)+'%';
-  updateSVGPoints(q.pts||null);
-  gsap.fromTo('#prob-card',{opacity:0,x:-20},{opacity:1,x:0,duration:.3});
-  setTimeout(()=>document.getElementById('ans').focus(),350);
-}
-
-function updateSVGPoints(pts){
-  const g=document.getElementById('svg-points');
-  g.innerHTML='';
-  if(!pts)return;
-  // SVG grid: origin at (160,110), 22px per unit
-  const ox=160,oy=110,sc=22;
-  const colors=['#00ff41','#ffb000'];
-  pts.forEach(([gx,gy],i)=>{
-    const px=ox+gx*sc,py=oy-gy*sc;
-    if(px<0||px>320||py<0||py>220)return;
-    const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    dot.setAttribute('cx',px);dot.setAttribute('cy',py);dot.setAttribute('r','5');
-    dot.setAttribute('fill',colors[i%2]);dot.setAttribute('stroke','#000');dot.setAttribute('stroke-width','1');
-    g.appendChild(dot);
-    // label
-    const lbl=document.createElementNS('http://www.w3.org/2000/svg','text');
-    lbl.setAttribute('x',px+(i===0?-24:8));lbl.setAttribute('y',py-8);
-    lbl.setAttribute('font-size','10');lbl.setAttribute('fill',colors[i%2]);lbl.setAttribute('font-family','VT323');
-    lbl.textContent='('+gx+','+gy+')';
-    g.appendChild(lbl);
-    // connecting line if 2 pts
-    if(i===1&&pts.length===2){
-      const [gx0,gy0]=pts[0];const px0=ox+gx0*sc,py0=oy-gy0*sc;
-      if(px0>=0&&px0<=320&&py0>=0&&py0<=220){
-        const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-        line.setAttribute('x1',px0);line.setAttribute('y1',py0);line.setAttribute('x2',px);line.setAttribute('y2',py);
-        line.setAttribute('stroke','rgba(0,255,65,.4)');line.setAttribute('stroke-width','1.5');line.setAttribute('stroke-dasharray','4,3');
-        g.insertBefore(line,g.firstChild);
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>City Builder — 6.NS.C.8</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    }
-  });
-}
+      body {
+        background: #0a0f1e;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      #game-container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      // ============================================================
+      //  CITY BUILDER — 6.NS.C.8
+      //  Solve problems by graphing in all four quadrants
+      // ============================================================
 
-function fireAns(){
-  if(AC.state==='suspended')AC.resume();
-  const raw=parseFloat(document.getElementById('ans').value);
-  if(isNaN(raw))return;
-  const q=gs.qs[gs.qIdx];
-  gs.attempts++;gs.total++;
-  const ok=Math.abs(raw-q.ans)<0.05;
-  if(ok)handleOK(q);
-  else handleMiss(q);
-}
+      const W = 800,
+        H = 600;
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function handleOK(q){
-  sndCorrect();
-  const pts=gs.attempts===1?100:50;
-  gs.score+=pts+gs.streak*10;gs.correct++;
-  gs.streak++;if(gs.streak>gs.bestStreak)gs.bestStreak=gs.streak;
-  updateHUD();
-  blastFeedback('HIT!','#00ff41');
-  spawnPixels(true);
-  if(gs.streak>=3)showCombo(gs.streak);
-  if(gs.correct===1)unlock('FIRST BLAST');
-  if(gs.streak===5)unlock('5x COMBO!');
-  // TWR
-  if(q.twr){document.getElementById('tw1').value=q.twr.a;document.getElementById('tw2').value=q.twr.b;document.getElementById('tw3').value=q.twr.c;}
-  document.getElementById('twr-panel').style.display='block';
-  setTimeout(()=>{gs.qIdx++;loadQ();},1500);
-}
+      function synth(f, d, t = "square", v = 0.1) {
+        try {
+          const o = audioCtx.createOscillator(),
+            g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.frequency.value = f;
+          o.type = t;
+          g.gain.setValueAtTime(v, audioCtx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + d);
+          o.start();
+          o.stop(audioCtx.currentTime + d);
+        } catch (e) {}
+      }
+      function sndPlace() {
+        synth(500, 0.08);
+        setTimeout(() => synth(700, 0.1), 60);
+      }
+      function sndCorrect() {
+        synth(523, 0.1);
+        setTimeout(() => synth(659, 0.1), 80);
+        setTimeout(() => synth(784, 0.15), 160);
+      }
+      function sndWrong() {
+        synth(150, 0.3, "sawtooth", 0.12);
+      }
+      function sndBuild() {
+        synth(300, 0.05);
+        setTimeout(() => synth(400, 0.05), 40);
+        setTimeout(() => synth(500, 0.08), 80);
+      }
+      function sndLevelUp() {
+        [523, 659, 784, 1047].forEach((f, i) =>
+          setTimeout(() => synth(f, 0.1), i * 80),
+        );
+      }
+      function sndConnect() {
+        synth(440, 0.06);
+        setTimeout(() => synth(550, 0.06), 50);
+      }
 
-function handleMiss(q){
-  sndWrong();
-  gs.streak=0;
-  if(gs.attempts===1){document.getElementById('sq0').className='attempt-sq used';}
-  else{document.getElementById('sq1').className='attempt-sq used';gs.lives--;updateLives();}
-  blastFeedback('MISS!','#ff2020');
-  updateHUD();
-  showHintPanel(q,gs.attempts);
-  spawnPixels(false);
-  if(gs.attempts>=3){
-    blastFeedback('ANS: '+q.ans,'#ffb000');
-    setTimeout(()=>{gs.qIdx++;loadQ();},1800);
-  }
-}
+      function shuffle(a) {
+        const b = [...a];
+        for (let i = b.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [b[i], b[j]] = [b[j], b[i]];
+        }
+        return b;
+      }
 
-function showHintPanel(q,attempt){
-  const hp=document.getElementById('hint-panel');
-  hp.classList.add('show');
-  const h=q.hints||[];
-  if(attempt===1){document.getElementById('hint-type').textContent='▶ HINT — LEVEL 1';document.getElementById('hint-txt').textContent=h[0]||'Check: same x or same y?';}
-  else if(attempt===2){document.getElementById('hint-type').textContent='▶ HINT — LEVEL 2';document.getElementById('hint-txt').textContent=h[1]||'Subtract the coordinates that differ.';}
-  else{document.getElementById('hint-type').textContent='▶ ANSWER REVEAL';document.getElementById('hint-txt').textContent='Answer: '+q.ans+' — '+((h[1]||''));}
-}
+      // Building types
+      const BUILDINGS = [
+        { name: "School", emoji: "🏫", color: 0x4ade80, points: 100 },
+        { name: "Hospital", emoji: "🏥", color: 0xef4444, points: 120 },
+        { name: "Fire Station", emoji: "🚒", color: 0xf97316, points: 110 },
+        { name: "Library", emoji: "📚", color: 0x8b5cf6, points: 90 },
+        { name: "Park", emoji: "🌳", color: 0x22c55e, points: 80 },
+        { name: "Store", emoji: "🏪", color: 0xfbbf24, points: 85 },
+        { name: "Police", emoji: "🚔", color: 0x3b82f6, points: 105 },
+        { name: "Power Plant", emoji: "⚡", color: 0xeab308, points: 130 },
+        { name: "Water Tower", emoji: "💧", color: 0x06b6d4, points: 95 },
+        { name: "Apartment", emoji: "🏢", color: 0x6366f1, points: 75 },
+        { name: "Restaurant", emoji: "🍕", color: 0xec4899, points: 70 },
+        { name: "Gym", emoji: "🏋️", color: 0x14b8a6, points: 65 },
+      ];
 
-function updateHUD(){
-  document.getElementById('h-score').textContent=gs.score;
-  document.getElementById('h-streak').textContent=gs.streak+'x';
-}
+      // ============================================================
+      // BOOT
+      // ============================================================
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          const g = this.make.graphics({ add: false });
 
-function updateLives(){
-  [0,1,2].forEach(i=>{const l=document.getElementById('l'+i);if(l)l.className='life'+(i>=gs.lives?' lost':'');});
-}
+          // Grid cell
+          g.fillStyle(0x1e293b, 0.3);
+          g.fillRect(0, 0, 48, 48);
+          g.lineStyle(1, 0x334155, 0.4);
+          g.strokeRect(0, 0, 48, 48);
+          g.generateTexture("cell", 48, 48);
+          g.clear();
 
-function skipQ(){gs.qIdx++;gs.streak=0;updateHUD();loadQ();}
+          // Building placeholder (colored square)
+          g.fillStyle(0x4ade80);
+          g.fillRoundedRect(4, 4, 40, 40, 6);
+          g.generateTexture("building", 48, 48);
+          g.clear();
 
-function blastFeedback(txt,color){
-  const el=document.getElementById('fb-blast');
-  el.textContent=txt;el.style.color=color;
-  el.style.textShadow='0 0 20px '+color;
-  gsap.fromTo(el,{opacity:0,scale:.3},{opacity:1,scale:1,duration:.25,ease:'back.out(3)',onComplete:()=>{
-    gsap.to(el,{opacity:0,y:-50,duration:.5,delay:.4});
-  }});
-}
+          // Road
+          g.fillStyle(0x475569);
+          g.fillRect(0, 0, 48, 8);
+          g.fillStyle(0xfbbf24, 0.6);
+          g.fillRect(20, 2, 8, 1);
+          g.generateTexture("road_h", 48, 8);
+          g.clear();
 
-function showCombo(n){
-  const cn=document.getElementById('cn'),ct=document.getElementById('ct');
-  cn.textContent=n+'x';
-  gsap.fromTo(cn,{opacity:0,scale:.4},{opacity:1,scale:1.2,duration:.25});
-  gsap.fromTo(ct,{opacity:0},{opacity:1,duration:.25});
-  gsap.to([cn,ct],{opacity:0,duration:.4,delay:1.2});
-}
+          g.fillStyle(0x475569);
+          g.fillRect(0, 0, 8, 48);
+          g.fillStyle(0xfbbf24, 0.6);
+          g.fillRect(2, 20, 1, 8);
+          g.generateTexture("road_v", 8, 48);
+          g.clear();
 
-function spawnPixels(ok){
-  const colors=ok?['#00ff41','#ffb000','#00ffff']:['#ff2020','#ff6600'];
-  for(let i=0;i<(ok?14:6);i++){
-    const p=document.createElement('div');
-    p.style.cssText=`position:fixed;width:6px;height:6px;background:${colors[i%colors.length]};left:50%;top:50%;pointer-events:none;z-index:400`;
-    document.body.appendChild(p);
-    gsap.to(p,{x:(Math.random()-.5)*300,y:(Math.random()-.5)*250,opacity:0,duration:.7+Math.random()*.4,ease:'power2.out',onComplete:()=>p.remove()});
-  }
-}
+          // Cursor highlight
+          g.fillStyle(0xfbbf24, 0.2);
+          g.fillRect(0, 0, 48, 48);
+          g.lineStyle(2, 0xfbbf24, 0.8);
+          g.strokeRect(0, 0, 48, 48);
+          g.generateTexture("cursor", 48, 48);
+          g.clear();
 
-function unlock(name){
-  document.getElementById('ach-n').textContent=name;
-  const p=document.getElementById('ach');p.classList.add('show');
-  beep(880,.08,'square');setTimeout(()=>beep(1108,.15,'square'),100);
-  setTimeout(()=>p.classList.remove('show'),3200);
-}
+          // Button
+          g.fillStyle(0x1e293b);
+          g.fillRoundedRect(0, 0, 220, 52, 14);
+          g.lineStyle(2, 0x8b5cf6);
+          g.strokeRoundedRect(0, 0, 220, 52, 14);
+          g.generateTexture("btn", 220, 52);
+          g.clear();
 
-// ═══ ZONE COMPLETE ═══
-function zoneComplete(){
-  const acc=gs.total>0?Math.round(gs.correct/gs.total*100):0;
-  const stars=acc>=90?3:acc>=70?2:1;
-  gs.zoneScores[gs.zone]={score:gs.score,stars,acc};
-  gs.zonesComplete=gs.zoneScores.filter(Boolean).length;
-  // unlock next
-  const next=gs.zone+1;
-  if(next<ZONES.length){
-    const nn=document.getElementById('zn'+next);
-    nn.classList.remove('locked');nn.classList.add('available');
-    document.getElementById('zst'+next).textContent='★★★';
-  }
-  document.getElementById('zn'+gs.zone).classList.add('complete');
-  document.getElementById('zst'+gs.zone).textContent='★'.repeat(stars)+'☆'.repeat(3-stars);
-  if(gs.score>gs.pb){gs.pb=gs.score;localStorage.setItem('cb_pb',gs.score);}
-  // fill ZC screen
-  document.getElementById('zc-stars').textContent='★'.repeat(stars)+'☆'.repeat(3-stars);
-  document.getElementById('zc-name').textContent=ZONES[gs.zone].name;
-  document.getElementById('zc-score').textContent=gs.score;
-  document.getElementById('zc-acc').textContent=acc+'%';
-  document.getElementById('zc-streak').textContent=gs.bestStreak+'x';
-  sndLevelUp();
-  showScreen('screen-zc');
-}
+          // Small button
+          g.fillStyle(0x1e293b);
+          g.fillRoundedRect(0, 0, 150, 42, 10);
+          g.lineStyle(2, 0x38bdf8);
+          g.strokeRoundedRect(0, 0, 150, 42, 10);
+          g.generateTexture("btn_sm", 150, 42);
+          g.clear();
 
-function replayZone(){startZone(gs.zone);}
-function nextZone(){const n=gs.zone+1;if(n<ZONES.length)startZone(n);else{fillStats();showScreen('screen-stats');}}
-function fillStats(){
-  const total=gs.zoneScores.reduce((a,z)=>a+(z?z.score:0),0);
-  document.getElementById('st-score').textContent=total;
-  document.getElementById('st-correct').textContent=gs.correct;
-  document.getElementById('st-streak').textContent=gs.bestStreak+'x';
-  document.getElementById('st-zones').textContent=gs.zonesComplete+'/6';
-  document.getElementById('st-pb').textContent=gs.pb;
-  const totalStars=gs.zoneScores.reduce((a,z)=>a+(z?z.stars:0),0);
-  const maxS=Math.max(gs.zonesComplete*3,1);
-  const pct=totalStars/maxS;
-  document.getElementById('final-stars').textContent=pct>0.85?'★★★':pct>0.6?'★★':'★';
-}
+          // Answer button
+          g.fillStyle(0x0f172a);
+          g.fillRoundedRect(0, 0, 180, 46, 10);
+          g.lineStyle(2, 0x8b5cf6);
+          g.strokeRoundedRect(0, 0, 180, 46, 10);
+          g.generateTexture("ans_btn", 180, 46);
+          g.clear();
 
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>{s.style.display='none';s.classList.remove('active');});
-  const el=document.getElementById(id);
-  el.style.display='flex';el.classList.add('active');
-  gsap.fromTo(el,{opacity:0},{opacity:1,duration:.3});
-  if(id==='screen-stats')fillStats();
-}
+          g.fillStyle(0x064e3b);
+          g.fillRoundedRect(0, 0, 180, 46, 10);
+          g.lineStyle(2, 0x4ade80);
+          g.strokeRoundedRect(0, 0, 180, 46, 10);
+          g.generateTexture("ans_ok", 180, 46);
+          g.clear();
 
-// INIT
-document.getElementById('st-pb').textContent=gs.pb||'---';
-</script>
-</body>
+          g.fillStyle(0x450a0a);
+          g.fillRoundedRect(0, 0, 180, 46, 10);
+          g.lineStyle(2, 0xf87171);
+          g.strokeRoundedRect(0, 0, 180, 46, 10);
+          g.generateTexture("ans_bad", 180, 46);
+          g.clear();
+
+          // Heart
+          g.fillStyle(0xef4444);
+          g.fillRect(2, 1, 3, 3);
+          g.fillRect(7, 1, 3, 3);
+          g.fillRect(0, 3, 12, 3);
+          g.fillRect(2, 6, 8, 3);
+          g.fillRect(4, 9, 4, 2);
+          g.generateTexture("heart", 12, 11);
+          g.clear();
+
+          // Particle
+          g.fillStyle(0xffffff, 0.5);
+          g.fillCircle(2, 2, 2);
+          g.generateTexture("particle", 4, 4);
+          g.clear();
+
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
+
+      // ============================================================
+      // TITLE
+      // ============================================================
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#0a0f1e");
+
+          // City lights bg
+          for (let i = 0; i < 120; i++) {
+            const c = this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 3),
+              Phaser.Math.RND.pick([
+                0xfbbf24, 0x4ade80, 0x38bdf8, 0xc084fc, 0xef4444,
+              ]),
+              Phaser.Math.FloatBetween(0.03, 0.2),
+            );
+            this.tweens.add({
+              targets: c,
+              alpha: { from: c.alpha, to: 0.02 },
+              duration: Phaser.Math.Between(800, 2500),
+              yoyo: true,
+              repeat: -1,
+            });
+          }
+
+          this.add
+            .text(W / 2, 75, "COORDINATE", {
+              fontSize: "42px",
+              fontStyle: "bold",
+              color: "#38bdf8",
+              stroke: "#0a0f1e",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 130, "CITY BUILDER", {
+              fontSize: "52px",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              stroke: "#0a0f1e",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 175, "6.NS.C.8 — Graphing in All Four Quadrants", {
+              fontSize: "15px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5);
+
+          // Building emojis floating
+          const emojis = [
+            "🏫",
+            "🏥",
+            "🚒",
+            "📚",
+            "🌳",
+            "🏪",
+            "🚔",
+            "⚡",
+            "💧",
+            "🏢",
+          ];
+          emojis.forEach((e, i) => {
+            const t = this.add
+              .text(80 + i * 70, 250, e, { fontSize: "32px" })
+              .setOrigin(0.5);
+            this.tweens.add({
+              targets: t,
+              y: 235,
+              duration: 600 + i * 80,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.InOut",
+            });
+          });
+
+          // Mini grid preview
+          this.drawMiniGrid(W / 2, 360);
+
+          // Difficulty select
+          this.add
+            .text(W / 2, 440, "Choose difficulty:", {
+              fontSize: "16px",
+              color: "#e2e8f0",
+            })
+            .setOrigin(0.5);
+          const diffs = [
+            { name: "Easy (5x5)", range: 2 },
+            { name: "Medium (7x7)", range: 3 },
+            { name: "Hard (9x9)", range: 4 },
+          ];
+          this.selectedDiff = 0;
+          this.diffBtns = [];
+          diffs.forEach((d, i) => {
+            const x = W / 2 - 200 + i * 200;
+            const bg = this.add
+              .image(x, 480, "btn")
+              .setScale(0.75)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, 480, d.name, {
+                fontSize: "13px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            bg.on("pointerdown", () => {
+              this.selectedDiff = i;
+              this.diffBtns.forEach((b, j) =>
+                b.setTint(j === i ? 0x4ade80 : 0xffffff),
+              );
+              synth(350 + i * 120, 0.08);
+            });
+            bg.on("pointerover", () => bg.setScale(0.8));
+            bg.on("pointerout", () => bg.setScale(0.75));
+            this.diffBtns.push(bg);
+          });
+          this.diffBtns[0].setTint(0x4ade80);
+
+          // Start
+          const startBtn = this.add
+            .image(W / 2, 545, "btn")
+            .setScale(1.2)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 545, "BUILD YOUR CITY!", {
+              fontSize: "20px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: startBtn,
+            scaleX: 1.25,
+            scaleY: 1.25,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.InOut",
+          });
+          startBtn.on("pointerdown", () => {
+            synth(600, 0.1);
+            setTimeout(() => synth(800, 0.15), 80);
+            this.cameras.main.fadeOut(400);
+            const ranges = [2, 3, 4];
+            this.time.delayedCall(400, () => {
+              this.scene.start("Game", { range: ranges[this.selectedDiff] });
+            });
+          });
+
+          this.add
+            .text(
+              W / 2,
+              585,
+              "Click/tap grid cells to place buildings at coordinates",
+              {
+                fontSize: "12px",
+                color: "#64748b",
+              },
+            )
+            .setOrigin(0.5);
+
+          this.cameras.main.fadeIn(500);
+        }
+
+        drawMiniGrid(cx, cy) {
+          const g = this.add.graphics();
+          const s = 18,
+            r = 3;
+          g.lineStyle(1, 0x334155, 0.3);
+          for (let i = -r; i <= r; i++) {
+            g.moveTo(cx + i * s, cy - r * s);
+            g.lineTo(cx + i * s, cy + r * s);
+            g.moveTo(cx - r * s, cy + i * s);
+            g.lineTo(cx + r * s, cy + i * s);
+          }
+          g.strokePath();
+          g.lineStyle(2, 0x38bdf8, 0.5);
+          g.moveTo(cx - r * s, cy);
+          g.lineTo(cx + r * s, cy);
+          g.moveTo(cx, cy - r * s);
+          g.lineTo(cx, cy + r * s);
+          g.strokePath();
+        }
+      }
+
+      // ============================================================
+      // GAME
+      // ============================================================
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+
+        init(data) {
+          this.gridRange = data.range || 3;
+          this.level = data.level || 1;
+          this.score = 0;
+          this.lives = 3;
+          this.combo = 0;
+          this.maxCombo = 0;
+          this.buildingsPlaced = 0;
+          this.totalBuildings = 4 + Math.min(this.level, 4);
+          this.qCorrect = 0;
+          this.qTotal = 0;
+          this.currentTask = null;
+          this.placedBuildings = [];
+          this.connections = [];
+          this.phase = "build"; // build or connect
+          this.taskIndex = 0;
+        }
+
+        create() {
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          this.cameras.main.setBackgroundColor("#0a0f1e");
+
+          const range = this.gridRange;
+          const cs = 44;
+          this.cs = cs;
+          this.range = range;
+
+          // Center grid in left portion of screen
+          const gridAreaW = 600;
+          const ox = gridAreaW / 2;
+          const oy = H / 2;
+          this.ox = ox;
+          this.oy = oy;
+
+          // Draw background
+          for (let i = 0; i < 40; i++) {
+            this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 2),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.01, 0.06),
+            );
+          }
+
+          // Grid cells (interactive)
+          this.cells = [];
+          this.cellMap = {};
+          for (let gx = -range; gx <= range; gx++) {
+            for (let gy = -range; gy <= range; gy++) {
+              const sx = ox + gx * cs;
+              const sy = oy - gy * cs;
+              const cell = this.add
+                .image(sx, sy, "cell")
+                .setInteractive({ useHandCursor: true })
+                .setDepth(1);
+              cell.gridX = gx;
+              cell.gridY = gy;
+
+              cell.on("pointerover", () => {
+                if (this.phase === "build" && this.currentTask)
+                  cell.setTint(0xfbbf24);
+                this.hoverLabel.setText(`(${gx}, ${gy})`);
+                this.hoverLabel.setPosition(sx, sy - 28);
+                this.hoverLabel.setVisible(true);
+              });
+              cell.on("pointerout", () => {
+                cell.clearTint();
+                this.hoverLabel.setVisible(false);
+              });
+              cell.on("pointerdown", () => this.onCellClick(gx, gy));
+
+              this.cells.push(cell);
+              this.cellMap[`${gx},${gy}`] = cell;
+            }
+          }
+
+          // Grid lines and axes
+          this.drawGridLines();
+
+          // Hover label
+          this.hoverLabel = this.add
+            .text(0, 0, "", {
+              fontSize: "12px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(20)
+            .setVisible(false);
+
+          // Building labels layer
+          this.buildingLabels = [];
+
+          // HUD
+          this.createHUD();
+
+          // Side panel
+          this.createSidePanel();
+
+          // Generate building tasks
+          this.generateTasks();
+
+          // Show first task
+          this.showNextTask();
+
+          this.cameras.main.fadeIn(500);
+        }
+
+        drawGridLines() {
+          const g = this.add.graphics().setDepth(0);
+          const { ox, oy, cs, range } = this;
+
+          // Grid
+          g.lineStyle(1, 0x334155, 0.25);
+          for (let i = -range; i <= range; i++) {
+            g.moveTo(ox + i * cs - cs / 2, oy - range * cs - cs / 2);
+            g.lineTo(ox + i * cs - cs / 2, oy + range * cs + cs / 2);
+            g.moveTo(ox - range * cs - cs / 2, oy + i * cs - cs / 2);
+            g.lineTo(ox + range * cs + cs / 2, oy + i * cs - cs / 2);
+          }
+          g.strokePath();
+
+          // Axes
+          g.lineStyle(2, 0x38bdf8, 0.5);
+          g.moveTo(ox - range * cs - cs / 2, oy);
+          g.lineTo(ox + range * cs + cs / 2, oy);
+          g.moveTo(ox, oy - range * cs - cs / 2);
+          g.lineTo(ox, oy + range * cs + cs / 2);
+          g.strokePath();
+
+          // Labels
+          for (let i = -range; i <= range; i++) {
+            if (i === 0) continue;
+            this.add
+              .text(ox + i * cs, oy + range * cs + cs / 2 + 8, `${i}`, {
+                fontSize: "10px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(ox - range * cs - cs / 2 - 12, oy - i * cs, `${i}`, {
+                fontSize: "10px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+          }
+          this.add
+            .text(ox + range * cs + cs / 2 + 12, oy, "x", {
+              fontSize: "12px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0, 0.5);
+          this.add
+            .text(ox, oy - range * cs - cs / 2 - 12, "y", {
+              fontSize: "12px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.add.text(ox - 12, oy + 12, "0", {
+            fontSize: "10px",
+            color: "#fbbf24",
+          });
+
+          // Quadrant labels
+          const qa = 0.15;
+          this.add
+            .text(ox + (range * cs) / 2, oy - (range * cs) / 2, "I", {
+              fontSize: "16px",
+              color: "#4ade80",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qa);
+          this.add
+            .text(ox - (range * cs) / 2, oy - (range * cs) / 2, "II", {
+              fontSize: "16px",
+              color: "#38bdf8",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qa);
+          this.add
+            .text(ox - (range * cs) / 2, oy + (range * cs) / 2, "III", {
+              fontSize: "16px",
+              color: "#fbbf24",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qa);
+          this.add
+            .text(ox + (range * cs) / 2, oy + (range * cs) / 2, "IV", {
+              fontSize: "16px",
+              color: "#c084fc",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qa);
+        }
+
+        createHUD() {
+          this.add.rectangle(W / 2, 18, W, 36, 0x0f172a, 0.9).setDepth(100);
+          this.scoreText = this.add
+            .text(12, 8, "Score: 0", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setDepth(101);
+          this.buildText = this.add
+            .text(12, 24, `Buildings: 0/${this.totalBuildings}`, {
+              fontSize: "12px",
+              color: "#4ade80",
+            })
+            .setDepth(101);
+          this.levelText = this.add
+            .text(W / 2, 8, `Level ${this.level}`, {
+              fontSize: "14px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+          this.comboText = this.add
+            .text(W / 2, 24, "", { fontSize: "11px", color: "#c084fc" })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+          this.hearts = [];
+          for (let i = 0; i < 3; i++) {
+            this.hearts.push(
+              this.add
+                .image(W - 50 + i * 18, 18, "heart")
+                .setScale(1.3)
+                .setDepth(101),
+            );
+          }
+        }
+
+        createSidePanel() {
+          const px = 700,
+            py = H / 2;
+
+          // Panel bg
+          this.add.rectangle(px, py, 190, H - 60, 0x0f172a, 0.8).setDepth(50);
+          this.add
+            .rectangle(px, py, 188, H - 62, 0x000000, 0)
+            .setDepth(50)
+            .setStrokeStyle(1, 0x334155);
+
+          // Task area
+          this.taskTitle = this.add
+            .text(px, 60, "BUILDING TASK", {
+              fontSize: "11px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+              letterSpacing: 2,
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+
+          this.taskEmoji = this.add
+            .text(px, 100, "🏫", { fontSize: "36px" })
+            .setOrigin(0.5)
+            .setDepth(51);
+
+          this.taskName = this.add
+            .text(px, 140, "School", {
+              fontSize: "16px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+
+          this.taskDesc = this.add
+            .text(px, 170, "Place at: (2, 3)", {
+              fontSize: "14px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              wordWrap: { width: 170 },
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+
+          this.taskHint = this.add
+            .text(px, 210, "", {
+              fontSize: "11px",
+              color: "#94a3b8",
+              wordWrap: { width: 170 },
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+
+          // Quadrant reference
+          this.add
+            .text(px, 290, "QUADRANT MAP", {
+              fontSize: "10px",
+              color: "#64748b",
+              fontStyle: "bold",
+              letterSpacing: 1,
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+
+          const qData = [
+            { label: "I (+,+)", color: "#4ade80", x: px + 30, y: 310 },
+            { label: "II (-,+)", color: "#38bdf8", x: px - 30, y: 310 },
+            { label: "III (-,-)", color: "#fbbf24", x: px - 30, y: 335 },
+            { label: "IV (+,-)", color: "#c084fc", x: px + 30, y: 335 },
+          ];
+          qData.forEach((q) => {
+            this.add
+              .text(q.x, q.y, q.label, {
+                fontSize: "11px",
+                color: q.color,
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(51);
+          });
+
+          // Distance formula reference
+          this.add
+            .text(px, 380, "DISTANCE", {
+              fontSize: "10px",
+              color: "#64748b",
+              fontStyle: "bold",
+              letterSpacing: 1,
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+          this.add
+            .text(px, 400, "d = |a - b|", {
+              fontSize: "14px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+          this.add
+            .text(px, 420, "Same x: use y values\nSame y: use x values", {
+              fontSize: "10px",
+              color: "#94a3b8",
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+
+          // Progress bar
+          this.add
+            .text(px, 470, "CITY PROGRESS", {
+              fontSize: "10px",
+              color: "#64748b",
+              fontStyle: "bold",
+              letterSpacing: 1,
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+
+          this.progressBg = this.add
+            .rectangle(px, 490, 160, 10, 0x1e293b)
+            .setDepth(51);
+          this.progressFill = this.add
+            .rectangle(px - 80, 490, 0, 8, 0x4ade80)
+            .setOrigin(0, 0.5)
+            .setDepth(52);
+          this.progressText = this.add
+            .text(px, 505, `0/${this.totalBuildings}`, {
+              fontSize: "11px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5)
+            .setDepth(51);
+        }
+
+        generateTasks() {
+          this.tasks = [];
+          const used = new Set();
+          used.add("0,0");
+          const buildings = shuffle([...BUILDINGS]);
+
+          for (let i = 0; i < this.totalBuildings; i++) {
+            let gx, gy;
+            do {
+              gx = Phaser.Math.Between(-this.range, this.range);
+              gy = Phaser.Math.Between(-this.range, this.range);
+            } while (used.has(`${gx},${gy}`) || (gx === 0 && gy === 0));
+            used.add(`${gx},${gy}`);
+
+            const b = buildings[i % buildings.length];
+            this.tasks.push({
+              gx,
+              gy,
+              building: b,
+              placed: false,
+              question: this.genPlacementQuestion(gx, gy, b, i),
+            });
+          }
+        }
+
+        genPlacementQuestion(gx, gy, building, idx) {
+          // Different types of placement instructions
+          const type = idx % 6;
+          if (type === 0) {
+            return {
+              text: `Place the ${building.name} at (${gx}, ${gy})`,
+              hint: `x=${gx} means ${gx >= 0 ? "right" : "left"}. y=${gy} means ${gy >= 0 ? "up" : "down"}.`,
+              targetX: gx,
+              targetY: gy,
+            };
+          } else if (type === 1) {
+            const quad =
+              gx > 0 && gy > 0
+                ? "I"
+                : gx < 0 && gy > 0
+                  ? "II"
+                  : gx < 0 && gy < 0
+                    ? "III"
+                    : "IV";
+            return {
+              text: `Place the ${building.name} at (${gx}, ${gy}) in Quadrant ${quad}`,
+              hint: `Quadrant ${quad}: x is ${gx >= 0 ? "positive" : "negative"}, y is ${gy >= 0 ? "positive" : "negative"}.`,
+              targetX: gx,
+              targetY: gy,
+            };
+          } else if (type === 2) {
+            return {
+              text: `The ${building.name} goes ${Math.abs(gx)} ${gx >= 0 ? "right" : "left"} and ${Math.abs(gy)} ${gy >= 0 ? "up" : "down"} from origin`,
+              hint: `Start at (0,0). Move ${gx >= 0 ? "right" : "left"} ${Math.abs(gx)}, then ${gy >= 0 ? "up" : "down"} ${Math.abs(gy)}.`,
+              targetX: gx,
+              targetY: gy,
+            };
+          } else if (type === 3) {
+            return {
+              text: `Build the ${building.name} where x = ${gx} and y = ${gy}`,
+              hint: `Find x = ${gx} on horizontal axis, y = ${gy} on vertical axis.`,
+              targetX: gx,
+              targetY: gy,
+            };
+          } else if (type === 4) {
+            const signX = gx >= 0 ? "positive" : "negative";
+            const signY = gy >= 0 ? "positive" : "negative";
+            return {
+              text: `Place ${building.name} at the point with ${signX} ${Math.abs(gx)} x and ${signY} ${Math.abs(gy)} y`,
+              hint: `${signX} x = ${gx}, ${signY} y = ${gy}. Point: (${gx}, ${gy})`,
+              targetX: gx,
+              targetY: gy,
+            };
+          } else {
+            return {
+              text: `The ${building.name} is at (${gx}, ${gy}). Tap that cell!`,
+              hint: `Move to column ${gx} and row ${gy}.`,
+              targetX: gx,
+              targetY: gy,
+            };
+          }
+        }
+
+        showNextTask() {
+          if (this.taskIndex >= this.tasks.length) {
+            this.showDistanceChallenge();
+            return;
+          }
+
+          this.currentTask = this.tasks[this.taskIndex];
+          const t = this.currentTask;
+          const b = t.building;
+
+          // Update side panel
+          this.taskEmoji.setText(b.emoji);
+          this.taskName.setText(b.name);
+          this.taskDesc.setText(t.question.text);
+          this.taskHint.setText(t.question.hint);
+
+          // Pulse the task emoji
+          this.tweens.add({
+            targets: this.taskEmoji,
+            scale: 1.2,
+            duration: 400,
+            yoyo: true,
+            repeat: 2,
+            ease: "Sine.InOut",
+          });
+        }
+
+        onCellClick(gx, gy) {
+          if (!this.currentTask) return;
+          if (this.phase !== "build") return;
+
+          const t = this.currentTask;
+          const correct =
+            gx === t.question.targetX && gy === t.question.targetY;
+
+          if (correct) {
+            sndPlace();
+            this.placeBuilding(gx, gy, t.building);
+            t.placed = true;
+            this.buildingsPlaced++;
+            this.combo++;
+            if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+            this.qCorrect++;
+            this.qTotal++;
+            const pts = t.building.points * this.combo;
+            this.score += pts;
+
+            // Float text
+            const sx = this.ox + gx * this.cs;
+            const sy = this.oy - gy * this.cs;
+            const ft = this.add
+              .text(sx, sy - 30, `+${pts}`, {
+                fontSize: "18px",
+                color: "#4ade80",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setDepth(30);
+            this.tweens.add({
+              targets: ft,
+              y: ft.y - 35,
+              alpha: 0,
+              duration: 800,
+              onComplete: () => ft.destroy(),
+            });
+
+            // Particles
+            this.add
+              .particles(sx, sy, "particle", {
+                speed: { min: 50, max: 150 },
+                scale: { start: 1.5, end: 0 },
+                lifespan: 500,
+                quantity: 12,
+                tint: t.building.color,
+                emitting: false,
+              })
+              .explode(12);
+
+            this.updateHUD();
+            this.taskIndex++;
+            this.time.delayedCall(600, () => this.showNextTask());
+          } else {
+            sndWrong();
+            this.combo = 0;
+            this.lives--;
+            this.qTotal++;
+            this.cameras.main.shake(150, 0.008);
+
+            // Show where they clicked vs where they should click
+            const sx = this.ox + gx * this.cs;
+            const sy = this.oy - gy * this.cs;
+            const ft = this.add
+              .text(sx, sy - 20, `(${gx},${gy}) - wrong spot!`, {
+                fontSize: "11px",
+                color: "#f87171",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setDepth(30);
+            this.tweens.add({
+              targets: ft,
+              alpha: 0,
+              delay: 1500,
+              duration: 500,
+              onComplete: () => ft.destroy(),
+            });
+
+            // Highlight correct cell briefly
+            const tx = t.question.targetX,
+              ty = t.question.targetY;
+            const cx = this.ox + tx * this.cs;
+            const cy = this.oy - ty * this.cs;
+            const highlight = this.add
+              .rectangle(cx, cy, this.cs, this.cs, 0x4ade80, 0.3)
+              .setDepth(15);
+            this.tweens.add({
+              targets: highlight,
+              alpha: 0,
+              delay: 2000,
+              duration: 500,
+              onComplete: () => highlight.destroy(),
+            });
+
+            this.updateHUD();
+            if (this.lives <= 0) this.endGame();
+          }
+        }
+
+        placeBuilding(gx, gy, building) {
+          const sx = this.ox + gx * this.cs;
+          const sy = this.oy - gy * this.cs;
+
+          // Building sprite
+          const bImg = this.add
+            .text(sx, sy, building.emoji, { fontSize: "28px" })
+            .setOrigin(0.5)
+            .setDepth(8);
+
+          // Scale-in animation
+          bImg.setScale(0);
+          this.tweens.add({
+            targets: bImg,
+            scale: 1,
+            duration: 300,
+            ease: "Back.easeOut",
+          });
+
+          // Label
+          const label = this.add
+            .text(sx, sy + 20, building.name, {
+              fontSize: "8px",
+              color: "#94a3b8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(9);
+
+          this.placedBuildings.push({ gx, gy, building, sprite: bImg });
+
+          // Draw roads connecting to origin or neighbors
+          this.drawConnection(gx, gy);
+        }
+
+        drawConnection(gx, gy) {
+          const g = this.add.graphics().setDepth(2);
+          const sx = this.ox + gx * this.cs;
+          const sy = this.oy - gy * this.cs;
+
+          // Draw dotted line to origin
+          g.lineStyle(2, 0x475569, 0.3);
+          const steps = Math.max(Math.abs(gx), Math.abs(gy)) * 4;
+          for (let i = 0; i < steps; i++) {
+            const t = i / steps;
+            const px = this.ox + (sx - this.ox) * t;
+            const py = this.oy + (sy - this.oy) * t;
+            if (i % 2 === 0) g.fillStyle(0x475569, 0.3).fillCircle(px, py, 1);
+          }
+
+          sndConnect();
+        }
+
+        showDistanceChallenge() {
+          this.phase = "questions";
+          this.currentTask = null;
+
+          // Generate distance questions from placed buildings
+          const distQs = this.genDistanceQuestions();
+          this.distQuestions = distQs;
+          this.distQIndex = 0;
+
+          this.taskTitle.setText("DISTANCE CHALLENGE");
+          this.taskEmoji.setText("📏");
+          this.taskName.setText("Calculate distances");
+          this.taskDesc.setText("Find the distance between buildings!");
+          this.taskHint.setText(
+            "Use |a - b| for same x or same y coordinates.",
+          );
+
+          this.time.delayedCall(1000, () => this.showDistQuestion());
+        }
+
+        genDistanceQuestions() {
+          const qs = [];
+          const placed = this.placedBuildings;
+          if (placed.length < 2) return qs;
+
+          // Generate pairs
+          for (let i = 0; i < Math.min(placed.length - 1, 4); i++) {
+            const a = placed[i];
+            const b = placed[(i + 1) % placed.length];
+
+            // Same x (vertical distance)
+            if (a.gx === b.gx) {
+              const dist = Math.abs(a.gy - b.gy);
+              qs.push({
+                q: `Distance between ${a.building.name} (${a.gx},${a.gy}) and ${b.building.name} (${b.gx},${b.gy})?`,
+                ans: `${dist}`,
+                opts: shuffle([
+                  `${dist}`,
+                  `${dist + 2}`,
+                  `${Math.max(1, dist - 1)}`,
+                ]),
+                explanation: `Same x = ${a.gx}. Distance = |${a.gy} - ${b.gy}| = |${a.gy - b.gy}| = ${dist}`,
+              });
+            }
+            // Same y (horizontal distance)
+            else if (a.gy === b.gy) {
+              const dist = Math.abs(a.gx - b.gx);
+              qs.push({
+                q: `Distance between ${a.building.name} (${a.gx},${a.gy}) and ${b.building.name} (${b.gx},${b.gy})?`,
+                ans: `${dist}`,
+                opts: shuffle([
+                  `${dist}`,
+                  `${dist + 3}`,
+                  `${Math.max(1, dist - 2)}`,
+                ]),
+                explanation: `Same y = ${a.gy}. Distance = |${a.gx} - ${b.gx}| = |${a.gx - b.gx}| = ${dist}`,
+              });
+            }
+            // Manhattan distance
+            else {
+              const dist = Math.abs(a.gx - b.gx) + Math.abs(a.gy - b.gy);
+              qs.push({
+                q: `Total blocks from ${a.building.name} (${a.gx},${a.gy}) to ${b.building.name} (${b.gx},${b.gy})? (|dx|+|dy|)`,
+                ans: `${dist}`,
+                opts: shuffle([
+                  `${dist}`,
+                  `${dist + 2}`,
+                  `${Math.max(1, dist - 3)}`,
+                ]),
+                explanation: `|${a.gx}-${b.gx}| + |${a.gy}-${b.gy}| = ${Math.abs(a.gx - b.gx)} + ${Math.abs(a.gy - b.gy)} = ${dist}`,
+              });
+            }
+          }
+
+          // Add quadrant questions about placed buildings
+          if (placed.length > 0) {
+            const p = placed[Phaser.Math.Between(0, placed.length - 1)];
+            const quad =
+              p.gx > 0 && p.gy > 0
+                ? "I"
+                : p.gx < 0 && p.gy > 0
+                  ? "II"
+                  : p.gx < 0 && p.gy < 0
+                    ? "III"
+                    : "IV";
+            qs.push({
+              q: `Which quadrant is ${p.building.name} at (${p.gx}, ${p.gy})?`,
+              ans: quad,
+              opts: shuffle(["I", "II", "III", "IV"]).slice(0, 3),
+              explanation: `(${p.gx}, ${p.gy}): x is ${p.gx >= 0 ? "+" : "-"}, y is ${p.gy >= 0 ? "+" : "-"} = Quadrant ${quad}`,
+            });
+          }
+
+          return qs.length > 0
+            ? qs
+            : [
+                {
+                  q: "A building at (-3,4) and one at (2,4). Distance?",
+                  ans: "5",
+                  opts: shuffle(["5", "7", "1"]),
+                  explanation: "Same y=4. |(-3)-2| = |-5| = 5",
+                },
+              ];
+        }
+
+        showDistQuestion() {
+          if (this.distQIndex >= this.distQuestions.length) {
+            this.levelComplete();
+            return;
+          }
+
+          const q = this.distQuestions[this.distQIndex];
+
+          // Overlay
+          this.qOverlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
+            .setDepth(600);
+          this.qElements = [];
+
+          const qNum = this.add
+            .text(
+              W / 2,
+              100,
+              `Distance Challenge ${this.distQIndex + 1}/${this.distQuestions.length}`,
+              {
+                fontSize: "13px",
+                color: "#38bdf8",
+                fontStyle: "bold",
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(601);
+          this.qElements.push(qNum);
+
+          const qText = this.add
+            .text(W / 2, 170, q.q, {
+              fontSize: "20px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              wordWrap: { width: 600 },
+              align: "center",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+          this.qElements.push(qText);
+
+          const formula = this.add
+            .text(W / 2, 220, "Formula: d = |coord1 - coord2|", {
+              fontSize: "13px",
+              color: "#64748b",
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+          this.qElements.push(formula);
+
+          const opts = [...new Set(q.opts)];
+          if (!opts.includes(q.ans)) {
+            opts[0] = q.ans;
+          }
+          while (opts.length < 3)
+            opts.push(`${parseInt(q.ans) + Phaser.Math.Between(2, 5)}`);
+
+          shuffle(opts)
+            .slice(0, 3)
+            .forEach((opt, i) => {
+              const bx = W / 2 - 180 + i * 180;
+              const by = 300;
+              const btn = this.add
+                .image(bx, by, "ans_btn")
+                .setScale(1.1)
+                .setDepth(601)
+                .setInteractive({ useHandCursor: true });
+              const txt = this.add
+                .text(bx, by, opt, {
+                  fontSize: "20px",
+                  color: "#e2e8f0",
+                  fontStyle: "bold",
+                })
+                .setOrigin(0.5)
+                .setDepth(602);
+              this.qElements.push(btn, txt);
+
+              btn.on("pointerdown", () => {
+                this.qElements.forEach((e) => {
+                  if (e.input) e.disableInteractive();
+                });
+                this.qTotal++;
+
+                if (opt === q.ans) {
+                  sndCorrect();
+                  btn.setTexture("ans_ok");
+                  txt.setColor("#4ade80");
+                  this.qCorrect++;
+                  this.combo++;
+                  if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+                  const pts = 250 * this.combo;
+                  this.score += pts;
+
+                  const fb = this.add
+                    .text(W / 2, 370, `Correct! +${pts}`, {
+                      fontSize: "18px",
+                      color: "#4ade80",
+                      fontStyle: "bold",
+                    })
+                    .setOrigin(0.5)
+                    .setDepth(601);
+                  this.qElements.push(fb);
+                } else {
+                  sndWrong();
+                  btn.setTexture("ans_bad");
+                  txt.setColor("#f87171");
+                  this.combo = 0;
+                  this.lives--;
+
+                  const fb = this.add
+                    .text(W / 2, 370, `Answer: ${q.ans}`, {
+                      fontSize: "18px",
+                      color: "#f87171",
+                      fontStyle: "bold",
+                    })
+                    .setOrigin(0.5)
+                    .setDepth(601);
+                  this.qElements.push(fb);
+                }
+
+                // Show explanation
+                const exp = this.add
+                  .text(W / 2, 410, q.explanation, {
+                    fontSize: "13px",
+                    color: "#94a3b8",
+                    wordWrap: { width: 500 },
+                    align: "center",
+                  })
+                  .setOrigin(0.5)
+                  .setDepth(601);
+                this.qElements.push(exp);
+
+                this.updateHUD();
+
+                this.time.delayedCall(2000, () => {
+                  this.qElements.forEach((e) => e.destroy());
+                  this.qOverlay.destroy();
+                  this.distQIndex++;
+                  if (this.lives <= 0) {
+                    this.endGame();
+                    return;
+                  }
+                  this.showDistQuestion();
+                });
+              });
+
+              btn.on("pointerover", () => btn.setScale(1.15));
+              btn.on("pointerout", () => btn.setScale(1.1));
+            });
+        }
+
+        levelComplete() {
+          sndLevelUp();
+
+          const ov = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
+            .setDepth(600);
+          this.add
+            .text(W / 2, 100, "CITY COMPLETE!", {
+              fontSize: "40px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+
+          const pct = this.qTotal > 0 ? this.qCorrect / this.qTotal : 0;
+          const stars = pct >= 0.85 ? 3 : pct >= 0.6 ? 2 : 1;
+          this.add
+            .text(W / 2, 160, "★".repeat(stars) + "☆".repeat(3 - stars), {
+              fontSize: "40px",
+              color: "#fbbf24",
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+
+          this.add
+            .text(
+              W / 2,
+              220,
+              `Score: ${this.score}  |  Buildings: ${this.buildingsPlaced}`,
+              {
+                fontSize: "16px",
+                color: "#e2e8f0",
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(601);
+          this.add
+            .text(
+              W / 2,
+              250,
+              `Questions: ${this.qCorrect}/${this.qTotal}  |  Best Combo: ${this.maxCombo}x`,
+              {
+                fontSize: "14px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(601);
+
+          // Confetti
+          for (let i = 0; i < 40; i++) {
+            const c = this.add
+              .circle(
+                Phaser.Math.Between(50, W - 50),
+                -10,
+                Phaser.Math.Between(3, 6),
+                Phaser.Math.RND.pick([
+                  0x38bdf8, 0xfbbf24, 0x4ade80, 0xc084fc, 0xef4444,
+                ]),
+              )
+              .setDepth(602);
+            this.tweens.add({
+              targets: c,
+              y: H + 20,
+              x: c.x + Phaser.Math.Between(-100, 100),
+              duration: Phaser.Math.Between(1500, 3000),
+              delay: Phaser.Math.Between(0, 500),
+            });
+          }
+
+          const nextBtn = this.add
+            .image(W / 2 - 110, 320, "btn")
+            .setScale(0.9)
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 - 110, 320, "Next Level", {
+              fontSize: "15px",
+              color: "#4ade80",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(602);
+          nextBtn.on("pointerdown", () => {
+            this.cameras.main.fadeOut(400);
+            this.time.delayedCall(400, () =>
+              this.scene.restart({
+                range: this.gridRange,
+                level: this.level + 1,
+              }),
+            );
+          });
+
+          const resBtn = this.add
+            .image(W / 2 + 110, 320, "btn")
+            .setScale(0.9)
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 + 110, 320, "Results", {
+              fontSize: "15px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(602);
+          resBtn.on("pointerdown", () => {
+            this.scene.start("Results", {
+              score: this.score,
+              level: this.level,
+              buildings: this.buildingsPlaced,
+              qCorrect: this.qCorrect,
+              qTotal: this.qTotal,
+              maxCombo: this.maxCombo,
+              range: this.gridRange,
+            });
+          });
+        }
+
+        endGame() {
+          this.cameras.main.shake(400, 0.02);
+          this.time.delayedCall(500, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              level: this.level,
+              buildings: this.buildingsPlaced,
+              qCorrect: this.qCorrect,
+              qTotal: this.qTotal,
+              maxCombo: this.maxCombo,
+              range: this.gridRange,
+              gameOver: true,
+            });
+          });
+        }
+
+        updateHUD() {
+          this.scoreText.setText(`Score: ${this.score}`);
+          this.buildText.setText(
+            `Buildings: ${this.buildingsPlaced}/${this.totalBuildings}`,
+          );
+          if (this.combo > 1) this.comboText.setText(`${this.combo}x Combo!`);
+          else this.comboText.setText("");
+          for (let i = 0; i < 3; i++)
+            this.hearts[i].setAlpha(i < this.lives ? 1 : 0.2);
+
+          // Progress bar
+          const pct = this.buildingsPlaced / this.totalBuildings;
+          this.progressFill.width = 160 * pct;
+          this.progressText.setText(
+            `${this.buildingsPlaced}/${this.totalBuildings}`,
+          );
+        }
+      }
+
+      // ============================================================
+      // RESULTS
+      // ============================================================
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(data) {
+          this.d = data;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#0a0f1e");
+
+          for (let i = 0; i < 80; i++) {
+            this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 2),
+              Phaser.Math.RND.pick([0xfbbf24, 0x4ade80, 0x38bdf8]),
+              Phaser.Math.FloatBetween(0.02, 0.12),
+            );
+          }
+
+          const title = this.d.gameOver ? "GAME OVER" : "CITY REPORT";
+          const color = this.d.gameOver ? "#f87171" : "#fbbf24";
+          this.add
+            .text(W / 2, 50, title, {
+              fontSize: "40px",
+              color,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5);
+
+          // City skyline emojis
+          const skyline = [
+            "🏫",
+            "🏥",
+            "🚒",
+            "📚",
+            "🌳",
+            "🏪",
+            "🚔",
+            "⚡",
+            "💧",
+            "🏢",
+          ];
+          skyline.forEach((e, i) => {
+            if (i < this.d.buildings)
+              this.add
+                .text(130 + i * 60, 100, e, { fontSize: "28px" })
+                .setOrigin(0.5);
+          });
+
+          const stats = [
+            ["Score", this.d.score],
+            ["Level", this.d.level],
+            ["Buildings Placed", this.d.buildings],
+            ["Questions Correct", `${this.d.qCorrect}/${this.d.qTotal}`],
+            ["Best Combo", `${this.d.maxCombo}x`],
+            [
+              "Accuracy",
+              this.d.qTotal > 0
+                ? Math.round((this.d.qCorrect / this.d.qTotal) * 100) + "%"
+                : "N/A",
+            ],
+          ];
+
+          stats.forEach((s, i) => {
+            const y = 150 + i * 48;
+            this.add.text(W / 2 - 140, y, s[0], {
+              fontSize: "16px",
+              color: "#94a3b8",
+            });
+            this.add
+              .text(W / 2 + 140, y, `${s[1]}`, {
+                fontSize: "20px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(1, 0);
+            if (i < stats.length - 1)
+              this.add.rectangle(W / 2, y + 36, 320, 1, 0x1e293b);
+          });
+
+          const pct = this.d.qTotal > 0 ? this.d.qCorrect / this.d.qTotal : 0;
+          const stars = pct >= 0.85 ? 3 : pct >= 0.6 ? 2 : 1;
+          this.add
+            .text(W / 2, 460, "★".repeat(stars) + "☆".repeat(3 - stars), {
+              fontSize: "38px",
+              color: "#fbbf24",
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(
+              W / 2,
+              505,
+              "Remember: d = |coord1 - coord2| for same axis. Quadrants: I(+,+) II(-,+) III(-,-) IV(+,-)",
+              {
+                fontSize: "11px",
+                color: "#64748b",
+                wordWrap: { width: 600 },
+                align: "center",
+              },
+            )
+            .setOrigin(0.5);
+
+          const playBtn = this.add
+            .image(W / 2 - 120, 555, "btn")
+            .setScale(0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 - 120, 555, "Play Again", {
+              fontSize: "16px",
+              color: "#4ade80",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          playBtn.on("pointerdown", () =>
+            this.scene.start("Game", { range: this.d.range }),
+          );
+
+          const menuBtn = this.add
+            .image(W / 2 + 120, 555, "btn")
+            .setScale(0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 + 120, 555, "Main Menu", {
+              fontSize: "16px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          menuBtn.on("pointerdown", () => this.scene.start("Title"));
+
+          this.cameras.main.fadeIn(500);
+        }
+      }
+
+      // ============================================================
+      // CONFIG
+      // ============================================================
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game-container",
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        input: { activePointers: 3 },
+      };
+
+      new Phaser.Game(config);
+    </script>
+  </body>
 </html>

@@ -1,0 +1,1495 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lesson 3-2: Understand Rates and Unit Rates</title>
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --faint: #8a97a5;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(15, 43, 60, 0.08);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+      .header {
+        background: linear-gradient(135deg, var(--navy) 0%, #1a4a6b 100%);
+        color: #fff;
+        padding: 28px 24px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .header-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .breadcrumb {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .breadcrumb a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .header h1 {
+        font-size: clamp(22px, 4vw, 30px);
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      .header p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.78);
+        margin: 0;
+        max-width: 600px;
+      }
+      .standard-badge {
+        display: inline-block;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      .level-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .level-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .level-toggle {
+        display: inline-flex;
+        background: var(--line);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+      .level-btn {
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .level-btn.active {
+        background: var(--card);
+        color: var(--navy);
+        box-shadow: 0 1px 4px rgba(15, 43, 60, 0.12);
+      }
+      .level-btn:hover:not(.active) {
+        color: var(--navy);
+      }
+      .level-desc {
+        font-size: 13px;
+        color: var(--faint);
+        margin-left: auto;
+      }
+      .progress-bar {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .progress-track {
+        height: 4px;
+        background: var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--teal), var(--blue));
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+      .main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 20px 24px 80px;
+      }
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 32px 0 16px;
+      }
+      .section-header:first-child {
+        margin-top: 8px;
+      }
+      .section-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .section-icon.warmup {
+        background: var(--gold);
+      }
+      .section-icon.practice {
+        background: var(--blue);
+      }
+      .section-icon.challenge {
+        background: var(--coral);
+      }
+      .section-header h2 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0;
+      }
+      .section-header .count {
+        font-size: 13px;
+        color: var(--faint);
+        font-weight: 600;
+      }
+      .q-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 22px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: border-color 0.2s;
+      }
+      .q-card.correct {
+        border-color: var(--green);
+      }
+      .q-card.incorrect {
+        border-color: var(--coral);
+      }
+      .q-card.correct .q-status {
+        display: flex;
+      }
+      .q-card.incorrect .q-status-wrong {
+        display: flex;
+      }
+      .q-num {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.45;
+      }
+      .q-prompt .math {
+        font-family: "Cambria Math", "Times New Roman", serif;
+        font-style: italic;
+      }
+      .scaffold {
+        background: var(--teal-light);
+        border: 1px solid rgba(14, 138, 125, 0.15);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #1a5c54;
+        line-height: 1.45;
+        display: none;
+      }
+      .scaffold strong {
+        color: var(--teal);
+      }
+      .scaffold .vocab {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid rgba(14, 138, 125, 0.2);
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-weight: 700;
+        margin: 2px;
+      }
+      body.level-1 .scaffold {
+        display: block;
+      }
+      .mc-options {
+        display: grid;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--bg);
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        font-size: 15px;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+      .mc-btn:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn .letter {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: var(--line);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--muted);
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mc-btn:hover .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .mc-btn.selected .letter {
+        background: var(--blue);
+        color: #fff;
+      }
+      .mc-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .mc-btn.is-correct .letter {
+        background: var(--green);
+        color: #fff;
+      }
+      .mc-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .mc-btn.is-wrong .letter {
+        background: var(--coral);
+        color: #fff;
+      }
+      .mc-btn.locked {
+        pointer-events: none;
+      }
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fill-input {
+        width: 100px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 16px;
+        text-align: center;
+        font-weight: 600;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .fill-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.12);
+      }
+      .fill-input.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .fill-input.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+      }
+      .fill-text {
+        font-size: 16px;
+        color: var(--ink);
+      }
+      .tf-options {
+        display: flex;
+        gap: 8px;
+      }
+      .tf-btn {
+        flex: 1;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .tf-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .tf-btn.selected {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .tf-btn.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .tf-btn.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        color: var(--coral);
+      }
+      .tf-btn.locked {
+        pointer-events: none;
+      }
+      .check-btn {
+        margin-top: 12px;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .check-btn:hover {
+        background: #155fa0;
+        transform: translateY(-1px);
+      }
+      .check-btn:active {
+        transform: scale(0.98);
+      }
+      .check-btn:disabled {
+        background: var(--line);
+        color: var(--faint);
+        cursor: default;
+        transform: none;
+      }
+      .q-status,
+      .q-status-wrong {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .q-status {
+        background: var(--green-light);
+        color: #1a5c36;
+        border: 1px solid rgba(45, 135, 75, 0.15);
+      }
+      .q-status-wrong {
+        background: var(--coral-light);
+        color: #8a3322;
+        border: 1px solid rgba(196, 90, 60, 0.15);
+      }
+      .fb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .explain-section {
+        display: none;
+        margin-top: 12px;
+      }
+      body.level-2 .explain-section {
+        display: block;
+      }
+      .explain-prompt {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .explain-input {
+        width: 100%;
+        min-height: 60px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        resize: vertical;
+        background: var(--bg);
+        color: var(--ink);
+        outline: none;
+        line-height: 1.4;
+      }
+      .explain-input:focus {
+        border-color: var(--blue);
+      }
+      .sentence-frame {
+        display: none;
+      }
+      body.level-1 .sentence-frame {
+        display: block;
+      }
+      .sentence-frame p {
+        font-size: 13px;
+        color: var(--teal);
+        font-weight: 600;
+        margin: 6px 0 0;
+        font-style: italic;
+      }
+      .drag-zone {
+        min-height: 52px;
+        border: 2px dashed var(--line);
+        border-radius: 10px;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        transition: border-color 0.15s;
+        background: var(--bg);
+      }
+      .drag-zone.over {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .drag-zone.is-correct {
+        border-color: var(--green);
+        background: var(--green-light);
+        border-style: solid;
+      }
+      .drag-zone.is-wrong {
+        border-color: var(--coral);
+        background: var(--coral-light);
+        border-style: solid;
+      }
+      .drag-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: grab;
+        user-select: none;
+        transition: all 0.15s;
+        color: var(--ink);
+      }
+      .drag-item:active {
+        cursor: grabbing;
+        opacity: 0.7;
+      }
+      .drag-item.placed {
+        background: var(--blue-light);
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .drag-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .drop-grid {
+        display: grid;
+        gap: 10px;
+      }
+      .drop-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+      .drop-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .score-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--line);
+        padding: 10px 24px;
+      }
+      .score-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .score-text {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .score-text span {
+        color: var(--teal);
+      }
+      .reset-btn {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .reset-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      @media (max-width: 600px) {
+        .header {
+          padding: 20px 16px 16px;
+        }
+        .level-bar {
+          padding: 12px 16px;
+        }
+        .main {
+          padding: 16px 16px 80px;
+        }
+        .q-card {
+          padding: 16px;
+        }
+        .drop-row {
+          grid-template-columns: 1fr;
+        }
+        .level-desc {
+          display: none;
+        }
+      }
+      @media print {
+        .score-bar,
+        .level-bar,
+        .progress-bar {
+          display: none;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+  </head>
+  <body class="level-1">
+<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+<style>
+#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
+#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
+.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
+@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
+.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
+.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
+.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
+.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
+.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
+.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
+.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
+.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
+.vso-dot.active{background:#6366F1;transform:scale(1.25)}
+.vso-dot.seen{background:#A5B4FC}
+</style>
+<div id="vocabSlideshowOverlay">
+<div class="vso-card">
+  <div class="vso-progress" id="vsoProgress">Word 1 of 3</div>
+  <div class="vso-svg-wrap" id="vsoSvg"></div>
+  <div class="vso-word" id="vsoWord"></div>
+  <div class="vso-def" id="vsoDef"></div>
+  <div class="vso-nav">
+    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
+    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
+    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
+  </div>
+  <div class="vso-dots" id="vsoDots"></div>
+</div>
+</div>
+<script>
+(function(){
+const VSO_ITEMS=[
+  {word: 'Rate', def: 'A ratio that compares two quantities with different units.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="50" y="80" width="200" height="50" rx="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="150" y="115" text-anchor="middle" font-size="26" font-weight="800" fill="#1E40AF" font-family="sans-serif">120 miles</text>   <line x1="50" y1="150" x2="250" y2="150" stroke="#1E293B" stroke-width="4"/>   <rect x="50" y="160" width="200" height="50" rx="12" fill="#FEF3C7" stroke="#F59E0B" stroke-width="3"/>   <text x="150" y="195" text-anchor="middle" font-size="26" font-weight="800" fill="#92400E" font-family="sans-serif">2 hours</text> </svg>'},
+  {word: 'Unit Rate', def: 'A rate where the second quantity is 1.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="50" y="80" width="200" height="50" rx="12" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="150" y="115" text-anchor="middle" font-size="26" font-weight="800" fill="#1E40AF" font-family="sans-serif">60 miles</text>   <line x1="50" y1="150" x2="250" y2="150" stroke="#1E293B" stroke-width="4"/>   <rect x="50" y="160" width="200" height="50" rx="12" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>   <text x="150" y="195" text-anchor="middle" font-size="26" font-weight="800" fill="#065F46" font-family="sans-serif">1 hour</text>   <circle cx="250" cy="110" r="20" fill="#10B981"/><text x="250" y="116" text-anchor="middle" font-size="16" font-weight="900" fill="#fff" font-family="sans-serif">1</text> </svg>'},
+  {word: 'Ratio', def: 'A comparison of two quantities.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="80" cy="120" r="30" fill="#F87171"/><circle cx="130" cy="120" r="30" fill="#F87171"/><circle cx="180" cy="120" r="30" fill="#F87171"/>   <circle cx="100" cy="200" r="30" fill="#60A5FA"/><circle cx="160" cy="200" r="30" fill="#60A5FA"/>   <text x="150" y="270" text-anchor="middle" font-size="28" font-weight="800" fill="#1E293B" font-family="sans-serif">3 : 2</text> </svg>'}
+];
+let vsoIdx=0,vsoSeen=new Set();
+function vsoRender(){
+  const it=VSO_ITEMS[vsoIdx];
+  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
+  document.getElementById('vsoWord').textContent=it.word;
+  document.getElementById('vsoDef').textContent=it.def;
+  document.getElementById('vsoSvg').innerHTML=it.svg;
+  vsoSeen.add(vsoIdx);
+  document.getElementById('vsoPrev').disabled=vsoIdx===0;
+  const isLast=vsoIdx===VSO_ITEMS.length-1;
+  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
+  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
+  const dots=document.getElementById('vsoDots');
+  dots.innerHTML='';
+  VSO_ITEMS.forEach(function(_,i){
+    const d=document.createElement('span');
+    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
+    d.onclick=function(){vsoIdx=i;vsoRender();};
+    dots.appendChild(d);
+  });
+}
+window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
+window.vsoClose=function(){
+  const el=document.getElementById('vocabSlideshowOverlay');
+  el.classList.add('vso-hidden');
+  setTimeout(function(){el.remove();},600);
+};
+vsoRender();
+})();
+</script>
+<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+
+
+    <header class="header">
+      <div class="header-inner">
+        <div class="breadcrumb">
+          <a href="/math/">Math</a> › <a href="/math/unit-3/">Unit 3</a> ›
+          Lesson 3-2
+        </div>
+        <h1>Understand Rates and Unit Rates</h1>
+        <p>
+          Interpret rates, find unit rates, and use them to compare real-world
+          quantities.
+        </p>
+        <span class="standard-badge"
+          >6.RP.A.2 · 6.RP.A.3b · Ratios &amp; Rates</span
+        >
+      </div>
+    </header>
+
+    <div class="level-bar">
+      <span class="level-label">Level</span>
+      <div class="level-toggle">
+        <button class="level-btn active" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+      </div>
+      <span class="level-desc" id="levelDesc"
+        >Guided practice with vocabulary support</span
+      >
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <main class="main">
+      <!-- WARM-UP -->
+      <div class="section-header">
+        <div class="section-icon warmup">W</div>
+        <h2>Warm-Up</h2>
+        <span class="count">2 questions</span>
+      </div>
+
+      <!-- W1 -->
+      <article class="q-card" data-q="w1">
+        <div class="q-num">Warm-Up 1</div>
+        <div class="q-prompt">
+          A car travels 120 miles in 2 hours. Which of the following is a
+          <strong>rate</strong>?
+        </div>
+        <div class="scaffold">
+          <strong>Vocabulary:</strong> A <span class="vocab">rate</span> is a
+          ratio that compares two quantities with <em>different</em> units (like
+          miles and hours).
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>120 miles</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>120 miles per 2 hours</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>2 hours</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>120:120</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! "120 miles per 2 hours" compares miles to hours — two
+            different units — making it a rate.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >A rate compares two different units. "120 miles per 2 hours"
+            compares miles to hours. The answer is <strong>B</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- W2 -->
+      <article class="q-card" data-q="w2">
+        <div class="q-num">Warm-Up 2</div>
+        <div class="q-prompt">
+          If you earn $24 for 3 hours of work, what is your
+          <strong>unit rate</strong> (dollars per hour)?
+        </div>
+        <div class="scaffold">
+          <strong>Hint:</strong> A <span class="vocab">unit rate</span> has a
+          denominator of 1. Divide $24 ÷ 3 hours to find the pay
+          <span class="vocab">per</span> one hour.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>$3 per hour</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>$8 per hour</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>$24 per hour</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>$72 per hour</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span>Correct! $24 ÷ 3 = $8 per hour.</span>
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Divide total dollars by total hours: $24 ÷ 3 = $8. The answer is
+            <strong>B</strong>: $8 per hour.</span
+          >
+        </div>
+      </article>
+
+      <!-- PRACTICE -->
+      <div class="section-header">
+        <div class="section-icon practice">P</div>
+        <h2>Practice</h2>
+        <span class="count">5 questions</span>
+      </div>
+
+      <!-- P1 -->
+      <article class="q-card" data-q="p1">
+        <div class="q-num">Practice 1</div>
+        <div class="q-prompt">
+          A printer prints 150 pages in 5 minutes. What is the unit rate?
+        </div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> Divide pages by minutes: 150 ÷ 5 = ? pages
+          per minute.
+        </div>
+        <div class="fill-row">
+          <input
+            class="fill-input"
+            data-answer="30"
+            placeholder="?"
+            aria-label="pages per minute"
+          />
+          <span class="fill-text">pages per minute</span>
+        </div>
+        <button class="check-btn" id="p1-check">Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show your division:</div>
+          <textarea
+            class="explain-input"
+            placeholder="150 ÷ 5 = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "I divided ___ pages by ___ minutes to get ___ pages
+            per minute."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span>Correct! 150 ÷ 5 = 30 pages per minute.</span>
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Divide 150 pages by 5 minutes: 150 ÷ 5 = <strong>30</strong> pages
+            per minute.</span
+          >
+        </div>
+      </article>
+
+      <!-- P2 -->
+      <article class="q-card" data-q="p2">
+        <div class="q-num">Practice 2</div>
+        <div class="q-prompt">
+          Store A sells 6 apples for $3.00. Store B sells 8 apples for $4.80.
+          Which store has the <strong>better unit price</strong>?
+        </div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> Find the price per apple at each store.
+          Store A: $3.00 ÷ 6. Store B: $4.80 ÷ 8. Compare the unit prices.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>Store A — $0.50 per apple</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>Store B — $0.60 per apple</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>They are the same price</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>Store B — $0.50 per apple</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show both unit prices:</div>
+          <textarea
+            class="explain-input"
+            placeholder="Store A: $3.00 ÷ 6 = ... Store B: $4.80 ÷ 8 = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "Store A costs $___ per apple and Store B costs $___
+            per apple, so Store ___ has the better price."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! Store A: $3.00 ÷ 6 = $0.50. Store B: $4.80 ÷ 8 = $0.60.
+            Store A is cheaper per apple.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Store A: $3.00 ÷ 6 = $0.50/apple. Store B: $4.80 ÷ 8 = $0.60/apple.
+            The answer is <strong>A</strong> — Store A is cheaper.</span
+          >
+        </div>
+      </article>
+
+      <!-- P3: Drag and Drop -->
+      <article class="q-card" data-q="p3">
+        <div class="q-num">Practice 3</div>
+        <div class="q-prompt">
+          Sort each example into the correct category:
+          <strong>Rate</strong> or <strong>Ratio (not a rate)</strong>.
+        </div>
+        <div class="scaffold">
+          <strong>Remember:</strong> A <span class="vocab">rate</span> compares
+          quantities with <em>different</em> units. A ratio that compares the
+          same kind of unit is not a rate.
+        </div>
+        <div class="drag-bank" id="p3-bank">
+          <div class="drag-item" draggable="true" data-id="d1" data-cat="rate">
+            60 miles per hour
+          </div>
+          <div class="drag-item" draggable="true" data-id="d2" data-cat="ratio">
+            3 boys to 5 girls
+          </div>
+          <div class="drag-item" draggable="true" data-id="d3" data-cat="rate">
+            $2.50 per pound
+          </div>
+          <div class="drag-item" draggable="true" data-id="d4" data-cat="ratio">
+            4 red to 6 blue
+          </div>
+          <div class="drag-item" draggable="true" data-id="d5" data-cat="rate">
+            90 words per minute
+          </div>
+          <div class="drag-item" draggable="true" data-id="d6" data-cat="ratio">
+            2 wins to 3 losses
+          </div>
+        </div>
+        <div class="drop-grid">
+          <div class="drop-row">
+            <div class="drop-label">Rates</div>
+            <div class="drag-zone" data-cat="rate" id="p3-rate"></div>
+          </div>
+          <div class="drop-row">
+            <div class="drop-label">Ratios (not rates)</div>
+            <div class="drag-zone" data-cat="ratio" id="p3-ratio"></div>
+          </div>
+        </div>
+        <button class="check-btn" id="p3-check">Check</button>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! Rates compare different units (miles/hours,
+            dollars/pounds). Ratios compare the same kind of unit.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Some are in the wrong group. Rates have different units (miles
+            &amp; hours, dollars &amp; pounds). Try again!</span
+          >
+        </div>
+      </article>
+
+      <!-- P4: Fill-in -->
+      <article class="q-card" data-q="p4">
+        <div class="q-num">Practice 4</div>
+        <div class="q-prompt">Find each unit rate.</div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> Divide the first quantity by the second to
+          get the rate per 1 unit.
+        </div>
+        <div style="display: grid; gap: 14px">
+          <div class="fill-row">
+            <span class="fill-text"
+              ><strong>a.</strong> 240 miles in 4 hours =</span
+            >
+            <input
+              class="fill-input"
+              data-answer="60"
+              placeholder="?"
+              aria-label="answer a"
+            />
+            <span class="fill-text">mph</span>
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"
+              ><strong>b.</strong> $17.50 for 5 pounds =</span
+            >
+            <input
+              class="fill-input"
+              data-answer="3.50"
+              placeholder="?"
+              aria-label="answer b"
+            />
+            <span class="fill-text">per pound</span>
+          </div>
+          <div class="fill-row">
+            <span class="fill-text"
+              ><strong>c.</strong> 360 words in 4 minutes =</span
+            >
+            <input
+              class="fill-input"
+              data-answer="90"
+              placeholder="?"
+              aria-label="answer c"
+            />
+            <span class="fill-text">words per minute</span>
+          </div>
+        </div>
+        <button class="check-btn" id="p4-check">Check All</button>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "I divided ___ by ___ to get a unit rate of ___ per
+            ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >All correct! 60 mph, $3.50 per pound, and 90 words per
+            minute.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Some answers need another look. Divide the total by the number of
+            units to find each unit rate.</span
+          >
+        </div>
+      </article>
+
+      <!-- P5 -->
+      <article class="q-card" data-q="p5">
+        <div class="q-num">Practice 5</div>
+        <div class="q-prompt">
+          Maria runs 3 miles in 27 minutes. Kevin runs 5 miles in 40 minutes.
+          Who runs at a <strong>faster</strong> rate?
+        </div>
+        <div class="scaffold">
+          <strong>Strategy:</strong> Find each person's unit rate (minutes per
+          mile). Maria: 27 ÷ 3. Kevin: 40 ÷ 5. Lower minutes per mile = faster.
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" data-val="a">
+            <span class="letter">A</span><span>Maria — 9 minutes per mile</span>
+          </button>
+          <button class="mc-btn" data-val="b">
+            <span class="letter">B</span><span>Kevin — 8 minutes per mile</span>
+          </button>
+          <button class="mc-btn" data-val="c">
+            <span class="letter">C</span><span>They run at the same rate</span>
+          </button>
+          <button class="mc-btn" data-val="d">
+            <span class="letter">D</span><span>Maria — 3 minutes per mile</span>
+          </button>
+        </div>
+        <button class="check-btn" disabled>Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show both unit rates:</div>
+          <textarea
+            class="explain-input"
+            placeholder="Maria: 27 ÷ 3 = ... Kevin: 40 ÷ 5 = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "Maria runs ___ minutes per mile. Kevin runs ___
+            minutes per mile. ___ is faster because ___."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Correct! Kevin runs 8 min/mile vs. Maria's 9 min/mile. Kevin is
+            faster.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Maria: 27 ÷ 3 = 9 min/mile. Kevin: 40 ÷ 5 = 8 min/mile. Lower =
+            faster. The answer is <strong>B</strong>.</span
+          >
+        </div>
+      </article>
+
+      <!-- CHALLENGE -->
+      <div class="section-header">
+        <div class="section-icon challenge">&#9733;</div>
+        <h2>Challenge</h2>
+        <span class="count">1 question</span>
+      </div>
+
+      <article class="q-card" data-q="c1">
+        <div class="q-num">Challenge</div>
+        <div class="q-prompt">
+          A faucet drips 2.5 gallons of water every 5 hours. At this rate, how
+          many gallons will it drip in <strong>24 hours</strong>?
+        </div>
+        <div class="scaffold">
+          <strong>Think about it:</strong> First find the unit rate (gallons per
+          hour): 2.5 ÷ 5 = ? Then multiply by 24 hours.
+        </div>
+        <div class="fill-row">
+          <span class="fill-text">Total gallons =</span>
+          <input
+            class="fill-input"
+            data-answer="12"
+            placeholder="?"
+            aria-label="total gallons"
+          />
+        </div>
+        <button class="check-btn" id="c1-check">Check</button>
+        <div class="explain-section">
+          <div class="explain-prompt">Show your work:</div>
+          <textarea
+            class="explain-input"
+            placeholder="Unit rate: 2.5 ÷ 5 = ... Then ... × 24 = ..."
+          ></textarea>
+        </div>
+        <div class="sentence-frame">
+          <p>
+            Sentence frame: "The unit rate is ___ gallons per hour. In 24 hours,
+            the faucet drips ___ × ___ = ___ gallons."
+          </p>
+        </div>
+        <div class="q-status">
+          <span class="fb-icon">&#10003;</span
+          ><span
+            >Excellent! Unit rate = 0.5 gal/hr. 0.5 × 24 = 12 gallons in 24
+            hours.</span
+          >
+        </div>
+        <div class="q-status-wrong">
+          <span class="fb-icon">&#10007;</span
+          ><span
+            >Unit rate: 2.5 ÷ 5 = 0.5 gal/hr. Then 0.5 × 24 =
+            <strong>12</strong> gallons.</span
+          >
+        </div>
+      </article>
+    </main>
+
+    <footer class="score-bar">
+      <div class="score-inner">
+        <span class="score-text"
+          ><span id="scoreCount">0</span> of
+          <span id="scoreTotal">8</span> correct</span
+        >
+        <button class="reset-btn" id="resetBtn">Start Over</button>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const ANSWERS = {
+          w1: "b",
+          w2: "b",
+          p2: "a",
+          p5: "b",
+        };
+
+        let score = 0;
+        let total = 0;
+        const totalQ = 8;
+
+        const levelBtns = document.querySelectorAll(".level-btn");
+        const levelDesc = document.getElementById("levelDesc");
+        const descs = {
+          1: "Guided practice with vocabulary support",
+          2: "Grade-level practice with explanations",
+        };
+        levelBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            levelBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.body.className = "level-" + btn.dataset.level;
+            levelDesc.textContent = descs[btn.dataset.level];
+          });
+        });
+
+        function updateProgress() {
+          const pct = Math.round((total / totalQ) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("scoreCount").textContent = score;
+        }
+
+        // MC
+        document.querySelectorAll(".mc-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".mc-btn");
+          let answered = false;
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".mc-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => {
+              b.classList.add("locked");
+              if (b.dataset.val === ANSWERS[qId]) b.classList.add("is-correct");
+            });
+            if (!correct) selected.classList.add("is-wrong");
+            if (correct) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // TF
+        document.querySelectorAll(".tf-options").forEach((group) => {
+          const card = group.closest(".q-card");
+          const checkBtn = card.querySelector(".check-btn");
+          const btns = group.querySelectorAll(".tf-btn");
+          let answered = false;
+          btns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              if (answered) return;
+              btns.forEach((b) => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              checkBtn.disabled = false;
+            });
+          });
+          checkBtn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            total++;
+            const selected = group.querySelector(".tf-btn.selected");
+            if (!selected) return;
+            const qId = card.dataset.q;
+            const correct = selected.dataset.val === ANSWERS[qId];
+            btns.forEach((b) => b.classList.add("locked"));
+            if (correct) {
+              selected.classList.add("is-correct");
+              score++;
+              card.classList.add("correct");
+            } else {
+              selected.classList.add("is-wrong");
+              btns.forEach((b) => {
+                if (b.dataset.val === ANSWERS[qId])
+                  b.classList.add("is-correct");
+              });
+              card.classList.add("incorrect");
+            }
+            checkBtn.disabled = true;
+            updateProgress();
+          });
+        });
+
+        // Drag and Drop (P3)
+        const bank = document.getElementById("p3-bank");
+        const zones = document.querySelectorAll(".drag-zone");
+        let draggedItem = null;
+        if (bank) {
+          bank.querySelectorAll(".drag-item").forEach((item) => {
+            item.addEventListener("dragstart", (e) => {
+              draggedItem = item;
+              e.dataTransfer.effectAllowed = "move";
+              setTimeout(() => (item.style.opacity = ".4"), 0);
+            });
+            item.addEventListener("dragend", () => {
+              item.style.opacity = "1";
+              draggedItem = null;
+            });
+            item.addEventListener(
+              "touchstart",
+              () => {
+                draggedItem = item;
+              },
+              { passive: true },
+            );
+          });
+          zones.forEach((zone) => {
+            zone.addEventListener("dragover", (e) => {
+              e.preventDefault();
+              zone.classList.add("over");
+            });
+            zone.addEventListener("dragleave", () =>
+              zone.classList.remove("over"),
+            );
+            zone.addEventListener("drop", (e) => {
+              e.preventDefault();
+              zone.classList.remove("over");
+              if (draggedItem) {
+                zone.appendChild(draggedItem);
+                draggedItem.classList.add("placed");
+              }
+            });
+            zone.addEventListener("click", (e) => {
+              const item = e.target.closest(".drag-item");
+              if (item) {
+                bank.appendChild(item);
+                item.classList.remove("placed");
+              }
+            });
+          });
+          bank.addEventListener("click", (e) => {
+            const item = e.target.closest(".drag-item");
+            if (!item) return;
+            const cat = item.dataset.cat;
+            const targetZone = document.querySelector(
+              `.drag-zone[data-cat="${cat}"]`,
+            );
+            if (targetZone) {
+              targetZone.appendChild(item);
+              item.classList.add("placed");
+            }
+          });
+          document
+            .getElementById("p3-check")
+            .addEventListener("click", function () {
+              total++;
+              let allCorrect = true;
+              zones.forEach((zone) => {
+                const cat = zone.dataset.cat;
+                zone.querySelectorAll(".drag-item").forEach((item) => {
+                  if (item.dataset.cat !== cat) allCorrect = false;
+                });
+                if (zone.childElementCount === 0) allCorrect = false;
+              });
+              const card = this.closest(".q-card");
+              if (allCorrect) {
+                score++;
+                card.classList.add("correct");
+              } else {
+                card.classList.add("incorrect");
+              }
+              this.disabled = true;
+              updateProgress();
+            });
+        }
+
+        // Fill-in helpers
+        function setupFillCheck(checkId) {
+          const el = document.getElementById(checkId);
+          if (!el) return;
+          el.addEventListener("click", function () {
+            const card = this.closest(".q-card");
+            const inputs = card.querySelectorAll(".fill-input");
+            let allCorrect = true;
+            inputs.forEach((inp) => {
+              const val = inp.value.trim();
+              const ans = inp.dataset.answer;
+              if (val === ans) {
+                inp.classList.add("is-correct");
+              } else {
+                inp.classList.add("is-wrong");
+                allCorrect = false;
+              }
+              inp.readOnly = true;
+            });
+            total++;
+            if (allCorrect) {
+              score++;
+              card.classList.add("correct");
+            } else {
+              card.classList.add("incorrect");
+            }
+            this.disabled = true;
+            updateProgress();
+          });
+        }
+        setupFillCheck("p1-check");
+        setupFillCheck("p4-check");
+        setupFillCheck("c1-check");
+
+        // Reset
+        document.getElementById("resetBtn").addEventListener("click", () => {
+          score = 0;
+          total = 0;
+          document.querySelectorAll(".q-card").forEach((card) => {
+            card.classList.remove("correct", "incorrect");
+          });
+          document.querySelectorAll(".mc-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".tf-btn").forEach((b) => {
+            b.classList.remove("selected", "is-correct", "is-wrong", "locked");
+          });
+          document.querySelectorAll(".fill-input").forEach((inp) => {
+            inp.classList.remove("is-correct", "is-wrong");
+            inp.value = "";
+            inp.readOnly = false;
+          });
+          document.querySelectorAll(".drag-item").forEach((item) => {
+            item.classList.remove("placed");
+            if (bank) bank.appendChild(item);
+          });
+          document.querySelectorAll(".drag-zone").forEach((z) => {
+            z.classList.remove("is-correct", "is-wrong");
+          });
+          document
+            .querySelectorAll(".check-btn")
+            .forEach((b) => (b.disabled = false));
+          document
+            .querySelectorAll(".explain-input")
+            .forEach((t) => (t.value = ""));
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        updateProgress();
+      })();
+    </script>
+  </body>
+</html>
