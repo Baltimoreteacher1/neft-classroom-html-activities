@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 2 Review: Fraction Operations</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --primary: #4338ca;
+        --primary-light: #6366f1;
+        --primary-dark: #3730a3;
+        --accent: #d97706;
+        --accent-light: #f59e0b;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #1e293b;
+        --text-light: #64748b;
+        --success: #16a34a;
+        --error: #dc2626;
+        --border: #e2e8f0;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 16px;
+        width: 100%;
+      }
+      h1 {
+        font-size: 1.5rem;
+        color: var(--primary);
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.25rem;
+        color: var(--primary);
+        margin-bottom: 12px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        margin-bottom: 16px;
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+      .btn-accent {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-accent:hover {
+        background: #b45309;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+      .btn-outline:hover {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border 0.2s;
+      }
+      input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+      /* Login */
+      #loginScreen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+      }
+      .login-box {
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+      }
+      .login-box .emoji {
+        font-size: 3rem;
+        margin-bottom: 8px;
+      }
+      .login-box input {
+        margin: 12px 0;
+      }
+      .login-box .btn {
+        width: 100%;
+        margin-top: 4px;
+      }
+      /* Progress */
+      .progress-bar {
+        height: 8px;
+        background: var(--border);
+        border-radius: 4px;
+        margin: 12px 0;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+      .section-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .badge-vocab {
+        background: #eef2ff;
+        color: var(--primary);
+      }
+      .badge-quick {
+        background: #fef3c7;
+        color: var(--accent);
+      }
+      .badge-practice {
+        background: #ecfdf5;
+        color: var(--success);
+      }
+      .badge-challenge {
+        background: #fee2e2;
+        color: var(--error);
+      }
+      /* Question */
+      .q-number {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 4px;
+      }
+      .q-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .option-btn {
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        text-align: left;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .option-btn:hover:not(.locked) {
+        border-color: var(--primary-light);
+        background: #eef2ff;
+      }
+      .option-btn.selected {
+        border-color: var(--primary);
+        background: #eef2ff;
+        font-weight: 600;
+      }
+      .option-btn.correct {
+        border-color: var(--success);
+        background: #f0fdf4;
+      }
+      .option-btn.incorrect {
+        border-color: var(--error);
+        background: #fef2f2;
+      }
+      .option-btn.locked {
+        cursor: default;
+      }
+      .feedback-box {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        display: none;
+      }
+      .feedback-correct {
+        background: #f0fdf4;
+        color: var(--success);
+        border: 1px solid #bbf7d0;
+        display: block;
+      }
+      .feedback-incorrect {
+        background: #fef2f2;
+        color: var(--error);
+        border: 1px solid #fecaca;
+        display: block;
+      }
+      .fill-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .fill-row input {
+        max-width: 160px;
+      }
+      .fill-row .btn {
+        white-space: nowrap;
+      }
+      /* Nav */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+      /* Summary */
+      .score-ring {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 16px;
+      }
+      .score-ring svg {
+        transform: rotate(-90deg);
+      }
+      .score-ring circle {
+        fill: none;
+        stroke-width: 10;
+      }
+      .score-ring .bg {
+        stroke: var(--border);
+      }
+      .score-ring .fg {
+        stroke: var(--primary);
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.8s ease;
+      }
+      .score-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-score:last-child {
+        border: none;
+      }
+      .tip-box {
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-top: 12px;
+        color: #92400e;
+        font-size: 0.95rem;
+      }
+      .footer {
+        text-align: center;
+        padding: 16px;
+        color: var(--text-light);
+        font-size: 0.8rem;
+        margin-top: auto;
+      }
+      .fraction {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        vertical-align: middle;
+        margin: 0 3px;
+        line-height: 1.1;
+        font-size: 0.95em;
+      }
+      .fraction .num,
+      .fraction .den {
+        display: block;
+        text-align: center;
+        padding: 0 2px;
+      }
+      .fraction .num {
+        border-bottom: 1.5px solid currentColor;
+      }
+      @media (max-width: 480px) {
+        .container {
+          padding: 12px;
+        }
+        .card {
+          padding: 16px;
+        }
+        .q-text {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN -->
+    <div id="loginScreen" class="screen active">
+      <div class="container">
+        <div class="card login-box">
+          <div class="emoji">🔍</div>
+          <h1>Unit 2 Review</h1>
+          <p style="color: var(--text-light); margin: 4px 0 16px">
+            Fraction Operations &mdash; Dividing Fractions (6.NS.1)
+          </p>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="Enter your name"
+            autocomplete="off"
+          />
+          <button class="btn btn-primary" onclick="startReview()">
+            Start Review
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quizScreen" class="screen">
+      <div class="container">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+          "
+        >
+          <h2 id="sectionTitle"></h2>
+          <span
+            id="qCount"
+            style="color: var(--text-light); font-size: 0.85rem"
+          ></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="card" id="questionCard"></div>
+        <div class="nav-row">
+          <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">
+            Next &#8594;
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div id="summaryScreen" class="screen">
+      <div class="container">
+        <div class="card" style="text-align: center">
+          <h2>🔍 Review Complete!</h2>
+          <p
+            id="summaryName"
+            style="color: var(--text-light); margin-bottom: 16px"
+          ></p>
+          <div class="score-ring" style="position: relative">
+            <svg viewBox="0 0 120 120">
+              <circle class="bg" cx="60" cy="60" r="50" />
+              <circle class="fg" id="scoreArc" cx="60" cy="60" r="50" />
+            </svg>
+            <div class="score-label" id="scoreLabel"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Section Scores</h2>
+          <div id="sectionScores"></div>
+        </div>
+        <div class="card">
+          <h2>Study Tips</h2>
+          <div id="tipsList"></div>
+        </div>
+        <div
+          style="
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+          "
+        >
+          <button class="btn btn-accent" onclick="exportResults()">
+            Export Results
+          </button>
+          <button class="btn btn-outline" onclick="retryReview()">
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">Neft Teacher &copy; 2026</footer>
+
+    <script>
+      const STORAGE_KEY = "unit2Review_v1";
+
+      /* ── fraction helper ── */
+      function frac(n, d) {
+        return `<span class="fraction"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+      }
+
+      /* ── QUESTIONS ── */
+      const questions = [
+        /* ─── VOCABULARY (0-4) ─── */
+        {
+          section: "Vocabulary",
+          badge: "badge-vocab",
+          type: "mc",
+          text: "What is the reciprocal of " + frac(3, 4) + "?",
+          options: [frac(4, 3), frac(3, 4), frac(1, 4), frac(3, 1)],
+          answer: 0,
+          explain:
+            "The reciprocal of a fraction is found by flipping the numerator and denominator. The reciprocal of 3/4 is 4/3.",
+        },
+
+        {
+          section: "Vocabulary",
+          badge: "badge-vocab",
+          type: "mc",
+          text:
+            "In the expression " +
+            frac(5, 8) +
+            " &divide; " +
+            frac(1, 4) +
+            ", which number is the <b>dividend</b>?",
+          options: [frac(1, 4), frac(5, 8), "4", "The answer"],
+          answer: 1,
+          explain:
+            "The dividend is the number being divided. In a &divide; b, the dividend is a. Here it is 5/8.",
+        },
+
+        {
+          section: "Vocabulary",
+          badge: "badge-vocab",
+          type: "mc",
+          text: "What is the <b>quotient</b>?",
+          options: [
+            "The number being divided",
+            "The number you divide by",
+            "The answer to a division problem",
+            "The bottom number of a fraction",
+          ],
+          answer: 2,
+          explain: "The quotient is the result (answer) of a division problem.",
+        },
+
+        {
+          section: "Vocabulary",
+          badge: "badge-vocab",
+          type: "mc",
+          text: "Which of the following is a <b>mixed number</b>?",
+          options: [frac(7, 3), "2 " + frac(1, 3), frac(1, 3), "3"],
+          answer: 1,
+          explain:
+            "A mixed number has a whole number part and a fraction part, such as 2 1/3.",
+        },
+
+        {
+          section: "Vocabulary",
+          badge: "badge-vocab",
+          type: "mc",
+          text: "What does it mean to <b>simplify</b> a fraction?",
+          options: [
+            "Flip the fraction upside down",
+            "Multiply the numerator and denominator",
+            "Reduce the fraction to lowest terms by dividing by the GCF",
+            "Add 1 to the numerator",
+          ],
+          answer: 2,
+          explain:
+            "Simplifying means dividing the numerator and denominator by their greatest common factor so the fraction is in lowest terms.",
+        },
+
+        /* ─── QUICK CHECK (5-9) ─── */
+        {
+          section: "Quick Check",
+          badge: "badge-quick",
+          type: "mc",
+          text: "Solve: " + frac(3, 4) + " &divide; " + frac(1, 2),
+          options: ["1 " + frac(1, 2), frac(3, 8), frac(1, 2), "2"],
+          answer: 0,
+          explain:
+            frac(3, 4) +
+            " &times; " +
+            frac(2, 1) +
+            " = " +
+            frac(6, 4) +
+            " = 1 " +
+            frac(1, 2),
+        },
+
+        {
+          section: "Quick Check",
+          badge: "badge-quick",
+          type: "mc",
+          text: "Solve: 6 &divide; " + frac(1, 3),
+          options: ["2", "3", "18", "9"],
+          answer: 2,
+          explain: "6 &times; " + frac(3, 1) + " = 18",
+        },
+
+        {
+          section: "Quick Check",
+          badge: "badge-quick",
+          type: "mc",
+          text: "Solve: " + frac(2, 5) + " &divide; " + frac(4, 5),
+          options: [
+            frac(8, 25),
+            frac(2, 4) + "= " + frac(1, 2),
+            frac(6, 5),
+            "2",
+          ],
+          answer: 1,
+          explain:
+            frac(2, 5) +
+            " &times; " +
+            frac(5, 4) +
+            " = " +
+            frac(10, 20) +
+            " = " +
+            frac(1, 2),
+        },
+
+        {
+          section: "Quick Check",
+          badge: "badge-quick",
+          type: "mc",
+          text: "Solve: " + frac(5, 6) + " &divide; " + frac(5, 6),
+          options: [frac(5, 6), frac(25, 36), "0", "1"],
+          answer: 3,
+          explain: "Any non-zero number divided by itself equals 1.",
+        },
+
+        {
+          section: "Quick Check",
+          badge: "badge-quick",
+          type: "mc",
+          text: "Solve: 8 &divide; " + frac(2, 3),
+          options: ["5 " + frac(1, 3), "12", "16", frac(16, 3)],
+          answer: 1,
+          explain: "8 &times; " + frac(3, 2) + " = " + frac(24, 2) + " = 12",
+        },
+
+        /* ─── PRACTICE (10-14) ─── */
+        {
+          section: "Practice",
+          badge: "badge-practice",
+          type: "fill",
+          text: "Solve: " + frac(7, 8) + " &divide; " + frac(1, 4) + " = ?",
+          accept: ["3 1/2", "3½", "7/2", "3.5"],
+          answer: "3 1/2",
+          explain:
+            frac(7, 8) +
+            " &times; " +
+            frac(4, 1) +
+            " = " +
+            frac(28, 8) +
+            " = " +
+            frac(7, 2) +
+            " = 3 " +
+            frac(1, 2),
+        },
+
+        {
+          section: "Practice",
+          badge: "badge-practice",
+          type: "fill",
+          text: "Solve: 3 &divide; " + frac(3, 5) + " = ?",
+          accept: ["5"],
+          answer: "5",
+          explain: "3 &times; " + frac(5, 3) + " = " + frac(15, 3) + " = 5",
+        },
+
+        {
+          section: "Practice",
+          badge: "badge-practice",
+          type: "fill",
+          text: "Solve: " + frac(4, 9) + " &divide; " + frac(2, 3) + " = ?",
+          accept: ["2/3"],
+          answer: "2/3",
+          explain:
+            frac(4, 9) +
+            " &times; " +
+            frac(3, 2) +
+            " = " +
+            frac(12, 18) +
+            " = " +
+            frac(2, 3),
+        },
+
+        {
+          section: "Practice",
+          badge: "badge-practice",
+          type: "fill",
+          text: "Solve: " + frac(1, 2) + " &divide; " + frac(3, 4) + " = ?",
+          accept: ["2/3"],
+          answer: "2/3",
+          explain:
+            frac(1, 2) +
+            " &times; " +
+            frac(4, 3) +
+            " = " +
+            frac(4, 6) +
+            " = " +
+            frac(2, 3),
+        },
+
+        {
+          section: "Practice",
+          badge: "badge-practice",
+          type: "fill",
+          text: "Solve: " + frac(5, 6) + " &divide; " + frac(1, 3) + " = ?",
+          accept: ["2 1/2", "2½", "5/2", "2.5"],
+          answer: "2 1/2",
+          explain:
+            frac(5, 6) +
+            " &times; " +
+            frac(3, 1) +
+            " = " +
+            frac(15, 6) +
+            " = " +
+            frac(5, 2) +
+            " = 2 " +
+            frac(1, 2),
+        },
+
+        /* ─── CHALLENGE (15-19) ─── */
+        {
+          section: "Challenge",
+          badge: "badge-challenge",
+          type: "mc",
+          text:
+            "A chef has " +
+            frac(3, 4) +
+            " pound of cheese. Each serving uses " +
+            frac(1, 8) +
+            " pound. How many servings can the chef make?",
+          options: ["4", "6", "8", "3"],
+          answer: 1,
+          explain:
+            frac(3, 4) +
+            " &divide; " +
+            frac(1, 8) +
+            " = " +
+            frac(3, 4) +
+            " &times; " +
+            frac(8, 1) +
+            " = " +
+            frac(24, 4) +
+            " = 6 servings",
+        },
+
+        {
+          section: "Challenge",
+          badge: "badge-challenge",
+          type: "mc",
+          text:
+            "A farmer has " +
+            frac(2, 3) +
+            " of an acre. Each garden plot needs " +
+            frac(1, 6) +
+            " of an acre. How many garden plots can be made?",
+          options: ["2", "3", "4", "6"],
+          answer: 2,
+          explain:
+            frac(2, 3) +
+            " &divide; " +
+            frac(1, 6) +
+            " = " +
+            frac(2, 3) +
+            " &times; " +
+            frac(6, 1) +
+            " = " +
+            frac(12, 3) +
+            " = 4 plots",
+        },
+
+        {
+          section: "Challenge",
+          badge: "badge-challenge",
+          type: "mc",
+          text:
+            "Maya has 5 cups of flour. Each batch of cookies uses " +
+            frac(2, 3) +
+            " cup. How many full batches can she make?",
+          options: ["3", "10", "7", "7 " + frac(1, 2)],
+          answer: 3,
+          explain:
+            "5 &divide; " +
+            frac(2, 3) +
+            " = 5 &times; " +
+            frac(3, 2) +
+            " = " +
+            frac(15, 2) +
+            " = 7 " +
+            frac(1, 2) +
+            " batches",
+        },
+
+        {
+          section: "Challenge",
+          badge: "badge-challenge",
+          type: "mc",
+          text:
+            "A runner covers " +
+            frac(3, 4) +
+            " of a mile every " +
+            frac(1, 2) +
+            " hour. What is the runner's speed in miles per hour?",
+          options: [
+            "1 " + frac(1, 4),
+            "1 " + frac(1, 2),
+            frac(3, 8),
+            frac(1, 2),
+          ],
+          answer: 1,
+          explain:
+            frac(3, 4) +
+            " &divide; " +
+            frac(1, 2) +
+            " = " +
+            frac(3, 4) +
+            " &times; " +
+            frac(2, 1) +
+            " = " +
+            frac(6, 4) +
+            " = 1 " +
+            frac(1, 2) +
+            " miles per hour",
+        },
+
+        {
+          section: "Challenge",
+          badge: "badge-challenge",
+          type: "mc",
+          text:
+            "Aiden has " +
+            frac(4, 5) +
+            " of a yard of ribbon. He needs pieces that are " +
+            frac(2, 5) +
+            " of a yard long. How many pieces can he cut?",
+          options: ["1", "2", "3", frac(2, 5)],
+          answer: 1,
+          explain:
+            frac(4, 5) +
+            " &divide; " +
+            frac(2, 5) +
+            " = " +
+            frac(4, 5) +
+            " &times; " +
+            frac(5, 2) +
+            " = " +
+            frac(20, 10) +
+            " = 2 pieces",
+        },
+      ];
+
+      /* ── STATE ── */
+      let state = {
+        name: "",
+        current: 0,
+        answers: Array(20).fill(null),
+        correct: Array(20).fill(false),
+      };
+
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+      function load() {
+        try {
+          const d = localStorage.getItem(STORAGE_KEY);
+          if (d) {
+            state = JSON.parse(d);
+            return true;
+          }
+        } catch (e) {}
+        return false;
+      }
+
+      /* ── LOGIN ── */
+      function startReview() {
+        const name = document.getElementById("studentName").value.trim();
+        if (!name) {
+          document.getElementById("studentName").style.borderColor =
+            "var(--error)";
+          return;
+        }
+        if (
+          load() &&
+          state.name === name &&
+          state.answers.some((a) => a !== null)
+        ) {
+          showScreen("quizScreen");
+          render();
+          return;
+        }
+        state.name = name;
+        state.current = 0;
+        state.answers = Array(20).fill(null);
+        state.correct = Array(20).fill(false);
+        save();
+        showScreen("quizScreen");
+        render();
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      /* ── RENDER ── */
+      function render() {
+        const q = questions[state.current];
+        const i = state.current;
+        document.getElementById("sectionTitle").innerHTML =
+          `<span class="section-badge ${q.badge}">${q.section}</span>`;
+        document.getElementById("qCount").textContent = `${i + 1} / 20`;
+        document.getElementById("progressFill").style.width =
+          ((i + 1) / 20) * 100 + "%";
+
+        const card = document.getElementById("questionCard");
+        let html = `<div class="q-number">Question ${i + 1}</div><div class="q-text">${q.text}</div>`;
+
+        if (q.type === "mc") {
+          html += '<div class="options">';
+          q.options.forEach((o, j) => {
+            const answered = state.answers[i] !== null;
+            let cls = "option-btn";
+            if (answered) {
+              cls += " locked";
+              if (j === q.answer) cls += " correct";
+              else if (j === state.answers[i]) cls += " incorrect";
+            } else if (j === state.answers[i]) {
+              cls += " selected";
+            }
+            html += `<button class="${cls}" onclick="selectMC(${j})" ${answered ? "disabled" : ""}>${o}</button>`;
+          });
+          html += "</div>";
+        } else {
+          const answered = state.answers[i] !== null;
+          html += `<div class="fill-row">
+      <input type="text" id="fillInput" placeholder="e.g. 3/4 or 2 1/3" ${answered ? 'disabled value="' + state.answers[i] + '"' : ""} onkeydown="if(event.key==='Enter')checkFill()">
+      <button class="btn btn-primary" onclick="checkFill()" ${answered ? "disabled" : ""}>Check</button>
+    </div>`;
+          html += `<p style="color:var(--text-light);font-size:.8rem;margin-top:6px">Enter fractions as a/b, mixed numbers as "2 1/3"</p>`;
+        }
+
+        /* feedback */
+        if (state.answers[i] !== null) {
+          const ok = state.correct[i];
+          html += `<div class="feedback-box ${ok ? "feedback-correct" : "feedback-incorrect"}">${ok ? "✓ Correct!" : "✗ Incorrect."} ${q.explain}</div>`;
+        }
+
+        card.innerHTML = html;
+
+        /* nav buttons */
+        document.getElementById("prevBtn").disabled = i === 0;
+        const nextBtn = document.getElementById("nextBtn");
+        if (i === 19 && state.answers[i] !== null) {
+          nextBtn.textContent = "Finish →";
+          nextBtn.onclick = () => showSummary();
+        } else {
+          nextBtn.textContent = "Next →";
+          nextBtn.onclick = () => navigate(1);
+        }
+      }
+
+      function selectMC(j) {
+        const i = state.current;
+        if (state.answers[i] !== null) return;
+        state.answers[i] = j;
+        state.correct[i] = j === questions[i].answer;
+        save();
+        render();
+      }
+
+      function checkFill() {
+        const i = state.current;
+        if (state.answers[i] !== null) return;
+        const v = document.getElementById("fillInput").value.trim();
+        if (!v) return;
+        const q = questions[i];
+        const norm = (s) => s.replace(/\s+/g, " ").trim().toLowerCase();
+        state.answers[i] = v;
+        state.correct[i] = q.accept.some((a) => norm(a) === norm(v));
+        save();
+        render();
+      }
+
+      function navigate(dir) {
+        const next = state.current + dir;
+        if (next < 0 || next > 19) return;
+        state.current = next;
+        save();
+        render();
+      }
+
+      /* ── SUMMARY ── */
+      function showSummary() {
+        showScreen("summaryScreen");
+        const total = state.correct.filter(Boolean).length;
+        const pct = Math.round((total / 20) * 100);
+
+        document.getElementById("summaryName").textContent = state.name;
+        document.getElementById("scoreLabel").textContent = pct + "%";
+
+        const circ = 2 * Math.PI * 50;
+        const arc = document.getElementById("scoreArc");
+        arc.style.strokeDasharray = circ;
+        arc.style.strokeDashoffset = circ;
+        requestAnimationFrame(() => {
+          arc.style.strokeDashoffset = circ - (circ * pct) / 100;
+        });
+
+        const sections = [
+          { name: "Vocabulary", range: [0, 5], badge: "badge-vocab" },
+          { name: "Quick Check", range: [5, 10], badge: "badge-quick" },
+          { name: "Practice", range: [10, 15], badge: "badge-practice" },
+          { name: "Challenge", range: [15, 20], badge: "badge-challenge" },
+        ];
+
+        let scoresHTML = "";
+        const tips = [];
+        sections.forEach((s) => {
+          const got = state.correct
+            .slice(s.range[0], s.range[1])
+            .filter(Boolean).length;
+          const of5 = got + "/5";
+          const color =
+            got >= 4
+              ? "var(--success)"
+              : got >= 3
+                ? "var(--accent)"
+                : "var(--error)";
+          scoresHTML += `<div class="section-score"><span><span class="section-badge ${s.badge}">${s.name}</span></span><span style="font-weight:700;color:${color}">${of5}</span></div>`;
+          if (got < 4) {
+            if (s.name === "Vocabulary")
+              tips.push(
+                "Review key vocabulary: reciprocal, dividend, divisor, quotient, mixed number, and simplify.",
+              );
+            if (s.name === "Quick Check")
+              tips.push(
+                "Practice the steps for dividing fractions: Keep the first fraction, Change to multiplication, Flip the second fraction (Keep-Change-Flip).",
+              );
+            if (s.name === "Practice")
+              tips.push(
+                "Work on writing your answers in simplest form and converting improper fractions to mixed numbers.",
+              );
+            if (s.name === "Challenge")
+              tips.push(
+                "Practice setting up fraction division from word problems. Identify what is being divided and the size of each group.",
+              );
+          }
+        });
+
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+        if (tips.length === 0)
+          tips.push("Great job! You are well-prepared for the Unit 2 test.");
+        document.getElementById("tipsList").innerHTML = tips
+          .map(
+            (t) =>
+              `<div class="tip-box" style="margin-bottom:8px">💡 ${t}</div>`,
+          )
+          .join("");
+      }
+
+      /* ── EXPORT ── */
+      function exportResults() {
+        const total = state.correct.filter(Boolean).length;
+        const pct = Math.round((total / 20) * 100);
+        const sections = [
+          { n: "Vocabulary", r: [0, 5] },
+          { n: "Quick Check", r: [5, 10] },
+          { n: "Practice", r: [10, 15] },
+          { n: "Challenge", r: [15, 20] },
+        ];
+        let txt = `Unit 2 Review: Fraction Operations\nStudent: ${state.name}\nDate: ${new Date().toLocaleDateString()}\nOverall: ${total}/20 (${pct}%)\n\n`;
+        sections.forEach((s) => {
+          const got = state.correct
+            .slice(s.r[0], s.r[1])
+            .filter(Boolean).length;
+          txt += `${s.n}: ${got}/5\n`;
+        });
+        txt += "\nDetailed Results:\n";
+        questions.forEach((q, i) => {
+          const plain = q.text.replace(/<[^>]*>/g, "");
+          const status = state.correct[i] ? "CORRECT" : "INCORRECT";
+          const given =
+            state.answers[i] !== null
+              ? q.type === "mc"
+                ? q.options[state.answers[i]].replace(/<[^>]*>/g, "")
+                : state.answers[i]
+              : "No answer";
+          const right =
+            q.type === "mc"
+              ? q.options[q.answer].replace(/<[^>]*>/g, "")
+              : q.answer;
+          txt += `\n${i + 1}. ${plain}\n   Your answer: ${given} | Correct: ${right} | ${status}\n`;
+        });
+        txt += "\n— Neft Teacher";
+        const blob = new Blob([txt], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Unit2-Review-${state.name.replace(/\s+/g, "-")}.txt`;
+        a.click();
+      }
+
+      function retryReview() {
+        state.current = 0;
+        state.answers = Array(20).fill(null);
+        state.correct = Array(20).fill(false);
+        save();
+        showScreen("quizScreen");
+        render();
+      }
+
+      /* ── INIT ── */
+      (function () {
+        if (load() && state.name) {
+          document.getElementById("studentName").value = state.name;
+        }
+        document
+          .getElementById("studentName")
+          .addEventListener("keydown", (e) => {
+            if (e.key === "Enter") startReview();
+          });
+      })();
+    </script>
+  </body>
+</html>

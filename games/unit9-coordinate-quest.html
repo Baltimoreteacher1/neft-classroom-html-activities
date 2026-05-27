@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coordinate Quest — Integers &amp; the Coordinate Plane</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --sand: #d4a574;
+        --parchment: #fdf6e3;
+        --brown: #44403c;
+        --gold: #eab308;
+        --ocean: #0ea5e9;
+        --cream: #faf7f0;
+        --muted: #78716c;
+        --line: #d6d3d1;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(68, 64, 60, 0.1);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--brown);
+        background: var(--parchment);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* Screens */
+      .screen {
+        display: none;
+        flex: 1;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* Login */
+      .login-wrap {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 48px 24px;
+      }
+      .hero-card {
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 44px 32px;
+        text-align: center;
+        border-top: 4px solid var(--gold);
+      }
+      .hero-emoji {
+        font-size: 3.6rem;
+        margin-bottom: 8px;
+      }
+      .hero-title {
+        font-size: 1.9rem;
+        font-weight: 900;
+        color: var(--brown);
+        margin-bottom: 4px;
+      }
+      .hero-sub {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 90px 90px;
+        gap: 10px;
+        text-align: left;
+        margin-bottom: 20px;
+      }
+      .form-grid label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--ocean);
+      }
+      .resume-bar {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.88rem;
+      }
+      .resume-bar.show {
+        display: flex;
+      }
+      .resume-bar button {
+        border: none;
+        border-radius: 8px;
+        padding: 7px 16px;
+        font-weight: 700;
+        font-size: 0.82rem;
+      }
+      .resume-bar .res-btn {
+        background: var(--success);
+        color: #fff;
+      }
+      .resume-bar .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.78rem;
+        padding: 5px 8px;
+      }
+      .start-btn {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: var(--radius);
+        background: var(--ocean);
+        color: #fff;
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        transition: background 0.2s;
+      }
+      .start-btn:hover {
+        background: #0284c7;
+      }
+      .start-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* HUD */
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background: #fff;
+        border-bottom: 2px solid var(--line);
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hud-left,
+      .hud-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .hud-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .hud-val {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--brown);
+      }
+      .hud-val.gold {
+        color: var(--gold);
+      }
+      .hud-val.red {
+        color: var(--error);
+      }
+      .hud-val.green {
+        color: var(--success);
+      }
+      .streak-badge {
+        background: var(--gold);
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 20px;
+        display: none;
+      }
+      .streak-badge.show {
+        display: inline-block;
+      }
+      .progress-track {
+        height: 6px;
+        background: var(--line);
+        border-radius: 3px;
+        margin: 0 20px;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--ocean);
+        border-radius: 3px;
+        transition: width 0.4s ease;
+      }
+
+      /* Question */
+      .q-wrap {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 32px 20px 80px;
+      }
+      .q-num {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--ocean);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+      }
+      .q-diff {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 10px;
+        border-radius: 20px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .q-diff.easy {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .q-diff.medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .q-diff.hard {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .q-text {
+        font-size: 1.18rem;
+        font-weight: 700;
+        color: var(--brown);
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+      .q-hint {
+        font-size: 0.88rem;
+        color: var(--ocean);
+        font-style: italic;
+        margin-bottom: 18px;
+        padding: 10px 14px;
+        background: rgba(14, 165, 233, 0.06);
+        border-radius: 8px;
+        display: none;
+      }
+      .q-hint.show {
+        display: block;
+      }
+      .opts {
+        display: grid;
+        gap: 10px;
+      }
+      .opt-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        text-align: left;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .opt-btn:hover:not(:disabled) {
+        border-color: var(--ocean);
+        background: rgba(14, 165, 233, 0.04);
+      }
+      .opt-btn:focus-visible {
+        outline: 3px solid var(--ocean);
+        outline-offset: 2px;
+      }
+      .opt-btn .letter {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--parchment);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.88rem;
+        color: var(--brown);
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      .opt-btn.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .opt-btn.correct .letter {
+        background: var(--success);
+        color: #fff;
+      }
+      .opt-btn.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .opt-btn.wrong .letter {
+        background: var(--error);
+        color: #fff;
+      }
+      .opt-btn:disabled {
+        cursor: default;
+      }
+      .feedback-box {
+        margin-top: 18px;
+        padding: 14px 18px;
+        border-radius: var(--radius);
+        font-size: 0.92rem;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback-box.show {
+        display: block;
+      }
+      .feedback-box.correct {
+        background: var(--success-bg);
+        color: var(--success);
+        border: 2px solid var(--success);
+      }
+      .feedback-box.wrong {
+        background: var(--error-bg);
+        color: var(--error);
+        border: 2px solid var(--error);
+      }
+      .next-btn {
+        margin-top: 18px;
+        padding: 12px 32px;
+        border: none;
+        border-radius: var(--radius);
+        background: var(--ocean);
+        color: #fff;
+        font-size: 0.95rem;
+        font-weight: 700;
+        display: none;
+        transition: background 0.2s;
+      }
+      .next-btn.show {
+        display: inline-block;
+      }
+      .next-btn:hover {
+        background: #0284c7;
+      }
+
+      /* Results */
+      .results-wrap {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 48px 24px;
+        text-align: center;
+      }
+      .results-card {
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 40px 32px;
+        border-top: 4px solid var(--gold);
+        margin-bottom: 24px;
+      }
+      .results-emoji {
+        font-size: 3.2rem;
+        margin-bottom: 8px;
+      }
+      .results-title {
+        font-size: 1.7rem;
+        font-weight: 900;
+        color: var(--brown);
+        margin-bottom: 4px;
+      }
+      .results-sub {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      .score-ring {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 20px;
+        position: relative;
+      }
+      .score-ring svg {
+        transform: rotate(-90deg);
+      }
+      .score-ring .ring-bg {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 10;
+      }
+      .score-ring .ring-fg {
+        fill: none;
+        stroke: var(--ocean);
+        stroke-width: 10;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1s ease;
+      }
+      .score-pct {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--brown);
+      }
+      .stat-row {
+        display: flex;
+        justify-content: center;
+        gap: 28px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+      .stat-item {
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--brown);
+      }
+      .stat-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .review-list {
+        text-align: left;
+        margin-top: 20px;
+      }
+      .review-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 0.88rem;
+      }
+      .review-item.r-correct {
+        background: var(--success-bg);
+        border-left: 4px solid var(--success);
+      }
+      .review-item.r-wrong {
+        background: var(--error-bg);
+        border-left: 4px solid var(--error);
+      }
+      .review-item strong {
+        display: block;
+        margin-bottom: 2px;
+      }
+      .review-item .your-ans {
+        color: var(--error);
+        font-weight: 600;
+      }
+      .review-item .right-ans {
+        color: var(--success);
+        font-weight: 600;
+      }
+      .retry-btn {
+        padding: 14px 36px;
+        border: none;
+        border-radius: var(--radius);
+        background: var(--gold);
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 800;
+        margin-top: 12px;
+        transition: background 0.2s;
+      }
+      .retry-btn:hover {
+        background: #ca8a04;
+      }
+
+      /* Footer */
+      .site-footer {
+        text-align: center;
+        padding: 16px;
+        font-size: 0.75rem;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+        margin-top: auto;
+      }
+
+      /* Accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition-duration: 0s !important;
+        }
+      }
+      @media (max-width: 560px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .hud {
+          padding: 8px 12px;
+        }
+        .q-wrap {
+          padding: 20px 14px 60px;
+        }
+        .stat-row {
+          gap: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN SCREEN -->
+    <div class="screen active" id="scr-login">
+      <div class="login-wrap">
+        <div class="hero-card">
+          <div class="hero-emoji" aria-hidden="true">🗺️</div>
+          <h1 class="hero-title">Coordinate Quest</h1>
+          <p class="hero-sub">
+            Navigate the coordinate plane to find hidden treasure! 15 missions
+            await.
+          </p>
+          <div class="resume-bar" id="resume-bar">
+            <span>🔄 You have a saved quest — resume where you left off?</span>
+            <button class="res-btn" onclick="resumeGame()">Resume</button>
+            <button class="clear-btn" onclick="clearSave()">Start Fresh</button>
+          </div>
+          <div class="form-grid">
+            <label class="label-name">Name</label>
+            <label class="label-period">Period</label>
+            <label class="label-date">Date</label>
+            <input
+              class="field"
+              id="f-name"
+              placeholder="First Last"
+              aria-label="Student name"
+            />
+            <select class="field" id="f-period" aria-label="Class period">
+              <option value="">--</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+            </select>
+            <input class="field" id="f-date" type="date" aria-label="Date" />
+          </div>
+          <button
+            class="start-btn"
+            id="start-btn"
+            disabled
+            onclick="startGame()"
+          >
+            Begin Quest ⚓
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div class="screen" id="scr-game">
+      <div class="hud" role="status" aria-live="polite">
+        <div class="hud-left">
+          <div>
+            <span class="hud-label">Mission</span><br /><span
+              class="hud-val"
+              id="hud-q"
+              >1 / 15</span
+            >
+          </div>
+          <div>
+            <span class="hud-label">Score</span><br /><span
+              class="hud-val gold"
+              id="hud-score"
+              >0</span
+            >
+          </div>
+          <span class="streak-badge" id="hud-streak" aria-label="Current streak"
+            >🔥 0</span
+          >
+        </div>
+        <div class="hud-right">
+          <div>
+            <span class="hud-label">Lives</span><br /><span
+              class="hud-val red"
+              id="hud-lives"
+              >❤️❤️❤️</span
+            >
+          </div>
+          <div>
+            <span class="hud-label">Time</span><br /><span
+              class="hud-val"
+              id="hud-time"
+              >0:00</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress" style="width: 0%"></div>
+      </div>
+      <div class="q-wrap">
+        <div>
+          <span class="q-num" id="q-num">Mission 1 of 15</span
+          ><span class="q-diff" id="q-diff">Easy</span>
+        </div>
+        <p class="q-text" id="q-text"></p>
+        <div class="q-hint" id="q-hint" aria-live="polite"></div>
+        <div
+          class="opts"
+          id="opts"
+          role="radiogroup"
+          aria-label="Answer choices"
+        ></div>
+        <div class="feedback-box" id="feedback" aria-live="assertive"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+          Next Mission ➡️
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div class="screen" id="scr-results">
+      <div class="results-wrap">
+        <div class="results-card">
+          <div class="results-emoji" aria-hidden="true">🏆</div>
+          <h2 class="results-title" id="res-title">Quest Complete!</h2>
+          <p class="results-sub" id="res-sub"></p>
+          <div class="score-ring">
+            <svg viewBox="0 0 120 120" width="120" height="120">
+              <circle class="ring-bg" cx="60" cy="60" r="50" />
+              <circle
+                class="ring-fg"
+                id="ring-fg"
+                cx="60"
+                cy="60"
+                r="50"
+                stroke-dasharray="314.16"
+                stroke-dashoffset="314.16"
+              />
+            </svg>
+            <span class="score-pct" id="score-pct">0%</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-item">
+              <div class="stat-num green" id="stat-correct">0</div>
+              <div class="stat-label">Correct</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num red" id="stat-wrong">0</div>
+              <div class="stat-label">Incorrect</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" id="stat-time">0:00</div>
+              <div class="stat-label">Time</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num gold" id="stat-streak">0</div>
+              <div class="stat-label">Best Streak</div>
+            </div>
+          </div>
+          <div class="review-list" id="review-list"></div>
+          <button class="retry-btn" onclick="retryGame()">Try Again 🗺️</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      Neft Teacher &bull; Grade 6 &bull; Unit 9 &mdash; Integers &amp; the
+      Coordinate Plane (6.NS.5&ndash;8)
+    </footer>
+
+    <script>
+      /* ===== QUESTION BANK ===== */
+      const QUESTIONS = [
+        /* ----- EASY (1-5): Quadrants, QI plotting, absolute value ----- */
+        {
+          id: 1,
+          difficulty: "easy",
+          text: "A point is located at (3, 5). Which quadrant of the coordinate plane is it in?",
+          options: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"],
+          correct: 0,
+          hint: "In Quadrant I, both x and y are positive.",
+          explain:
+            "(3, 5) has a positive x-value and a positive y-value, so it is in Quadrant I.",
+        },
+        {
+          id: 2,
+          difficulty: "easy",
+          text: "What is the absolute value of −9?",
+          options: ["9", "−9", "0", "−1"],
+          correct: 0,
+          hint: "Absolute value is the distance from zero on a number line — always non-negative.",
+          explain:
+            "|−9| = 9. Absolute value measures distance from 0, so it is always positive or zero.",
+        },
+        {
+          id: 3,
+          difficulty: "easy",
+          text: "Which point is located in Quadrant I of the coordinate plane?",
+          options: ["(4, 7)", "(−2, 5)", "(3, −1)", "(−6, −4)"],
+          correct: 0,
+          hint: "Quadrant I: x is positive AND y is positive.",
+          explain:
+            "(4, 7) has both coordinates positive. (−2, 5) is in QII, (3, −1) is in QIV, (−6, −4) is in QIII.",
+        },
+        {
+          id: 4,
+          difficulty: "easy",
+          text: "A treasure chest is buried at point (6, 2) on a map. How many units to the right of the y-axis is it?",
+          options: ["6 units", "2 units", "8 units", "4 units"],
+          correct: 0,
+          hint: "The x-coordinate tells you horizontal distance from the y-axis.",
+          explain:
+            "The x-coordinate is 6, so the point is 6 units to the right of the y-axis.",
+        },
+        {
+          id: 5,
+          difficulty: "easy",
+          text: "What is |−15|?",
+          options: ["15", "−15", "0", "1"],
+          correct: 0,
+          hint: "Think: how far is −15 from zero on a number line?",
+          explain:
+            "|−15| = 15. The distance from −15 to 0 on a number line is 15 units.",
+        },
+        /* ----- MEDIUM (6-10): All 4 quadrants, compare integers, reflections ----- */
+        {
+          id: 6,
+          difficulty: "medium",
+          text: "The point (−4, 6) is in which quadrant?",
+          options: ["Quadrant II", "Quadrant I", "Quadrant III", "Quadrant IV"],
+          correct: 0,
+          hint: "Check the signs: x is negative, y is positive. Which quadrant has (−, +)?",
+          explain: "(−4, 6): x is negative and y is positive → Quadrant II.",
+        },
+        {
+          id: 7,
+          difficulty: "medium",
+          text: "Which integer is greater: −3 or −8?",
+          options: ["−3", "−8", "They are equal", "Cannot be determined"],
+          correct: 0,
+          hint: "On a number line, the number farther to the right is greater.",
+          explain: "−3 is to the right of −8 on the number line, so −3 > −8.",
+        },
+        {
+          id: 8,
+          difficulty: "medium",
+          text: "Point A is at (5, 3). If you reflect Point A across the y-axis, what are the new coordinates?",
+          options: ["(−5, 3)", "(5, −3)", "(−5, −3)", "(3, 5)"],
+          correct: 0,
+          hint: "Reflecting across the y-axis changes the sign of the x-coordinate only.",
+          explain:
+            "Reflection across the y-axis: (x, y) → (−x, y). So (5, 3) → (−5, 3).",
+        },
+        {
+          id: 9,
+          difficulty: "medium",
+          text: "A pirate ship is at (−7, −2). Which quadrant is this location in?",
+          options: ["Quadrant III", "Quadrant I", "Quadrant II", "Quadrant IV"],
+          correct: 0,
+          hint: "Both coordinates are negative. Which quadrant has (−, −)?",
+          explain: "(−7, −2): both x and y are negative → Quadrant III.",
+        },
+        {
+          id: 10,
+          difficulty: "medium",
+          text: "Point B is at (2, −6). If you reflect Point B across the x-axis, what are the new coordinates?",
+          options: ["(2, 6)", "(−2, −6)", "(−2, 6)", "(2, −6)"],
+          correct: 0,
+          hint: "Reflecting across the x-axis changes the sign of the y-coordinate only.",
+          explain:
+            "Reflection across the x-axis: (x, y) → (x, −y). So (2, −6) → (2, 6).",
+        },
+        /* ----- HARD (11-15): Distance, ordering rationals, word problems ----- */
+        {
+          id: 11,
+          difficulty: "hard",
+          text: "What is the distance between the points (3, −2) and (3, 5)?",
+          options: ["7 units", "3 units", "5 units", "2 units"],
+          correct: 0,
+          hint: "When two points share the same x-coordinate, find the distance using |y₁ − y₂|.",
+          explain:
+            "Same x-coordinate → vertical distance = |−2 − 5| = |−7| = 7 units.",
+        },
+        {
+          id: 12,
+          difficulty: "hard",
+          text: "Order these numbers from least to greatest: −4, 1.5, −7, 0, 3",
+          options: [
+            "−7, −4, 0, 1.5, 3",
+            "−4, −7, 0, 1.5, 3",
+            "3, 1.5, 0, −4, −7",
+            "0, −4, −7, 1.5, 3",
+          ],
+          correct: 0,
+          hint: "Place each number on a number line. Numbers farther left are lesser.",
+          explain: "On a number line left to right: −7 < −4 < 0 < 1.5 < 3.",
+        },
+        {
+          id: 13,
+          difficulty: "hard",
+          text: "A diver is at a depth of −40 feet and a bird is at an altitude of 25 feet. What is the distance between them?",
+          options: ["65 feet", "15 feet", "40 feet", "25 feet"],
+          correct: 0,
+          hint: "Distance = |−40 − 25| or count from −40 up to 25 on a number line.",
+          explain:
+            "Distance = |−40 − 25| = |−65| = 65 feet. From −40 to 0 is 40, then 0 to 25 is 25. Total = 65.",
+        },
+        {
+          id: 14,
+          difficulty: "hard",
+          text: "Point P is at (−5, 4) and Point Q is at (2, 4). What is the distance between P and Q?",
+          options: ["7 units", "3 units", "5 units", "9 units"],
+          correct: 0,
+          hint: "Same y-coordinate means horizontal distance: |x₁ − x₂|.",
+          explain:
+            "Same y-coordinate → horizontal distance = |−5 − 2| = |−7| = 7 units.",
+        },
+        {
+          id: 15,
+          difficulty: "hard",
+          text: "A submarine starts at position (−3, −8) on a grid. It surfaces and ends at (−3, 0). How far did it travel?",
+          options: ["8 units", "3 units", "11 units", "5 units"],
+          correct: 0,
+          hint: "Same x-coordinate → find vertical distance using |y₁ − y₂|.",
+          explain: "Same x → vertical distance = |−8 − 0| = |−8| = 8 units.",
+        },
+      ];
+
+      /* ===== STATE ===== */
+      const STORAGE_KEY = "coordinateQuest_v1";
+      let state = {
+        name: "",
+        period: "",
+        date: "",
+        current: 0,
+        score: 0,
+        lives: 3,
+        streak: 0,
+        bestStreak: 0,
+        elapsed: 0,
+        answers: [],
+        finished: false,
+      };
+      let timer = null;
+
+      /* ===== HELPERS ===== */
+      const $ = (id) => document.getElementById(id);
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        $(id).classList.add("active");
+      }
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+      function loadSave() {
+        try {
+          const d = localStorage.getItem(STORAGE_KEY);
+          return d ? JSON.parse(d) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+      function clearSave() {
+        localStorage.removeItem(STORAGE_KEY);
+        $("resume-bar").classList.remove("show");
+      }
+      function fmtTime(s) {
+        return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60);
+      }
+
+      /* ===== LOGIN ===== */
+      function checkForm() {
+        const ok = $("f-name").value.trim() && $("f-period").value;
+        $("start-btn").disabled = !ok;
+      }
+      $("f-name").addEventListener("input", checkForm);
+      $("f-period").addEventListener("change", checkForm);
+      $("f-date").valueAsDate = new Date();
+
+      // Check for saved game
+      (function () {
+        const saved = loadSave();
+        if (saved && !saved.finished && saved.current < QUESTIONS.length) {
+          $("resume-bar").classList.add("show");
+          $("f-name").value = saved.name || "";
+          $("f-period").value = saved.period || "";
+          $("f-date").value = saved.date || "";
+          checkForm();
+        }
+      })();
+
+      function resumeGame() {
+        const saved = loadSave();
+        if (saved) {
+          state = saved;
+          showScreen("scr-game");
+          startTimer();
+          renderQuestion();
+        }
+      }
+
+      function startGame() {
+        state = {
+          name: $("f-name").value.trim(),
+          period: $("f-period").value,
+          date: $("f-date").value,
+          current: 0,
+          score: 0,
+          lives: 3,
+          streak: 0,
+          bestStreak: 0,
+          elapsed: 0,
+          answers: [],
+          finished: false,
+        };
+        save();
+        showScreen("scr-game");
+        startTimer();
+        renderQuestion();
+      }
+
+      /* ===== TIMER ===== */
+      function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+          state.elapsed++;
+          $("hud-time").textContent = fmtTime(state.elapsed);
+        }, 1000);
+      }
+      function stopTimer() {
+        clearInterval(timer);
+      }
+
+      /* ===== RENDER QUESTION ===== */
+      function renderQuestion() {
+        const i = state.current;
+        if (i >= QUESTIONS.length) {
+          endGame();
+          return;
+        }
+        const q = QUESTIONS[i];
+        $("hud-q").textContent = i + 1 + " / 15";
+        $("hud-score").textContent = state.score;
+        updateLives();
+        updateStreak();
+        $("progress").style.width = (i / 15) * 100 + "%";
+        $("q-num").textContent = "Mission " + (i + 1) + " of 15";
+        const dEl = $("q-diff");
+        dEl.textContent =
+          q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1);
+        dEl.className = "q-diff " + q.difficulty;
+        $("q-text").textContent = q.text;
+        $("q-hint").classList.remove("show");
+        $("q-hint").textContent = "";
+        $("feedback").classList.remove("show", "correct", "wrong");
+        $("feedback").textContent = "";
+        $("next-btn").classList.remove("show");
+        // Render options
+        const container = $("opts");
+        container.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.setAttribute("role", "radio");
+          btn.setAttribute("aria-checked", "false");
+          btn.setAttribute("aria-label", letters[idx] + ": " + opt);
+          btn.innerHTML =
+            '<span class="letter">' +
+            letters[idx] +
+            "</span><span>" +
+            opt +
+            "</span>";
+          btn.onclick = () => handleAnswer(idx, btn);
+          container.appendChild(btn);
+        });
+        // Keyboard nav
+        container.onkeydown = function (e) {
+          const btns = [
+            ...container.querySelectorAll(".opt-btn:not(:disabled)"),
+          ];
+          const ci = btns.indexOf(document.activeElement);
+          if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+            e.preventDefault();
+            btns[(ci + 1) % btns.length].focus();
+          }
+          if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            btns[(ci - 1 + btns.length) % btns.length].focus();
+          }
+        };
+      }
+
+      /* ===== ANSWER ===== */
+      function handleAnswer(idx, btn) {
+        const q = QUESTIONS[state.current];
+        const btns = [...$("opts").querySelectorAll(".opt-btn")];
+        btns.forEach((b) => (b.disabled = true));
+        const isCorrect = idx === q.correct;
+        if (isCorrect) {
+          btn.classList.add("correct");
+          state.score++;
+          state.streak++;
+          if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+          showFeedback(true, "Correct! " + q.explain);
+        } else {
+          btn.classList.add("wrong");
+          btns[q.correct].classList.add("correct");
+          state.lives--;
+          state.streak = 0;
+          showFeedback(false, "Not quite. " + q.explain);
+        }
+        state.answers.push({
+          qId: q.id,
+          chosen: idx,
+          correct: q.correct,
+          isCorrect,
+        });
+        $("hud-score").textContent = state.score;
+        updateLives();
+        updateStreak();
+        $("next-btn").classList.add("show");
+        $("next-btn").focus();
+        save();
+        // Auto-end if lives depleted
+        if (state.lives <= 0) {
+          $("next-btn").textContent = "View Results";
+        }
+      }
+
+      function showFeedback(ok, msg) {
+        const fb = $("feedback");
+        fb.textContent = msg;
+        fb.className = "feedback-box show " + (ok ? "correct" : "wrong");
+      }
+
+      function updateLives() {
+        $("hud-lives").textContent =
+          "❤️".repeat(Math.max(0, state.lives)) +
+          "🖤".repeat(Math.max(0, 3 - state.lives));
+      }
+
+      function updateStreak() {
+        const el = $("hud-streak");
+        if (state.streak >= 2) {
+          el.textContent = "🔥 " + state.streak;
+          el.classList.add("show");
+        } else {
+          el.classList.remove("show");
+        }
+      }
+
+      /* ===== NEXT ===== */
+      function nextQuestion() {
+        if (state.lives <= 0) {
+          endGame();
+          return;
+        }
+        state.current++;
+        if (state.current >= QUESTIONS.length) {
+          endGame();
+          return;
+        }
+        $("next-btn").textContent = "Next Mission ➡️";
+        save();
+        renderQuestion();
+      }
+
+      /* ===== END GAME ===== */
+      function endGame() {
+        stopTimer();
+        state.finished = true;
+        save();
+        showScreen("scr-results");
+        const total = state.answers.length;
+        const pct = total ? Math.round((state.score / total) * 100) : 0;
+        // Title
+        if (pct >= 90) $("res-title").textContent = "Legendary Navigator! 🏆";
+        else if (pct >= 70) $("res-title").textContent = "Skilled Explorer! ⚓";
+        else if (pct >= 50)
+          $("res-title").textContent = "Apprentice Sailor! 🚢";
+        else $("res-title").textContent = "Keep Practicing! 🗺️";
+        $("res-sub").textContent =
+          state.name +
+          ", you scored " +
+          state.score +
+          " out of " +
+          total +
+          " (" +
+          pct +
+          "%)";
+        // Ring
+        const circ = 314.16;
+        const offset = circ - (circ * pct) / 100;
+        setTimeout(() => {
+          $("ring-fg").style.strokeDashoffset = offset;
+          $("score-pct").textContent = pct + "%";
+        }, 100);
+        // Stats
+        $("stat-correct").textContent = state.score;
+        $("stat-wrong").textContent = total - state.score;
+        $("stat-time").textContent = fmtTime(state.elapsed);
+        $("stat-streak").textContent = state.bestStreak;
+        // Review
+        const rl = $("review-list");
+        rl.innerHTML =
+          "<h3 style='margin-bottom:10px;font-size:1rem'>Review</h3>";
+        state.answers.forEach((a) => {
+          const q = QUESTIONS.find((x) => x.id === a.qId);
+          const div = document.createElement("div");
+          div.className =
+            "review-item " + (a.isCorrect ? "r-correct" : "r-wrong");
+          let html = "<strong>" + q.text + "</strong>";
+          if (!a.isCorrect) {
+            html +=
+              '<span class="your-ans">Your answer: ' +
+              q.options[a.chosen] +
+              "</span> ";
+          }
+          html +=
+            '<span class="right-ans">Correct: ' +
+            q.options[q.correct] +
+            "</span>";
+          div.innerHTML = html;
+          rl.appendChild(div);
+        });
+      }
+
+      /* ===== RETRY ===== */
+      function retryGame() {
+        clearSave();
+        showScreen("scr-login");
+        checkForm();
+      }
+
+      /* ===== KEYBOARD: Enter to advance ===== */
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const nb = $("next-btn");
+          if (nb.classList.contains("show")) {
+            nb.click();
+            e.preventDefault();
+          }
+          const sb = $("start-btn");
+          if (!sb.disabled && $("scr-login").classList.contains("active")) {
+            sb.click();
+            e.preventDefault();
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discount Dash — Rates, Percents &amp; Conversions</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --pink: #ec4899;
+        --pink-light: #fdf2f8;
+        --gold: #d97706;
+        --gold-light: #fffbeb;
+        --bg: #f4f5f7;
+        --ink: #1e293b;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --success: #16a34a;
+        --success-bg: #f0fdf4;
+        --error: #dc2626;
+        --error-bg: #fef2f2;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* ── Screens ── */
+      .screen {
+        display: none;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* ── Intro ── */
+      .hero {
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 44px 32px;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .hero-emoji {
+        font-size: 3.8rem;
+        margin-bottom: 8px;
+      }
+      .hero h1 {
+        font-size: 1.9rem;
+        font-weight: 900;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
+      .hero p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin-bottom: 24px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 90px 110px;
+        gap: 10px;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      .form-grid label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        transition: border-color 0.2s;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--pink);
+      }
+      .resume-bar {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 12px 16px;
+        margin-bottom: 18px;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+      }
+      .resume-bar button {
+        background: var(--success);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 7px 16px;
+        font-weight: 700;
+        font-size: 0.82rem;
+      }
+      .resume-bar .clear {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.78rem;
+        padding: 5px 8px;
+      }
+      .how-box {
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px 28px;
+        margin-bottom: 20px;
+      }
+      .how-box h2 {
+        font-size: 1.05rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      .how-box ul {
+        list-style: none;
+        padding: 0;
+      }
+      .how-box li {
+        font-size: 0.88rem;
+        color: var(--muted);
+        padding: 4px 0;
+      }
+      .how-box li::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+      .how-box li:nth-child(1)::before {
+        background: var(--pink);
+      }
+      .how-box li:nth-child(2)::before {
+        background: var(--gold);
+      }
+      .how-box li:nth-child(3)::before {
+        background: var(--success);
+      }
+      .how-box li:nth-child(4)::before {
+        background: var(--error);
+      }
+      .btn-start {
+        display: block;
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
+        padding: 14px;
+        background: var(--pink);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.05rem;
+        font-weight: 800;
+        transition: background 0.2s;
+      }
+      .btn-start:hover {
+        background: #db2777;
+      }
+      .btn-start:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ── Game HUD ── */
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hud-item {
+        text-align: center;
+      }
+      .hud-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .hud-val {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--ink);
+      }
+      .hud-val.lives {
+        color: var(--error);
+      }
+      .hud-val.streak {
+        color: var(--gold);
+      }
+      .progress-track {
+        height: 6px;
+        background: var(--line);
+        border-radius: 3px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--pink);
+        border-radius: 3px;
+        transition: width 0.4s;
+      }
+
+      /* ── Question Card ── */
+      .q-card {
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 32px 28px;
+        margin-bottom: 20px;
+      }
+      .q-num {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 6px;
+      }
+      .q-diff {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-left: 8px;
+      }
+      .q-diff.easy {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .q-diff.medium {
+        background: var(--gold-light);
+        color: var(--gold);
+      }
+      .q-diff.hard {
+        background: #fee2e2;
+        color: var(--error);
+      }
+      .q-text {
+        font-size: 1.12rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+      .choice-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        background: var(--bg);
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--ink);
+        text-align: left;
+        transition: all 0.2s;
+      }
+      .choice-btn:hover:not(:disabled) {
+        border-color: var(--pink);
+        background: var(--pink-light);
+      }
+      .choice-btn:focus {
+        outline: 2px solid var(--pink);
+        outline-offset: 2px;
+      }
+      .choice-btn .letter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--line);
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+      .choice-btn.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .choice-btn.correct .letter {
+        background: var(--success);
+        color: #fff;
+      }
+      .choice-btn.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .choice-btn.wrong .letter {
+        background: var(--error);
+        color: #fff;
+      }
+
+      /* ── Feedback ── */
+      .feedback {
+        display: none;
+        padding: 16px 20px;
+        border-radius: var(--radius);
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        line-height: 1.5;
+      }
+      .feedback.correct {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: #15803d;
+      }
+      .feedback.wrong {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: #991b1b;
+      }
+      .btn-next {
+        display: none;
+        width: 100%;
+        padding: 13px;
+        background: var(--pink);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        font-weight: 800;
+        transition: background 0.2s;
+      }
+      .btn-next:hover {
+        background: #db2777;
+      }
+
+      /* ── Results ── */
+      .results-hero {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .results-hero h1 {
+        font-size: 2rem;
+        font-weight: 900;
+      }
+      .results-sub {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin: 24px 0;
+      }
+      .score-box {
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+        text-align: center;
+      }
+      .score-box .big {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--ink);
+      }
+      .score-box .lbl {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+      .review-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        margin: 20px 0;
+      }
+      .review-tbl th {
+        background: var(--ink);
+        color: #fff;
+        padding: 10px;
+        text-align: left;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+      }
+      .review-tbl td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .review-tbl tr.good {
+        background: var(--success-bg);
+      }
+      .review-tbl tr.bad {
+        background: var(--error-bg);
+      }
+      .submit-box {
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        text-align: center;
+        margin-top: 24px;
+      }
+      .submit-box h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 14px;
+      }
+      .submit-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .btn-action {
+        padding: 10px 22px;
+        border-radius: var(--radius);
+        font-weight: 700;
+        font-size: 0.88rem;
+        border: none;
+        transition: background 0.2s;
+      }
+      .btn-copy {
+        background: var(--pink);
+        color: #fff;
+      }
+      .btn-copy:hover {
+        background: #db2777;
+      }
+      .btn-email {
+        background: var(--gold);
+        color: #fff;
+      }
+      .btn-email:hover {
+        background: #b45309;
+      }
+      .btn-retry {
+        background: var(--ink);
+        color: #fff;
+      }
+      .btn-retry:hover {
+        background: #334155;
+      }
+      .copy-msg {
+        display: none;
+        font-size: 0.8rem;
+        color: var(--success);
+        font-weight: 600;
+        margin-top: 6px;
+      }
+
+      /* ── Footer ── */
+      .footer {
+        text-align: center;
+        padding: 20px 16px;
+        font-size: 0.72rem;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+        margin-top: 28px;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 600px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .score-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .hud {
+          justify-content: center;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ INTRO SCREEN ═══════ -->
+    <div class="screen active" id="scr-intro">
+      <div class="hero">
+        <div class="hero-emoji" aria-hidden="true">🛒</div>
+        <h1>Discount Dash</h1>
+        <p>
+          Race through the aisles! Convert fractions, decimals &amp; percents,
+          calculate discounts, and compare unit rates to become a shopping
+          champion.
+        </p>
+        <div class="form-grid">
+          <label>Your Name</label><label>Period</label><label>Date</label>
+          <input
+            id="inp-name"
+            class="field"
+            type="text"
+            placeholder="First Last Initial"
+            aria-label="Student name"
+          />
+          <input
+            id="inp-period"
+            class="field"
+            type="text"
+            placeholder="P3"
+            aria-label="Class period"
+          />
+          <input id="inp-date" class="field" type="date" aria-label="Date" />
+        </div>
+      </div>
+
+      <div class="resume-bar" id="resume-bar">
+        <span id="resume-info"></span>
+        <button onclick="doResume()" aria-label="Resume saved game">
+          Resume
+        </button>
+        <button class="clear" onclick="doClear()">Start Fresh</button>
+      </div>
+
+      <div class="how-box">
+        <h2>How It Works</h2>
+        <ul>
+          <li>15 multiple-choice questions across 3 difficulty levels</li>
+          <li>Earn streak bonuses for consecutive correct answers</li>
+          <li>You start with 3 lives — wrong answers cost a life</li>
+          <li>Lose all lives and the game ends early</li>
+        </ul>
+      </div>
+
+      <button
+        class="btn-start"
+        id="btn-go"
+        onclick="startGame()"
+        disabled
+        aria-label="Start game"
+      >
+        Enter Your Name to Start
+      </button>
+    </div>
+
+    <!-- ═══════ GAME SCREEN ═══════ -->
+    <div class="screen" id="scr-game">
+      <div class="hud" role="status" aria-live="polite">
+        <div class="hud-item">
+          <div class="hud-label">Question</div>
+          <div class="hud-val" id="hud-q">1/15</div>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">Score</div>
+          <div class="hud-val" id="hud-score">0</div>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">Lives</div>
+          <div class="hud-val lives" id="hud-lives">❤️❤️❤️</div>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">Streak</div>
+          <div class="hud-val streak" id="hud-streak">0🔥</div>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">Time</div>
+          <div class="hud-val" id="hud-time">0:00</div>
+        </div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width: 0%"></div>
+      </div>
+
+      <div class="q-card" id="q-card">
+        <div class="q-num" id="q-num">Question 1 of 15</div>
+        <div class="q-text" id="q-text"></div>
+        <div
+          class="choices"
+          id="choices"
+          role="radiogroup"
+          aria-label="Answer choices"
+        ></div>
+      </div>
+
+      <div class="feedback" id="feedback" aria-live="assertive"></div>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">
+        Next Question →
+      </button>
+    </div>
+
+    <!-- ═══════ RESULTS SCREEN ═══════ -->
+    <div class="screen" id="scr-results">
+      <div class="results-hero">
+        <div class="hero-emoji" aria-hidden="true">🛒</div>
+        <h1 id="res-title">Great Job!</h1>
+        <p class="results-sub" id="res-sub"></p>
+      </div>
+
+      <div class="score-grid" id="score-grid"></div>
+
+      <h2 style="font-size: 1.05rem; font-weight: 800; margin: 20px 0 8px">
+        Question Review
+      </h2>
+      <table class="review-tbl" aria-label="Question review">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Question</th>
+            <th>Your Answer</th>
+            <th>Correct</th>
+          </tr>
+        </thead>
+        <tbody id="review-body"></tbody>
+      </table>
+
+      <div class="submit-box">
+        <h3>Save Your Results</h3>
+        <div class="submit-row">
+          <button
+            class="btn-action btn-copy"
+            onclick="copyResults()"
+            aria-label="Copy results to clipboard"
+          >
+            📋 Copy Results
+          </button>
+          <button
+            class="btn-action btn-email"
+            onclick="emailResults()"
+            aria-label="Email results"
+          >
+            📧 Email Results
+          </button>
+          <button
+            class="btn-action btn-retry"
+            onclick="retryGame()"
+            aria-label="Play again"
+          >
+            🔄 Play Again
+          </button>
+        </div>
+        <div class="copy-msg" id="copy-msg">Copied to clipboard!</div>
+      </div>
+
+      <div class="footer">
+        Neft Teacher &bull; Grade 6 Unit 4 &bull; 6.RP.2 &amp; 6.RP.3c
+      </div>
+    </div>
+
+    <script>
+      /* ══════════════════════════════════════
+   DISCOUNT DASH — Question Bank
+   Standards: 6.RP.2, 6.RP.3c
+   ══════════════════════════════════════ */
+
+      const QUESTIONS = [
+        // ── EASY (1-5): Conversions & simple unit rates ──
+        {
+          id: 1,
+          difficulty: "easy",
+          text: "Convert the fraction 1/4 to a percent.",
+          choices: ["25%", "20%", "40%", "15%"],
+          answer: 0,
+          explain: "1/4 = 1 ÷ 4 = 0.25 = 25%.",
+        },
+        {
+          id: 2,
+          difficulty: "easy",
+          text: "What is 0.75 written as a percent?",
+          choices: ["75%", "7.5%", "57%", "80%"],
+          answer: 0,
+          explain: "0.75 × 100 = 75%.",
+        },
+        {
+          id: 3,
+          difficulty: "easy",
+          text: "Convert 60% to a fraction in simplest form.",
+          choices: ["3/5", "6/10", "2/3", "3/4"],
+          answer: 0,
+          explain:
+            "60% = 60/100 = 3/5 after dividing numerator and denominator by 20.",
+        },
+        {
+          id: 4,
+          difficulty: "easy",
+          text: "A store sells 5 notebooks for $15. What is the unit rate (price per notebook)?",
+          choices: [
+            "$3 per notebook",
+            "$5 per notebook",
+            "$2 per notebook",
+            "$4 per notebook",
+          ],
+          answer: 0,
+          explain: "$15 ÷ 5 notebooks = $3 per notebook.",
+        },
+        {
+          id: 5,
+          difficulty: "easy",
+          text: "What decimal is equivalent to 40%?",
+          choices: ["0.4", "4.0", "0.04", "0.44"],
+          answer: 0,
+          explain: "40% ÷ 100 = 0.40 = 0.4.",
+        },
+        // ── MEDIUM (6-10): Percent of a number, discounts, tax ──
+        {
+          id: 6,
+          difficulty: "medium",
+          text: "A jacket costs $80. It is 25% off. How much is the discount?",
+          choices: ["$20", "$25", "$15", "$60"],
+          answer: 0,
+          explain: "25% of $80 = 0.25 × 80 = $20.",
+        },
+        {
+          id: 7,
+          difficulty: "medium",
+          text: "Find 15% of 200.",
+          choices: ["30", "20", "15", "35"],
+          answer: 0,
+          explain: "15% of 200 = 0.15 × 200 = 30.",
+        },
+        {
+          id: 8,
+          difficulty: "medium",
+          text: "A meal costs $40. The sales tax is 8%. What is the total cost including tax?",
+          choices: ["$43.20", "$48.00", "$44.00", "$42.80"],
+          answer: 0,
+          explain: "Tax = 0.08 × $40 = $3.20. Total = $40 + $3.20 = $43.20.",
+        },
+        {
+          id: 9,
+          difficulty: "medium",
+          text: "A pair of shoes originally costs $60. They are on sale for 30% off. What is the sale price?",
+          choices: ["$42", "$48", "$38", "$18"],
+          answer: 0,
+          explain: "Discount = 0.30 × $60 = $18. Sale price = $60 − $18 = $42.",
+        },
+        {
+          id: 10,
+          difficulty: "medium",
+          text: "A 12-pack of juice costs $9.60. A 6-pack costs $5.40. Which is the better unit price?",
+          choices: [
+            "12-pack ($0.80 each)",
+            "6-pack ($0.90 each)",
+            "They cost the same",
+            "Not enough information",
+          ],
+          answer: 0,
+          explain:
+            "12-pack: $9.60 ÷ 12 = $0.80 each. 6-pack: $5.40 ÷ 6 = $0.90 each. The 12-pack is cheaper per juice.",
+        },
+        // ── HARD (11-15): Multi-step, percent increase/decrease, comparing rates ──
+        {
+          id: 11,
+          difficulty: "hard",
+          text: "A bike originally costs $250. It is marked down 20%, then an extra 10% off the sale price. What is the final price?",
+          choices: ["$180", "$175", "$200", "$170"],
+          answer: 0,
+          explain:
+            "After 20% off: $250 × 0.80 = $200. After extra 10% off: $200 × 0.90 = $180.",
+        },
+        {
+          id: 12,
+          difficulty: "hard",
+          text: "A town's population grew from 8,000 to 9,200. What was the percent increase?",
+          choices: ["15%", "12%", "20%", "8%"],
+          answer: 0,
+          explain:
+            "Increase = 9,200 − 8,000 = 1,200. Percent increase = 1,200 ÷ 8,000 = 0.15 = 15%.",
+        },
+        {
+          id: 13,
+          difficulty: "hard",
+          text: "Store A sells 3 lb of apples for $5.25. Store B sells 5 lb for $8.00. Which store has the lower unit price per pound?",
+          choices: [
+            "Store B ($1.60/lb)",
+            "Store A ($1.75/lb)",
+            "They are equal",
+            "Store A ($1.50/lb)",
+          ],
+          answer: 0,
+          explain:
+            "Store A: $5.25 ÷ 3 = $1.75/lb. Store B: $8.00 ÷ 5 = $1.60/lb. Store B is cheaper.",
+        },
+        {
+          id: 14,
+          difficulty: "hard",
+          text: "A tablet costs $320 before tax. The tax rate is 6.5%. What is the total cost?",
+          choices: ["$340.80", "$336.50", "$345.00", "$339.20"],
+          answer: 0,
+          explain:
+            "Tax = 0.065 × $320 = $20.80. Total = $320 + $20.80 = $340.80.",
+        },
+        {
+          id: 15,
+          difficulty: "hard",
+          text: "Last year a coat was $90. This year the price dropped to $72. What is the percent decrease?",
+          choices: ["20%", "18%", "22%", "25%"],
+          answer: 0,
+          explain:
+            "Decrease = $90 − $72 = $18. Percent decrease = $18 ÷ $90 = 0.20 = 20%.",
+        },
+      ];
+
+      /* ══════════════════════════════════════
+   STATE & STORAGE
+   ══════════════════════════════════════ */
+      const STORAGE_KEY = "discountDash_v1";
+      let state = {
+        name: "",
+        period: "",
+        date: "",
+        current: 0,
+        score: 0,
+        lives: 3,
+        streak: 0,
+        bestStreak: 0,
+        answers: [], // {qId, picked, correct, time}
+        startTime: 0,
+        elapsed: 0,
+        finished: false,
+      };
+      let timerInterval = null;
+      let questionStart = 0;
+
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+      function load() {
+        try {
+          const d = localStorage.getItem(STORAGE_KEY);
+          return d ? JSON.parse(d) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+      function clearSave() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+      }
+
+      /* ══════════════════════════════════════
+   INIT
+   ══════════════════════════════════════ */
+      document.addEventListener("DOMContentLoaded", () => {
+        const nameInp = document.getElementById("inp-name");
+        const dateInp = document.getElementById("inp-date");
+        dateInp.value = new Date().toISOString().slice(0, 10);
+        nameInp.addEventListener("input", () => {
+          const ok = nameInp.value.trim().length >= 2;
+          const btn = document.getElementById("btn-go");
+          btn.disabled = !ok;
+          btn.textContent = ok
+            ? "Start Discount Dash! 🛒"
+            : "Enter Your Name to Start";
+        });
+
+        // Check for saved game
+        const saved = load();
+        if (saved && !saved.finished && saved.current < QUESTIONS.length) {
+          const bar = document.getElementById("resume-bar");
+          bar.style.display = "flex";
+          document.getElementById("resume-info").textContent =
+            `${saved.name} — Q${saved.current + 1}/15, Score: ${saved.score}, Lives: ${saved.lives}`;
+        }
+      });
+
+      function doResume() {
+        const saved = load();
+        if (!saved) return;
+        state = saved;
+        showScreen("scr-game");
+        startTimer();
+        renderQuestion();
+      }
+      function doClear() {
+        clearSave();
+        document.getElementById("resume-bar").style.display = "none";
+      }
+
+      /* ══════════════════════════════════════
+   GAME FLOW
+   ══════════════════════════════════════ */
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function startGame() {
+        const n = document.getElementById("inp-name").value.trim();
+        if (n.length < 2) return;
+        state.name = n;
+        state.period = document.getElementById("inp-period").value.trim();
+        state.date = document.getElementById("inp-date").value;
+        state.current = 0;
+        state.score = 0;
+        state.lives = 3;
+        state.streak = 0;
+        state.bestStreak = 0;
+        state.answers = [];
+        state.startTime = Date.now();
+        state.elapsed = 0;
+        state.finished = false;
+
+        // Shuffle choices (keeping answer tracking correct)
+        QUESTIONS.forEach((q) => {
+          const indices = [0, 1, 2, 3];
+          for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+          }
+          q._order = indices;
+        });
+
+        showScreen("scr-game");
+        startTimer();
+        renderQuestion();
+        save();
+      }
+
+      function startTimer() {
+        const t0 = Date.now() - state.elapsed * 1000;
+        timerInterval = setInterval(() => {
+          state.elapsed = Math.floor((Date.now() - t0) / 1000);
+          const m = Math.floor(state.elapsed / 60);
+          const s = state.elapsed % 60;
+          document.getElementById("hud-time").textContent =
+            m + ":" + (s < 10 ? "0" : "") + s;
+        }, 500);
+      }
+
+      function renderQuestion() {
+        if (state.current >= QUESTIONS.length || state.lives <= 0) {
+          endGame();
+          return;
+        }
+        const q = QUESTIONS[state.current];
+        const order = q._order || [0, 1, 2, 3];
+        const letters = ["A", "B", "C", "D"];
+
+        document.getElementById("hud-q").textContent =
+          state.current + 1 + "/15";
+        document.getElementById("hud-score").textContent = state.score;
+        document.getElementById("hud-lives").textContent =
+          "❤️".repeat(state.lives) + "🖤".repeat(3 - state.lives);
+        document.getElementById("hud-streak").textContent = state.streak + "🔥";
+        document.getElementById("prog-fill").style.width =
+          (state.current / 15) * 100 + "%";
+
+        document.getElementById("q-num").innerHTML =
+          `Question ${state.current + 1} of 15 <span class="q-diff ${q.difficulty}">${q.difficulty.toUpperCase()}</span>`;
+        document.getElementById("q-text").textContent = q.text;
+
+        const box = document.getElementById("choices");
+        box.innerHTML = "";
+        order.forEach((ci, i) => {
+          const btn = document.createElement("button");
+          btn.className = "choice-btn";
+          btn.setAttribute("role", "radio");
+          btn.setAttribute("aria-checked", "false");
+          btn.setAttribute("tabindex", i === 0 ? "0" : "-1");
+          btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${q.choices[ci]}</span>`;
+          btn.addEventListener("click", () => pickAnswer(ci, btn));
+          box.appendChild(btn);
+        });
+
+        document.getElementById("feedback").style.display = "none";
+        document.getElementById("feedback").className = "feedback";
+        document.getElementById("btn-next").style.display = "none";
+        questionStart = Date.now();
+
+        // Keyboard navigation for choices
+        box.addEventListener("keydown", handleChoiceKeys);
+      }
+
+      function handleChoiceKeys(e) {
+        const btns = [...document.querySelectorAll(".choice-btn")];
+        const idx = btns.indexOf(document.activeElement);
+        if (idx < 0) return;
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+          e.preventDefault();
+          btns[(idx + 1) % btns.length].focus();
+        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          btns[(idx - 1 + btns.length) % btns.length].focus();
+        } else if (e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          document.activeElement.click();
+        }
+      }
+
+      function pickAnswer(ci, btn) {
+        // Disable all buttons
+        document
+          .querySelectorAll(".choice-btn")
+          .forEach((b) => (b.disabled = true));
+        const q = QUESTIONS[state.current];
+        const isCorrect = ci === q.answer;
+        const elapsed = Math.round((Date.now() - questionStart) / 1000);
+
+        // Points: easy=10, medium=20, hard=30; streak bonus +5 per streak level (max +25)
+        const base = { easy: 10, medium: 20, hard: 30 }[q.difficulty];
+        let pts = 0;
+
+        if (isCorrect) {
+          state.streak++;
+          if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+          const bonus = Math.min(state.streak - 1, 5) * 5;
+          pts = base + bonus;
+          state.score += pts;
+          btn.classList.add("correct");
+        } else {
+          state.streak = 0;
+          state.lives--;
+          btn.classList.add("wrong");
+          // Highlight correct answer
+          const order = q._order || [0, 1, 2, 3];
+          const btns = document.querySelectorAll(".choice-btn");
+          order.forEach((oi, i) => {
+            if (oi === q.answer) btns[i].classList.add("correct");
+          });
+        }
+
+        state.answers.push({
+          qId: q.id,
+          picked: ci,
+          correct: isCorrect,
+          time: elapsed,
+          pts,
+        });
+
+        // Show feedback
+        const fb = document.getElementById("feedback");
+        fb.style.display = "block";
+        if (isCorrect) {
+          fb.className = "feedback correct";
+          fb.innerHTML = `✅ Correct! +${pts} points${state.streak > 1 ? " (🔥 " + state.streak + " streak!)" : ""}<br><small>${q.explain}</small>`;
+        } else {
+          fb.className = "feedback wrong";
+          fb.innerHTML = `❌ Not quite. The correct answer is: <strong>${q.choices[q.answer]}</strong><br><small>${q.explain}</small>`;
+        }
+
+        // Update HUD
+        document.getElementById("hud-score").textContent = state.score;
+        document.getElementById("hud-lives").textContent =
+          "❤️".repeat(Math.max(0, state.lives)) +
+          "🖤".repeat(3 - Math.max(0, state.lives));
+        document.getElementById("hud-streak").textContent = state.streak + "🔥";
+
+        document.getElementById("btn-next").style.display = "block";
+        document.getElementById("btn-next").focus();
+        save();
+      }
+
+      function nextQuestion() {
+        state.current++;
+        save();
+        if (state.current >= QUESTIONS.length || state.lives <= 0) {
+          endGame();
+        } else {
+          renderQuestion();
+        }
+      }
+
+      /* ══════════════════════════════════════
+   RESULTS
+   ══════════════════════════════════════ */
+      function endGame() {
+        clearInterval(timerInterval);
+        state.finished = true;
+        save();
+        showScreen("scr-results");
+
+        const total = state.answers.length;
+        const correct = state.answers.filter((a) => a.correct).length;
+        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+        const mins = Math.floor(state.elapsed / 60);
+        const secs = state.elapsed % 60;
+
+        // Title based on performance
+        let title, sub;
+        if (pct >= 90) {
+          title = "🏆 Shopping Champion!";
+          sub = "Outstanding work — you mastered those percents!";
+        } else if (pct >= 70) {
+          title = "⭐ Smart Shopper!";
+          sub = "Great job — keep practicing those trickier problems!";
+        } else if (pct >= 50) {
+          title = "🛒 Solid Start!";
+          sub = "You're building your skills — review the ones you missed.";
+        } else {
+          title = "📚 Keep Practicing!";
+          sub = "Percents take time — try again and watch your score climb!";
+        }
+
+        if (state.lives <= 0 && state.current < QUESTIONS.length) {
+          sub += ` (Game ended at question ${state.current} — ran out of lives.)`;
+        }
+
+        document.getElementById("res-title").textContent = title;
+        document.getElementById("res-sub").textContent = sub;
+
+        // Score cards
+        const grid = document.getElementById("score-grid");
+        grid.innerHTML = [
+          { big: `${correct}/${total}`, lbl: "Correct" },
+          { big: pct + "%", lbl: "Accuracy" },
+          { big: state.score, lbl: "Points" },
+          { big: `${mins}:${secs < 10 ? "0" : ""}${secs}`, lbl: "Time" },
+        ]
+          .map(
+            (c) =>
+              `<div class="score-box"><div class="big">${c.big}</div><div class="lbl">${c.lbl}</div></div>`,
+          )
+          .join("");
+
+        // Review table
+        const tbody = document.getElementById("review-body");
+        tbody.innerHTML = "";
+        state.answers.forEach((a, i) => {
+          const q = QUESTIONS.find((qq) => qq.id === a.qId);
+          const tr = document.createElement("tr");
+          tr.className = a.correct ? "good" : "bad";
+          tr.innerHTML = `<td>${i + 1}</td><td>${q.text}</td><td>${q.choices[a.picked]}</td><td>${a.correct ? "✅" : "❌ " + q.choices[q.answer]}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function copyResults() {
+        const correct = state.answers.filter((a) => a.correct).length;
+        const total = state.answers.length;
+        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+        const mins = Math.floor(state.elapsed / 60);
+        const secs = state.elapsed % 60;
+        let txt = `Discount Dash Results\nStudent: ${state.name}\nPeriod: ${state.period}\nDate: ${state.date}\nScore: ${state.score} pts | ${correct}/${total} (${pct}%) | Time: ${mins}:${secs < 10 ? "0" : ""}${secs}\nBest Streak: ${state.bestStreak}\n\n`;
+        state.answers.forEach((a, i) => {
+          const q = QUESTIONS.find((qq) => qq.id === a.qId);
+          txt += `Q${i + 1} [${q.difficulty}]: ${a.correct ? "✅" : "❌"} ${q.text} → ${q.choices[a.picked]}`;
+          if (!a.correct) txt += ` (Correct: ${q.choices[q.answer]})`;
+          txt += "\n";
+        });
+        navigator.clipboard.writeText(txt).then(() => {
+          const msg = document.getElementById("copy-msg");
+          msg.style.display = "block";
+          setTimeout(() => (msg.style.display = "none"), 3000);
+        });
+      }
+
+      function emailResults() {
+        const correct = state.answers.filter((a) => a.correct).length;
+        const total = state.answers.length;
+        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+        const subj = encodeURIComponent(
+          `Discount Dash — ${state.name} — ${correct}/${total} (${pct}%)`,
+        );
+        const body = encodeURIComponent(
+          `Student: ${state.name}\nPeriod: ${state.period}\nDate: ${state.date}\nScore: ${state.score} pts\nAccuracy: ${correct}/${total} (${pct}%)\nBest Streak: ${state.bestStreak}`,
+        );
+        window.open(`mailto:?subject=${subj}&body=${body}`);
+      }
+
+      function retryGame() {
+        clearSave();
+        state = {
+          name: state.name,
+          period: state.period,
+          date: state.date,
+          current: 0,
+          score: 0,
+          lives: 3,
+          streak: 0,
+          bestStreak: 0,
+          answers: [],
+          startTime: Date.now(),
+          elapsed: 0,
+          finished: false,
+        };
+        showScreen("scr-intro");
+        document.getElementById("inp-name").value = state.name;
+        document.getElementById("inp-period").value = state.period;
+        document.getElementById("inp-date").value = state.date;
+        document.getElementById("btn-go").disabled = false;
+        document.getElementById("btn-go").textContent =
+          "Start Discount Dash! 🛒";
+        document.getElementById("resume-bar").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

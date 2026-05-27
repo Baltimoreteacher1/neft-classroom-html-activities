@@ -1,0 +1,1539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Area Architect — Area of 2D Figures</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --green: #10b981;
+        --green-dark: #059669;
+        --teal-dark: #134e4a;
+        --orange: #f59e0b;
+        --sky: #e0f2fe;
+        --cream: #fef9ef;
+        --ink: #134e4a;
+        --muted: #6b7280;
+        --line: #d1d5db;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(19, 78, 74, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--sky);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* ── Screens ── */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* ── Intro ── */
+      .intro {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .hero-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 48px 36px;
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--teal-dark);
+        margin-bottom: 6px;
+      }
+      .hero-sub {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+        line-height: 1.6;
+      }
+      .student-form {
+        display: grid;
+        grid-template-columns: 1fr 100px 100px;
+        gap: 12px;
+        max-width: 500px;
+        margin: 0 auto 24px;
+        text-align: left;
+      }
+      .student-form label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--green);
+      }
+      .rules-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px 28px;
+        margin-bottom: 24px;
+      }
+      .rules-card h2 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--teal-dark);
+        margin-bottom: 12px;
+      }
+      .rules-card ul {
+        list-style: none;
+        padding: 0;
+      }
+      .rules-card li {
+        padding: 6px 0;
+        font-size: 0.9rem;
+        color: var(--ink);
+      }
+      .rules-card li::before {
+        content: ">";
+        color: var(--green);
+        font-weight: 900;
+        margin-right: 8px;
+      }
+      .start-btn {
+        display: block;
+        margin: 0 auto;
+        padding: 14px 48px;
+        background: var(--green);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+      .resume-banner {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .resume-banner.show {
+        display: flex;
+      }
+      .resume-banner button {
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .resume-banner .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      /* ── Game Header ── */
+      .game-header {
+        background: var(--teal-dark);
+        color: white;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        flex-wrap: wrap;
+      }
+      .hdr-progress {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .progress-track {
+        flex: 1;
+        max-width: 240px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--orange);
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+      .hdr-stat {
+        font-size: 0.8rem;
+        opacity: 0.85;
+      }
+      .hdr-stat .val {
+        font-weight: 800;
+        color: var(--orange);
+      }
+      .hdr-right {
+        margin-left: auto;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+      .lives-display {
+        font-size: 1rem;
+        letter-spacing: 2px;
+      }
+
+      /* ── Question Card ── */
+      .question-area {
+        max-width: 740px;
+        margin: 0 auto;
+        padding: 32px 24px 60px;
+      }
+      .q-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 28px 32px;
+        margin-bottom: 20px;
+      }
+      .q-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 14px;
+      }
+      .q-badge.easy {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .q-badge.medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .q-badge.hard {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .q-number {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--teal-dark);
+        line-height: 1.6;
+        margin-bottom: 8px;
+      }
+      .q-formula {
+        background: #ecfdf5;
+        border: 2px solid var(--green);
+        border-radius: 8px;
+        padding: 10px 16px;
+        text-align: center;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--teal-dark);
+        margin: 12px 0 18px;
+      }
+
+      /* SVG visual */
+      .q-visual {
+        display: flex;
+        justify-content: center;
+        margin: 16px 0;
+      }
+
+      /* MC options */
+      .options-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .opt-btn {
+        padding: 14px 18px;
+        background: white;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--teal-dark);
+        text-align: left;
+        transition: all 0.2s;
+        position: relative;
+      }
+      .opt-btn:hover:not(.locked) {
+        border-color: var(--green);
+        background: rgba(16, 185, 129, 0.04);
+      }
+      .opt-btn.selected {
+        border-color: var(--green);
+        background: rgba(16, 185, 129, 0.08);
+      }
+      .opt-btn.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .opt-btn.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+        color: var(--error);
+      }
+      .opt-btn.locked {
+        cursor: default;
+        opacity: 0.85;
+      }
+      .opt-btn .opt-letter {
+        display: inline-block;
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+        text-align: center;
+        border-radius: 50%;
+        background: var(--sky);
+        color: var(--teal-dark);
+        font-size: 0.8rem;
+        font-weight: 800;
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
+      .opt-btn.correct .opt-letter {
+        background: var(--success);
+        color: white;
+      }
+      .opt-btn.wrong .opt-letter {
+        background: var(--error);
+        color: white;
+      }
+
+      /* Feedback */
+      .feedback-box {
+        display: none;
+        padding: 16px 20px;
+        border-radius: 10px;
+        margin-top: 16px;
+        font-size: 0.92rem;
+        line-height: 1.55;
+      }
+      .feedback-box.show {
+        display: block;
+      }
+      .feedback-box.ok {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: var(--success);
+      }
+      .feedback-box.no {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: var(--error);
+      }
+      .feedback-box .fb-title {
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+
+      /* Streak banner */
+      .streak-banner {
+        display: none;
+        text-align: center;
+        padding: 8px;
+        background: var(--orange);
+        color: white;
+        font-weight: 800;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        animation: pulse 0.6s ease;
+      }
+      .streak-banner.show {
+        display: block;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.03);
+        }
+      }
+
+      .next-btn {
+        display: none;
+        margin: 20px auto 0;
+        padding: 12px 40px;
+        background: var(--green);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+      }
+      .next-btn:hover {
+        opacity: 0.9;
+      }
+      .next-btn.show {
+        display: block;
+      }
+
+      .fade-in {
+        animation: fadeSlide 0.35s ease;
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Results ── */
+      .results {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+      }
+      .results-hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .results-hero .r-emoji {
+        font-size: 3rem;
+        margin-bottom: 8px;
+      }
+      .results-hero h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--teal-dark);
+      }
+      .results-sub {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0;
+      }
+      .score-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        text-align: center;
+      }
+      .score-card .big {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--teal-dark);
+      }
+      .score-card .label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 24px 0;
+      }
+      .review-table th {
+        background: var(--teal-dark);
+        color: white;
+        padding: 10px;
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      .review-table td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .review-table tr.good {
+        background: var(--success-bg);
+      }
+      .review-table tr.needs {
+        background: white;
+      }
+      .submit-section {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 28px;
+        text-align: center;
+      }
+      .submit-section h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--teal-dark);
+        margin-bottom: 16px;
+      }
+      .submit-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .primary-btn {
+        padding: 10px 24px;
+        background: var(--green);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+      }
+      .primary-btn:hover {
+        opacity: 0.9;
+      }
+      .ghost-btn {
+        padding: 8px 18px;
+        background: transparent;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--teal-dark);
+        transition: all 0.2s;
+      }
+      .ghost-btn:hover {
+        border-color: var(--green);
+        background: rgba(16, 185, 129, 0.06);
+      }
+      .copy-confirm {
+        display: none;
+        font-size: 0.82rem;
+        color: var(--success);
+        font-weight: 600;
+        margin-top: 8px;
+      }
+      .footer-brand {
+        text-align: center;
+        padding: 24px 16px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 640px) {
+        .score-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .options-grid {
+          grid-template-columns: 1fr;
+        }
+        .student-form {
+          grid-template-columns: 1fr;
+        }
+        .game-header {
+          padding: 8px 16px;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ LOGIN SCREEN ═══════ -->
+    <div class="screen active" id="screen-login">
+      <div class="intro">
+        <div class="hero-card">
+          <div class="hero-emoji">📐</div>
+          <h1 class="hero-title">Area Architect</h1>
+          <p class="hero-sub">
+            Calculate the area of rectangles, parallelograms, triangles,
+            trapezoids, and composite figures to design buildings and
+            structures.<br />
+            <strong>15 questions</strong> &bull; Timer &bull; 3 lives &bull;
+            Streak bonuses
+          </p>
+          <div class="student-form">
+            <label>Your Name</label>
+            <label>Period</label>
+            <label>Date</label>
+            <input
+              id="student-name"
+              class="field"
+              type="text"
+              placeholder="First Last Initial"
+            />
+            <input
+              id="student-period"
+              class="field"
+              type="text"
+              placeholder="P3"
+            />
+            <input id="student-date" class="field" type="date" />
+          </div>
+        </div>
+
+        <div class="resume-banner" id="resume-banner">
+          <span id="resume-info"></span>
+          <button onclick="resumeGame()">Resume</button>
+          <button class="clear-btn" onclick="clearSave()">Start Fresh</button>
+        </div>
+
+        <div class="rules-card">
+          <h2>How It Works</h2>
+          <ul>
+            <li>
+              Answer 15 multiple-choice questions about area of 2D figures
+              (6.G.1)
+            </li>
+            <li>
+              Easy: rectangles &amp; parallelograms &bull; Medium: triangles
+              &amp; trapezoids &bull; Hard: composite figures
+            </li>
+            <li>You start with 3 lives — each wrong answer costs 1 life</li>
+            <li>
+              Build streaks of correct answers for bonus points (3+ in a row)
+            </li>
+            <li>Timer tracks your total time — work carefully but steadily</li>
+          </ul>
+        </div>
+
+        <button class="start-btn" onclick="startGame()">
+          Start Building 📐
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════ GAME SCREEN ═══════ -->
+    <div class="screen" id="screen-game">
+      <div class="game-header">
+        <span class="hdr-progress" id="hdr-progress">Q1 / 15</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="hdr-stat"
+          >Score: <span class="val" id="hdr-score">0</span></span
+        >
+        <span class="hdr-stat"
+          >Streak: <span class="val" id="hdr-streak">0</span></span
+        >
+        <div class="hdr-right">
+          <span class="hdr-stat"
+            >Time: <span class="val" id="hdr-timer">0:00</span></span
+          >
+          <span class="lives-display" id="hdr-lives"></span>
+        </div>
+      </div>
+      <div class="question-area" id="question-area"></div>
+    </div>
+
+    <!-- ═══════ GAME OVER (no lives) ═══════ -->
+    <div class="screen" id="screen-gameover">
+      <div class="results">
+        <div class="results-hero">
+          <div class="r-emoji">🏗️</div>
+          <h1>Blueprint Rejected!</h1>
+          <p class="results-sub">
+            You ran out of lives. Review the answers below, then try again!
+          </p>
+        </div>
+        <div class="score-grid" id="go-score-grid"></div>
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Your Answer</th>
+              <th>Correct Answer</th>
+            </tr>
+          </thead>
+          <tbody id="go-review-body"></tbody>
+        </table>
+        <div class="submit-section">
+          <h3>Try Again?</h3>
+          <div class="submit-row">
+            <button class="primary-btn" onclick="restartGame()">
+              Restart Game
+            </button>
+          </div>
+        </div>
+        <div class="footer-brand">
+          Neft Teacher &mdash; Area Architect: Area of 2D Figures &mdash; 6.G.1
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ RESULTS SCREEN ═══════ -->
+    <div class="screen" id="screen-results">
+      <div class="results">
+        <div class="results-hero">
+          <div class="r-emoji" id="results-emoji">🏆</div>
+          <h1 id="results-title">Blueprint Approved!</h1>
+          <p class="results-sub" id="results-sub"></p>
+        </div>
+        <div class="score-grid" id="results-score-grid"></div>
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Your Answer</th>
+              <th>Correct Answer</th>
+            </tr>
+          </thead>
+          <tbody id="results-review-body"></tbody>
+        </table>
+        <div class="submit-section">
+          <h3>Submit Your Blueprint Report</h3>
+          <div class="submit-row">
+            <button class="primary-btn" onclick="downloadReport()">
+              Download Report
+            </button>
+            <button class="ghost-btn" onclick="copyReport()">
+              Copy to Clipboard
+            </button>
+          </div>
+          <div class="submit-row">
+            <button class="ghost-btn" onclick="openClassroom()">
+              Google Classroom
+            </button>
+            <input
+              id="teacher-email"
+              class="field"
+              type="email"
+              placeholder="Teacher email"
+              style="max-width: 220px"
+            />
+            <button class="ghost-btn" onclick="emailReport()">
+              Email Report
+            </button>
+          </div>
+          <div class="copy-confirm" id="copy-confirm">Copied to clipboard!</div>
+          <div class="submit-row" style="margin-top: 12px">
+            <button class="ghost-btn" onclick="restartGame()">
+              Play Again
+            </button>
+          </div>
+        </div>
+        <div class="footer-brand">
+          Neft Teacher &mdash; Area Architect: Area of 2D Figures &mdash; 6.G.1
+        </div>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+
+      /* ═══════════════════════════════════════════
+         QUESTION BANK — 15 QUESTIONS (6.G.1)
+         5 Easy | 5 Medium | 5 Hard
+         ALL MATH VERIFIED
+         ═══════════════════════════════════════════ */
+
+      const QUESTIONS = [
+        // ── EASY (1-5): Rectangles & Parallelograms ──
+        {
+          id: 1,
+          difficulty: "easy",
+          text: "A rectangular lobby floor is 14 ft long and 9 ft wide. What is the area of the floor?",
+          formula: "A = b × h",
+          visual: "rect",
+          dims: { b: 14, h: 9, unit: "ft" },
+          answer: "126 sq ft",
+          options: ["126 sq ft", "46 sq ft", "63 sq ft", "252 sq ft"],
+          explain:
+            "A = b × h = 14 × 9 = 126 sq ft. Multiply the base by the height to find the area of a rectangle.",
+        },
+        {
+          id: 2,
+          difficulty: "easy",
+          text: "A parallelogram-shaped window panel has a base of 6 cm and a height of 11 cm. What is its area?",
+          formula: "A = b × h",
+          visual: "pgram",
+          dims: { b: 6, h: 11, unit: "cm" },
+          answer: "66 sq cm",
+          options: ["66 sq cm", "34 sq cm", "72 sq cm", "33 sq cm"],
+          explain:
+            "A = b × h = 6 × 11 = 66 sq cm. For a parallelogram, multiply the base by the perpendicular height.",
+        },
+        {
+          id: 3,
+          difficulty: "easy",
+          text: "An architect needs carpet for a rectangular office that is 20 ft by 15 ft. How many square feet of carpet are needed?",
+          formula: "A = b × h",
+          visual: "rect",
+          dims: { b: 20, h: 15, unit: "ft" },
+          answer: "300 sq ft",
+          options: ["300 sq ft", "70 sq ft", "150 sq ft", "350 sq ft"],
+          explain:
+            "A = b × h = 20 × 15 = 300 sq ft. The area of a rectangle is base times height.",
+        },
+        {
+          id: 4,
+          difficulty: "easy",
+          text: "A parallelogram-shaped tile has a base of 8 in. and a height of 5 in. What is the area of the tile?",
+          formula: "A = b × h",
+          visual: "pgram",
+          dims: { b: 8, h: 5, unit: "in." },
+          answer: "40 sq in.",
+          options: ["40 sq in.", "26 sq in.", "20 sq in.", "80 sq in."],
+          explain:
+            "A = b × h = 8 × 5 = 40 sq in. Use the perpendicular height, not the slant side.",
+        },
+        {
+          id: 5,
+          difficulty: "easy",
+          text: "A rectangular garden bed is 12 m long and 7.5 m wide. What is the area?",
+          formula: "A = b × h",
+          visual: "rect",
+          dims: { b: 12, h: 7.5, unit: "m" },
+          answer: "90 sq m",
+          options: ["90 sq m", "39 sq m", "45 sq m", "180 sq m"],
+          explain:
+            "A = b × h = 12 × 7.5 = 90 sq m. Multiply 12 by 7.5 to get 90.",
+        },
+
+        // ── MEDIUM (6-10): Triangles & Trapezoids ──
+        {
+          id: 6,
+          difficulty: "medium",
+          text: "A triangular roof section has a base of 16 ft and a height of 10 ft. What is the area of the roof section?",
+          formula: "A = ½ × b × h",
+          visual: "tri",
+          dims: { b: 16, h: 10, unit: "ft" },
+          answer: "80 sq ft",
+          options: ["80 sq ft", "160 sq ft", "26 sq ft", "60 sq ft"],
+          explain: "A = ½ × b × h = ½ × 16 × 10 = ½ × 160 = 80 sq ft.",
+        },
+        {
+          id: 7,
+          difficulty: "medium",
+          text: "A triangular skylight has a base of 9 cm and a height of 14 cm. What is its area?",
+          formula: "A = ½ × b × h",
+          visual: "tri",
+          dims: { b: 9, h: 14, unit: "cm" },
+          answer: "63 sq cm",
+          options: ["63 sq cm", "126 sq cm", "46 sq cm", "31.5 sq cm"],
+          explain: "A = ½ × b × h = ½ × 9 × 14 = ½ × 126 = 63 sq cm.",
+        },
+        {
+          id: 8,
+          difficulty: "medium",
+          text: "A trapezoid-shaped patio has bases of 10 ft and 14 ft, and a height of 8 ft. What is the area?",
+          formula: "A = ½ × (b₁ + b₂) × h",
+          visual: "trap",
+          dims: { b1: 10, b2: 14, h: 8, unit: "ft" },
+          answer: "96 sq ft",
+          options: ["96 sq ft", "112 sq ft", "192 sq ft", "48 sq ft"],
+          explain: "A = ½ × (10 + 14) × 8 = ½ × 24 × 8 = ½ × 192 = 96 sq ft.",
+        },
+        {
+          id: 9,
+          difficulty: "medium",
+          text: "A trapezoid-shaped wall panel has parallel sides of 6 m and 10 m, with a height of 5 m. What is the area?",
+          formula: "A = ½ × (b₁ + b₂) × h",
+          visual: "trap",
+          dims: { b1: 6, b2: 10, h: 5, unit: "m" },
+          answer: "40 sq m",
+          options: ["40 sq m", "80 sq m", "30 sq m", "50 sq m"],
+          explain: "A = ½ × (6 + 10) × 5 = ½ × 16 × 5 = ½ × 80 = 40 sq m.",
+        },
+        {
+          id: 10,
+          difficulty: "medium",
+          text: "A triangular courtyard has a base of 24 m and a height of 11 m. What is the area?",
+          formula: "A = ½ × b × h",
+          visual: "tri",
+          dims: { b: 24, h: 11, unit: "m" },
+          answer: "132 sq m",
+          options: ["132 sq m", "264 sq m", "35 sq m", "120 sq m"],
+          explain: "A = ½ × b × h = ½ × 24 × 11 = ½ × 264 = 132 sq m.",
+        },
+
+        // ── HARD (11-15): Composite Figures & Missing Dimensions ──
+        {
+          id: 11,
+          difficulty: "hard",
+          text: "A building facade is shaped like a rectangle (18 ft wide, 12 ft tall) with a triangular gable on top (base 18 ft, height 6 ft). What is the total area of the facade?",
+          formula: "Rectangle: A = b × h &nbsp;|&nbsp; Triangle: A = ½ × b × h",
+          visual: "composite1",
+          dims: { rb: 18, rh: 12, tb: 18, th: 6, unit: "ft" },
+          answer: "270 sq ft",
+          options: ["270 sq ft", "216 sq ft", "324 sq ft", "234 sq ft"],
+          explain:
+            "Rectangle: 18 × 12 = 216 sq ft. Triangle: ½ × 18 × 6 = 54 sq ft. Total: 216 + 54 = 270 sq ft.",
+        },
+        {
+          id: 12,
+          difficulty: "hard",
+          text: "An L-shaped hallway can be split into two rectangles: one is 10 m by 4 m, and the other is 6 m by 3 m. What is the total area?",
+          formula: "Add the areas of both rectangles",
+          visual: "compositeL",
+          dims: { r1b: 10, r1h: 4, r2b: 6, r2h: 3, unit: "m" },
+          answer: "58 sq m",
+          options: ["58 sq m", "40 sq m", "72 sq m", "46 sq m"],
+          explain:
+            "Rectangle 1: 10 × 4 = 40 sq m. Rectangle 2: 6 × 3 = 18 sq m. Total: 40 + 18 = 58 sq m.",
+        },
+        {
+          id: 13,
+          difficulty: "hard",
+          text: "A rectangular wall is 20 ft by 10 ft. A triangular window (base 4 ft, height 3 ft) is cut out. What is the remaining wall area?",
+          formula: "Wall area − Window area",
+          visual: "compositeSub",
+          dims: { rb: 20, rh: 10, tb: 4, th: 3, unit: "ft" },
+          answer: "194 sq ft",
+          options: ["194 sq ft", "200 sq ft", "188 sq ft", "206 sq ft"],
+          explain:
+            "Wall: 20 × 10 = 200 sq ft. Window: ½ × 4 × 3 = 6 sq ft. Remaining: 200 − 6 = 194 sq ft.",
+        },
+        {
+          id: 14,
+          difficulty: "hard",
+          text: "A parallelogram has an area of 108 sq cm and a base of 12 cm. What is its height?",
+          formula: "A = b × h &nbsp;→&nbsp; h = A ÷ b",
+          visual: "pgram",
+          dims: { b: 12, h: 9, unit: "cm" },
+          answer: "9 cm",
+          options: ["9 cm", "12 cm", "54 cm", "6 cm"],
+          explain: "A = b × h, so h = A ÷ b = 108 ÷ 12 = 9 cm.",
+        },
+        {
+          id: 15,
+          difficulty: "hard",
+          text: "A triangle has an area of 60 sq ft and a height of 10 ft. What is its base?",
+          formula: "A = ½ × b × h &nbsp;→&nbsp; b = 2A ÷ h",
+          visual: "tri",
+          dims: { b: 12, h: 10, unit: "ft" },
+          answer: "12 ft",
+          options: ["12 ft", "6 ft", "120 ft", "3 ft"],
+          explain:
+            "A = ½ × b × h, so b = 2A ÷ h = 2(60) ÷ 10 = 120 ÷ 10 = 12 ft.",
+        },
+      ];
+
+      /* ═══════════════════════════════════════════
+         STATE
+         ═══════════════════════════════════════════ */
+      const STORAGE_KEY = "areaArchitect_v1";
+      let state = {
+        name: "",
+        period: "",
+        date: "",
+        current: 0,
+        score: 0,
+        streak: 0,
+        bestStreak: 0,
+        lives: 3,
+        startTime: 0,
+        elapsed: 0,
+        answers: [], // { qId, chosen, correct, time }
+        finished: false,
+      };
+      let timerInterval = null;
+
+      /* ── Save / Load ── */
+      function saveState() {
+        state.elapsed = Date.now() - state.startTime;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return null;
+      }
+
+      function clearSave() {
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById("resume-banner").classList.remove("show");
+      }
+
+      /* ── Init ── */
+      (function init() {
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("student-date").value = today;
+        const saved = loadState();
+        if (saved && !saved.finished && saved.answers.length > 0) {
+          const banner = document.getElementById("resume-banner");
+          document.getElementById("resume-info").textContent =
+            `${saved.name} — Q${saved.current + 1}/15 — ${saved.score} pts`;
+          banner.classList.add("show");
+        }
+      })();
+
+      function resumeGame() {
+        const saved = loadState();
+        if (!saved) return;
+        state = saved;
+        state.startTime = Date.now() - state.elapsed;
+        showScreen("screen-game");
+        startTimer();
+        renderQuestion();
+      }
+
+      /* ═══════════════════════════════════════════
+         GAME FLOW
+         ═══════════════════════════════════════════ */
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      function startGame() {
+        const name = document.getElementById("student-name").value.trim();
+        const period = document.getElementById("student-period").value.trim();
+        const date = document.getElementById("student-date").value;
+        if (!name) {
+          alert("Please enter your name.");
+          return;
+        }
+        state = {
+          name,
+          period,
+          date,
+          current: 0,
+          score: 0,
+          streak: 0,
+          bestStreak: 0,
+          lives: 3,
+          startTime: Date.now(),
+          elapsed: 0,
+          answers: [],
+          finished: false,
+        };
+        clearSave();
+        showScreen("screen-game");
+        startTimer();
+        renderQuestion();
+      }
+
+      function restartGame() {
+        clearSave();
+        showScreen("screen-login");
+      }
+
+      /* ── Timer ── */
+      function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+      }
+
+      function updateTimer() {
+        const secs = Math.floor((Date.now() - state.startTime) / 1000);
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        document.getElementById("hdr-timer").textContent =
+          `${m}:${s.toString().padStart(2, "0")}`;
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval);
+        updateTimer();
+      }
+
+      /* ── Header Update ── */
+      function updateHeader() {
+        const q = state.current + 1;
+        document.getElementById("hdr-progress").textContent = `Q${q} / 15`;
+        document.getElementById("progress-fill").style.width =
+          `${(state.current / 15) * 100}%`;
+        document.getElementById("hdr-score").textContent = state.score;
+        document.getElementById("hdr-streak").textContent = state.streak;
+        let hearts = "";
+        for (let i = 0; i < 3; i++) hearts += i < state.lives ? "❤️" : "🦨";
+        document.getElementById("hdr-lives").textContent = hearts;
+      }
+
+      /* ═══════════════════════════════════════════
+         RENDER QUESTION
+         ═══════════════════════════════════════════ */
+      function renderQuestion() {
+        updateHeader();
+        const q = QUESTIONS[state.current];
+        const area = document.getElementById("question-area");
+
+        // Shuffle options for this question
+        const shuffled = shuffleWithAnswer(q.options, q.answer);
+        const letters = ["A", "B", "C", "D"];
+
+        let streakHTML = "";
+        if (state.streak >= 3) {
+          streakHTML = `<div class="streak-banner show">🔥 ${state.streak}-question streak!</div>`;
+        }
+
+        area.innerHTML = `
+          <div class="fade-in">
+            ${streakHTML}
+            <div class="q-card">
+              <span class="q-badge ${q.difficulty}">${q.difficulty}</span>
+              <div class="q-number">Question ${q.id} of 15</div>
+              <div class="q-text">${q.text}</div>
+              <div class="q-formula">${q.formula}</div>
+              <div class="q-visual" id="q-visual"></div>
+              <div class="options-grid" id="options-grid">
+                ${shuffled
+                  .map(
+                    (opt, i) => `
+                  <button class="opt-btn" onclick="selectAnswer(this, '${escHTML(opt)}', '${escHTML(q.answer)}')" data-val="${escHTML(opt)}">
+                    <span class="opt-letter">${letters[i]}</span>${opt}
+                  </button>`,
+                  )
+                  .join("")}
+              </div>
+              <div class="feedback-box" id="feedback-box"></div>
+              <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+                ${state.current < 14 ? "Next Question →" : "See Results →"}
+              </button>
+            </div>
+          </div>`;
+
+        drawVisual(q);
+      }
+
+      function escHTML(s) {
+        return s.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      }
+
+      function shuffleWithAnswer(options, answer) {
+        const arr = [...options];
+        // Fisher-Yates shuffle
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      /* ═══════════════════════════════════════════
+         ANSWER HANDLING
+         ═══════════════════════════════════════════ */
+      function selectAnswer(btn, chosen, correct) {
+        // Prevent double-click
+        const btns = document.querySelectorAll(".opt-btn");
+        if (btn.classList.contains("locked")) return;
+        btns.forEach((b) => b.classList.add("locked"));
+
+        const isCorrect = chosen === correct;
+        const q = QUESTIONS[state.current];
+
+        // Mark buttons
+        btns.forEach((b) => {
+          const val = b.getAttribute("data-val");
+          if (val === correct) b.classList.add("correct");
+          if (val === chosen && !isCorrect) b.classList.add("wrong");
+        });
+
+        // Update state
+        if (isCorrect) {
+          state.streak++;
+          if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+          let pts = 10;
+          if (q.difficulty === "medium") pts = 15;
+          if (q.difficulty === "hard") pts = 20;
+          if (state.streak >= 5) pts += 5;
+          else if (state.streak >= 3) pts += 3;
+          state.score += pts;
+        } else {
+          state.streak = 0;
+          state.lives--;
+        }
+
+        state.answers.push({
+          qId: q.id,
+          chosen: chosen,
+          correct: correct,
+          isCorrect,
+        });
+
+        // Feedback
+        const fb = document.getElementById("feedback-box");
+        if (isCorrect) {
+          let bonus = "";
+          if (state.streak >= 5) bonus = " (+5 streak bonus!)";
+          else if (state.streak >= 3) bonus = " (+3 streak bonus!)";
+          fb.innerHTML = `<div class="fb-title">✅ Correct!${bonus}</div>${q.explain}`;
+          fb.className = "feedback-box show ok";
+        } else {
+          fb.innerHTML = `<div class="fb-title">❌ Incorrect</div>The correct answer is <strong>${correct}</strong>. ${q.explain}`;
+          fb.className = "feedback-box show no";
+        }
+
+        updateHeader();
+        saveState();
+
+        // Show next or handle game over
+        if (state.lives <= 0) {
+          setTimeout(() => showGameOver(), 1800);
+        } else {
+          document.getElementById("next-btn").classList.add("show");
+        }
+      }
+
+      function nextQuestion() {
+        state.current++;
+        if (state.current >= 15) {
+          finishGame();
+        } else {
+          renderQuestion();
+        }
+      }
+
+      /* ═══════════════════════════════════════════
+         GAME OVER / FINISH
+         ═══════════════════════════════════════════ */
+      function showGameOver() {
+        stopTimer();
+        state.finished = true;
+        state.elapsed = Date.now() - state.startTime;
+        saveState();
+        showScreen("screen-gameover");
+        const correct = state.answers.filter((a) => a.isCorrect).length;
+        const total = state.answers.length;
+        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+        const mins = Math.floor(state.elapsed / 60000);
+
+        document.getElementById("go-score-grid").innerHTML = buildScoreCards(
+          correct,
+          total,
+          pct,
+          mins,
+        );
+        document.getElementById("go-review-body").innerHTML = buildReviewRows();
+      }
+
+      function finishGame() {
+        stopTimer();
+        state.finished = true;
+        state.elapsed = Date.now() - state.startTime;
+        saveState();
+        showScreen("screen-results");
+
+        const correct = state.answers.filter((a) => a.isCorrect).length;
+        const pct = Math.round((correct / 15) * 100);
+        const mins = Math.floor(state.elapsed / 60000);
+
+        // Title/emoji based on score
+        let emoji = "🏆",
+          title = "Blueprint Approved!";
+        if (pct === 100) {
+          emoji = "⭐";
+          title = "Master Architect!";
+        } else if (pct >= 80) {
+          emoji = "🏆";
+          title = "Blueprint Approved!";
+        } else if (pct >= 60) {
+          emoji = "💪";
+          title = "Solid Foundation!";
+        } else {
+          emoji = "🛠️";
+          title = "Keep Building!";
+        }
+
+        document.getElementById("results-emoji").textContent = emoji;
+        document.getElementById("results-title").textContent = title;
+        document.getElementById("results-sub").textContent =
+          `${state.name} • Period ${state.period} • ${state.date}`;
+
+        document.getElementById("results-score-grid").innerHTML =
+          buildScoreCards(correct, 15, pct, mins);
+        document.getElementById("results-review-body").innerHTML =
+          buildReviewRows();
+      }
+
+      function buildScoreCards(correct, total, pct, mins) {
+        return `
+          <div class="score-card"><div class="big">${correct}/${total}</div><div class="label">Correct</div></div>
+          <div class="score-card"><div class="big">${pct}%</div><div class="label">Accuracy</div></div>
+          <div class="score-card"><div class="big">${state.score}</div><div class="label">Points</div></div>
+          <div class="score-card"><div class="big">${mins}m</div><div class="label">Time</div></div>`;
+      }
+
+      function buildReviewRows() {
+        return state.answers
+          .map((a) => {
+            const q = QUESTIONS.find((qq) => qq.id === a.qId);
+            const cls = a.isCorrect ? "good" : "needs";
+            return `<tr class="${cls}">
+              <td>${a.qId}</td>
+              <td>${q.text.substring(0, 80)}${q.text.length > 80 ? "..." : ""}</td>
+              <td>${a.isCorrect ? "✅ " : "❌ "}${a.chosen}</td>
+              <td>${a.correct}</td>
+            </tr>`;
+          })
+          .join("");
+      }
+
+      /* ═══════════════════════════════════════════
+         SVG VISUALS
+         ═══════════════════════════════════════════ */
+      function drawVisual(q) {
+        const container = document.getElementById("q-visual");
+        if (!container) return;
+        const d = q.dims;
+        let svg = "";
+
+        switch (q.visual) {
+          case "rect":
+            svg = buildRectSVG(d);
+            break;
+          case "pgram":
+            svg = buildPgramSVG(d);
+            break;
+          case "tri":
+            svg = buildTriSVG(d);
+            break;
+          case "trap":
+            svg = buildTrapSVG(d);
+            break;
+          case "composite1":
+            svg = buildComposite1SVG(d);
+            break;
+          case "compositeL":
+            svg = buildCompositeLSVG(d);
+            break;
+          case "compositeSub":
+            svg = buildCompositeSubSVG(d);
+            break;
+          default:
+            svg = "";
+        }
+        container.innerHTML = svg;
+      }
+
+      function buildRectSVG(d) {
+        return `<svg width="220" height="160" viewBox="0 0 220 160">
+          <rect x="20" y="20" width="180" height="110" fill="#d1fae5" stroke="#10b981" stroke-width="2.5" rx="2"/>
+          <text x="110" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#134e4a">${d.b} ${d.unit}</text>
+          <text x="210" y="78" text-anchor="start" font-size="13" font-weight="700" fill="#134e4a" transform="rotate(90,210,78)">${d.h} ${d.unit}</text>
+        </svg>`;
+      }
+
+      function buildPgramSVG(d) {
+        return `<svg width="240" height="160" viewBox="0 0 240 160">
+          <polygon points="50,20 220,20 190,130 20,130" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.5"/>
+          <line x1="50" y1="20" x2="50" y2="130" stroke="#134e4a" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <text x="120" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#134e4a">${d.b} ${d.unit}</text>
+          <text x="38" y="78" text-anchor="end" font-size="13" font-weight="700" fill="#134e4a">${d.h} ${d.unit}</text>
+        </svg>`;
+      }
+
+      function buildTriSVG(d) {
+        return `<svg width="220" height="170" viewBox="0 0 220 170">
+          <polygon points="110,15 20,140 200,140" fill="#dbeafe" stroke="#3b82f6" stroke-width="2.5"/>
+          <line x1="110" y1="15" x2="110" y2="140" stroke="#134e4a" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <text x="110" y="160" text-anchor="middle" font-size="13" font-weight="700" fill="#134e4a">${d.b} ${d.unit}</text>
+          <text x="98" y="82" text-anchor="end" font-size="12" font-weight="700" fill="#134e4a">${d.h} ${d.unit}</text>
+        </svg>`;
+      }
+
+      function buildTrapSVG(d) {
+        return `<svg width="260" height="170" viewBox="0 0 260 170">
+          <polygon points="70,20 190,20 230,140 30,140" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2.5"/>
+          <line x1="70" y1="20" x2="70" y2="140" stroke="#134e4a" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <text x="130" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="#134e4a">${d.b1} ${d.unit}</text>
+          <text x="130" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#134e4a">${d.b2} ${d.unit}</text>
+          <text x="58" y="85" text-anchor="end" font-size="12" font-weight="700" fill="#134e4a">${d.h} ${d.unit}</text>
+        </svg>`;
+      }
+
+      function buildComposite1SVG(d) {
+        // Rectangle with triangle on top
+        return `<svg width="240" height="200" viewBox="0 0 240 200">
+          <rect x="20" y="80" width="200" height="100" fill="#d1fae5" stroke="#10b981" stroke-width="2.5"/>
+          <polygon points="20,80 120,20 220,80" fill="#dbeafe" stroke="#3b82f6" stroke-width="2.5"/>
+          <line x1="120" y1="20" x2="120" y2="80" stroke="#134e4a" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <text x="120" y="195" text-anchor="middle" font-size="12" font-weight="700" fill="#134e4a">${d.rb} ${d.unit}</text>
+          <text x="12" y="135" text-anchor="end" font-size="11" font-weight="700" fill="#134e4a">${d.rh} ${d.unit}</text>
+          <text x="130" y="54" text-anchor="start" font-size="11" font-weight="700" fill="#134e4a">${d.th} ${d.unit}</text>
+        </svg>`;
+      }
+
+      function buildCompositeLSVG(d) {
+        // L-shape: two rectangles
+        return `<svg width="240" height="180" viewBox="0 0 240 180">
+          <rect x="20" y="20" width="160" height="60" fill="#d1fae5" stroke="#10b981" stroke-width="2.5"/>
+          <rect x="20" y="80" width="90" height="70" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.5"/>
+          <text x="100" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#134e4a">${d.r1b} ${d.unit}</text>
+          <text x="190" y="55" text-anchor="start" font-size="11" font-weight="700" fill="#134e4a">${d.r1h} ${d.unit}</text>
+          <text x="65" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#134e4a">${d.r2b} ${d.unit}</text>
+          <text x="120" y="120" text-anchor="start" font-size="11" font-weight="700" fill="#134e4a">${d.r2h} ${d.unit}</text>
+        </svg>`;
+      }
+
+      function buildCompositeSubSVG(d) {
+        // Rectangle with triangular cutout
+        return `<svg width="240" height="160" viewBox="0 0 240 160">
+          <rect x="20" y="20" width="200" height="110" fill="#d1fae5" stroke="#10b981" stroke-width="2.5"/>
+          <polygon points="140,50 170,50 155,80" fill="white" stroke="#c0392b" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="155" y="44" text-anchor="middle" font-size="10" font-weight="700" fill="#c0392b">${d.tb} ${d.unit}</text>
+          <text x="175" y="68" text-anchor="start" font-size="10" font-weight="700" fill="#c0392b">${d.th} ${d.unit}</text>
+          <text x="120" y="148" text-anchor="middle" font-size="12" font-weight="700" fill="#134e4a">${d.rb} ${d.unit}</text>
+          <text x="230" y="78" text-anchor="start" font-size="12" font-weight="700" fill="#134e4a">${d.rh} ${d.unit}</text>
+        </svg>`;
+      }
+
+      /* ═══════════════════════════════════════════
+         REPORTING
+         ═══════════════════════════════════════════ */
+      function buildReportText() {
+        const correct = state.answers.filter((a) => a.isCorrect).length;
+        const total = state.answers.length;
+        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+        const mins = Math.floor(state.elapsed / 60000);
+
+        let lines = [
+          "AREA ARCHITECT — Blueprint Report",
+          "Standard: 6.G.1 — Area of 2D Figures",
+          "========================================",
+          `Student: ${state.name}`,
+          `Period: ${state.period}`,
+          `Date: ${state.date}`,
+          "",
+          `Score: ${correct}/${total} (${pct}%)`,
+          `Points: ${state.score}`,
+          `Best Streak: ${state.bestStreak}`,
+          `Time: ${mins} min`,
+          `Lives Remaining: ${state.lives}`,
+          "",
+          "QUESTION REVIEW",
+          "----------------------------------------",
+        ];
+
+        state.answers.forEach((a) => {
+          const q = QUESTIONS.find((qq) => qq.id === a.qId);
+          lines.push(`Q${a.qId} [${q.difficulty.toUpperCase()}]: ${q.text}`);
+          lines.push(
+            `  Your answer: ${a.chosen} ${a.isCorrect ? "(CORRECT)" : "(WRONG — Correct: " + a.correct + ")"}`,
+          );
+          lines.push("");
+        });
+
+        lines.push("========================================");
+        lines.push("Neft Teacher — Area Architect — 6.G.1");
+        return lines.join("\n");
+      }
+
+      function downloadReport() {
+        const text = buildReportText();
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `AreaArchitect_${state.name.replace(/\s+/g, "_")}_${state.date}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function copyReport() {
+        navigator.clipboard
+          .writeText(buildReportText())
+          .then(() => {
+            const el = document.getElementById("copy-confirm");
+            el.style.display = "block";
+            setTimeout(() => (el.style.display = "none"), 2500);
+          })
+          .catch(() => alert("Could not copy. Try downloading instead."));
+      }
+
+      function openClassroom() {
+        window.open(
+          "https://classroom.google.com/share?url=" +
+            encodeURIComponent(window.location.href),
+          "_blank",
+        );
+      }
+
+      function emailReport() {
+        const email = document.getElementById("teacher-email").value.trim();
+        if (!email) {
+          alert("Please enter a teacher email address.");
+          return;
+        }
+        const subject = encodeURIComponent(
+          `Area Architect Report — ${state.name}`,
+        );
+        const body = encodeURIComponent(buildReportText());
+        window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stats Slam 🏀</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --red: #d0342c;
+        --bg: #f4f5f7;
+        --navy: #1e293b;
+        --gold: #d97706;
+        --green: #16a34a;
+        --white: #fff;
+        --shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--navy);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .screen {
+        display: none;
+        width: 100%;
+        max-width: 560px;
+        animation: fadeIn 0.3s ease;
+      }
+      .screen.active {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      /* LOGIN */
+      .login-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 40px 32px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        width: 100%;
+      }
+      .login-card h1 {
+        font-size: 2rem;
+        color: var(--red);
+        margin-bottom: 4px;
+      }
+      .login-card .emoji-title {
+        font-size: 3rem;
+        margin-bottom: 8px;
+      }
+      .login-card p {
+        color: #64748b;
+        margin-bottom: 24px;
+        font-size: 0.95rem;
+      }
+      .login-card input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        margin-bottom: 16px;
+        transition: border-color 0.2s;
+      }
+      .login-card input:focus {
+        outline: none;
+        border-color: var(--red);
+      }
+      .btn {
+        padding: 14px 32px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: var(--red);
+        color: var(--white);
+        box-shadow: 0 4px 12px rgba(208, 52, 44, 0.3);
+      }
+      .btn-primary:hover {
+        box-shadow: 0 6px 20px rgba(208, 52, 44, 0.4);
+      }
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      /* HUD */
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hud-item {
+        background: var(--white);
+        border-radius: 10px;
+        padding: 8px 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .hud-item .label {
+        color: #94a3b8;
+        font-weight: 400;
+      }
+      .lives {
+        color: var(--red);
+      }
+      .streak-val {
+        color: var(--gold);
+      }
+      .timer-bar {
+        width: 100%;
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 3px;
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+      .timer-fill {
+        height: 100%;
+        background: var(--red);
+        border-radius: 3px;
+        transition: width 0.25s linear;
+      }
+      /* QUESTION */
+      .q-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 24px;
+        box-shadow: var(--shadow);
+        width: 100%;
+      }
+      .q-number {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .q-tier {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+      .tier-easy {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .tier-medium {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .tier-hard {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .q-text {
+        font-size: 1.1rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .q-data {
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-family: "Courier New", monospace;
+        font-size: 0.95rem;
+        text-align: center;
+        font-weight: 600;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .opt-btn {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: var(--white);
+        text-align: left;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .opt-btn:hover:not(:disabled) {
+        border-color: var(--red);
+        background: #fef2f2;
+      }
+      .opt-btn:focus {
+        outline: 2px solid var(--red);
+        outline-offset: 2px;
+      }
+      .opt-btn.correct {
+        border-color: var(--green);
+        background: #dcfce7;
+      }
+      .opt-btn.wrong {
+        border-color: var(--red);
+        background: #fee2e2;
+      }
+      .opt-btn:disabled {
+        cursor: default;
+      }
+      .feedback-box {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        display: none;
+      }
+      .feedback-box.show {
+        display: block;
+        animation: fadeIn 0.25s ease;
+      }
+      .feedback-box.correct-fb {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #86efac;
+      }
+      .feedback-box.wrong-fb {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+      }
+      .next-btn {
+        margin-top: 16px;
+        align-self: flex-end;
+      }
+      /* RESULTS */
+      .results-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 36px 28px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        width: 100%;
+      }
+      .results-card h2 {
+        font-size: 1.8rem;
+        color: var(--red);
+        margin-bottom: 4px;
+      }
+      .score-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px auto;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--white);
+      }
+      .stars {
+        font-size: 2rem;
+        margin: 12px 0;
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .stat-box {
+        background: var(--bg);
+        border-radius: 10px;
+        padding: 14px 12px;
+      }
+      .stat-box .val {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .stat-box .lbl {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        margin-top: 2px;
+      }
+      .review-section {
+        text-align: left;
+        margin-top: 24px;
+      }
+      .review-section h3 {
+        font-size: 1rem;
+        margin-bottom: 12px;
+        color: var(--navy);
+      }
+      .review-item {
+        background: var(--bg);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 8px;
+        font-size: 0.88rem;
+        line-height: 1.4;
+      }
+      .review-item.r-correct {
+        border-left: 4px solid var(--green);
+      }
+      .review-item.r-wrong {
+        border-left: 4px solid var(--red);
+      }
+      .review-item .ri-q {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .review-item .ri-a {
+        color: #64748b;
+      }
+      .review-item .ri-a span {
+        font-weight: 600;
+      }
+      .footer {
+        margin-top: 24px;
+        font-size: 0.75rem;
+        color: #94a3b8;
+        text-align: center;
+      }
+      .footer span {
+        color: var(--red);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="screen active">
+      <div class="login-card">
+        <div class="emoji-title">🏀</div>
+        <h1>Stats Slam</h1>
+        <p>
+          Use your statistics skills to dominate the court!<br />15 questions
+          across 3 difficulty tiers.
+        </p>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Enter your name"
+          maxlength="30"
+          aria-label="Enter your name"
+        />
+        <br />
+        <button
+          class="btn btn-primary"
+          id="startBtn"
+          disabled
+          onclick="startGame()"
+        >
+          Let's Play!
+        </button>
+      </div>
+      <div class="footer">Powered by <span>Neft Teacher</span></div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" class="screen">
+      <div class="hud">
+        <div class="hud-item">
+          <span class="label">Q</span> <span id="hudQ">1/15</span>
+        </div>
+        <div class="hud-item">
+          <span class="label">Score</span> <span id="hudScore">0</span>
+        </div>
+        <div class="hud-item lives">
+          <span class="label">Lives</span> <span id="hudLives">❤️❤️❤️</span>
+        </div>
+        <div class="hud-item">
+          <span class="label">Streak</span>
+          <span class="streak-val" id="hudStreak">0🔥</span>
+        </div>
+        <div class="hud-item">
+          <span class="label">⏱</span> <span id="hudTimer">30</span>
+        </div>
+      </div>
+      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+      <div class="q-card">
+        <div class="q-number" id="qNumber">Question 1 of 15</div>
+        <div class="q-tier tier-easy" id="qTier">Easy</div>
+        <div class="q-text" id="qText"></div>
+        <div class="q-data" id="qData" aria-label="Data set"></div>
+        <div
+          class="options"
+          id="optionsContainer"
+          role="radiogroup"
+          aria-label="Answer choices"
+        ></div>
+        <div class="feedback-box" id="feedbackBox" aria-live="polite"></div>
+        <button
+          class="btn btn-primary next-btn"
+          id="nextBtn"
+          style="display: none"
+          onclick="nextQuestion()"
+        >
+          Next →
+        </button>
+      </div>
+      <div class="footer">Powered by <span>Neft Teacher</span></div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="resultsScreen" class="screen">
+      <div class="results-card">
+        <div style="font-size: 2.5rem">🏀</div>
+        <h2>Game Over!</h2>
+        <p id="resultsName"></p>
+        <div class="score-circle" id="scoreCircle">0</div>
+        <div class="stars" id="starsDisplay" aria-label="Star rating"></div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="val" id="rCorrect">0</div>
+            <div class="lbl">Correct</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" id="rAccuracy">0%</div>
+            <div class="lbl">Accuracy</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" id="rStreak">0</div>
+            <div class="lbl">Best Streak</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" id="rTime">0s</div>
+            <div class="lbl">Total Time</div>
+          </div>
+        </div>
+        <div class="review-section" id="reviewSection"><h3>📋 Review</h3></div>
+        <br />
+        <button class="btn btn-primary" onclick="resetGame()">
+          Play Again 🔄
+        </button>
+      </div>
+      <div class="footer">Powered by <span>Neft Teacher</span></div>
+    </div>
+
+    <script>
+      const QUESTIONS = [
+        // ===== EASY (1-5) =====
+        {
+          tier: "easy",
+          text: "A basketball player scored the following points in 5 games. What is the mean (average) number of points?",
+          data: "12, 18, 15, 21, 14",
+          options: ["16", "15", "18", "14"],
+          answer: 0,
+          explanation: "Mean = (12 + 18 + 15 + 21 + 14) ÷ 5 = 80 ÷ 5 = 16",
+        },
+        {
+          tier: "easy",
+          text: "A volleyball player recorded these assist counts over 5 matches. What is the median?",
+          data: "8, 3, 7, 12, 5",
+          options: ["7", "8", "5", "3"],
+          answer: 0,
+          explanation: "Sort the data: 3, 5, 7, 8, 12. The middle value is 7.",
+        },
+        {
+          tier: "easy",
+          text: "A soccer goalie recorded these saves per game. What is the mode?",
+          data: "22, 18, 22, 15, 22, 18",
+          options: ["22", "18", "20", "15"],
+          answer: 0,
+          explanation:
+            "22 appears 3 times, more than any other value, so the mode is 22.",
+        },
+        {
+          tier: "easy",
+          text: "These are a sprinter's 100m dash times (seconds). What is the range?",
+          data: "45, 52, 38, 61, 44",
+          options: ["23", "17", "16", "38"],
+          answer: 0,
+          explanation: "Range = maximum − minimum = 61 − 38 = 23.",
+        },
+        {
+          tier: "easy",
+          text: "A tennis player won these numbers of games across 4 sets. What is the mean?",
+          data: "10, 8, 12, 6",
+          options: ["9", "10", "8", "11"],
+          answer: 0,
+          explanation: "Mean = (10 + 8 + 12 + 6) ÷ 4 = 36 ÷ 4 = 9.",
+        },
+        // ===== MEDIUM (6-10) =====
+        {
+          tier: "medium",
+          text: "A swimmer's lap times (seconds) over 7 practices are shown. What is the mean, rounded to the nearest tenth?",
+          data: "24, 31, 28, 35, 22, 18, 26",
+          options: ["26.3", "28.0", "26.0", "27.5"],
+          answer: 0,
+          explanation: "Mean = (24+31+28+35+22+18+26) ÷ 7 = 184 ÷ 7 ≈ 26.3",
+        },
+        {
+          tier: "medium",
+          text: "Which of the following is a statistical question?",
+          data: "",
+          options: [
+            "How do the points scored by our team vary from game to game?",
+            "How many points did our team score last Tuesday?",
+            "Who is the tallest player on the roster?",
+            "What color are the team jerseys?",
+          ],
+          answer: 0,
+          explanation:
+            "A statistical question expects variability in the data. Asking how points 'vary' anticipates different answers across games.",
+        },
+        {
+          tier: "medium",
+          text: "A baseball player's batting averages over 7 seasons are shown. What is the range?",
+          data: ".278, .282, .291, .285, .288, .279, .294",
+          options: [".016", ".015", ".012", ".022"],
+          answer: 0,
+          explanation: "Range = .294 − .278 = .016",
+        },
+        {
+          tier: "medium",
+          text: "A track team recorded these long-jump distances (ft). What is the median?",
+          data: "14, 17, 19, 22, 25, 28",
+          options: ["20.5", "19", "22", "21"],
+          answer: 0,
+          explanation:
+            "With 6 values sorted, the median is the average of the 3rd and 4th: (19 + 22) ÷ 2 = 20.5",
+        },
+        {
+          tier: "medium",
+          text: "A box plot shows: Min = 55, Q1 = 65, Median = 72, Q3 = 80, Max = 92. What is the interquartile range (IQR)?",
+          data: "Min 55 · Q1 65 · Med 72 · Q3 80 · Max 92",
+          options: ["15", "37", "7", "12"],
+          answer: 0,
+          explanation: "IQR = Q3 − Q1 = 80 − 65 = 15",
+        },
+        // ===== HARD (11-15) =====
+        {
+          tier: "hard",
+          text: "A gymnast's scores over 5 routines are shown. What is the mean absolute deviation (MAD)?",
+          data: "70, 75, 80, 85, 90",
+          options: ["6", "5", "8", "10"],
+          answer: 0,
+          explanation:
+            "Mean = 80. Deviations from mean: |70−80|=10, |75−80|=5, |80−80|=0, |85−80|=5, |90−80|=10. MAD = (10+5+0+5+10) ÷ 5 = 30 ÷ 5 = 6.",
+        },
+        {
+          tier: "hard",
+          text: "A hockey team's goals per game were: 8, 10, 9, 11, 42. The 42 was a data-entry error. How much does removing it change the mean?",
+          data: "8, 10, 9, 11, 42",
+          options: [
+            "The mean decreases by 6.5",
+            "The mean decreases by 3",
+            "The mean increases by 6.5",
+            "The mean stays the same",
+          ],
+          answer: 0,
+          explanation:
+            "Mean with 42: (8+10+9+11+42)÷5 = 80÷5 = 16. Mean without: (8+10+9+11)÷4 = 38÷4 = 9.5. Difference = 16 − 9.5 = 6.5, so the mean decreases by 6.5.",
+        },
+        {
+          tier: "hard",
+          text: "A runner's race times (min) are: 3, 4, 4, 5, 5, 5, 6, 25. Which measure of center best represents the typical time?",
+          data: "3, 4, 4, 5, 5, 5, 6, 25",
+          options: ["Median", "Mean", "Mode", "Range"],
+          answer: 0,
+          explanation:
+            "The outlier 25 pulls the mean to 7.125, which doesn't represent typical times. The median (5) is not affected by the outlier and better represents the center.",
+        },
+        {
+          tier: "hard",
+          text: "Team A scores: 72, 75, 78, 80, 82, 85, 88. Team B scores: 60, 65, 75, 80, 85, 90, 95. Which statement is true?",
+          data: "A: 72 75 78 80 82 85 88 | B: 60 65 75 80 85 90 95",
+          options: [
+            "Team A is more consistent because its range (16) is smaller than Team B's range (35)",
+            "Team B is more consistent because it has higher scores",
+            "Both teams have the same consistency",
+            "Team A is more consistent because its mean is higher",
+          ],
+          answer: 0,
+          explanation:
+            "Team A range = 88−72 = 16. Team B range = 95−60 = 35. A smaller range means less spread, so Team A is more consistent.",
+        },
+        {
+          tier: "hard",
+          text: "A basketball player's rebounds over 5 games are shown. What is the mean absolute deviation (MAD)?",
+          data: "15, 18, 22, 25, 20",
+          options: ["2.8", "3.2", "4.0", "2.0"],
+          answer: 0,
+          explanation:
+            "Mean = (15+18+22+25+20)÷5 = 100÷5 = 20. Deviations: |15−20|=5, |18−20|=2, |22−20|=2, |25−20|=5, |20−20|=0. MAD = (5+2+2+5+0)÷5 = 14÷5 = 2.8",
+        },
+      ];
+
+      // Shuffle options for each question while tracking the correct answer
+      function shuffleQuestions() {
+        QUESTIONS.forEach((q) => {
+          const correctText = q.options[q.answer];
+          const indices = q.options.map((_, i) => i);
+          for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+          }
+          const shuffled = indices.map((i) => q.options[i]);
+          q.answer = shuffled.indexOf(correctText);
+          q.options = shuffled;
+        });
+      }
+
+      const STORAGE_KEY = "statsSlam_v1";
+      const TIME_PER_Q = 30;
+
+      let state = {
+        name: "",
+        current: 0,
+        score: 0,
+        lives: 3,
+        streak: 0,
+        bestStreak: 0,
+        answers: [],
+        startTime: 0,
+        timerLeft: TIME_PER_Q,
+        timerInterval: null,
+      };
+
+      // DOM refs
+      const $ = (id) => document.getElementById(id);
+      const nameInput = $("nameInput");
+      const startBtn = $("startBtn");
+
+      nameInput.addEventListener("input", () => {
+        startBtn.disabled = nameInput.value.trim().length < 1;
+      });
+      nameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !startBtn.disabled) startGame();
+      });
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        $(id).classList.add("active");
+      }
+
+      function startGame() {
+        state.name = nameInput.value.trim();
+        state.current = 0;
+        state.score = 0;
+        state.lives = 3;
+        state.streak = 0;
+        state.bestStreak = 0;
+        state.answers = [];
+        state.startTime = Date.now();
+        shuffleQuestions();
+        showScreen("gameScreen");
+        renderQuestion();
+      }
+
+      function updateHUD() {
+        $("hudQ").textContent = `${state.current + 1}/15`;
+        $("hudScore").textContent = state.score;
+        $("hudLives").textContent =
+          "❤️".repeat(state.lives) + "🖤".repeat(3 - state.lives);
+        $("hudStreak").textContent = state.streak + "🔥";
+      }
+
+      function startTimer() {
+        state.timerLeft = TIME_PER_Q;
+        $("hudTimer").textContent = state.timerLeft;
+        $("timerFill").style.width = "100%";
+        clearInterval(state.timerInterval);
+        state.timerInterval = setInterval(() => {
+          state.timerLeft--;
+          $("hudTimer").textContent = Math.max(0, state.timerLeft);
+          $("timerFill").style.width =
+            (state.timerLeft / TIME_PER_Q) * 100 + "%";
+          if (state.timerLeft <= 5) $("timerFill").style.background = "#ef4444";
+          else $("timerFill").style.background = "var(--red)";
+          if (state.timerLeft <= 0) {
+            clearInterval(state.timerInterval);
+            handleTimeout();
+          }
+        }, 1000);
+      }
+
+      function handleTimeout() {
+        const q = QUESTIONS[state.current];
+        state.lives--;
+        state.streak = 0;
+        state.answers.push({
+          qIdx: state.current,
+          selected: -1,
+          correct: false,
+        });
+        const btns = document.querySelectorAll(".opt-btn");
+        btns.forEach((b, i) => {
+          b.disabled = true;
+          if (i === q.answer) b.classList.add("correct");
+        });
+        const fb = $("feedbackBox");
+        fb.className = "feedback-box show wrong-fb";
+        fb.innerHTML = `⏱ <strong>Time's up!</strong> ${q.explanation}`;
+        $("nextBtn").style.display = "inline-block";
+        $("nextBtn").focus();
+      }
+
+      function renderQuestion() {
+        if (state.current >= 15 || state.lives <= 0) {
+          endGame();
+          return;
+        }
+        const q = QUESTIONS[state.current];
+        updateHUD();
+        $("qNumber").textContent = `Question ${state.current + 1} of 15`;
+        const tierMap = {
+          easy: ["Easy", "tier-easy"],
+          medium: ["Medium", "tier-medium"],
+          hard: ["Hard", "tier-hard"],
+        };
+        const [tierLabel, tierClass] = tierMap[q.tier];
+        $("qTier").textContent = tierLabel;
+        $("qTier").className = "q-tier " + tierClass;
+        $("qText").textContent = q.text;
+        if (q.data) {
+          $("qData").textContent = q.data;
+          $("qData").style.display = "block";
+        } else {
+          $("qData").style.display = "none";
+        }
+        const container = $("optionsContainer");
+        container.innerHTML = "";
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.textContent = opt;
+          btn.setAttribute("role", "radio");
+          btn.setAttribute("aria-checked", "false");
+          btn.setAttribute("aria-label", `Option ${i + 1}: ${opt}`);
+          btn.addEventListener("click", () => selectAnswer(i));
+          container.appendChild(btn);
+        });
+        $("feedbackBox").className = "feedback-box";
+        $("feedbackBox").innerHTML = "";
+        $("nextBtn").style.display = "none";
+        startTimer();
+      }
+
+      function selectAnswer(idx) {
+        clearInterval(state.timerInterval);
+        const q = QUESTIONS[state.current];
+        const btns = document.querySelectorAll(".opt-btn");
+        btns.forEach((b) => (b.disabled = true));
+        const isCorrect = idx === q.answer;
+        btns[idx].classList.add(isCorrect ? "correct" : "wrong");
+        if (!isCorrect) btns[q.answer].classList.add("correct");
+        const fb = $("feedbackBox");
+        if (isCorrect) {
+          state.streak++;
+          if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+          const tierPts = { easy: 10, medium: 20, hard: 30 };
+          let pts = tierPts[q.tier] || 10;
+          if (state.streak >= 3) pts += 5;
+          state.score += pts;
+          fb.className = "feedback-box show correct-fb";
+          fb.innerHTML = `✅ <strong>Correct!</strong> +${pts} pts${state.streak >= 3 ? " (streak bonus!)" : ""}<br>${q.explanation}`;
+          playSound(true);
+        } else {
+          state.lives--;
+          state.streak = 0;
+          fb.className = "feedback-box show wrong-fb";
+          fb.innerHTML = `❌ <strong>Not quite.</strong> ${q.explanation}`;
+          playSound(false);
+        }
+        state.answers.push({
+          qIdx: state.current,
+          selected: idx,
+          correct: isCorrect,
+        });
+        updateHUD();
+        $("nextBtn").style.display = "inline-block";
+        $("nextBtn").focus();
+      }
+
+      function nextQuestion() {
+        state.current++;
+        renderQuestion();
+      }
+
+      function endGame() {
+        clearInterval(state.timerInterval);
+        showScreen("resultsScreen");
+        const totalCorrect = state.answers.filter((a) => a.correct).length;
+        const totalAnswered = state.answers.length;
+        const accuracy =
+          totalAnswered > 0
+            ? Math.round((totalCorrect / totalAnswered) * 100)
+            : 0;
+        const elapsed = Math.round((Date.now() - state.startTime) / 1000);
+        const starCount =
+          accuracy >= 90 ? 3 : accuracy >= 70 ? 2 : accuracy >= 50 ? 1 : 0;
+        $("resultsName").textContent = `Great effort, ${state.name}!`;
+        const circle = $("scoreCircle");
+        circle.textContent = state.score;
+        circle.style.background =
+          accuracy >= 70
+            ? "var(--green)"
+            : accuracy >= 50
+              ? "var(--gold)"
+              : "var(--red)";
+        $("starsDisplay").textContent =
+          "⭐".repeat(starCount) + "☆".repeat(3 - starCount);
+        $("rCorrect").textContent = `${totalCorrect}/${totalAnswered}`;
+        $("rAccuracy").textContent = accuracy + "%";
+        $("rStreak").textContent = state.bestStreak;
+        $("rTime").textContent =
+          elapsed < 60
+            ? elapsed + "s"
+            : Math.floor(elapsed / 60) + "m " + (elapsed % 60) + "s";
+        // Review
+        const rev = $("reviewSection");
+        rev.innerHTML = "<h3>📋 Review</h3>";
+        state.answers.forEach((a) => {
+          const q = QUESTIONS[a.qIdx];
+          const div = document.createElement("div");
+          div.className =
+            "review-item " + (a.correct ? "r-correct" : "r-wrong");
+          const yourAnswer =
+            a.selected === -1 ? "No answer (timed out)" : q.options[a.selected];
+          div.innerHTML = `<div class="ri-q">${q.text}</div>
+      <div class="ri-a">Your answer: <span>${yourAnswer}</span> ${a.correct ? "✅" : "❌ Correct: <span>" + q.options[q.answer] + "</span>"}</div>`;
+          rev.appendChild(div);
+        });
+        // Save to localStorage
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+          saved.push({
+            name: state.name,
+            score: state.score,
+            accuracy,
+            date: new Date().toISOString(),
+            stars: starCount,
+          });
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+        } catch (e) {
+          /* storage unavailable */
+        }
+      }
+
+      function resetGame() {
+        showScreen("loginScreen");
+        nameInput.value = "";
+        startBtn.disabled = true;
+        nameInput.focus();
+      }
+
+      // Minimal Web Audio beeps
+      function playSound(success) {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          gain.gain.value = 0.08;
+          if (success) {
+            osc.frequency.value = 523;
+            osc.type = "sine";
+            osc.start();
+            osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+            osc.stop(ctx.currentTime + 0.2);
+          } else {
+            osc.frequency.value = 300;
+            osc.type = "square";
+            osc.start();
+            osc.frequency.setValueAtTime(200, ctx.currentTime + 0.15);
+            osc.stop(ctx.currentTime + 0.25);
+          }
+          gain.gain.setValueAtTime(0.08, ctx.currentTime + 0.15);
+          gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.25);
+        } catch (e) {
+          /* no audio support */
+        }
+      }
+
+      // Keyboard nav for options
+      document.addEventListener("keydown", (e) => {
+        if (!$("gameScreen").classList.contains("active")) return;
+        const btns = Array.from(
+          document.querySelectorAll(".opt-btn:not(:disabled)"),
+        );
+        if (!btns.length) return;
+        const focused = document.activeElement;
+        const idx = btns.indexOf(focused);
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+          e.preventDefault();
+          btns[(idx + 1) % btns.length].focus();
+        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          btns[(idx - 1 + btns.length) % btns.length].focus();
+        } else if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
+          e.preventDefault();
+          btns[idx].click();
+        }
+      });
+    </script>
+  </body>
+</html>

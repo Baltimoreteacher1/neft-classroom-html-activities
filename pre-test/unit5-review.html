@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📐 Unit 5 Review: Area</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --primary: #10b981;
+        --primary-dark: #059669;
+        --primary-light: #d1fae5;
+        --bg: #e0f2fe;
+        --card: #ffffff;
+        --text: #134e4a;
+        --muted: #6b7280;
+        --line: #d1d5db;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(19, 78, 74, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --amber: #f59e0b;
+        --amber-bg: #fef3c7;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+      }
+      input,
+      select {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* Screens */
+      .screen {
+        display: none;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 24px 16px 80px;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* Login */
+      .login-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 40px 32px;
+        text-align: center;
+        margin-top: 40px;
+      }
+      .login-card h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+      .login-card .subtitle {
+        color: var(--muted);
+        margin-bottom: 28px;
+        font-size: 15px;
+      }
+      .login-card .emoji-hero {
+        font-size: 56px;
+        margin-bottom: 16px;
+      }
+      .form-group {
+        margin-bottom: 16px;
+        text-align: left;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border 0.2s;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+      .btn-outline:hover {
+        background: var(--primary-light);
+      }
+      .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+      }
+
+      /* Progress Bar */
+      .progress-bar {
+        background: #e5e7eb;
+        border-radius: 99px;
+        height: 10px;
+        margin: 16px 0 8px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .progress-text {
+        font-size: 13px;
+        color: var(--muted);
+        text-align: right;
+      }
+
+      /* Section Header */
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-desc {
+        background: var(--primary-light);
+        padding: 12px 20px;
+        font-size: 14px;
+        color: var(--text);
+        border-bottom: 1px solid var(--line);
+      }
+
+      /* Question Card */
+      .q-card {
+        background: var(--card);
+        border-radius: 0 0 var(--radius) var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .q-card:first-of-type {
+        border-radius: var(--radius);
+      }
+      .q-body {
+        padding: 20px;
+      }
+      .q-number {
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+
+      /* MC Options */
+      .mc-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .mc-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 15px;
+      }
+      .mc-option:hover {
+        border-color: var(--primary);
+        background: #f0fdf4;
+      }
+      .mc-option.selected {
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+      .mc-option.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .mc-option.incorrect {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .mc-option.show-correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .mc-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        transition: all 0.2s;
+      }
+      .mc-option.selected .mc-dot {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+      .mc-option.correct .mc-dot {
+        border-color: var(--success);
+        background: var(--success);
+        color: #fff;
+      }
+      .mc-option.incorrect .mc-dot {
+        border-color: var(--error);
+        background: var(--error);
+        color: #fff;
+      }
+
+      /* Fill-in */
+      .fill-input {
+        width: 140px;
+        padding: 8px 12px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: center;
+        transition: border 0.2s;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .fill-input.incorrect {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .fill-unit {
+        font-size: 14px;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+
+      /* Feedback */
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .feedback.incorrect {
+        display: block;
+        background: var(--error-bg);
+        color: var(--error);
+      }
+
+      /* Nav */
+      .q-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      /* Results */
+      .results-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 32px;
+        margin-bottom: 20px;
+      }
+      .results-card h2 {
+        font-size: 22px;
+        margin-bottom: 16px;
+      }
+      .score-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 36px;
+        font-weight: 800;
+        color: #fff;
+      }
+      .score-circle span {
+        font-size: 14px;
+        font-weight: 400;
+      }
+      .score-high {
+        background: var(--success);
+      }
+      .score-mid {
+        background: var(--amber);
+      }
+      .score-low {
+        background: var(--error);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .section-score:last-child {
+        border-bottom: none;
+      }
+      .section-name {
+        font-weight: 600;
+      }
+      .section-result {
+        font-weight: 700;
+      }
+      .tip-box {
+        background: var(--amber-bg);
+        border-left: 4px solid var(--amber);
+        padding: 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 16px;
+      }
+      .tip-box h3 {
+        font-size: 15px;
+        margin-bottom: 6px;
+        color: #92400e;
+      }
+      .tip-box ul {
+        margin-left: 20px;
+        font-size: 14px;
+        color: #78350f;
+      }
+      .tip-box li {
+        margin-bottom: 4px;
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        padding: 24px 16px;
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 40px;
+      }
+
+      /* Print */
+      @media print {
+        .screen {
+          display: block !important;
+          padding: 12px;
+        }
+        .btn,
+        .q-nav {
+          display: none !important;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══ LOGIN SCREEN ═══ -->
+    <div id="loginScreen" class="screen active">
+      <div class="login-card">
+        <div class="emoji-hero">📐</div>
+        <h1>Unit 5 Review: Area</h1>
+        <p class="subtitle">
+          6.G.1 — Area of Parallelograms, Triangles, Trapezoids &amp; Composite
+          Figures
+        </p>
+        <p class="subtitle" style="margin-bottom: 24px">
+          20 Problems &bull; 4 Sections &bull; Immediate Feedback
+        </p>
+        <div class="form-group">
+          <label for="studentName">Your Name</label>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="First and Last Name"
+            autocomplete="name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="studentPeriod">Class Period</label>
+          <select id="studentPeriod">
+            <option value="">Select Period</option>
+            <option>Period 1</option>
+            <option>Period 2</option>
+            <option>Period 3</option>
+            <option>Period 4</option>
+            <option>Period 5</option>
+            <option>Period 6</option>
+            <option>Period 7</option>
+          </select>
+        </div>
+        <button
+          class="btn btn-primary"
+          style="width: 100%; margin-top: 8px"
+          onclick="startReview()"
+          id="startBtn"
+          disabled
+        >
+          Start Review
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ QUIZ SCREEN ═══ -->
+    <div id="quizScreen" class="screen">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+        "
+      >
+        <h2 id="sectionTitle" style="font-size: 18px"></h2>
+        <span id="qCount" style="font-size: 14px; color: var(--muted)"></span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text" id="progressText"></p>
+      <div id="questionArea"></div>
+    </div>
+
+    <!-- ═══ RESULTS SCREEN ═══ -->
+    <div id="resultsScreen" class="screen">
+      <div class="results-card" style="text-align: center">
+        <div class="emoji-hero" style="font-size: 48px; margin-bottom: 8px">
+          📐
+        </div>
+        <h2>Unit 5 Review Complete!</h2>
+        <p
+          id="resultsName"
+          style="color: var(--muted); margin-bottom: 16px"
+        ></p>
+        <div id="scoreCircle" class="score-circle"></div>
+      </div>
+      <div class="results-card">
+        <h2>Section Scores</h2>
+        <div id="sectionScores"></div>
+      </div>
+      <div class="results-card">
+        <h2>Study Tips</h2>
+        <div id="studyTips"></div>
+      </div>
+      <div class="results-card" style="text-align: center">
+        <h2 style="margin-bottom: 12px">Review Your Answers</h2>
+        <button class="btn btn-outline" onclick="showReviewAll()">
+          View All Questions &amp; Answers
+        </button>
+      </div>
+      <div id="reviewAllArea" style="display: none"></div>
+      <div
+        style="
+          text-align: center;
+          margin-top: 20px;
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          flex-wrap: wrap;
+        "
+      >
+        <button class="btn btn-primary" onclick="exportResults()">
+          Export Results
+        </button>
+        <button class="btn btn-outline" onclick="retakeReview()">
+          Retake Review
+        </button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      Neft Teacher &mdash; Grade 6 Unit 5 Area Review
+    </footer>
+
+    <script>
+      // ═══════════════════════════════════════
+      // DATA — 20 PROBLEMS, 4 SECTIONS
+      // ═══════════════════════════════════════
+      const STORAGE_KEY = "unit5Review_v1";
+
+      const sections = [
+        {
+          name: "Vocabulary",
+          icon: "📖",
+          desc: "Match area terms to their definitions. Choose the best answer.",
+          questions: [
+            {
+              type: "mc",
+              prompt: "What is the <strong>base</strong> of a parallelogram?",
+              choices: [
+                "Any side of the parallelogram that is used along with the height to find its area",
+                "The longest side of any polygon",
+                "The perpendicular distance between two parallel sides",
+                "The line segment connecting two vertices",
+              ],
+              answer: 0,
+              explain:
+                "The base is any side of the parallelogram chosen as the reference for calculating area. The height is measured perpendicular to it.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "The <strong>height</strong> of a triangle used to find area must be:",
+              choices: [
+                "The longest side of the triangle",
+                "The perpendicular distance from the base to the opposite vertex",
+                "Any side of the triangle",
+                "Half of the hypotenuse",
+              ],
+              answer: 1,
+              explain:
+                "The height (or altitude) of a triangle is the perpendicular distance from the chosen base to the opposite vertex.",
+            },
+            {
+              type: "mc",
+              prompt: "A <strong>composite figure</strong> is:",
+              choices: [
+                "A shape with only right angles",
+                "A figure made up of two or more basic geometric shapes",
+                "Any polygon with more than 4 sides",
+                "A figure where all sides are equal",
+              ],
+              answer: 1,
+              explain:
+                "A composite figure is formed by combining two or more simpler shapes such as rectangles, triangles, and trapezoids.",
+            },
+            {
+              type: "mc",
+              prompt: "A <strong>trapezoid</strong> is a quadrilateral with:",
+              choices: [
+                "Four equal sides",
+                "Two pairs of parallel sides",
+                "Exactly one pair of parallel sides",
+                "No parallel sides",
+              ],
+              answer: 2,
+              explain:
+                "A trapezoid has exactly one pair of parallel sides, called the bases. The non-parallel sides are called the legs.",
+            },
+            {
+              type: "mc",
+              prompt: "The <strong>area</strong> of a figure measures:",
+              choices: [
+                "The distance around the outside of the figure",
+                "The number of square units needed to cover the surface of the figure",
+                "The length of the longest diagonal",
+                "The total length of all sides combined",
+              ],
+              answer: 1,
+              explain:
+                "Area measures the amount of surface a figure covers, expressed in square units (e.g., cm², ft², in²).",
+            },
+          ],
+        },
+        {
+          name: "Quick Check",
+          icon: "⚡",
+          desc: "Apply area formulas. Pick the correct answer for each problem.",
+          questions: [
+            {
+              type: "mc",
+              prompt:
+                "A parallelogram has a base of 12 cm and a height of 7 cm. What is its area?",
+              choices: ["38 cm²", "84 cm²", "42 cm²", "19 cm²"],
+              answer: 1,
+              explain: "A = b × h = 12 × 7 = 84 cm².",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A triangle has a base of 10 in. and a height of 6 in. What is its area?",
+              choices: ["60 in²", "16 in²", "30 in²", "20 in²"],
+              answer: 2,
+              explain: "A = ½ × b × h = ½ × 10 × 6 = 30 in².",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A trapezoid has bases of 8 m and 14 m and a height of 5 m. What is its area?",
+              choices: ["55 m²", "110 m²", "45 m²", "70 m²"],
+              answer: 0,
+              explain:
+                "A = ½ × (b₁ + b₂) × h = ½ × (8 + 14) × 5 = ½ × 22 × 5 = 55 m².",
+            },
+            {
+              type: "mc",
+              prompt: "Which formula is used to find the area of a triangle?",
+              choices: [
+                "A = b × h",
+                "A = ½ × (b₁ + b₂) × h",
+                "A = ½ × b × h",
+                "A = s²",
+              ],
+              answer: 2,
+              explain:
+                "The area of a triangle is A = ½ × b × h, where b is the base and h is the perpendicular height.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A parallelogram has an area of 96 ft² and a base of 8 ft. What is the height?",
+              choices: ["8 ft", "12 ft", "16 ft", "10 ft"],
+              answer: 1,
+              explain: "A = b × h → 96 = 8 × h → h = 96 ÷ 8 = 12 ft.",
+            },
+          ],
+        },
+        {
+          name: "Practice",
+          icon: "✏️",
+          desc: "Calculate the area. Type your numeric answer (number only).",
+          questions: [
+            {
+              type: "fill",
+              prompt:
+                "A parallelogram has a base of 15 cm and a height of 9 cm. What is the area?",
+              answer: "135",
+              unit: "cm²",
+              explain: "A = b × h = 15 × 9 = 135 cm².",
+            },
+            {
+              type: "fill",
+              prompt:
+                "A triangle has a base of 20 m and a height of 14 m. What is its area?",
+              answer: "140",
+              unit: "m²",
+              explain: "A = ½ × b × h = ½ × 20 × 14 = 140 m².",
+            },
+            {
+              type: "fill",
+              prompt:
+                "A trapezoid has bases of 6 in. and 10 in. and a height of 8 in. What is its area?",
+              answer: "64",
+              unit: "in²",
+              explain:
+                "A = ½ × (b₁ + b₂) × h = ½ × (6 + 10) × 8 = ½ × 16 × 8 = 64 in².",
+            },
+            {
+              type: "fill",
+              prompt:
+                "A triangle has a base of 18 ft and a height of 7 ft. What is the area?",
+              answer: "63",
+              unit: "ft²",
+              explain: "A = ½ × b × h = ½ × 18 × 7 = 63 ft².",
+            },
+            {
+              type: "fill",
+              prompt:
+                "A parallelogram has an area of 72 m² and a height of 6 m. What is the base?",
+              answer: "12",
+              unit: "m",
+              explain: "A = b × h → 72 = b × 6 → b = 72 ÷ 6 = 12 m.",
+            },
+          ],
+        },
+        {
+          name: "Challenge",
+          icon: "🏆",
+          desc: "Solve word problems involving area. Read carefully and choose the best answer.",
+          questions: [
+            {
+              type: "mc",
+              prompt:
+                "A park has a triangular garden with a base of 24 ft and a height of 10 ft. How many square feet of mulch are needed to cover the garden?",
+              choices: ["240 ft²", "120 ft²", "34 ft²", "200 ft²"],
+              answer: 1,
+              explain:
+                "A = ½ × b × h = ½ × 24 × 10 = 120 ft². You need 120 square feet of mulch.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A classroom wall is shaped like a parallelogram with a base of 18 ft and a height of 9 ft. One can of paint covers 40 ft². How many cans are needed to paint the wall?",
+              choices: ["3 cans", "4 cans", "5 cans", "6 cans"],
+              answer: 2,
+              explain:
+                "A = 18 × 9 = 162 ft². Cans needed = 162 ÷ 40 = 4.05, so you need 5 cans (round up since you cannot buy a partial can).",
+            },
+            {
+              type: "mc",
+              prompt:
+                "An L-shaped room is made of two rectangles: one is 10 ft by 8 ft and the other is 6 ft by 4 ft. What is the total area of the room?",
+              choices: ["104 ft²", "80 ft²", "28 ft²", "56 ft²"],
+              answer: 0,
+              explain:
+                "Area = (10 × 8) + (6 × 4) = 80 + 24 = 104 ft². Add the areas of both rectangles.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A trapezoidal banner has bases of 3 ft and 5 ft and a height of 2 ft. Fabric costs $4 per square foot. What is the total cost of the fabric?",
+              choices: ["$16", "$32", "$24", "$40"],
+              answer: 1,
+              explain:
+                "A = ½ × (3 + 5) × 2 = ½ × 8 × 2 = 8 ft². Cost = 8 × $4 = $32.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A composite figure is made of a rectangle (12 m by 5 m) with a triangle on top (base 12 m, height 4 m). What is the total area?",
+              choices: ["84 m²", "108 m²", "60 m²", "96 m²"],
+              answer: 0,
+              explain:
+                "Rectangle: 12 × 5 = 60 m². Triangle: ½ × 12 × 4 = 24 m². Total = 60 + 24 = 84 m².",
+            },
+          ],
+        },
+      ];
+
+      // ═══════════════════════════════════════
+      // STATE
+      // ═══════════════════════════════════════
+      let student = { name: "", period: "" };
+      let currentSection = 0;
+      let currentQ = 0;
+      let globalQ = 0;
+      let answers = []; // { section, qIndex, correct, userAnswer }
+      let locked = []; // track which questions are locked after answering
+
+      // ═══════════════════════════════════════
+      // LOGIN
+      // ═══════════════════════════════════════
+      const nameInput = document.getElementById("studentName");
+      const periodInput = document.getElementById("studentPeriod");
+      const startBtn = document.getElementById("startBtn");
+
+      function checkLogin() {
+        startBtn.disabled = !(nameInput.value.trim() && periodInput.value);
+      }
+      nameInput.addEventListener("input", checkLogin);
+      periodInput.addEventListener("change", checkLogin);
+
+      function startReview() {
+        student.name = nameInput.value.trim();
+        student.period = periodInput.value;
+        currentSection = 0;
+        currentQ = 0;
+        globalQ = 0;
+        answers = [];
+        locked = [];
+        for (let s of sections) for (let q of s.questions) locked.push(false);
+        showScreen("quizScreen");
+        renderQuestion();
+      }
+
+      // ═══════════════════════════════════════
+      // NAVIGATION
+      // ═══════════════════════════════════════
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function getGlobalIndex(sec, qi) {
+        let idx = 0;
+        for (let i = 0; i < sec; i++) idx += sections[i].questions.length;
+        return idx + qi;
+      }
+
+      function totalQuestions() {
+        return sections.reduce((s, sec) => s + sec.questions.length, 0);
+      }
+
+      // ═══════════════════════════════════════
+      // RENDER
+      // ═══════════════════════════════════════
+      function renderQuestion() {
+        const sec = sections[currentSection];
+        const q = sec.questions[currentQ];
+        const gi = getGlobalIndex(currentSection, currentQ);
+        globalQ = gi;
+
+        document.getElementById("sectionTitle").textContent =
+          sec.icon + " " + sec.name;
+        document.getElementById("qCount").textContent =
+          `Question ${gi + 1} of ${totalQuestions()}`;
+        const pct = (gi / totalQuestions()) * 100;
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressText").textContent =
+          `${gi} of ${totalQuestions()} completed`;
+
+        const area = document.getElementById("questionArea");
+        let html = "";
+
+        if (currentQ === 0) {
+          html += `<div class="section-header">${sec.icon} Section ${currentSection + 1}: ${sec.name}</div>`;
+          html += `<div class="section-desc">${sec.desc}</div>`;
+        }
+
+        html += `<div class="q-card" ${currentQ > 0 ? 'style="border-radius:var(--radius)"' : ""}>`;
+        html += `<div class="q-body">`;
+        html += `<div class="q-number">Question ${gi + 1}</div>`;
+        html += `<div class="q-prompt">${q.prompt}</div>`;
+
+        if (q.type === "mc") {
+          html += `<div class="mc-options" id="mcOptions">`;
+          q.choices.forEach((c, i) => {
+            html += `<div class="mc-option" data-idx="${i}" onclick="selectMC(${i})">`;
+            html += `<div class="mc-dot"></div><span>${c}</span></div>`;
+          });
+          html += `</div>`;
+        } else if (q.type === "fill") {
+          html += `<div style="margin-top:8px"><input type="text" class="fill-input" id="fillInput" placeholder="?" autocomplete="off" inputmode="numeric">`;
+          html += `<span class="fill-unit">${q.unit || ""}</span></div>`;
+        }
+
+        html += `<div class="feedback" id="feedback"></div>`;
+        html += `<div class="q-nav">`;
+        if (gi > 0)
+          html += `<button class="btn btn-outline btn-sm" onclick="prevQuestion()">Back</button>`;
+        else html += `<span></span>`;
+        html += `<button class="btn btn-primary btn-sm" id="checkBtn" onclick="checkAnswer()" disabled>Check Answer</button>`;
+        html += `</div></div></div>`;
+
+        area.innerHTML = html;
+
+        // Restore state if already answered
+        const prev = answers.find(
+          (a) => a.section === currentSection && a.qIndex === currentQ,
+        );
+        if (prev) restoreAnswered(prev);
+        else if (q.type === "fill") {
+          document
+            .getElementById("fillInput")
+            .addEventListener("input", function () {
+              document.getElementById("checkBtn").disabled = !this.value.trim();
+            });
+          document
+            .getElementById("fillInput")
+            .addEventListener("keydown", function (e) {
+              if (e.key === "Enter" && this.value.trim()) checkAnswer();
+            });
+        }
+      }
+
+      function selectMC(idx) {
+        const gi = getGlobalIndex(currentSection, currentQ);
+        if (locked[gi]) return;
+        document
+          .querySelectorAll(".mc-option")
+          .forEach((o) => o.classList.remove("selected"));
+        document
+          .querySelector(`.mc-option[data-idx="${idx}"]`)
+          .classList.add("selected");
+        document.getElementById("checkBtn").disabled = false;
+      }
+
+      // ═══════════════════════════════════════
+      // CHECK ANSWER
+      // ═══════════════════════════════════════
+      function checkAnswer() {
+        const gi = getGlobalIndex(currentSection, currentQ);
+        if (locked[gi]) {
+          nextQuestion();
+          return;
+        }
+
+        const sec = sections[currentSection];
+        const q = sec.questions[currentQ];
+        let correct = false,
+          userAnswer = "";
+
+        if (q.type === "mc") {
+          const sel = document.querySelector(".mc-option.selected");
+          if (!sel) return;
+          const idx = parseInt(sel.dataset.idx);
+          userAnswer = q.choices[idx];
+          correct = idx === q.answer;
+
+          document.querySelectorAll(".mc-option").forEach((o) => {
+            const oi = parseInt(o.dataset.idx);
+            if (oi === q.answer) o.classList.add("correct");
+            else if (oi === idx && !correct) o.classList.add("incorrect");
+            o.style.pointerEvents = "none";
+          });
+        } else if (q.type === "fill") {
+          const input = document.getElementById("fillInput");
+          userAnswer = input.value.trim();
+          correct = userAnswer === q.answer;
+          input.classList.add(correct ? "correct" : "incorrect");
+          input.disabled = true;
+          if (!correct) {
+            const corrSpan = document.createElement("span");
+            corrSpan.style.cssText =
+              "margin-left:12px;color:var(--success);font-weight:600";
+            corrSpan.textContent =
+              "Correct answer: " + q.answer + " " + (q.unit || "");
+            input.parentNode.appendChild(corrSpan);
+          }
+        }
+
+        const fb = document.getElementById("feedback");
+        fb.className = "feedback " + (correct ? "correct" : "incorrect");
+        fb.innerHTML = (correct ? "✓ Correct! " : "✗ Incorrect. ") + q.explain;
+
+        locked[gi] = true;
+        // Remove existing answer for this question if any, then add
+        answers = answers.filter(
+          (a) => !(a.section === currentSection && a.qIndex === currentQ),
+        );
+        answers.push({
+          section: currentSection,
+          qIndex: currentQ,
+          correct,
+          userAnswer,
+        });
+
+        const btn = document.getElementById("checkBtn");
+        btn.textContent = gi < totalQuestions() - 1 ? "Next →" : "See Results";
+        btn.disabled = false;
+        btn.onclick = gi < totalQuestions() - 1 ? nextQuestion : showResults;
+      }
+
+      function restoreAnswered(prev) {
+        const q = sections[prev.section].questions[prev.qIndex];
+        const gi = getGlobalIndex(prev.section, prev.qIndex);
+
+        if (q.type === "mc") {
+          const choiceIdx = q.choices.indexOf(prev.userAnswer);
+          document.querySelectorAll(".mc-option").forEach((o) => {
+            const oi = parseInt(o.dataset.idx);
+            if (oi === q.answer) o.classList.add("correct");
+            if (oi === choiceIdx && !prev.correct) o.classList.add("incorrect");
+            if (oi === choiceIdx) o.classList.add("selected");
+            o.style.pointerEvents = "none";
+          });
+        } else if (q.type === "fill") {
+          const input = document.getElementById("fillInput");
+          input.value = prev.userAnswer;
+          input.classList.add(prev.correct ? "correct" : "incorrect");
+          input.disabled = true;
+          if (!prev.correct) {
+            const corrSpan = document.createElement("span");
+            corrSpan.style.cssText =
+              "margin-left:12px;color:var(--success);font-weight:600";
+            corrSpan.textContent =
+              "Correct answer: " + q.answer + " " + (q.unit || "");
+            input.parentNode.appendChild(corrSpan);
+          }
+        }
+
+        const fb = document.getElementById("feedback");
+        fb.className = "feedback " + (prev.correct ? "correct" : "incorrect");
+        fb.innerHTML =
+          (prev.correct ? "✓ Correct! " : "✗ Incorrect. ") + q.explain;
+
+        const btn = document.getElementById("checkBtn");
+        btn.textContent = gi < totalQuestions() - 1 ? "Next →" : "See Results";
+        btn.disabled = false;
+        btn.onclick = gi < totalQuestions() - 1 ? nextQuestion : showResults;
+      }
+
+      // ═══════════════════════════════════════
+      // NAVIGATION
+      // ═══════════════════════════════════════
+      function nextQuestion() {
+        currentQ++;
+        if (currentQ >= sections[currentSection].questions.length) {
+          currentSection++;
+          currentQ = 0;
+        }
+        if (currentSection >= sections.length) {
+          showResults();
+          return;
+        }
+        renderQuestion();
+      }
+
+      function prevQuestion() {
+        currentQ--;
+        if (currentQ < 0) {
+          currentSection--;
+          if (currentSection < 0) {
+            currentSection = 0;
+            currentQ = 0;
+            return;
+          }
+          currentQ = sections[currentSection].questions.length - 1;
+        }
+        renderQuestion();
+      }
+
+      // ═══════════════════════════════════════
+      // RESULTS
+      // ═══════════════════════════════════════
+      function showResults() {
+        showScreen("resultsScreen");
+        const total = totalQuestions();
+        const correctCount = answers.filter((a) => a.correct).length;
+        const pct = Math.round((correctCount / total) * 100);
+
+        document.getElementById("resultsName").textContent =
+          student.name + " — " + student.period;
+        const circle = document.getElementById("scoreCircle");
+        circle.className =
+          "score-circle " +
+          (pct >= 80 ? "score-high" : pct >= 60 ? "score-mid" : "score-low");
+        circle.innerHTML = `${pct}%<span>${correctCount} / ${total}</span>`;
+
+        // Section scores
+        let scoresHTML = "";
+        const sectionResults = [];
+        sections.forEach((sec, si) => {
+          const secAnswers = answers.filter((a) => a.section === si);
+          const secCorrect = secAnswers.filter((a) => a.correct).length;
+          const secTotal = sec.questions.length;
+          const secPct = Math.round((secCorrect / secTotal) * 100);
+          sectionResults.push({
+            name: sec.name,
+            correct: secCorrect,
+            total: secTotal,
+            pct: secPct,
+          });
+          const color =
+            secPct >= 80
+              ? "var(--success)"
+              : secPct >= 60
+                ? "var(--amber)"
+                : "var(--error)";
+          scoresHTML += `<div class="section-score"><span class="section-name">${sec.icon} ${sec.name}</span><span class="section-result" style="color:${color}">${secCorrect}/${secTotal} (${secPct}%)</span></div>`;
+        });
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+
+        // Study Tips
+        let tips = "";
+        if (sectionResults[0].pct < 80) {
+          tips += `<div class="tip-box"><h3>📖 Vocabulary</h3><ul>
+      <li>Review the definitions of base, height, and area.</li>
+      <li>Practice identifying parts of parallelograms, triangles, and trapezoids.</li>
+      <li>Know the difference between composite figures and single shapes.</li></ul></div>`;
+        }
+        if (sectionResults[1].pct < 80) {
+          tips += `<div class="tip-box"><h3>⚡ Area Formulas</h3><ul>
+      <li>Memorize: Parallelogram A = b × h</li>
+      <li>Memorize: Triangle A = ½ × b × h</li>
+      <li>Memorize: Trapezoid A = ½ × (b₁ + b₂) × h</li>
+      <li>Practice plugging in values and solving step by step.</li></ul></div>`;
+        }
+        if (sectionResults[2].pct < 80) {
+          tips += `<div class="tip-box"><h3>✏️ Computation Practice</h3><ul>
+      <li>Write out each formula before substituting numbers.</li>
+      <li>Double-check multiplication, especially with ½.</li>
+      <li>Practice working backwards (finding base or height from area).</li></ul></div>`;
+        }
+        if (sectionResults[3].pct < 80) {
+          tips += `<div class="tip-box"><h3>🏆 Word Problems</h3><ul>
+      <li>Read the problem twice — identify the shape and given measurements.</li>
+      <li>Draw a quick sketch and label the dimensions.</li>
+      <li>For composite figures, break them into simpler shapes first.</li>
+      <li>Check if the problem asks for anything extra (cost, number of cans, etc.).</li></ul></div>`;
+        }
+        if (!tips) {
+          tips = `<div class="tip-box" style="border-left-color:var(--success);background:var(--success-bg)"><h3 style="color:var(--success)">Great job!</h3><ul style="color:var(--text)"><li>You scored 80% or above in all sections.</li><li>Keep reviewing your formulas to stay sharp for the test!</li></ul></div>`;
+        }
+        document.getElementById("studyTips").innerHTML = tips;
+
+        // Save to localStorage
+        saveResults();
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const gi = getGlobalIndex(
+          currentSection >= sections.length
+            ? sections.length - 1
+            : currentSection,
+          currentQ >=
+            (sections[
+              currentSection >= sections.length
+                ? sections.length - 1
+                : currentSection
+            ]?.questions.length || 0)
+            ? 0
+            : currentQ,
+        );
+        const pct = (answers.length / totalQuestions()) * 100;
+        document.getElementById("progressFill").style.width = pct + "%";
+      }
+
+      // ═══════════════════════════════════════
+      // REVIEW ALL
+      // ═══════════════════════════════════════
+      function showReviewAll() {
+        const area = document.getElementById("reviewAllArea");
+        if (area.style.display === "block") {
+          area.style.display = "none";
+          return;
+        }
+        let html = "";
+        let gi = 0;
+        sections.forEach((sec, si) => {
+          html += `<div class="results-card"><h2>${sec.icon} ${sec.name}</h2>`;
+          sec.questions.forEach((q, qi) => {
+            gi++;
+            const ans = answers.find(
+              (a) => a.section === si && a.qIndex === qi,
+            );
+            const icon = ans && ans.correct ? "✓" : "✗";
+            const color =
+              ans && ans.correct ? "var(--success)" : "var(--error)";
+            html += `<div style="padding:12px 0;border-bottom:1px solid var(--line)">`;
+            html += `<div style="font-weight:700;color:${color};margin-bottom:4px">${icon} Q${gi}: ${q.prompt}</div>`;
+            if (q.type === "mc") {
+              html += `<div style="font-size:14px;color:var(--muted)">Your answer: ${ans ? ans.userAnswer : "—"}</div>`;
+              html += `<div style="font-size:14px;color:var(--success)">Correct: ${q.choices[q.answer]}</div>`;
+            } else {
+              html += `<div style="font-size:14px;color:var(--muted)">Your answer: ${ans ? ans.userAnswer : "—"} ${q.unit || ""}</div>`;
+              html += `<div style="font-size:14px;color:var(--success)">Correct: ${q.answer} ${q.unit || ""}</div>`;
+            }
+            html += `<div style="font-size:13px;margin-top:4px;color:var(--text)">${q.explain}</div></div>`;
+          });
+          html += `</div>`;
+        });
+        area.innerHTML = html;
+        area.style.display = "block";
+      }
+
+      // ═══════════════════════════════════════
+      // EXPORT
+      // ═══════════════════════════════════════
+      function exportResults() {
+        const total = totalQuestions();
+        const correctCount = answers.filter((a) => a.correct).length;
+        const pct = Math.round((correctCount / total) * 100);
+        let text = `Unit 5 Review: Area — Results\n`;
+        text += `Student: ${student.name}\nPeriod: ${student.period}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Score: ${correctCount}/${total} (${pct}%)\n\n`;
+
+        sections.forEach((sec, si) => {
+          const secAns = answers.filter((a) => a.section === si);
+          const secCorr = secAns.filter((a) => a.correct).length;
+          text += `--- ${sec.name}: ${secCorr}/${sec.questions.length} ---\n`;
+          sec.questions.forEach((q, qi) => {
+            const ans = secAns.find((a) => a.qIndex === qi);
+            const mark = ans && ans.correct ? "✓" : "✗";
+            const stripHTML = q.prompt.replace(/<[^>]*>/g, "");
+            text += `${mark} Q${getGlobalIndex(si, qi) + 1}: ${stripHTML}\n`;
+            if (q.type === "mc") {
+              text += `   Your answer: ${ans ? ans.userAnswer : "—"}\n`;
+              text += `   Correct: ${q.choices[q.answer]}\n`;
+            } else {
+              text += `   Your answer: ${ans ? ans.userAnswer : "—"} ${q.unit || ""}\n`;
+              text += `   Correct: ${q.answer} ${q.unit || ""}\n`;
+            }
+          });
+          text += `\n`;
+        });
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Unit5-Review-${student.name.replace(/\s+/g, "-")}.txt`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+
+      // ═══════════════════════════════════════
+      // STORAGE
+      // ═══════════════════════════════════════
+      function saveResults() {
+        const data = {
+          student,
+          answers,
+          timestamp: new Date().toISOString(),
+          score: answers.filter((a) => a.correct).length,
+          total: totalQuestions(),
+        };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+
+      function retakeReview() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+        showScreen("loginScreen");
+      }
+    </script>
+  </body>
+</html>

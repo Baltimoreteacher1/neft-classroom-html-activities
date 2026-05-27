@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equation Escape | Neft Teacher</title>
+    <style>
+      :root {
+        --primary: #1e3a5f;
+        --bg: #fef3c7;
+        --text: #1c1917;
+        --accent: #f59e0b;
+        --success: #16a34a;
+        --error: #dc2626;
+        --card: #ffffff;
+        --shadow: 0 4px 16px rgba(30, 58, 95, 0.13);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 18px;
+        line-height: 1.5;
+      }
+      .screen {
+        display: none;
+        width: 100%;
+        max-width: 640px;
+        padding: 24px 16px;
+        flex-direction: column;
+        align-items: center;
+      }
+      .screen.active {
+        display: flex;
+      }
+      h1 {
+        font-size: 1.8rem;
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      h2 {
+        font-size: 1.3rem;
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 12px;
+      }
+      .subtitle {
+        color: #6b7280;
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 1rem;
+      }
+      .emoji-hero {
+        font-size: 3.5rem;
+        text-align: center;
+        margin: 16px 0;
+      }
+
+      /* Login */
+      .login-card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 32px 24px;
+        box-shadow: var(--shadow);
+        width: 100%;
+        border-top: 5px solid var(--primary);
+      }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--primary);
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 1rem;
+        background: #f9fafb;
+        transition: border-color 0.2s;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .btn {
+        display: inline-block;
+        padding: 14px 32px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        text-align: center;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-accent {
+        background: var(--accent);
+        color: var(--primary);
+      }
+      .btn-full {
+        width: 100%;
+      }
+
+      /* HUD */
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        background: var(--primary);
+        color: #fff;
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin-bottom: 16px;
+        font-size: 0.95rem;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .hud-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .hud-item span {
+        font-weight: 700;
+      }
+
+      /* Progress bar */
+      .progress-wrap {
+        width: 100%;
+        background: #e5e7eb;
+        border-radius: 8px;
+        height: 10px;
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 8px;
+        transition: width 0.4s ease;
+      }
+
+      /* Question card */
+      .question-card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 28px 22px;
+        box-shadow: var(--shadow);
+        width: 100%;
+        border-left: 5px solid var(--accent);
+      }
+      .q-number {
+        font-size: 0.85rem;
+        color: #9ca3af;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .q-tier {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+      .tier-easy {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .tier-medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .tier-hard {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .q-text {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 20px;
+        line-height: 1.5;
+      }
+
+      /* Options */
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+      }
+      .option-btn {
+        width: 100%;
+        padding: 14px 18px;
+        background: #f3f4f6;
+        border: 2px solid #d1d5db;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        text-align: left;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .option-btn:hover:not(.disabled) {
+        border-color: var(--accent);
+        background: #fef3c7;
+      }
+      .option-btn:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .option-btn.correct {
+        background: #d1fae5;
+        border-color: var(--success);
+        color: #065f46;
+      }
+      .option-btn.wrong {
+        background: #fee2e2;
+        border-color: var(--error);
+        color: #991b1b;
+      }
+      .option-btn.disabled {
+        cursor: default;
+        opacity: 0.7;
+      }
+      .option-btn.show-correct {
+        background: #d1fae5;
+        border-color: var(--success);
+      }
+
+      /* Feedback */
+      .feedback {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        display: none;
+        line-height: 1.5;
+      }
+      .feedback.correct-fb {
+        background: #d1fae5;
+        color: #065f46;
+        border-left: 4px solid var(--success);
+      }
+      .feedback.wrong-fb {
+        background: #fee2e2;
+        color: #991b1b;
+        border-left: 4px solid var(--error);
+      }
+      .feedback.visible {
+        display: block;
+      }
+      .next-btn {
+        margin-top: 16px;
+        align-self: flex-end;
+      }
+
+      /* Results */
+      .results-card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 32px 24px;
+        box-shadow: var(--shadow);
+        width: 100%;
+        text-align: center;
+        border-top: 5px solid var(--accent);
+      }
+      .score-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 16px auto;
+        font-size: 2.2rem;
+        font-weight: 800;
+      }
+      .score-circle small {
+        font-size: 0.8rem;
+        font-weight: 400;
+      }
+      .stars {
+        font-size: 2.2rem;
+        margin: 10px 0;
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 16px 0;
+        text-align: center;
+      }
+      .stat-box {
+        background: #f3f4f6;
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .stat-box .val {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+      .stat-box .lbl {
+        font-size: 0.8rem;
+        color: #6b7280;
+      }
+      .review-list {
+        text-align: left;
+        margin: 16px 0;
+      }
+      .review-item {
+        padding: 10px 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+      }
+      .review-item.r-correct {
+        background: #d1fae5;
+      }
+      .review-item.r-wrong {
+        background: #fee2e2;
+      }
+
+      footer {
+        margin-top: auto;
+        padding: 16px;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #9ca3af;
+      }
+      footer strong {
+        color: var(--primary);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-in {
+        animation: fadeIn 0.35s ease-out;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+      }
+      .pulse {
+        animation: pulse 0.4s ease;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+      .shake {
+        animation: shake 0.35s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="screen active" role="main">
+      <div class="emoji-hero" aria-hidden="true">🔓</div>
+      <h1>Equation Escape</h1>
+      <p class="subtitle">
+        Crack the code by solving equations and inequalities!
+      </p>
+      <div class="login-card">
+        <div class="form-group">
+          <label for="student-name">Detective Name</label>
+          <input
+            type="text"
+            id="student-name"
+            placeholder="Enter your name"
+            maxlength="30"
+            aria-required="true"
+            autocomplete="off"
+          />
+        </div>
+        <div class="form-group">
+          <label for="class-period">Class Period</label>
+          <select id="class-period" aria-required="true">
+            <option value="">Select period...</option>
+            <option value="1">Period 1</option>
+            <option value="2">Period 2</option>
+            <option value="3">Period 3</option>
+            <option value="4">Period 4</option>
+            <option value="5">Period 5</option>
+            <option value="6">Period 6</option>
+            <option value="7">Period 7</option>
+          </select>
+        </div>
+        <button
+          class="btn btn-primary btn-full"
+          id="start-btn"
+          aria-label="Start the mission"
+        >
+          Start Mission 🔓
+        </button>
+        <p
+          id="login-error"
+          style="
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+          "
+          role="alert"
+        ></p>
+      </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen" role="main" aria-live="polite">
+      <div class="hud" aria-label="Game status">
+        <div class="hud-item">🔓 <span id="hud-q">1/15</span></div>
+        <div class="hud-item">⏱️ <span id="hud-timer">0:00</span></div>
+        <div class="hud-item">❤️ <span id="hud-lives">3</span></div>
+        <div class="hud-item">🔥 <span id="hud-streak">0</span></div>
+        <div class="hud-item">⭐ <span id="hud-score">0</span></div>
+      </div>
+      <div
+        class="progress-wrap"
+        role="progressbar"
+        aria-valuenow="0"
+        aria-valuemin="0"
+        aria-valuemax="15"
+      >
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="question-card animate-in" id="question-card">
+        <div class="q-number" id="q-number"></div>
+        <span class="q-tier" id="q-tier"></span>
+        <div class="q-text" id="q-text"></div>
+        <div
+          class="options"
+          id="options-container"
+          role="radiogroup"
+          aria-label="Answer choices"
+        ></div>
+        <div class="feedback" id="feedback" aria-live="assertive"></div>
+        <button
+          class="btn btn-accent next-btn"
+          id="next-btn"
+          style="display: none"
+          aria-label="Next question"
+        >
+          Next Clue →
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="results-screen" class="screen" role="main">
+      <div class="emoji-hero" aria-hidden="true">🔓</div>
+      <h1>Case Closed!</h1>
+      <div class="results-card">
+        <div
+          id="result-msg"
+          style="font-size: 1.1rem; margin-bottom: 8px"
+        ></div>
+        <div class="score-circle" id="score-circle">
+          <span id="final-pct">0%</span>
+          <small>score</small>
+        </div>
+        <div class="stars" id="final-stars" aria-label="Star rating"></div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="val" id="stat-correct">0</div>
+            <div class="lbl">Correct</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" id="stat-time">0:00</div>
+            <div class="lbl">Time</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" id="stat-streak">0</div>
+            <div class="lbl">Best Streak</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" id="stat-lives">0</div>
+            <div class="lbl">Lives Left</div>
+          </div>
+        </div>
+        <h2 style="margin-top: 16px">Case Review</h2>
+        <div class="review-list" id="review-list"></div>
+        <button
+          class="btn btn-primary btn-full"
+          id="retry-btn"
+          style="margin-top: 16px"
+          aria-label="Play again"
+        >
+          New Case 🔓
+        </button>
+      </div>
+    </div>
+
+    <footer>
+      🔓 Equation Escape &mdash; <strong>Neft Teacher</strong> | 6.EE.5 / 6.EE.7
+      / 6.EE.8
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+        const STORAGE_KEY = "equationEscape_v1";
+
+        // ── QUESTIONS (15 total, verified) ──
+        const QUESTIONS = [
+          // EASY (1-5): One-step addition/subtraction
+          {
+            id: 1,
+            tier: "easy",
+            standard: "6.EE.7",
+            text: "Solve: x + 5 = 12",
+            options: ["x = 7", "x = 17", "x = 5", "x = 6"],
+            answer: 0,
+            explain: "Subtract 5 from both sides: x = 12 − 5 = 7.",
+            misconceptions: [
+              "Added instead of subtracted",
+              "Copied the 5",
+              "Off-by-one error",
+            ],
+          },
+          {
+            id: 2,
+            tier: "easy",
+            standard: "6.EE.7",
+            text: "Solve: x − 3 = 8",
+            options: ["x = 5", "x = 11", "x = 8", "x = 24"],
+            answer: 1,
+            explain: "Add 3 to both sides: x = 8 + 3 = 11.",
+            misconceptions: [
+              "Subtracted instead of added",
+              "Used the right side only",
+              "Multiplied instead",
+            ],
+          },
+          {
+            id: 3,
+            tier: "easy",
+            standard: "6.EE.7",
+            text: "Solve: x + 9 = 15",
+            options: ["x = 24", "x = 9", "x = 6", "x = 5"],
+            answer: 2,
+            explain: "Subtract 9 from both sides: x = 15 − 9 = 6.",
+            misconceptions: [
+              "Added instead of subtracted",
+              "Copied the 9",
+              "Subtracted wrong",
+            ],
+          },
+          {
+            id: 4,
+            tier: "easy",
+            standard: "6.EE.5",
+            text: "Solve: 14 − x = 6",
+            options: ["x = 20", "x = 6", "x = 8", "x = 7"],
+            answer: 2,
+            explain: "Subtract 6 from 14: x = 14 − 6 = 8. Check: 14 − 8 = 6. ✓",
+            misconceptions: ["Added both numbers", "Used the 6", "Off-by-one"],
+          },
+          {
+            id: 5,
+            tier: "easy",
+            standard: "6.EE.7",
+            text: "Solve: x − 7 = 12",
+            options: ["x = 5", "x = 84", "x = 19", "x = 18"],
+            answer: 2,
+            explain: "Add 7 to both sides: x = 12 + 7 = 19.",
+            misconceptions: ["Subtracted instead", "Multiplied", "Off-by-one"],
+          },
+          // MEDIUM (6-10): One-step multiply/divide + situations
+          {
+            id: 6,
+            tier: "medium",
+            standard: "6.EE.7",
+            text: "Solve: 3x = 21",
+            options: ["x = 63", "x = 18", "x = 7", "x = 24"],
+            answer: 2,
+            explain: "Divide both sides by 3: x = 21 ÷ 3 = 7.",
+            misconceptions: ["Multiplied instead", "Subtracted 3", "Added 3"],
+          },
+          {
+            id: 7,
+            tier: "medium",
+            standard: "6.EE.7",
+            text: "Solve: x ÷ 4 = 9",
+            options: ["x = 36", "x = 13", "x = 5", "x = 32"],
+            answer: 0,
+            explain: "Multiply both sides by 4: x = 9 × 4 = 36.",
+            misconceptions: [
+              "Added 4",
+              "Divided instead",
+              "Used wrong operation",
+            ],
+          },
+          {
+            id: 8,
+            tier: "medium",
+            standard: "6.EE.7",
+            text: "Solve: 5x = 45",
+            options: ["x = 225", "x = 40", "x = 8", "x = 9"],
+            answer: 3,
+            explain: "Divide both sides by 5: x = 45 ÷ 5 = 9.",
+            misconceptions: [
+              "Multiplied instead",
+              "Subtracted 5",
+              "Divided wrong",
+            ],
+          },
+          {
+            id: 9,
+            tier: "medium",
+            standard: "6.EE.7",
+            text: "A bookshelf has equal rows of 6 books, with 42 books total. Which equation finds the number of rows (r)?",
+            options: ["r + 6 = 42", "r − 6 = 42", "6r = 42", "r ÷ 42 = 6"],
+            answer: 2,
+            explain:
+              "6 books per row × r rows = 42 total, so 6r = 42. Then r = 7.",
+            misconceptions: [
+              "Confused add for multiply",
+              "Confused subtract",
+              "Inverted division",
+            ],
+          },
+          {
+            id: 10,
+            tier: "medium",
+            standard: "6.EE.7",
+            text: "Solve: x ÷ 3 = 8",
+            options: ["x = 5", "x = 11", "x = 24", "x = 27"],
+            answer: 2,
+            explain: "Multiply both sides by 3: x = 8 × 3 = 24.",
+            misconceptions: ["Subtracted 3", "Added 3", "Used 27 (9×3)"],
+          },
+          // HARD (11-15): Inequalities + word problems
+          {
+            id: 11,
+            tier: "hard",
+            standard: "6.EE.8",
+            text: "Which value of x is a solution to x + 3 > 10?",
+            options: ["x = 5", "x = 7", "x = 6", "x = 8"],
+            answer: 3,
+            explain:
+              "x + 3 > 10 means x > 7. Only x = 8 is greater than 7. (x = 7 gives 10, not > 10.)",
+            misconceptions: [
+              "Included boundary",
+              "Subtracted wrong",
+              "Picked too small",
+            ],
+          },
+          {
+            id: 12,
+            tier: "hard",
+            standard: "6.EE.8",
+            text: "Maya has $15. She spends $d on lunch and wants more than $4 left. Which inequality represents this?",
+            options: ["15 + d > 4", "15 − d > 4", "d − 15 > 4", "15 − d < 4"],
+            answer: 1,
+            explain:
+              "She starts with $15, spends $d, so 15 − d is what remains. She wants more than $4 left: 15 − d > 4.",
+            misconceptions: [
+              "Added instead of subtracted",
+              "Reversed terms",
+              "Flipped the inequality",
+            ],
+          },
+          {
+            id: 13,
+            tier: "hard",
+            standard: "6.EE.5",
+            text: "Which value of x is NOT a solution to x − 5 ≥ 3?",
+            options: ["x = 8", "x = 10", "x = 7", "x = 12"],
+            answer: 2,
+            explain:
+              "x − 5 ≥ 3 means x ≥ 8. x = 7 gives 7 − 5 = 2, which is less than 3. So x = 7 is NOT a solution.",
+            misconceptions: [
+              "Boundary is a solution",
+              "Larger values work",
+              "Misread inequality",
+            ],
+          },
+          {
+            id: 14,
+            tier: "hard",
+            standard: "6.EE.7",
+            text: "Sam earns $8 per hour. He needs at least $56 for a bike. Which inequality shows the hours (h) he needs to work?",
+            options: ["8 + h ≥ 56", "8h < 56", "8h ≥ 56", "h ÷ 8 ≥ 56"],
+            answer: 2,
+            explain:
+              "$8 per hour × h hours ≥ $56 needed. So 8h ≥ 56. Solving: h ≥ 7.",
+            misconceptions: [
+              "Added instead of multiplied",
+              "Used < instead of ≥",
+              "Inverted operation",
+            ],
+          },
+          {
+            id: 15,
+            tier: "hard",
+            standard: "6.EE.8",
+            text: "A number line shows an open circle at 4 with an arrow pointing to the right. Which inequality does it represent?",
+            options: ["x < 4", "x ≤ 4", "x > 4", "x ≥ 4"],
+            answer: 2,
+            explain:
+              "An open circle means 4 is NOT included. Arrow pointing right means values greater than 4. So x > 4.",
+            misconceptions: [
+              "Confused open/closed circle",
+              "Wrong direction",
+              "Included boundary",
+            ],
+          },
+        ];
+
+        // ── STATE ──
+        let state = {
+          name: "",
+          period: "",
+          current: 0,
+          score: 0,
+          lives: 3,
+          streak: 0,
+          bestStreak: 0,
+          answers: [],
+          startTime: 0,
+          elapsed: 0,
+          timerRef: null,
+          order: [],
+        };
+
+        // ── DOM REFS ──
+        const $ = (id) => document.getElementById(id);
+        const loginScreen = $("login-screen");
+        const gameScreen = $("game-screen");
+        const resultsScreen = $("results-screen");
+        const nameInput = $("student-name");
+        const periodSelect = $("class-period");
+        const startBtn = $("start-btn");
+        const loginError = $("login-error");
+        const hudQ = $("hud-q");
+        const hudTimer = $("hud-timer");
+        const hudLives = $("hud-lives");
+        const hudStreak = $("hud-streak");
+        const hudScore = $("hud-score");
+        const progressBar = $("progress-bar");
+        const qCard = $("question-card");
+        const qNumber = $("q-number");
+        const qTier = $("q-tier");
+        const qText = $("q-text");
+        const optionsContainer = $("options-container");
+        const feedback = $("feedback");
+        const nextBtn = $("next-btn");
+
+        // ── HELPERS ──
+        function shuffle(arr) {
+          const a = [...arr];
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        }
+
+        function formatTime(s) {
+          const m = Math.floor(s / 60);
+          const sec = s % 60;
+          return m + ":" + (sec < 10 ? "0" : "") + sec;
+        }
+
+        function showScreen(screen) {
+          [loginScreen, gameScreen, resultsScreen].forEach((s) =>
+            s.classList.remove("active"),
+          );
+          screen.classList.add("active");
+          screen.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function saveState() {
+          try {
+            localStorage.setItem(
+              STORAGE_KEY,
+              JSON.stringify({
+                name: state.name,
+                period: state.period,
+                lastScore: state.score,
+                lastDate: new Date().toISOString(),
+              }),
+            );
+          } catch (e) {
+            /* storage unavailable */
+          }
+        }
+
+        function loadState() {
+          try {
+            const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (d && d.name) {
+              nameInput.value = d.name;
+              if (d.period) periodSelect.value = d.period;
+            }
+          } catch (e) {
+            /* ignore */
+          }
+        }
+
+        // ── TIMER ──
+        function startTimer() {
+          state.startTime = Date.now();
+          state.elapsed = 0;
+          state.timerRef = setInterval(() => {
+            state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+            hudTimer.textContent = formatTime(state.elapsed);
+          }, 1000);
+        }
+
+        function stopTimer() {
+          clearInterval(state.timerRef);
+        }
+
+        // ── AUDIO (Web Audio API) ──
+        let audioCtx = null;
+        function getAudio() {
+          if (!audioCtx) {
+            try {
+              audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {
+              return null;
+            }
+          }
+          return audioCtx;
+        }
+
+        function playTone(freq, dur, type) {
+          const ctx = getAudio();
+          if (!ctx) return;
+          try {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type || "sine";
+            osc.frequency.value = freq;
+            gain.gain.value = 0.12;
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              ctx.currentTime + dur,
+            );
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + dur);
+          } catch (e) {
+            /* audio failed, no-op */
+          }
+        }
+
+        function playCorrect() {
+          playTone(523, 0.15, "sine");
+          setTimeout(() => playTone(659, 0.15, "sine"), 100);
+          setTimeout(() => playTone(784, 0.2, "sine"), 200);
+        }
+        function playWrong() {
+          playTone(200, 0.25, "sawtooth");
+        }
+        function playFinish() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => playTone(f, 0.2, "sine"), i * 120),
+          );
+        }
+
+        // ── LOGIN ──
+        startBtn.addEventListener("click", handleLogin);
+        nameInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") handleLogin();
+        });
+
+        function handleLogin() {
+          const name = nameInput.value.trim();
+          const period = periodSelect.value;
+          if (!name) {
+            loginError.textContent = "Please enter your name.";
+            loginError.style.display = "block";
+            nameInput.focus();
+            return;
+          }
+          if (!period) {
+            loginError.textContent = "Please select a period.";
+            loginError.style.display = "block";
+            periodSelect.focus();
+            return;
+          }
+          loginError.style.display = "none";
+          state.name = name;
+          state.period = period;
+          state.current = 0;
+          state.score = 0;
+          state.lives = 3;
+          state.streak = 0;
+          state.bestStreak = 0;
+          state.answers = [];
+          state.order = shuffle([...Array(15).keys()]);
+          showScreen(gameScreen);
+          startTimer();
+          renderQuestion();
+        }
+
+        // ── RENDER QUESTION ──
+        function renderQuestion() {
+          const idx = state.order[state.current];
+          const q = QUESTIONS[idx];
+          const num = state.current + 1;
+
+          hudQ.textContent = num + "/15";
+          hudLives.textContent = state.lives;
+          hudStreak.textContent = state.streak;
+          hudScore.textContent = state.score;
+          progressBar.style.width = ((num - 1) / 15) * 100 + "%";
+
+          qNumber.textContent = "Clue " + num + " of 15";
+          qTier.textContent =
+            q.tier === "easy"
+              ? "Patrol"
+              : q.tier === "medium"
+                ? "Detective"
+                : "Chief";
+          qTier.className = "q-tier tier-" + q.tier;
+          qText.textContent = q.text;
+
+          feedback.className = "feedback";
+          feedback.textContent = "";
+          feedback.classList.remove("visible");
+          nextBtn.style.display = "none";
+
+          optionsContainer.innerHTML = "";
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.textContent = opt;
+            btn.setAttribute("role", "radio");
+            btn.setAttribute("aria-checked", "false");
+            btn.setAttribute("aria-label", "Option " + (i + 1) + ": " + opt);
+            btn.setAttribute("tabindex", "0");
+            btn.addEventListener("click", () => handleAnswer(i, btn));
+            optionsContainer.appendChild(btn);
+          });
+
+          qCard.classList.remove("animate-in");
+          void qCard.offsetWidth;
+          qCard.classList.add("animate-in");
+
+          // Focus first option for keyboard nav
+          setTimeout(() => {
+            const first = optionsContainer.querySelector(".option-btn");
+            if (first) first.focus();
+          }, 100);
+        }
+
+        // ── HANDLE ANSWER ──
+        function handleAnswer(chosen, btnEl) {
+          const idx = state.order[state.current];
+          const q = QUESTIONS[idx];
+          const buttons = optionsContainer.querySelectorAll(".option-btn");
+
+          // Disable all
+          buttons.forEach((b) => {
+            b.classList.add("disabled");
+            b.removeEventListener("click", handleAnswer);
+          });
+
+          const isCorrect = chosen === q.answer;
+
+          if (isCorrect) {
+            btnEl.classList.add("correct");
+            btnEl.setAttribute("aria-checked", "true");
+            const tierBonus =
+              q.tier === "easy" ? 10 : q.tier === "medium" ? 20 : 30;
+            const streakBonus = Math.min(state.streak, 5) * 5;
+            state.score += tierBonus + streakBonus;
+            state.streak++;
+            if (state.streak > state.bestStreak)
+              state.bestStreak = state.streak;
+
+            feedback.className = "feedback correct-fb visible";
+            feedback.textContent = "✓ Correct! " + q.explain;
+            btnEl.classList.add("pulse");
+            playCorrect();
+          } else {
+            btnEl.classList.add("wrong");
+            buttons[q.answer].classList.add("show-correct");
+            state.lives--;
+            state.streak = 0;
+            hudLives.textContent = state.lives;
+
+            feedback.className = "feedback wrong-fb visible";
+            feedback.textContent = "✗ Not quite. " + q.explain;
+            qCard.classList.add("shake");
+            setTimeout(() => qCard.classList.remove("shake"), 400);
+            playWrong();
+          }
+
+          state.answers.push({
+            qId: q.id,
+            question: q.text,
+            tier: q.tier,
+            chosen: q.options[chosen],
+            correct: q.options[q.answer],
+            isCorrect: isCorrect,
+          });
+
+          hudScore.textContent = state.score;
+          hudStreak.textContent = state.streak;
+
+          // Check end conditions
+          if (state.lives <= 0 || state.current >= 14) {
+            nextBtn.textContent = "See Results 🔓";
+          } else {
+            nextBtn.textContent = "Next Clue →";
+          }
+          nextBtn.style.display = "inline-block";
+          nextBtn.focus();
+        }
+
+        // ── NEXT ──
+        nextBtn.addEventListener("click", () => {
+          if (state.lives <= 0 || state.current >= 14) {
+            endGame();
+            return;
+          }
+          state.current++;
+          renderQuestion();
+        });
+
+        // ── END GAME ──
+        function endGame() {
+          stopTimer();
+          playFinish();
+
+          const total = state.answers.length;
+          const correct = state.answers.filter((a) => a.isCorrect).length;
+          const pct = Math.round((correct / total) * 100);
+
+          // Stars
+          let starCount = 0;
+          if (pct >= 90) starCount = 3;
+          else if (pct >= 70) starCount = 2;
+          else if (pct >= 50) starCount = 1;
+
+          const starStr = "⭐".repeat(starCount) + "☆".repeat(3 - starCount);
+
+          // Result message
+          let msg = "";
+          if (pct >= 90)
+            msg =
+              "🔓 Outstanding, Detective " +
+              state.name +
+              "! Case solved brilliantly!";
+          else if (pct >= 70)
+            msg =
+              "🔓 Great work, Detective " +
+              state.name +
+              "! Case nearly cracked!";
+          else if (pct >= 50)
+            msg =
+              "🔓 Good effort, Detective " +
+              state.name +
+              "! Keep investigating!";
+          else
+            msg =
+              "🔓 Keep practicing, Detective " +
+              state.name +
+              ". You'll crack it next time!";
+
+          $("result-msg").textContent = msg;
+          $("final-pct").textContent = pct + "%";
+          $("final-stars").textContent = starStr;
+          $("final-stars").setAttribute(
+            "aria-label",
+            starCount + " out of 3 stars",
+          );
+          $("stat-correct").textContent = correct + "/" + total;
+          $("stat-time").textContent = formatTime(state.elapsed);
+          $("stat-streak").textContent = state.bestStreak;
+          $("stat-lives").textContent = state.lives;
+
+          // Review list
+          const reviewList = $("review-list");
+          reviewList.innerHTML = "";
+          state.answers.forEach((a, i) => {
+            const div = document.createElement("div");
+            div.className =
+              "review-item " + (a.isCorrect ? "r-correct" : "r-wrong");
+            div.textContent =
+              i +
+              1 +
+              ". " +
+              a.question +
+              " → Your answer: " +
+              a.chosen +
+              (a.isCorrect ? " ✓" : " ✗ (Correct: " + a.correct + ")");
+            reviewList.appendChild(div);
+          });
+
+          saveState();
+          showScreen(resultsScreen);
+        }
+
+        // ── RETRY ──
+        $("retry-btn").addEventListener("click", () => {
+          state.current = 0;
+          state.score = 0;
+          state.lives = 3;
+          state.streak = 0;
+          state.bestStreak = 0;
+          state.answers = [];
+          state.order = shuffle([...Array(15).keys()]);
+          showScreen(gameScreen);
+          startTimer();
+          renderQuestion();
+        });
+
+        // ── KEYBOARD NAV ──
+        document.addEventListener("keydown", (e) => {
+          if (!gameScreen.classList.contains("active")) return;
+          const opts = [
+            ...optionsContainer.querySelectorAll(".option-btn:not(.disabled)"),
+          ];
+          if (!opts.length) return;
+          const focused = document.activeElement;
+          const idx = opts.indexOf(focused);
+
+          if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+            e.preventDefault();
+            const next = idx < opts.length - 1 ? idx + 1 : 0;
+            opts[next].focus();
+          } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            const prev = idx > 0 ? idx - 1 : opts.length - 1;
+            opts[prev].focus();
+          } else if (
+            (e.key === "Enter" || e.key === " ") &&
+            focused.classList.contains("option-btn") &&
+            !focused.classList.contains("disabled")
+          ) {
+            e.preventDefault();
+            focused.click();
+          }
+        });
+
+        // ── INIT ──
+        loadState();
+        nameInput.focus();
+      })();
+    </script>
+  </body>
+</html>

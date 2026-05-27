@@ -18,6 +18,8 @@
         --cream: #f7f4ec;
         --ink: #21313f;
         --line: #d7e2ed;
+        --coral: #d9795d;
+        --green: #0fa958;
       }
       * {
         box-sizing: border-box;
@@ -29,7 +31,7 @@
         color: var(--ink);
       }
       .container {
-        max-width: 860px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 48px 24px;
       }
@@ -47,8 +49,9 @@
       }
       .stats {
         display: flex;
-        gap: 24px;
+        gap: 16px;
         margin-bottom: 36px;
+        flex-wrap: wrap;
       }
       .stat {
         background: white;
@@ -68,8 +71,65 @@
         text-transform: uppercase;
         letter-spacing: 0.04em;
       }
+
+      /* Category tabs */
+      .category-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+      }
+      .cat-tab {
+        padding: 10px 20px;
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.15s ease;
+        text-decoration: none;
+        color: var(--ink);
+        background: white;
+      }
+      .cat-tab:hover {
+        border-color: var(--teal);
+      }
+      .cat-tab.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+      }
+      .cat-tab .badge {
+        display: inline-block;
+        background: rgba(31, 166, 162, 0.15);
+        color: var(--teal);
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 100px;
+        margin-left: 6px;
+      }
+      .cat-tab.active .badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      /* Category sections */
+      .category-section {
+        display: none;
+      }
+      .category-section.active {
+        display: block;
+      }
+      .section-desc {
+        font-size: 0.9rem;
+        color: #5f6f80;
+        margin-bottom: 20px;
+        line-height: 1.5;
+      }
+
       .unit-group {
-        margin-bottom: 32px;
+        margin-bottom: 28px;
       }
       .unit-label {
         font-size: 0.82rem;
@@ -77,25 +137,25 @@
         text-transform: uppercase;
         letter-spacing: 0.06em;
         color: var(--teal);
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         padding-left: 4px;
       }
       .lessons {
         display: grid;
-        gap: 12px;
+        gap: 10px;
       }
       .lesson-card {
         display: grid;
-        grid-template-columns: 52px 1fr auto;
+        grid-template-columns: 48px 1fr auto;
         gap: 14px;
         align-items: center;
         background: white;
         border: 1px solid rgba(18, 53, 91, 0.07);
-        border-radius: 16px;
-        padding: 16px 20px;
+        border-radius: 14px;
+        padding: 14px 18px;
         text-decoration: none;
         color: inherit;
-        box-shadow: 0 2px 10px rgba(18, 53, 91, 0.05);
+        box-shadow: 0 2px 8px rgba(18, 53, 91, 0.04);
         transition: all 0.15s ease;
       }
       .lesson-card:hover {
@@ -103,12 +163,12 @@
         box-shadow: 0 6px 20px rgba(18, 53, 91, 0.1);
       }
       .icon {
-        width: 52px;
-        height: 52px;
+        width: 48px;
+        height: 48px;
         border-radius: 12px;
         display: grid;
         place-items: center;
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 900;
       }
       .u1 {
@@ -153,10 +213,10 @@
       }
       .title {
         font-weight: 800;
-        font-size: 1.02rem;
+        font-size: 0.98rem;
       }
       .meta {
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         color: #5f6f80;
         margin-top: 2px;
       }
@@ -164,6 +224,31 @@
         font-size: 1.1rem;
         color: var(--teal);
         font-weight: 900;
+      }
+      .type-pill {
+        display: inline-block;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 100px;
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+      .pill-game {
+        background: #e8f8f0;
+        color: #0fa958;
+      }
+      .pill-review {
+        background: #fff3db;
+        color: #875f00;
+      }
+      .pill-creative {
+        background: #fce6de;
+        color: #b64e2f;
+      }
+      .pill-lesson {
+        background: #dff2f1;
+        color: #1fa6a2;
       }
       .footer {
         margin-top: 40px;
@@ -176,189 +261,965 @@
   <body>
     <div class="container">
       <h1>📐 Reveal Math Activities</h1>
-      <p class="sub">Grade 6 · Interactive Lessons by Neft Teacher</p>
+      <p class="sub">Grade 6 · Interactive Activities by Neft Teacher</p>
       <div class="stats">
         <div class="stat">
           <div class="stat-num">10</div>
+          <div class="stat-label">Units</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">64</div>
           <div class="stat-label">Lessons</div>
         </div>
         <div class="stat">
-          <div class="stat-num">11</div>
-          <div class="stat-label">Activity Types</div>
+          <div class="stat-num">10</div>
+          <div class="stat-label">Games</div>
         </div>
         <div class="stat">
-          <div class="stat-num">6</div>
-          <div class="stat-label">Phases Each</div>
+          <div class="stat-num">10</div>
+          <div class="stat-label">Reviews</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">10</div>
+          <div class="stat-label">Post-Tests</div>
         </div>
       </div>
 
-      <div class="unit-group">
-        <div class="unit-label">Unit 1 — Number Sense</div>
-        <div class="lessons">
-          <a href="./lessons/1-2/index.html" class="lesson-card">
-            <div class="icon u1">🚀</div>
-            <div>
-              <div class="title">Greatest Common Factor</div>
-              <div class="meta">
-                Lesson 1-2 · 6.NS.4 · Matching Game + Drag Sort + Error Analysis
+      <div class="category-tabs">
+        <button class="cat-tab active" data-cat="lessons">
+          Lessons <span class="badge">64</span>
+        </button>
+        <button class="cat-tab" data-cat="games">
+          Games <span class="badge">10</span>
+        </button>
+        <button class="cat-tab" data-cat="pre-test">
+          Pre-Test Reviews <span class="badge">10</span>
+        </button>
+        <button class="cat-tab" data-cat="post-test">
+          Post-Test Activities <span class="badge">10</span>
+        </button>
+      </div>
+
+      <!-- LESSONS -->
+      <div class="category-section active" id="cat-lessons">
+        <p class="section-desc">
+          Interactive lesson activities aligned to Reveal Math Grade 6. Each
+          lesson includes multiple phases with manipulatives, scaffolded
+          practice, and real-time feedback.
+        </p>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 1 — Number Sense</div>
+          <div class="lessons">
+            <a href="./lessons/1-1/index.html" class="lesson-card"
+              ><div class="icon u1">1.1</div>
+              <div>
+                <div class="title">Prime Factorization</div>
+                <div class="meta">6.NS.4</div>
               </div>
-            </div>
-            <span class="arrow">→</span>
-          </a>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/1-2/index.html" class="lesson-card"
+              ><div class="icon u1">1.2</div>
+              <div>
+                <div class="title">Greatest Common Factor</div>
+                <div class="meta">6.NS.4</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/1-3/index.html" class="lesson-card"
+              ><div class="icon u1">1.3</div>
+              <div>
+                <div class="title">Least Common Multiple</div>
+                <div class="meta">6.NS.4</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/1-4/index.html" class="lesson-card"
+              ><div class="icon u1">1.4</div>
+              <div>
+                <div class="title">Add & Subtract Decimals</div>
+                <div class="meta">6.NS.3</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/1-5/index.html" class="lesson-card"
+              ><div class="icon u1">1.5</div>
+              <div>
+                <div class="title">Multiply Decimals</div>
+                <div class="meta">6.NS.3</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/1-6/index.html" class="lesson-card"
+              ><div class="icon u1">1.6</div>
+              <div>
+                <div class="title">Divide Decimals</div>
+                <div class="meta">6.NS.3</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/1-7/index.html" class="lesson-card"
+              ><div class="icon u1">1.7</div>
+              <div>
+                <div class="title">Divide Multi-Digit Numbers</div>
+                <div class="meta">6.NS.2</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 2 — Fractions</div>
+          <div class="lessons">
+            <a href="./lessons/2-1/index.html" class="lesson-card"
+              ><div class="icon u2">2.1</div>
+              <div>
+                <div class="title">Interpret Fractions as Division</div>
+                <div class="meta">6.NS.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/2-2/index.html" class="lesson-card"
+              ><div class="icon u2">2.2</div>
+              <div>
+                <div class="title">Multiply Fractions</div>
+                <div class="meta">6.NS.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/2-3/index.html" class="lesson-card"
+              ><div class="icon u2">2.3</div>
+              <div>
+                <div class="title">Divide Fractions</div>
+                <div class="meta">6.NS.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/2-4/index.html" class="lesson-card"
+              ><div class="icon u2">2.4</div>
+              <div>
+                <div class="title">Divide Mixed Numbers</div>
+                <div class="meta">6.NS.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/2-5/index.html" class="lesson-card"
+              ><div class="icon u2">2.5</div>
+              <div>
+                <div class="title">Solve Fraction Problems</div>
+                <div class="meta">6.NS.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">
+            Unit 3 — Ratios & Proportional Relationships
+          </div>
+          <div class="lessons">
+            <a href="./lessons/3-1/index.html" class="lesson-card"
+              ><div class="icon u3">3.1</div>
+              <div>
+                <div class="title">Understand Ratios</div>
+                <div class="meta">6.RP.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/3-2/index.html" class="lesson-card"
+              ><div class="icon u3">3.2</div>
+              <div>
+                <div class="title">Ratio Tables</div>
+                <div class="meta">6.RP.3a</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/3-3/index.html" class="lesson-card"
+              ><div class="icon u3">3.3</div>
+              <div>
+                <div class="title">Graph Ratios</div>
+                <div class="meta">6.RP.3a</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/3-4/index.html" class="lesson-card"
+              ><div class="icon u3">3.4</div>
+              <div>
+                <div class="title">Equivalent Ratios</div>
+                <div class="meta">6.RP.3</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/3-5/index.html" class="lesson-card"
+              ><div class="icon u3">3.5</div>
+              <div>
+                <div class="title">Compare Ratios</div>
+                <div class="meta">6.RP.3a</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/3-6/index.html" class="lesson-card"
+              ><div class="icon u3">3.6</div>
+              <div>
+                <div class="title">Unit Rates</div>
+                <div class="meta">6.RP.2</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/3-7/index.html" class="lesson-card"
+              ><div class="icon u3">3.7</div>
+              <div>
+                <div class="title">Convert Measurement Units</div>
+                <div class="meta">6.RP.3d</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 4 — Percents</div>
+          <div class="lessons">
+            <a href="./lessons/4-1/index.html" class="lesson-card"
+              ><div class="icon u4">4.1</div>
+              <div>
+                <div class="title">Understand Percents</div>
+                <div class="meta">6.RP.3c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/4-2/index.html" class="lesson-card"
+              ><div class="icon u4">4.2</div>
+              <div>
+                <div class="title">Fractions, Decimals & Percents</div>
+                <div class="meta">6.RP.3c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/4-3/index.html" class="lesson-card"
+              ><div class="icon u4">4.3</div>
+              <div>
+                <div class="title">Percent of a Number</div>
+                <div class="meta">6.RP.3c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/4-4/index.html" class="lesson-card"
+              ><div class="icon u4">4.4</div>
+              <div>
+                <div class="title">Find the Whole</div>
+                <div class="meta">6.RP.3c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/4-5/index.html" class="lesson-card"
+              ><div class="icon u4">4.5</div>
+              <div>
+                <div class="title">Financial Literacy</div>
+                <div class="meta">6.RP.3c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/4-6/index.html" class="lesson-card"
+              ><div class="icon u4">4.6</div>
+              <div>
+                <div class="title">Simple Interest</div>
+                <div class="meta">6.RP.3c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/4-7/index.html" class="lesson-card"
+              ><div class="icon u4">4.7</div>
+              <div>
+                <div class="title">Solve Percent Problems</div>
+                <div class="meta">6.RP.3c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 5 — Geometry: Area</div>
+          <div class="lessons">
+            <a href="./lessons/5-1/index.html" class="lesson-card"
+              ><div class="icon u5">5.1</div>
+              <div>
+                <div class="title">Area of Parallelograms</div>
+                <div class="meta">6.G.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/5-2/index.html" class="lesson-card"
+              ><div class="icon u5">5.2</div>
+              <div>
+                <div class="title">Area of Triangles</div>
+                <div class="meta">6.G.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/5-3/index.html" class="lesson-card"
+              ><div class="icon u5">5.3</div>
+              <div>
+                <div class="title">Area of Trapezoids</div>
+                <div class="meta">6.G.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/5-4/index.html" class="lesson-card"
+              ><div class="icon u5">5.4</div>
+              <div>
+                <div class="title">Area of Regular Polygons</div>
+                <div class="meta">6.G.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/5-5/index.html" class="lesson-card"
+              ><div class="icon u5">5.5</div>
+              <div>
+                <div class="title">Area of Composite Figures</div>
+                <div class="meta">6.G.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 6 — Expressions</div>
+          <div class="lessons">
+            <a href="./lessons/6-1/index.html" class="lesson-card"
+              ><div class="icon u6">6.1</div>
+              <div>
+                <div class="title">Write Numerical Expressions</div>
+                <div class="meta">6.EE.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/6-2/index.html" class="lesson-card"
+              ><div class="icon u6">6.2</div>
+              <div>
+                <div class="title">Evaluate Expressions</div>
+                <div class="meta">6.EE.2c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/6-3/index.html" class="lesson-card"
+              ><div class="icon u6">6.3</div>
+              <div>
+                <div class="title">Properties of Operations</div>
+                <div class="meta">6.EE.3</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/6-4/index.html" class="lesson-card"
+              ><div class="icon u6">6.4</div>
+              <div>
+                <div class="title">Equivalent Expressions</div>
+                <div class="meta">6.EE.4</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/6-5/index.html" class="lesson-card"
+              ><div class="icon u6">6.5</div>
+              <div>
+                <div class="title">Write Algebraic Expressions</div>
+                <div class="meta">6.EE.2a</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/6-6/index.html" class="lesson-card"
+              ><div class="icon u6">6.6</div>
+              <div>
+                <div class="title">Identify Parts of Expressions</div>
+                <div class="meta">6.EE.2b</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/6-7/index.html" class="lesson-card"
+              ><div class="icon u6">6.7</div>
+              <div>
+                <div class="title">Generate Equivalent Expressions</div>
+                <div class="meta">6.EE.3</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 7 — Equations</div>
+          <div class="lessons">
+            <a href="./lessons/7-1/index.html" class="lesson-card"
+              ><div class="icon u7">7.1</div>
+              <div>
+                <div class="title">Equations and Solutions</div>
+                <div class="meta">6.EE.5</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/7-2/index.html" class="lesson-card"
+              ><div class="icon u7">7.2</div>
+              <div>
+                <div class="title">Solve One-Step Equations</div>
+                <div class="meta">6.EE.7</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/7-3/index.html" class="lesson-card"
+              ><div class="icon u7">7.3</div>
+              <div>
+                <div class="title">Write & Solve Equations</div>
+                <div class="meta">6.EE.7</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/7-4/index.html" class="lesson-card"
+              ><div class="icon u7">7.4</div>
+              <div>
+                <div class="title">Solve Inequalities</div>
+                <div class="meta">6.EE.8</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/7-5/index.html" class="lesson-card"
+              ><div class="icon u7">7.5</div>
+              <div>
+                <div class="title">Graph Inequalities</div>
+                <div class="meta">6.EE.8</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/7-6/index.html" class="lesson-card"
+              ><div class="icon u7">7.6</div>
+              <div>
+                <div class="title">Dependent & Independent Variables</div>
+                <div class="meta">6.EE.9</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/7-7/index.html" class="lesson-card"
+              ><div class="icon u7">7.7</div>
+              <div>
+                <div class="title">Patterns & Relationships</div>
+                <div class="meta">6.EE.9</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 8 — Statistics</div>
+          <div class="lessons">
+            <a href="./lessons/8-1/index.html" class="lesson-card"
+              ><div class="icon u8">8.1</div>
+              <div>
+                <div class="title">Statistical Questions</div>
+                <div class="meta">6.SP.1</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/8-2/index.html" class="lesson-card"
+              ><div class="icon u8">8.2</div>
+              <div>
+                <div class="title">Mean, Median, and Mode</div>
+                <div class="meta">6.SP.3</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/8-3/index.html" class="lesson-card"
+              ><div class="icon u8">8.3</div>
+              <div>
+                <div class="title">Mean Absolute Deviation</div>
+                <div class="meta">6.SP.5c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/8-4/index.html" class="lesson-card"
+              ><div class="icon u8">8.4</div>
+              <div>
+                <div class="title">Display Data</div>
+                <div class="meta">6.SP.4</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/8-5/index.html" class="lesson-card"
+              ><div class="icon u8">8.5</div>
+              <div>
+                <div class="title">Describe Data Distributions</div>
+                <div class="meta">6.SP.5</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/8-6/index.html" class="lesson-card"
+              ><div class="icon u8">8.6</div>
+              <div>
+                <div class="title">Summarize Data</div>
+                <div class="meta">6.SP.5d</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/8-7/index.html" class="lesson-card"
+              ><div class="icon u8">8.7</div>
+              <div>
+                <div class="title">Choose Appropriate Measures</div>
+                <div class="meta">6.SP.5d</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 9 — Coordinate Plane</div>
+          <div class="lessons">
+            <a href="./lessons/9-1/index.html" class="lesson-card"
+              ><div class="icon u9">9.1</div>
+              <div>
+                <div class="title">Graph on the Coordinate Plane</div>
+                <div class="meta">6.NS.6</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/9-2/index.html" class="lesson-card"
+              ><div class="icon u9">9.2</div>
+              <div>
+                <div class="title">Ordered Pairs</div>
+                <div class="meta">6.NS.6b</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/9-3/index.html" class="lesson-card"
+              ><div class="icon u9">9.3</div>
+              <div>
+                <div class="title">Absolute Value</div>
+                <div class="meta">6.NS.7c</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/9-4/index.html" class="lesson-card"
+              ><div class="icon u9">9.4</div>
+              <div>
+                <div class="title">Compare & Order Integers</div>
+                <div class="meta">6.NS.7</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/9-5/index.html" class="lesson-card"
+              ><div class="icon u9">9.5</div>
+              <div>
+                <div class="title">Distance on the Coordinate Plane</div>
+                <div class="meta">6.NS.8</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/9-6/index.html" class="lesson-card"
+              ><div class="icon u9">9.6</div>
+              <div>
+                <div class="title">Polygons on the Coordinate Plane</div>
+                <div class="meta">6.G.3</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/9-7/index.html" class="lesson-card"
+              ><div class="icon u9">9.7</div>
+              <div>
+                <div class="title">Problem Solving with Coordinates</div>
+                <div class="meta">6.NS.8</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
+        </div>
+
+        <div class="unit-group">
+          <div class="unit-label">Unit 10 — Volume & Surface Area</div>
+          <div class="lessons">
+            <a href="./lessons/10-1/index.html" class="lesson-card"
+              ><div class="icon u10">10.1</div>
+              <div>
+                <div class="title">Volume of Rectangular Prisms</div>
+                <div class="meta">6.G.2</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/10-2/index.html" class="lesson-card"
+              ><div class="icon u10">10.2</div>
+              <div>
+                <div class="title">Volume with Fractions</div>
+                <div class="meta">6.G.2</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/10-3/index.html" class="lesson-card"
+              ><div class="icon u10">10.3</div>
+              <div>
+                <div class="title">Surface Area of Prisms</div>
+                <div class="meta">6.G.4</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/10-4/index.html" class="lesson-card"
+              ><div class="icon u10">10.4</div>
+              <div>
+                <div class="title">Surface Area of Pyramids</div>
+                <div class="meta">6.G.4</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+            <a href="./lessons/10-5/index.html" class="lesson-card"
+              ><div class="icon u10">10.5</div>
+              <div>
+                <div class="title">Nets & Surface Area</div>
+                <div class="meta">6.G.4</div>
+              </div>
+              <span class="arrow">→</span></a
+            >
+          </div>
         </div>
       </div>
 
-      <div class="unit-group">
-        <div class="unit-label">Unit 2 — Fractions</div>
+      <!-- GAMES -->
+      <div class="category-section" id="cat-games">
+        <p class="section-desc">
+          Fast-paced games for each unit. Students practice key skills through
+          arcade-style gameplay with scoring and feedback.
+        </p>
         <div class="lessons">
-          <a href="./lessons/2-3/index.html" class="lesson-card">
-            <div class="icon u2">🔍</div>
+          <a href="./games/unit1-factor-frenzy.html" class="lesson-card"
+            ><div class="icon u1">🎮</div>
             <div>
-              <div class="title">Divide Fractions</div>
+              <div class="title">Factor Frenzy</div>
+              <div class="meta">Unit 1 · GCF & LCM · Timed arcade game</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit2-fraction-kitchen.html" class="lesson-card"
+            ><div class="icon u2">🎮</div>
+            <div>
+              <div class="title">Fraction Kitchen</div>
               <div class="meta">
-                Lesson 2-3 · 6.NS.1 · Bar Model + Number Line + Error Analysis
+                Unit 2 · Fraction operations · Cooking challenge
               </div>
             </div>
-            <span class="arrow">→</span>
-          </a>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit3-ratio-rally.html" class="lesson-card"
+            ><div class="icon u3">🎮</div>
+            <div>
+              <div class="title">Ratio Rally</div>
+              <div class="meta">Unit 3 · Equivalent ratios · Racing game</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit4-discount-dash.html" class="lesson-card"
+            ><div class="icon u4">🎮</div>
+            <div>
+              <div class="title">Discount Dash</div>
+              <div class="meta">Unit 4 · Percents · Shopping challenge</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit5-area-architect.html" class="lesson-card"
+            ><div class="icon u5">🎮</div>
+            <div>
+              <div class="title">Area Architect</div>
+              <div class="meta">
+                Unit 5 · Area of shapes · Building challenge
+              </div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit6-expression-engine.html" class="lesson-card"
+            ><div class="icon u6">🎮</div>
+            <div>
+              <div class="title">Expression Engine</div>
+              <div class="meta">
+                Unit 6 · Evaluate expressions · Puzzle game
+              </div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit7-equation-escape.html" class="lesson-card"
+            ><div class="icon u7">🎮</div>
+            <div>
+              <div class="title">Equation Escape</div>
+              <div class="meta">Unit 7 · Solve equations · Escape room</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit8-stats-slam.html" class="lesson-card"
+            ><div class="icon u8">🎮</div>
+            <div>
+              <div class="title">Stats Slam</div>
+              <div class="meta">Unit 8 · Mean, median, mode · Sports game</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit9-coordinate-quest.html" class="lesson-card"
+            ><div class="icon u9">🎮</div>
+            <div>
+              <div class="title">Coordinate Quest</div>
+              <div class="meta">Unit 9 · Coordinate plane · Adventure game</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./games/unit10-volume-vault.html" class="lesson-card"
+            ><div class="icon u10">🎮</div>
+            <div>
+              <div class="title">Volume Vault</div>
+              <div class="meta">Unit 10 · Volume · Treasure game</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
         </div>
       </div>
 
-      <div class="unit-group">
-        <div class="unit-label">
-          Unit 3 — Ratios &amp; Proportional Relationships
-        </div>
+      <!-- PRE-TEST REVIEWS -->
+      <div class="category-section" id="cat-pre-test">
+        <p class="section-desc">
+          Unit review activities for test preparation. Comprehensive skill
+          review with guided practice across all unit standards.
+        </p>
         <div class="lessons">
-          <a href="./lessons/3-4/index.html" class="lesson-card">
-            <div class="icon u3">👨‍🍳</div>
+          <a href="./pre-test/unit1-review.html" class="lesson-card"
+            ><div class="icon u1">📝</div>
             <div>
-              <div class="title">Equivalent Ratios</div>
+              <div class="title">Unit 1 Review</div>
               <div class="meta">
-                Lesson 3-4 · 6.RP.3 · Fill Table + Drag Sort + Error Analysis
+                Number Sense · GCF, LCM, Decimal Operations
               </div>
             </div>
-            <span class="arrow">→</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="unit-group">
-        <div class="unit-label">Unit 4 — Percents</div>
-        <div class="lessons">
-          <a href="./lessons/4-2/index.html" class="lesson-card">
-            <div class="icon u4">🕹️</div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit2-review.html" class="lesson-card"
+            ><div class="icon u2">📝</div>
             <div>
-              <div class="title">Relate Fractions, Decimals, and Percents</div>
+              <div class="title">Unit 2 Review</div>
+              <div class="meta">Fractions · Multiply & Divide Fractions</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit3-review.html" class="lesson-card"
+            ><div class="icon u3">📝</div>
+            <div>
+              <div class="title">Unit 3 Review</div>
+              <div class="meta">Ratios · Tables, Graphs, Unit Rates</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit4-review.html" class="lesson-card"
+            ><div class="icon u4">📝</div>
+            <div>
+              <div class="title">Unit 4 Review</div>
+              <div class="meta">Percents · Conversions, Percent Problems</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit5-review.html" class="lesson-card"
+            ><div class="icon u5">📝</div>
+            <div>
+              <div class="title">Unit 5 Review</div>
               <div class="meta">
-                Lesson 4-2 · 6.RP.3c · Fill Table + Number Line + Drag Sort
+                Area · Parallelograms, Triangles, Composite
               </div>
             </div>
-            <span class="arrow">→</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="unit-group">
-        <div class="unit-label">Unit 5 — Geometry: Area</div>
-        <div class="lessons">
-          <a href="./lessons/5-3/index.html" class="lesson-card">
-            <div class="icon u5">📐</div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit6-review.html" class="lesson-card"
+            ><div class="icon u6">📝</div>
             <div>
-              <div class="title">Area of Triangles</div>
+              <div class="title">Unit 6 Review</div>
+              <div class="meta">Expressions · Write, Evaluate, Simplify</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit7-review.html" class="lesson-card"
+            ><div class="icon u7">📝</div>
+            <div>
+              <div class="title">Unit 7 Review</div>
+              <div class="meta">Equations · Solve, Write, Inequalities</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit8-review.html" class="lesson-card"
+            ><div class="icon u8">📝</div>
+            <div>
+              <div class="title">Unit 8 Review</div>
+              <div class="meta">Statistics · Mean, Median, MAD, Displays</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit9-review.html" class="lesson-card"
+            ><div class="icon u9">📝</div>
+            <div>
+              <div class="title">Unit 9 Review</div>
               <div class="meta">
-                Lesson 5-3 · 6.G.1 · Coordinate Grid + Fill Table + Error
-                Analysis
+                Coordinate Plane · Graphing, Distance, Polygons
               </div>
             </div>
-            <span class="arrow">→</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="unit-group">
-        <div class="unit-label">Unit 6 — Expressions</div>
-        <div class="lessons">
-          <a href="./lessons/6-2/index.html" class="lesson-card">
-            <div class="icon u6">🎵</div>
+            <span class="arrow">→</span></a
+          >
+          <a href="./pre-test/unit10-review.html" class="lesson-card"
+            ><div class="icon u10">📝</div>
             <div>
-              <div class="title">Evaluate Expressions</div>
+              <div class="title">Unit 10 Review</div>
               <div class="meta">
-                Lesson 6-2 · 6.EE.2c · Fill Table + Drag Sort + Error Analysis
+                Volume & Surface Area · Prisms, Pyramids, Nets
               </div>
             </div>
-            <span class="arrow">→</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="unit-group">
-        <div class="unit-label">Unit 7 — Equations</div>
-        <div class="lessons">
-          <a href="./lessons/7-2/index.html" class="lesson-card">
-            <div class="icon u7">🔍</div>
-            <div>
-              <div class="title">Solve One-Step Equations</div>
-              <div class="meta">
-                Lesson 7-2 · 6.EE.7 · Balance Scale + Error Analysis
-              </div>
-            </div>
-            <span class="arrow">→</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="unit-group">
-        <div class="unit-label">Unit 8 — Statistics</div>
-        <div class="lessons">
-          <a href="./lessons/8-2/index.html" class="lesson-card">
-            <div class="icon u8">🏀</div>
-            <div>
-              <div class="title">Mean, Median, and Mode</div>
-              <div class="meta">
-                Lesson 8-2 · 6.SP.3 · Number Line + Fill Table + Error Analysis
-              </div>
-            </div>
-            <span class="arrow">→</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="unit-group">
-        <div class="unit-label">Unit 9 — Coordinate Plane</div>
-        <div class="lessons">
-          <a href="./lessons/9-1/index.html" class="lesson-card">
-            <div class="icon u9">🗺️</div>
-            <div>
-              <div class="title">Graph on the Coordinate Plane</div>
-              <div class="meta">
-                Lesson 9-1 · 6.NS.6 · Coordinate Grid + Matching Game
-              </div>
-            </div>
-            <span class="arrow">→</span>
-          </a>
+            <span class="arrow">→</span></a
+          >
         </div>
       </div>
 
-      <div class="unit-group">
-        <div class="unit-label">Unit 10 — Volume</div>
+      <!-- POST-TEST ACTIVITIES -->
+      <div class="category-section" id="cat-post-test">
+        <p class="section-desc">
+          Creative application activities after unit tests. Students apply math
+          concepts through immersive themed scenarios — mission control,
+          cooking, travel planning, and more.
+        </p>
         <div class="lessons">
-          <a href="./lessons/10-2/index.html" class="lesson-card">
-            <div class="icon u10">📦</div>
+          <a
+            href="./post-test/unit1-space-mission-control.html"
+            class="lesson-card"
+            ><div class="icon u1">🚀</div>
             <div>
-              <div class="title">Volume of Rectangular Prisms</div>
+              <div class="title">Space Mission Control</div>
               <div class="meta">
-                Lesson 10-2 · 6.G.2 · Fill Table + Bar Model + Error Analysis
+                Unit 1 · Apply number sense in a NASA-style mission
               </div>
             </div>
-            <span class="arrow">→</span>
-          </a>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit2-master-chef-kitchen.html"
+            class="lesson-card"
+            ><div class="icon u2">👨‍🍳</div>
+            <div>
+              <div class="title">Master Chef Kitchen</div>
+              <div class="meta">Unit 2 · Use fractions to create recipes</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit3-global-travel-planner.html"
+            class="lesson-card"
+            ><div class="icon u3">✈️</div>
+            <div>
+              <div class="title">Global Travel Planner</div>
+              <div class="meta">Unit 3 · Plan trips using ratios & rates</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit4-shopping-mall-mogul.html"
+            class="lesson-card"
+            ><div class="icon u4">🛍️</div>
+            <div>
+              <div class="title">Shopping Mall Mogul</div>
+              <div class="meta">
+                Unit 4 · Run a store using percents & discounts
+              </div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit5-theme-park-engineer.html"
+            class="lesson-card"
+            ><div class="icon u5">🎢</div>
+            <div>
+              <div class="title">Theme Park Engineer</div>
+              <div class="meta">
+                Unit 5 · Design rides using area calculations
+              </div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit6-music-festival-producer.html"
+            class="lesson-card"
+            ><div class="icon u6">🎵</div>
+            <div>
+              <div class="title">Music Festival Producer</div>
+              <div class="meta">Unit 6 · Organize events using expressions</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit7-detective-case-files.html"
+            class="lesson-card"
+            ><div class="icon u7">🔍</div>
+            <div>
+              <div class="title">Detective Case Files</div>
+              <div class="meta">Unit 7 · Solve mysteries with equations</div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit8-sports-data-analyst.html"
+            class="lesson-card"
+            ><div class="icon u8">🏀</div>
+            <div>
+              <div class="title">Sports Data Analyst</div>
+              <div class="meta">
+                Unit 8 · Analyze game stats using statistics
+              </div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit9-treasure-map-navigator.html"
+            class="lesson-card"
+            ><div class="icon u9">🗺️</div>
+            <div>
+              <div class="title">Treasure Map Navigator</div>
+              <div class="meta">
+                Unit 9 · Navigate using coordinates & distance
+              </div>
+            </div>
+            <span class="arrow">→</span></a
+          >
+          <a
+            href="./post-test/unit10-aquarium-architect.html"
+            class="lesson-card"
+            ><div class="icon u10">🐠</div>
+            <div>
+              <div class="title">Aquarium Architect</div>
+              <div class="meta">
+                Unit 10 · Design tanks using volume & surface area
+              </div>
+            </div>
+            <span class="arrow">→</span></a
+          >
         </div>
       </div>
 
       <div class="footer">
-        Neft Teacher · Reveal Math Grade 6 · 10 of 66 lessons built · More
-        coming soon
+        Neft Teacher · Reveal Math Grade 6 · 94 activities across 10 units
       </div>
     </div>
+
+    <script>
+      document.querySelectorAll(".cat-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".cat-tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".category-section")
+            .forEach((s) => s.classList.remove("active"));
+          tab.classList.add("active");
+          document
+            .getElementById("cat-" + tab.dataset.cat)
+            .classList.add("active");
+        });
+      });
+    </script>
   </body>
 </html>

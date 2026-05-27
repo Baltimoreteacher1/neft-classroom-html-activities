@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ratio Rally 🏎️ | Neft Teacher</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --primary: #0d9488;
+        --primary-light: #14b8a6;
+        --primary-dark: #0f766e;
+        --bg: #fef3c7;
+        --bg-light: #fffbeb;
+        --text: #1e3a5f;
+        --text-light: #3b6b9a;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --warning: #f59e0b;
+        --white: #ffffff;
+        --shadow: 0 4px 14px rgba(30, 58, 95, 0.12);
+        --shadow-lg: 0 8px 24px rgba(30, 58, 95, 0.18);
+        --radius: 12px;
+      }
+
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 640px;
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        padding: 32px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--primary-light)
+        );
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        text-align: center;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      h2 {
+        font-size: 1.3rem;
+        text-align: center;
+        color: var(--text-light);
+        margin-bottom: 20px;
+        font-weight: 500;
+      }
+
+      .emoji-title {
+        font-size: 2.2rem;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+
+      /* LOGIN */
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 12px;
+      }
+      .login-form label {
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      .login-form input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+      }
+      .login-form input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--white);
+        background: var(--primary);
+      }
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow);
+      }
+      .btn:active {
+        transform: translateY(0);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-block {
+        width: 100%;
+      }
+      .btn-success {
+        background: var(--success);
+      }
+      .btn-success:hover {
+        background: #15803d;
+      }
+      .btn-danger {
+        background: var(--danger);
+      }
+      .btn-secondary {
+        background: var(--text-light);
+      }
+      .btn-secondary:hover {
+        background: var(--text);
+      }
+
+      /* HUD */
+      .hud {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .hud-item {
+        background: var(--bg-light);
+        border-radius: 8px;
+        padding: 8px 4px;
+      }
+      .hud-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: var(--text-light);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .hud-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .hud-value.danger {
+        color: var(--danger);
+      }
+      .hud-value.warning {
+        color: var(--warning);
+      }
+
+      /* TIMER BAR */
+      .timer-bar-wrap {
+        width: 100%;
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+      .timer-bar {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 4px;
+        transition:
+          width 0.25s linear,
+          background 0.3s;
+        width: 100%;
+      }
+      .timer-bar.warning {
+        background: var(--warning);
+      }
+      .timer-bar.danger {
+        background: var(--danger);
+      }
+
+      /* PROGRESS */
+      .progress-dots {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #e5e7eb;
+        border: 2px solid #d1d5db;
+        font-size: 0;
+        transition: all 0.3s;
+      }
+      .dot.correct {
+        background: var(--success);
+        border-color: var(--success);
+      }
+      .dot.wrong {
+        background: var(--danger);
+        border-color: var(--danger);
+      }
+      .dot.current {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
+      }
+      .dot.skipped {
+        background: var(--warning);
+        border-color: var(--warning);
+      }
+
+      /* QUESTION */
+      .difficulty-badge {
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+      }
+      .badge-easy {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .badge-medium {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+      .badge-hard {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .question-text {
+        font-size: 1.15rem;
+        font-weight: 600;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        min-height: 60px;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .option-btn {
+        width: 100%;
+        text-align: left;
+        padding: 14px 18px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        background: var(--white);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--text);
+        font-weight: 500;
+      }
+      .option-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        background: #f0fdfa;
+      }
+      .option-btn:disabled {
+        cursor: default;
+      }
+      .option-btn.selected {
+        border-color: var(--primary);
+        background: #ccfbf1;
+      }
+      .option-btn.correct-answer {
+        border-color: var(--success);
+        background: #dcfce7;
+        color: #166534;
+        font-weight: 700;
+      }
+      .option-btn.wrong-answer {
+        border-color: var(--danger);
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      /* FEEDBACK */
+      .feedback-box {
+        margin-top: 16px;
+        padding: 14px 18px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        display: none;
+      }
+      .feedback-box.correct {
+        background: #dcfce7;
+        border-left: 4px solid var(--success);
+        color: #166534;
+      }
+      .feedback-box.wrong {
+        background: #fee2e2;
+        border-left: 4px solid var(--danger);
+        color: #991b1b;
+      }
+      .feedback-box.timeout {
+        background: #fef9c3;
+        border-left: 4px solid var(--warning);
+        color: #854d0e;
+      }
+
+      /* STREAK */
+      .streak-banner {
+        text-align: center;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 6px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: none;
+      }
+      .streak-banner.active {
+        display: block;
+        background: linear-gradient(90deg, #fef9c3, #fde68a);
+        color: #92400e;
+      }
+
+      /* RESULTS */
+      .results-header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .results-score {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary);
+        line-height: 1.1;
+      }
+      .results-grade {
+        font-size: 1.1rem;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: var(--bg-light);
+        border-radius: 10px;
+        padding: 14px;
+        text-align: center;
+      }
+      .stat-card .stat-val {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .stat-card .stat-label {
+        font-size: 0.78rem;
+        color: var(--text-light);
+        margin-top: 2px;
+      }
+
+      .review-item {
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+      }
+      .review-item:last-child {
+        border-bottom: none;
+      }
+      .review-q {
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 0.92rem;
+      }
+      .review-answer {
+        font-size: 0.88rem;
+        color: var(--text-light);
+      }
+      .review-answer.correct-text {
+        color: var(--success);
+      }
+      .review-answer.wrong-text {
+        color: var(--danger);
+      }
+
+      .btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .btn-row .btn {
+        flex: 1;
+      }
+
+      /* LIVES */
+      .lives {
+        font-size: 1.3rem;
+        letter-spacing: 2px;
+      }
+
+      /* FOOTER */
+      .footer {
+        margin-top: 16px;
+        text-align: center;
+        font-size: 0.78rem;
+        color: var(--text-light);
+        opacity: 0.7;
+      }
+
+      /* GAME OVER */
+      .game-over-msg {
+        text-align: center;
+        padding: 20px;
+        font-size: 1.1rem;
+        color: var(--danger);
+        font-weight: 600;
+      }
+
+      /* SCREEN MANAGEMENT */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* ANIMATIONS */
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20%,
+        60% {
+          transform: translateX(-6px);
+        }
+        40%,
+        80% {
+          transform: translateX(6px);
+        }
+      }
+      .shake {
+        animation: shake 0.4s ease;
+      }
+
+      @keyframes pop {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.15);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .pop {
+        animation: pop 0.3s ease;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 500px) {
+        .container {
+          padding: 20px 16px;
+        }
+        h1 {
+          font-size: 1.4rem;
+        }
+        .hud {
+          grid-template-columns: 1fr 1fr;
+        }
+        .question-text {
+          font-size: 1.05rem;
+        }
+        .btn-row {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- LOGIN SCREEN -->
+      <div id="loginScreen" class="screen active">
+        <div class="emoji-title">🏎️</div>
+        <h1>Ratio Rally</h1>
+        <h2>Ratios &amp; Proportional Relationships</h2>
+        <p
+          style="
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+          "
+        >
+          Race through 15 questions on ratios, proportions, and unit rates!<br />
+          30 seconds per question &bull; 3 lives &bull; Streak bonuses
+        </p>
+        <form class="login-form" onsubmit="startGame(event)">
+          <div>
+            <label for="playerName">Your Name</label>
+            <input
+              type="text"
+              id="playerName"
+              placeholder="Enter your name..."
+              required
+              maxlength="30"
+              autocomplete="off"
+            />
+          </div>
+          <button type="submit" class="btn btn-block">
+            🏁 Start the Rally!
+          </button>
+        </form>
+        <div
+          id="prevScore"
+          style="
+            text-align: center;
+            margin-top: 14px;
+            font-size: 0.88rem;
+            color: var(--text-light);
+          "
+        ></div>
+      </div>
+
+      <!-- GAME SCREEN -->
+      <div id="gameScreen" class="screen">
+        <div class="hud">
+          <div class="hud-item">
+            <div class="hud-label">Question</div>
+            <div class="hud-value" id="hudQuestion">1/15</div>
+          </div>
+          <div class="hud-item">
+            <div class="hud-label">Score</div>
+            <div class="hud-value" id="hudScore">0</div>
+          </div>
+          <div class="hud-item">
+            <div class="hud-label">Timer</div>
+            <div class="hud-value" id="hudTimer">30</div>
+          </div>
+          <div class="hud-item">
+            <div class="hud-label">Lives</div>
+            <div class="hud-value lives" id="hudLives">❤️❤️❤️</div>
+          </div>
+        </div>
+
+        <div class="timer-bar-wrap">
+          <div class="timer-bar" id="timerBar"></div>
+        </div>
+
+        <div class="progress-dots" id="progressDots"></div>
+
+        <div class="streak-banner" id="streakBanner"></div>
+
+        <div id="questionArea">
+          <span class="difficulty-badge" id="diffBadge"></span>
+          <div class="question-text" id="questionText"></div>
+          <div class="options" id="optionsArea"></div>
+        </div>
+
+        <div class="feedback-box" id="feedbackBox"></div>
+
+        <div style="text-align: center; margin-top: 16px">
+          <button
+            class="btn"
+            id="nextBtn"
+            style="display: none"
+            onclick="nextQuestion()"
+          >
+            Next Question ➜
+          </button>
+        </div>
+      </div>
+
+      <!-- RESULTS SCREEN -->
+      <div id="resultsScreen" class="screen">
+        <div class="emoji-title">🏎️</div>
+        <div class="results-header">
+          <div
+            style="
+              font-size: 1rem;
+              color: var(--text-light);
+              margin-bottom: 4px;
+            "
+          >
+            Rally Complete!
+          </div>
+          <div class="results-score" id="finalScore">0</div>
+          <div style="font-size: 0.85rem; color: var(--text-light)">points</div>
+          <div class="results-grade" id="finalGrade"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="statCorrect">0</div>
+            <div class="stat-label">Correct</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statAccuracy">0%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statStreak">0</div>
+            <div class="stat-label">Best Streak</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statAnswered">0</div>
+            <div class="stat-label">Answered</div>
+          </div>
+        </div>
+
+        <details style="margin-bottom: 16px">
+          <summary
+            style="
+              cursor: pointer;
+              font-weight: 600;
+              color: var(--primary);
+              padding: 8px 0;
+            "
+          >
+            Review Answers
+          </summary>
+          <div id="reviewList"></div>
+        </details>
+
+        <div class="btn-row">
+          <button class="btn btn-success" onclick="restartGame()">
+            🔄 Play Again
+          </button>
+          <button class="btn btn-secondary" onclick="showLogin()">
+            🏠 Home
+          </button>
+        </div>
+      </div>
+
+      <!-- GAME OVER SCREEN -->
+      <div id="gameOverScreen" class="screen">
+        <div class="emoji-title">💥</div>
+        <h1>Rally Over!</h1>
+        <div class="game-over-msg">You ran out of lives!</div>
+        <div class="results-header" style="margin-top: 12px">
+          <div class="results-score" id="goScore">0</div>
+          <div style="font-size: 0.85rem; color: var(--text-light)">points</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="goCorrect">0</div>
+            <div class="stat-label">Correct</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="goAnswered">0</div>
+            <div class="stat-label">Answered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="goStreak">0</div>
+            <div class="stat-label">Best Streak</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="goAccuracy">0%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+        </div>
+
+        <details style="margin-bottom: 16px">
+          <summary
+            style="
+              cursor: pointer;
+              font-weight: 600;
+              color: var(--primary);
+              padding: 8px 0;
+            "
+          >
+            Review Answers
+          </summary>
+          <div id="goReviewList"></div>
+        </details>
+
+        <div class="btn-row">
+          <button class="btn btn-success" onclick="restartGame()">
+            🔄 Try Again
+          </button>
+          <button class="btn btn-secondary" onclick="showLogin()">
+            🏠 Home
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Neft Teacher &bull; Grade 6 Unit 3 &bull; 6.RP.1 &amp; 6.RP.3
+    </div>
+
+    <script>
+      // ─── QUESTIONS ──────────────────────────────────────────────
+      const QUESTIONS = [
+        // ── EASY (5) ──────────────────────────────────────────────
+        {
+          difficulty: "easy",
+          question:
+            "A bag has 3 red marbles and 5 blue marbles. What is the ratio of red to blue marbles?",
+          options: ["3:5", "5:3", "3:8", "8:3"],
+          answer: 0,
+          explanation:
+            "The ratio of red to blue is simply 3 to 5, written as 3:5.",
+        },
+        {
+          difficulty: "easy",
+          question:
+            "There are 8 boys and 12 girls in a class. What is the ratio of boys to girls in simplest form?",
+          options: ["8:12", "4:6", "2:3", "3:2"],
+          answer: 2,
+          explanation: "8:12 simplified by dividing both by 4 gives 2:3.",
+        },
+        {
+          difficulty: "easy",
+          question:
+            "If the ratio of cats to dogs is 3:5, and there are 6 cats, how many dogs are there?",
+          options: ["8", "10", "15", "9"],
+          answer: 1,
+          explanation: "3:5 = 6:? — Since 3 × 2 = 6, multiply 5 × 2 = 10 dogs.",
+        },
+        {
+          difficulty: "easy",
+          question: "Which ratio is equivalent to 4:6?",
+          options: ["2:4", "6:9", "8:10", "3:2"],
+          answer: 1,
+          explanation:
+            "4:6 simplifies to 2:3. Check: 6:9 also simplifies to 2:3 (divide both by 3). They are equivalent.",
+        },
+        {
+          difficulty: "easy",
+          question:
+            "A recipe uses 2 cups of flour for every 1 cup of sugar. What is the ratio of flour to sugar?",
+          options: ["1:2", "2:1", "2:3", "3:2"],
+          answer: 1,
+          explanation: "2 cups flour to 1 cup sugar = 2:1.",
+        },
+        // ── MEDIUM (5) ────────────────────────────────────────────
+        {
+          difficulty: "medium",
+          question:
+            "In a ratio table, if 3 corresponds to 12, and 5 corresponds to ?, what is the missing value?",
+          options: ["15", "17", "20", "25"],
+          answer: 2,
+          explanation: "The multiplier is 12 ÷ 3 = 4. So 5 × 4 = 20.",
+        },
+        {
+          difficulty: "medium",
+          question:
+            "Maria mixes paint in a ratio of 3 parts blue to 2 parts white. If she uses 9 cups of blue, how many cups of white does she need?",
+          options: ["4", "5", "6", "8"],
+          answer: 2,
+          explanation:
+            "3:2 = 9:? — Since 3 × 3 = 9, multiply 2 × 3 = 6 cups of white.",
+        },
+        {
+          difficulty: "medium",
+          question: "Which ratio is NOT equivalent to 6:10?",
+          options: ["3:5", "12:20", "9:15", "8:12"],
+          answer: 3,
+          explanation:
+            "6:10 simplifies to 3:5. Check each: 3:5 ✓, 12:20 = 3:5 ✓, 9:15 = 3:5 ✓, but 8:12 = 2:3 ✗.",
+        },
+        {
+          difficulty: "medium",
+          question:
+            "A store sells 4 notebooks for $6. At this rate, how much do 10 notebooks cost?",
+          options: ["$12", "$15", "$18", "$24"],
+          answer: 1,
+          explanation:
+            "4 notebooks = $6, so 1 notebook = $6 ÷ 4 = $1.50. Then 10 × $1.50 = $15.",
+        },
+        {
+          difficulty: "medium",
+          question:
+            "The ratio of soccer players to basketball players at a camp is 5:3. If there are 40 soccer players, how many basketball players are there?",
+          options: ["15", "20", "24", "30"],
+          answer: 2,
+          explanation:
+            "5:3 = 40:? — Since 40 ÷ 5 = 8, multiply 3 × 8 = 24 basketball players.",
+        },
+        // ── HARD (5) ──────────────────────────────────────────────
+        {
+          difficulty: "hard",
+          question:
+            "A car travels 150 miles in 3 hours. What is the unit rate in miles per hour?",
+          options: ["45 mph", "50 mph", "55 mph", "60 mph"],
+          answer: 1,
+          explanation: "Unit rate = 150 ÷ 3 = 50 miles per hour.",
+        },
+        {
+          difficulty: "hard",
+          question:
+            "Brand A juice costs $3.60 for 12 oz. Brand B costs $4.50 for 18 oz. Which brand has the lower unit price?",
+          options: [
+            "Brand A ($0.30/oz)",
+            "Brand B ($0.25/oz)",
+            "They are equal",
+            "Cannot be determined",
+          ],
+          answer: 1,
+          explanation:
+            "Brand A: $3.60 ÷ 12 = $0.30/oz. Brand B: $4.50 ÷ 18 = $0.25/oz. Brand B is cheaper per ounce.",
+        },
+        {
+          difficulty: "hard",
+          question:
+            "On a map, 2 cm represents 15 km. Two cities are 9 cm apart on the map. What is the actual distance?",
+          options: ["45 km", "60 km", "67.5 km", "75 km"],
+          answer: 2,
+          explanation:
+            "2 cm : 15 km, so 1 cm = 7.5 km. Then 9 cm × 7.5 = 67.5 km.",
+        },
+        {
+          difficulty: "hard",
+          question:
+            "A trail mix uses peanuts, raisins, and chocolate chips in a ratio of 5:3:2. If you want 30 cups total, how many cups of raisins do you need?",
+          options: ["6", "9", "12", "15"],
+          answer: 1,
+          explanation:
+            "Total parts = 5 + 3 + 2 = 10. Each part = 30 ÷ 10 = 3 cups. Raisins = 3 parts × 3 = 9 cups.",
+        },
+        {
+          difficulty: "hard",
+          question:
+            "Sam earns $84 for 7 hours of work. At this rate, how much does he earn for 12 hours?",
+          options: ["$120", "$132", "$144", "$156"],
+          answer: 2,
+          explanation:
+            "Unit rate = $84 ÷ 7 = $12/hour. For 12 hours: 12 × $12 = $144.",
+        },
+      ];
+
+      // ─── STATE ──────────────────────────────────────────────────
+      const STORAGE_KEY = "ratioRally_v1";
+      const TIMER_MAX = 30;
+      const TOTAL_QUESTIONS = 15;
+      const MAX_LIVES = 3;
+
+      let state = {
+        playerName: "",
+        currentQ: 0,
+        score: 0,
+        lives: MAX_LIVES,
+        streak: 0,
+        bestStreak: 0,
+        answered: 0,
+        correctCount: 0,
+        results: [],
+        shuffledQuestions: [],
+        timerValue: TIMER_MAX,
+        timerInterval: null,
+        questionLocked: false,
+      };
+
+      // ─── HELPERS ────────────────────────────────────────────────
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        $(id).classList.add("active");
+      }
+
+      function saveData(data) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+
+      function loadData() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY));
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function getMultiplier(streak) {
+        if (streak >= 5) return 3;
+        if (streak >= 3) return 2;
+        return 1;
+      }
+
+      function getPoints(difficulty, streak) {
+        const base =
+          difficulty === "easy" ? 10 : difficulty === "medium" ? 20 : 30;
+        return base * getMultiplier(streak);
+      }
+
+      // ─── LOGIN ──────────────────────────────────────────────────
+      function initLogin() {
+        const saved = loadData();
+        if (saved && saved.name) {
+          $("playerName").value = saved.name;
+          if (saved.lastScore !== undefined) {
+            $("prevScore").textContent =
+              `Welcome back, ${saved.name}! Your last score: ${saved.lastScore} pts`;
+          }
+        }
+      }
+
+      function startGame(e) {
+        e.preventDefault();
+        const name = $("playerName").value.trim();
+        if (!name) return;
+
+        state.playerName = name;
+        state.currentQ = 0;
+        state.score = 0;
+        state.lives = MAX_LIVES;
+        state.streak = 0;
+        state.bestStreak = 0;
+        state.answered = 0;
+        state.correctCount = 0;
+        state.results = [];
+        state.questionLocked = false;
+
+        // Shuffle questions but keep difficulty order: easy, medium, hard
+        const easy = shuffle(QUESTIONS.filter((q) => q.difficulty === "easy"));
+        const medium = shuffle(
+          QUESTIONS.filter((q) => q.difficulty === "medium"),
+        );
+        const hard = shuffle(QUESTIONS.filter((q) => q.difficulty === "hard"));
+        state.shuffledQuestions = [...easy, ...medium, ...hard];
+
+        buildProgressDots();
+        showScreen("gameScreen");
+        loadQuestion();
+      }
+
+      function showLogin() {
+        clearTimer();
+        showScreen("loginScreen");
+      }
+
+      function restartGame() {
+        clearTimer();
+        startGame(new Event("submit"));
+      }
+
+      // ─── PROGRESS DOTS ──────────────────────────────────────────
+      function buildProgressDots() {
+        const wrap = $("progressDots");
+        wrap.innerHTML = "";
+        for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+          const d = document.createElement("div");
+          d.className = "dot";
+          d.id = "dot" + i;
+          wrap.appendChild(d);
+        }
+      }
+
+      function updateDot(index, status) {
+        const d = $("dot" + index);
+        if (d) d.className = "dot " + status;
+      }
+
+      // ─── TIMER ──────────────────────────────────────────────────
+      function startTimer() {
+        state.timerValue = TIMER_MAX;
+        updateTimerDisplay();
+        state.timerInterval = setInterval(() => {
+          state.timerValue--;
+          updateTimerDisplay();
+          if (state.timerValue <= 0) {
+            clearTimer();
+            handleTimeout();
+          }
+        }, 1000);
+      }
+
+      function clearTimer() {
+        if (state.timerInterval) {
+          clearInterval(state.timerInterval);
+          state.timerInterval = null;
+        }
+      }
+
+      function updateTimerDisplay() {
+        $("hudTimer").textContent = state.timerValue;
+        const pct = (state.timerValue / TIMER_MAX) * 100;
+        const bar = $("timerBar");
+        bar.style.width = pct + "%";
+        bar.className =
+          "timer-bar" + (pct <= 20 ? " danger" : pct <= 40 ? " warning" : "");
+        $("hudTimer").className =
+          "hud-value" +
+          (state.timerValue <= 5
+            ? " danger"
+            : state.timerValue <= 10
+              ? " warning"
+              : "");
+      }
+
+      // ─── QUESTION ───────────────────────────────────────────────
+      function loadQuestion() {
+        if (state.currentQ >= TOTAL_QUESTIONS) {
+          showResults();
+          return;
+        }
+
+        state.questionLocked = false;
+        const q = state.shuffledQuestions[state.currentQ];
+
+        // Update HUD
+        $("hudQuestion").textContent =
+          state.currentQ + 1 + "/" + TOTAL_QUESTIONS;
+        $("hudScore").textContent = state.score;
+        updateLivesDisplay();
+
+        // Difficulty badge
+        const badge = $("diffBadge");
+        badge.textContent = q.difficulty;
+        badge.className = "difficulty-badge badge-" + q.difficulty;
+
+        // Question text
+        $("questionText").textContent = q.question;
+
+        // Shuffle option indices
+        const indices = [0, 1, 2, 3];
+        const shuffledIndices = shuffle(indices);
+
+        // Build options
+        const optArea = $("optionsArea");
+        optArea.innerHTML = "";
+        shuffledIndices.forEach((origIdx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.textContent = q.options[origIdx];
+          btn.dataset.index = origIdx;
+          btn.onclick = () => selectAnswer(btn, origIdx);
+          optArea.appendChild(btn);
+        });
+
+        // Reset feedback
+        const fb = $("feedbackBox");
+        fb.style.display = "none";
+        fb.className = "feedback-box";
+        $("nextBtn").style.display = "none";
+
+        // Streak banner
+        updateStreakBanner();
+
+        // Highlight current dot
+        document.querySelectorAll(".dot").forEach((d, i) => {
+          if (
+            i === state.currentQ &&
+            !d.classList.contains("correct") &&
+            !d.classList.contains("wrong")
+          ) {
+            d.classList.add("current");
+          } else {
+            d.classList.remove("current");
+          }
+        });
+
+        startTimer();
+      }
+
+      function selectAnswer(btn, chosenIdx) {
+        if (state.questionLocked) return;
+        state.questionLocked = true;
+        clearTimer();
+
+        const q = state.shuffledQuestions[state.currentQ];
+        const isCorrect = chosenIdx === q.answer;
+        state.answered++;
+
+        // Highlight buttons
+        const allBtns = $("optionsArea").querySelectorAll(".option-btn");
+        allBtns.forEach((b) => {
+          b.disabled = true;
+          if (parseInt(b.dataset.index) === q.answer) {
+            b.classList.add("correct-answer");
+          }
+          if (b === btn && !isCorrect) {
+            b.classList.add("wrong-answer");
+          }
+        });
+
+        // Update state
+        if (isCorrect) {
+          state.streak++;
+          if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+          const pts = getPoints(q.difficulty, state.streak);
+          state.score += pts;
+          state.correctCount++;
+          updateDot(state.currentQ, "correct");
+
+          const fb = $("feedbackBox");
+          const mult = getMultiplier(state.streak);
+          fb.innerHTML = `<strong>✅ Correct! +${pts} pts${mult > 1 ? " (×" + mult + " streak!)" : ""}</strong><br>${q.explanation}`;
+          fb.className = "feedback-box correct";
+          fb.style.display = "block";
+
+          $("hudScore").textContent = state.score;
+          $("hudScore").classList.add("pop");
+          setTimeout(() => $("hudScore").classList.remove("pop"), 300);
+        } else {
+          state.streak = 0;
+          state.lives--;
+          updateDot(state.currentQ, "wrong");
+          updateLivesDisplay();
+
+          const fb = $("feedbackBox");
+          fb.innerHTML = `<strong>❌ Incorrect.</strong> The answer is: <strong>${q.options[q.answer]}</strong><br>${q.explanation}`;
+          fb.className = "feedback-box wrong";
+          fb.style.display = "block";
+
+          $("hudLives").classList.add("shake");
+          setTimeout(() => $("hudLives").classList.remove("shake"), 400);
+        }
+
+        state.results.push({
+          question: q.question,
+          chosen: q.options[chosenIdx],
+          correct: q.options[q.answer],
+          isCorrect,
+          difficulty: q.difficulty,
+          timedOut: false,
+        });
+
+        updateStreakBanner();
+
+        if (state.lives <= 0) {
+          setTimeout(() => showGameOver(), 1800);
+        } else {
+          $("nextBtn").style.display = "inline-flex";
+        }
+      }
+
+      function handleTimeout() {
+        if (state.questionLocked) return;
+        state.questionLocked = true;
+
+        const q = state.shuffledQuestions[state.currentQ];
+        state.answered++;
+        state.streak = 0;
+        state.lives--;
+        updateLivesDisplay();
+        updateDot(state.currentQ, "skipped");
+
+        const allBtns = $("optionsArea").querySelectorAll(".option-btn");
+        allBtns.forEach((b) => {
+          b.disabled = true;
+          if (parseInt(b.dataset.index) === q.answer)
+            b.classList.add("correct-answer");
+        });
+
+        const fb = $("feedbackBox");
+        fb.innerHTML = `<strong>⏱️ Time's up!</strong> The answer is: <strong>${q.options[q.answer]}</strong><br>${q.explanation}`;
+        fb.className = "feedback-box timeout";
+        fb.style.display = "block";
+
+        $("hudLives").classList.add("shake");
+        setTimeout(() => $("hudLives").classList.remove("shake"), 400);
+
+        state.results.push({
+          question: q.question,
+          chosen: "(no answer)",
+          correct: q.options[q.answer],
+          isCorrect: false,
+          difficulty: q.difficulty,
+          timedOut: true,
+        });
+
+        updateStreakBanner();
+
+        if (state.lives <= 0) {
+          setTimeout(() => showGameOver(), 1800);
+        } else {
+          $("nextBtn").style.display = "inline-flex";
+        }
+      }
+
+      function nextQuestion() {
+        state.currentQ++;
+        loadQuestion();
+      }
+
+      // ─── STREAK BANNER ──────────────────────────────────────────
+      function updateStreakBanner() {
+        const sb = $("streakBanner");
+        if (state.streak >= 3) {
+          const mult = getMultiplier(state.streak);
+          sb.textContent = `🔥 ${state.streak} streak! ×${mult} multiplier!`;
+          sb.className = "streak-banner active";
+        } else {
+          sb.className = "streak-banner";
+        }
+      }
+
+      // ─── LIVES DISPLAY ──────────────────────────────────────────
+      function updateLivesDisplay() {
+        const full = "❤️".repeat(state.lives);
+        const empty = "🖤".repeat(MAX_LIVES - state.lives);
+        $("hudLives").innerHTML = full + empty;
+      }
+
+      // ─── RESULTS ────────────────────────────────────────────────
+      function showResults() {
+        clearTimer();
+        buildResultsView(
+          "resultsScreen",
+          "finalScore",
+          "finalGrade",
+          "statCorrect",
+          "statAccuracy",
+          "statStreak",
+          "statAnswered",
+          "reviewList",
+        );
+        showScreen("resultsScreen");
+        persistScore();
+      }
+
+      function showGameOver() {
+        clearTimer();
+        buildResultsView(
+          "gameOverScreen",
+          "goScore",
+          null,
+          "goCorrect",
+          "goAccuracy",
+          "goStreak",
+          "goAnswered",
+          "goReviewList",
+        );
+        showScreen("gameOverScreen");
+        persistScore();
+      }
+
+      function buildResultsView(
+        screenId,
+        scoreId,
+        gradeId,
+        correctId,
+        accuracyId,
+        streakId,
+        answeredId,
+        reviewId,
+      ) {
+        $(scoreId).textContent = state.score;
+
+        const pct =
+          state.answered > 0
+            ? Math.round((state.correctCount / state.answered) * 100)
+            : 0;
+        $(correctId).textContent = state.correctCount + "/" + state.answered;
+        $(accuracyId).textContent = pct + "%";
+        $(streakId).textContent = state.bestStreak;
+        $(answeredId).textContent = state.answered + "/" + TOTAL_QUESTIONS;
+
+        if (gradeId) {
+          let grade = "";
+          if (pct >= 90) grade = "🏆 Outstanding!";
+          else if (pct >= 80) grade = "🥇 Great Job!";
+          else if (pct >= 70) grade = "🥈 Good Work!";
+          else if (pct >= 60) grade = "🥉 Keep Practicing!";
+          else grade = "📚 More Practice Needed";
+          $(gradeId).textContent = grade;
+          $(gradeId).style.color =
+            pct >= 70
+              ? "var(--success)"
+              : pct >= 60
+                ? "var(--warning)"
+                : "var(--danger)";
+        }
+
+        // Build review
+        const reviewWrap = $(reviewId);
+        reviewWrap.innerHTML = "";
+        state.results.forEach((r, i) => {
+          const div = document.createElement("div");
+          div.className = "review-item";
+          const icon = r.isCorrect ? "✅" : r.timedOut ? "⏱️" : "❌";
+          const badge = `<span class="difficulty-badge badge-${r.difficulty}" style="font-size:0.65rem; padding:2px 6px;">${r.difficulty}</span>`;
+          div.innerHTML = `
+      <div class="review-q">${icon} ${badge} Q${i + 1}: ${r.question}</div>
+      <div class="review-answer ${r.isCorrect ? "correct-text" : "wrong-text"}">
+        Your answer: ${r.chosen} ${r.isCorrect ? "" : "&nbsp;|&nbsp; Correct: " + r.correct}
+      </div>`;
+          reviewWrap.appendChild(div);
+        });
+      }
+
+      function persistScore() {
+        saveData({
+          name: state.playerName,
+          lastScore: state.score,
+          lastCorrect: state.correctCount,
+          lastTotal: state.answered,
+          lastDate: new Date().toISOString(),
+        });
+      }
+
+      // ─── INIT ───────────────────────────────────────────────────
+      initLogin();
+    </script>
+  </body>
+</html>
