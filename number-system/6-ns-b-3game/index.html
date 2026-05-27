@@ -1,1045 +1,1367 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<title>Integer Wizards – Battle Arena</title>
-<style>
-:root{
-  --bg:#06090f;
-  --panel:#0d1527;
-  --card:#131f3e;
-  --card2:#1a2a52;
-  --accent:#38bdf8;
-  --gold:#fbbf24;
-  --green:#4ade80;
-  --red:#f87171;
-  --purple:#c084fc;
-  --fire:#fb923c;
-  --ice:#7dd3fc;
-  --storm:#a78bfa;
-  --plant:#86efac;
-  --water:#60a5fa;
-  --text:#e5e7eb;
-  --shadow:rgba(0,0,0,.6);
-}
-
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  background:var(--bg);
-  font-family:'Inter',system-ui;
-  color:var(--text);
-  display:flex;
-  justify-content:center;
-  min-height:100vh;
-  padding:16px;
-  background-image:
-    radial-gradient(ellipse 80% 40% at 50% 0%, #1a2a6c33 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 80% 80%, #38bdf822 0%, transparent 50%);
-}
-
-#game{
-  width:960px;
-  max-width:100%;
-}
-
-/* ===== TITLE ===== */
-#title{
-  text-align:center;
-  padding:10px 0 4px;
-  font-family:'Cinzel',serif;
-  font-size:1.8rem;
-  background:linear-gradient(135deg,#fbbf24,#38bdf8,#c084fc);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  letter-spacing:2px;
-  text-shadow:none;
-}
-#subtitle{font-size:.75rem;text-align:center;color:#6b7280;margin-bottom:14px;letter-spacing:1px}
-
-/* ===== LAYOUT ===== */
-#arena{
-  display:grid;
-  grid-template-columns:220px 1fr 220px;
-  gap:14px;
-  margin-bottom:14px;
-}
-
-/* ===== PANELS ===== */
-.panel{
-  background:var(--panel);
-  border-radius:16px;
-  padding:14px;
-  border:1px solid #1f2d54;
-}
-
-/* ===== PLAYER PANEL ===== */
-#playerPanel{}
-.wizard-avatar{
-  font-size:52px;
-  text-align:center;
-  margin-bottom:6px;
-  filter:drop-shadow(0 0 12px var(--accent));
-}
-.player-name{
-  text-align:center;
-  font-family:'Cinzel',serif;
-  font-size:.9rem;
-  color:var(--gold);
-  margin-bottom:8px;
-}
-.stat-row{
-  display:flex;
-  justify-content:space-between;
-  font-size:.75rem;
-  margin-bottom:5px;
-  color:#9ca3af;
-}
-.stat-val{color:var(--text);font-weight:700}
-
-.bar-label{font-size:.7rem;color:#6b7280;margin-bottom:2px}
-.bar{height:9px;background:#1a2240;border-radius:6px;overflow:hidden;margin-bottom:8px}
-.bar-fill{height:100%;border-radius:6px;transition:width .4s ease}
-#hpFill{background:linear-gradient(90deg,#22c55e,#16a34a)}
-#xpFill{background:linear-gradient(90deg,#818cf8,#6366f1)}
-#energyFill{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
-
-.pet-section{
-  margin-top:10px;
-  text-align:center;
-}
-.pet-section h4{font-size:.7rem;color:#6b7280;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
-#petSprite{font-size:28px}
-#petName{font-size:.7rem;color:var(--purple);margin-top:2px}
-
-/* ===== BATTLE CENTER ===== */
-#battleCenter{}
-
-/* enemy zone */
-#enemyZone{
-  text-align:center;
-  padding:14px 0;
-  position:relative;
-  min-height:180px;
-  background:radial-gradient(ellipse 70% 60% at 50% 60%, #0d1d4422 0%, transparent 70%);
-  border-radius:12px;
-  margin-bottom:12px;
-}
-#enemySprite{
-  font-size:80px;
-  display:inline-block;
-  transition:.15s;
-  filter:drop-shadow(0 0 20px #f87171aa);
-}
-#enemySprite.shake{animation:shake .3s}
-@keyframes shake{
-  0%,100%{transform:translateX(0)}
-  20%{transform:translateX(-8px) rotate(-5deg)}
-  60%{transform:translateX(8px) rotate(5deg)}
-}
-#enemySprite.hit{transform:scale(.75);filter:drop-shadow(0 0 30px #ef4444)}
-#enemyName{font-family:'Cinzel',serif;font-size:1rem;color:var(--red);margin:6px 0 2px}
-#enemyLevelTag{font-size:.7rem;color:#6b7280}
-#enemyElement{font-size:.8rem;margin-bottom:6px}
-
-.enemy-bar-wrap{padding:0 20px}
-#enemyHPtext{font-size:.7rem;color:#9ca3af;margin-bottom:2px}
-#enemyHPfill{background:linear-gradient(90deg,#ef4444,#f97316)}
-
-/* battle status */
-#battleStatus{
-  text-align:center;
-  min-height:24px;
-  font-size:.85rem;
-  color:#9ca3af;
-  margin-bottom:8px;
-}
-#battleStatus.correct{color:var(--green)}
-#battleStatus.wrong{color:var(--red)}
-#battleStatus.boss{color:var(--gold)}
-
-/* problem area */
-#problemBox{
-  background:var(--card);
-  border-radius:14px;
-  padding:18px 14px 14px;
-  border:1px solid #1f2d54;
-  position:relative;
-}
-#problemLabel{font-size:.65rem;color:#6b7280;text-align:center;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-#problem{
-  font-size:2.8rem;
-  text-align:center;
-  font-weight:900;
-  font-family:'Cinzel',serif;
-  background:linear-gradient(135deg,#fff,#38bdf8);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  margin-bottom:10px;
-}
-
-/* number line */
-#numberLine{
-  height:44px;
-  background:#0a1020;
-  border-radius:8px;
-  position:relative;
-  margin-bottom:12px;
-  overflow:hidden;
-}
-.nl-dot{
-  position:absolute;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  z-index:2;
-}
-.nl-dot.a{background:#38bdf8;box-shadow:0 0 8px #38bdf8}
-.nl-dot.b{background:#fbbf24;box-shadow:0 0 8px #fbbf24}
-.nl-arrow{
-  position:absolute;
-  height:2px;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:1;
-}
-.nl-zero{
-  position:absolute;
-  height:100%;
-  width:1px;
-  background:#ffffff22;
-  top:0;
-}
-.nl-label{
-  position:absolute;
-  font-size:.55rem;
-  color:#6b7280;
-  top:4px;
-  transform:translateX(-50%);
-}
-
-/* input & buttons */
-#answerInput{
-  width:100%;
-  padding:13px;
-  font-size:1.3rem;
-  border-radius:10px;
-  border:2px solid #2a3a6a;
-  background:#0a1020;
-  color:white;
-  text-align:center;
-  font-weight:700;
-  margin-bottom:10px;
-  transition:border-color .2s;
-}
-#answerInput:focus{outline:none;border-color:var(--accent)}
-
-.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-
-.btn{
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  font-weight:700;
-  font-size:.9rem;
-  cursor:pointer;
-  transition:transform .1s,box-shadow .1s;
-  font-family:'Inter',system-ui;
-}
-.btn:active{transform:scale(.96)}
-
-#attackBtn{
-  grid-column:1/-1;
-  background:linear-gradient(135deg,#38bdf8,#818cf8);
-  color:white;
-  font-size:1rem;
-  box-shadow:0 4px 20px #38bdf833;
-}
-#attackBtn:hover{box-shadow:0 4px 28px #38bdf866}
-
-#spellBtn{
-  background:linear-gradient(135deg,#c084fc,#ec4899);
-  color:white;
-  box-shadow:0 4px 14px #c084fc33;
-}
-#healBtn{
-  background:linear-gradient(135deg,#4ade80,#16a34a);
-  color:white;
-  box-shadow:0 4px 14px #4ade8033;
-}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-
-/* ===== RIGHT PANEL ===== */
-#rightPanel{}
-#rightPanel h4{font-size:.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-
-/* spell cards */
-#spellCards{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-  margin-bottom:14px;
-}
-.spell-card{
-  background:var(--card2);
-  border-radius:10px;
-  padding:8px 6px;
-  text-align:center;
-  border:1px solid #2a3a6a;
-  cursor:pointer;
-  transition:.15s;
-  position:relative;
-  overflow:hidden;
-}
-.spell-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.spell-card.selected{border-color:var(--gold);box-shadow:0 0 12px var(--gold)44}
-.spell-card.charged .charge-bar-fill{background:var(--gold)}
-.spell-card .spell-icon{font-size:22px;margin-bottom:2px}
-.spell-card .spell-name{font-size:.6rem;font-weight:700;color:var(--text)}
-.spell-card .spell-elem{font-size:.55rem;color:#6b7280}
-.charge-bar{height:3px;background:#1a2240;border-radius:2px;margin-top:4px}
-.charge-bar-fill{height:100%;border-radius:2px;background:#4b5563;transition:width .3s}
-
-/* inventory / loot */
-#lootList{
-  display:flex;
-  flex-wrap:wrap;
-  gap:5px;
-  margin-bottom:12px;
-  min-height:30px;
-}
-.loot-item{
-  background:var(--card2);
-  border-radius:7px;
-  padding:4px 8px;
-  font-size:.7rem;
-  border:1px solid #2a3a6a;
-  cursor:default;
-}
-.loot-item.rare{border-color:var(--purple);color:var(--purple)}
-.loot-item.epic{border-color:var(--gold);color:var(--gold)}
-
-/* zone / quest */
-#zoneBox{
-  background:var(--card);
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:10px;
-  border:1px solid #1f2d54;
-}
-#zoneName{font-size:.8rem;font-weight:700;color:var(--accent)}
-#questText{font-size:.7rem;color:#6b7280;margin-top:4px}
-#questProgress{
-  height:4px;
-  background:#1a2240;
-  border-radius:3px;
-  margin-top:6px;
-  overflow:hidden;
-}
-#questProgressFill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:3px;transition:width .4s}
-
-/* ===== BOTTOM HUD ===== */
-#bottomHud{
-  background:var(--panel);
-  border-radius:16px;
-  padding:12px 16px;
-  border:1px solid #1f2d54;
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:8px;
-}
-.hud-tile{
-  background:var(--card);
-  padding:8px;
-  border-radius:10px;
-  text-align:center;
-}
-.hud-tile .hud-label{font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.5px}
-.hud-tile .hud-val{font-size:1rem;font-weight:700;color:var(--text);margin-top:2px}
-.hud-tile.combo-tile .hud-val{color:var(--gold)}
-.hud-tile.streak-tile .hud-val{color:var(--fire)}
-
-/* ===== FLOATING EFFECTS ===== */
-.float-text{
-  position:fixed;
-  font-weight:900;
-  font-size:1.2rem;
-  pointer-events:none;
-  z-index:999;
-  animation:floatUp .9s ease-out forwards;
-}
-@keyframes floatUp{
-  0%{opacity:1;transform:translateY(0) scale(1)}
-  100%{opacity:0;transform:translateY(-70px) scale(.8)}
-}
-
-/* ===== MODAL ===== */
-#modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:#000000cc;
-  z-index:100;
-  justify-content:center;
-  align-items:center;
-}
-#modal.show{display:flex}
-#modalBox{
-  background:var(--panel);
-  border-radius:20px;
-  padding:36px;
-  text-align:center;
-  border:1px solid #2a3a6a;
-  min-width:320px;
-  animation:popIn .3s ease-out;
-}
-@keyframes popIn{
-  from{transform:scale(.7);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
-#modalTitle{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold);margin-bottom:10px}
-#modalBody{color:#9ca3af;font-size:.9rem;margin-bottom:20px;line-height:1.6}
-#modalBtn{
-  background:linear-gradient(135deg,#38bdf8,#818cf8);
-  color:white;
-  padding:12px 32px;
-  border-radius:10px;
-  border:none;
-  font-size:1rem;
-  font-weight:700;
-  cursor:pointer;
-}
-
-/* ===== BATTLE LOG ===== */
-#battleLog{
-  background:var(--card);
-  border-radius:10px;
-  padding:8px 12px;
-  margin-bottom:10px;
-  height:64px;
-  overflow:hidden;
-  border:1px solid #1f2d54;
-}
-.log-entry{font-size:.7rem;color:#6b7280;line-height:1.6}
-.log-entry.good{color:var(--green)}
-.log-entry.bad{color:var(--red)}
-.log-entry.special{color:var(--gold)}
-
-/* ===== RESPONSIVE ===== */
-@media(max-width:700px){
-  #arena{grid-template-columns:1fr}
-  #bottomHud{grid-template-columns:repeat(4,1fr)}
-}
-</style>
-</head>
-<body>
-<div id="game">
-
-  <div id="title">✨ Integer Wizards</div>
-  <div id="subtitle">Battle Arena · Integer Magic · Elemental Spells</div>
-
-  <div id="arena">
-
-    <!-- LEFT: Player -->
-    <div class="panel" id="playerPanel">
-      <div class="wizard-avatar" id="wizardAvatar">🧙</div>
-      <div class="player-name" id="wizardName">Arithmancer</div>
-
-      <div class="stat-row"><span>HP</span><span class="stat-val"><span id="hpVal">100</span>/<span id="hpMax">100</span></span></div>
-      <div class="bar"><div id="hpFill" class="bar-fill" style="width:100%"></div></div>
-
-      <div class="stat-row"><span>Energy</span><span class="stat-val"><span id="energyVal">3</span>/5</span></div>
-      <div class="bar"><div id="energyFill" class="bar-fill" style="width:60%"></div></div>
-
-      <div class="stat-row"><span>XP</span><span class="stat-val" id="xpStat">0/100</span></div>
-      <div class="bar"><div id="xpFill" class="bar-fill" style="width:0%"></div></div>
-
-      <div class="stat-row"><span>Power</span><span class="stat-val" id="powerStat">18</span></div>
-      <div class="stat-row"><span>Defense</span><span class="stat-val" id="defenseStat">5</span></div>
-      <div class="stat-row"><span>Streak</span><span class="stat-val" id="streakStat">0🔥</span></div>
-
-      <div class="pet-section">
-        <h4>Companion</h4>
-        <div id="petSprite">🦊</div>
-        <div id="petName">Ember Fox</div>
-        <div id="petHP" style="font-size:.65rem;color:#6b7280;margin-top:2px">Pet HP: 40/40</div>
-      </div>
-    </div>
-
-    <!-- CENTER: Battle -->
-    <div class="panel" id="battleCenter">
-
-      <div id="enemyZone">
-        <div id="enemySprite">👾</div>
-        <div id="enemyName">Goblin Scout</div>
-        <div id="enemyLevelTag">Lv.1 · Common</div>
-        <div id="enemyElement">🔥 Fire</div>
-        <div class="enemy-bar-wrap">
-          <div id="enemyHPtext">HP: 80/80</div>
-          <div class="bar"><div id="enemyHPfill" class="bar-fill" style="width:100%"></div></div>
-        </div>
-      </div>
-
-      <div id="battleStatus">Solve the equation to cast your spell!</div>
-
-      <div id="problemBox">
-        <div id="problemLabel">⚡ Integer Challenge</div>
-        <div id="problem">? + ? = ?</div>
-        <div id="numberLine"></div>
-        <input id="answerInput" type="number" placeholder="Your answer…" autocomplete="off">
-        <div class="btn-row">
-          <button class="btn" id="attackBtn" onclick="submitAnswer('attack')">⚔️ Attack</button>
-          <button class="btn" id="spellBtn" onclick="submitAnswer('spell')">✨ Spell</button>
-          <button class="btn" id="healBtn" onclick="submitAnswer('heal')">💚 Heal</button>
-        </div>
-      </div>
-
-      <br>
-      <div id="battleLog"></div>
-
-    </div>
-
-    <!-- RIGHT: Spells & Loot -->
-    <div class="panel" id="rightPanel">
-
-      <div id="zoneBox">
-        <div id="zoneName">🌋 Ember Wastes</div>
-        <div id="questText">Quest: Defeat 3 enemies</div>
-        <div id="questProgress"><div id="questProgressFill" style="width:0%"></div></div>
-      </div>
-
-      <h4>Spell Cards</h4>
-      <div id="spellCards"></div>
-
-      <h4>Inventory</h4>
-      <div id="lootList"><span style="font-size:.7rem;color:#4b5563">No items yet…</span></div>
-
-    </div>
-  </div>
-
-  <!-- BOTTOM HUD -->
-  <div id="bottomHud">
-    <div class="hud-tile"><div class="hud-label">Score</div><div class="hud-val" id="scoreVal">0</div></div>
-    <div class="hud-tile"><div class="hud-label">Level</div><div class="hud-val" id="levelVal">1</div></div>
-    <div class="hud-tile"><div class="hud-label">Zone</div><div class="hud-val" id="zoneVal">1</div></div>
-    <div class="hud-tile"><div class="hud-label">Room</div><div class="hud-val" id="roomVal">1</div></div>
-    <div class="hud-tile combo-tile"><div class="hud-label">Combo</div><div class="hud-val" id="comboVal">0</div></div>
-    <div class="hud-tile streak-tile"><div class="hud-label">Streak</div><div class="hud-val" id="streakVal">0</div></div>
-    <div class="hud-tile"><div class="hud-label">Gold</div><div class="hud-val" id="goldVal">0💰</div></div>
-  </div>
-
-</div>
-
-<!-- MODAL -->
-<div id="modal">
-  <div id="modalBox">
-    <div id="modalTitle">Victory!</div>
-    <div id="modalBody">You defeated the enemy!</div>
-    <button id="modalBtn" onclick="closeModal()">Continue ➜</button>
-  </div>
-</div>
-
-<script>
-/* ============================================================
-   INTEGER WIZARDS – BATTLE ARENA  (Prodigy-Level Edition)
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Cooking Simulator — 6.NS.B.3</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #1a0a00;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      #game-container {
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      "use strict";
+      (() => {
+        /* ============================================================
+   COOKING SIMULATOR — 6.NS.B.3
+   Add, subtract, multiply, divide multi-digit decimals.
+   Follow recipes, measure ingredients with decimal operations.
    ============================================================ */
 
-// ── CONSTANTS ──────────────────────────────────────────────
-const ZONES = [
-  { name:"🌋 Ember Wastes",   element:"fire",  quest:"Defeat 3 enemies",  goal:3 },
-  { name:"❄️ Frost Caverns",  element:"ice",   quest:"Defeat 4 enemies",  goal:4 },
-  { name:"🌿 Thorn Forest",   element:"plant", quest:"Defeat 4 enemies",  goal:4 },
-  { name:"⚡ Storm Peaks",    element:"storm", quest:"Defeat 5 enemies",  goal:5 },
-  { name:"🌊 Abyssal Deep",   element:"water", quest:"Defeat 6 enemies",  goal:6 },
-];
-
-const ELEMENTS = {
-  fire:  { icon:"🔥", color:"#fb923c", strong:"plant",  weak:"water"  },
-  ice:   { icon:"❄️", color:"#7dd3fc", strong:"water",  weak:"fire"   },
-  plant: { icon:"🌿", color:"#86efac", strong:"water",  weak:"fire"   },
-  storm: { icon:"⚡", color:"#a78bfa", strong:"ice",    weak:"plant"  },
-  water: { icon:"🌊", color:"#60a5fa", strong:"fire",   weak:"storm"  },
-};
-
-const SPELLS = [
-  { name:"Fireball",    icon:"🔥", elem:"fire",  dmgMult:1.4, energyCost:2, type:"attack", charge:0 },
-  { name:"Blizzard",    icon:"❄️", elem:"ice",   dmgMult:1.3, energyCost:2, type:"attack", charge:0 },
-  { name:"Vine Wrap",   icon:"🌿", elem:"plant", dmgMult:1.0, energyCost:1, type:"attack", charge:0, effect:"slow" },
-  { name:"Thunderbolt", icon:"⚡", elem:"storm", dmgMult:1.6, energyCost:3, type:"attack", charge:0 },
-  { name:"Tidal Wave",  icon:"🌊", elem:"water", dmgMult:1.2, energyCost:2, type:"attack", charge:0, effect:"aoe" },
-  { name:"Rejuvenate",  icon:"💚", elem:"plant", energyCost:2, type:"heal",   healAmt:25,   charge:0 },
-  { name:"Ember Fang",  icon:"🦊", elem:"fire",  dmgMult:1.8, energyCost:4, type:"attack", charge:0, petSpell:true },
-];
-
-const ENEMY_TYPES = [
-  { sprite:"👾", name:"Goblin Scout",  elem:"fire",  rarity:"Common",    hpBase:70,  reward:80,  xpReward:20 },
-  { sprite:"🧟", name:"Zombie Mage",   elem:"plant", rarity:"Common",    hpBase:85,  reward:100, xpReward:25 },
-  { sprite:"🐺", name:"Frost Wolf",    elem:"ice",   rarity:"Uncommon",  hpBase:110, reward:130, xpReward:35 },
-  { sprite:"👻", name:"Storm Wraith",  elem:"storm", rarity:"Rare",      hpBase:140, reward:180, xpReward:50 },
-  { sprite:"🧊", name:"Ice Titan",     elem:"ice",   rarity:"Rare",      hpBase:160, reward:220, xpReward:65 },
-  { sprite:"🐉", name:"Lava Dragon",   elem:"fire",  rarity:"Epic",      hpBase:220, reward:350, xpReward:100, boss:true },
-  { sprite:"🌑", name:"Shadow Lord",   elem:"storm", rarity:"Legendary", hpBase:300, reward:500, xpReward:150, boss:true },
-];
-
-const LOOT_TABLE = [
-  { name:"Power Gem",    icon:"💎", rarity:"rare",  effect:"power", val:5  },
-  { name:"Iron Shield",  icon:"🛡️", rarity:"rare",  effect:"def",   val:5  },
-  { name:"Spell Scroll", icon:"📜", rarity:"epic",  effect:"spell", val:0  },
-  { name:"Gold Coin",    icon:"🪙", rarity:"common",effect:"gold",  val:20 },
-  { name:"XP Crystal",   icon:"🔮", rarity:"rare",  effect:"xp",    val:50 },
-  { name:"Dragon Shard", icon:"🐉", rarity:"epic",  effect:"power", val:12 },
-];
-
-const WIZARD_CLASSES = [
-  { name:"Arithmancer",  avatar:"🧙", power:18, defense:5  },
-  { name:"Mathemagus",   avatar:"🔮", power:22, defense:4  },
-  { name:"Numerilock",   avatar:"⚡", power:16, defense:8  },
-];
-
-const PETS = [
-  { name:"Ember Fox",   sprite:"🦊", hp:40 },
-  { name:"Frost Bunny", sprite:"🐰", hp:45 },
-  { name:"Storm Eagle", sprite:"🦅", hp:35 },
-];
-
-// ── STATE ──────────────────────────────────────────────────
-let state = {
-  score:0, level:1, zone:0, room:1,
-  combo:0, streak:0, gold:0,
-  hp:100, hpMax:100,
-  energy:3, energyMax:5,
-  xp:0, xpNext:100,
-  power:18, defense:5,
-  questKills:0,
-  selectedSpell:0,
-  mode:"attack",       // attack | spell | heal
-  inputLocked:false,
-  enemyHP:0, enemyMaxHP:0, enemyData:null,
-  a:0, b:0, op:"+", correct:0,
-  loot:[],
-  petHP:40, petMaxHP:40,
-  wizardClass:0,
-  petIdx:0,
-  spells: JSON.parse(JSON.stringify(SPELLS)),
-};
-
-const $=id=>document.getElementById(id);
-
-// ── INIT ───────────────────────────────────────────────────
-function init(){
-  renderSpellCards();
-  spawnEnemy();
-  generate();
-  updateUI();
-}
-
-// ── ENEMY ──────────────────────────────────────────────────
-function spawnEnemy(){
-  const zone=ZONES[state.zone % ZONES.length];
-  // prefer zone element, sometimes random boss at room 5
-  let pool=ENEMY_TYPES.filter(e=>!e.boss);
-  if(state.room % 5 === 0) pool=ENEMY_TYPES.filter(e=>e.boss);
-  const e=pool[rand(0,pool.length-1)];
-  state.enemyData=e;
-  state.enemyMaxHP = Math.floor(e.hpBase * (1 + (state.level-1)*.18));
-  state.enemyHP = state.enemyMaxHP;
-
-  $('enemySprite').innerText = e.sprite;
-  $('enemyName').innerText   = e.name;
-  $('enemyLevelTag').innerText = `Lv.${state.level} · ${e.rarity}`;
-  const el=ELEMENTS[e.elem];
-  $('enemyElement').innerText = `${el.icon} ${cap(e.elem)}`;
-  $('enemyElement').style.color = el.color;
-
-  updateEnemyBar();
-  if(e.boss) showBossWarning(e);
-}
-
-function updateEnemyBar(){
-  const pct = state.enemyHP / state.enemyMaxHP * 100;
-  $('enemyHPfill').style.width = pct + "%";
-  $('enemyHPtext').innerText = `HP: ${Math.max(0,state.enemyHP)}/${state.enemyMaxHP}`;
-}
-
-function showBossWarning(e){
-  showModal(`⚠️ BOSS BATTLE`, `${e.sprite} <b style="color:#fbbf24">${e.name}</b> appears!<br>Prepare yourself, wizard…`, "Fight!");
-}
-
-// ── MATH GENERATION ───────────────────────────────────────
-function generate(){
-  const ops=["+","-","*"];
-  const range = 5 + state.level * 2;
-  state.op = ops[rand(0, ops.length-1)];
-  state.a  = rand(-range, range);
-  state.b  = rand(-range, range);
-
-  // avoid division/zero weirdness for *
-  if(state.op==="*"){
-    state.a = rand(-6,6);
-    state.b = rand(-5,5);
-  }
-
-  if(state.op==="*") state.correct = state.a * state.b;
-  else if(state.op==="+") state.correct = state.a + state.b;
-  else state.correct = state.a - state.b;
-
-  $('problem').innerText = `${state.a} ${state.op} ${state.b}`;
-  renderNumberLine();
-  $('answerInput').value = "";
-  state.inputLocked = false;
-}
-
-function renderNumberLine(){
-  const line = $('numberLine');
-  line.innerHTML = "";
-  if(state.op==="*"){ line.innerHTML='<div style="font-size:.65rem;color:#4b5563;text-align:center;line-height:44px">× shown on grid</div>'; return; }
-
-  const min=-22, max=22;
-  const pos=v=>((v-min)/(max-min))*100;
-
-  // zero line
-  const z=document.createElement("div");
-  z.className="nl-zero"; z.style.left=pos(0)+"%"; line.appendChild(z);
-
-  // arrow from a to b
-  const x1=pos(state.a), x2=pos(state.b);
-  const arr=document.createElement("div");
-  arr.className="nl-arrow";
-  arr.style.left=Math.min(x1,x2)+"%";
-  arr.style.width=Math.abs(x2-x1)+"%";
-  arr.style.background=state.op==="-"?"#f87171":"#38bdf8";
-  arr.style.opacity=".5";
-  line.appendChild(arr);
-
-  // dots
-  [["a",state.a],["b",state.b]].forEach(([cls,v])=>{
-    const d=document.createElement("div");
-    d.className=`nl-dot ${cls}`; d.style.left=pos(v)+"%";
-    const lbl=document.createElement("div");
-    lbl.className="nl-label"; lbl.style.left=pos(v)+"%";
-    lbl.innerText=v;
-    line.appendChild(d); line.appendChild(lbl);
-  });
-}
-
-// ── ANSWER SUBMISSION ─────────────────────────────────────
-function submitAnswer(mode){
-  if(state.inputLocked) return;
-  const val=parseInt($('answerInput').value);
-  if(isNaN(val)){ shakeProblem(); return; }
-  state.mode=mode;
-  state.inputLocked=true;
-
-  if(val===state.correct){
-    onCorrect();
-  } else {
-    onWrong(val);
-  }
-}
-
-function onCorrect(){
-  state.combo++;
-  state.streak++;
-  const sp=state.spells[state.selectedSpell];
-
-  if(state.mode==="heal"){
-    const healAmt=Math.floor(sp.healAmt||20 * (1+state.level*.1));
-    state.hp=Math.min(state.hpMax, state.hp+healAmt);
-    floatText("+"+healAmt+"❤️","#4ade80");
-    log(`🌿 ${sp.name} healed you for ${healAmt} HP!`,"good");
-    setBattleStatus("✨ Healing complete!","correct");
-    state.energy=Math.max(0,state.energy-(sp.energyCost||1));
-  } else {
-    // damage calc
-    let dmg=Math.floor(state.power * (sp.dmgMult||1) * (1+(state.combo-1)*.15));
-    // elemental advantage
-    const enemyEl = state.enemyData.elem;
-    const spellEl = sp.elem;
-    const elData  = ELEMENTS[spellEl];
-    if(elData.strong===enemyEl) { dmg=Math.floor(dmg*1.5); floatText("⚡ SUPER EFFECTIVE!","#fbbf24"); }
-    if(elData.weak===enemyEl)   { dmg=Math.floor(dmg*0.6); floatText("🧊 Not very effective","#7dd3fc"); }
-
-    // crit
-    const crit = Math.random()<(0.05+state.streak*.01);
-    if(crit){ dmg=Math.floor(dmg*2); floatText("💥 CRITICAL HIT!","#f87171"); }
-
-    state.enemyHP -= dmg;
-    state.score   += 100 * state.combo;
-    state.energy   = Math.max(0, state.energy-(sp.energyCost||1));
-
-    floatText("-"+dmg+"⚔️","#f87171");
-    animateEnemy();
-    log(`${sp.icon} ${sp.name} dealt ${dmg} dmg!${crit?" CRIT!":""}${elData.strong===enemyEl?" Super Effective!":""}`,"good");
-    setBattleStatus(`${sp.icon} Hit for ${dmg}!`,"correct");
-  }
-
-  // charge energy slowly
-  state.energy=Math.min(state.energyMax, state.energy+1);
-
-  // gain XP
-  state.xp += 12 + state.level*3;
-  checkLevelUp();
-
-  // charge spells over correct answers
-  state.spells.forEach(s=>{ s.charge=Math.min(100, s.charge+20); });
-
-  if(state.enemyHP<=0){
-    setTimeout(onEnemyDead,400);
-  } else {
-    setTimeout(()=>{ generate(); updateUI(); }, 700);
-  }
-
-  updateUI();
-}
-
-function onWrong(val){
-  state.combo=0;
-  state.streak=0;
-  const rawDmg = 8 + state.level*4;
-  const dmg    = Math.max(0, rawDmg - state.defense);
-  state.hp -= dmg;
-
-  floatText("-"+dmg+"💔","#f87171");
-  flashScreen("#f8717122");
-  log(`❌ Wrong (you said ${val}, answer was ${state.correct}). Took ${dmg} dmg.`,"bad");
-  setBattleStatus(`Enemy hit you for ${dmg}!`,"wrong");
-
-  if(state.hp<=0){ setTimeout(onGameOver,400); return; }
-
-  setTimeout(()=>{ generate(); updateUI(); }, 800);
-  updateUI();
-}
-
-// ── ENEMY DEAD ─────────────────────────────────────────────
-function onEnemyDead(){
-  const e=state.enemyData;
-  state.score += e.reward * state.level;
-  state.xp    += e.xpReward;
-  state.gold  += rand(5,15) + (e.boss?30:0);
-  state.room++;
-  state.questKills++;
-  checkLevelUp();
-
-  // loot drop
-  let drops=[];
-  if(Math.random()<.55){
-    const item=LOOT_TABLE[rand(0,LOOT_TABLE.length-1)];
-    drops.push(item);
-    state.loot.push(item);
-    applyLoot(item);
-  }
-
-  // quest check
-  const zone=ZONES[state.zone % ZONES.length];
-  const questDone = state.questKills >= zone.goal;
-  if(questDone){ state.questKills=0; state.zone++; }
-
-  const dropTxt=drops.length?`<br>🎁 Dropped: ${drops.map(d=>d.icon+d.name).join(", ")}`:"";
-  showModal(
-    e.boss?"🏆 BOSS DEFEATED!":"⚔️ Victory!",
-    `You defeated <b style="color:${ELEMENTS[e.elem].color}">${e.sprite} ${e.name}</b>!<br>
-     +${e.reward * state.level} score · +${e.xpReward} XP${dropTxt}
-     ${questDone?'<br>🌟 Quest Complete! New zone unlocked!':''}`,
-    "Next Battle ➜"
-  );
-
-  updateUI();
-  renderLoot();
-}
-
-function applyLoot(item){
-  if(item.effect==="power")  state.power  += item.val;
-  if(item.effect==="def")    state.defense+= item.val;
-  if(item.effect==="xp")   { state.xp     += item.val; checkLevelUp(); }
-  if(item.effect==="gold")   state.gold   += item.val;
-}
-
-// ── LEVEL UP ───────────────────────────────────────────────
-function checkLevelUp(){
-  while(state.xp >= state.xpNext){
-    state.xp     -= state.xpNext;
-    state.level++;
-    state.xpNext  = Math.floor(state.xpNext * 1.35);
-    state.hpMax  += 15;
-    state.hp      = state.hpMax;
-    state.power  += 3;
-    state.defense+= 1;
-    floatText("⬆️ LEVEL UP!","#fbbf24");
-    log(`⬆️ Level Up! Now Lv.${state.level}. HP restored!`,"special");
-  }
-}
-
-// ── MODAL ──────────────────────────────────────────────────
-let modalCallback=null;
-function showModal(title,body,btnTxt,cb){
-  $('modalTitle').innerHTML=title;
-  $('modalBody').innerHTML=body;
-  $('modalBtn').innerText=btnTxt||"Continue";
-  modalCallback=cb||null;
-  $('modal').classList.add("show");
-}
-function closeModal(){
-  $('modal').classList.remove("show");
-  if(modalCallback){ modalCallback(); return; }
-  spawnEnemy(); generate(); updateUI();
-}
-
-// ── GAME OVER ──────────────────────────────────────────────
-function onGameOver(){
-  showModal(
-    "💀 Defeated",
-    `You were bested in battle!<br>Final Score: <b>${state.score}</b><br>Level reached: <b>${state.level}</b>`,
-    "Try Again 🔄",
-    ()=>location.reload()
-  );
-}
-
-// ── UI UPDATE ──────────────────────────────────────────────
-function updateUI(){
-  // player stats
-  $('hpVal').innerText     = Math.max(0,state.hp);
-  $('hpMax').innerText     = state.hpMax;
-  $('hpFill').style.width  = (state.hp/state.hpMax*100)+"%";
-  $('energyVal').innerText = state.energy;
-  $('energyFill').style.width = (state.energy/state.energyMax*100)+"%";
-  $('xpStat').innerText    = `${state.xp}/${state.xpNext}`;
-  $('xpFill').style.width  = (state.xp/state.xpNext*100)+"%";
-  $('powerStat').innerText = state.power;
-  $('defenseStat').innerText=state.defense;
-  $('streakStat').innerText= state.streak+"🔥";
-
-  // pet
-  const pet=PETS[state.petIdx];
-  $('petSprite').innerText=pet.sprite;
-  $('petName').innerText=pet.name;
-  $('petHP').innerText=`Pet HP: ${state.petHP}/${state.petMaxHP}`;
-
-  // bottom hud
-  $('scoreVal').innerText  = state.score;
-  $('levelVal').innerText  = state.level;
-  $('zoneVal').innerText   = (state.zone%ZONES.length)+1;
-  $('roomVal').innerText   = state.room;
-  $('comboVal').innerText  = state.combo;
-  $('streakVal').innerText = state.streak;
-  $('goldVal').innerText   = state.gold+"💰";
-
-  // zone/quest
-  const zoneData=ZONES[state.zone%ZONES.length];
-  $('zoneName').innerText  = zoneData.name;
-  $('questText').innerText = `Quest: ${zoneData.quest}`;
-  $('questProgressFill').style.width=(state.questKills/zoneData.goal*100)+"%";
-
-  // enemy bar
-  updateEnemyBar();
-
-  // buttons
-  $('healBtn').disabled = state.energy<(state.spells.find(s=>s.type==="heal")?.energyCost||2);
-  $('spellBtn').disabled= state.energy<(state.spells[state.selectedSpell]?.energyCost||1);
-
-  renderSpellCards();
-}
-
-// ── SPELL CARDS ────────────────────────────────────────────
-function renderSpellCards(){
-  const container=$('spellCards');
-  container.innerHTML="";
-  state.spells.forEach((sp,i)=>{
-    const div=document.createElement("div");
-    div.className="spell-card"+(i===state.selectedSpell?" selected":"")+(sp.charge>=100?" charged":"");
-    div.innerHTML=`
-      <div class="spell-icon">${sp.icon}</div>
-      <div class="spell-name">${sp.name}</div>
-      <div class="spell-elem">${cap(sp.elem)} · ${sp.type==="heal"?"Heal":"Atk"}</div>
-      <div class="spell-elem" style="color:#6b7280">⚡${sp.energyCost}</div>
-      <div class="charge-bar"><div class="charge-bar-fill" style="width:${sp.charge}%"></div></div>
-    `;
-    div.onclick=()=>{ state.selectedSpell=i; renderSpellCards(); };
-    container.appendChild(div);
-  });
-}
-
-// ── LOOT RENDER ────────────────────────────────────────────
-function renderLoot(){
-  const container=$('lootList');
-  if(!state.loot.length){ container.innerHTML='<span style="font-size:.7rem;color:#4b5563">No items yet…</span>'; return; }
-  container.innerHTML="";
-  state.loot.slice(-8).forEach(item=>{
-    const d=document.createElement("div");
-    d.className=`loot-item ${item.rarity}`;
-    d.innerText=`${item.icon} ${item.name}`;
-    d.title=`${item.effect}+${item.val||""}`;
-    container.appendChild(d);
-  });
-}
-
-// ── BATTLE LOG ─────────────────────────────────────────────
-function log(msg,type=""){
-  const el=document.createElement("div");
-  el.className=`log-entry ${type}`;
-  el.innerText=msg;
-  const box=$('battleLog');
-  box.insertBefore(el,box.firstChild);
-  while(box.children.length>6) box.removeChild(box.lastChild);
-}
-
-// ── HELPERS ────────────────────────────────────────────────
-function setBattleStatus(msg,cls){
-  const el=$('battleStatus');
-  el.innerText=msg;
-  el.className=cls||"";
-}
-
-function animateEnemy(){
-  const sp=$('enemySprite');
-  sp.classList.add("hit","shake");
-  setTimeout(()=>sp.classList.remove("hit","shake"),300);
-}
-
-function shakeProblem(){
-  const pb=$('problemBox');
-  pb.style.animation="none";
-  pb.style.border="2px solid #f87171";
-  setTimeout(()=>pb.style.border="1px solid #1f2d54",600);
-}
-
-function floatText(text,color){
-  const el=document.createElement("div");
-  el.className="float-text";
-  el.innerText=text;
-  el.style.color=color;
-  el.style.left=(30+Math.random()*40)+"%";
-  el.style.top ="35%";
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),950);
-}
-
-function flashScreen(color){
-  const fl=document.createElement("div");
-  fl.style.cssText=`position:fixed;inset:0;background:${color};pointer-events:none;z-index:50;animation:floatUp .4s forwards`;
-  document.body.appendChild(fl);
-  setTimeout(()=>fl.remove(),400);
-}
-
-function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-function cap(s){ return s[0].toUpperCase()+s.slice(1); }
-
-// ── KEYBOARD SUPPORT ───────────────────────────────────────
-document.addEventListener("keydown",e=>{
-  if(e.key==="Enter") submitAnswer(state.mode);
-  if(e.key==="1") submitAnswer("attack");
-  if(e.key==="2") submitAnswer("spell");
-  if(e.key==="3") submitAnswer("heal");
-  if(e.key>="4"&&e.key<="9"){
-    const idx=parseInt(e.key)-4;
-    if(idx<state.spells.length){ state.selectedSpell=idx; renderSpellCards(); }
-  }
-});
-
-// ── BOOT ───────────────────────────────────────────────────
-init();
-</script>
-</body>
+        // --- Audio ---
+        let audioCtx = null;
+        function getAudio() {
+          if (!audioCtx)
+            try {
+              audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          return audioCtx;
+        }
+        function playTone(f, d, t = "sine", v = 0.05) {
+          const c = getAudio();
+          if (!c) return;
+          if (c.state === "suspended") c.resume();
+          const o = c.createOscillator(),
+            g = c.createGain();
+          o.type = t;
+          o.frequency.value = f;
+          g.gain.setValueAtTime(0.0001, c.currentTime);
+          g.gain.linearRampToValueAtTime(v, c.currentTime + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + d);
+          o.connect(g).connect(c.destination);
+          o.start();
+          o.stop(c.currentTime + d + 0.01);
+        }
+        function sfxCorrect() {
+          playTone(523, 0.1);
+          setTimeout(() => playTone(659, 0.1), 70);
+          setTimeout(() => playTone(784, 0.12), 140);
+        }
+        function sfxWrong() {
+          playTone(200, 0.12, "sawtooth", 0.03);
+          setTimeout(() => playTone(160, 0.15, "sawtooth", 0.03), 80);
+        }
+        function sfxDing() {
+          playTone(880, 0.15, "triangle", 0.04);
+        }
+        function sfxSizzle() {
+          for (let i = 0; i < 5; i++)
+            setTimeout(
+              () =>
+                playTone(3000 + Math.random() * 2000, 0.03, "sawtooth", 0.01),
+              i * 30,
+            );
+        }
+        function sfxChop() {
+          playTone(300, 0.05, "square", 0.04);
+          setTimeout(() => playTone(250, 0.04, "square", 0.03), 40);
+        }
+        function sfxLevelUp() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => playTone(f, 0.12, "sine", 0.04), i * 80),
+          );
+        }
+        function sfxServe() {
+          playTone(660, 0.1);
+          setTimeout(() => playTone(880, 0.1), 80);
+          setTimeout(() => playTone(1100, 0.15), 160);
+        }
+
+        // --- Math ---
+        function rand(a, b) {
+          return Math.floor(Math.random() * (b - a + 1)) + a;
+        }
+        function pick(a) {
+          return a[rand(0, a.length - 1)];
+        }
+        function shuffle(a) {
+          const r = [...a];
+          for (let i = r.length - 1; i > 0; i--) {
+            const j = rand(0, i);
+            [r[i], r[j]] = [r[j], r[i]];
+          }
+          return r;
+        }
+        function round2(n) {
+          return Math.round(n * 100) / 100;
+        }
+        function fmtDec(n) {
+          const r = round2(n);
+          return r === Math.floor(r) ? r.toFixed(1) : String(r);
+        }
+
+        const OPS = ["+", "-", "×", "÷"];
+        const OP_WORDS = {
+          "+": "add",
+          "-": "subtract",
+          "×": "multiply",
+          "÷": "divide",
+        };
+
+        const INGREDIENTS = [
+          "flour",
+          "sugar",
+          "butter",
+          "milk",
+          "eggs",
+          "salt",
+          "vanilla",
+          "cocoa",
+          "cream",
+          "oil",
+          "honey",
+          "cinnamon",
+          "baking powder",
+          "cheese",
+          "tomato sauce",
+          "rice",
+          "pasta",
+          "beans",
+          "pepper",
+          "garlic",
+        ];
+        const UNITS = [
+          "cups",
+          "tablespoons",
+          "teaspoons",
+          "ounces",
+          "grams",
+          "liters",
+          "milliliters",
+          "pounds",
+        ];
+        const RECIPES = [
+          { name: "Chocolate Cake", emoji: "🎂", color: 0x8b4513 },
+          { name: "Pasta Primavera", emoji: "🍝", color: 0xdaa520 },
+          { name: "Berry Smoothie", emoji: "🥤", color: 0xdc143c },
+          { name: "Veggie Stir-Fry", emoji: "🥘", color: 0x228b22 },
+          { name: "Pancake Stack", emoji: "🥞", color: 0xf4a460 },
+          { name: "Pizza Margherita", emoji: "🍕", color: 0xff6347 },
+          { name: "Fruit Salad", emoji: "🥗", color: 0x32cd32 },
+          { name: "Banana Bread", emoji: "🍞", color: 0xd2691e },
+          { name: "Lemon Bars", emoji: "🍋", color: 0xffd700 },
+          { name: "Rice Pudding", emoji: "🍚", color: 0xfffacd },
+        ];
+
+        function generateDecimalQ(level) {
+          const op = pick(
+            level <= 1
+              ? ["+", "-"]
+              : level <= 3
+                ? ["+", "-", "×"]
+                : ["+", "-", "×", "÷"],
+          );
+          let a, b, answer;
+          const ingredient = pick(INGREDIENTS);
+          const unit = pick(UNITS);
+
+          if (op === "+") {
+            if (level <= 2) {
+              a = rand(10, 99) / 10;
+              b = rand(10, 99) / 10;
+            } else {
+              a = rand(100, 999) / 100;
+              b = rand(100, 999) / 100;
+            }
+            answer = round2(a + b);
+          } else if (op === "-") {
+            if (level <= 2) {
+              a = rand(30, 99) / 10;
+              b = rand(10, Math.floor(a * 10) - 1) / 10;
+            } else {
+              a = rand(200, 999) / 100;
+              b = rand(100, Math.floor(a * 100) - 1) / 100;
+            }
+            answer = round2(a - b);
+          } else if (op === "×") {
+            if (level <= 2) {
+              a = rand(10, 50) / 10;
+              b = rand(2, 9);
+            } else if (level <= 4) {
+              a = rand(10, 99) / 10;
+              b = rand(10, 50) / 10;
+            } else {
+              a = rand(10, 99) / 10;
+              b = rand(10, 99) / 10;
+            }
+            answer = round2(a * b);
+          } else {
+            // Division
+            if (level <= 3) {
+              b = rand(2, 9);
+              answer = rand(10, 50) / 10;
+              a = round2(answer * b);
+            } else {
+              b = rand(10, 50) / 10;
+              answer = rand(10, 99) / 10;
+              a = round2(answer * b);
+            }
+          }
+
+          a = round2(a);
+          b = round2(b);
+          answer = round2(answer);
+          const stem = fmtDec(a) + " " + op + " " + fmtDec(b);
+
+          // Context sentence
+          const contexts = {
+            "+":
+              "You need " +
+              fmtDec(a) +
+              " " +
+              unit +
+              " of " +
+              ingredient +
+              " plus " +
+              fmtDec(b) +
+              " more " +
+              unit +
+              ". How much total?",
+            "-":
+              "You have " +
+              fmtDec(a) +
+              " " +
+              unit +
+              " of " +
+              ingredient +
+              ". You use " +
+              fmtDec(b) +
+              " " +
+              unit +
+              ". How much is left?",
+            "×":
+              "Each serving needs " +
+              fmtDec(a) +
+              " " +
+              unit +
+              " of " +
+              ingredient +
+              ". You make " +
+              fmtDec(b) +
+              " servings. How much total?",
+            "÷":
+              "You have " +
+              fmtDec(a) +
+              " " +
+              unit +
+              " of " +
+              ingredient +
+              ". Split into groups of " +
+              fmtDec(b) +
+              ". How many groups?",
+          };
+
+          // Wrong answers
+          const wrongs = new Set();
+          wrongs.add(fmtDec(round2(answer + 0.1)));
+          wrongs.add(fmtDec(round2(answer - 0.1)));
+          wrongs.add(fmtDec(round2(answer + 1)));
+          wrongs.add(fmtDec(round2(Math.abs(answer - 1))));
+          // Decimal place error
+          wrongs.add(fmtDec(round2(answer * 10)));
+          wrongs.add(fmtDec(round2(answer / 10)));
+          wrongs.delete(fmtDec(answer));
+
+          const wrongArr = [...wrongs]
+            .filter((w) => parseFloat(w) > 0 && w !== fmtDec(answer))
+            .slice(0, 3);
+          while (wrongArr.length < 3)
+            wrongArr.push(fmtDec(round2(answer + rand(1, 20) / 10)));
+
+          const choices = shuffle([
+            { text: fmtDec(answer), correct: true },
+            ...wrongArr.slice(0, 3).map((w) => ({ text: w, correct: false })),
+          ]);
+
+          return {
+            a,
+            b,
+            op,
+            answer,
+            stem,
+            context: contexts[op],
+            choices,
+            hint:
+              "Line up decimals. " +
+              OP_WORDS[op] +
+              " carefully: " +
+              stem +
+              " = " +
+              fmtDec(answer),
+            ingredient,
+            unit,
+          };
+        }
+
+        // --- Phaser ---
+        const W = 960,
+          H = 640;
+        const config = {
+          type: Phaser.AUTO,
+          parent: "game-container",
+          width: W,
+          height: H,
+          backgroundColor: "#1a0f05",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          physics: {
+            default: "arcade",
+            arcade: { gravity: { y: 300 }, debug: false },
+          },
+          scene: [],
+        };
+
+        // ==================== BOOT ====================
+        class BootScene extends Phaser.Scene {
+          constructor() {
+            super("Boot");
+          }
+          create() {
+            const g = this.make.graphics({ add: false });
+
+            // Chef character
+            g.clear();
+            g.fillStyle(0xffffff);
+            g.fillRoundedRect(6, 0, 20, 14, 4); // hat
+            g.fillStyle(0xfcd9b6);
+            g.fillCircle(16, 20, 10); // face
+            g.fillStyle(0xffffff);
+            g.fillRoundedRect(6, 28, 20, 22, 4); // body
+            g.fillStyle(0x333333);
+            g.fillCircle(13, 18, 2);
+            g.fillCircle(19, 18, 2); // eyes
+            g.fillStyle(0xff6b6b);
+            g.fillEllipse(16, 23, 4, 2); // mouth
+            g.generateTexture("chef", 32, 52);
+
+            // Ingredient item
+            g.clear();
+            g.fillStyle(0xfbbf24);
+            g.fillRoundedRect(0, 0, 36, 36, 8);
+            g.fillStyle(0xffffff, 0.3);
+            g.fillRoundedRect(4, 4, 28, 12, 4);
+            g.generateTexture("ingredient", 36, 36);
+
+            // Pot
+            g.clear();
+            g.fillStyle(0x6b7280);
+            g.fillRoundedRect(0, 10, 50, 35, 6);
+            g.fillStyle(0x4b5563);
+            g.fillRect(5, 0, 40, 12);
+            g.fillStyle(0xff6347, 0.5);
+            g.fillEllipse(25, 25, 30, 15); // contents
+            g.generateTexture("pot", 50, 45);
+
+            // Cutting board
+            g.clear();
+            g.fillStyle(0xd4a574);
+            g.fillRoundedRect(0, 0, 60, 40, 6);
+            g.lineStyle(1, 0xb8956a);
+            g.strokeRoundedRect(0, 0, 60, 40, 6);
+            g.generateTexture("board", 60, 40);
+
+            // Oven
+            g.clear();
+            g.fillStyle(0x374151);
+            g.fillRoundedRect(0, 0, 70, 60, 8);
+            g.fillStyle(0x1f2937);
+            g.fillRoundedRect(5, 5, 60, 35, 4);
+            g.fillStyle(0xff6347, 0.3);
+            g.fillRoundedRect(8, 8, 54, 29, 3); // glow
+            g.fillStyle(0x9ca3af);
+            g.fillCircle(20, 50, 4);
+            g.fillCircle(35, 50, 4);
+            g.fillCircle(50, 50, 4);
+            g.generateTexture("oven", 70, 60);
+
+            // Plate
+            g.clear();
+            g.fillStyle(0xffffff, 0.9);
+            g.fillEllipse(25, 20, 50, 35);
+            g.lineStyle(2, 0xe5e7eb);
+            g.strokeEllipse(25, 20, 50, 35);
+            g.generateTexture("plate", 50, 40);
+
+            // Star
+            g.clear();
+            g.fillStyle(0xfbbf24);
+            g.fillCircle(5, 5, 5);
+            g.generateTexture("star", 10, 10);
+
+            // Particle
+            g.clear();
+            g.fillStyle(0xffffff);
+            g.fillCircle(3, 3, 3);
+            g.generateTexture("particle", 6, 6);
+
+            // Steam particle
+            g.clear();
+            g.fillStyle(0xffffff, 0.4);
+            g.fillCircle(6, 6, 6);
+            g.generateTexture("steam", 12, 12);
+
+            // Answer card
+            g.clear();
+            g.fillStyle(0x2d1810, 0.92);
+            g.fillRoundedRect(0, 0, 130, 55, 12);
+            g.lineStyle(2, 0xfbbf24, 0.4);
+            g.strokeRoundedRect(0, 0, 130, 55, 12);
+            g.generateTexture("card", 130, 55);
+
+            // Conveyor belt segment
+            g.clear();
+            g.fillStyle(0x374151);
+            g.fillRect(0, 0, 80, 20);
+            g.lineStyle(1, 0x4b5563);
+            g.lineBetween(0, 10, 80, 10);
+            g.generateTexture("belt", 80, 20);
+
+            this.scene.start("Title");
+          }
+        }
+
+        // ==================== TITLE ====================
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+          create() {
+            // Kitchen background
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
+            bg.fillRect(0, 0, W, H);
+
+            // Tile pattern
+            for (let x = 0; x < W; x += 40) {
+              for (let y = 0; y < H; y += 40) {
+                this.add
+                  .rectangle(
+                    x + 20,
+                    y + 20,
+                    38,
+                    38,
+                    (x + y) % 80 === 0 ? 0x3d2215 : 0x2d1810,
+                    0.3,
+                  )
+                  .setStrokeStyle(1, 0x4d3220, 0.15);
+              }
+            }
+
+            // Steam effects
+            for (let i = 0; i < 10; i++) {
+              const s = this.add
+                .image(rand(100, W - 100), H + 20, "steam")
+                .setAlpha(0)
+                .setScale(1 + Math.random() * 2);
+              this.tweens.add({
+                targets: s,
+                y: -30,
+                alpha: { from: 0.3, to: 0 },
+                duration: 4000 + rand(0, 3000),
+                repeat: -1,
+                delay: rand(0, 3000),
+              });
+            }
+
+            this.add
+              .text(W / 2, 90, "COOKING\nSIMULATOR", {
+                fontSize: "52px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                align: "center",
+                lineSpacing: 6,
+                stroke: "#78350f",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+
+            this.add
+              .text(W / 2, 185, "6.NS.B.3 — Decimal Operations", {
+                fontSize: "15px",
+                color: "#d4a574",
+              })
+              .setOrigin(0.5);
+
+            // Kitchen items
+            this.add.image(W / 2 - 120, 310, "pot").setScale(2);
+            this.add.image(W / 2, 300, "chef").setScale(2.5);
+            this.add.image(W / 2 + 120, 310, "oven").setScale(1.8);
+
+            // Floating ingredients
+            const emojis = ["🥚", "🧈", "🥛", "🍫", "🍯", "🧂", "🫒", "🌾"];
+            emojis.forEach((e, i) => {
+              const t = this.add
+                .text(80 + i * 115, 380, e, { fontSize: "32px" })
+                .setOrigin(0.5);
+              this.tweens.add({
+                targets: t,
+                y: 370,
+                duration: 1500 + rand(0, 800),
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+                delay: rand(0, 600),
+              });
+            });
+
+            const lines = [
+              "Run a kitchen and solve decimal math!",
+              "Add, subtract, multiply, and divide decimals.",
+              "Measure ingredients on the conveyor belt.",
+              "Pick the right answer to complete each dish.",
+              "Click / Tap answer cards or press 1-4",
+            ];
+            lines.forEach((t, i) =>
+              this.add
+                .text(W / 2, 430 + i * 22, t, {
+                  fontSize: "13px",
+                  color: "#d4a574",
+                })
+                .setOrigin(0.5),
+            );
+
+            // Start
+            const btn = this.add
+              .rectangle(W / 2, 575, 220, 50, 0xfbbf24)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2, 575, "OPEN KITCHEN", {
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
+            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+            btn.on("pointerdown", () => {
+              getAudio();
+              sfxDing();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+
+            this.input.keyboard.on("keydown-SPACE", () => {
+              getAudio();
+              sfxDing();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+            this.input.keyboard.on("keydown-ENTER", () => {
+              getAudio();
+              sfxDing();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+
+            this.cameras.main.fadeIn(400);
+          }
+        }
+
+        // ==================== GAME ====================
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("Game");
+          }
+
+          create() {
+            this.cameras.main.fadeIn(300);
+            this.physics.world.gravity.y = 0;
+
+            // State
+            this.score = 0;
+            this.combo = 0;
+            this.bestCombo = 0;
+            this.lives = 4;
+            this.level = 1;
+            this.dishesServed = 0;
+            this.questionsCorrect = 0;
+            this.questionsTotal = 0;
+            this.currentQ = null;
+            this.answered = false;
+            this.currentRecipe = pick(RECIPES);
+            this.recipeProgress = 0;
+            this.recipesPerDish = 3;
+            this.timer = 20;
+            this.timerMax = 20;
+
+            // Kitchen background
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
+            bg.fillRect(0, 0, W, H);
+
+            // Wall tiles (top half)
+            for (let x = 0; x < W; x += 48) {
+              for (let y = 0; y < 280; y += 48) {
+                this.add
+                  .rectangle(x + 24, y + 24, 46, 46, 0x3d2215, 0.25)
+                  .setStrokeStyle(1, 0x4d3220, 0.12);
+              }
+            }
+
+            // Counter
+            this.add
+              .rectangle(W / 2, 285, W, 20, 0x8b6914)
+              .setStrokeStyle(2, 0xa0791e);
+
+            // Conveyor belt
+            for (let x = 0; x < W; x += 80) {
+              this.add.image(x + 40, 480, "belt").setAlpha(0.5);
+            }
+            // Belt animation dots
+            this.beltDots = [];
+            for (let i = 0; i < 15; i++) {
+              const d = this.add.circle(i * 70, 480, 3, 0x9ca3af, 0.4);
+              this.beltDots.push(d);
+            }
+
+            // Kitchen items (static decor)
+            this.add.image(80, 240, "pot").setScale(1.5).setAlpha(0.6);
+            this.add
+              .image(W - 80, 240, "oven")
+              .setScale(1.4)
+              .setAlpha(0.5);
+
+            // Steam from pot
+            this.add.particles(80, 210, "steam", {
+              lifespan: 2000,
+              speedY: { min: -20, max: -50 },
+              speedX: { min: -8, max: 8 },
+              scale: { start: 0.5, end: 1.5 },
+              alpha: { start: 0.3, end: 0 },
+              frequency: 400,
+              quantity: 1,
+            });
+
+            // Chef
+            this.chef = this.add
+              .image(W / 2, 240, "chef")
+              .setScale(2)
+              .setDepth(5);
+            this.tweens.add({
+              targets: this.chef,
+              y: 235,
+              duration: 1500,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+
+            // Plate (where food goes)
+            this.plate = this.add
+              .image(W / 2, 360, "plate")
+              .setScale(2)
+              .setDepth(4);
+            this.dishEmoji = this.add
+              .text(W / 2, 355, this.currentRecipe.emoji, { fontSize: "30px" })
+              .setOrigin(0.5)
+              .setDepth(6);
+
+            // Answer cards (interactive)
+            this.cards = [];
+            this.cardLabels = [];
+            this.cardBgs = [];
+            for (let i = 0; i < 4; i++) {
+              const x = 140 + i * 190;
+              const y = 555;
+              const bg = this.add
+                .image(x, y, "card")
+                .setScale(1.1)
+                .setDepth(10)
+                .setInteractive({ useHandCursor: true });
+              bg.on("pointerover", () => {
+                if (!this.answered) bg.setScale(1.18);
+              });
+              bg.on("pointerout", () => bg.setScale(1.1));
+              const idx = i;
+              bg.on("pointerdown", () => this.selectAnswer(idx));
+
+              const label = this.add
+                .text(x, y, "", {
+                  fontSize: "20px",
+                  fontStyle: "bold",
+                  color: "#fef3c7",
+                  align: "center",
+                })
+                .setOrigin(0.5)
+                .setDepth(11);
+              this.cards.push({ bg, label, index: i });
+              this.cardBgs.push(bg);
+              this.cardLabels.push(label);
+            }
+
+            // Keyboard
+            this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
+            this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
+            this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
+            this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
+
+            // HUD
+            this.createHUD();
+
+            // Timer event
+            this.timerEvent = this.time.addEvent({
+              delay: 1000,
+              callback: () => {
+                if (!this.answered && this.timer > 0) {
+                  this.timer--;
+                  this.updateTimerBar();
+                  if (this.timer <= 0) this.timeUp();
+                }
+              },
+              loop: true,
+            });
+
+            // First question
+            this.nextQuestion();
+          }
+
+          createHUD() {
+            const y = 22;
+            // Score
+            this.add
+              .rectangle(75, y, 130, 32, 0x2d1810, 0.9)
+              .setStrokeStyle(1, 0xfbbf24, 0.3)
+              .setDepth(100);
+            this.scoreText = this.add
+              .text(75, y, "Score: 0", {
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            // Combo
+            this.add
+              .rectangle(205, y, 100, 32, 0x2d1810, 0.9)
+              .setStrokeStyle(1, 0xfb923c, 0.3)
+              .setDepth(100);
+            this.comboText = this.add
+              .text(205, y, "x0", {
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#fb923c",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            // Level
+            this.add
+              .rectangle(315, y, 100, 32, 0x2d1810, 0.9)
+              .setStrokeStyle(1, 0x34d399, 0.3)
+              .setDepth(100);
+            this.levelText = this.add
+              .text(315, y, "Level: 1", {
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#34d399",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            // Dishes
+            this.add
+              .rectangle(435, y, 120, 32, 0x2d1810, 0.9)
+              .setStrokeStyle(1, 0xa78bfa, 0.3)
+              .setDepth(100);
+            this.dishText = this.add
+              .text(435, y, "Dishes: 0", {
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#a78bfa",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            // Lives
+            this.livesText = this.add
+              .text(W - 80, y, "", { fontSize: "22px" })
+              .setOrigin(0.5)
+              .setDepth(101);
+            this.updateLives();
+
+            // Recipe progress
+            this.add
+              .rectangle(W / 2, 300, 200, 18, 0x1a0f05, 0.8)
+              .setStrokeStyle(1, 0xfbbf24, 0.3)
+              .setDepth(100);
+            this.recipeBar = this.add
+              .rectangle(W / 2 - 95, 300, 0, 12, 0xfbbf24, 0.8)
+              .setOrigin(0, 0.5)
+              .setDepth(101);
+            this.recipeName = this.add
+              .text(
+                W / 2,
+                300,
+                this.currentRecipe.emoji + " " + this.currentRecipe.name,
+                { fontSize: "11px", fontStyle: "bold", color: "#fff" },
+              )
+              .setOrigin(0.5)
+              .setDepth(102);
+
+            // Timer bar
+            this.add
+              .rectangle(W / 2, 510, W - 80, 10, 0x1a0f05, 0.8)
+              .setStrokeStyle(1, 0x34d399, 0.2)
+              .setDepth(100);
+            this.timerBar = this.add
+              .rectangle(50, 510, 0, 6, 0x34d399, 0.9)
+              .setOrigin(0, 0.5)
+              .setDepth(101);
+            this.timerBar.width = W - 90;
+
+            // Question panel
+            this.qPanel = this.add
+              .rectangle(W / 2, 415, W - 60, 60, 0x2d1810, 0.9)
+              .setStrokeStyle(1, 0xfbbf24, 0.3)
+              .setDepth(100);
+            this.qText = this.add
+              .text(W / 2, 408, "", {
+                fontSize: "22px",
+                fontStyle: "bold",
+                color: "#fef3c7",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+            this.qContext = this.add
+              .text(W / 2, 430, "", { fontSize: "12px", color: "#d4a574" })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            // Feedback
+            this.feedbackText = this.add
+              .text(W / 2, 350, "", {
+                fontSize: "26px",
+                fontStyle: "bold",
+                color: "#34d399",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setDepth(102)
+              .setAlpha(0);
+          }
+
+          nextQuestion() {
+            this.answered = false;
+            this.timer = this.timerMax;
+            this.updateTimerBar();
+
+            this.currentQ = generateDecimalQ(this.level);
+            this.qText.setText(this.currentQ.stem);
+            this.qContext.setText(this.currentQ.context);
+
+            // Reset card visuals
+            this.currentQ.choices.forEach((c, i) => {
+              if (i < this.cardLabels.length) {
+                this.cardLabels[i].setText(c.text);
+                this.cardBgs[i].setTint(0xffffff).setAlpha(1).setScale(1.1);
+                this.cardLabels[i].setColor("#fef3c7");
+              }
+            });
+
+            // Ingredient animation on conveyor
+            this.spawnIngredientOnBelt();
+          }
+
+          spawnIngredientOnBelt() {
+            const ing = this.add
+              .image(-30, 480, "ingredient")
+              .setScale(1)
+              .setDepth(8);
+            const label = this.add
+              .text(-30, 478, this.currentQ.ingredient.substring(0, 6), {
+                fontSize: "9px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5)
+              .setDepth(9);
+            this.tweens.add({
+              targets: [ing, label],
+              x: W + 40,
+              duration: 6000,
+              onComplete: () => {
+                ing.destroy();
+                label.destroy();
+              },
+            });
+          }
+
+          selectAnswer(idx) {
+            if (this.answered || idx >= this.currentQ.choices.length) return;
+            this.answered = true;
+
+            const choice = this.currentQ.choices[idx];
+
+            if (choice.correct) {
+              sfxCorrect();
+              this.combo++;
+              this.bestCombo = Math.max(this.bestCombo, this.combo);
+              this.questionsCorrect++;
+              this.questionsTotal++;
+
+              const pts = 100 + this.combo * 15 + this.level * 25;
+              this.score += pts;
+
+              this.cardBgs[idx].setTint(0x34d399);
+              this.cardLabels[idx].setColor("#34d399");
+
+              this.showFeedback("Delicious! +" + pts, 0x34d399);
+
+              // Particles
+              this.add
+                .particles(this.cardBgs[idx].x, this.cardBgs[idx].y, "star", {
+                  speed: { min: 50, max: 150 },
+                  lifespan: 600,
+                  scale: { start: 0.8, end: 0 },
+                  tint: [0xfbbf24, 0xfb923c, 0x34d399],
+                  quantity: 12,
+                  emitting: false,
+                })
+                .explode(12);
+
+              // Chef happy
+              this.tweens.add({
+                targets: this.chef,
+                scaleX: 2.2,
+                scaleY: 2.2,
+                duration: 100,
+                yoyo: true,
+                repeat: 1,
+              });
+
+              // Recipe progress
+              this.recipeProgress++;
+              this.recipeBar.width =
+                (this.recipeProgress / this.recipesPerDish) * 190;
+
+              if (this.recipeProgress >= this.recipesPerDish) {
+                this.serveDish();
+              }
+
+              // Level up
+              if (
+                this.questionsCorrect > 0 &&
+                this.questionsCorrect % 5 === 0 &&
+                this.level < 6
+              ) {
+                this.level++;
+                this.levelText.setText("Level: " + this.level);
+                this.timerMax = Math.max(10, 20 - this.level * 2);
+                sfxLevelUp();
+              }
+
+              this.cameras.main.flash(150, 52, 211, 153, false);
+              this.updateHUD();
+              this.time.delayedCall(1000, () => {
+                if (this.lives > 0) this.nextQuestion();
+              });
+            } else {
+              sfxWrong();
+              this.combo = 0;
+              this.lives--;
+              this.questionsTotal++;
+
+              this.cardBgs[idx].setTint(0xef4444);
+              this.cardLabels[idx].setColor("#ef4444");
+
+              // Highlight correct
+              this.currentQ.choices.forEach((c, i) => {
+                if (c.correct) {
+                  this.cardBgs[i].setTint(0x34d399);
+                  this.cardLabels[i].setColor("#34d399");
+                }
+              });
+
+              this.showFeedback(
+                "Not right! Answer: " + fmtDec(this.currentQ.answer),
+                0xef4444,
+              );
+              this.qContext.setText(this.currentQ.hint);
+
+              this.cameras.main.shake(200, 0.008);
+
+              this.add
+                .particles(
+                  this.cardBgs[idx].x,
+                  this.cardBgs[idx].y,
+                  "particle",
+                  {
+                    speed: { min: 30, max: 80 },
+                    lifespan: 400,
+                    tint: 0xef4444,
+                    quantity: 8,
+                    emitting: false,
+                  },
+                )
+                .explode(8);
+
+              this.updateHUD();
+              if (this.lives <= 0) {
+                this.time.delayedCall(1200, () => this.endGame());
+              } else {
+                this.time.delayedCall(1800, () => this.nextQuestion());
+              }
+            }
+          }
+
+          serveDish() {
+            sfxServe();
+            this.dishesServed++;
+            this.score += 200;
+            this.recipeProgress = 0;
+            this.recipeBar.width = 0;
+
+            // Dish served animation
+            this.showFeedback(
+              this.currentRecipe.emoji +
+                " " +
+                this.currentRecipe.name +
+                " Served! +200",
+              0xfbbf24,
+            );
+
+            // Plate animation
+            this.tweens.add({
+              targets: this.plate,
+              scaleX: 2.5,
+              scaleY: 2.5,
+              duration: 200,
+              yoyo: true,
+            });
+
+            // Pick new recipe
+            this.currentRecipe = pick(RECIPES);
+            this.recipeName.setText(
+              this.currentRecipe.emoji + " " + this.currentRecipe.name,
+            );
+            this.dishEmoji.setText(this.currentRecipe.emoji);
+
+            // Firework particles
+            for (let i = 0; i < 3; i++) {
+              const x = rand(200, W - 200),
+                y = rand(100, 300);
+              this.time.delayedCall(i * 200, () => {
+                this.add
+                  .particles(x, y, "star", {
+                    speed: { min: 60, max: 200 },
+                    lifespan: 800,
+                    scale: { start: 1, end: 0 },
+                    tint: [0xfbbf24, 0xfb923c, 0xef4444, 0x34d399],
+                    quantity: 15,
+                    emitting: false,
+                  })
+                  .explode(15);
+              });
+            }
+
+            this.updateHUD();
+          }
+
+          timeUp() {
+            if (this.answered) return;
+            this.answered = true;
+            sfxWrong();
+            this.combo = 0;
+            this.lives--;
+            this.questionsTotal++;
+
+            // Highlight correct
+            this.currentQ.choices.forEach((c, i) => {
+              if (c.correct) {
+                this.cardBgs[i].setTint(0x34d399);
+                this.cardLabels[i].setColor("#34d399");
+              }
+            });
+
+            this.showFeedback(
+              "Time is up! Answer: " + fmtDec(this.currentQ.answer),
+              0xfb923c,
+            );
+            this.updateHUD();
+            if (this.lives <= 0) {
+              this.time.delayedCall(1200, () => this.endGame());
+            } else {
+              this.time.delayedCall(1800, () => this.nextQuestion());
+            }
+          }
+
+          showFeedback(text, color) {
+            const hex = "#" + color.toString(16).padStart(6, "0");
+            this.feedbackText
+              .setText(text)
+              .setColor(hex)
+              .setAlpha(1)
+              .setScale(0.5);
+            this.tweens.add({
+              targets: this.feedbackText,
+              scale: 1,
+              duration: 200,
+              ease: "Back.easeOut",
+            });
+            this.tweens.add({
+              targets: this.feedbackText,
+              alpha: 0,
+              duration: 700,
+              delay: 900,
+            });
+          }
+
+          updateTimerBar() {
+            const pct = this.timer / this.timerMax;
+            this.timerBar.width = (W - 90) * pct;
+            this.timerBar.fillColor =
+              pct > 0.5 ? 0x34d399 : pct > 0.25 ? 0xfbbf24 : 0xef4444;
+          }
+
+          updateLives() {
+            let h = "";
+            for (let i = 0; i < 4; i++) h += i < this.lives ? "❤️" : "🖤";
+            this.livesText.setText(h);
+          }
+
+          updateHUD() {
+            this.scoreText.setText("Score: " + this.score);
+            this.comboText.setText(
+              "x" + this.combo + (this.combo >= 3 ? " 🔥" : ""),
+            );
+            this.levelText.setText("Level: " + this.level);
+            this.dishText.setText("Dishes: " + this.dishesServed);
+            this.updateLives();
+          }
+
+          endGame() {
+            if (this.timerEvent) this.timerEvent.destroy();
+            this.scene.start("Results", {
+              score: this.score,
+              correct: this.questionsCorrect,
+              total: this.questionsTotal,
+              level: this.level,
+              bestCombo: this.bestCombo,
+              dishes: this.dishesServed,
+            });
+          }
+
+          update(time, delta) {
+            // Belt animation
+            this.beltDots.forEach((d) => {
+              d.x += 0.5;
+              if (d.x > W + 10) d.x = -10;
+            });
+          }
+        }
+
+        // ==================== RESULTS ====================
+        class ResultsScene extends Phaser.Scene {
+          constructor() {
+            super("Results");
+          }
+          init(data) {
+            this.d = data;
+          }
+          create() {
+            const d = this.d;
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
+            bg.fillRect(0, 0, W, H);
+
+            const acc = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+            const won = d.dishes >= 3;
+
+            this.add
+              .text(W / 2, 55, won ? "HEAD CHEF!" : "KITCHEN CLOSED", {
+                fontSize: "36px",
+                fontStyle: "bold",
+                color: won ? "#fbbf24" : "#fb923c",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 90, "6.NS.B.3 — Decimal Operations", {
+                fontSize: "14px",
+                color: "#d4a574",
+              })
+              .setOrigin(0.5);
+
+            const stats = [
+              { label: "Score", value: d.score, color: "#fbbf24" },
+              {
+                label: "Correct",
+                value: d.correct + "/" + d.total,
+                color: "#34d399",
+              },
+              { label: "Accuracy", value: acc + "%", color: "#61dafb" },
+              { label: "Level", value: d.level, color: "#a78bfa" },
+              { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
+              { label: "Dishes Served", value: d.dishes, color: "#fbbf24" },
+            ];
+            stats.forEach((s, i) => {
+              const col = i % 3,
+                row = Math.floor(i / 3);
+              const x = W / 2 - 190 + col * 190,
+                y = 150 + row * 95;
+              this.add
+                .rectangle(x, y, 165, 70, 0x2d1810, 0.85)
+                .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
+              this.add
+                .text(x, y - 14, s.label, {
+                  fontSize: "11px",
+                  color: "#d4a574",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 12, String(s.value), {
+                  fontSize: "24px",
+                  fontStyle: "bold",
+                  color: s.color,
+                })
+                .setOrigin(0.5);
+            });
+
+            const badges = [];
+            if (acc >= 90) badges.push("Master Chef");
+            if (acc >= 70) badges.push("Sous Chef");
+            if (d.bestCombo >= 5) badges.push("Combo Cook");
+            if (d.dishes >= 5) badges.push("Kitchen Hero");
+            if (d.level >= 4) badges.push("Advanced");
+            if (!badges.length) badges.push("Keep Cooking!");
+
+            this.add
+              .text(W / 2, 370, "Achievements", {
+                fontSize: "13px",
+                color: "#d4a574",
+              })
+              .setOrigin(0.5);
+            badges.forEach((b, i) => {
+              const bx = W / 2 + (i - (badges.length - 1) / 2) * 130;
+              this.add
+                .rectangle(bx, 400, 115, 28, 0x3d2215, 0.8)
+                .setStrokeStyle(1, 0xfbbf24, 0.5);
+              this.add
+                .text(bx, 400, b, {
+                  fontSize: "11px",
+                  fontStyle: "bold",
+                  color: "#fbbf24",
+                })
+                .setOrigin(0.5);
+            });
+
+            this.add
+              .text(
+                W / 2,
+                455,
+                "Tip: Line up decimal points.\nEstimate first, then compute carefully.",
+                {
+                  fontSize: "13px",
+                  color: "#d4a574",
+                  align: "center",
+                  lineSpacing: 4,
+                },
+              )
+              .setOrigin(0.5);
+
+            const btn = this.add
+              .rectangle(W / 2 - 80, 535, 160, 46, 0xfbbf24)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 - 80, 535, "COOK AGAIN", {
+                fontSize: "17px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
+            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+            btn.on("pointerdown", () => {
+              sfxDing();
+              this.scene.start("Game");
+            });
+
+            const menu = this.add
+              .rectangle(W / 2 + 100, 535, 110, 46, 0x2d1810)
+              .setStrokeStyle(1, 0xfbbf24, 0.5)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 + 100, 535, "MENU", {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5);
+            menu.on("pointerdown", () => this.scene.start("Title"));
+
+            this.input.keyboard.on("keydown-SPACE", () => {
+              sfxDing();
+              this.scene.start("Game");
+            });
+            this.cameras.main.fadeIn(400);
+
+            if (acc >= 70) {
+              for (let i = 0; i < 20; i++) {
+                const e = this.add.text(
+                  rand(50, W - 50),
+                  -20,
+                  pick(["🎂", "🍝", "🥤", "🥘", "🥞", "🍕"]),
+                  { fontSize: "28px" },
+                );
+                this.tweens.add({
+                  targets: e,
+                  y: H + 30,
+                  x: e.x + rand(-60, 60),
+                  angle: 360,
+                  duration: 2500 + rand(0, 1500),
+                  delay: rand(0, 1000),
+                  alpha: 0,
+                });
+              }
+            }
+          }
+        }
+
+        config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
+        new Phaser.Game(config);
+      })();
+    </script>
+  </body>
 </html>

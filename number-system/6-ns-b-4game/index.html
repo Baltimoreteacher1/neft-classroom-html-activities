@@ -1,692 +1,1685 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<title>Factor Factory — 6.NS.B.4</title>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<style>
-:root {
-    --bg: #08090f;
-    --surface: #0f1624;
-    --card: #161d2e;
-    --border: #232f48;
-    --accent: #10b981;
-    --accent2: #38bdf8;
-    --accent3: #f59e0b;
-    --danger: #ef4444;
-    --purple: #a78bfa;
-    --text: #f1f5f9;
-    --muted: #64748b;
-  }
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Treasure Hunter — 6.NS.B.4</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0a14;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      #game-container {
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      "use strict";
+      (() => {
+        /* ============================================================
+   TREASURE HUNTER — 6.NS.B.4
+   Find GCF and LCM to unlock treasure chests.
+   Navigate through a dungeon collecting gold.
+   ============================================================ */
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* === ANIMATED BG === */
-  .bg-particles {
-    position: fixed; inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .bg-particles span {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.04;
-    animation: drift 12s infinite ease-in-out;
-  }
-  @keyframes drift {
-    0%,100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-40px) scale(1.05); }
-  }
-
-  /* === HEADER === */
-  .game-header {
-    position: relative;
-    z-index: 1;
-    background: linear-gradient(180deg, #0d1b3e 0%, #080c1a 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 22px 20px 16px;
-    text-align: center;
-  }
-  .game-badge {
-    display: inline-block;
-    background: rgba(167,139,250,0.15);
-    border: 1px solid rgba(167,139,250,0.3);
-    color: var(--purple);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 4px 14px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-  }
-  .game-header h1 {
-    font-size: clamp(24px,4vw,42px);
-    font-weight: 800;
-    background: linear-gradient(90deg, #38bdf8, #a78bfa, #10b981);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .game-header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
-
-  /* === HUD === */
-  .hud {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding: 14px 20px;
-    position: relative;
-    z-index: 1;
-  }
-  .hud-chip {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 30px;
-    padding: 8px 20px;
-    font-size: 13px;
-    font-weight: 700;
-  }
-  .hud-chip .val { color: var(--accent3); font-size: 18px; margin-left: 6px; }
-  .hud-chip.streak-chip .val { color: var(--accent); }
-  .hud-chip.level-chip  .val { color: var(--purple); }
-
-  /* === MAIN GAME === */
-  #game {
-    max-width: 900px;
-    margin: 0 auto 40px;
-    padding: 0 16px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* === PROMPT CARD === */
-  .prompt-card {
-    background: linear-gradient(135deg, #0d1f3c, #0a1628);
-    border: 1px solid rgba(56,189,248,0.2);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  .prompt-numbers {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .num-bubble {
-    background: rgba(255,255,255,0.06);
-    border: 2px solid rgba(56,189,248,0.3);
-    border-radius: 14px;
-    padding: 14px 28px;
-    font-size: clamp(26px,5vw,40px);
-    font-weight: 800;
-    color: var(--accent2);
-  }
-  .prompt-divider { color: var(--muted); font-size: 20px; font-weight: 700; }
-  .prompt-instruction {
-    color: var(--muted);
-    font-size: 14px;
-    margin-top: 4px;
-    text-align: center;
-  }
-  .prompt-instruction strong { color: var(--accent3); }
-
-  /* === TIMER BAR === */
-  .timer-bar-outer {
-    height: 5px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 10px;
-    overflow: hidden;
-    width: 100%;
-    margin-top: 4px;
-  }
-  .timer-bar-inner {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 10px;
-    transition: width 1s linear;
-  }
-
-  /* === GRID === */
-  .number-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  @media(max-width:520px){ .number-grid { grid-template-columns: repeat(4,1fr); } }
-
-  .tile {
-    background: var(--card);
-    border: 1px solid var(--border);
-    padding: 18px 8px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 20px;
-    font-weight: 700;
-    text-align: center;
-    transition: background 0.15s, border-color 0.15s, transform 0.15s;
-    user-select: none;
-  }
-  .tile:hover {
-    background: rgba(56,189,248,0.12);
-    border-color: var(--accent2);
-    transform: scale(1.05);
-    color: var(--accent2);
-  }
-  .tile.correct {
-    background: rgba(16,185,129,0.2) !important;
-    border-color: var(--accent) !important;
-    color: var(--accent) !important;
-    animation: pulse-correct 0.4s ease;
-  }
-  .tile.wrong {
-    background: rgba(239,68,68,0.18) !important;
-    border-color: var(--danger) !important;
-    color: var(--danger) !important;
-    animation: shake 0.3s ease;
-  }
-  .tile.disabled { pointer-events: none; opacity: 0.4; }
-
-  @keyframes pulse-correct {
-    0%  { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100%{ transform: scale(1); }
-  }
-  @keyframes shake {
-    0%,100%{ transform: translateX(0); }
-    25%    { transform: translateX(-5px); }
-    75%    { transform: translateX(5px); }
-  }
-
-  /* === ANSWER HISTORY === */
-  .history-section {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 16px;
-  }
-  .history-section h3 {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 12px;
-  }
-  .history-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    min-height: 32px;
-  }
-  .history-item {
-    background: rgba(16,185,129,0.1);
-    border: 1px solid rgba(16,185,129,0.3);
-    color: var(--accent);
-    border-radius: 8px;
-    padding: 5px 12px;
-    font-size: 13px;
-    font-weight: 600;
-  }
-  .history-item.miss {
-    background: rgba(239,68,68,0.1);
-    border-color: rgba(239,68,68,0.3);
-    color: var(--danger);
-  }
-
-  /* === CONTROLS === */
-  .controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 12px;
-  }
-  .btn-next {
-    padding: 12px 28px;
-    background: linear-gradient(135deg, var(--accent), #059669);
-    border: none;
-    border-radius: 12px;
-    color: #000;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    font-family: inherit;
-    transition: opacity 0.2s, transform 0.15s;
-    letter-spacing: 0.3px;
-  }
-  .btn-next:hover { opacity: 0.88; transform: scale(1.03); }
-
-  .btn-hint {
-    padding: 12px 22px;
-    background: rgba(167,139,250,0.12);
-    border: 1px solid rgba(167,139,250,0.3);
-    border-radius: 12px;
-    color: var(--purple);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.2s;
-  }
-  .btn-hint:hover { background: rgba(167,139,250,0.22); }
-  .btn-hint:disabled { opacity: 0.35; cursor: not-allowed; }
-
-  /* === HINT BOX === */
-  .hint-box {
-    background: rgba(167,139,250,0.08);
-    border: 1px solid rgba(167,139,250,0.2);
-    border-radius: 12px;
-    padding: 14px 18px;
-    font-size: 13px;
-    color: var(--purple);
-    margin-bottom: 14px;
-    display: none;
-  }
-
-  /* === LEVEL BADGE === */
-  .level-up-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
-  .level-up-overlay.show { display: flex; }
-  .level-up-card {
-    background: linear-gradient(135deg, #0d1b3e, #1a0d3e);
-    border: 2px solid var(--purple);
-    border-radius: 20px;
-    padding: 40px 60px;
-    text-align: center;
-    animation: zoomIn 0.4s ease;
-  }
-  @keyframes zoomIn {
-    from { transform: scale(0.6); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
-  }
-  .level-up-card h2 { font-size: 32px; font-weight: 800; color: var(--purple); }
-  .level-up-card p  { color: var(--muted); margin: 10px 0 20px; font-size: 15px; }
-  .level-up-card button {
-    padding: 12px 30px;
-    background: var(--purple);
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    color: #000;
-  }
-
-  /* === LEADERBOARD MINI === */
-  .leaderboard {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 20px;
-  }
-  .leaderboard h3 {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 12px;
-  }
-  .lb-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 14px;
-  }
-  .lb-row:last-child { border-bottom: none; }
-  .lb-rank { color: var(--accent3); font-weight: 800; width: 24px; }
-  .lb-name { flex: 1; padding-left: 10px; color: var(--muted); }
-  .lb-score { font-weight: 700; color: var(--text); }
-  .lb-row.you .lb-name { color: var(--accent2); font-weight: 600; }
-
-  /* Toast */
-  #toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--accent);
-    color: #000;
-    font-weight: 800;
-    padding: 12px 28px;
-    border-radius: 30px;
-    font-size: 15px;
-    transition: transform 0.35s ease;
-    z-index: 200;
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-
-  .footer {
-    text-align: center;
-    padding: 22px;
-    color: var(--muted);
-    font-size: 12px;
-    border-top: 1px solid var(--border);
-    position: relative;
-    z-index: 1;
-  }
-</style>
-</head>
-<body>
-
-<!-- BG Particles -->
-<div class="bg-particles">
-  <span style="width:400px;height:400px;background:#38bdf8;top:-100px;left:20%;animation-delay:0s"></span>
-  <span style="width:300px;height:300px;background:#a78bfa;bottom:5%;right:10%;animation-delay:4s"></span>
-  <span style="width:200px;height:200px;background:#10b981;top:40%;left:5%;animation-delay:2s"></span>
-</div>
-
-<!-- HEADER -->
-<div class="game-header">
-  <div class="game-badge">6.NS.B.4 — Arcade Mode</div>
-  <h1>⚙️ Factor Factory</h1>
-  <p>Find the GCF — tap the correct tile before time runs out!</p>
-</div>
-
-<!-- HUD -->
-<div class="hud">
-  <div class="hud-chip">Score <span class="val" id="score">0</span></div>
-  <div class="hud-chip streak-chip">Streak <span class="val" id="streak">0</span> 🔥</div>
-  <div class="hud-chip level-chip">Level <span class="val" id="level">1</span></div>
-  <div class="hud-chip">Best <span class="val" id="best">0</span></div>
-</div>
-
-<!-- GAME -->
-<div id="game">
-
-  <!-- Prompt -->
-  <div class="prompt-card">
-    <div class="prompt-numbers">
-      <div class="num-bubble" id="numA">—</div>
-      <div class="prompt-divider">&amp;</div>
-      <div class="num-bubble" id="numB">—</div>
-    </div>
-    <div class="prompt-instruction">Tap the tile that shows the <strong>GCF</strong> of these two numbers</div>
-    <div class="timer-bar-outer"><div class="timer-bar-inner" id="timerBar"></div></div>
-  </div>
-
-  <!-- Hint -->
-  <div class="hint-box" id="hintBox"></div>
-
-  <!-- Grid -->
-  <div class="number-grid" id="grid"></div>
-
-  <!-- Controls -->
-  <div class="controls">
-    <button class="btn-hint" id="hintBtn" onclick="showHint()">💡 Hint (−5 pts)</button>
-    <button class="btn-next" onclick="nextRound()">Next Machine →</button>
-  </div>
-
-  <!-- History -->
-  <div class="history-section">
-    <h3>Round History</h3>
-    <div class="history-list" id="historyList"></div>
-  </div>
-
-  <!-- Leaderboard -->
-  <div class="leaderboard">
-    <h3>🏆 Session Leaderboard</h3>
-    <div id="leaderboard">
-      <div class="lb-row"><div class="lb-rank">1</div><div class="lb-name">Top Player</div><div class="lb-score">150</div></div>
-      <div class="lb-row"><div class="lb-rank">2</div><div class="lb-name">Factor Pro</div><div class="lb-score">120</div></div>
-      <div class="lb-row"><div class="lb-rank">3</div><div class="lb-name">GCF Master</div><div class="lb-score">90</div></div>
-      <div class="lb-row you" id="myRow"><div class="lb-rank">—</div><div class="lb-name">You</div><div class="lb-score" id="myScore">0</div></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- Level Up Overlay -->
-<div class="level-up-overlay" id="levelOverlay">
-  <div class="level-up-card">
-    <div style="font-size:48px;margin-bottom:10px">🎉</div>
-    <h2>Level Up!</h2>
-    <p id="levelMsg">You reached Level 2! Numbers are getting bigger...</p>
-    <button onclick="dismissLevel()">Keep Going</button>
-  </div>
-</div>
-
-<div id="toast">✅ Correct!</div>
-
-<div class="footer">Factor Factory · 6.NS.B.4 Arcade · GCF Mastery Game</div>
-
-<script>
-  let score = 0, streak = 0, level = 1, best = 0;
-  let targetA, targetB, gcf;
-  let hintUsed = false;
-  let timerInterval = null;
-  let timerSeconds = 15;
-  let roundAnswered = false;
-  let history = [];
-
-  const LEVELS = [
-    { min:10, max:30, time:15 },
-    { min:15, max:50, time:12 },
-    { min:20, max:80, time:10 },
-    { min:30, max:100, time:8  },
-  ];
-
-  function gcd(a, b) {
-    while (b) { [a,b] = [b, a % b]; }
-    return a;
-  }
-
-  function getLevelCfg() {
-    return LEVELS[Math.min(level - 1, LEVELS.length - 1)];
-  }
-
-  function nextRound() {
-    clearInterval(timerInterval);
-    roundAnswered = false;
-    hintUsed = false;
-
-    const cfg = getLevelCfg();
-    targetA = Math.floor(Math.random() * (cfg.max - cfg.min) + cfg.min);
-    targetB = Math.floor(Math.random() * (cfg.max - cfg.min) + cfg.min);
-    gcf = gcd(targetA, targetB);
-
-    document.getElementById('numA').textContent = targetA;
-    document.getElementById('numB').textContent = targetB;
-    document.getElementById('hintBox').style.display = 'none';
-    document.getElementById('hintBtn').disabled = false;
-
-    generateGrid();
-    startTimer(cfg.time);
-  }
-
-  function startTimer(seconds) {
-    timerSeconds = seconds;
-    const bar = document.getElementById('timerBar');
-    bar.style.transition = 'none';
-    bar.style.width = '100%';
-
-    setTimeout(() => {
-      bar.style.transition = 'width ' + seconds + 's linear';
-      bar.style.width = '0%';
-    }, 50);
-
-    timerInterval = setInterval(() => {
-      timerSeconds--;
-      if (timerSeconds <= 0) {
-        clearInterval(timerInterval);
-        if (!roundAnswered) {
-          timeUp();
+        // --- Audio ---
+        let audioCtx = null;
+        function getAudio() {
+          if (!audioCtx)
+            try {
+              audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          return audioCtx;
         }
-      }
-    }, 1000);
-  }
+        function playTone(f, d, t = "sine", v = 0.05) {
+          const c = getAudio();
+          if (!c) return;
+          if (c.state === "suspended") c.resume();
+          const o = c.createOscillator(),
+            g = c.createGain();
+          o.type = t;
+          o.frequency.value = f;
+          g.gain.setValueAtTime(0.0001, c.currentTime);
+          g.gain.linearRampToValueAtTime(v, c.currentTime + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + d);
+          o.connect(g).connect(c.destination);
+          o.start();
+          o.stop(c.currentTime + d + 0.01);
+        }
+        function sfxUnlock() {
+          playTone(523, 0.1);
+          setTimeout(() => playTone(659, 0.1), 70);
+          setTimeout(() => playTone(784, 0.12), 140);
+          setTimeout(() => playTone(1047, 0.15), 220);
+        }
+        function sfxWrong() {
+          playTone(200, 0.12, "sawtooth", 0.03);
+          setTimeout(() => playTone(160, 0.15, "sawtooth", 0.03), 80);
+        }
+        function sfxCoin() {
+          playTone(1200, 0.08, "sine", 0.03);
+          setTimeout(() => playTone(1500, 0.06), 50);
+        }
+        function sfxStep() {
+          playTone(100, 0.04, "square", 0.02);
+        }
+        function sfxTrap() {
+          playTone(150, 0.2, "sawtooth", 0.04);
+          setTimeout(() => playTone(120, 0.15, "sawtooth", 0.03), 80);
+        }
+        function sfxLevelUp() {
+          [440, 554, 659, 880].forEach((f, i) =>
+            setTimeout(() => playTone(f, 0.12, "sine", 0.04), i * 80),
+          );
+        }
+        function sfxChest() {
+          playTone(660, 0.15, "triangle", 0.04);
+          setTimeout(() => playTone(880, 0.12, "triangle", 0.04), 100);
+        }
+        function sfxKey() {
+          playTone(1000, 0.1);
+          setTimeout(() => playTone(1200, 0.08), 60);
+        }
 
-  function timeUp() {
-    roundAnswered = true;
-    streak = 0;
-    updateHUD();
-    addHistory(targetA, targetB, gcf, false);
-    showToast('⏱ Time's up! GCF was ' + gcf);
-    document.querySelectorAll('.tile').forEach(t => t.classList.add('disabled'));
-  }
+        // --- Math ---
+        function rand(a, b) {
+          return Math.floor(Math.random() * (b - a + 1)) + a;
+        }
+        function pick(a) {
+          return a[rand(0, a.length - 1)];
+        }
+        function shuffle(a) {
+          const r = [...a];
+          for (let i = r.length - 1; i > 0; i--) {
+            const j = rand(0, i);
+            [r[i], r[j]] = [r[j], r[i]];
+          }
+          return r;
+        }
 
-  function generateGrid() {
-    const grid = document.getElementById('grid');
-    grid.innerHTML = '';
+        function gcd(a, b) {
+          a = Math.abs(a);
+          b = Math.abs(b);
+          while (b) {
+            [a, b] = [b, a % b];
+          }
+          return a || 1;
+        }
+        function lcm(a, b) {
+          return Math.abs(a * b) / gcd(a, b);
+        }
 
-    // Guarantee GCF appears 1-2 times
-    let nums = [gcf];
-    if (Math.random() > 0.4) nums.push(gcf);
+        function factorsOf(n) {
+          const f = [];
+          for (let i = 1; i <= n; i++) {
+            if (n % i === 0) f.push(i);
+          }
+          return f;
+        }
+        function commonFactors(a, b) {
+          return factorsOf(a).filter((f) => b % f === 0);
+        }
 
-    while (nums.length < 24) {
-      let n = Math.floor(Math.random() * 30) + 1;
-      nums.push(n);
-    }
+        function generateGCFQ(level) {
+          let a, b, answer;
+          if (level <= 2) {
+            a = rand(6, 24);
+            b = rand(6, 24);
+            // Ensure non-trivial GCF
+            const g = rand(2, 6);
+            a = g * rand(2, 5);
+            b = g * rand(2, 5);
+          } else if (level <= 4) {
+            const g = rand(3, 12);
+            a = g * rand(2, 8);
+            b = g * rand(2, 8);
+          } else {
+            const g = rand(4, 15);
+            a = g * rand(3, 10);
+            b = g * rand(3, 10);
+          }
+          if (a === b) b += rand(2, 6) * gcd(a, b);
+          answer = gcd(a, b);
 
-    // Shuffle
-    nums = nums.sort(() => Math.random() - 0.5).slice(0, 24);
+          const cf = commonFactors(a, b);
+          const hint =
+            "Factors of " +
+            a +
+            ": " +
+            factorsOf(a).join(", ") +
+            "\nFactors of " +
+            b +
+            ": " +
+            factorsOf(b).join(", ") +
+            "\nCommon: " +
+            cf.join(", ") +
+            " → GCF = " +
+            answer;
 
-    nums.forEach(n => {
-      const div = document.createElement('div');
-      div.className = 'tile';
-      div.textContent = n;
-      div.onclick = () => selectTile(n, div);
-      grid.appendChild(div);
-    });
-  }
+          const wrongs = new Set();
+          wrongs.add(lcm(a, b)); // LCM confusion
+          wrongs.add(answer * 2);
+          wrongs.add(Math.max(1, answer - 1));
+          wrongs.add(answer + 2);
+          wrongs.add(a);
+          wrongs.add(b);
+          wrongs.add(a * b);
+          wrongs.delete(answer);
 
-  function selectTile(n, el) {
-    if (roundAnswered) return;
+          const wrongArr = [...wrongs]
+            .filter((w) => w > 0 && w !== answer && w <= a * b)
+            .slice(0, 3);
+          while (wrongArr.length < 3) wrongArr.push(answer + rand(3, 15));
 
-    if (n === gcf) {
-      roundAnswered = true;
-      clearInterval(timerInterval);
-      el.classList.add('correct');
+          return {
+            a,
+            b,
+            answer,
+            type: "GCF",
+            stem: "GCF of " + a + " and " + b,
+            prompt: "Find the Greatest Common Factor",
+            hint,
+            choices: shuffle([
+              { text: String(answer), correct: true },
+              ...wrongArr
+                .slice(0, 3)
+                .map((w) => ({ text: String(w), correct: false })),
+            ]),
+          };
+        }
 
-      const bonus = hintUsed ? 5 : 10;
-      const streakBonus = streak >= 2 ? 5 : 0;
-      streak++;
-      score += bonus + streakBonus;
-      if (score > best) best = score;
+        function generateLCMQ(level) {
+          let a, b, answer;
+          if (level <= 2) {
+            a = rand(2, 8);
+            b = rand(2, 8);
+          } else if (level <= 4) {
+            a = rand(3, 12);
+            b = rand(3, 12);
+          } else {
+            a = rand(4, 15);
+            b = rand(4, 15);
+          }
+          if (a === b) b = a + rand(1, 4);
+          answer = lcm(a, b);
 
-      updateHUD();
-      addHistory(targetA, targetB, gcf, true);
+          const hint =
+            "Multiples of " +
+            a +
+            ": " +
+            Array.from({ length: 8 }, (_, i) => a * (i + 1)).join(", ") +
+            "\nMultiples of " +
+            b +
+            ": " +
+            Array.from({ length: 8 }, (_, i) => b * (i + 1)).join(", ") +
+            "\nLCM = " +
+            answer;
 
-      const msg = streak >= 3
-        ? '🔥 ' + streak + '-Streak! +'  + (bonus + streakBonus) + ' pts'
-        : '✅ Correct! +' + (bonus + streakBonus) + ' pts';
-      showToast(msg);
+          const wrongs = new Set();
+          wrongs.add(gcd(a, b)); // GCF confusion
+          wrongs.add(a * b); // Just multiplied
+          wrongs.add(answer + a);
+          wrongs.add(answer + b);
+          wrongs.add(Math.max(1, answer - a));
+          wrongs.add(answer * 2);
+          wrongs.delete(answer);
 
-      // Level up every 50 pts
-      const newLevel = Math.floor(score / 50) + 1;
-      if (newLevel > level) {
-        level = newLevel;
-        setTimeout(() => triggerLevelUp(), 600);
-      }
+          const wrongArr = [...wrongs]
+            .filter((w) => w > 0 && w !== answer)
+            .slice(0, 3);
+          while (wrongArr.length < 3) wrongArr.push(answer + rand(2, 20));
 
-      updateLeaderboard();
+          return {
+            a,
+            b,
+            answer,
+            type: "LCM",
+            stem: "LCM of " + a + " and " + b,
+            prompt: "Find the Least Common Multiple",
+            hint,
+            choices: shuffle([
+              { text: String(answer), correct: true },
+              ...wrongArr
+                .slice(0, 3)
+                .map((w) => ({ text: String(w), correct: false })),
+            ]),
+          };
+        }
 
-    } else {
-      el.classList.add('wrong');
-      el.classList.add('disabled');
-      streak = 0;
-      updateHUD();
-      showToast('✘ Not quite — keep looking!');
-    }
-  }
+        function generateQuestion(level) {
+          // Alternate GCF and LCM, with some randomness
+          return Math.random() > 0.45
+            ? generateGCFQ(level)
+            : generateLCMQ(level);
+        }
 
-  function showHint() {
-    const btn = document.getElementById('hintBtn');
-    btn.disabled = true;
-    hintUsed = true;
-    score = Math.max(0, score - 5);
-    updateHUD();
+        // --- Phaser ---
+        const W = 960,
+          H = 640;
+        const config = {
+          type: Phaser.AUTO,
+          parent: "game-container",
+          width: W,
+          height: H,
+          backgroundColor: "#0a0a14",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          physics: {
+            default: "arcade",
+            arcade: { gravity: { y: 0 }, debug: false },
+          },
+          scene: [],
+        };
 
-    const factors = [];
-    for (let i = 1; i <= Math.min(targetA, targetB); i++) {
-      if (targetA % i === 0 && targetB % i === 0) factors.push(i);
-    }
-    const hintBox = document.getElementById('hintBox');
-    hintBox.style.display = 'block';
-    hintBox.innerHTML = '💡 <strong>Hint:</strong> Common factors of ' + targetA + ' and ' + targetB + ': <strong>' + factors.join(', ') + '</strong> — the GCF is the largest one.';
-  }
+        // ==================== BOOT ====================
+        class BootScene extends Phaser.Scene {
+          constructor() {
+            super("Boot");
+          }
+          create() {
+            const g = this.make.graphics({ add: false });
 
-  function addHistory(a, b, g, correct) {
-    history.unshift({ a, b, g, correct });
-    if (history.length > 8) history.pop();
-    renderHistory();
-  }
+            // Player (adventurer)
+            g.clear();
+            g.fillStyle(0xfbbf24);
+            g.fillRoundedRect(8, 0, 16, 10, 3); // hat
+            g.fillStyle(0xfcd9b6);
+            g.fillCircle(16, 14, 8); // head
+            g.fillStyle(0x3b82f6);
+            g.fillRoundedRect(8, 22, 16, 16, 3); // body
+            g.fillStyle(0x1e3a5f);
+            g.fillRect(8, 36, 7, 10);
+            g.fillRect(17, 36, 7, 10); // legs
+            g.fillStyle(0x333333);
+            g.fillCircle(13, 13, 2);
+            g.fillCircle(19, 13, 2); // eyes
+            g.generateTexture("player", 32, 48);
 
-  function renderHistory() {
-    const list = document.getElementById('historyList');
-    list.innerHTML = history.map(h =>
-      '<div class="history-item ' + (h.correct ? '' : 'miss') + '">' +
-      'GCF(' + h.a + ',' + h.b + ')=' + h.g + ' ' + (h.correct ? '✔' : '✘') +
-      '</div>'
-    ).join('');
-  }
+            // Chest (closed)
+            g.clear();
+            g.fillStyle(0x92400e);
+            g.fillRoundedRect(0, 8, 36, 22, 4);
+            g.fillStyle(0x78350f);
+            g.fillRoundedRect(0, 2, 36, 14, 4);
+            g.fillStyle(0xfbbf24);
+            g.fillRect(14, 6, 8, 6);
+            g.fillRect(16, 12, 4, 4);
+            g.generateTexture("chest", 36, 30);
 
-  function updateHUD() {
-    document.getElementById('score').textContent = score;
-    document.getElementById('streak').textContent = streak;
-    document.getElementById('level').textContent = level;
-    document.getElementById('best').textContent = best;
-  }
+            // Chest (open)
+            g.clear();
+            g.fillStyle(0x92400e);
+            g.fillRoundedRect(0, 12, 36, 18, 4);
+            g.fillStyle(0x78350f);
+            g.fillRoundedRect(0, 0, 36, 14, 4);
+            g.fillStyle(0xfbbf24);
+            g.fillCircle(18, 20, 6);
+            g.fillStyle(0xfcd34d);
+            g.fillCircle(12, 22, 4);
+            g.fillCircle(24, 22, 4);
+            g.generateTexture("chest_open", 36, 30);
 
-  function updateLeaderboard() {
-    document.getElementById('myScore').textContent = score;
-    document.getElementById('myRow').querySelector('.lb-rank').textContent = score > 150 ? '1' : score > 120 ? '2' : score > 90 ? '3' : '4';
-  }
+            // Key
+            g.clear();
+            g.fillStyle(0xfbbf24);
+            g.fillCircle(6, 6, 6);
+            g.fillStyle(0x0a0a14);
+            g.fillCircle(6, 6, 3);
+            g.fillStyle(0xfbbf24);
+            g.fillRect(10, 4, 14, 4);
+            g.fillRect(18, 8, 4, 4);
+            g.fillRect(22, 8, 4, 4);
+            g.generateTexture("key", 26, 14);
 
-  function triggerLevelUp() {
-    document.getElementById('levelMsg').textContent =
-      'You reached Level ' + level + '! ' +
-      (level === 2 ? 'Numbers are getting bigger...' :
-       level === 3 ? 'Timer is faster now. Stay sharp!' :
-       level === 4 ? 'Expert mode! Max difficulty!' :
-       'Incredible! You are a Factor Master!');
-    document.getElementById('levelOverlay').classList.add('show');
-  }
+            // Coin
+            g.clear();
+            g.fillStyle(0xfbbf24);
+            g.fillCircle(8, 8, 8);
+            g.fillStyle(0xfcd34d);
+            g.fillCircle(7, 7, 4);
+            g.generateTexture("coin", 16, 16);
 
-  function dismissLevel() {
-    document.getElementById('levelOverlay').classList.remove('show');
-  }
+            // Torch
+            g.clear();
+            g.fillStyle(0x78350f);
+            g.fillRect(3, 10, 6, 16);
+            g.fillStyle(0xfb923c);
+            g.fillCircle(6, 8, 6);
+            g.fillStyle(0xfbbf24);
+            g.fillCircle(6, 6, 4);
+            g.fillStyle(0xffffff, 0.5);
+            g.fillCircle(5, 5, 2);
+            g.generateTexture("torch", 12, 26);
 
-  let toastTimer;
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
-  }
+            // Wall brick
+            g.clear();
+            g.fillStyle(0x1e293b);
+            g.fillRect(0, 0, 48, 48);
+            g.lineStyle(1, 0x334155, 0.4);
+            g.strokeRect(1, 1, 46, 22);
+            g.strokeRect(1, 25, 22, 22);
+            g.strokeRect(25, 25, 22, 22);
+            g.generateTexture("wall", 48, 48);
 
-  nextRound();
-</script>
+            // Floor
+            g.clear();
+            g.fillStyle(0x1a1a2e);
+            g.fillRect(0, 0, 48, 48);
+            g.lineStyle(1, 0x252540, 0.3);
+            g.strokeRect(1, 1, 46, 46);
+            g.generateTexture("floor", 48, 48);
 
-</body>
+            // Trap (spikes)
+            g.clear();
+            for (let i = 0; i < 4; i++) {
+              g.fillStyle(0x6b7280);
+              g.fillTriangle(i * 10 + 2, 20, i * 10 + 7, 4, i * 10 + 12, 20);
+            }
+            g.fillStyle(0x4b5563);
+            g.fillRect(0, 18, 48, 6);
+            g.generateTexture("trap", 48, 24);
+
+            // Star particle
+            g.clear();
+            g.fillStyle(0xfbbf24);
+            g.fillCircle(4, 4, 4);
+            g.generateTexture("star", 8, 8);
+
+            // Particle
+            g.clear();
+            g.fillStyle(0xffffff);
+            g.fillCircle(3, 3, 3);
+            g.generateTexture("particle", 6, 6);
+
+            // Answer stone
+            g.clear();
+            g.fillStyle(0x1e293b, 0.92);
+            g.fillRoundedRect(0, 0, 110, 50, 10);
+            g.lineStyle(2, 0xfbbf24, 0.4);
+            g.strokeRoundedRect(0, 0, 110, 50, 10);
+            g.generateTexture("stone", 110, 50);
+
+            // Ghost enemy
+            g.clear();
+            g.fillStyle(0x818cf8, 0.6);
+            g.fillRoundedRect(2, 0, 20, 18, 8);
+            g.fillStyle(0x818cf8, 0.6);
+            for (let i = 0; i < 3; i++)
+              g.fillTriangle(2 + i * 8, 18, 6 + i * 8, 26, 10 + i * 8, 18);
+            g.fillStyle(0xffffff);
+            g.fillCircle(9, 8, 3);
+            g.fillCircle(17, 8, 3);
+            g.fillStyle(0x1e1b4b);
+            g.fillCircle(10, 9, 1.5);
+            g.fillCircle(18, 9, 1.5);
+            g.generateTexture("ghost", 24, 26);
+
+            this.scene.start("Title");
+          }
+        }
+
+        // ==================== TITLE ====================
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+          create() {
+            // Dungeon bg
+            for (let x = 0; x < W; x += 48) {
+              for (let y = 0; y < H; y += 48) {
+                this.add
+                  .image(
+                    x + 24,
+                    y + 24,
+                    Math.random() > 0.15 ? "floor" : "wall",
+                  )
+                  .setAlpha(0.4);
+              }
+            }
+
+            // Torches
+            for (let i = 0; i < 6; i++) {
+              const t = this.add.image(80 + i * 160, 100, "torch").setScale(2);
+              this.tweens.add({
+                targets: t,
+                scaleX: 2.1,
+                scaleY: 2.1,
+                alpha: 0.8,
+                duration: 400 + rand(0, 200),
+                yoyo: true,
+                repeat: -1,
+              });
+            }
+
+            // Glow overlay
+            const glow = this.add.ellipse(
+              W / 2,
+              H / 2,
+              600,
+              400,
+              0xfbbf24,
+              0.03,
+            );
+            this.tweens.add({
+              targets: glow,
+              scaleX: 1.1,
+              scaleY: 1.1,
+              alpha: 0.02,
+              duration: 3000,
+              yoyo: true,
+              repeat: -1,
+            });
+
+            this.add
+              .text(W / 2, 90, "TREASURE\nHUNTER", {
+                fontSize: "52px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                align: "center",
+                lineSpacing: 6,
+                stroke: "#78350f",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+
+            this.add
+              .text(W / 2, 190, "6.NS.B.4 — GCF and LCM", {
+                fontSize: "16px",
+                color: "#94a3b8",
+              })
+              .setOrigin(0.5);
+
+            // Character and chests
+            this.add.image(W / 2 - 100, 300, "chest").setScale(2.5);
+            const player = this.add.image(W / 2, 290, "player").setScale(2.5);
+            this.tweens.add({
+              targets: player,
+              y: 285,
+              duration: 1500,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+            this.add.image(W / 2 + 100, 300, "chest").setScale(2.5);
+
+            // Floating keys/coins
+            for (let i = 0; i < 5; i++) {
+              const k = this.add
+                .image(
+                  rand(150, W - 150),
+                  rand(240, 350),
+                  pick(["key", "coin"]),
+                )
+                .setScale(1.5 + Math.random())
+                .setAlpha(0.6);
+              this.tweens.add({
+                targets: k,
+                y: k.y - 10,
+                duration: 1200 + rand(0, 500),
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+                delay: rand(0, 500),
+              });
+            }
+
+            const lines = [
+              "Explore the dungeon and unlock treasure chests!",
+              "Find GCF and LCM to open each lock.",
+              "Move through rooms, avoid traps and ghosts.",
+              "Collect keys and gold along the way.",
+              "Arrow keys / WASD / Touch to move, click answers",
+            ];
+            lines.forEach((t, i) =>
+              this.add
+                .text(W / 2, 380 + i * 22, t, {
+                  fontSize: "13px",
+                  color: "#94a3b8",
+                })
+                .setOrigin(0.5),
+            );
+
+            const btn = this.add
+              .rectangle(W / 2, 560, 220, 50, 0xfbbf24)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2, 560, "ENTER DUNGEON", {
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
+            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+            btn.on("pointerdown", () => {
+              getAudio();
+              sfxChest();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+
+            this.input.keyboard.on("keydown-SPACE", () => {
+              getAudio();
+              sfxChest();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+            this.input.keyboard.on("keydown-ENTER", () => {
+              getAudio();
+              sfxChest();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+
+            this.cameras.main.fadeIn(400);
+          }
+        }
+
+        // ==================== GAME ====================
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("Game");
+          }
+
+          create() {
+            this.cameras.main.fadeIn(300);
+
+            // State
+            this.score = 0;
+            this.combo = 0;
+            this.bestCombo = 0;
+            this.lives = 4;
+            this.level = 1;
+            this.gold = 0;
+            this.keys = 0;
+            this.chestsOpened = 0;
+            this.room = 1;
+            this.questionsCorrect = 0;
+            this.questionsTotal = 0;
+            this.currentQ = null;
+            this.answered = false;
+            this.playerSpeed = 200;
+
+            // Draw dungeon floor
+            for (let x = 0; x < W; x += 48) {
+              for (let y = 0; y < H; y += 48) {
+                this.add.image(x + 24, y + 24, "floor").setAlpha(0.5);
+              }
+            }
+
+            // Dungeon walls (top and bottom borders)
+            for (let x = 0; x < W; x += 48) {
+              this.add.image(x + 24, 24, "wall").setAlpha(0.7);
+              this.add.image(x + 24, H - 24, "wall").setAlpha(0.7);
+            }
+            // Side walls
+            for (let y = 48; y < H - 48; y += 48) {
+              this.add.image(24, y + 24, "wall").setAlpha(0.7);
+              this.add.image(W - 24, y + 24, "wall").setAlpha(0.7);
+            }
+
+            // Torches with flickering light
+            this.torches = [];
+            const torchPositions = [
+              [80, 70],
+              [W - 80, 70],
+              [80, H - 70],
+              [W - 80, H - 70],
+              [W / 2, 70],
+            ];
+            torchPositions.forEach(([tx, ty]) => {
+              const t = this.add
+                .image(tx, ty, "torch")
+                .setScale(1.5)
+                .setDepth(3);
+              const glow = this.add
+                .ellipse(tx, ty + 10, 80, 60, 0xfb923c, 0.06)
+                .setDepth(1);
+              this.tweens.add({
+                targets: [t],
+                scaleX: 1.55,
+                scaleY: 1.55,
+                duration: 300 + rand(0, 200),
+                yoyo: true,
+                repeat: -1,
+              });
+              this.tweens.add({
+                targets: glow,
+                scaleX: 1.2,
+                scaleY: 1.2,
+                alpha: 0.03,
+                duration: 500 + rand(0, 300),
+                yoyo: true,
+                repeat: -1,
+              });
+              this.torches.push({ torch: t, glow });
+            });
+
+            // Ambient particles (dust motes)
+            this.add.particles(0, 0, "particle", {
+              x: { min: 60, max: W - 60 },
+              y: { min: 60, max: H - 60 },
+              lifespan: 5000,
+              speedX: { min: -5, max: 5 },
+              speedY: { min: -8, max: -2 },
+              scale: { start: 0.3, end: 0 },
+              alpha: { start: 0.2, end: 0 },
+              tint: 0xfbbf24,
+              frequency: 600,
+              quantity: 1,
+            });
+
+            // Player
+            this.player = this.physics.add
+              .image(W / 2, H / 2, "player")
+              .setScale(1.5)
+              .setDepth(10);
+            this.player.setCollideWorldBounds(true);
+            this.player.body.setSize(20, 30).setOffset(6, 10);
+
+            // Player light
+            this.playerLight = this.add
+              .ellipse(0, 0, 120, 100, 0xfbbf24, 0.04)
+              .setDepth(9);
+
+            // Groups
+            this.chests = this.physics.add.group();
+            this.coins = this.physics.add.group();
+            this.keyItems = this.physics.add.group();
+            this.traps = this.physics.add.group();
+            this.ghosts = this.physics.add.group();
+
+            // Spawn room contents
+            this.buildRoom();
+
+            // Controls
+            this.cursors = this.input.keyboard.createCursorKeys();
+            this.wasd = {
+              up: this.input.keyboard.addKey("W"),
+              down: this.input.keyboard.addKey("S"),
+              left: this.input.keyboard.addKey("A"),
+              right: this.input.keyboard.addKey("D"),
+            };
+
+            // Touch
+            this.touchTarget = null;
+            this.input.on("pointerdown", (p) => {
+              // Only use for movement if not clicking an answer card
+              if (p.worldY < 440)
+                this.touchTarget = { x: p.worldX, y: p.worldY };
+            });
+            this.input.on("pointermove", (p) => {
+              if (p.isDown && p.worldY < 440)
+                this.touchTarget = { x: p.worldX, y: p.worldY };
+            });
+            this.input.on("pointerup", () => (this.touchTarget = null));
+
+            // Collisions
+            this.physics.add.overlap(
+              this.player,
+              this.chests,
+              (p, c) => this.hitChest(c),
+              null,
+              this,
+            );
+            this.physics.add.overlap(
+              this.player,
+              this.coins,
+              (p, c) => this.collectCoin(c),
+              null,
+              this,
+            );
+            this.physics.add.overlap(
+              this.player,
+              this.keyItems,
+              (p, k) => this.collectKey(k),
+              null,
+              this,
+            );
+            this.physics.add.overlap(
+              this.player,
+              this.traps,
+              (p, t) => this.hitTrap(t),
+              null,
+              this,
+            );
+            this.physics.add.overlap(
+              this.player,
+              this.ghosts,
+              (p, g) => this.hitGhost(g),
+              null,
+              this,
+            );
+
+            // HUD
+            this.createHUD();
+
+            // Answer panel (hidden initially)
+            this.answerPanel = this.add
+              .rectangle(W / 2, H - 80, W - 40, 140, 0x0a0a14, 0.92)
+              .setStrokeStyle(2, 0xfbbf24, 0.4)
+              .setDepth(50)
+              .setVisible(false);
+            this.answerTitle = this.add
+              .text(W / 2, H - 140, "", {
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setDepth(51)
+              .setVisible(false);
+            this.answerStem = this.add
+              .text(W / 2, H - 115, "", { fontSize: "16px", color: "#e5e7eb" })
+              .setOrigin(0.5)
+              .setDepth(51)
+              .setVisible(false);
+
+            // Answer buttons
+            this.answerBtns = [];
+            this.answerLabels = [];
+            for (let i = 0; i < 4; i++) {
+              const x = 120 + i * 200;
+              const y = H - 55;
+              const bg = this.add
+                .image(x, y, "stone")
+                .setScale(1)
+                .setDepth(52)
+                .setInteractive({ useHandCursor: true })
+                .setVisible(false);
+              bg.on("pointerover", () => {
+                if (!this.answered) bg.setScale(1.08);
+              });
+              bg.on("pointerout", () => bg.setScale(1));
+              const idx = i;
+              bg.on("pointerdown", () => this.selectAnswer(idx));
+              const label = this.add
+                .text(x, y, "", {
+                  fontSize: "18px",
+                  fontStyle: "bold",
+                  color: "#fef3c7",
+                })
+                .setOrigin(0.5)
+                .setDepth(53)
+                .setVisible(false);
+              this.answerBtns.push(bg);
+              this.answerLabels.push(label);
+            }
+
+            // Keyboard answer
+            this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
+            this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
+            this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
+            this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
+
+            // Feedback
+            this.feedbackText = this.add
+              .text(W / 2, H / 2 - 40, "", {
+                fontSize: "26px",
+                fontStyle: "bold",
+                color: "#34d399",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setDepth(60)
+              .setAlpha(0);
+
+            // Ghost spawner
+            this.time.addEvent({
+              delay: 5000,
+              callback: () => this.spawnGhost(),
+              loop: true,
+            });
+          }
+
+          buildRoom() {
+            this.chests.clear(true, true);
+            this.coins.clear(true, true);
+            this.keyItems.clear(true, true);
+            this.traps.clear(true, true);
+            this.ghosts.clear(true, true);
+
+            // Scatter chests (1-3 per room)
+            const numChests = Math.min(3, 1 + Math.floor(this.room / 2));
+            for (let i = 0; i < numChests; i++) {
+              const cx = rand(120, W - 120);
+              const cy = rand(120, 350);
+              const chest = this.physics.add
+                .image(cx, cy, "chest")
+                .setScale(1.5)
+                .setDepth(5);
+              chest.body.setImmovable(true);
+              chest.setData("opened", false);
+              this.chests.add(chest);
+
+              // Glow around chest
+              const glow = this.add
+                .ellipse(cx, cy + 5, 60, 40, 0xfbbf24, 0.04)
+                .setDepth(4);
+              this.tweens.add({
+                targets: glow,
+                scaleX: 1.2,
+                alpha: 0.02,
+                duration: 1000,
+                yoyo: true,
+                repeat: -1,
+              });
+              chest.setData("glow", glow);
+            }
+
+            // Scatter coins
+            for (let i = 0; i < rand(4, 8); i++) {
+              const cx = rand(80, W - 80);
+              const cy = rand(80, 400);
+              const coin = this.physics.add
+                .image(cx, cy, "coin")
+                .setScale(1)
+                .setDepth(4);
+              this.tweens.add({
+                targets: coin,
+                y: cy - 5,
+                duration: 800,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+                delay: rand(0, 400),
+              });
+              this.coins.add(coin);
+            }
+
+            // Keys
+            for (let i = 0; i < rand(1, 2); i++) {
+              const kx = rand(100, W - 100);
+              const ky = rand(100, 380);
+              const key = this.physics.add
+                .image(kx, ky, "key")
+                .setScale(1.3)
+                .setDepth(4);
+              this.tweens.add({
+                targets: key,
+                angle: 15,
+                duration: 600,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+              this.keyItems.add(key);
+            }
+
+            // Traps
+            for (let i = 0; i < rand(1, 2 + Math.floor(this.level / 2)); i++) {
+              const tx = rand(100, W - 100);
+              const ty = rand(120, 380);
+              const trap = this.physics.add
+                .image(tx, ty, "trap")
+                .setScale(1.2)
+                .setDepth(3)
+                .setAlpha(0.5);
+              trap.body.setImmovable(true);
+              this.traps.add(trap);
+            }
+
+            // Initial ghosts
+            if (this.level >= 2) {
+              this.spawnGhost();
+            }
+          }
+
+          spawnGhost() {
+            if (this.ghosts.getLength() >= 3 + this.level) return;
+            const side = rand(0, 3);
+            let gx, gy;
+            if (side === 0) {
+              gx = rand(80, W - 80);
+              gy = 60;
+            } else if (side === 1) {
+              gx = rand(80, W - 80);
+              gy = H - 60;
+            } else if (side === 2) {
+              gx = 60;
+              gy = rand(80, H - 80);
+            } else {
+              gx = W - 60;
+              gy = rand(80, H - 80);
+            }
+
+            const ghost = this.physics.add
+              .image(gx, gy, "ghost")
+              .setScale(1.5)
+              .setDepth(6)
+              .setAlpha(0.7);
+            ghost.setData("speed", 40 + this.level * 10);
+            this.tweens.add({
+              targets: ghost,
+              alpha: 0.4,
+              duration: 800,
+              yoyo: true,
+              repeat: -1,
+            });
+            this.ghosts.add(ghost);
+          }
+
+          createHUD() {
+            const y = 24;
+            this.add
+              .rectangle(70, y, 120, 30, 0x0a0a14, 0.9)
+              .setStrokeStyle(1, 0xfbbf24, 0.3)
+              .setDepth(100);
+            this.scoreText = this.add
+              .text(70, y, "Score: 0", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            this.add
+              .rectangle(190, y, 90, 30, 0x0a0a14, 0.9)
+              .setStrokeStyle(1, 0xfb923c, 0.3)
+              .setDepth(100);
+            this.comboText = this.add
+              .text(190, y, "x0", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#fb923c",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            this.add
+              .rectangle(290, y, 90, 30, 0x0a0a14, 0.9)
+              .setStrokeStyle(1, 0xa78bfa, 0.3)
+              .setDepth(100);
+            this.levelText = this.add
+              .text(290, y, "Room: 1", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#a78bfa",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            this.add
+              .rectangle(390, y, 100, 30, 0x0a0a14, 0.9)
+              .setStrokeStyle(1, 0xfbbf24, 0.3)
+              .setDepth(100);
+            this.goldText = this.add
+              .text(390, y, "Gold: 0", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            this.add
+              .rectangle(500, y, 100, 30, 0x0a0a14, 0.9)
+              .setStrokeStyle(1, 0x61dafb, 0.3)
+              .setDepth(100);
+            this.keyText = this.add
+              .text(500, y, "Keys: 0", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#61dafb",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            this.add
+              .rectangle(615, y, 110, 30, 0x0a0a14, 0.9)
+              .setStrokeStyle(1, 0x34d399, 0.3)
+              .setDepth(100);
+            this.chestText = this.add
+              .text(615, y, "Chests: 0", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#34d399",
+              })
+              .setOrigin(0.5)
+              .setDepth(101);
+
+            this.livesText = this.add
+              .text(W - 70, y, "", { fontSize: "20px" })
+              .setOrigin(0.5)
+              .setDepth(101);
+            this.updateLives();
+          }
+
+          hitChest(chest) {
+            if (chest.getData("opened") || this.answerPanel.visible) return;
+
+            // Need a key to attempt
+            if (this.keys <= 0) {
+              this.showFeedback("Need a key!", 0xfb923c);
+              return;
+            }
+
+            sfxChest();
+            this.keys--;
+
+            // Show question
+            this.currentQ = generateQuestion(this.level);
+            this.answered = false;
+            this.showAnswerPanel(chest);
+          }
+
+          showAnswerPanel(chest) {
+            this.answerPanel.setVisible(true);
+            this.answerTitle
+              .setVisible(true)
+              .setText(this.currentQ.prompt + " (" + this.currentQ.type + ")");
+            this.answerStem.setVisible(true).setText(this.currentQ.stem);
+
+            this.currentQ.choices.forEach((c, i) => {
+              if (i < 4) {
+                this.answerBtns[i]
+                  .setVisible(true)
+                  .setTint(0xffffff)
+                  .setScale(1);
+                this.answerLabels[i]
+                  .setVisible(true)
+                  .setText(c.text)
+                  .setColor("#fef3c7");
+              }
+            });
+
+            // Store reference to chest
+            this.activeChest = chest;
+
+            // Pause player movement during answer
+            this.player.body.setVelocity(0, 0);
+          }
+
+          hideAnswerPanel() {
+            this.answerPanel.setVisible(false);
+            this.answerTitle.setVisible(false);
+            this.answerStem.setVisible(false);
+            this.answerBtns.forEach((b) => b.setVisible(false));
+            this.answerLabels.forEach((l) => l.setVisible(false));
+          }
+
+          selectAnswer(idx) {
+            if (
+              this.answered ||
+              !this.answerPanel.visible ||
+              idx >= this.currentQ.choices.length
+            )
+              return;
+            this.answered = true;
+
+            const choice = this.currentQ.choices[idx];
+            const chest = this.activeChest;
+
+            if (choice.correct) {
+              sfxUnlock();
+              this.combo++;
+              this.bestCombo = Math.max(this.bestCombo, this.combo);
+              this.questionsCorrect++;
+              this.questionsTotal++;
+
+              const pts = 150 + this.combo * 20 + this.level * 30;
+              this.score += pts;
+              this.gold += rand(10, 25);
+              this.chestsOpened++;
+
+              this.answerBtns[idx].setTint(0x34d399);
+              this.answerLabels[idx].setColor("#34d399");
+
+              // Open chest
+              if (chest) {
+                chest.setData("opened", true);
+                chest.setTexture("chest_open");
+                const glow = chest.getData("glow");
+                if (glow) {
+                  this.tweens.add({
+                    targets: glow,
+                    alpha: 0.15,
+                    scaleX: 2,
+                    scaleY: 2,
+                    duration: 500,
+                    onComplete: () => {
+                      this.tweens.add({
+                        targets: glow,
+                        alpha: 0,
+                        duration: 500,
+                        onComplete: () => glow.destroy(),
+                      });
+                    },
+                  });
+                }
+              }
+
+              this.showFeedback("Unlocked! +" + pts, 0x34d399);
+
+              // Treasure burst
+              this.add
+                .particles(
+                  chest ? chest.x : W / 2,
+                  chest ? chest.y : 200,
+                  "star",
+                  {
+                    speed: { min: 80, max: 250 },
+                    lifespan: 800,
+                    scale: { start: 1, end: 0 },
+                    tint: [0xfbbf24, 0xfcd34d, 0xfb923c],
+                    quantity: 20,
+                    emitting: false,
+                  },
+                )
+                .explode(20);
+
+              this.cameras.main.flash(200, 52, 211, 153);
+              this.cameras.main.shake(100, 0.004);
+
+              // Level up every 3 chests
+              if (this.chestsOpened > 0 && this.chestsOpened % 3 === 0) {
+                this.level++;
+                this.room++;
+                sfxLevelUp();
+                this.time.delayedCall(800, () => {
+                  this.hideAnswerPanel();
+                  this.showFeedback(
+                    "Room " + this.room + "! Deeper into the dungeon!",
+                    0xa78bfa,
+                  );
+                  this.buildRoom();
+                  this.player.setPosition(W / 2, H / 2);
+                });
+                this.updateHUD();
+                return;
+              }
+
+              this.updateHUD();
+              this.time.delayedCall(800, () => this.hideAnswerPanel());
+            } else {
+              sfxWrong();
+              this.combo = 0;
+              this.lives--;
+              this.questionsTotal++;
+
+              this.answerBtns[idx].setTint(0xef4444);
+              this.answerLabels[idx].setColor("#ef4444");
+
+              // Highlight correct
+              this.currentQ.choices.forEach((c, i) => {
+                if (c.correct) {
+                  this.answerBtns[i].setTint(0x34d399);
+                  this.answerLabels[i].setColor("#34d399");
+                }
+              });
+
+              this.showFeedback(
+                "Wrong! Answer: " + this.currentQ.answer,
+                0xef4444,
+              );
+              this.cameras.main.shake(200, 0.008);
+
+              this.add
+                .particles(
+                  this.answerBtns[idx].x,
+                  this.answerBtns[idx].y,
+                  "particle",
+                  {
+                    speed: { min: 30, max: 80 },
+                    lifespan: 400,
+                    tint: 0xef4444,
+                    quantity: 8,
+                    emitting: false,
+                  },
+                )
+                .explode(8);
+
+              // Give back the key since they didn't open it
+              this.keys++;
+
+              this.updateHUD();
+              if (this.lives <= 0) {
+                this.time.delayedCall(1200, () => {
+                  this.hideAnswerPanel();
+                  this.endGame();
+                });
+              } else {
+                this.time.delayedCall(1500, () => this.hideAnswerPanel());
+              }
+            }
+          }
+
+          collectCoin(coin) {
+            sfxCoin();
+            this.gold += 5;
+            this.score += 10;
+            this.add
+              .particles(coin.x, coin.y, "star", {
+                speed: { min: 20, max: 60 },
+                lifespan: 300,
+                scale: { start: 0.5, end: 0 },
+                tint: 0xfbbf24,
+                quantity: 4,
+                emitting: false,
+              })
+              .explode(4);
+            coin.destroy();
+            this.updateHUD();
+          }
+
+          collectKey(key) {
+            sfxKey();
+            this.keys++;
+            this.showFeedback("Key found!", 0x61dafb);
+            this.add
+              .particles(key.x, key.y, "star", {
+                speed: { min: 30, max: 100 },
+                lifespan: 500,
+                scale: { start: 0.8, end: 0 },
+                tint: [0xfbbf24, 0x61dafb],
+                quantity: 8,
+                emitting: false,
+              })
+              .explode(8);
+            key.destroy();
+            this.updateHUD();
+          }
+
+          hitTrap(trap) {
+            sfxTrap();
+            this.lives--;
+            this.combo = 0;
+
+            // Knockback
+            const angle = Phaser.Math.Angle.Between(
+              trap.x,
+              trap.y,
+              this.player.x,
+              this.player.y,
+            );
+            this.player.body.velocity.x = Math.cos(angle) * 250;
+            this.player.body.velocity.y = Math.sin(angle) * 250;
+
+            this.tweens.add({
+              targets: this.player,
+              alpha: 0.3,
+              duration: 80,
+              yoyo: true,
+              repeat: 4,
+            });
+            this.cameras.main.shake(200, 0.008);
+            this.showFeedback("Trap! -1 life", 0xef4444);
+
+            trap.destroy();
+            this.updateHUD();
+            if (this.lives <= 0)
+              this.time.delayedCall(800, () => this.endGame());
+          }
+
+          hitGhost(ghost) {
+            sfxTrap();
+            this.lives--;
+            this.combo = 0;
+
+            const angle = Phaser.Math.Angle.Between(
+              ghost.x,
+              ghost.y,
+              this.player.x,
+              this.player.y,
+            );
+            this.player.body.velocity.x = Math.cos(angle) * 200;
+            this.player.body.velocity.y = Math.sin(angle) * 200;
+
+            this.tweens.add({
+              targets: this.player,
+              alpha: 0.3,
+              duration: 80,
+              yoyo: true,
+              repeat: 4,
+            });
+            this.cameras.main.shake(150, 0.006);
+            this.showFeedback("Ghost! -1 life", 0x818cf8);
+
+            ghost.destroy();
+            this.updateHUD();
+            if (this.lives <= 0)
+              this.time.delayedCall(800, () => this.endGame());
+          }
+
+          showFeedback(text, color) {
+            const hex = "#" + color.toString(16).padStart(6, "0");
+            this.feedbackText
+              .setText(text)
+              .setColor(hex)
+              .setAlpha(1)
+              .setScale(0.5)
+              .setY(H / 2 - 40);
+            this.tweens.add({
+              targets: this.feedbackText,
+              scale: 1,
+              duration: 200,
+              ease: "Back.easeOut",
+            });
+            this.tweens.add({
+              targets: this.feedbackText,
+              alpha: 0,
+              y: H / 2 - 70,
+              duration: 700,
+              delay: 900,
+            });
+          }
+
+          updateLives() {
+            let h = "";
+            for (let i = 0; i < 4; i++) h += i < this.lives ? "❤️" : "🖤";
+            this.livesText.setText(h);
+          }
+
+          updateHUD() {
+            this.scoreText.setText("Score: " + this.score);
+            this.comboText.setText(
+              "x" + this.combo + (this.combo >= 3 ? " 🔥" : ""),
+            );
+            this.levelText.setText("Room: " + this.room);
+            this.goldText.setText("Gold: " + this.gold);
+            this.keyText.setText("Keys: " + this.keys);
+            this.chestText.setText("Chests: " + this.chestsOpened);
+            this.updateLives();
+          }
+
+          endGame() {
+            this.physics.pause();
+            this.scene.start("Results", {
+              score: this.score,
+              correct: this.questionsCorrect,
+              total: this.questionsTotal,
+              level: this.level,
+              bestCombo: this.bestCombo,
+              gold: this.gold,
+              keys: this.keys,
+              chests: this.chestsOpened,
+              room: this.room,
+            });
+          }
+
+          update(time, delta) {
+            if (this.lives <= 0) return;
+
+            // Movement (disabled during answer panel)
+            if (!this.answerPanel.visible) {
+              const speed = this.playerSpeed;
+              let vx = 0,
+                vy = 0;
+              if (this.cursors.left.isDown || this.wasd.left.isDown)
+                vx = -speed;
+              if (this.cursors.right.isDown || this.wasd.right.isDown)
+                vx = speed;
+              if (this.cursors.up.isDown || this.wasd.up.isDown) vy = -speed;
+              if (this.cursors.down.isDown || this.wasd.down.isDown) vy = speed;
+
+              if (this.touchTarget) {
+                const dx = this.touchTarget.x - this.player.x;
+                const dy = this.touchTarget.y - this.player.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist > 15) {
+                  vx = (dx / dist) * speed;
+                  vy = (dy / dist) * speed;
+                }
+              }
+
+              this.player.body.velocity.x = Phaser.Math.Linear(
+                this.player.body.velocity.x,
+                vx,
+                0.2,
+              );
+              this.player.body.velocity.y = Phaser.Math.Linear(
+                this.player.body.velocity.y,
+                vy,
+                0.2,
+              );
+
+              if (vx < -10) this.player.setFlipX(true);
+              else if (vx > 10) this.player.setFlipX(false);
+            }
+
+            // Player light
+            this.playerLight.setPosition(this.player.x, this.player.y);
+
+            // Ghost AI: chase player slowly
+            this.ghosts.getChildren().forEach((g) => {
+              const sp = g.getData("speed") || 50;
+              const angle = Phaser.Math.Angle.Between(
+                g.x,
+                g.y,
+                this.player.x,
+                this.player.y,
+              );
+              g.body.velocity.x = Math.cos(angle) * sp;
+              g.body.velocity.y = Math.sin(angle) * sp;
+              g.setFlipX(g.body.velocity.x < 0);
+            });
+
+            // Check if room is cleared (all chests opened or no chests left)
+            const unopened = this.chests
+              .getChildren()
+              .filter((c) => !c.getData("opened"));
+            if (
+              unopened.length === 0 &&
+              this.chests.getLength() > 0 &&
+              !this.answerPanel.visible
+            ) {
+              this.room++;
+              this.showFeedback("Room cleared! Next room...", 0x34d399);
+              this.time.delayedCall(1000, () => {
+                this.buildRoom();
+                this.player.setPosition(W / 2, H / 2);
+                this.updateHUD();
+              });
+              // Clear current chests to prevent re-trigger
+              this.chests.clear(true, true);
+            }
+          }
+        }
+
+        // ==================== RESULTS ====================
+        class ResultsScene extends Phaser.Scene {
+          constructor() {
+            super("Results");
+          }
+          init(data) {
+            this.d = data;
+          }
+          create() {
+            const d = this.d;
+
+            // Dungeon floor bg
+            for (let x = 0; x < W; x += 48) {
+              for (let y = 0; y < H; y += 48) {
+                this.add.image(x + 24, y + 24, "floor").setAlpha(0.3);
+              }
+            }
+
+            const acc = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+            const won = d.chests >= 6;
+
+            this.add
+              .text(W / 2, 50, won ? "TREASURE MASTER!" : "DUNGEON REPORT", {
+                fontSize: "34px",
+                fontStyle: "bold",
+                color: won ? "#fbbf24" : "#a78bfa",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 85, "6.NS.B.4 — GCF and LCM", {
+                fontSize: "14px",
+                color: "#94a3b8",
+              })
+              .setOrigin(0.5);
+
+            const stats = [
+              { label: "Score", value: d.score, color: "#fbbf24" },
+              {
+                label: "Correct",
+                value: d.correct + "/" + d.total,
+                color: "#34d399",
+              },
+              { label: "Accuracy", value: acc + "%", color: "#61dafb" },
+              { label: "Room Reached", value: d.room, color: "#a78bfa" },
+              { label: "Chests Opened", value: d.chests, color: "#fbbf24" },
+              { label: "Gold", value: d.gold, color: "#fcd34d" },
+              { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
+              { label: "Keys Found", value: d.keys, color: "#61dafb" },
+            ];
+
+            stats.forEach((s, i) => {
+              const col = i % 4,
+                row = Math.floor(i / 4);
+              const x = W / 2 - 280 + col * 190,
+                y = 140 + row * 90;
+              this.add
+                .rectangle(x, y, 160, 65, 0x0a0a14, 0.85)
+                .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
+              this.add
+                .text(x, y - 12, s.label, {
+                  fontSize: "11px",
+                  color: "#94a3b8",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 12, String(s.value), {
+                  fontSize: "22px",
+                  fontStyle: "bold",
+                  color: s.color,
+                })
+                .setOrigin(0.5);
+            });
+
+            const badges = [];
+            if (acc >= 90) badges.push("Factor Master");
+            if (acc >= 70) badges.push("Smart Explorer");
+            if (d.bestCombo >= 5) badges.push("Combo Hunter");
+            if (d.chests >= 6) badges.push("Treasure King");
+            if (d.gold >= 100) badges.push("Gold Hoarder");
+            if (d.room >= 4) badges.push("Deep Dungeon");
+            if (!badges.length) badges.push("Keep Exploring!");
+
+            this.add
+              .text(W / 2, 355, "Achievements", {
+                fontSize: "13px",
+                color: "#94a3b8",
+              })
+              .setOrigin(0.5);
+            badges.forEach((b, i) => {
+              const bx = W / 2 + (i - (badges.length - 1) / 2) * 120;
+              this.add
+                .rectangle(bx, 385, 110, 26, 0x1a0d3e, 0.8)
+                .setStrokeStyle(1, 0xfbbf24, 0.5);
+              this.add
+                .text(bx, 385, b, {
+                  fontSize: "10px",
+                  fontStyle: "bold",
+                  color: "#fbbf24",
+                })
+                .setOrigin(0.5);
+            });
+
+            this.add
+              .text(
+                W / 2,
+                430,
+                "GCF: List factors of both numbers, find the largest common one.\nLCM: List multiples of both numbers, find the smallest common one.",
+                {
+                  fontSize: "13px",
+                  color: "#94a3b8",
+                  align: "center",
+                  lineSpacing: 4,
+                },
+              )
+              .setOrigin(0.5);
+
+            const btn = this.add
+              .rectangle(W / 2 - 80, 510, 160, 46, 0xfbbf24)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 - 80, 510, "EXPLORE AGAIN", {
+                fontSize: "17px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
+            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+            btn.on("pointerdown", () => {
+              sfxChest();
+              this.scene.start("Game");
+            });
+
+            const menu = this.add
+              .rectangle(W / 2 + 100, 510, 110, 46, 0x0a0a14)
+              .setStrokeStyle(1, 0xfbbf24, 0.5)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 + 100, 510, "MENU", {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5);
+            menu.on("pointerdown", () => this.scene.start("Title"));
+
+            this.input.keyboard.on("keydown-SPACE", () => {
+              sfxChest();
+              this.scene.start("Game");
+            });
+            this.cameras.main.fadeIn(400);
+
+            if (acc >= 70) {
+              for (let i = 0; i < 25; i++) {
+                const s = this.add
+                  .image(rand(50, W - 50), -20, pick(["coin", "key", "star"]))
+                  .setScale(1 + Math.random())
+                  .setTint(pick([0xfbbf24, 0xfcd34d, 0xa78bfa]));
+                this.tweens.add({
+                  targets: s,
+                  y: H + 20,
+                  x: s.x + rand(-80, 80),
+                  angle: 360,
+                  duration: 2200 + rand(0, 1500),
+                  delay: rand(0, 1000),
+                  alpha: 0,
+                });
+              }
+            }
+          }
+        }
+
+        config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
+        new Phaser.Game(config);
+      })();
+    </script>
+  </body>
 </html>

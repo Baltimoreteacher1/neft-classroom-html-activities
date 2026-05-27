@@ -1,1723 +1,1404 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Fraction Forge: 6.NS.A.1 Flagship</title>
-  <style>
-    :root{
-      --bg:#07111f;
-      --bg2:#0d1c33;
-      --panel:rgba(10,20,38,.88);
-      --panel2:rgba(14,26,49,.94);
-      --card:rgba(255,255,255,.06);
-      --line:rgba(255,255,255,.12);
-      --text:#eef4ff;
-      --muted:#b9c8ea;
-      --cyan:#51d7ff;
-      --violet:#9f7aea;
-      --green:#34d399;
-      --gold:#fbbf24;
-      --red:#fb7185;
-      --shadow:0 20px 60px rgba(0,0,0,.35);
-      --radius:22px;
-      --radius-sm:16px;
-      --grad:linear-gradient(135deg,#43c6ff,#8b5cf6);
-      --good:linear-gradient(135deg,#34d399,#22c55e);
-      --warn:linear-gradient(135deg,#fbbf24,#f59e0b);
-      --bad:linear-gradient(135deg,#fb7185,#f43f5e);
-      --font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:
-      radial-gradient(circle at 15% 10%,rgba(81,215,255,.16),transparent 24%),
-      radial-gradient(circle at 85% 0%,rgba(159,122,234,.18),transparent 24%),
-      radial-gradient(circle at 10% 90%,rgba(52,211,153,.12),transparent 22%),
-      linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);font-family:var(--font);overflow-x:hidden}
-    body.shake{animation:shake .22s linear 1}
-    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)}}
-    @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(81,215,255,.24)}50%{box-shadow:0 0 0 14px rgba(81,215,255,0)}}
-    @keyframes floatUp{0%{transform:translateY(0) scale(.75);opacity:0}20%{opacity:1}100%{transform:translateY(-40px) scale(1.3);opacity:0}}
-    @keyframes glow{0%,100%{filter:drop-shadow(0 0 0 rgba(251,191,36,0))}50%{filter:drop-shadow(0 0 12px rgba(251,191,36,.4))}}
-    .hidden{display:none!important}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    .app{width:min(1360px,calc(100vw - 20px));margin:10px auto 24px;display:grid;grid-template-columns:320px minmax(0,1fr);gap:14px;animation:rise .4s ease}
-    .panel,.main{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(10px)}
-    .panel{padding:14px;position:sticky;top:10px;height:fit-content}
-    .main{padding:14px;position:relative;overflow:hidden;min-height:84vh}
-    .eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:7px}
-    .title-main{font-size:clamp(1.4rem,2.5vw,2.2rem);font-weight:950;line-height:1;letter-spacing:-.03em;margin:0}
-    .sub{color:var(--muted);line-height:1.45}
-    .topbar{display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px}
-    .hud{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;min-height:84px;position:relative;overflow:hidden}
-    .hud:after{content:"";position:absolute;right:-20px;bottom:-26px;width:120px;height:120px;background:radial-gradient(circle,rgba(81,215,255,.12),transparent 65%)}
-    .value{font-size:1.42rem;font-weight:900;line-height:1.05}
-    .small{font-size:.88rem;color:var(--muted);margin-top:6px;line-height:1.35}
-    .meter{margin-top:10px;height:11px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
-    .meter>span{display:block;height:100%;width:0%;background:var(--grad);border-radius:999px;transition:width .2s ease}
-    .stack{display:grid;gap:10px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px}
-    .pill-row{display:flex;flex-wrap:wrap;gap:8px}
-    .pill{padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);font-size:.84rem;color:var(--muted)}
-    .quest{display:grid;grid-template-columns:1.05fr .95fr;gap:12px}
-    .arena,.side{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;padding:12px}
-    .toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-    .btn-row{display:flex;flex-wrap:wrap;gap:8px}
-    button{font:inherit}
-    .btn{border:none;border-radius:14px;padding:11px 14px;font-weight:800;color:white;background:var(--grad);cursor:pointer;box-shadow:0 12px 28px rgba(67,198,255,.12);transition:transform .14s ease,filter .14s ease,opacity .14s ease}
-    .btn:hover,.btn:focus-visible{transform:translateY(-1px);filter:brightness(1.05);outline:none}
-    .btn.secondary{background:rgba(255,255,255,.06);border:1px solid var(--line);box-shadow:none}
-    .btn.good{background:var(--good)}
-    .btn.warn{background:var(--warn);color:#19212f}
-    .btn.bad{background:var(--bad)}
-    .banner{display:none;border:1px solid var(--line);border-radius:18px;padding:12px;background:linear-gradient(135deg,rgba(81,215,255,.16),rgba(159,122,234,.1));margin-bottom:12px}
-    .banner.show{display:block;animation:rise .22s ease}
-    .boss-panel{display:grid;grid-template-columns:118px 1fr;gap:14px;align-items:center;border:1px solid var(--line);border-radius:20px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));margin-bottom:12px}
-    .orb{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;font-size:2rem;font-weight:950;border:1px solid rgba(255,255,255,.16);background:
-      radial-gradient(circle at 30% 30%,rgba(255,255,255,.3),transparent 24%),
-      radial-gradient(circle at 50% 50%,rgba(81,215,255,.35),rgba(139,92,246,.18) 58%,rgba(255,255,255,.04) 59%);animation:pulse 1.8s ease infinite}
-    .orb.boss{background:
-      radial-gradient(circle at 30% 30%,rgba(255,255,255,.3),transparent 24%),
-      radial-gradient(circle at 50% 50%,rgba(251,191,36,.45),rgba(244,63,94,.18) 58%,rgba(255,255,255,.04) 59%);animation:pulse 1.5s ease infinite,glow 1.7s ease infinite}
-    .enemy-name{font-size:1.18rem;font-weight:950}
-    .bar-label{display:flex;justify-content:space-between;color:var(--muted);font-size:.84rem;margin-bottom:5px}
-    .bar{height:13px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}
-    .bar>span{display:block;height:100%;width:100%;border-radius:999px;transition:width .22s ease}
-    .hp>span{background:var(--bad)}
-    .focus>span{background:var(--grad)}
-    .task-card{border:1px solid var(--line);border-radius:22px;padding:16px;background:linear-gradient(180deg,rgba(12,20,38,.98),rgba(17,27,52,.95))}
-    .task-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-    .task-tag{padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);font-size:.82rem;color:var(--muted)}
-    .problem{font-size:clamp(1.38rem,2.5vw,2rem);font-weight:950;line-height:1.08;letter-spacing:-.03em;margin:8px 0}
-    .context{color:var(--muted);line-height:1.5;margin-bottom:12px}
-    .strategy{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .strategy .step-pill{padding:9px 11px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-weight:800;font-size:.9rem}
-    .mc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .answer{border:1px solid var(--line);border-radius:18px;padding:14px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));color:var(--text);cursor:pointer;text-align:left;min-height:92px;transition:transform .14s ease,border-color .14s ease,background .14s ease}
-    .answer:hover,.answer:focus-visible{transform:translateY(-2px);border-color:rgba(81,215,255,.45);outline:none}
-    .answer.correct{background:linear-gradient(180deg,rgba(52,211,153,.2),rgba(34,197,94,.08));border-color:rgba(52,211,153,.7)}
-    .answer.wrong{background:linear-gradient(180deg,rgba(251,113,133,.18),rgba(244,63,94,.08));border-color:rgba(251,113,133,.7)}
-    .answer-main{font-size:1.2rem;font-weight:950;margin-bottom:6px}
-    .answer-sub{font-size:.9rem;color:var(--muted);line-height:1.3}
-    .drop-zone-wrap{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:center;margin-top:10px}
-    .drop-zone{min-height:68px;border:2px dashed rgba(255,255,255,.2);border-radius:18px;padding:10px;display:grid;place-items:center;background:rgba(255,255,255,.03);text-align:center;font-weight:900}
-    .drop-zone.filled{border-style:solid;border-color:rgba(81,215,255,.55);background:rgba(81,215,255,.08)}
-    .chip-bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .chip{padding:10px 12px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.04));border:1px solid var(--line);font-weight:900;cursor:grab;user-select:none}
-    .chip:active{cursor:grabbing}
-    .input-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    .mini-card{border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(255,255,255,.04)}
-    input[type="number"],input[type="text"]{width:100%;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);padding:10px 12px;font:inherit}
-    input::placeholder{color:#9fb1da}
-    .explain{display:grid;gap:8px;margin-top:12px}
-    .exp-step{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);line-height:1.45}
-    .visual{min-height:260px;border:1px solid var(--line);border-radius:18px;padding:12px;background:
-      linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)),
-      radial-gradient(circle at 20% 20%,rgba(81,215,255,.1),transparent 35%);overflow:hidden}
-    .caption{color:var(--muted);font-size:.9rem;line-height:1.45;margin-top:8px}
-    .coach{line-height:1.5;color:var(--muted)}
-    .map{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-    .node{min-height:82px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);display:grid;place-items:center;text-align:center;padding:8px}
-    .node.done{background:linear-gradient(180deg,rgba(52,211,153,.18),rgba(34,197,94,.08));border-color:rgba(52,211,153,.5)}
-    .node.active{background:linear-gradient(180deg,rgba(81,215,255,.18),rgba(159,122,234,.08));border-color:rgba(81,215,255,.6);animation:pulse 1.6s ease infinite}
-    .node.locked{opacity:.55}
-    .achievements{display:grid;gap:8px}
-    .ach{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.04);display:flex;justify-content:space-between;gap:8px;align-items:center}
-    .ach.locked{opacity:.55}
-    .log{display:grid;gap:8px;max-height:210px;overflow:auto}
-    .log-item{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.04);color:var(--muted);font-size:.92rem;line-height:1.4}
-    .log-item strong{color:var(--text)}
-    .overlay,.modal{position:absolute;inset:0;display:grid;place-items:center;padding:14px;background:linear-gradient(180deg,rgba(8,12,22,.82),rgba(7,10,18,.92));backdrop-filter:blur(10px);z-index:20}
-    .overlay-card,.modal-card{width:min(920px,100%);border-radius:28px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(13,20,39,.97),rgba(10,16,30,.98));padding:22px;box-shadow:var(--shadow)}
-    .overlay-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:950;line-height:.98;letter-spacing:-.03em;margin:0 0 10px}
-    .start-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:14px;margin-top:12px}
-    .modes{display:grid;gap:10px}
-    .mode{border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.04);padding:14px;cursor:pointer;transition:transform .14s ease,border-color .14s ease}
-    .mode:hover,.mode:focus-visible{transform:translateY(-2px);border-color:rgba(81,215,255,.55);outline:none}
-    .mode.active{background:linear-gradient(180deg,rgba(81,215,255,.18),rgba(159,122,234,.08));border-color:rgba(81,215,255,.7)}
-    .mode h4{margin:0 0 4px;font-size:1.05rem}
-    .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .kpi{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);padding:12px}
-    .kpi .n{font-size:1.45rem;font-weight:950}
-    .particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
-    .particle{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1),rgba(81,215,255,.7));opacity:0;animation:floatUp .85s ease-out forwards}
-    .toast-wrap{position:fixed;right:12px;bottom:12px;display:grid;gap:8px;z-index:100;width:min(360px,calc(100vw - 24px))}
-    .toast{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(14,20,38,.98),rgba(10,15,28,.98));padding:12px 14px;box-shadow:var(--shadow);animation:rise .2s ease}
-    .toast.good{border-color:rgba(52,211,153,.55)}
-    .toast.warn{border-color:rgba(251,191,36,.55)}
-    .toast.bad{border-color:rgba(251,113,133,.55)}
-    .toast strong{display:block;margin-bottom:4px}
-    .kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:8px;padding:2px 8px;background:rgba(255,255,255,.06);font-weight:900}
-    .footer-note{margin-top:10px;font-size:.84rem;color:var(--muted);text-align:center}
-    .print-only{display:none}
-    @media (max-width:1120px){
-      .app{grid-template-columns:1fr}
-      .panel{position:static}
-      .quest{grid-template-columns:1fr}
-      .topbar{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .start-grid{grid-template-columns:1fr}
-    }
-    @media (max-width:760px){
-      .topbar,.input-grid,.mc-grid{grid-template-columns:1fr}
-      .boss-panel{grid-template-columns:1fr}
-      .map{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .drop-zone-wrap{grid-template-columns:1fr;justify-items:stretch}
-      .drop-zone-wrap .sym{display:none}
-    }
-    @media (prefers-reduced-motion:reduce){
-      *,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-    }
-    @media print{
-      body{background:white!important;color:black!important}
-      .panel,.overlay,.modal,.toast-wrap,.btn,.particles{display:none!important}
-      .app{width:100%;display:block;margin:0}
-      .main,.arena,.side,.card,.hud,.task-card,.log-item,.mini-card{background:white!important;color:black!important;border:1px solid #999!important;box-shadow:none!important}
-      .print-only{display:block}
-      .small,.sub,.caption,.coach,.log-item,.eyebrow,.context{color:#333!important}
-    }
-  </style>
-</head>
-<body>
-  <div class="app">
-    <aside class="panel">
-      <div class="eyebrow">Fraction Forge Flagship</div>
-      <div class="value" id="playerTitle">Apprentice Divider</div>
-      <div class="small">Commercial-grade mastery game for <strong>6.NS.A.1</strong>: divide fractions by fractions and solve word problems.</div>
-      <div class="meter"><span id="xpBar"></span></div>
-
-      <div class="pill-row" style="margin-top:10px">
-        <div class="pill" id="modePill">Mode: Standard</div>
-        <div class="pill" id="hintPill">Hints: Off</div>
-        <div class="pill" id="soundPill">Sound: On</div>
-        <div class="pill" id="themePill">Engine: Flagship</div>
-      </div>
-
-      <div class="stack" style="margin-top:12px">
-        <div class="card">
-          <div class="eyebrow">Adaptive Tutor</div>
-          <div class="coach" id="coachText">The game will watch your errors and adjust support, difficulty, and feedback.</div>
-        </div>
-
-        <div class="card">
-          <div class="eyebrow">Mastery Snapshot</div>
-          <div class="coach">
-            <div><strong>Accuracy:</strong> <span id="accText">0%</span></div>
-            <div><strong>Current streak:</strong> <span id="streakText">0</span></div>
-            <div><strong>Best streak:</strong> <span id="bestStreakText">0</span></div>
-            <div><strong>Skill focus:</strong> <span id="focusText">Build confidence</span></div>
-            <div><strong>Misconception:</strong> <span id="misText">None yet</span></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="eyebrow">Quest Map</div>
-          <div class="map" id="questMap"></div>
-        </div>
-
-        <div class="card">
-          <div class="eyebrow">Achievements</div>
-          <div class="achievements" id="achievements"></div>
-        </div>
-
-        <div class="card">
-          <div class="eyebrow">Battle Log</div>
-          <div class="log" id="battleLog"></div>
-        </div>
-      </div>
-
-      <div class="footer-note">
-        Keyboard-friendly: <span class="kbd">Tab</span> move · <span class="kbd">Enter</span> select · <span class="kbd">Esc</span> close panels
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="particles" id="particles"></div>
-
-      <div class="topbar">
-        <div class="hud">
-          <div class="eyebrow">Level & XP</div>
-          <div class="value">Lv <span id="levelText">1</span> · <span id="xpText">0</span> XP</div>
-          <div class="small">Progress grows with correct answers, streaks, and boss clears.</div>
-        </div>
-        <div class="hud">
-          <div class="eyebrow">Forge Energy</div>
-          <div class="value"><span id="energyText">5</span> ⚡</div>
-          <div class="small">Lose energy on misses. Streaks and perfect phases can restore it.</div>
-        </div>
-        <div class="hud">
-          <div class="eyebrow">Guardians Broken</div>
-          <div class="value"><span id="guardiansText">0</span>/5</div>
-          <div class="small">Defeat every chamber, then restore the Forge Core.</div>
-        </div>
-        <div class="hud">
-          <div class="eyebrow">Mastery Rank</div>
-          <div class="value" id="rankText">Novice</div>
-          <div class="small" id="rankSub">Learn the core routine: keep, flip, multiply, simplify.</div>
-        </div>
-      </div>
-
-      <div class="banner" id="banner"><strong id="bannerTitle">Ready</strong><div class="small" id="bannerBody">The forge is waking up.</div></div>
-
-      <div class="quest">
-        <section class="arena">
-          <div class="toolbar">
-            <div>
-              <h1 class="title-main">Fraction Forge: Divide to Restore</h1>
-              <div class="sub">Premium student-facing flagship game with mixed interaction types, misconception routing, analytics export, adaptive support, visual models, and a multi-phase boss for <strong>6.NS.A.1</strong>.</div>
-              <div class="pill-row" style="margin-top:10px">
-                <div class="pill">6.NS.A.1 aligned</div>
-                <div class="pill">Mixed interactions</div>
-                <div class="pill">Misconception engine</div>
-                <div class="pill">Teacher export</div>
-                <div class="pill">Replayable</div>
-              </div>
-            </div>
-            <div class="btn-row">
-              <button class="btn secondary" id="toggleHintBtn">Hints Off</button>
-              <button class="btn secondary" id="toggleSoundBtn">Sound On</button>
-              <button class="btn secondary" id="helpBtn">How to Play</button>
-              <button class="btn secondary" id="exportBtn">Export Results</button>
-            </div>
-          </div>
-
-          <div class="boss-panel" id="bossPanel">
-            <div class="orb" id="orb">Δ</div>
-            <div>
-              <div class="enemy-name" id="enemyName">Shard Warden</div>
-              <div class="small" id="enemyDesc">Basic fraction-division challenges. Flip the second fraction only.</div>
-              <div style="margin-top:8px">
-                <div class="bar-label"><span>Guardian Shield</span><span id="hpLabel">100%</span></div>
-                <div class="bar hp"><span id="hpBar" style="width:100%"></span></div>
-              </div>
-              <div style="margin-top:8px">
-                <div class="bar-label"><span>Your Focus</span><span id="focusLabel">100%</span></div>
-                <div class="bar focus"><span id="focusBar" style="width:100%"></span></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="task-card">
-            <div class="task-head">
-              <div class="pill-row">
-                <div class="task-tag" id="typeTag">Core Skill</div>
-                <div class="task-tag" id="diffTag">Difficulty 1</div>
-                <div class="task-tag" id="countTag">Question 1</div>
-              </div>
-              <div class="pill-row">
-                <div class="task-tag" id="routeTag">Route: Standard</div>
-                <div class="task-tag" id="modeTag">Interaction: Multiple Choice</div>
-              </div>
-            </div>
-
-            <div class="problem" id="problemText">1/2 ÷ 1/4</div>
-            <div class="context" id="contextText">Use the reciprocal of the second fraction, then simplify.</div>
-
-            <div class="strategy">
-              <div class="step-pill">Keep first fraction</div>
-              <div class="step-pill">Flip second fraction</div>
-              <div class="step-pill">Multiply</div>
-              <div class="step-pill">Simplify</div>
-            </div>
-
-            <div id="interactionArea"></div>
-
-            <div class="btn-row" style="margin-top:12px">
-              <button class="btn good" id="submitBtn">Submit</button>
-              <button class="btn secondary" id="nextBtn" disabled>Next Challenge</button>
-              <button class="btn secondary" id="explainBtn">Show Explanation</button>
-              <button class="btn secondary" id="skipBtn">Skip</button>
-            </div>
-
-            <div class="explain hidden" id="explainWrap"></div>
-          </div>
-
-          <div class="print-only" id="printWrap"></div>
-        </section>
-
-        <aside class="side">
-          <div class="stack">
-            <div class="card">
-              <div class="eyebrow">Visual Model</div>
-              <div class="visual" id="visualArea"></div>
-              <div class="caption" id="visualCaption">Visuals show the meaning of the division and support precise reasoning.</div>
-            </div>
-
-            <div class="card">
-              <div class="eyebrow">Tutor Feedback</div>
-              <div class="coach" id="tutorText">Read the divisor carefully. The reciprocal applies to the second fraction only.</div>
-            </div>
-
-            <div class="card">
-              <div class="eyebrow">Word-Bank & Vocabulary</div>
-              <div class="coach">
-                <strong>Dividend</strong>: the amount being divided.<br />
-                <strong>Divisor</strong>: the amount you divide by.<br />
-                <strong>Reciprocal</strong>: the flipped fraction.<br />
-                <strong>Simplify</strong>: write the result in lowest terms.<br />
-                <strong>Group size</strong>: the size of one equal part or unit in the story.
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="eyebrow">Teacher Analytics</div>
-              <div class="coach">
-                <div><strong>Correct:</strong> <span id="correctText">0</span></div>
-                <div><strong>Incorrect:</strong> <span id="incorrectText">0</span></div>
-                <div><strong>Hints used:</strong> <span id="hintCountText">0</span></div>
-                <div><strong>Boss phases cleared:</strong> <span id="bossPhaseText">0</span>/3</div>
-                <div><strong>Most common error:</strong> <span id="commonErrorText">None yet</span></div>
-              </div>
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <div class="overlay" id="startOverlay">
-        <div class="overlay-card">
-          <h2 class="overlay-title">Restore the Fraction Forge</h2>
-          <div class="sub">The forge that powers the math realm is failing. Five guardians protect the chambers. To restore the core, divide fractions accurately, read models, build equations from situations, and defeat the three-phase final boss.</div>
-
-          <div class="start-grid">
-            <div class="modes" role="radiogroup" aria-label="Modes">
-              <button class="mode active" data-mode="standard" role="radio" aria-checked="true">
-                <h4>Standard Quest</h4>
-                <div class="sub">Balanced difficulty, premium progression, hints optional, mixed task types.</div>
-              </button>
-              <button class="mode" data-mode="support" role="radio" aria-checked="false">
-                <h4>Support Mode</h4>
-                <div class="sub">Extra energy, gentler distractors, more scaffolded visuals, stronger tutor support.</div>
-              </button>
-              <button class="mode" data-mode="boost" role="radio" aria-checked="false">
-                <h4>Boost Mode</h4>
-                <div class="sub">Faster XP, sharper distractors, tougher routing, better for confident players.</div>
-              </button>
-            </div>
-
-            <div class="stack">
-              <div class="card">
-                <div class="eyebrow">What makes this flagship</div>
-                <div class="coach">Multiple interaction types, boss phases, adaptive misconception analysis, achievements, replay variety, analytics export, keyboard support, and strong classroom-ready stability.</div>
-              </div>
-              <div class="kpis">
-                <div class="kpi"><div class="n">5</div><div class="small">Guardians</div></div>
-                <div class="kpi"><div class="n">3</div><div class="small">Boss phases</div></div>
-                <div class="kpi"><div class="n">4</div><div class="small">Interaction types</div></div>
-                <div class="kpi"><div class="n">∞</div><div class="small">Replay paths</div></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="btn-row" style="margin-top:16px">
-            <button class="btn warn" id="startBtn">Start Mission</button>
-            <button class="btn secondary" id="openHelpFromStart">Instructions</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="overlay hidden" id="endOverlay">
-        <div class="overlay-card">
-          <h2 class="overlay-title" id="endTitle">Forge Restored</h2>
-          <div class="sub" id="endSub">You restored the forge with strong fraction reasoning.</div>
-          <div class="kpis" style="margin-top:14px">
-            <div class="kpi"><div class="n" id="endAcc">0%</div><div class="small">Accuracy</div></div>
-            <div class="kpi"><div class="n" id="endXP">0</div><div class="small">XP</div></div>
-            <div class="kpi"><div class="n" id="endStreak">0</div><div class="small">Best streak</div></div>
-            <div class="kpi"><div class="n" id="endRank">Novice</div><div class="small">Rank</div></div>
-          </div>
-          <div class="stack" style="margin-top:14px">
-            <div class="card"><div class="eyebrow">Teacher-style feedback</div><div class="coach" id="teacherFeedback">Keep practicing.</div></div>
-            <div class="card"><div class="eyebrow">Remember</div><div class="coach">Keep the first fraction, flip the second fraction, multiply, then simplify. In word problems, identify the total amount and the amount in one group.</div></div>
-          </div>
-          <div class="btn-row" style="margin-top:16px">
-            <button class="btn good" id="replayBtn">Play Again</button>
-            <button class="btn secondary" id="exportBtnEnd">Export Results</button>
-            <button class="btn secondary" id="printBtn">Print Summary</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal hidden" id="helpModal">
-        <div class="modal-card">
-          <h3 style="margin-top:0">How to Play</h3>
-          <div class="coach">
-            <p><strong>Goal:</strong> defeat each guardian and restore the Forge Core.</p>
-            <p><strong>Core rule:</strong> keep the first fraction, flip the second fraction, multiply, then simplify.</p>
-            <p><strong>Interactions:</strong> you will see multiple choice, drag-and-drop reciprocal building, constructed response, and word-problem boss phases.</p>
-            <p><strong>Adaptive engine:</strong> the game detects misconception patterns and changes hints, distractors, visuals, and routing.</p>
-          </div>
-          <div class="btn-row" style="margin-top:14px">
-            <button class="btn good" id="closeHelpBtn">Back</button>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <div class="toast-wrap" id="toastWrap"></div>
-
-  <script>
-    (() => {
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Underwater Adventure — 6.NS.A.1</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #020a18;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      #game-container {
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
       "use strict";
+      (() => {
+        /* ============================================================
+   UNDERWATER ADVENTURE — 6.NS.A.1
+   Divide fractions by fractions.
+   Dive deeper by solving fraction division problems.
+   Avoid sea creatures carrying wrong answers.
+   ============================================================ */
 
-      const CONFIG = Object.freeze({
-        VERSION: "Fraction Forge Flagship 1.0.0",
-        STANDARD: "6.NS.A.1",
-        STORAGE_KEY: "fraction_forge_flagship_6nsa1",
-        MODES: {
-          standard: { name: "Standard", energy: 5, xpMult: 1, support: 0 },
-          support: { name: "Support", energy: 6, xpMult: 0.9, support: 1 },
-          boost: { name: "Boost", energy: 4, xpMult: 1.2, support: -1 }
-        },
-        GUARDIANS: [
-          { name: "Shard Warden", icon: "Δ", type: "Core Skill", hp: 100, desc: "Basic fraction division. Flip only the second fraction." },
-          { name: "Mirror Sentinel", icon: "↺", type: "Reciprocal Craft", hp: 118, desc: "Reciprocal reasoning. Build the correct flipped divisor." },
-          { name: "Scale Keeper", icon: "⚖", type: "Simplify", hp: 132, desc: "Mixed numbers and simplification matter now." },
-          { name: "Model Weaver", icon: "▥", type: "Visual Model", hp: 148, desc: "Use visual grouping to decide how many groups fit." },
-          { name: "Forge Core", icon: "✦", type: "Boss Battle", hp: 180, desc: "Three boss phases: solve real-world fraction division precisely.", boss: true }
-        ],
-        ACHIEVEMENTS: [
-          { id: "first-hit", name: "First Hit", desc: "Answer your first question correctly." },
-          { id: "streak-3", name: "Heat Check", desc: "Reach a streak of 3." },
-          { id: "streak-5", name: "On Fire", desc: "Reach a streak of 5." },
-          { id: "boss-1", name: "Core Breach", desc: "Clear the first boss phase." },
-          { id: "perfect-guardian", name: "Clean Chamber", desc: "Defeat a guardian with no mistakes in that chamber." },
-          { id: "mastery-90", name: "Forge Master", desc: "Finish with 90%+ accuracy." }
-        ]
-      });
-
-      const $ = id => document.getElementById(id);
-      const ui = {
-        playerTitle: $("playerTitle"),
-        xpBar: $("xpBar"),
-        modePill: $("modePill"),
-        hintPill: $("hintPill"),
-        soundPill: $("soundPill"),
-        themePill: $("themePill"),
-        coachText: $("coachText"),
-        accText: $("accText"),
-        streakText: $("streakText"),
-        bestStreakText: $("bestStreakText"),
-        focusText: $("focusText"),
-        misText: $("misText"),
-        questMap: $("questMap"),
-        achievements: $("achievements"),
-        battleLog: $("battleLog"),
-        levelText: $("levelText"),
-        xpText: $("xpText"),
-        energyText: $("energyText"),
-        guardiansText: $("guardiansText"),
-        rankText: $("rankText"),
-        rankSub: $("rankSub"),
-        banner: $("banner"),
-        bannerTitle: $("bannerTitle"),
-        bannerBody: $("bannerBody"),
-        toggleHintBtn: $("toggleHintBtn"),
-        toggleSoundBtn: $("toggleSoundBtn"),
-        helpBtn: $("helpBtn"),
-        exportBtn: $("exportBtn"),
-        exportBtnEnd: $("exportBtnEnd"),
-        bossPanel: $("bossPanel"),
-        orb: $("orb"),
-        enemyName: $("enemyName"),
-        enemyDesc: $("enemyDesc"),
-        hpLabel: $("hpLabel"),
-        hpBar: $("hpBar"),
-        focusLabel: $("focusLabel"),
-        focusBar: $("focusBar"),
-        typeTag: $("typeTag"),
-        diffTag: $("diffTag"),
-        countTag: $("countTag"),
-        routeTag: $("routeTag"),
-        modeTag: $("modeTag"),
-        problemText: $("problemText"),
-        contextText: $("contextText"),
-        interactionArea: $("interactionArea"),
-        submitBtn: $("submitBtn"),
-        nextBtn: $("nextBtn"),
-        explainBtn: $("explainBtn"),
-        skipBtn: $("skipBtn"),
-        explainWrap: $("explainWrap"),
-        visualArea: $("visualArea"),
-        visualCaption: $("visualCaption"),
-        tutorText: $("tutorText"),
-        correctText: $("correctText"),
-        incorrectText: $("incorrectText"),
-        hintCountText: $("hintCountText"),
-        bossPhaseText: $("bossPhaseText"),
-        commonErrorText: $("commonErrorText"),
-        startOverlay: $("startOverlay"),
-        startBtn: $("startBtn"),
-        openHelpFromStart: $("openHelpFromStart"),
-        endOverlay: $("endOverlay"),
-        endTitle: $("endTitle"),
-        endSub: $("endSub"),
-        endAcc: $("endAcc"),
-        endXP: $("endXP"),
-        endStreak: $("endStreak"),
-        endRank: $("endRank"),
-        teacherFeedback: $("teacherFeedback"),
-        replayBtn: $("replayBtn"),
-        printBtn: $("printBtn"),
-        helpModal: $("helpModal"),
-        closeHelpBtn: $("closeHelpBtn"),
-        toastWrap: $("toastWrap"),
-        particles: $("particles"),
-        printWrap: $("printWrap")
-      };
-
-      const state = {
-        mode: "standard",
-        sound: true,
-        hints: false,
-        started: false,
-        energy: 5,
-        maxEnergy: 5,
-        xp: 0,
-        level: 1,
-        guardiansCleared: 0,
-        guardianIndex: 0,
-        guardianHp: 100,
-        bossPhase: 0,
-        questionIndex: 0,
-        totalAsked: 0,
-        correct: 0,
-        incorrect: 0,
-        streak: 0,
-        bestStreak: 0,
-        hintCount: 0,
-        activeQuestion: null,
-        answered: false,
-        route: "standard",
-        chamberWrong: 0,
-        history: [],
-        usedIds: new Set(),
-        misconceptions: {
-          flippedFirst: 0,
-          forgotReciprocal: 0,
-          noSimplify: 0,
-          mixedNumberError: 0,
-          modelMisread: 0,
-          contextTransfer: 0
-        },
-        achievements: new Set(),
-        masterySkill: "Build confidence"
-      };
-
-      function savePrefs() {
-        try {
-          localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({
-            mode: state.mode,
-            sound: state.sound,
-            hints: state.hints
-          }));
-        } catch (_) {}
-      }
-
-      function loadPrefs() {
-        try {
-          const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
-          if (!raw) return;
-          const data = JSON.parse(raw);
-          if (data.mode && CONFIG.MODES[data.mode]) state.mode = data.mode;
-          if (typeof data.sound === "boolean") state.sound = data.sound;
-          if (typeof data.hints === "boolean") state.hints = data.hints;
-        } catch (_) {}
-      }
-
-      function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1}
-      function simp(n,d){
-        if (d === 0) return {n,d};
-        if (d < 0) { n *= -1; d *= -1; }
-        const g = gcd(n,d);
-        return { n:n/g, d:d/g };
-      }
-      function frac(n,d){ return simp(n,d); }
-      function eq(a,b){ const x=simp(a.n,a.d), y=simp(b.n,b.d); return x.n===y.n && x.d===y.d; }
-      function divf(a,b){ return simp(a.n*b.d, a.d*b.n); }
-      function mulf(a,b){ return simp(a.n*b.n, a.d*b.d); }
-      function properString(f){
-        const s = simp(f.n,f.d);
-        if (s.d === 1) return String(s.n);
-        return `${s.n}/${s.d}`;
-      }
-      function displayString(f){
-        const s = simp(f.n,f.d);
-        if (s.d === 1) return String(s.n);
-        if (Math.abs(s.n) > s.d) {
-          const whole = Math.trunc(s.n / s.d);
-          const rem = Math.abs(s.n % s.d);
-          return rem === 0 ? String(whole) : `${whole} ${rem}/${s.d}`;
+        // --- Audio helpers ---
+        let audioCtx = null;
+        function getAudio() {
+          if (!audioCtx)
+            try {
+              audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          return audioCtx;
         }
-        return `${s.n}/${s.d}`;
-      }
-      function parseFracText(str){
-        str = String(str).trim();
-        if (/^-?\d+\s+\d+\/\d+$/.test(str)) {
-          const [w,p] = str.split(/\s+/);
-          const [a,b] = p.split("/").map(Number);
-          const whole = Number(w);
-          const n = Math.abs(whole)*b + a;
-          return frac(whole < 0 ? -n : n, b);
+        function playTone(freq, dur, type = "sine", vol = 0.06) {
+          const c = getAudio();
+          if (!c) return;
+          if (c.state === "suspended") c.resume();
+          const o = c.createOscillator(),
+            g = c.createGain();
+          o.type = type;
+          o.frequency.value = freq;
+          g.gain.setValueAtTime(0.0001, c.currentTime);
+          g.gain.linearRampToValueAtTime(vol, c.currentTime + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+          o.connect(g).connect(c.destination);
+          o.start();
+          o.stop(c.currentTime + dur + 0.01);
         }
-        if (/^-?\d+\/-?\d+$/.test(str)) {
-          const [a,b] = str.split("/").map(Number);
-          return frac(a,b);
+        function sfxCorrect() {
+          playTone(523, 0.12);
+          setTimeout(() => playTone(659, 0.12), 80);
+          setTimeout(() => playTone(784, 0.15), 160);
         }
-        if (/^-?\d+$/.test(str)) return frac(Number(str),1);
-        return null;
-      }
-      function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-      function pick(arr){ return arr[rand(0,arr.length-1)]; }
-      function shuffle(arr){
-        const a = [...arr];
-        for (let i=a.length-1;i>0;i--) {
-          const j = rand(0,i);
-          [a[i],a[j]]=[a[j],a[i]];
+        function sfxWrong() {
+          playTone(200, 0.15, "sawtooth", 0.04);
+          setTimeout(() => playTone(160, 0.18, "sawtooth", 0.03), 100);
         }
-        return a;
-      }
-      function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
-      function percent(num,den){ return den ? Math.round((num/den)*100) : 0; }
-
-      function levelFromXP(xp){ return 1 + Math.floor(xp/140); }
-      function levelPct(xp){ const floor = Math.floor(xp/140)*140; return Math.round(((xp-floor)/140)*100); }
-
-      function rankFromAcc(acc){
-        if (acc >= 92) return { rank:"Master", title:"Forge Master", sub:"You are applying fraction division with precision and strong transfer." };
-        if (acc >= 82) return { rank:"Expert", title:"Core Engineer", sub:"You are consistently accurate and simplifying reliably." };
-        if (acc >= 70) return { rank:"Skilled", title:"Guardian Breaker", sub:"You understand the process and can handle more challenge." };
-        if (acc >= 55) return { rank:"Developing", title:"Apprentice Divider", sub:"The process is building. Keep focusing on the reciprocal." };
-        return { rank:"Novice", title:"Apprentice Divider", sub:"Start with: keep, flip, multiply, simplify." };
-      }
-
-      function mostCommonMisconception(){
-        const entries = Object.entries(state.misconceptions).sort((a,b)=>b[1]-a[1]);
-        const [key,val] = entries[0];
-        if (!val) return "None yet";
-        const map = {
-          flippedFirst: "Flipping the first fraction",
-          forgotReciprocal: "Forgetting the reciprocal",
-          noSimplify: "Not simplifying",
-          mixedNumberError: "Mixed-number conversion",
-          modelMisread: "Misreading the model",
-          contextTransfer: "Translating the context"
-        };
-        return map[key] || key;
-      }
-
-      function routeEngine() {
-        const acc = percent(state.correct, state.totalAsked);
-        const m = mostCommonMisconception();
-        if (state.mode === "support") return "support";
-        if (m === "Forgetting the reciprocal" || m === "Flipping the first fraction") return "reciprocal-reteach";
-        if (m === "Not simplifying" || m === "Mixed-number conversion") return "simplify-reteach";
-        if (m === "Misreading the model") return "visual-reteach";
-        if (m === "Translating the context") return "context-reteach";
-        if (state.streak >= 4 && acc >= 85) return "challenge";
-        return "standard";
-      }
-
-      function adaptiveDifficulty() {
-        let d = 1;
-        const acc = percent(state.correct, state.totalAsked);
-        if (acc >= 70) d = 2;
-        if (acc >= 84) d = 3;
-        if (state.streak >= 4) d++;
-        if (state.mode === "support") d--;
-        if (state.mode === "boost") d++;
-        if (state.route.includes("reteach")) d--;
-        return clamp(d,1,4);
-      }
-
-      function spawnParticles(kind="good") {
-        const count = kind === "bad" ? 8 : 12;
-        for (let i=0;i<count;i++) {
-          const p = document.createElement("div");
-          p.className = "particle";
-          p.style.left = `${rand(70, Math.max(80, ui.particles.clientWidth - 70))}px`;
-          p.style.top = `${rand(120, Math.max(140, ui.particles.clientHeight - 60))}px`;
-          p.style.background = kind === "bad"
-            ? "radial-gradient(circle,rgba(255,255,255,1),rgba(251,113,133,.7))"
-            : kind === "gold"
-            ? "radial-gradient(circle,rgba(255,255,255,1),rgba(251,191,36,.75))"
-            : "radial-gradient(circle,rgba(255,255,255,1),rgba(81,215,255,.7))";
-          ui.particles.appendChild(p);
-          setTimeout(() => p.remove(), 900);
+        function sfxDive() {
+          playTone(330, 0.2, "triangle", 0.04);
+          setTimeout(() => playTone(262, 0.25, "triangle", 0.03), 120);
         }
-      }
-
-      function tone(type="good"){
-        if (!state.sound) return;
-        try {
-          const AC = window.AudioContext || window.webkitAudioContext;
-          if (!AC) return;
-          tone.ctx = tone.ctx || new AC();
-          const ctx = tone.ctx;
-          if (ctx.state === "suspended") ctx.resume();
-          const o = ctx.createOscillator();
-          const g = ctx.createGain();
-          const now = ctx.currentTime;
-          o.type = type === "bad" ? "sawtooth" : "sine";
-          const map = {
-            good: [530,760],
-            bad: [220,160],
-            gold: [620,880],
-            warn: [400,500]
-          };
-          const [f1,f2] = map[type] || map.good;
-          o.frequency.setValueAtTime(f1,now);
-          o.frequency.linearRampToValueAtTime(f2, now+.12);
-          g.gain.setValueAtTime(.0001, now);
-          g.gain.linearRampToValueAtTime(.045, now+.02);
-          g.gain.exponentialRampToValueAtTime(.0001, now+.18);
-          o.connect(g).connect(ctx.destination);
-          o.start(now); o.stop(now+.19);
-        } catch (_) {}
-      }
-
-      function toast(title, body, kind="good"){
-        const d = document.createElement("div");
-        d.className = `toast ${kind}`;
-        d.innerHTML = `<strong>${title}</strong><div class="small" style="margin-top:0">${body}</div>`;
-        ui.toastWrap.appendChild(d);
-        setTimeout(()=>{d.style.opacity="0";d.style.transform="translateY(8px)";},2300);
-        setTimeout(()=>d.remove(),2700);
-      }
-
-      function banner(title, body){
-        ui.bannerTitle.textContent = title;
-        ui.bannerBody.textContent = body;
-        ui.banner.classList.add("show");
-        clearTimeout(banner.t);
-        banner.t = setTimeout(()=>ui.banner.classList.remove("show"),2200);
-      }
-
-      function log(strong, text){
-        state.history.unshift({strong, text});
-        state.history = state.history.slice(0, 12);
-        renderLog();
-      }
-
-      function renderLog(){
-        ui.battleLog.innerHTML = "";
-        if (!state.history.length) {
-          ui.battleLog.innerHTML = `<div class="log-item"><strong>Mission ready.</strong> Start the quest to begin.</div>`;
-          return;
+        function sfxBubble() {
+          playTone(800 + Math.random() * 400, 0.08, "sine", 0.02);
         }
-        state.history.forEach(item => {
-          const div = document.createElement("div");
-          div.className = "log-item";
-          div.innerHTML = `<strong>${item.strong}</strong> ${item.text}`;
-          ui.battleLog.appendChild(div);
-        });
-      }
-
-      function unlockAchievement(id){
-        if (state.achievements.has(id)) return;
-        state.achievements.add(id);
-        renderAchievements();
-        const ach = CONFIG.ACHIEVEMENTS.find(a => a.id === id);
-        if (ach) {
-          toast("Achievement unlocked", ach.name, "gold");
-          tone("gold");
-        }
-      }
-
-      function renderAchievements(){
-        ui.achievements.innerHTML = "";
-        CONFIG.ACHIEVEMENTS.forEach(a => {
-          const div = document.createElement("div");
-          const unlocked = state.achievements.has(a.id);
-          div.className = `ach ${unlocked ? "" : "locked"}`;
-          div.innerHTML = `<div><strong>${a.name}</strong><div class="small" style="margin-top:2px">${a.desc}</div></div><div>${unlocked ? "🏆" : "🔒"}</div>`;
-          ui.achievements.appendChild(div);
-        });
-      }
-
-      function renderMap(){
-        ui.questMap.innerHTML = "";
-        CONFIG.GUARDIANS.forEach((g,i)=>{
-          const div = document.createElement("div");
-          div.className = "node";
-          if (i < state.guardiansCleared) div.classList.add("done");
-          else if (i === state.guardianIndex && state.started) div.classList.add("active");
-          else if (i > state.guardiansCleared && state.started) div.classList.add("locked");
-          div.innerHTML = `<div><div style="font-size:1.2rem;font-weight:950">${g.icon}</div><div style="font-weight:900">${g.name}</div><div class="small">${g.type}</div></div>`;
-          ui.questMap.appendChild(div);
-        });
-      }
-
-      function updateHUD(){
-        const acc = percent(state.correct, state.totalAsked);
-        const rank = rankFromAcc(acc);
-        state.level = levelFromXP(state.xp);
-
-        ui.playerTitle.textContent = rank.title;
-        ui.xpBar.style.width = `${levelPct(state.xp)}%`;
-        ui.levelText.textContent = state.level;
-        ui.xpText.textContent = state.xp;
-        ui.energyText.textContent = state.energy;
-        ui.guardiansText.textContent = state.guardiansCleared;
-        ui.rankText.textContent = rank.rank;
-        ui.rankSub.textContent = rank.sub;
-        ui.modePill.textContent = `Mode: ${CONFIG.MODES[state.mode].name}`;
-        ui.hintPill.textContent = `Hints: ${state.hints ? "On" : "Off"}`;
-        ui.soundPill.textContent = `Sound: ${state.sound ? "On" : "Off"}`;
-        ui.accText.textContent = `${acc}%`;
-        ui.streakText.textContent = state.streak;
-        ui.bestStreakText.textContent = state.bestStreak;
-        ui.focusText.textContent = state.masterySkill;
-        ui.misText.textContent = mostCommonMisconception();
-        ui.focusLabel.textContent = `${percent(state.energy, state.maxEnergy)}%`;
-        ui.focusBar.style.width = `${percent(state.energy, state.maxEnergy)}%`;
-        ui.correctText.textContent = state.correct;
-        ui.incorrectText.textContent = state.incorrect;
-        ui.hintCountText.textContent = state.hintCount;
-        ui.bossPhaseText.textContent = state.bossPhase;
-        ui.commonErrorText.textContent = mostCommonMisconception();
-        savePrefs();
-      }
-
-      function wrongLabel(kind){
-        const map = {
-          forgotReciprocal: "You multiplied without flipping the second fraction.",
-          flippedFirst: "You flipped the first fraction instead of the second fraction.",
-          noSimplify: "The result is equivalent, but it is not simplified.",
-          mixedNumberError: "The fraction should convert to a mixed number or simplified form.",
-          modelMisread: "The visual model was read incorrectly.",
-          contextTransfer: "The word problem was not translated into division correctly."
-        };
-        return map[kind] || "Check your fraction division process.";
-      }
-
-      function detectMisconception(q, selected){
-        if (!selected) return "contextTransfer";
-        if (selected.reasonTag) return selected.reasonTag;
-        if (q.kind === "Boss Battle") return "contextTransfer";
-        return "forgotReciprocal";
-      }
-
-      function recordMisconception(tag){
-        if (!state.misconceptions[tag] && state.misconceptions[tag] !== 0) return;
-        state.misconceptions[tag]++;
-      }
-
-      function simplifiedEquivalentWrong(ans){
-        return { n: ans.n*2, d: ans.d*2 };
-      }
-
-      function buildChoices(answer, meta){
-        const correct = properString(answer);
-        const wrong = new Map();
-
-        if (meta.a && meta.b) {
-          wrong.set(properString(mulf(meta.a, meta.b)), "forgotReciprocal");
-          wrong.set(properString(frac(meta.a.d * meta.b.n, meta.a.n * meta.b.d)), "flippedFirst");
-        }
-        wrong.set(properString(simplifiedEquivalentWrong(answer)), "noSimplify");
-        if (Math.abs(answer.n) > answer.d && answer.d !== 1) {
-          const w = Math.trunc(answer.n / answer.d);
-          wrong.set(String(w), "mixedNumberError");
-        } else {
-          wrong.set(properString(frac(answer.n+1, answer.d)), "mixedNumberError");
-        }
-        if (meta.kind === "Boss Battle") wrong.set(properString(frac(Math.max(1,answer.n-1), answer.d)), "contextTransfer");
-        if (meta.kind === "Visual Model") wrong.set(properString(frac(Math.max(1,answer.n+1), answer.d)), "modelMisread");
-
-        const pool = [];
-        for (const [value, reasonTag] of wrong.entries()) {
-          if (value !== correct && !pool.some(p => p.value === value)) pool.push({ value, reasonTag });
-        }
-        while (pool.length < 3) {
-          const alt = properString(frac(rand(1,10), rand(2,10)));
-          if (alt !== correct && !pool.some(p => p.value === alt)) pool.push({ value: alt, reasonTag: "forgotReciprocal" });
-        }
-        return shuffle([{ value: correct, correct: true }, ...pool.slice(0,3)]);
-      }
-
-      function buildSteps(a,b,answer,isWord=false){
-        const recip = frac(b.d,b.n);
-        const product = mulf(a,recip);
-        return [
-          isWord ? `Write the situation as division: <strong>${properString(a)} ÷ ${properString(b)}</strong>.` : `Start with <strong>${properString(a)} ÷ ${properString(b)}</strong>.`,
-          `Keep the first fraction: <strong>${properString(a)}</strong>.`,
-          `Flip the second fraction to its reciprocal: <strong>${properString(b)} → ${properString(recip)}</strong>.`,
-          `Multiply: <strong>${properString(a)} × ${properString(recip)} = ${properString(product)}</strong>.`,
-          `Simplify the result: <strong>${properString(product)} = ${displayString(answer)}</strong>.`
-        ];
-      }
-
-      function newCoreQuestion(guardianIndex, diff) {
-        const route = state.route;
-        const denSmall = [2,3,4];
-        const denMid = [2,3,4,5,6];
-        const denBig = [2,3,4,5,6,8,10];
-        let dens = diff === 1 ? denSmall : diff === 2 ? denMid : denBig;
-
-        let a = frac(rand(1, diff >= 3 ? 9 : 6), pick(dens));
-        let b = frac(rand(1, diff >= 3 ? 8 : 5), pick(dens));
-
-        if (guardianIndex === 2 || route === "simplify-reteach") {
-          a = frac(rand(4,11), pick([3,4,5,6]));
-          b = frac(rand(1,5), pick([2,3,4,5]));
-        }
-        if (guardianIndex === 3 || route === "visual-reteach") {
-          a = frac(rand(1,5), pick([2,3,4,6]));
-          b = frac(rand(1,4), pick([2,3,4]));
-        }
-        if (route === "reciprocal-reteach") {
-          a = frac(rand(1,4), pick([2,3,4]));
-          b = frac(rand(1,3), pick([2,3,4]));
+        function sfxLevelUp() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => playTone(f, 0.15, "sine", 0.05), i * 100),
+          );
         }
 
-        const answer = divf(a,b);
-        const id = `g${guardianIndex}-${a.n}/${a.d}-${b.n}/${b.d}-${route}-${diff}`;
-        const interaction = guardianIndex === 1 ? "drag" : guardianIndex === 2 ? "input" : guardianIndex === 3 ? "model" : "mc";
-        const kind = guardianIndex === 1 ? "Reciprocal Craft" : guardianIndex === 2 ? "Simplify" : guardianIndex === 3 ? "Visual Model" : "Core Skill";
-
-        return {
-          id, interaction, kind, difficulty: diff,
-          a, b, answer,
-          prompt: `${properString(a)} ÷ ${properString(b)}`,
-          context: guardianIndex === 3
-            ? `Use the model to decide how many groups of ${properString(b)} fit into ${properString(a)}.`
-            : `Apply the reciprocal rule, then simplify your answer.`,
-          choices: buildChoices(answer, { a, b, kind }),
-          steps: buildSteps(a,b,answer,false)
-        };
-      }
-
-      function newBossQuestion(phase) {
-        const bank = [
-          {
-            prompt: "A steel ribbon is 3 meters long. Each shield strap uses 3/4 meter. How many full straps can be made?",
-            a: frac(3,1), b: frac(3,4), interaction: "boss-mc"
-          },
-          {
-            prompt: "The Forge Core has 5/6 tank of gel left. Each restart cycle uses 1/4 tank. How many cycles can run?",
-            a: frac(5,6), b: frac(1,4), interaction: "boss-input"
-          },
-          {
-            prompt: "A repair beam is 2 1/2 meters long. Each panel needs 5/8 meter. How many panels can be repaired?",
-            a: frac(5,2), b: frac(5,8), interaction: "boss-drag"
+        // --- Math helpers ---
+        function gcd(a, b) {
+          a = Math.abs(a);
+          b = Math.abs(b);
+          while (b) {
+            [a, b] = [b, a % b];
           }
-        ];
-        const item = bank[phase];
-        const answer = divf(item.a,item.b);
-        return {
-          id: `boss-${phase}`,
-          interaction: item.interaction,
-          kind: "Boss Battle",
-          difficulty: 4,
-          a: item.a, b: item.b, answer,
-          prompt: item.prompt,
-          context: `Identify the total amount and the amount in one group. Then divide.`,
-          choices: buildChoices(answer, { a:item.a, b:item.b, kind:"Boss Battle" }),
-          steps: buildSteps(item.a,item.b,answer,true)
-        };
-      }
+          return a || 1;
+        }
+        function simplify(n, d) {
+          if (d < 0) {
+            n *= -1;
+            d *= -1;
+          }
+          const g = gcd(n, d);
+          return { n: n / g, d: d / g };
+        }
+        function fracStr(f) {
+          const s = simplify(f.n, f.d);
+          if (s.d === 1) return "" + s.n;
+          return s.n + "/" + s.d;
+        }
+        function fracDisplay(f) {
+          const s = simplify(f.n, f.d);
+          if (s.d === 1) return "" + s.n;
+          if (Math.abs(s.n) > s.d) {
+            const w = Math.trunc(s.n / s.d),
+              r = Math.abs(s.n % s.d);
+            return r === 0 ? "" + w : w + " " + r + "/" + s.d;
+          }
+          return s.n + "/" + s.d;
+        }
+        function fracEqual(a, b) {
+          const x = simplify(a.n, a.d),
+            y = simplify(b.n, b.d);
+          return x.n === y.n && x.d === y.d;
+        }
+        function divFrac(a, b) {
+          return simplify(a.n * b.d, a.d * b.n);
+        }
+        function mulFrac(a, b) {
+          return simplify(a.n * b.n, a.d * b.d);
+        }
+        function rand(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        function pick(arr) {
+          return arr[rand(0, arr.length - 1)];
+        }
+        function shuffle(arr) {
+          const a = [...arr];
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = rand(0, i);
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        }
 
-      function buildQuestion() {
-        state.route = routeEngine();
-        const diff = adaptiveDifficulty();
-        const guardian = CONFIG.GUARDIANS[state.guardianIndex];
-        let q;
-
-        if (guardian.boss) {
-          q = newBossQuestion(state.bossPhase);
-        } else {
+        // --- Question generator ---
+        function generateQuestion(level) {
+          const dens =
+            level <= 2
+              ? [2, 3, 4]
+              : level <= 4
+                ? [2, 3, 4, 5, 6]
+                : [2, 3, 4, 5, 6, 8];
+          const maxN = level <= 2 ? 5 : level <= 4 ? 7 : 9;
+          let a, b, answer;
           let attempts = 0;
           do {
-            q = newCoreQuestion(state.guardianIndex, diff);
+            a = { n: rand(1, maxN), d: pick(dens) };
+            b = { n: rand(1, Math.min(maxN, a.d)), d: pick(dens) };
+            answer = divFrac(a, b);
             attempts++;
-          } while (state.usedIds.has(q.id) && attempts < 20);
-          state.usedIds.add(q.id);
+          } while (
+            ((answer.d === 1 && Math.abs(answer.n) > 12) ||
+              Math.abs(answer.n) > 20 ||
+              answer.d > 12) &&
+            attempts < 30
+          );
+
+          const correct = fracStr(answer);
+          const wrongs = new Set();
+          // Wrong: forgot reciprocal (just multiply straight)
+          wrongs.add(fracStr(mulFrac(a, b)));
+          // Wrong: flipped first fraction
+          wrongs.add(fracStr(simplify(a.d * b.n, a.n * b.d)));
+          // Wrong: unsimplified
+          wrongs.add(answer.n * 2 + "/" + answer.d * 2);
+          // Wrong: random
+          wrongs.add(fracStr({ n: answer.n + 1, d: answer.d }));
+          wrongs.add(fracStr({ n: Math.max(1, answer.n - 1), d: answer.d }));
+          wrongs.add(fracStr({ n: rand(1, 8), d: rand(2, 8) }));
+
+          wrongs.delete(correct);
+          const wrongArr = [...wrongs].slice(0, 3);
+          while (wrongArr.length < 3)
+            wrongArr.push(fracStr({ n: rand(1, 10), d: rand(2, 10) }));
+
+          const choices = shuffle([
+            { text: correct, correct: true },
+            ...wrongArr.map((w) => ({ text: w, correct: false })),
+          ]);
+
+          return {
+            a,
+            b,
+            answer,
+            prompt: fracStr(a) + " ÷ " + fracStr(b),
+            hint:
+              "Keep " +
+              fracStr(a) +
+              ", flip " +
+              fracStr(b) +
+              " to " +
+              fracStr({ n: b.d, d: b.n }) +
+              ", multiply.",
+            choices,
+            steps: [
+              "Start: " + fracStr(a) + " ÷ " + fracStr(b),
+              "Keep first: " + fracStr(a),
+              "Flip second: " +
+                fracStr(b) +
+                " → " +
+                fracStr({ n: b.d, d: b.n }),
+              "Multiply: " + fracStr(a) + " × " + fracStr({ n: b.d, d: b.n }),
+              "Result: " + fracDisplay(answer),
+            ],
+          };
         }
 
-        state.activeQuestion = q;
-        state.questionIndex++;
-        state.totalAsked++;
-        state.answered = false;
-        renderQuestion();
-      }
-
-      function renderQuestion() {
-        const q = state.activeQuestion;
-        const guardian = CONFIG.GUARDIANS[state.guardianIndex];
-        ui.orb.textContent = guardian.icon;
-        ui.orb.classList.toggle("boss", !!guardian.boss);
-        ui.enemyName.textContent = guardian.name;
-        ui.enemyDesc.textContent = guardian.desc;
-        ui.hpBar.style.width = `${state.guardianHp}%`;
-        ui.hpLabel.textContent = `${Math.round(state.guardianHp)}%`;
-
-        ui.typeTag.textContent = q.kind;
-        ui.diffTag.textContent = `Difficulty ${q.difficulty}`;
-        ui.countTag.textContent = guardian.boss ? `Boss Phase ${state.bossPhase + 1}` : `Question ${state.questionIndex}`;
-        ui.routeTag.textContent = `Route: ${state.route.replace("-", " ")}`;
-        ui.modeTag.textContent = `Interaction: ${interactionLabel(q.interaction)}`;
-        ui.problemText.textContent = q.prompt;
-        ui.contextText.textContent = state.hints ? q.context : guardian.boss ? "Turn the story into division, then solve." : "Solve the fraction division accurately.";
-        ui.explainWrap.classList.add("hidden");
-        ui.explainWrap.innerHTML = q.steps.map(s => `<div class="exp-step">${s}</div>`).join("");
-        ui.explainBtn.textContent = "Show Explanation";
-        ui.nextBtn.disabled = true;
-        renderInteraction(q);
-        renderVisual(q);
-        updateTutor();
-        updateHUD();
-        renderMap();
-      }
-
-      function interactionLabel(type){
-        const map = {
-          mc: "Multiple Choice",
-          drag: "Drag & Drop",
-          input: "Constructed Response",
-          model: "Model Reasoning",
-          "boss-mc": "Boss Choice",
-          "boss-input": "Boss Input",
-          "boss-drag": "Boss Build"
+        // --- Phaser Config ---
+        const W = 960,
+          H = 640;
+        const config = {
+          type: Phaser.AUTO,
+          parent: "game-container",
+          width: W,
+          height: H,
+          backgroundColor: "#020a18",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          physics: {
+            default: "arcade",
+            arcade: { gravity: { y: 0 }, debug: false },
+          },
+          scene: [],
         };
-        return map[type] || type;
-      }
 
-      function renderInteraction(q){
-        ui.interactionArea.innerHTML = "";
-        if (q.interaction === "mc" || q.interaction === "boss-mc" || q.interaction === "model") {
-          const wrap = document.createElement("div");
-          wrap.className = "mc-grid";
-          q.choices.forEach((c,i) => {
-            const btn = document.createElement("button");
-            btn.className = "answer";
-            btn.dataset.value = c.value;
-            btn.dataset.correct = c.correct ? "1" : "0";
-            if (c.reasonTag) btn.dataset.reason = c.reasonTag;
-            btn.innerHTML = `<div class="answer-main">${c.value}</div><div class="answer-sub">${c.correct ? "This may be the simplified result." : state.mode === "support" ? "Think about reciprocal, simplification, or the model." : "Choose the best answer."}</div>`;
-            btn.addEventListener("click", () => {
-              [...wrap.querySelectorAll(".answer")].forEach(a => a.classList.remove("selected"));
-              btn.classList.add("selected");
-            });
-            wrap.appendChild(btn);
-          });
-          ui.interactionArea.appendChild(wrap);
-          return;
-        }
-
-        if (q.interaction === "drag" || q.interaction === "boss-drag") {
-          const recip = `${q.b.d}/${q.b.n}`;
-          const wrong1 = `${q.b.n}/${q.b.d}`;
-          const wrong2 = `${q.a.d}/${q.a.n}`;
-          const bank = shuffle([properString(q.a), recip, properString(q.answer), wrong1, wrong2, "×", "÷"]);
-          const container = document.createElement("div");
-          container.innerHTML = `
-            <div class="sub">Drag the correct pieces to build the multiplication equation after rewriting the division problem.</div>
-            <div class="drop-zone-wrap">
-              <div class="drop-zone" data-slot="first">First fraction</div>
-              <div class="sym">×</div>
-              <div class="drop-zone" data-slot="second">Reciprocal of second fraction</div>
-              <div class="sym">=</div>
-              <div class="drop-zone" data-slot="result">Product</div>
-            </div>
-            <div class="chip-bank" id="chipBank"></div>
-          `;
-          ui.interactionArea.appendChild(container);
-          const bankDiv = container.querySelector("#chipBank");
-          bank.forEach(v => {
-            const chip = document.createElement("div");
-            chip.className = "chip";
-            chip.draggable = true;
-            chip.textContent = v;
-            chip.dataset.value = v;
-            chip.addEventListener("dragstart", e => e.dataTransfer.setData("text/plain", v));
-            chip.addEventListener("click", () => autoPlaceChip(container, v, chip));
-            bankDiv.appendChild(chip);
-          });
-          container.querySelectorAll(".drop-zone").forEach(zone => {
-            zone.addEventListener("dragover", e => e.preventDefault());
-            zone.addEventListener("drop", e => {
-              e.preventDefault();
-              const value = e.dataTransfer.getData("text/plain");
-              placeChip(zone, value);
-            });
-          });
-          return;
-        }
-
-        if (q.interaction === "input" || q.interaction === "boss-input") {
-          const div = document.createElement("div");
-          div.innerHTML = `
-            <div class="sub">Enter the simplified answer. Use a fraction like 5/6, a whole number, or a mixed number like 1 1/2.</div>
-            <div class="input-grid" style="margin-top:10px">
-              <div class="mini-card">
-                <div class="eyebrow">Simplified answer</div>
-                <input type="text" id="answerInput" placeholder="Example: 1 1/2" aria-label="Answer input">
-              </div>
-              <div class="mini-card">
-                <div class="eyebrow">Checkpoint</div>
-                <div class="coach">Did you flip only the second fraction?</div>
-              </div>
-              <div class="mini-card">
-                <div class="eyebrow">Reminder</div>
-                <div class="coach">Convert improper fractions to mixed numbers when appropriate.</div>
-              </div>
-            </div>
-          `;
-          ui.interactionArea.appendChild(div);
-        }
-      }
-
-      function autoPlaceChip(container, value, chip){
-        const slots = [...container.querySelectorAll(".drop-zone")];
-        const empty = slots.find(s => !s.dataset.value);
-        if (!empty) return;
-        placeChip(empty, value);
-        chip.style.opacity = ".45";
-      }
-
-      function placeChip(zone, value){
-        zone.textContent = value;
-        zone.dataset.value = value;
-        zone.classList.add("filled");
-      }
-
-      function renderVisual(q){
-        if (q.kind === "Visual Model") {
-          ui.visualArea.innerHTML = svgGroups(q.a, q.b, q.answer);
-          ui.visualCaption.textContent = "Count how many divisor-sized groups fit in the dividend.";
-          return;
-        }
-        if (q.kind === "Boss Battle") {
-          if (state.bossPhase === 0) {
-            ui.visualArea.innerHTML = svgRibbon(q.a, q.b, q.answer);
-            ui.visualCaption.textContent = "The ribbon is the total amount. Each strap uses the divisor amount.";
-          } else if (state.bossPhase === 1) {
-            ui.visualArea.innerHTML = svgTank(q.a, q.b, q.answer);
-            ui.visualCaption.textContent = "The tank shows the total amount and one cycle size.";
-          } else {
-            ui.visualArea.innerHTML = svgBars(q.a, q.b, q.answer, true);
-            ui.visualCaption.textContent = "Use the bar model to reason about how many groups fit in the total.";
+        // ==================== BOOT SCENE ====================
+        class BootScene extends Phaser.Scene {
+          constructor() {
+            super("Boot");
           }
-          return;
-        }
-        ui.visualArea.innerHTML = svgBars(q.a, q.b, q.answer, false);
-        ui.visualCaption.textContent = "The visual supports the dividend, divisor, and final simplified answer.";
-      }
+          create() {
+            // Generate textures
+            const g = this.make.graphics({ add: false });
 
-      function svgBars(a,b,ans,boss){
-        return `
-          <svg viewBox="0 0 560 250" width="100%" height="100%" role="img" aria-label="Fraction bar model">
-            <defs>
-              <linearGradient id="ga" x1="0" x2="1"><stop offset="0%" stop-color="${boss ? "#fbbf24" : "#43c6ff"}"/><stop offset="100%" stop-color="${boss ? "#f43f5e" : "#8b5cf6"}"/></linearGradient>
-              <linearGradient id="gb" x1="0" x2="1"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#22c55e"/></linearGradient>
-            </defs>
-            <rect x="24" y="34" width="512" height="54" rx="16" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
-            ${barSeg(24,34,512,54,a.d,a.n,"url(#ga)")}
-            <text x="24" y="24" fill="#edf2ff" font-size="16" font-weight="900">Dividend: ${properString(a)}</text>
+            // Diver (player)
+            g.clear();
+            g.fillStyle(0x61dafb);
+            g.fillEllipse(20, 16, 40, 28);
+            g.fillStyle(0xffd166);
+            g.fillCircle(32, 10, 8);
+            g.fillStyle(0x18d2ba);
+            g.fillRect(0, 6, 10, 20);
+            g.fillStyle(0x61dafb);
+            g.fillTriangle(-6, 16, -18, 8, -18, 24);
+            g.generateTexture("diver", 44, 32);
 
-            <rect x="24" y="124" width="512" height="54" rx="16" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
-            ${barSeg(24,124,512,54,b.d,b.n,"url(#gb)")}
-            <text x="24" y="114" fill="#dcfce7" font-size="16" font-weight="900">Divisor: ${properString(b)}</text>
+            // Bubble
+            g.clear();
+            g.fillStyle(0xffffff, 0.3);
+            g.fillCircle(6, 6, 6);
+            g.fillStyle(0xffffff, 0.5);
+            g.fillCircle(4, 4, 2);
+            g.generateTexture("bubble", 12, 12);
 
-            <text x="24" y="220" fill="#edf2ff" font-size="18" font-weight="950">Answer: ${displayString(ans)}</text>
-          </svg>`;
-      }
+            // Answer pod (neutral)
+            g.clear();
+            g.lineStyle(2, 0x61dafb, 0.6);
+            g.fillStyle(0x0a1e3a, 0.9);
+            g.fillRoundedRect(0, 0, 100, 50, 12);
+            g.strokeRoundedRect(0, 0, 100, 50, 12);
+            g.generateTexture("pod", 100, 50);
 
-      function barSeg(x,y,w,h,d,n,fill){
-        let out = "";
-        const segW = w/d;
-        for (let i=0;i<d;i++) {
-          out += `<rect x="${x+i*segW}" y="${y}" width="${segW}" height="${h}" fill="${i<n ? fill : "rgba(255,255,255,.03)"}"/>`;
-          out += `<line x1="${x+i*segW}" y1="${y}" x2="${x+i*segW}" y2="${y+h}" stroke="rgba(255,255,255,.22)"/>`;
-        }
-        out += `<line x1="${x+w}" y1="${y}" x2="${x+w}" y2="${y+h}" stroke="rgba(255,255,255,.22)"/>`;
-        return out;
-      }
+            // Sea creature (enemy)
+            g.clear();
+            g.fillStyle(0xff6b6b);
+            g.fillEllipse(20, 14, 40, 28);
+            g.fillStyle(0xffffff);
+            g.fillCircle(28, 10, 5);
+            g.fillStyle(0x000000);
+            g.fillCircle(29, 10, 2);
+            g.fillStyle(0xff6b6b);
+            g.fillTriangle(0, 14, -8, 6, -8, 22);
+            g.generateTexture("enemy", 44, 28);
 
-      function svgGroups(a,b,ans){
-        const units = 24;
-        const aUnits = Math.round((a.n/a.d)*units);
-        const bUnits = Math.max(1, Math.round((b.n/b.d)*units));
-        let marks = "";
-        for (let i=0;i<=units;i++) {
-          const x = 26 + (508/units)*i;
-          marks += `<line x1="${x}" y1="90" x2="${x}" y2="${i%bUnits===0 ? 126 : 108}" stroke="${i%bUnits===0 ? "rgba(251,191,36,.85)" : "rgba(255,255,255,.18)"}" stroke-width="${i%bUnits===0 ? 2 : 1}"/>`;
-        }
-        return `
-          <svg viewBox="0 0 560 250" width="100%" height="100%" role="img" aria-label="Grouping model">
-            <defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0%" stop-color="#43c6ff"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
-            <rect x="26" y="58" width="508" height="30" rx="15" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
-            <rect x="26" y="58" width="${(508/units)*aUnits}" height="30" rx="15" fill="url(#gg)"/>
-            ${marks}
-            <text x="26" y="38" fill="#edf2ff" font-size="16" font-weight="900">Total amount: ${properString(a)}</text>
-            <text x="26" y="154" fill="#fcd34d" font-size="15" font-weight="900">Each gold jump = ${properString(b)}</text>
-            <text x="26" y="214" fill="#edf2ff" font-size="18" font-weight="950">Groups that fit: ${displayString(ans)}</text>
-          </svg>`;
-      }
-
-      function svgRibbon(a,b,ans){
-        return `
-          <svg viewBox="0 0 560 250" width="100%" height="100%" role="img" aria-label="Ribbon model">
-            <defs><linearGradient id="r1" x1="0" x2="1"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f43f5e"/></linearGradient></defs>
-            <rect x="24" y="72" width="512" height="48" rx="16" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.18)"/>
-            <rect x="24" y="72" width="512" height="48" rx="16" fill="url(#r1)" opacity=".8"/>
-            ${Array.from({length:4}).map((_,i)=>`<line x1="${24+i*(512/4)}" y1="72" x2="${24+i*(512/4)}" y2="120" stroke="rgba(255,255,255,.35)" stroke-width="2"/>`).join("")}
-            <line x1="536" y1="72" x2="536" y2="120" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
-            <text x="24" y="44" fill="#fde68a" font-size="16" font-weight="900">Total ribbon: ${properString(a)} meters</text>
-            <text x="24" y="156" fill="#edf2ff" font-size="15" font-weight="900">Each strap: ${properString(b)} meter</text>
-            <text x="24" y="214" fill="#edf2ff" font-size="18" font-weight="950">Full straps: ${displayString(ans)}</text>
-          </svg>`;
-      }
-
-      function svgTank(a,b,ans){
-        return `
-          <svg viewBox="0 0 560 250" width="100%" height="100%" role="img" aria-label="Tank model">
-            <defs><linearGradient id="t1" x1="0" x2="1"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#43c6ff"/></linearGradient></defs>
-            <rect x="52" y="30" width="130" height="176" rx="18" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.2)"/>
-            <rect x="52" y="${30+176*(1-a.n/a.d)}" width="130" height="${176*(a.n/a.d)}" rx="18" fill="url(#t1)" opacity=".85"/>
-            <rect x="278" y="30" width="130" height="176" rx="18" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.2)"/>
-            <rect x="278" y="${30+176*(1-b.n/b.d)}" width="130" height="${176*(b.n/b.d)}" rx="18" fill="#fbbf24" opacity=".88"/>
-            <text x="52" y="224" fill="#edf2ff" font-size="16" font-weight="900">Total = ${properString(a)} tank</text>
-            <text x="278" y="224" fill="#edf2ff" font-size="16" font-weight="900">1 cycle = ${properString(b)} tank</text>
-            <text x="440" y="105" fill="#edf2ff" font-size="18" font-weight="900">Cycles =</text>
-            <text x="440" y="146" fill="#fcd34d" font-size="34" font-weight="950">${displayString(ans)}</text>
-          </svg>`;
-      }
-
-      function updateTutor(){
-        const mis = mostCommonMisconception();
-        const acc = percent(state.correct, state.totalAsked);
-        let tutor = "Read the divisor carefully. The reciprocal applies to the second fraction only.";
-        let coach = "The game will watch your errors and adjust support, difficulty, and feedback.";
-        let skill = "Build confidence";
-
-        if (mis === "Forgetting the reciprocal") {
-          tutor = "You may be multiplying without flipping the second fraction. Pause and say: keep, flip, multiply.";
-          coach = "Routing to reciprocal support. Expect more reciprocal-building tasks.";
-          skill = "Reciprocal reasoning";
-        } else if (mis === "Flipping the first fraction") {
-          tutor = "Do not flip the first fraction. Only the divisor gets turned into its reciprocal.";
-          coach = "Routing to reciprocal correction. Focus on naming dividend and divisor first.";
-          skill = "Dividend vs divisor";
-        } else if (mis === "Not simplifying") {
-          tutor = "Your result may be equivalent but not simplified. Reduce the fraction at the end.";
-          coach = "Routing to simplify support. Expect more simplification and mixed-number tasks.";
-          skill = "Simplifying fractions";
-        } else if (mis === "Mixed-number conversion") {
-          tutor = "When the numerator is larger than the denominator, check whether the answer should be a mixed number.";
-          coach = "Routing to mixed-number support.";
-          skill = "Mixed numbers";
-        } else if (mis === "Misreading the model") {
-          tutor = "Use the visual to ask: how many groups of the divisor fit inside the dividend?";
-          coach = "Routing to model support.";
-          skill = "Visual interpretation";
-        } else if (mis === "Translating the context") {
-          tutor = "In a story, identify the total amount first and the amount in one group second.";
-          coach = "Routing to context support.";
-          skill = "Word-problem translation";
-        } else if (acc >= 85 && state.streak >= 3) {
-          tutor = "Strong work. Check for harder distractors and simplify precisely.";
-          coach = "Challenge route active.";
-          skill = "Advanced fluency";
-        }
-
-        state.masterySkill = skill;
-        ui.tutorText.textContent = tutor;
-        ui.coachText.textContent = coach;
-      }
-
-      function xpGain(base){
-        const gain = Math.round(base * CONFIG.MODES[state.mode].xpMult);
-        state.xp += gain;
-        return gain;
-      }
-
-      function correctAnswer(reward = 1){
-        state.correct++;
-        state.streak++;
-        state.bestStreak = Math.max(state.bestStreak, state.streak);
-        const dmgBase = CONFIG.GUARDIANS[state.guardianIndex].boss ? 58 : 38;
-        const dmg = Math.min(100, dmgBase + state.streak * 5 + state.activeQuestion.difficulty * 4);
-        state.guardianHp = clamp(state.guardianHp - dmg, 0, 999);
-        const xp = xpGain(28 + state.activeQuestion.difficulty * 10 + state.streak * 2);
-        ui.hpBar.style.width = `${state.guardianHp}%`;
-        ui.hpLabel.textContent = `${Math.round(state.guardianHp)}%`;
-        spawnParticles(CONFIG.GUARDIANS[state.guardianIndex].boss ? "gold" : "good");
-        tone(CONFIG.GUARDIANS[state.guardianIndex].boss ? "gold" : "good");
-        toast("Correct", `+${xp} XP${state.streak >= 2 ? ` · streak ${state.streak}` : ""}`, "good");
-        log("Correct.", `You solved <strong>${state.activeQuestion.prompt}</strong> and dealt ${Math.round(dmg)} shield damage.`);
-        if (state.correct === 1) unlockAchievement("first-hit");
-        if (state.streak === 3) { unlockAchievement("streak-3"); state.energy = clamp(state.energy + 1, 0, state.maxEnergy); banner("Heat Check", "Streak 3. +1 energy."); }
-        if (state.streak === 5) unlockAchievement("streak-5");
-        if (CONFIG.GUARDIANS[state.guardianIndex].boss && state.bossPhase === 0) unlockAchievement("boss-1");
-      }
-
-      function incorrectAnswer(tag){
-        state.incorrect++;
-        state.streak = 0;
-        state.energy = clamp(state.energy - 1, 0, state.maxEnergy);
-        recordMisconception(tag);
-        tone("bad");
-        spawnParticles("bad");
-        toast("Incorrect", wrongLabel(tag), "bad");
-        log("Miss.", `${wrongLabel(tag)}`);
-        document.body.classList.add("shake");
-        setTimeout(() => document.body.classList.remove("shake"), 220);
-      }
-
-      function chamberCleared(){
-        const boss = CONFIG.GUARDIANS[state.guardianIndex].boss;
-        if (boss) {
-          state.bossPhase++;
-          if (state.bossPhase < 3) {
-            state.guardianHp = CONFIG.GUARDIANS[state.guardianIndex].hp;
-            banner("Boss phase cleared", `Phase ${state.bossPhase} complete. Another lock remains.`);
-            ui.nextBtn.disabled = false;
-            updateHUD();
-            return;
-          }
-          state.guardiansCleared++;
-          endGame(true);
-          return;
-        }
-
-        if (state.chamberWrong === 0) unlockAchievement("perfect-guardian");
-        state.guardiansCleared++;
-        banner("Guardian defeated", `${CONFIG.GUARDIANS[state.guardianIndex].name} is down.`);
-        tone("gold");
-        spawnParticles("gold");
-        state.guardianIndex++;
-        state.chamberWrong = 0;
-        state.guardianHp = CONFIG.GUARDIANS[state.guardianIndex].hp;
-        ui.nextBtn.disabled = false;
-        renderMap();
-        updateHUD();
-      }
-
-      function finalizeQuestion(correct, tag){
-        state.answered = true;
-        ui.nextBtn.disabled = false;
-        if (correct) {
-          correctAnswer();
-          if (state.guardianHp <= 0) chamberCleared();
-        } else {
-          state.chamberWrong++;
-          incorrectAnswer(tag);
-          if (state.energy <= 0) endGame(false);
-        }
-        updateTutor();
-        updateHUD();
-      }
-
-      function checkMC(){
-        const selected = ui.interactionArea.querySelector(".answer.selected");
-        if (!selected) { toast("Select an answer", "Choose the best answer before submitting.", "warn"); tone("warn"); return; }
-        const buttons = [...ui.interactionArea.querySelectorAll(".answer")];
-        buttons.forEach(btn => {
-          btn.disabled = true;
-          if (btn.dataset.correct === "1") btn.classList.add("correct");
-        });
-        if (selected.dataset.correct === "1") {
-          selected.classList.add("correct");
-          finalizeQuestion(true, null);
-        } else {
-          selected.classList.add("wrong");
-          finalizeQuestion(false, selected.dataset.reason || "forgotReciprocal");
-        }
-      }
-
-      function checkDrag(){
-        const slots = [...ui.interactionArea.querySelectorAll(".drop-zone")];
-        const vals = slots.map(s => s.dataset.value || "");
-        const q = state.activeQuestion;
-        const expectedFirst = properString(q.a);
-        const expectedSecond = properString(frac(q.b.d,q.b.n));
-        const expectedThird = properString(q.answer);
-
-        slots.forEach(s => {
-          s.style.borderColor = "rgba(255,255,255,.2)";
-          s.style.background = "rgba(255,255,255,.03)";
-        });
-
-        if (!vals.every(Boolean)) {
-          toast("Complete the build", "Place a value in every drop zone.", "warn");
-          return;
-        }
-
-        if (vals[0] === expectedFirst && vals[1] === expectedSecond && parseFracText(vals[2]) && eq(parseFracText(vals[2]), q.answer)) {
-          slots.forEach(s => { s.style.borderColor = "rgba(52,211,153,.75)"; s.style.background = "rgba(52,211,153,.12)"; });
-          finalizeQuestion(true, null);
-        } else {
-          let tag = "forgotReciprocal";
-          if (vals[0] === properString(frac(q.a.d,q.a.n))) tag = "flippedFirst";
-          else if (vals[1] === properString(q.b)) tag = "forgotReciprocal";
-          else if (parseFracText(vals[2]) && eq(parseFracText(vals[2]), simplifiedEquivalentWrong(q.answer))) tag = "noSimplify";
-          slots.forEach(s => { s.style.borderColor = "rgba(251,113,133,.75)"; s.style.background = "rgba(251,113,133,.10)"; });
-          finalizeQuestion(false, tag);
-        }
-      }
-
-      function checkInput(){
-        const input = ui.interactionArea.querySelector("#answerInput");
-        if (!input || !input.value.trim()) { toast("Enter an answer", "Type the simplified answer before submitting.", "warn"); return; }
-        const val = parseFracText(input.value);
-        if (!val) { toast("Format issue", "Use a whole number, fraction, or mixed number like 1 1/2.", "warn"); return; }
-        const ans = state.activeQuestion.answer;
-        if (eq(val, ans)) {
-          finalizeQuestion(true, null);
-        } else {
-          let tag = "mixedNumberError";
-          if (eq(val, simplifiedEquivalentWrong(ans))) tag = "noSimplify";
-          else if (state.activeQuestion.kind === "Boss Battle") tag = "contextTransfer";
-          finalizeQuestion(false, tag);
-        }
-      }
-
-      function submitCurrent(){
-        if (state.answered || !state.activeQuestion) return;
-        const type = state.activeQuestion.interaction;
-        if (type === "mc" || type === "boss-mc" || type === "model") checkMC();
-        else if (type === "drag" || type === "boss-drag") checkDrag();
-        else checkInput();
-      }
-
-      function nextQuestion(){
-        if (state.energy <= 0) return endGame(false);
-        buildQuestion();
-      }
-
-      function skipQuestion(){
-        if (state.answered) return;
-        state.answered = true;
-        state.incorrect++;
-        state.chamberWrong++;
-        state.streak = 0;
-        state.energy = clamp(state.energy - 1, 0, state.maxEnergy);
-        recordMisconception(state.activeQuestion.kind === "Boss Battle" ? "contextTransfer" : "forgotReciprocal");
-        toast("Skipped", "You lost 1 energy.", "warn");
-        log("Skip.", `You skipped <strong>${state.activeQuestion.prompt}</strong>.`);
-        ui.nextBtn.disabled = false;
-        if (state.energy <= 0) endGame(false);
-        updateTutor();
-        updateHUD();
-      }
-
-      function toggleExplain(){
-        const hidden = ui.explainWrap.classList.contains("hidden");
-        ui.explainWrap.classList.toggle("hidden");
-        ui.explainBtn.textContent = hidden ? "Hide Explanation" : "Show Explanation";
-        if (hidden) {
-          state.hintCount++;
-          updateHUD();
-          toast("Explanation opened", "Use the steps to check your process.", "warn");
-        }
-      }
-
-      function exportResults(){
-        const acc = percent(state.correct, state.totalAsked);
-        const data = {
-          version: CONFIG.VERSION,
-          standard: CONFIG.STANDARD,
-          mode: state.mode,
-          accuracy: acc,
-          xp: state.xp,
-          level: state.level,
-          correct: state.correct,
-          incorrect: state.incorrect,
-          bestStreak: state.bestStreak,
-          guardiansCleared: state.guardiansCleared,
-          bossPhases: state.bossPhase,
-          misconceptions: state.misconceptions,
-          commonError: mostCommonMisconception(),
-          rank: rankFromAcc(acc).rank,
-          timestamp: new Date().toISOString()
-        };
-
-        const csvRows = [
-          ["version","standard","mode","accuracy","xp","level","correct","incorrect","bestStreak","guardiansCleared","bossPhases","commonError"],
-          [data.version,data.standard,data.mode,data.accuracy,data.xp,data.level,data.correct,data.incorrect,data.bestStreak,data.guardiansCleared,data.bossPhases,data.commonError]
-        ];
-        const csv = csvRows.map(r => r.map(v => `"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
-        const json = JSON.stringify(data, null, 2);
-        downloadFile(`fraction-forge-results-${Date.now()}.csv`, csv, "text/csv");
-        setTimeout(()=>downloadFile(`fraction-forge-results-${Date.now()}.json`, json, "application/json"), 100);
-        toast("Export complete", "CSV and JSON reports downloaded.", "good");
-      }
-
-      function downloadFile(name, content, type){
-        const blob = new Blob([content], { type });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = name; a.click();
-        setTimeout(()=>URL.revokeObjectURL(url), 1500);
-      }
-
-      function printSummary(){
-        const acc = percent(state.correct, state.totalAsked);
-        ui.printWrap.innerHTML = `
-          <h2>Fraction Forge Summary</h2>
-          <p><strong>Standard:</strong> ${CONFIG.STANDARD}</p>
-          <p><strong>Accuracy:</strong> ${acc}%</p>
-          <p><strong>Common Error:</strong> ${mostCommonMisconception()}</p>
-          <p><strong>Reminder:</strong> Keep the first fraction, flip the second fraction, multiply, then simplify.</p>
-        `;
-        window.print();
-      }
-
-      function endGame(won){
-        const acc = percent(state.correct, state.totalAsked);
-        const rank = rankFromAcc(acc);
-        if (won && acc >= 90) unlockAchievement("mastery-90");
-        ui.endTitle.textContent = won ? "Forge Restored" : "Forge Needs Another Run";
-        ui.endSub.textContent = won
-          ? "You restored the forge with powerful fraction-division reasoning."
-          : "You ran out of energy, but the tutor has clear next steps for your next run.";
-        ui.endAcc.textContent = `${acc}%`;
-        ui.endXP.textContent = String(state.xp);
-        ui.endStreak.textContent = String(state.bestStreak);
-        ui.endRank.textContent = rank.rank;
-
-        let feedback = "";
-        if (won && acc >= 90) feedback = "Excellent transfer and precision. You showed mastery of reciprocal reasoning, simplification, and word-problem translation.";
-        else if (won && acc >= 75) feedback = "Strong work. You used the reciprocal strategy accurately and handled context better over time.";
-        else if (acc >= 60) feedback = "You are building the correct process. Focus next on the most common misconception: " + mostCommonMisconception().toLowerCase() + ".";
-        else feedback = "Priority next step: slow down and name the dividend and divisor before solving. Then apply keep, flip, multiply, simplify.";
-        ui.teacherFeedback.textContent = feedback;
-
-        ui.endOverlay.classList.remove("hidden");
-      }
-
-      function resetState(){
-        state.started = false;
-        state.energy = CONFIG.MODES[state.mode].energy;
-        state.maxEnergy = state.energy;
-        state.xp = 0;
-        state.level = 1;
-        state.guardiansCleared = 0;
-        state.guardianIndex = 0;
-        state.guardianHp = CONFIG.GUARDIANS[0].hp;
-        state.bossPhase = 0;
-        state.questionIndex = 0;
-        state.totalAsked = 0;
-        state.correct = 0;
-        state.incorrect = 0;
-        state.streak = 0;
-        state.bestStreak = 0;
-        state.hintCount = 0;
-        state.activeQuestion = null;
-        state.answered = false;
-        state.route = "standard";
-        state.chamberWrong = 0;
-        state.history = [];
-        state.usedIds = new Set();
-        state.misconceptions = {
-          flippedFirst: 0,
-          forgotReciprocal: 0,
-          noSimplify: 0,
-          mixedNumberError: 0,
-          modelMisread: 0,
-          contextTransfer: 0
-        };
-        state.achievements = new Set();
-        state.masterySkill = "Build confidence";
-        renderAchievements();
-        renderLog();
-        renderMap();
-        updateHUD();
-      }
-
-      function startGame(){
-        resetState();
-        state.started = true;
-        ui.startOverlay.classList.add("hidden");
-        ui.endOverlay.classList.add("hidden");
-        buildQuestion();
-        toast("Mission started", "Defeat every chamber and restore the Forge Core.", "good");
-        log("Start.", "The forge is active. Guardian 1 awaits.");
-      }
-
-      function toggleHints(){
-        state.hints = !state.hints;
-        ui.toggleHintBtn.textContent = state.hints ? "Hints On" : "Hints Off";
-        updateHUD();
-      }
-
-      function toggleSound(){
-        state.sound = !state.sound;
-        ui.toggleSoundBtn.textContent = state.sound ? "Sound On" : "Sound Off";
-        updateHUD();
-      }
-
-      function selectMode(mode){
-        if (!CONFIG.MODES[mode]) return;
-        state.mode = mode;
-        document.querySelectorAll(".mode").forEach(btn => {
-          const active = btn.dataset.mode === mode;
-          btn.classList.toggle("active", active);
-          btn.setAttribute("aria-checked", String(active));
-        });
-        savePrefs();
-      }
-
-      function selfTest(){
-        const tests = [];
-        tests.push(eq(divf(frac(1,2), frac(1,4)), frac(2,1)));
-        tests.push(eq(divf(frac(3,4), frac(1,2)), frac(3,2)));
-        tests.push(eq(parseFracText("1 1/2"), frac(3,2)));
-        tests.push(rankFromAcc(93).rank === "Master");
-        tests.push(properString(frac(4,8)) === "1/2");
-        return tests.every(Boolean);
-      }
-
-      function bindEvents(){
-        ui.startBtn.addEventListener("click", startGame);
-        ui.replayBtn.addEventListener("click", startGame);
-        ui.toggleHintBtn.addEventListener("click", toggleHints);
-        ui.toggleSoundBtn.addEventListener("click", toggleSound);
-        ui.helpBtn.addEventListener("click", ()=>ui.helpModal.classList.remove("hidden"));
-        ui.openHelpFromStart.addEventListener("click", ()=>ui.helpModal.classList.remove("hidden"));
-        ui.closeHelpBtn.addEventListener("click", ()=>ui.helpModal.classList.add("hidden"));
-        ui.exportBtn.addEventListener("click", exportResults);
-        ui.exportBtnEnd.addEventListener("click", exportResults);
-        ui.printBtn.addEventListener("click", printSummary);
-        ui.submitBtn.addEventListener("click", submitCurrent);
-        ui.skipBtn.addEventListener("click", skipQuestion);
-        ui.nextBtn.addEventListener("click", nextQuestion);
-        ui.explainBtn.addEventListener("click", toggleExplain);
-
-        document.querySelectorAll(".mode").forEach(btn => {
-          btn.addEventListener("click", ()=>selectMode(btn.dataset.mode));
-          btn.addEventListener("keydown", e => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              selectMode(btn.dataset.mode);
+            // Jellyfish
+            g.clear();
+            g.fillStyle(0xc084fc, 0.7);
+            g.fillEllipse(16, 10, 32, 20);
+            for (let i = 0; i < 5; i++) {
+              g.lineStyle(2, 0xc084fc, 0.5);
+              g.lineBetween(4 + i * 7, 18, 2 + i * 7, 36);
             }
-          });
-        });
+            g.generateTexture("jellyfish", 32, 38);
 
-        document.addEventListener("keydown", e => {
-          if (e.key === "Escape") ui.helpModal.classList.add("hidden");
-          if (e.key === "Enter" && state.started && !state.answered && document.activeElement.tagName !== "INPUT") submitCurrent();
-        });
-      }
+            // Treasure chest
+            g.clear();
+            g.fillStyle(0xfbbf24);
+            g.fillRoundedRect(0, 8, 32, 20, 4);
+            g.fillStyle(0xd97706);
+            g.fillRoundedRect(0, 0, 32, 12, 4);
+            g.fillStyle(0xffffff);
+            g.fillRect(14, 4, 4, 6);
+            g.generateTexture("chest", 32, 28);
 
-      function init(){
-        loadPrefs();
-        selectMode(state.mode);
-        ui.toggleHintBtn.textContent = state.hints ? "Hints On" : "Hints Off";
-        ui.toggleSoundBtn.textContent = state.sound ? "Sound On" : "Sound Off";
-        bindEvents();
-        renderAchievements();
-        renderLog();
-        renderMap();
-        updateHUD();
-        if (!selfTest()) toast("Diagnostics", "Self-test warning detected. Review build before classroom use.", "warn");
-      }
+            // Coral
+            g.clear();
+            g.fillStyle(0xff6b8a, 0.6);
+            g.fillRoundedRect(0, 10, 8, 20, 3);
+            g.fillRoundedRect(6, 5, 8, 25, 3);
+            g.fillRoundedRect(12, 12, 8, 18, 3);
+            g.generateTexture("coral", 20, 30);
 
-      init();
-    })();
-  </script>
-</body>
+            // Particle
+            g.clear();
+            g.fillStyle(0xffffff);
+            g.fillCircle(3, 3, 3);
+            g.generateTexture("particle", 6, 6);
+
+            // Star particle
+            g.clear();
+            g.fillStyle(0xffd166);
+            g.fillCircle(4, 4, 4);
+            g.generateTexture("star", 8, 8);
+
+            // Health heart
+            g.clear();
+            g.fillStyle(0xff6b6b);
+            g.fillCircle(8, 6, 6);
+            g.fillCircle(16, 6, 6);
+            g.fillTriangle(2, 8, 22, 8, 12, 20);
+            g.generateTexture("heart", 24, 20);
+
+            this.scene.start("Title");
+          }
+        }
+
+        // ==================== TITLE SCENE ====================
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+          create() {
+            // Ocean gradient background
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x031321, 0x031321, 0x072a44, 0x072a44, 1);
+            bg.fillRect(0, 0, W, H);
+
+            // Animated bubbles
+            for (let i = 0; i < 30; i++) {
+              const b = this.add
+                .image(rand(20, W - 20), rand(20, H - 20), "bubble")
+                .setAlpha(0.2 + Math.random() * 0.3)
+                .setScale(0.5 + Math.random() * 1.5);
+              this.tweens.add({
+                targets: b,
+                y: b.y - 100 - Math.random() * 200,
+                alpha: 0,
+                duration: 3000 + Math.random() * 4000,
+                repeat: -1,
+                delay: Math.random() * 3000,
+              });
+            }
+
+            // Title
+            this.add
+              .text(W / 2, 120, "UNDERWATER\nADVENTURE", {
+                fontSize: "52px",
+                fontFamily: "Inter,system-ui,sans-serif",
+                fontStyle: "bold",
+                color: "#61dafb",
+                align: "center",
+                lineSpacing: 8,
+                stroke: "#0a3a58",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+
+            this.add
+              .text(W / 2, 210, "6.NS.A.1 — Divide Fractions by Fractions", {
+                fontSize: "16px",
+                color: "#a8d7e5",
+                align: "center",
+              })
+              .setOrigin(0.5);
+
+            // Diver animation
+            const diver = this.add.image(W / 2, 320, "diver").setScale(3);
+            this.tweens.add({
+              targets: diver,
+              y: 340,
+              duration: 2000,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+
+            // Instructions
+            const info = [
+              "Dive deep and solve fraction division!",
+              "Swim into the answer bubble with the correct result.",
+              "Avoid sea creatures carrying wrong answers.",
+              "Keep → Flip → Multiply → Simplify",
+              "Arrow keys / WASD / Touch to move",
+            ];
+            info.forEach((t, i) => {
+              this.add
+                .text(W / 2, 400 + i * 24, t, {
+                  fontSize: "14px",
+                  color: "#7ec8e3",
+                  align: "center",
+                })
+                .setOrigin(0.5);
+            });
+
+            // Start button
+            const btn = this.add
+              .rectangle(W / 2, 570, 220, 50, 0x18d2ba)
+              .setInteractive({ useHandCursor: true });
+            const btnTxt = this.add
+              .text(W / 2, 570, "START DIVE", {
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5);
+
+            btn.on("pointerover", () => btn.setFillStyle(0x34d399));
+            btn.on("pointerout", () => btn.setFillStyle(0x18d2ba));
+            btn.on("pointerdown", () => {
+              getAudio();
+              sfxDive();
+              this.cameras.main.fadeOut(500, 2, 10, 24);
+              this.time.delayedCall(500, () => this.scene.start("Game"));
+            });
+
+            // Keyboard start
+            this.input.keyboard.on("keydown-SPACE", () => {
+              getAudio();
+              sfxDive();
+              this.cameras.main.fadeOut(500);
+              this.time.delayedCall(500, () => this.scene.start("Game"));
+            });
+            this.input.keyboard.on("keydown-ENTER", () => {
+              getAudio();
+              sfxDive();
+              this.cameras.main.fadeOut(500);
+              this.time.delayedCall(500, () => this.scene.start("Game"));
+            });
+
+            this.cameras.main.fadeIn(400);
+          }
+        }
+
+        // ==================== GAME SCENE ====================
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("Game");
+          }
+
+          create() {
+            this.cameras.main.fadeIn(400);
+
+            // State
+            this.score = 0;
+            this.combo = 0;
+            this.lives = 4;
+            this.level = 1;
+            this.questionsAnswered = 0;
+            this.questionsCorrect = 0;
+            this.depth = 0;
+            this.targetDepth = 0;
+            this.currentQ = null;
+            this.answered = false;
+            this.bestCombo = 0;
+
+            // Ocean background layers
+            this.bgBack = this.add.tileSprite(0, 0, W, H, null).setOrigin(0);
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x072a44, 0x072a44, 0x031321, 0x031321, 1);
+            bg.fillRect(0, 0, W, H);
+            bg.setScrollFactor(0);
+
+            // Light rays
+            this.rays = this.add.graphics().setAlpha(0.08).setScrollFactor(0);
+            for (let i = 0; i < 6; i++) {
+              this.rays.fillStyle(0x61dafb);
+              const x = 100 + i * 160;
+              this.rays.fillTriangle(x, 0, x - 40, H, x + 40, H);
+            }
+
+            // Bubbles particle
+            this.bubbleParticles = this.add
+              .particles(0, 0, "bubble", {
+                x: { min: 0, max: W },
+                y: { min: H + 10, max: H + 50 },
+                lifespan: 4000,
+                speedY: { min: -30, max: -80 },
+                speedX: { min: -10, max: 10 },
+                scale: { start: 0.3, end: 0.8 },
+                alpha: { start: 0.4, end: 0 },
+                frequency: 200,
+                quantity: 1,
+              })
+              .setScrollFactor(0);
+
+            // Coral decorations at bottom
+            for (let i = 0; i < 12; i++) {
+              this.add
+                .image(rand(20, W - 20), H - rand(5, 30), "coral")
+                .setScale(1 + Math.random())
+                .setAlpha(0.3 + Math.random() * 0.3)
+                .setTint(pick([0xff6b8a, 0xc084fc, 0x34d399, 0x61dafb]))
+                .setScrollFactor(0);
+            }
+
+            // Player (diver)
+            this.player = this.physics.add
+              .image(120, H / 2, "diver")
+              .setScale(1.8)
+              .setDepth(10);
+            this.player.setCollideWorldBounds(true);
+            this.player.body.setMaxVelocity(280, 280);
+            this.player.setDamping(true);
+            this.player.setDrag(0.92);
+
+            // Player glow
+            this.playerGlow = this.add
+              .ellipse(0, 0, 70, 50, 0x61dafb, 0.15)
+              .setDepth(9);
+            this.tweens.add({
+              targets: this.playerGlow,
+              scaleX: 1.2,
+              scaleY: 1.2,
+              alpha: 0.08,
+              duration: 1000,
+              yoyo: true,
+              repeat: -1,
+            });
+
+            // Trail particles
+            this.trailEmitter = this.add
+              .particles(0, 0, "particle", {
+                follow: this.player,
+                followOffset: { x: -20, y: 0 },
+                lifespan: 600,
+                speedX: { min: -20, max: -60 },
+                speedY: { min: -15, max: 15 },
+                scale: { start: 0.5, end: 0 },
+                alpha: { start: 0.5, end: 0 },
+                tint: 0x61dafb,
+                frequency: 50,
+                quantity: 1,
+              })
+              .setDepth(9);
+
+            // Answer pods group
+            this.pods = this.physics.add.group();
+
+            // Enemy creatures group
+            this.enemies = this.physics.add.group();
+
+            // Collectibles
+            this.collectibles = this.physics.add.group();
+
+            // HUD
+            this.createHUD();
+
+            // Controls
+            this.cursors = this.input.keyboard.createCursorKeys();
+            this.wasd = {
+              up: this.input.keyboard.addKey("W"),
+              down: this.input.keyboard.addKey("S"),
+              left: this.input.keyboard.addKey("A"),
+              right: this.input.keyboard.addKey("D"),
+            };
+
+            // Touch controls
+            this.touchTarget = null;
+            this.input.on("pointerdown", (p) => {
+              this.touchTarget = { x: p.worldX, y: p.worldY };
+            });
+            this.input.on("pointermove", (p) => {
+              if (p.isDown) this.touchTarget = { x: p.worldX, y: p.worldY };
+            });
+            this.input.on("pointerup", () => {
+              this.touchTarget = null;
+            });
+
+            // Collisions
+            this.physics.add.overlap(
+              this.player,
+              this.pods,
+              (p, pod) => this.hitPod(pod),
+              null,
+              this,
+            );
+            this.physics.add.overlap(
+              this.player,
+              this.enemies,
+              (p, e) => this.hitEnemy(e),
+              null,
+              this,
+            );
+            this.physics.add.overlap(
+              this.player,
+              this.collectibles,
+              (p, c) => this.hitCollectible(c),
+              null,
+              this,
+            );
+
+            // Spawn first question
+            this.nextQuestion();
+
+            // Ambient fish spawner
+            this.time.addEvent({
+              delay: 3000,
+              callback: () => this.spawnAmbientFish(),
+              loop: true,
+            });
+
+            // Depth timer (auto increase)
+            this.time.addEvent({
+              delay: 100,
+              callback: () => {
+                this.depth += 0.3;
+                this.depthText.setText(
+                  "Depth: " + Math.floor(this.depth) + "m",
+                );
+              },
+              loop: true,
+            });
+          }
+
+          createHUD() {
+            const pad = 12;
+            // Score
+            this.add
+              .rectangle(80, pad + 18, 140, 36, 0x0a1e3a, 0.8)
+              .setScrollFactor(0)
+              .setDepth(100)
+              .setStrokeStyle(1, 0x61dafb, 0.3);
+            this.scoreText = this.add
+              .text(80, pad + 18, "Score: 0", {
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#61dafb",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Combo
+            this.add
+              .rectangle(230, pad + 18, 120, 36, 0x0a1e3a, 0.8)
+              .setScrollFactor(0)
+              .setDepth(100)
+              .setStrokeStyle(1, 0xffd166, 0.3);
+            this.comboText = this.add
+              .text(230, pad + 18, "Combo: 0", {
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#ffd166",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Level
+            this.add
+              .rectangle(370, pad + 18, 120, 36, 0x0a1e3a, 0.8)
+              .setScrollFactor(0)
+              .setDepth(100)
+              .setStrokeStyle(1, 0x34d399, 0.3);
+            this.levelText = this.add
+              .text(370, pad + 18, "Level: 1", {
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#34d399",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Depth
+            this.add
+              .rectangle(510, pad + 18, 140, 36, 0x0a1e3a, 0.8)
+              .setScrollFactor(0)
+              .setDepth(100)
+              .setStrokeStyle(1, 0xc084fc, 0.3);
+            this.depthText = this.add
+              .text(510, pad + 18, "Depth: 0m", {
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#c084fc",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Lives (hearts)
+            this.heartsGroup = [];
+            for (let i = 0; i < 4; i++) {
+              const h = this.add
+                .image(W - 120 + i * 28, pad + 18, "heart")
+                .setScale(1.2)
+                .setScrollFactor(0)
+                .setDepth(101);
+              this.heartsGroup.push(h);
+            }
+
+            // Question display (bottom panel)
+            this.qPanel = this.add
+              .rectangle(W / 2, H - 50, W - 40, 80, 0x0a1e3a, 0.85)
+              .setScrollFactor(0)
+              .setDepth(100)
+              .setStrokeStyle(1, 0x61dafb, 0.4);
+            this.qText = this.add
+              .text(W / 2, H - 60, "", {
+                fontSize: "24px",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+            this.qHint = this.add
+              .text(W / 2, H - 35, "", {
+                fontSize: "13px",
+                color: "#a8d7e5",
+                align: "center",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+            this.feedbackText = this.add
+              .text(W / 2, H / 2, "", {
+                fontSize: "28px",
+                fontStyle: "bold",
+                color: "#34d399",
+                stroke: "#000",
+                strokeThickness: 4,
+                align: "center",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(102)
+              .setAlpha(0);
+          }
+
+          nextQuestion() {
+            // Clear old pods and enemies
+            this.pods.clear(true, true);
+            this.enemies.clear(true, true);
+            this.answered = false;
+
+            // Generate question
+            this.currentQ = generateQuestion(this.level);
+            this.qText.setText(this.currentQ.prompt);
+            this.qHint.setText("Swim into the correct answer!");
+
+            // Spawn answer pods
+            const startX = W * 0.4;
+            const choices = this.currentQ.choices;
+            choices.forEach((c, i) => {
+              const x = startX + rand(50, 350);
+              const y = 80 + (i * (H - 200)) / choices.length + rand(-20, 20);
+
+              const pod = this.physics.add
+                .image(x, y, "pod")
+                .setScale(1.2)
+                .setDepth(5);
+              pod.setData("correct", c.correct);
+              pod.setData("text", c.text);
+              pod.setData("bobOffset", Math.random() * Math.PI * 2);
+              pod.body.setImmovable(true);
+
+              // Answer label
+              const label = this.add
+                .text(x, y, c.text, {
+                  fontSize: "18px",
+                  fontStyle: "bold",
+                  color: "#ecfbff",
+                  align: "center",
+                })
+                .setOrigin(0.5)
+                .setDepth(6);
+              pod.setData("label", label);
+
+              // Bob animation
+              this.tweens.add({
+                targets: [pod, label],
+                y: y + 12,
+                duration: 1500 + rand(0, 500),
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+                delay: rand(0, 500),
+              });
+
+              this.pods.add(pod);
+
+              // If wrong answer, also spawn an enemy near it
+              if (!c.correct && Math.random() > 0.4) {
+                const ex = x + rand(-60, 60);
+                const ey = y + rand(-40, 40);
+                const enemy = this.physics.add
+                  .image(ex, ey, pick(["enemy", "jellyfish"]))
+                  .setScale(1.3)
+                  .setDepth(4);
+                enemy.setData("speed", rand(30, 80));
+                enemy.setData("dir", Math.random() > 0.5 ? 1 : -1);
+                this.enemies.add(enemy);
+              }
+            });
+
+            // Spawn some extra roaming enemies
+            for (let i = 0; i < this.level; i++) {
+              const ex = rand(W * 0.3, W - 60);
+              const ey = rand(60, H - 120);
+              const enemy = this.physics.add
+                .image(ex, ey, pick(["enemy", "jellyfish"]))
+                .setScale(1.2)
+                .setDepth(4);
+              enemy.setData("speed", rand(40, 100));
+              enemy.setData("dir", Math.random() > 0.5 ? 1 : -1);
+              enemy.setData("vertDir", Math.random() > 0.5 ? 1 : -1);
+              this.enemies.add(enemy);
+            }
+
+            // Spawn collectible bubbles
+            for (let i = 0; i < rand(1, 3); i++) {
+              const cx = rand(200, W - 80);
+              const cy = rand(80, H - 150);
+              const c = this.physics.add
+                .image(cx, cy, "star")
+                .setScale(1.5)
+                .setDepth(4);
+              c.setData("type", "bonus");
+              this.tweens.add({
+                targets: c,
+                y: cy - 15,
+                duration: 1000,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+              this.collectibles.add(c);
+            }
+          }
+
+          hitPod(pod) {
+            if (this.answered) return;
+            this.answered = true;
+
+            const correct = pod.getData("correct");
+            const label = pod.getData("label");
+
+            if (correct) {
+              // Correct answer
+              sfxCorrect();
+              this.combo++;
+              this.bestCombo = Math.max(this.bestCombo, this.combo);
+              this.questionsCorrect++;
+              this.questionsAnswered++;
+
+              const points = 100 + this.combo * 20 + this.level * 30;
+              this.score += points;
+
+              // Visual feedback
+              pod.setTint(0x34d399);
+              label.setColor("#34d399");
+
+              this.showFeedback("CORRECT! +" + points, 0x34d399);
+
+              // Particles burst
+              this.add
+                .particles(pod.x, pod.y, "star", {
+                  speed: { min: 60, max: 200 },
+                  lifespan: 800,
+                  scale: { start: 1, end: 0 },
+                  alpha: { start: 1, end: 0 },
+                  quantity: 15,
+                  tint: 0xffd166,
+                  emitting: false,
+                })
+                .explode(15);
+
+              // Camera flash
+              this.cameras.main.flash(200, 52, 211, 153, false, null, this);
+
+              // Screen shake
+              this.cameras.main.shake(150, 0.005);
+
+              // Increase depth
+              this.depth += 10 + this.level * 5;
+
+              // Level up check
+              if (
+                this.questionsCorrect > 0 &&
+                this.questionsCorrect % 4 === 0 &&
+                this.level < 6
+              ) {
+                this.level++;
+                this.levelText.setText("Level: " + this.level);
+                sfxLevelUp();
+                this.showFeedback(
+                  "LEVEL " + this.level + "! Diving deeper!",
+                  0xffd166,
+                );
+              }
+
+              // Update HUD
+              this.updateHUD();
+
+              // Next question after delay
+              this.time.delayedCall(1200, () => {
+                if (this.lives > 0) this.nextQuestion();
+              });
+            } else {
+              // Wrong answer
+              sfxWrong();
+              this.combo = 0;
+              this.lives--;
+              this.questionsAnswered++;
+
+              pod.setTint(0xff6b6b);
+              label.setColor("#ff6b6b");
+
+              // Show the correct answer
+              const correctPod = this.pods
+                .getChildren()
+                .find((p) => p.getData("correct"));
+              if (correctPod) {
+                correctPod.setTint(0x34d399);
+                const cl = correctPod.getData("label");
+                if (cl) cl.setColor("#34d399");
+              }
+
+              this.showFeedback(
+                "Not quite! Answer: " + fracDisplay(this.currentQ.answer),
+                0xff6b6b,
+              );
+
+              // Show hint
+              this.qHint.setText(this.currentQ.hint);
+
+              // Camera shake
+              this.cameras.main.shake(300, 0.01);
+              this.cameras.main.flash(200, 255, 107, 107, false, null, this);
+
+              // Particles
+              this.add
+                .particles(pod.x, pod.y, "particle", {
+                  speed: { min: 40, max: 150 },
+                  lifespan: 600,
+                  scale: { start: 0.8, end: 0 },
+                  tint: 0xff6b6b,
+                  quantity: 10,
+                  emitting: false,
+                })
+                .explode(10);
+
+              this.updateHUD();
+
+              if (this.lives <= 0) {
+                this.time.delayedCall(1500, () => this.endGame());
+              } else {
+                this.time.delayedCall(2000, () => this.nextQuestion());
+              }
+            }
+          }
+
+          hitEnemy(enemy) {
+            if (this.answered) return;
+
+            sfxWrong();
+            this.combo = 0;
+            this.lives--;
+
+            // Knockback
+            const angle = Phaser.Math.Angle.Between(
+              enemy.x,
+              enemy.y,
+              this.player.x,
+              this.player.y,
+            );
+            this.player.body.velocity.x = Math.cos(angle) * 250;
+            this.player.body.velocity.y = Math.sin(angle) * 250;
+
+            // Flash player
+            this.tweens.add({
+              targets: this.player,
+              alpha: 0.3,
+              duration: 100,
+              yoyo: true,
+              repeat: 3,
+            });
+
+            this.cameras.main.shake(200, 0.008);
+            this.showFeedback("Ouch! Sea creature hit! -1 life", 0xff6b6b);
+
+            // Particles
+            this.add
+              .particles(enemy.x, enemy.y, "particle", {
+                speed: { min: 30, max: 100 },
+                lifespan: 500,
+                scale: { start: 0.6, end: 0 },
+                tint: 0xff6b6b,
+                quantity: 8,
+                emitting: false,
+              })
+              .explode(8);
+
+            // Remove this enemy
+            enemy.destroy();
+
+            this.updateHUD();
+
+            if (this.lives <= 0) {
+              this.time.delayedCall(800, () => this.endGame());
+            }
+          }
+
+          hitCollectible(col) {
+            sfxBubble();
+            const type = col.getData("type");
+            if (type === "bonus") {
+              this.score += 50;
+              this.showFeedback("+50 bonus!", 0xffd166);
+            }
+            this.add
+              .particles(col.x, col.y, "star", {
+                speed: { min: 30, max: 100 },
+                lifespan: 500,
+                scale: { start: 0.8, end: 0 },
+                tint: 0xffd166,
+                quantity: 6,
+                emitting: false,
+              })
+              .explode(6);
+            col.destroy();
+            this.updateHUD();
+          }
+
+          showFeedback(text, color) {
+            const hex = "#" + color.toString(16).padStart(6, "0");
+            this.feedbackText
+              .setText(text)
+              .setColor(hex)
+              .setAlpha(1)
+              .setScale(0.5);
+            this.tweens.add({
+              targets: this.feedbackText,
+              scale: 1,
+              duration: 200,
+              ease: "Back.easeOut",
+            });
+            this.tweens.add({
+              targets: this.feedbackText,
+              alpha: 0,
+              y: this.feedbackText.y - 30,
+              duration: 800,
+              delay: 1000,
+              onComplete: () => {
+                this.feedbackText.y = H / 2;
+              },
+            });
+          }
+
+          updateHUD() {
+            this.scoreText.setText("Score: " + this.score);
+            this.comboText.setText(
+              "Combo: " + this.combo + (this.combo >= 3 ? " 🔥" : ""),
+            );
+            this.levelText.setText("Level: " + this.level);
+
+            // Hearts
+            this.heartsGroup.forEach((h, i) => {
+              h.setAlpha(i < this.lives ? 1 : 0.2);
+              h.setTint(i < this.lives ? 0xffffff : 0x333333);
+            });
+          }
+
+          spawnAmbientFish() {
+            const y = rand(60, H - 120);
+            const dir = Math.random() > 0.5 ? 1 : -1;
+            const fish = this.add.ellipse(
+              dir > 0 ? -30 : W + 30,
+              y,
+              30 + rand(0, 20),
+              12 + rand(0, 8),
+              pick([0x61dafb, 0xffd166, 0x34d399, 0xc084fc]),
+              0.4,
+            );
+            this.tweens.add({
+              targets: fish,
+              x: dir > 0 ? W + 30 : -30,
+              duration: 6000 + rand(0, 4000),
+              onComplete: () => fish.destroy(),
+            });
+          }
+
+          endGame() {
+            this.physics.pause();
+            this.scene.start("Results", {
+              score: this.score,
+              correct: this.questionsCorrect,
+              total: this.questionsAnswered,
+              level: this.level,
+              bestCombo: this.bestCombo,
+              depth: Math.floor(this.depth),
+            });
+          }
+
+          update(time, delta) {
+            if (this.lives <= 0) return;
+
+            // Player movement
+            const speed = 320;
+            let vx = 0,
+              vy = 0;
+
+            if (this.cursors.left.isDown || this.wasd.left.isDown) vx = -speed;
+            if (this.cursors.right.isDown || this.wasd.right.isDown) vx = speed;
+            if (this.cursors.up.isDown || this.wasd.up.isDown) vy = -speed;
+            if (this.cursors.down.isDown || this.wasd.down.isDown) vy = speed;
+
+            // Touch
+            if (this.touchTarget) {
+              const dx = this.touchTarget.x - this.player.x;
+              const dy = this.touchTarget.y - this.player.y;
+              const dist = Math.hypot(dx, dy);
+              if (dist > 15) {
+                vx = (dx / dist) * speed;
+                vy = (dy / dist) * speed;
+              }
+            }
+
+            this.player.body.velocity.x = Phaser.Math.Linear(
+              this.player.body.velocity.x,
+              vx,
+              0.15,
+            );
+            this.player.body.velocity.y = Phaser.Math.Linear(
+              this.player.body.velocity.y,
+              vy,
+              0.15,
+            );
+
+            // Flip diver based on direction
+            if (vx < -20) this.player.setFlipX(true);
+            else if (vx > 20) this.player.setFlipX(false);
+
+            // Player glow follows
+            this.playerGlow.setPosition(this.player.x, this.player.y);
+
+            // Animate enemies
+            this.enemies.getChildren().forEach((e) => {
+              const sp = e.getData("speed") || 50;
+              const d = e.getData("dir") || 1;
+              const vd = e.getData("vertDir") || 0;
+              e.x += (d * sp * delta) / 1000;
+              e.y += ((vd * (sp * 0.5) * delta) / 1000) * Math.sin(time / 500);
+
+              // Bounce at edges
+              if (e.x < 100 || e.x > W - 20) e.setData("dir", -d);
+              if (e.y < 40 || e.y > H - 100) e.setData("vertDir", -(vd || 1));
+
+              // Face direction
+              e.setFlipX(d < 0);
+            });
+
+            // Subtle ray animation
+            if (this.rays) {
+              this.rays.setAlpha(0.06 + Math.sin(time / 2000) * 0.02);
+            }
+          }
+        }
+
+        // ==================== RESULTS SCENE ====================
+        class ResultsScene extends Phaser.Scene {
+          constructor() {
+            super("Results");
+          }
+
+          init(data) {
+            this.data = data;
+          }
+
+          create() {
+            const d = this.data;
+
+            // Background
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x031321, 0x031321, 0x072a44, 0x072a44, 1);
+            bg.fillRect(0, 0, W, H);
+
+            // Bubbles
+            for (let i = 0; i < 20; i++) {
+              const b = this.add
+                .image(rand(20, W - 20), rand(20, H - 20), "bubble")
+                .setAlpha(0.15)
+                .setScale(0.8 + Math.random());
+              this.tweens.add({
+                targets: b,
+                y: b.y - 150,
+                alpha: 0,
+                duration: 4000 + Math.random() * 3000,
+                repeat: -1,
+                delay: Math.random() * 3000,
+              });
+            }
+
+            // Title
+            const won = d.correct >= 10;
+            this.add
+              .text(W / 2, 60, won ? "DEEP SEA CHAMPION!" : "DIVE COMPLETE", {
+                fontSize: "38px",
+                fontStyle: "bold",
+                color: won ? "#ffd166" : "#61dafb",
+                align: "center",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5);
+
+            this.add
+              .text(W / 2, 100, "6.NS.A.1 — Fraction Division", {
+                fontSize: "14px",
+                color: "#7ec8e3",
+              })
+              .setOrigin(0.5);
+
+            // Stats grid
+            const stats = [
+              { label: "Score", value: d.score, color: "#61dafb" },
+              {
+                label: "Correct",
+                value: d.correct + "/" + d.total,
+                color: "#34d399",
+              },
+              {
+                label: "Accuracy",
+                value:
+                  (d.total ? Math.round((d.correct / d.total) * 100) : 0) + "%",
+                color: "#ffd166",
+              },
+              { label: "Level", value: d.level, color: "#c084fc" },
+              { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
+              { label: "Depth", value: d.depth + "m", color: "#38bdf8" },
+            ];
+
+            stats.forEach((s, i) => {
+              const col = i % 3;
+              const row = Math.floor(i / 3);
+              const x = W / 2 - 200 + col * 200;
+              const y = 170 + row * 100;
+
+              this.add
+                .rectangle(x, y, 170, 75, 0x0a1e3a, 0.8)
+                .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
+              this.add
+                .text(x, y - 15, s.label, {
+                  fontSize: "12px",
+                  color: "#7ec8e3",
+                  align: "center",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 12, String(s.value), {
+                  fontSize: "26px",
+                  fontStyle: "bold",
+                  color: s.color,
+                  align: "center",
+                })
+                .setOrigin(0.5);
+            });
+
+            // Badges
+            const acc = d.total ? (d.correct / d.total) * 100 : 0;
+            const badges = [];
+            if (acc >= 90) badges.push("Fraction Master");
+            if (acc >= 75) badges.push("Strong Diver");
+            if (d.bestCombo >= 5) badges.push("Combo King");
+            if (d.depth >= 200) badges.push("Deep Explorer");
+            if (d.level >= 4) badges.push("Advanced");
+            if (badges.length === 0) badges.push("Keep Practicing!");
+
+            this.add
+              .text(W / 2, 390, "Achievements", {
+                fontSize: "14px",
+                color: "#7ec8e3",
+              })
+              .setOrigin(0.5);
+            badges.forEach((b, i) => {
+              const bx = W / 2 + (i - (badges.length - 1) / 2) * 140;
+              this.add
+                .rectangle(bx, 425, 120, 30, 0x1a0d3e, 0.8)
+                .setStrokeStyle(1, 0xc084fc, 0.5);
+              this.add
+                .text(bx, 425, b, {
+                  fontSize: "11px",
+                  fontStyle: "bold",
+                  color: "#c084fc",
+                })
+                .setOrigin(0.5);
+            });
+
+            // Tip
+            this.add
+              .text(
+                W / 2,
+                480,
+                "Remember: Keep the first fraction, flip the second,\nmultiply across, then simplify!",
+                {
+                  fontSize: "14px",
+                  color: "#a8d7e5",
+                  align: "center",
+                  lineSpacing: 4,
+                },
+              )
+              .setOrigin(0.5);
+
+            // Buttons
+            const playBtn = this.add
+              .rectangle(W / 2 - 80, 560, 160, 48, 0x18d2ba)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 - 80, 560, "DIVE AGAIN", {
+                fontSize: "18px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5);
+            playBtn.on("pointerover", () => playBtn.setFillStyle(0x34d399));
+            playBtn.on("pointerout", () => playBtn.setFillStyle(0x18d2ba));
+            playBtn.on("pointerdown", () => {
+              sfxDive();
+              this.scene.start("Game");
+            });
+
+            const menuBtn = this.add
+              .rectangle(W / 2 + 100, 560, 120, 48, 0x0a1e3a)
+              .setStrokeStyle(1, 0x61dafb, 0.5)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 + 100, 560, "MENU", {
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#61dafb",
+              })
+              .setOrigin(0.5);
+            menuBtn.on("pointerdown", () => this.scene.start("Title"));
+
+            // Keyboard
+            this.input.keyboard.on("keydown-SPACE", () => {
+              sfxDive();
+              this.scene.start("Game");
+            });
+
+            this.cameras.main.fadeIn(400);
+
+            // Confetti if good score
+            if (acc >= 70) {
+              for (let i = 0; i < 30; i++) {
+                const star = this.add
+                  .image(rand(50, W - 50), -20, "star")
+                  .setScale(1 + Math.random())
+                  .setTint(
+                    pick([0xffd166, 0x34d399, 0x61dafb, 0xc084fc, 0xff6b8a]),
+                  );
+                this.tweens.add({
+                  targets: star,
+                  y: H + 20,
+                  x: star.x + rand(-100, 100),
+                  angle: 360,
+                  duration: 2000 + rand(0, 2000),
+                  delay: rand(0, 1000),
+                  alpha: 0,
+                });
+              }
+            }
+          }
+        }
+
+        // --- Register scenes and start ---
+        config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
+        const game = new Phaser.Game(config);
+      })();
+    </script>
+  </body>
 </html>

@@ -1,714 +1,1320 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes">
-<title>Submarine Division Command — Studio Edition v2</title>
-<style>
-:root{
-  --bg1:#031321;
-  --bg2:#07263b;
-  --bg3:#0a3a58;
-  --panel:rgba(5,18,31,.72);
-  --panel2:rgba(9,35,53,.84);
-  --line:rgba(170,235,255,.18);
-  --text:#ecfbff;
-  --muted:#a8d7e5;
-  --cyan:#61dafb;
-  --teal:#18d2ba;
-  --gold:#ffd166;
-  --red:#ff6b6b;
-  --green:#58e6a9;
-  --shadow:0 14px 50px rgba(0,0,0,.35);
-}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(180deg,var(--bg2),var(--bg1));font-family:Inter,Arial,Helvetica,sans-serif;color:var(--text)}
-button,input{font:inherit}
-canvas{position:fixed;inset:0;display:block}
-.overlay{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 20% 20%, rgba(97,218,251,.12), transparent 20%),
-             radial-gradient(circle at 80% 18%, rgba(24,210,186,.10), transparent 16%),
-             linear-gradient(180deg, rgba(2,10,18,.25), rgba(2,10,18,.6));
-  z-index:50;
-}
-.hidden{display:none !important}
-.card{
-  width:min(940px,94vw);
-  max-height:min(90vh,900px);
-  overflow:auto;
-  padding:28px;
-  border-radius:28px;
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,rgba(9,35,53,.88),rgba(5,18,31,.9));
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(10px);
-}
-.title{
-  font-size:clamp(30px,5vw,54px);
-  line-height:1;
-  margin:0 0 8px;
-  letter-spacing:.02em;
-}
-.subtitle{font-size:18px;color:var(--muted);line-height:1.55;margin:0}
-.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:20px}
-.panel{
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:18px;
-  background:rgba(255,255,255,.04);
-}
-h2,h3{margin:0 0 10px}
-p{margin:0}
-ul{margin:10px 0 0 18px;color:var(--muted);line-height:1.55}
-.big-btn,.small-btn,.touch-btn,.pill{
-  border:0;border-radius:18px;cursor:pointer;color:white;
-  background:linear-gradient(135deg,var(--cyan),var(--teal));
-  box-shadow:0 10px 28px rgba(24,210,186,.28);
-}
-.big-btn{padding:16px 22px;font-size:20px;font-weight:800;letter-spacing:.02em}
-.small-btn{padding:10px 14px;font-size:15px;font-weight:700}
-.small-btn.alt{background:rgba(255,255,255,.08);box-shadow:none;border:1px solid var(--line)}
-.hud{
-  position:fixed;top:0;left:0;right:0;z-index:12;
-  padding:14px 16px 0;
-  pointer-events:none;
-}
-.hud-row{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
-.hud-left,.hud-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.hud-box{
-  pointer-events:auto;
-  min-width:112px;
-  padding:12px 14px;border-radius:18px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-}
-.hud-k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.hud-v{font-size:24px;font-weight:900;line-height:1}
-.top-bar{
-  pointer-events:auto;
-  width:min(620px,100%);
-  padding:12px 14px;
-  border-radius:20px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-}
-.progress-wrap{margin-top:8px;height:12px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08)}
-.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--gold),var(--teal));transition:width .35s ease}
-#questionPanel{
-  position:fixed;left:16px;right:16px;bottom:16px;z-index:11;
-  max-width:980px;margin:auto;
-  padding:16px 18px;border-radius:24px;
-  background:linear-gradient(180deg,rgba(8,26,40,.76),rgba(6,16,28,.92));
-  border:1px solid var(--line);box-shadow:var(--shadow);
-  backdrop-filter:blur(8px);
-}
-.q-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.q-title{font-size:26px;font-weight:900;line-height:1.12}
-.q-sub{margin-top:6px;color:var(--muted);font-size:15px;line-height:1.45}
-.q-status{font-size:16px;font-weight:800;color:var(--gold)}
-.hint-box{margin-top:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.06);border-left:4px solid var(--cyan);color:var(--text)}
-.hint-head{font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.feedback{margin-top:12px;min-height:28px;font-size:18px;font-weight:800}
-.good{color:var(--green)}
-.bad{color:var(--red)}
-.warn{color:var(--gold)}
-#toast{
-  position:fixed;right:16px;top:88px;z-index:18;
-  min-width:240px;max-width:min(420px,88vw);
-  padding:14px 16px;border-radius:16px;
-  background:rgba(5,18,31,.92);border:1px solid var(--line);box-shadow:var(--shadow);
-}
-#workedOverlay .card{width:min(740px,94vw)}
-.example-step{margin-top:10px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.05);line-height:1.5}
-.hl{border:1px solid rgba(97,218,251,.45);background:rgba(97,218,251,.08);font-weight:900}
-.input-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
-.input-row input{
-  min-width:200px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);
-  background:rgba(255,255,255,.06);color:var(--text)
-}
-.results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
-.stat{padding:16px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
-.stat .k{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-.stat .v{margin-top:6px;font-size:34px;font-weight:900}
-.badge-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-.pill{padding:10px 12px;font-size:14px;font-weight:800;border-radius:999px}
-#touchControls{position:fixed;right:16px;bottom:210px;z-index:14;display:none;gap:8px;flex-direction:column;align-items:center}
-.touch-row{display:flex;gap:8px}
-.touch-btn{width:62px;height:62px;border-radius:18px;font-size:24px;font-weight:900}
-@media (max-width:900px){
-  .hero-grid,.results-grid{grid-template-columns:1fr}
-  .hud-box{min-width:92px}
-  .q-title{font-size:22px}
-}
-@media (pointer:coarse){#touchControls{display:flex}}
-</style>
-</head>
-<body>
-<canvas id="game"></canvas>
-
-<div class="hud">
-  <div class="hud-row">
-    <div class="hud-left">
-      <div class="hud-box"><div class="hud-k">Hull</div><div class="hud-v" id="hullText">100%</div></div>
-      <div class="hud-box"><div class="hud-k">Score</div><div class="hud-v" id="scoreText">0</div></div>
-      <div class="hud-box"><div class="hud-k">Streak</div><div class="hud-v" id="streakText">0</div></div>
-      <div class="hud-box"><div class="hud-k">XP</div><div class="hud-v" id="xpText">0</div></div>
-    </div>
-    <div class="hud-right">
-      <div class="top-bar">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
-          <div>
-            <div class="hud-k">Mission</div>
-            <div style="font-weight:800" id="missionText">Zone 1 · Reef Intake Repair</div>
-          </div>
-          <div style="text-align:right">
-            <div class="hud-k">Progress</div>
-            <div style="font-weight:800" id="progressText">0 / 4</div>
-          </div>
-        </div>
-        <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
-      </div>
-      <button class="small-btn alt" id="audioBtn">Audio: On</button>
-    </div>
-  </div>
-</div>
-
-<div id="questionPanel" class="hidden">
-  <div class="q-top">
-    <div>
-      <div class="q-title" id="qTitle">Find the correct quotient.</div>
-      <div class="q-sub" id="qSub">Pilot the submarine into the correct answer drone.</div>
-    </div>
-    <div class="q-status" id="zoneBadge">Zone 1</div>
-  </div>
-  <div id="hintMount"></div>
-  <div class="feedback" id="feedback"></div>
-</div>
-
-<div id="touchControls">
-  <button class="touch-btn" data-dir="up">▲</button>
-  <div class="touch-row">
-    <button class="touch-btn" data-dir="left">◀</button>
-    <button class="touch-btn" data-dir="down">▼</button>
-    <button class="touch-btn" data-dir="right">▶</button>
-  </div>
-</div>
-
-<div id="toast" class="hidden"></div>
-
-<div id="startOverlay" class="overlay">
-  <div class="card">
-    <h1 class="title">Submarine Division Command</h1>
-    <p class="subtitle">Studio Edition v2 · 6.NS.B.2 · Multi-digit division using the standard algorithm</p>
-    <div class="hero-grid">
-      <div class="panel">
-        <h2>Mission Brief</h2>
-        <p style="color:var(--muted);line-height:1.6">Three underwater systems are failing. Steer your submarine into neutral sonar drones to select an answer. All drones look the same until you commit. Wrong collisions damage the hull and trigger smarter support: first a conceptual hint, then a procedural hint, then a worked-example rescue. Finish all zones to unlock the reactor core.</p>
-        <ul>
-          <li>Keyboard: Arrow keys or WASD</li>
-          <li>Touch: on-screen movement pad</li>
-          <li>Correct answers build streak, XP, and zone progress</li>
-          <li>Feedback appears only after collision</li>
-        </ul>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
-          <button class="big-btn" id="startBtn">Start Mission</button>
-          <button class="small-btn alt" id="guideBtn">Mission Guide</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>Premium Systems</h3>
-        <ul>
-          <li>Mechanic-first gameplay loop</li>
-          <li>Neutral answer drone design</li>
-          <li>Animated ocean environment</li>
-          <li>Collision-based answer selection</li>
-          <li>Zone progression + reactor boss</li>
-          <li>Particles, camera shake, glow, and SFX</li>
-          <li>Support pipeline: concept → procedure → worked example</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="guideOverlay" class="overlay hidden">
-  <div class="card">
-    <h2 style="font-size:38px;margin-bottom:12px">Mission Guide</h2>
-    <div class="panel">
-      <p style="color:var(--muted);line-height:1.65">Each division prompt spawns four neutral sonar drones in the water. Move into a drone to commit to that answer. Before collision, none of them reveal whether they are correct. On mistakes, the game keeps you on the same problem and adds support. After the third mistake, you complete the final step of a worked example before returning to the mission.</p>
-      <ul>
-        <li><strong style="color:var(--text)">Zone 1:</strong> build strong quotient estimates with friendlier numbers</li>
-        <li><strong style="color:var(--text)">Zone 2:</strong> maintain place value and finish every step</li>
-        <li><strong style="color:var(--text)">Zone 3:</strong> handle larger dividends and zeros in the quotient</li>
-        <li><strong style="color:var(--text)">Boss:</strong> stabilize the reactor with one final high-value division repair</li>
-      </ul>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
-      <button class="big-btn" id="guideStartBtn">Start Mission</button>
-      <button class="small-btn alt" id="guideBackBtn">Back</button>
-    </div>
-  </div>
-</div>
-
-<div id="workedOverlay" class="overlay hidden">
-  <div class="card">
-    <h2 style="font-size:38px;margin-bottom:8px">Worked Example Rescue</h2>
-    <p style="color:var(--muted);line-height:1.6">Complete the last step to recalibrate the system, then the mission continues.</p>
-    <div id="workedSteps"></div>
-    <div class="input-row">
-      <input id="workedInput" inputmode="numeric" placeholder="Type the final answer">
-      <button class="big-btn" id="workedSubmit">I Got It</button>
-    </div>
-    <div class="feedback" id="workedFeedback"></div>
-  </div>
-</div>
-
-<div id="resultsOverlay" class="overlay hidden">
-  <div class="card">
-    <h2 class="title" style="font-size:46px">Mission Complete</h2>
-    <p class="subtitle">The submarine systems are stable. Division command restored.</p>
-    <div class="results-grid">
-      <div class="stat"><div class="k">Score</div><div class="v" id="rScore">0</div></div>
-      <div class="stat"><div class="k">Accuracy</div><div class="v" id="rAcc">0%</div></div>
-      <div class="stat"><div class="k">Best Streak</div><div class="v" id="rStreak">0</div></div>
-      <div class="stat"><div class="k">XP Earned</div><div class="v" id="rXp">0</div></div>
-    </div>
-    <div class="badge-row" id="badgeRow"></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
-      <button class="big-btn" id="playAgainBtn">Play Again</button>
-    </div>
-  </div>
-</div>
-
-<script>
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-
-const UI = {
-  startOverlay: document.getElementById('startOverlay'),
-  guideOverlay: document.getElementById('guideOverlay'),
-  workedOverlay: document.getElementById('workedOverlay'),
-  resultsOverlay: document.getElementById('resultsOverlay'),
-  questionPanel: document.getElementById('questionPanel'),
-  qTitle: document.getElementById('qTitle'),
-  qSub: document.getElementById('qSub'),
-  zoneBadge: document.getElementById('zoneBadge'),
-  feedback: document.getElementById('feedback'),
-  hintMount: document.getElementById('hintMount'),
-  hullText: document.getElementById('hullText'),
-  scoreText: document.getElementById('scoreText'),
-  streakText: document.getElementById('streakText'),
-  xpText: document.getElementById('xpText'),
-  missionText: document.getElementById('missionText'),
-  progressText: document.getElementById('progressText'),
-  progressFill: document.getElementById('progressFill'),
-  toast: document.getElementById('toast'),
-  workedSteps: document.getElementById('workedSteps'),
-  workedInput: document.getElementById('workedInput'),
-  workedSubmit: document.getElementById('workedSubmit'),
-  workedFeedback: document.getElementById('workedFeedback'),
-  audioBtn: document.getElementById('audioBtn')
-};
-
-const STORAGE = {
-  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
-};
-
-let audioCtx = null;
-let audioOn = true;
-let keys = {};
-let touchState = {up:false,down:false,left:false,right:false};
-let toastTimer = null;
-let shakeTime = 0;
-let cameraShake = 0;
-
-const ZONES = [
-  {
-    name:'Zone 1 · Reef Intake Repair',
-    subtitle:'Steer into the correct quotient drone.',
-    needed:4,
-    problems:[
-      {stem:'84 ÷ 4',answer:'21',choices:['21','18','20','24'],conceptual:'Division shows how many are in each equal group.',procedural:'8 tens ÷ 4 = 2 tens. Bring down 4 ones. 4 ÷ 4 = 1.',worked:['84 ÷ 4','4 goes into 8 tens 2 times.','2 × 4 = 8 tens. Subtract to get 0 tens.','Bring down 4.','4 ÷ 4 = ___'],workedAnswer:'1'},
-      {stem:'96 ÷ 3',answer:'32',choices:['32','30','36','29'],conceptual:'Use the related fact 3 × quotient = 96.',procedural:'9 tens ÷ 3 = 3 tens. Bring down 6. 6 ÷ 3 = 2.',worked:['96 ÷ 3','3 goes into 9 tens 3 times.','3 × 3 = 9 tens. Subtract to get 0 tens.','Bring down 6.','6 ÷ 3 = ___'],workedAnswer:'2'},
-      {stem:'144 ÷ 6',answer:'24',choices:['24','18','22','26'],conceptual:'The quotient is built one place value at a time.',procedural:'14 tens ÷ 6 = 2 tens. 2 × 6 = 12 tens. Subtract. Bring down 4. Then 24 ÷ 6 = 4.',worked:['144 ÷ 6','6 goes into 14 tens 2 times.','2 × 6 = 12 tens. 14 tens - 12 tens = 2 tens.','Bring down 4 to make 24.','24 ÷ 6 = ___'],workedAnswer:'4'},
-      {stem:'168 ÷ 4',answer:'42',choices:['42','40','38','48'],conceptual:'Each quotient digit tells how many groups fit into the current place-value chunk.',procedural:'16 tens ÷ 4 = 4 tens. Subtract. Bring down 8. 8 ÷ 4 = 2.',worked:['168 ÷ 4','4 goes into 16 tens 4 times.','4 × 4 = 16 tens. Subtract to get 0 tens.','Bring down 8.','8 ÷ 4 = ___'],workedAnswer:'2'}
-    ]
-  },
-  {
-    name:'Zone 2 · Midwater Stabilizer',
-    subtitle:'Hold place value and finish every step.',
-    needed:4,
-    problems:[
-      {stem:'315 ÷ 9',answer:'35',choices:['35','30','34','45'],conceptual:'Estimate first: 315 ÷ 9 should be a little more than 27 and less than 45.',procedural:'31 tens ÷ 9 = 3 tens. 3 × 9 = 27. Subtract. Bring down 5. 45 ÷ 9 = 5.',worked:['315 ÷ 9','9 goes into 31 tens 3 times.','3 × 9 = 27 tens. 31 tens - 27 tens = 4 tens.','Bring down 5 to make 45.','45 ÷ 9 = ___'],workedAnswer:'5'},
-      {stem:'432 ÷ 6',answer:'72',choices:['72','70','68','76'],conceptual:'Match the quotient to the place value of the dividend.',procedural:'43 tens ÷ 6 = 7 tens. 7 × 6 = 42 tens. Subtract. Bring down 2. 12 ÷ 6 = 2.',worked:['432 ÷ 6','6 goes into 43 tens 7 times.','7 × 6 = 42 tens. 43 tens - 42 tens = 1 ten.','Bring down 2 to make 12.','12 ÷ 6 = ___'],workedAnswer:'2'},
-      {stem:'1,248 ÷ 6',answer:'208',choices:['208','206','198','218'],conceptual:'A zero in the quotient matters when the divisor does not fit into the current place-value chunk.',procedural:'12 hundreds ÷ 6 = 2 hundreds. Bring down 4 tens. 4 tens ÷ 6 = 0 tens. Bring down 8 ones. 48 ÷ 6 = 8.',worked:['1,248 ÷ 6','6 goes into 12 hundreds 2 times.','Subtract to get 0 hundreds. Bring down 4 tens.','4 tens ÷ 6 = 0 tens, so write 0. Bring down 8 ones to make 48.','48 ÷ 6 = ___'],workedAnswer:'8'},
-      {stem:'1,356 ÷ 4',answer:'339',choices:['339','334','329','342'],conceptual:'Multiply back and subtract before bringing down the next digit.',procedural:'13 hundreds ÷ 4 = 3 hundreds. Subtract 12 hundreds. Bring down 5 tens to make 15 tens. 15 ÷ 4 = 3 tens. Bring down 6. Then 36 ÷ 4 = 9.',worked:['1,356 ÷ 4','4 goes into 13 hundreds 3 times.','3 × 4 = 12 hundreds. Subtract to get 1 hundred.','Bring down 5 tens to make 15 tens. 15 ÷ 4 = 3 tens.','Bring down 6 to make 36. 36 ÷ 4 = ___'],workedAnswer:'9'}
-    ]
-  },
-  {
-    name:'Zone 3 · Abyssal Core Lines',
-    subtitle:'Repair deep-ocean systems with larger dividends.',
-    needed:4,
-    problems:[
-      {stem:'1,872 ÷ 9',answer:'208',choices:['208','198','212','218'],conceptual:'Keep the zero in the quotient when the divisor does not fit into the tens place.',procedural:'18 hundreds ÷ 9 = 2 hundreds. Bring down 7 tens. 7 tens ÷ 9 = 0 tens. Bring down 2 ones. Then 72 ÷ 9 = 8.',worked:['1,872 ÷ 9','9 goes into 18 hundreds 2 times.','Subtract to get 0 hundreds. Bring down 7 tens.','7 tens ÷ 9 = 0 tens, so write 0. Bring down 2 ones to make 72.','72 ÷ 9 = ___'],workedAnswer:'8'},
-      {stem:'2,184 ÷ 7',answer:'312',choices:['312','318','296','302'],conceptual:'Estimate 2,100 ÷ 7 = 300, so the quotient should be just above 300.',procedural:'21 hundreds ÷ 7 = 3 hundreds. Bring down 8 tens. 8 tens ÷ 7 = 1 ten. Bring down 4 ones. 14 ÷ 7 = 2.',worked:['2,184 ÷ 7','7 goes into 21 hundreds 3 times.','Subtract to get 0 hundreds. Bring down 8 tens.','8 tens ÷ 7 = 1 ten. Subtract to get 1 ten. Bring down 4 to make 14.','14 ÷ 7 = ___'],workedAnswer:'2'},
-      {stem:'2,520 ÷ 8',answer:'315',choices:['315','305','320','225'],conceptual:'Estimate 2,400 ÷ 8 = 300, then refine.',procedural:'25 hundreds ÷ 8 = 3 hundreds. Subtract 24 hundreds. Bring down 2 tens to make 12 tens. 12 ÷ 8 = 1 ten. Bring down 0. 40 ÷ 8 = 5.',worked:['2,520 ÷ 8','8 goes into 25 hundreds 3 times.','Subtract 24 hundreds to get 1 hundred. Bring down 2 tens to make 12 tens.','12 ÷ 8 = 1 ten. Subtract 8. Bring down 0 to make 40.','40 ÷ 8 = ___'],workedAnswer:'5'},
-      {stem:'1,764 ÷ 6',answer:'294',choices:['294','284','296','304'],conceptual:'Use place value to keep each quotient digit aligned correctly.',procedural:'17 hundreds ÷ 6 = 2 hundreds. Bring down 6 tens to make 56 tens. 56 ÷ 6 = 9 tens. Bring down 4. 24 ÷ 6 = 4.',worked:['1,764 ÷ 6','6 goes into 17 hundreds 2 times.','Subtract 12 hundreds to get 5 hundreds. Bring down 6 tens to make 56 tens.','56 ÷ 6 = 9 tens. Subtract 54 tens. Bring down 4 to make 24.','24 ÷ 6 = ___'],workedAnswer:'4'}
-    ]
-  }
-];
-
-const BOSS = {stem:'Reactor Core Repair: 2,835 ÷ 9',answer:'315',choices:['315','305','325','345'],conceptual:'A correct quotient should multiply back to the dividend.',procedural:'28 hundreds ÷ 9 = 3 hundreds. Bring down 3 tens to make 13 tens. 13 ÷ 9 = 1 ten. Bring down 5. 45 ÷ 9 = 5.',worked:['2,835 ÷ 9','9 goes into 28 hundreds 3 times.','Subtract 27 hundreds to get 1 hundred. Bring down 3 tens to make 13 tens.','13 ÷ 9 = 1 ten. Subtract 9 tens. Bring down 5 to make 45.','45 ÷ 9 = ___'],workedAnswer:'5'};
-
-const state = {
-  playing:false, zoneIndex:0, zoneSolved:0, hull:100, score:0, streak:0, bestStreak:0, xp:0,
-  totalAnswers:0, correctAnswers:0, badges:new Set(), currentProblem:null, attemptsOnProblem:0,
-  answerPods:[], particles:[], bubbles:[], fish:[], currentRings:[],
-  sub:{x:180,y:320,r:26,vx:0,vy:0,glow:0}, lastTime:0
-};
-
-function resize(){
-  canvas.width = innerWidth * devicePixelRatio;
-  canvas.height = innerHeight * devicePixelRatio;
-  canvas.style.width = innerWidth + 'px';
-  canvas.style.height = innerHeight + 'px';
-  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-}
-resize();
-addEventListener('resize', resize);
-
-function ensureAudio(){
-  if(audioCtx) return;
-  try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
-}
-function blip(type='good'){
-  if(!audioOn) return;
-  ensureAudio();
-  if(!audioCtx) return;
-  const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.type = type === 'good' ? 'triangle' : 'square';
-  osc.frequency.value = type === 'good' ? 540 : 180;
-  gain.gain.value = 0.0001;
-  osc.start();
-  gain.gain.exponentialRampToValueAtTime(0.04, audioCtx.currentTime + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (type === 'good' ? 0.16 : 0.12));
-  osc.stop(audioCtx.currentTime + (type === 'good' ? 0.18 : 0.14));
-}
-function showToast(text){
-  UI.toast.textContent = text;
-  UI.toast.classList.remove('hidden');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>UI.toast.classList.add('hidden'), 2200);
-}
-function setFeedback(text, cls=''){ UI.feedback.className = 'feedback ' + cls; UI.feedback.textContent = text; }
-function renderHint(type, text){ UI.hintMount.innerHTML = `<div class="hint-box"><div class="hint-head">${type}</div><div>${text}</div></div>`; }
-function clearHint(){ UI.hintMount.innerHTML = ''; }
-function zoneLabel(){ return state.zoneIndex < ZONES.length ? `Zone ${state.zoneIndex + 1}` : 'Boss'; }
-
-function updateHUD(){
-  UI.hullText.textContent = Math.max(0, Math.round(state.hull)) + '%';
-  UI.scoreText.textContent = String(state.score);
-  UI.streakText.textContent = String(state.streak);
-  UI.xpText.textContent = String(state.xp);
-  const currentZone = state.zoneIndex < ZONES.length ? ZONES[state.zoneIndex] : null;
-  UI.missionText.textContent = currentZone ? currentZone.name : 'Final Reactor Core';
-  const needed = currentZone ? currentZone.needed : 1;
-  UI.progressText.textContent = `${state.zoneSolved} / ${needed}`;
-  UI.progressFill.style.width = (state.zoneSolved / needed * 100) + '%';
-  UI.zoneBadge.textContent = zoneLabel();
-}
-
-function pickProblem(){
-  state.currentProblem = state.zoneIndex >= ZONES.length
-    ? JSON.parse(JSON.stringify(BOSS))
-    : JSON.parse(JSON.stringify(ZONES[state.zoneIndex].problems[Math.floor(Math.random() * ZONES[state.zoneIndex].problems.length)]));
-}
-function spawnPods(){
-  const count = state.currentProblem.choices.length;
-  state.answerPods = [];
-  const cx = innerWidth * 0.57, cy = innerHeight * 0.4, rad = Math.min(innerWidth, innerHeight) * 0.19;
-  for(let i=0;i<count;i++){
-    const a = (Math.PI * 2 / count) * i - Math.PI / 2;
-    state.answerPods.push({
-      value: state.currentProblem.choices[i],
-      correct: state.currentProblem.choices[i] === state.currentProblem.answer,
-      x: cx + Math.cos(a) * rad, y: cy + Math.sin(a) * rad,
-      baseX: cx + Math.cos(a) * rad, baseY: cy + Math.sin(a) * rad,
-      r: 48, bob: Math.random() * Math.PI * 2, hit:false, reveal:0, revealType:''
-    });
-  }
-}
-function newProblem(){
-  pickProblem();
-  spawnPods();
-  state.attemptsOnProblem = 0;
-  clearHint();
-  setFeedback('', '');
-  UI.questionPanel.classList.remove('hidden');
-  UI.qTitle.textContent = state.currentProblem.stem;
-  UI.qSub.textContent = state.zoneIndex < ZONES.length ? ZONES[state.zoneIndex].subtitle : 'Stabilize the reactor core with one final correct repair.';
-  updateHUD();
-}
-function completeZone(){
-  if(state.zoneIndex < ZONES.length){
-    state.badges.add(`Zone ${state.zoneIndex + 1} Cleared`);
-    showToast(`${ZONES[state.zoneIndex].name} repaired`);
-    state.zoneIndex++;
-    state.zoneSolved = 0;
-    if(state.zoneIndex >= ZONES.length) showToast('Reactor core unlocked');
-  }
-  if(state.zoneIndex >= ZONES.length && state.currentProblem && state.currentProblem.stem === BOSS.stem){ endGame(); return; }
-  newProblem();
-}
-function burst(x, y, color, n){
-  for(let i=0;i<n;i++){
-    state.particles.push({x,y,vx:(Math.random()-.5)*5,vy:(Math.random()-.5)*5,life:30+Math.random()*20,max:40,color});
-  }
-}
-function correctHit(pod){
-  if(pod.hit || !state.playing) return;
-  pod.hit = true; pod.reveal = 40; pod.revealType = 'good';
-  state.totalAnswers++; state.correctAnswers++; state.attemptsOnProblem++;
-  state.streak++; state.bestStreak = Math.max(state.bestStreak, state.streak);
-  state.score += 120 + state.zoneIndex * 40 + state.streak * 6;
-  state.xp += 14 + state.zoneIndex * 8 + state.streak * 2;
-  state.zoneSolved++; state.sub.glow = 18; state.hull = Math.min(100, state.hull + 3);
-  burst(pod.x, pod.y, '#58e6a9', 28); blip('good'); setFeedback('System repaired. Move to the next target.', 'good');
-  if(state.streak >= 5) state.badges.add('5-Streak');
-  updateHUD();
-  const currentZone = state.zoneIndex < ZONES.length ? ZONES[state.zoneIndex] : null;
-  const needed = currentZone ? currentZone.needed : 1;
-  if(state.zoneIndex >= ZONES.length || state.zoneSolved >= needed) setTimeout(()=>completeZone(), 850);
-  else setTimeout(()=>newProblem(), 850);
-}
-function wrongHit(pod){
-  if(pod.hit || !state.playing) return;
-  pod.hit = true; pod.reveal = 40; pod.revealType = 'bad';
-  state.totalAnswers++; state.attemptsOnProblem++; state.streak = 0; state.hull -= 11; state.score = Math.max(0, state.score - 35);
-  state.sub.glow = 8; shakeTime = 20; burst(pod.x, pod.y, '#ff6b6b', 20); blip('bad');
-  if(state.attemptsOnProblem === 1){ renderHint('Conceptual Hint', state.currentProblem.conceptual); setFeedback('Hull damaged. Use the concept hint and try again.', 'bad'); }
-  else if(state.attemptsOnProblem === 2){ renderHint('Procedural Hint', state.currentProblem.procedural); setFeedback('Still unstable. Use the step-by-step hint.', 'warn'); }
-  else { openWorkedExample(); return; }
-  updateHUD();
-  if(state.hull <= 0){ state.badges.add('Emergency Recovery'); state.hull = 35; showToast('Emergency hull repair activated'); }
-  setTimeout(()=>spawnPods(), 900);
-}
-function openWorkedExample(){
-  state.playing = false;
-  UI.workedOverlay.classList.remove('hidden');
-  UI.workedSteps.innerHTML = '';
-  state.currentProblem.worked.forEach((step, idx)=>{
-    const div = document.createElement('div');
-    div.className = 'example-step' + (idx === state.currentProblem.worked.length - 1 ? ' hl' : '');
-    div.textContent = step;
-    UI.workedSteps.appendChild(div);
-  });
-  UI.workedFeedback.textContent = '';
-  UI.workedInput.value = '';
-  setFeedback('Worked example rescue engaged.', 'warn');
-  setTimeout(()=>UI.workedInput.focus(), 60);
-}
-function closeWorkedExample(success){
-  UI.workedOverlay.classList.add('hidden');
-  state.playing = true;
-  if(success){
-    showToast('Recalibration complete');
-    state.hull = Math.min(100, state.hull + 6);
-    newProblem();
-  }
-}
-function submitWorked(){
-  const v = UI.workedInput.value.trim();
-  if(v === state.currentProblem.workedAnswer){
-    UI.workedFeedback.className = 'feedback good';
-    UI.workedFeedback.textContent = 'Correct. Return to the mission.';
-    state.badges.add('Worked Example Recovery');
-    setTimeout(()=>closeWorkedExample(true), 550);
-  } else {
-    UI.workedFeedback.className = 'feedback bad';
-    UI.workedFeedback.textContent = 'Not quite. Check the final division step again.';
-    blip('bad');
-  }
-}
-function endGame(){
-  state.playing = false;
-  UI.questionPanel.classList.add('hidden');
-  UI.resultsOverlay.classList.remove('hidden');
-  document.getElementById('rScore').textContent = state.score;
-  const acc = state.totalAnswers ? Math.round(state.correctAnswers / state.totalAnswers * 100) : 0;
-  document.getElementById('rAcc').textContent = acc + '%';
-  document.getElementById('rStreak').textContent = state.bestStreak;
-  document.getElementById('rXp').textContent = state.xp;
-  const badgeRow = document.getElementById('badgeRow');
-  badgeRow.innerHTML = '';
-  if(acc >= 80) state.badges.add('Strong Accuracy');
-  if(state.hull >= 70) state.badges.add('Hull Preserved');
-  if(state.badges.size === 0) state.badges.add('Mission Completed');
-  [...state.badges].forEach(b=>{ const span = document.createElement('span'); span.className = 'pill'; span.textContent = b; badgeRow.appendChild(span); });
-  STORAGE.set('sdc_best', Math.max(STORAGE.get('sdc_best', 0), state.score));
-}
-function startMission(){
-  ensureAudio();
-  UI.startOverlay.classList.add('hidden');
-  UI.guideOverlay.classList.add('hidden');
-  UI.resultsOverlay.classList.add('hidden');
-  state.playing = true;
-  state.zoneIndex = 0; state.zoneSolved = 0; state.hull = 100; state.score = 0; state.streak = 0; state.bestStreak = 0;
-  state.xp = 0; state.totalAnswers = 0; state.correctAnswers = 0; state.badges = new Set(); state.sub.x = 180; state.sub.y = innerHeight * 0.5;
-  state.particles = []; state.answerPods = []; state.bubbles = []; state.fish = [];
-  newProblem();
-}
-document.getElementById('startBtn').addEventListener('click', startMission);
-document.getElementById('guideBtn').addEventListener('click', ()=>{ UI.startOverlay.classList.add('hidden'); UI.guideOverlay.classList.remove('hidden'); });
-document.getElementById('guideBackBtn').addEventListener('click', ()=>{ UI.guideOverlay.classList.add('hidden'); UI.startOverlay.classList.remove('hidden'); });
-document.getElementById('guideStartBtn').addEventListener('click', startMission);
-document.getElementById('playAgainBtn').addEventListener('click', startMission);
-UI.workedSubmit.addEventListener('click', submitWorked);
-UI.workedInput.addEventListener('keydown', e=>{ if(e.key === 'Enter') submitWorked(); });
-UI.audioBtn.addEventListener('click', ()=>{ audioOn = !audioOn; UI.audioBtn.textContent = 'Audio: ' + (audioOn ? 'On' : 'Off'); if(audioOn) ensureAudio(); });
-
-document.querySelectorAll('.touch-btn').forEach(btn=>{
-  const dir = btn.dataset.dir;
-  const on = ()=>touchState[dir] = true, off = ()=>touchState[dir] = false;
-  btn.addEventListener('pointerdown', e=>{ e.preventDefault(); on(); ensureAudio(); });
-  btn.addEventListener('pointerup', off);
-  btn.addEventListener('pointercancel', off);
-  btn.addEventListener('pointerleave', off);
-});
-addEventListener('keydown', e=>{ keys[e.key.toLowerCase()] = true; ensureAudio(); });
-addEventListener('keyup', e=>{ keys[e.key.toLowerCase()] = false; });
-
-function spawnAmbient(){
-  if(state.bubbles.length < 50 && Math.random() < 0.45) state.bubbles.push({x: Math.random() * innerWidth,y: innerHeight + 20,r: 2 + Math.random() * 7,sp: 0.8 + Math.random() * 2,drift:(Math.random()-.5)*0.5});
-  if(state.fish.length < 8 && Math.random() < 0.02) state.fish.push({x: innerWidth + 60,y: 120 + Math.random() * (innerHeight - 280),w: 42 + Math.random() * 24,h: 16 + Math.random() * 8,sp: 1.5 + Math.random() * 2.5,hue: Math.random() < .5 ? '#6fe7ff' : '#ffd166'});
-}
-function update(dt){
-  if(shakeTime > 0){ shakeTime--; cameraShake = shakeTime * 0.9; } else cameraShake = 0;
-  spawnAmbient();
-  state.bubbles.forEach(b=>{ b.y -= b.sp; b.x += b.drift; });
-  state.bubbles = state.bubbles.filter(b=>b.y > -20);
-  state.fish.forEach(f=>f.x -= f.sp);
-  state.fish = state.fish.filter(f=>f.x > -100);
-  state.particles.forEach(p=>{ p.x += p.vx; p.y += p.vy; p.life -= 1; p.vy += 0.02; });
-  state.particles = state.particles.filter(p=>p.life > 0);
-  state.answerPods.forEach(p=>{ if(p.reveal > 0) p.reveal -= 1; });
-  if(state.sub.glow > 0) state.sub.glow -= 1;
-
-  if(state.playing){
-    const speed = 4.1;
-    const up = keys['arrowup'] || keys['w'] || touchState.up;
-    const down = keys['arrowdown'] || keys['s'] || touchState.down;
-    const left = keys['arrowleft'] || keys['a'] || touchState.left;
-    const right = keys['arrowright'] || keys['d'] || touchState.right;
-    state.sub.vx = (right ? speed : 0) - (left ? speed : 0);
-    state.sub.vy = (down ? speed : 0) - (up ? speed : 0);
-    state.sub.x += state.sub.vx;
-    state.sub.y += state.sub.vy;
-    state.sub.x = Math.max(40, Math.min(innerWidth - 40, state.sub.x));
-    state.sub.y = Math.max(70, Math.min(innerHeight - 180, state.sub.y));
-
-    state.answerPods.forEach((pod, i)=>{
-      pod.bob += 0.03 + i * 0.001;
-      pod.x = pod.baseX + Math.cos(pod.bob) * 16;
-      pod.y = pod.baseY + Math.sin(pod.bob * 1.2) * 12;
-      const dx = pod.x - state.sub.x, dy = pod.y - state.sub.y;
-      if(Math.hypot(dx, dy) < pod.r + state.sub.r - 8){
-        if(pod.correct) correctHit(pod); else wrongHit(pod);
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Asteroid Miner — 6.NS.B.2</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    });
-  }
-}
-function drawBackground(){
-  const g = ctx.createLinearGradient(0,0,0,innerHeight);
-  g.addColorStop(0,'#0b3351'); g.addColorStop(.45,'#07263b'); g.addColorStop(1,'#031321');
-  ctx.fillStyle = g; ctx.fillRect(0,0,innerWidth,innerHeight);
-  for(let i=0;i<10;i++){
-    const y = innerHeight * .72 + i * 24;
-    ctx.fillStyle = i % 2 ? 'rgba(255,255,255,.02)' : 'rgba(0,0,0,.06)';
-    ctx.beginPath(); ctx.moveTo(0,y);
-    for(let x=0;x<=innerWidth;x+=80) ctx.quadraticCurveTo(x+40, y + Math.sin((x+i*20)/120)*10, x+80, y);
-    ctx.lineTo(innerWidth, innerHeight); ctx.lineTo(0, innerHeight); ctx.closePath(); ctx.fill();
-  }
-}
-function drawAmbient(){
-  state.bubbles.forEach(b=>{
-    ctx.fillStyle = 'rgba(220,245,255,.22)';
-    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.stroke();
-  });
-  state.fish.forEach(f=>{
-    ctx.fillStyle = f.hue;
-    ctx.beginPath(); ctx.ellipse(f.x, f.y, f.w/2, f.h/2, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(f.x + f.w/2 - 4, f.y); ctx.lineTo(f.x + f.w/2 + 14, f.y - 10); ctx.lineTo(f.x + f.w/2 + 14, f.y + 10); ctx.closePath(); ctx.fill();
-  });
-}
-function drawSub(){
-  const x = state.sub.x + (cameraShake ? (Math.random()-.5)*cameraShake : 0);
-  const y = state.sub.y + (cameraShake ? (Math.random()-.5)*cameraShake : 0);
-  ctx.save(); ctx.translate(x, y);
-  ctx.shadowColor = state.sub.glow ? 'rgba(97,218,251,.9)' : 'rgba(0,0,0,.25)'; ctx.shadowBlur = state.sub.glow ? 28 : 10;
-  ctx.fillStyle = '#61dafb'; ctx.beginPath(); ctx.ellipse(0, 0, 40, 24, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#0d2538'; ctx.beginPath(); ctx.arc(10, -5, 10, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#ecfbff'; ctx.beginPath(); ctx.arc(10, -5, 4, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#18d2ba'; ctx.fillRect(-26, -12, 10, 24);
-  ctx.fillStyle = '#61dafb'; ctx.beginPath(); ctx.moveTo(-38, 0); ctx.lineTo(-54, -10); ctx.lineTo(-54, 10); ctx.closePath(); ctx.fill();
-  ctx.restore();
-}
-function drawPods(){
-  state.answerPods.forEach(pod=>{
-    const dx = pod.x - state.sub.x, dy = pod.y - state.sub.y;
-    const dist = Math.hypot(dx, dy);
-    const near = dist < 120;
-    let ringColor = 'rgba(97,218,251,.28)';
-    let coreColor = 'rgba(6,16,28,.96)';
-    let textColor = '#ecfbff';
-    if(pod.reveal > 0){
-      if(pod.revealType === 'good'){ ringColor = 'rgba(88,230,169,.78)'; coreColor = 'rgba(19,53,43,.96)'; textColor = '#58e6a9'; }
-      else { ringColor = 'rgba(255,107,107,.78)'; coreColor = 'rgba(57,20,20,.96)'; textColor = '#ff9b9b'; }
-    } else if(near){
-      ringColor = 'rgba(255,209,102,.55)';
-      textColor = '#ffd166';
-    }
-    ctx.save();
-    ctx.shadowColor = ringColor; ctx.shadowBlur = near || pod.reveal > 0 ? 20 : 12;
-    ctx.fillStyle = coreColor; ctx.strokeStyle = ringColor; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(pod.x, pod.y, pod.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = 'rgba(255,255,255,.12)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(pod.x, pod.y, pod.r - 10, 0, Math.PI * 2); ctx.stroke();
-    ctx.fillStyle = textColor;
-    ctx.font = '900 24px Inter, Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(pod.value, pod.x, pod.y);
-    ctx.restore();
-  });
-}
-function drawParticles(){
-  state.particles.forEach(p=>{
-    ctx.globalAlpha = Math.max(0, p.life / p.max);
-    ctx.fillStyle = p.color;
-    ctx.fillRect(p.x, p.y, 4, 4);
-  });
-  ctx.globalAlpha = 1;
-}
-function loop(ts){
-  const dt = Math.min(32, ts - (state.lastTime || ts));
-  state.lastTime = ts;
-  update(dt);
-  drawBackground();
-  drawAmbient();
-  drawPods();
-  drawSub();
-  drawParticles();
-  requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
-</script>
-</body>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #05050f;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      #game-container {
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      "use strict";
+      (() => {
+        /* ============================================================
+   ASTEROID MINER — 6.NS.B.2
+   Fluently divide multi-digit numbers.
+   Mine asteroids by computing divisions, collect gems.
+   ============================================================ */
+
+        // --- Audio ---
+        let audioCtx = null;
+        function getAudio() {
+          if (!audioCtx)
+            try {
+              audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          return audioCtx;
+        }
+        function playTone(f, d, t = "sine", v = 0.05) {
+          const c = getAudio();
+          if (!c) return;
+          if (c.state === "suspended") c.resume();
+          const o = c.createOscillator(),
+            g = c.createGain();
+          o.type = t;
+          o.frequency.value = f;
+          g.gain.setValueAtTime(0.0001, c.currentTime);
+          g.gain.linearRampToValueAtTime(v, c.currentTime + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + d);
+          o.connect(g).connect(c.destination);
+          o.start();
+          o.stop(c.currentTime + d + 0.01);
+        }
+        function sfxMine() {
+          playTone(440, 0.1, "square", 0.03);
+          setTimeout(() => playTone(660, 0.12, "square", 0.03), 80);
+          setTimeout(() => playTone(880, 0.15, "triangle", 0.04), 160);
+        }
+        function sfxWrong() {
+          playTone(180, 0.15, "sawtooth", 0.03);
+          setTimeout(() => playTone(140, 0.2, "sawtooth", 0.03), 100);
+        }
+        function sfxGem() {
+          playTone(1200, 0.1, "sine", 0.03);
+          setTimeout(() => playTone(1400, 0.08), 60);
+        }
+        function sfxExplosion() {
+          playTone(80, 0.3, "sawtooth", 0.04);
+        }
+        function sfxLevelUp() {
+          [440, 554, 659, 880].forEach((f, i) =>
+            setTimeout(() => playTone(f, 0.15, "sine", 0.04), i * 90),
+          );
+        }
+        function sfxLaser() {
+          playTone(900, 0.06, "square", 0.03);
+          setTimeout(() => playTone(600, 0.08, "square", 0.02), 50);
+        }
+
+        // --- Math ---
+        function rand(a, b) {
+          return Math.floor(Math.random() * (b - a + 1)) + a;
+        }
+        function pick(a) {
+          return a[rand(0, a.length - 1)];
+        }
+        function shuffle(a) {
+          const r = [...a];
+          for (let i = r.length - 1; i > 0; i--) {
+            const j = rand(0, i);
+            [r[i], r[j]] = [r[j], r[i]];
+          }
+          return r;
+        }
+
+        function generateDivision(level) {
+          let dividend, divisor, quotient;
+          if (level <= 2) {
+            // 2-digit ÷ 1-digit
+            divisor = rand(2, 9);
+            quotient = rand(10, 99);
+            dividend = divisor * quotient;
+          } else if (level <= 4) {
+            // 3-digit ÷ 1-digit
+            divisor = rand(3, 9);
+            quotient = rand(100, 999);
+            dividend = divisor * quotient;
+            // Sometimes make it simpler
+            if (Math.random() > 0.5) {
+              quotient = rand(20, 300);
+              dividend = divisor * quotient;
+            }
+          } else {
+            // 4-digit ÷ 1-digit or 2-digit
+            if (Math.random() > 0.4) {
+              divisor = rand(4, 9);
+              quotient = rand(100, 999);
+            } else {
+              divisor = rand(11, 25);
+              quotient = rand(10, 200);
+            }
+            dividend = divisor * quotient;
+          }
+
+          const stem = dividend.toLocaleString() + " ÷ " + divisor;
+          const answer = quotient;
+
+          // Generate wrong choices
+          const wrongs = new Set();
+          wrongs.add(answer + rand(1, 10));
+          wrongs.add(Math.max(1, answer - rand(1, 10)));
+          wrongs.add(answer + divisor);
+          wrongs.add(Math.max(1, answer - divisor));
+          // Place-value error
+          if (answer >= 100) wrongs.add(Math.floor(answer / 10) * 10);
+          wrongs.add(answer * 10);
+          wrongs.delete(answer);
+
+          const wrongArr = [...wrongs]
+            .filter((w) => w > 0 && w !== answer)
+            .slice(0, 3);
+          while (wrongArr.length < 3) wrongArr.push(answer + rand(5, 50));
+
+          const choices = shuffle([
+            { text: String(answer), correct: true },
+            ...wrongArr
+              .slice(0, 3)
+              .map((w) => ({ text: String(w), correct: false })),
+          ]);
+
+          // Build worked example steps
+          const steps = [];
+          const dStr = String(dividend);
+          steps.push("Start: " + stem);
+          if (dStr.length >= 3) {
+            const h = parseInt(dStr.substring(0, dStr.length - 1));
+            const qh = Math.floor(h / divisor);
+            steps.push(
+              h +
+                " ÷ " +
+                divisor +
+                " = " +
+                qh +
+                " (with remainder " +
+                (h - qh * divisor) +
+                ")",
+            );
+          }
+          steps.push("Final quotient: " + answer);
+          steps.push("Check: " + answer + " × " + divisor + " = " + dividend);
+
+          return {
+            dividend,
+            divisor,
+            quotient: answer,
+            stem,
+            choices,
+            steps,
+            hint:
+              "Divide place by place. " +
+              divisor +
+              " goes into " +
+              dividend +
+              " = " +
+              answer,
+          };
+        }
+
+        // --- Phaser ---
+        const W = 960,
+          H = 640;
+        const config = {
+          type: Phaser.AUTO,
+          parent: "game-container",
+          width: W,
+          height: H,
+          backgroundColor: "#05050f",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          physics: {
+            default: "arcade",
+            arcade: { gravity: { y: 0 }, debug: false },
+          },
+          scene: [],
+        };
+
+        // ==================== BOOT ====================
+        class BootScene extends Phaser.Scene {
+          constructor() {
+            super("Boot");
+          }
+          create() {
+            const g = this.make.graphics({ add: false });
+
+            // Ship
+            g.clear();
+            g.fillStyle(0x61dafb);
+            g.fillTriangle(24, 0, 0, 20, 24, 14);
+            g.fillTriangle(24, 0, 48, 20, 24, 14);
+            g.fillStyle(0x38bdf8);
+            g.fillRect(10, 14, 28, 10);
+            g.fillStyle(0xffd166);
+            g.fillCircle(24, 10, 4);
+            g.generateTexture("ship", 48, 24);
+
+            // Asteroid
+            g.clear();
+            g.fillStyle(0x4a5568);
+            g.fillCircle(24, 24, 24);
+            g.fillStyle(0x6b7280);
+            g.fillCircle(16, 14, 6);
+            g.fillCircle(30, 20, 4);
+            g.fillCircle(20, 32, 5);
+            g.generateTexture("asteroid", 48, 48);
+
+            // Small asteroid
+            g.clear();
+            g.fillStyle(0x6b7280);
+            g.fillCircle(12, 12, 12);
+            g.fillStyle(0x9ca3af);
+            g.fillCircle(8, 8, 3);
+            g.generateTexture("asteroid_sm", 24, 24);
+
+            // Gem
+            g.clear();
+            g.fillStyle(0xfbbf24);
+            g.fillTriangle(8, 0, 0, 12, 16, 12);
+            g.fillTriangle(0, 12, 16, 12, 8, 20);
+            g.generateTexture("gem", 16, 20);
+
+            // Laser
+            g.clear();
+            g.fillStyle(0x61dafb);
+            g.fillRect(0, 0, 20, 3);
+            g.generateTexture("laser", 20, 3);
+
+            // Star particle
+            g.clear();
+            g.fillStyle(0xffffff);
+            g.fillCircle(2, 2, 2);
+            g.generateTexture("star", 4, 4);
+
+            // Explosion particle
+            g.clear();
+            g.fillStyle(0xfb923c);
+            g.fillCircle(4, 4, 4);
+            g.generateTexture("explosion", 8, 8);
+
+            // Health bar bg
+            g.clear();
+            g.fillStyle(0x1a1a2e);
+            g.fillRoundedRect(0, 0, 200, 16, 6);
+            g.generateTexture("hpbg", 200, 16);
+
+            // Pod answer
+            g.clear();
+            g.lineStyle(2, 0x61dafb, 0.5);
+            g.fillStyle(0x111827, 0.9);
+            g.fillRoundedRect(0, 0, 80, 40, 10);
+            g.strokeRoundedRect(0, 0, 80, 40, 10);
+            g.generateTexture("pod", 80, 40);
+
+            this.scene.start("Title");
+          }
+        }
+
+        // ==================== TITLE ====================
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+          create() {
+            // Starfield
+            for (let i = 0; i < 120; i++) {
+              const s = this.add.circle(
+                rand(0, W),
+                rand(0, H),
+                Math.random() * 1.5 + 0.3,
+                0xffffff,
+                0.3 + Math.random() * 0.5,
+              );
+              this.tweens.add({
+                targets: s,
+                alpha: 0.1,
+                duration: 1000 + rand(0, 2000),
+                yoyo: true,
+                repeat: -1,
+              });
+            }
+
+            // Nebula glow
+            const neb = this.add.ellipse(
+              W * 0.3,
+              H * 0.4,
+              400,
+              250,
+              0x4c1d95,
+              0.08,
+            );
+            this.tweens.add({
+              targets: neb,
+              scaleX: 1.1,
+              scaleY: 1.1,
+              alpha: 0.04,
+              duration: 4000,
+              yoyo: true,
+              repeat: -1,
+            });
+            const neb2 = this.add.ellipse(
+              W * 0.7,
+              H * 0.6,
+              300,
+              200,
+              0x1e40af,
+              0.06,
+            );
+            this.tweens.add({
+              targets: neb2,
+              scaleX: 1.1,
+              alpha: 0.03,
+              duration: 3500,
+              yoyo: true,
+              repeat: -1,
+            });
+
+            this.add
+              .text(W / 2, 100, "ASTEROID\nMINER", {
+                fontSize: "56px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                align: "center",
+                lineSpacing: 6,
+                stroke: "#78350f",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+
+            this.add
+              .text(
+                W / 2,
+                195,
+                "6.NS.B.2 — Fluently Divide Multi-Digit Numbers",
+                { fontSize: "15px", color: "#94a3b8" },
+              )
+              .setOrigin(0.5);
+
+            // Floating asteroids
+            for (let i = 0; i < 6; i++) {
+              const a = this.add
+                .image(rand(100, W - 100), rand(240, 380), "asteroid")
+                .setScale(0.8 + Math.random() * 0.8)
+                .setAlpha(0.6)
+                .setAngle(rand(0, 360));
+              this.tweens.add({
+                targets: a,
+                y: a.y + rand(-15, 15),
+                x: a.x + rand(-10, 10),
+                angle: a.angle + rand(-30, 30),
+                duration: 3000 + rand(0, 2000),
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+            }
+
+            // Ship
+            const ship = this.add.image(W / 2, 330, "ship").setScale(2.5);
+            this.tweens.add({
+              targets: ship,
+              y: 340,
+              duration: 2000,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+
+            // Instructions
+            const lines = [
+              "Fly your ship and mine asteroids with division!",
+              "Each asteroid shows a division problem.",
+              "Fly into the correct answer to mine it.",
+              "Collect gems for bonus points.",
+              "Arrow keys / WASD / Touch to fly",
+            ];
+            lines.forEach((t, i) =>
+              this.add
+                .text(W / 2, 400 + i * 22, t, {
+                  fontSize: "13px",
+                  color: "#94a3b8",
+                })
+                .setOrigin(0.5),
+            );
+
+            // Start button
+            const btn = this.add
+              .rectangle(W / 2, 565, 200, 48, 0xfbbf24)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2, 565, "LAUNCH", {
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
+            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+            btn.on("pointerdown", () => {
+              getAudio();
+              sfxLaser();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+
+            this.input.keyboard.on("keydown-SPACE", () => {
+              getAudio();
+              sfxLaser();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+            this.input.keyboard.on("keydown-ENTER", () => {
+              getAudio();
+              sfxLaser();
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            });
+
+            this.cameras.main.fadeIn(400);
+          }
+        }
+
+        // ==================== GAME ====================
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("Game");
+          }
+
+          create() {
+            this.cameras.main.fadeIn(300);
+
+            // State
+            this.score = 0;
+            this.combo = 0;
+            this.bestCombo = 0;
+            this.lives = 4;
+            this.level = 1;
+            this.gems = 0;
+            this.questionsCorrect = 0;
+            this.questionsTotal = 0;
+            this.shield = 100;
+            this.currentQ = null;
+            this.answered = false;
+            this.scrollSpeed = 0.5;
+
+            // Starfield background (parallax layers)
+            this.starLayers = [];
+            for (let layer = 0; layer < 3; layer++) {
+              const stars = [];
+              for (let i = 0; i < 40; i++) {
+                const s = this.add.circle(
+                  rand(0, W),
+                  rand(0, H),
+                  0.5 + layer * 0.4,
+                  0xffffff,
+                  0.2 + layer * 0.15,
+                );
+                s.setData("speed", 0.2 + layer * 0.3);
+                stars.push(s);
+              }
+              this.starLayers.push(stars);
+            }
+
+            // Nebula
+            this.add.ellipse(300, 200, 500, 300, 0x4c1d95, 0.04);
+            this.add.ellipse(700, 450, 400, 250, 0x1e3a5f, 0.04);
+
+            // Player ship
+            this.player = this.physics.add
+              .image(120, H / 2, "ship")
+              .setScale(1.6)
+              .setDepth(10);
+            this.player.setCollideWorldBounds(true);
+            this.player.body.setMaxVelocity(350, 350);
+            this.player.setDamping(true);
+            this.player.setDrag(0.9);
+
+            // Engine glow
+            this.engineGlow = this.add
+              .ellipse(0, 0, 30, 12, 0x61dafb, 0.25)
+              .setDepth(9);
+            this.tweens.add({
+              targets: this.engineGlow,
+              scaleX: 1.3,
+              alpha: 0.1,
+              duration: 300,
+              yoyo: true,
+              repeat: -1,
+            });
+
+            // Engine particles
+            this.engineParticles = this.add
+              .particles(0, 0, "star", {
+                follow: this.player,
+                followOffset: { x: -28, y: 0 },
+                lifespan: 400,
+                speedX: { min: -80, max: -40 },
+                speedY: { min: -10, max: 10 },
+                scale: { start: 0.8, end: 0 },
+                alpha: { start: 0.6, end: 0 },
+                tint: [0x61dafb, 0x38bdf8, 0x818cf8],
+                frequency: 40,
+                quantity: 1,
+              })
+              .setDepth(9);
+
+            // Groups
+            this.pods = this.physics.add.group();
+            this.asteroids = this.physics.add.group();
+            this.gemGroup = this.physics.add.group();
+            this.hazards = this.physics.add.group();
+
+            // HUD
+            this.createHUD();
+
+            // Controls
+            this.cursors = this.input.keyboard.createCursorKeys();
+            this.wasd = {
+              up: this.input.keyboard.addKey("W"),
+              down: this.input.keyboard.addKey("S"),
+              left: this.input.keyboard.addKey("A"),
+              right: this.input.keyboard.addKey("D"),
+            };
+
+            // Touch
+            this.touchTarget = null;
+            this.input.on("pointerdown", (p) => {
+              this.touchTarget = { x: p.worldX, y: p.worldY };
+            });
+            this.input.on("pointermove", (p) => {
+              if (p.isDown) this.touchTarget = { x: p.worldX, y: p.worldY };
+            });
+            this.input.on("pointerup", () => (this.touchTarget = null));
+
+            // Collisions
+            this.physics.add.overlap(
+              this.player,
+              this.pods,
+              (p, pod) => this.hitPod(pod),
+              null,
+              this,
+            );
+            this.physics.add.overlap(
+              this.player,
+              this.gemGroup,
+              (p, gem) => this.collectGem(gem),
+              null,
+              this,
+            );
+            this.physics.add.overlap(
+              this.player,
+              this.hazards,
+              (p, h) => this.hitHazard(h),
+              null,
+              this,
+            );
+
+            // Spawn question
+            this.nextQuestion();
+
+            // Floating debris spawner
+            this.time.addEvent({
+              delay: 2000,
+              callback: () => this.spawnDebris(),
+              loop: true,
+            });
+
+            // Gem spawner
+            this.time.addEvent({
+              delay: 4000,
+              callback: () => this.spawnGem(),
+              loop: true,
+            });
+
+            // Small hazard spawner
+            this.time.addEvent({
+              delay: 3000 + rand(0, 2000),
+              callback: () => this.spawnHazard(),
+              loop: true,
+            });
+          }
+
+          createHUD() {
+            const pad = 10;
+            // Score
+            this.add
+              .rectangle(80, pad + 16, 140, 32, 0x111827, 0.85)
+              .setStrokeStyle(1, 0xfbbf24, 0.3)
+              .setScrollFactor(0)
+              .setDepth(100);
+            this.scoreText = this.add
+              .text(80, pad + 16, "Score: 0", {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Combo
+            this.add
+              .rectangle(220, pad + 16, 110, 32, 0x111827, 0.85)
+              .setStrokeStyle(1, 0xfb923c, 0.3)
+              .setScrollFactor(0)
+              .setDepth(100);
+            this.comboText = this.add
+              .text(220, pad + 16, "Combo: 0", {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#fb923c",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Level
+            this.add
+              .rectangle(345, pad + 16, 110, 32, 0x111827, 0.85)
+              .setStrokeStyle(1, 0xa78bfa, 0.3)
+              .setScrollFactor(0)
+              .setDepth(100);
+            this.levelText = this.add
+              .text(345, pad + 16, "Level: 1", {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#a78bfa",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Gems
+            this.add
+              .rectangle(470, pad + 16, 110, 32, 0x111827, 0.85)
+              .setStrokeStyle(1, 0xfbbf24, 0.3)
+              .setScrollFactor(0)
+              .setDepth(100);
+            this.gemText = this.add
+              .text(470, pad + 16, "Gems: 0", {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Shield bar
+            this.add
+              .rectangle(W - 110, pad + 16, 180, 32, 0x111827, 0.85)
+              .setStrokeStyle(1, 0x34d399, 0.3)
+              .setScrollFactor(0)
+              .setDepth(100);
+            this.shieldBar = this.add
+              .rectangle(W - 190, pad + 16, 0, 22, 0x34d399, 0.8)
+              .setOrigin(0, 0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+            this.shieldBar.width = 160;
+            this.shieldText = this.add
+              .text(W - 110, pad + 16, "Shield: 100%", {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(102);
+
+            // Question panel
+            this.qPanel = this.add
+              .rectangle(W / 2, H - 44, W - 60, 68, 0x111827, 0.88)
+              .setStrokeStyle(1, 0x61dafb, 0.3)
+              .setScrollFactor(0)
+              .setDepth(100);
+            this.qText = this.add
+              .text(W / 2, H - 52, "", {
+                fontSize: "22px",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+            this.qHint = this.add
+              .text(W / 2, H - 30, "", { fontSize: "12px", color: "#94a3b8" })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(101);
+
+            // Feedback
+            this.feedbackText = this.add
+              .text(W / 2, H / 2, "", {
+                fontSize: "28px",
+                fontStyle: "bold",
+                color: "#34d399",
+                stroke: "#000",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(102)
+              .setAlpha(0);
+          }
+
+          nextQuestion() {
+            this.pods.clear(true, true);
+            this.answered = false;
+
+            this.currentQ = generateDivision(this.level);
+            this.qText.setText(this.currentQ.stem);
+            this.qHint.setText("Fly into the correct quotient!");
+
+            // Spawn answer asteroids
+            const choices = this.currentQ.choices;
+            const startX = W * 0.35;
+            choices.forEach((c, i) => {
+              const x = startX + rand(80, 400);
+              const y = 70 + (i * (H - 220)) / choices.length + rand(-25, 25);
+
+              // Asteroid
+              const ast = this.add
+                .image(x, y, "asteroid")
+                .setScale(1.3 + Math.random() * 0.3)
+                .setDepth(5);
+              this.tweens.add({
+                targets: ast,
+                angle: ast.angle + 360,
+                duration: 8000 + rand(0, 4000),
+                repeat: -1,
+              });
+
+              // Pod overlay
+              const pod = this.physics.add
+                .image(x, y, "pod")
+                .setScale(1.1)
+                .setDepth(6)
+                .setAlpha(0.9);
+              pod.setData("correct", c.correct);
+              pod.setData("text", c.text);
+              pod.setData("asteroid", ast);
+              pod.body.setImmovable(true);
+
+              const label = this.add
+                .text(x, y, c.text, {
+                  fontSize: "17px",
+                  fontStyle: "bold",
+                  color: "#ecfbff",
+                })
+                .setOrigin(0.5)
+                .setDepth(7);
+              pod.setData("label", label);
+
+              // Bob
+              this.tweens.add({
+                targets: [pod, label, ast],
+                y: y + 10,
+                duration: 1800 + rand(0, 600),
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+                delay: rand(0, 400),
+              });
+
+              this.pods.add(pod);
+            });
+          }
+
+          hitPod(pod) {
+            if (this.answered) return;
+            this.answered = true;
+
+            const correct = pod.getData("correct");
+            const label = pod.getData("label");
+            const ast = pod.getData("asteroid");
+
+            if (correct) {
+              sfxMine();
+              this.combo++;
+              this.bestCombo = Math.max(this.bestCombo, this.combo);
+              this.questionsCorrect++;
+              this.questionsTotal++;
+
+              const pts = 120 + this.combo * 25 + this.level * 40;
+              this.score += pts;
+
+              // Explosion effect
+              this.add
+                .particles(pod.x, pod.y, "explosion", {
+                  speed: { min: 80, max: 250 },
+                  lifespan: 700,
+                  scale: { start: 1.2, end: 0 },
+                  alpha: { start: 1, end: 0 },
+                  quantity: 20,
+                  tint: [0xfbbf24, 0xfb923c, 0xef4444],
+                  emitting: false,
+                })
+                .explode(20);
+
+              if (ast) ast.destroy();
+              pod.setTint(0x34d399);
+              if (label) label.setColor("#34d399");
+
+              this.showFeedback("MINED! +" + pts, 0x34d399);
+              this.cameras.main.shake(150, 0.006);
+              sfxExplosion();
+
+              // Drop gems
+              for (let i = 0; i < rand(2, 4); i++) {
+                const gem = this.physics.add
+                  .image(pod.x + rand(-30, 30), pod.y + rand(-20, 20), "gem")
+                  .setScale(1.2)
+                  .setDepth(5);
+                gem.body.velocity.x = rand(-100, 100);
+                gem.body.velocity.y = rand(-100, 100);
+                gem.body.drag.x = 80;
+                gem.body.drag.y = 80;
+                this.gemGroup.add(gem);
+              }
+
+              // Level up
+              if (
+                this.questionsCorrect > 0 &&
+                this.questionsCorrect % 4 === 0 &&
+                this.level < 6
+              ) {
+                this.level++;
+                this.levelText.setText("Level: " + this.level);
+                sfxLevelUp();
+                this.showFeedback("SECTOR " + this.level + "!", 0xa78bfa);
+              }
+
+              this.updateHUD();
+              this.time.delayedCall(1000, () => {
+                if (this.shield > 0) this.nextQuestion();
+              });
+            } else {
+              sfxWrong();
+              this.combo = 0;
+              this.shield -= 18;
+              this.questionsTotal++;
+
+              pod.setTint(0xef4444);
+              if (label) label.setColor("#ef4444");
+
+              // Show correct
+              this.pods.getChildren().forEach((p) => {
+                if (p.getData("correct")) {
+                  p.setTint(0x34d399);
+                  const l = p.getData("label");
+                  if (l) l.setColor("#34d399");
+                }
+              });
+
+              this.showFeedback(
+                "Miss! Answer: " + this.currentQ.quotient,
+                0xef4444,
+              );
+              this.qHint.setText(this.currentQ.hint);
+              this.cameras.main.shake(250, 0.01);
+
+              this.add
+                .particles(pod.x, pod.y, "star", {
+                  speed: { min: 30, max: 100 },
+                  lifespan: 500,
+                  scale: { start: 0.6, end: 0 },
+                  tint: 0xef4444,
+                  quantity: 10,
+                  emitting: false,
+                })
+                .explode(10);
+
+              this.updateHUD();
+              if (this.shield <= 0) {
+                this.time.delayedCall(1200, () => this.endGame());
+              } else {
+                this.time.delayedCall(1800, () => this.nextQuestion());
+              }
+            }
+          }
+
+          collectGem(gem) {
+            sfxGem();
+            this.gems++;
+            this.score += 30;
+            this.add
+              .particles(gem.x, gem.y, "star", {
+                speed: { min: 20, max: 80 },
+                lifespan: 400,
+                scale: { start: 0.5, end: 0 },
+                tint: 0xfbbf24,
+                quantity: 5,
+                emitting: false,
+              })
+              .explode(5);
+            gem.destroy();
+            this.updateHUD();
+          }
+
+          hitHazard(h) {
+            sfxWrong();
+            this.shield -= 10;
+            this.combo = 0;
+            this.cameras.main.shake(150, 0.005);
+            this.tweens.add({
+              targets: this.player,
+              alpha: 0.3,
+              duration: 80,
+              yoyo: true,
+              repeat: 3,
+            });
+
+            const angle = Phaser.Math.Angle.Between(
+              h.x,
+              h.y,
+              this.player.x,
+              this.player.y,
+            );
+            this.player.body.velocity.x = Math.cos(angle) * 200;
+            this.player.body.velocity.y = Math.sin(angle) * 200;
+
+            h.destroy();
+            this.updateHUD();
+            if (this.shield <= 0)
+              this.time.delayedCall(500, () => this.endGame());
+          }
+
+          spawnDebris() {
+            const y = rand(40, H - 100);
+            const a = this.add
+              .image(W + 30, y, "asteroid_sm")
+              .setScale(0.6 + Math.random() * 0.6)
+              .setAlpha(0.35)
+              .setAngle(rand(0, 360));
+            this.tweens.add({
+              targets: a,
+              x: -40,
+              angle: a.angle + 180,
+              duration: 5000 + rand(0, 3000),
+              onComplete: () => a.destroy(),
+            });
+          }
+
+          spawnGem() {
+            if (this.gems > 30) return;
+            const gem = this.physics.add
+              .image(W + 20, rand(60, H - 120), "gem")
+              .setScale(1)
+              .setDepth(5);
+            gem.body.velocity.x = -60 - rand(0, 40);
+            this.tweens.add({
+              targets: gem,
+              y: gem.y + rand(-20, 20),
+              duration: 1500,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+            this.gemGroup.add(gem);
+            this.time.delayedCall(8000, () => {
+              if (gem.active) gem.destroy();
+            });
+          }
+
+          spawnHazard() {
+            if (!this.answered) return;
+            const h = this.physics.add
+              .image(W + 30, rand(50, H - 100), "asteroid_sm")
+              .setScale(0.8)
+              .setTint(0xef4444)
+              .setDepth(4);
+            h.body.velocity.x = -120 - this.level * 20;
+            h.body.velocity.y = rand(-30, 30);
+            this.hazards.add(h);
+            this.time.delayedCall(6000, () => {
+              if (h.active) h.destroy();
+            });
+          }
+
+          showFeedback(text, color) {
+            const hex = "#" + color.toString(16).padStart(6, "0");
+            this.feedbackText
+              .setText(text)
+              .setColor(hex)
+              .setAlpha(1)
+              .setScale(0.5);
+            this.tweens.add({
+              targets: this.feedbackText,
+              scale: 1,
+              duration: 200,
+              ease: "Back.easeOut",
+            });
+            this.tweens.add({
+              targets: this.feedbackText,
+              alpha: 0,
+              duration: 700,
+              delay: 900,
+            });
+          }
+
+          updateHUD() {
+            this.scoreText.setText("Score: " + this.score);
+            this.comboText.setText(
+              "Combo: " + this.combo + (this.combo >= 3 ? " 🔥" : ""),
+            );
+            this.levelText.setText("Level: " + this.level);
+            this.gemText.setText("Gems: " + this.gems);
+            this.shield = Math.max(0, Math.min(100, this.shield));
+            this.shieldBar.width = Math.max(0, (this.shield / 100) * 160);
+            this.shieldBar.fillColor =
+              this.shield > 50
+                ? 0x34d399
+                : this.shield > 25
+                  ? 0xfbbf24
+                  : 0xef4444;
+            this.shieldText.setText("Shield: " + Math.round(this.shield) + "%");
+          }
+
+          endGame() {
+            this.physics.pause();
+            this.scene.start("Results", {
+              score: this.score,
+              correct: this.questionsCorrect,
+              total: this.questionsTotal,
+              level: this.level,
+              bestCombo: this.bestCombo,
+              gems: this.gems,
+            });
+          }
+
+          update(time, delta) {
+            if (this.shield <= 0) return;
+
+            const speed = 340;
+            let vx = 0,
+              vy = 0;
+            if (this.cursors.left.isDown || this.wasd.left.isDown) vx = -speed;
+            if (this.cursors.right.isDown || this.wasd.right.isDown) vx = speed;
+            if (this.cursors.up.isDown || this.wasd.up.isDown) vy = -speed;
+            if (this.cursors.down.isDown || this.wasd.down.isDown) vy = speed;
+
+            if (this.touchTarget) {
+              const dx = this.touchTarget.x - this.player.x;
+              const dy = this.touchTarget.y - this.player.y;
+              const dist = Math.hypot(dx, dy);
+              if (dist > 15) {
+                vx = (dx / dist) * speed;
+                vy = (dy / dist) * speed;
+              }
+            }
+
+            this.player.body.velocity.x = Phaser.Math.Linear(
+              this.player.body.velocity.x,
+              vx,
+              0.15,
+            );
+            this.player.body.velocity.y = Phaser.Math.Linear(
+              this.player.body.velocity.y,
+              vy,
+              0.15,
+            );
+
+            if (vx < -20) this.player.setFlipX(true);
+            else if (vx > 20) this.player.setFlipX(false);
+
+            // Engine glow
+            this.engineGlow.setPosition(this.player.x - 22, this.player.y);
+
+            // Parallax stars
+            this.starLayers.forEach((layer) => {
+              layer.forEach((s) => {
+                s.x -= s.getData("speed");
+                if (s.x < -5) {
+                  s.x = W + 5;
+                  s.y = rand(0, H);
+                }
+              });
+            });
+
+            // Clean offscreen
+            this.gemGroup.getChildren().forEach((g) => {
+              if (g.x < -30) g.destroy();
+            });
+            this.hazards.getChildren().forEach((h) => {
+              if (h.x < -40) h.destroy();
+            });
+          }
+        }
+
+        // ==================== RESULTS ====================
+        class ResultsScene extends Phaser.Scene {
+          constructor() {
+            super("Results");
+          }
+          init(data) {
+            this.d = data;
+          }
+          create() {
+            const d = this.d;
+
+            for (let i = 0; i < 100; i++) {
+              this.add.circle(
+                rand(0, W),
+                rand(0, H),
+                Math.random() * 1.5 + 0.3,
+                0xffffff,
+                0.2 + Math.random() * 0.4,
+              );
+            }
+
+            const acc = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+            const won = d.correct >= 10;
+
+            this.add
+              .text(W / 2, 55, won ? "MISSION COMPLETE!" : "MINING REPORT", {
+                fontSize: "36px",
+                fontStyle: "bold",
+                color: won ? "#fbbf24" : "#61dafb",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 90, "6.NS.B.2 — Multi-Digit Division", {
+                fontSize: "14px",
+                color: "#94a3b8",
+              })
+              .setOrigin(0.5);
+
+            const stats = [
+              { label: "Score", value: d.score, color: "#fbbf24" },
+              {
+                label: "Correct",
+                value: d.correct + "/" + d.total,
+                color: "#34d399",
+              },
+              { label: "Accuracy", value: acc + "%", color: "#61dafb" },
+              { label: "Level", value: d.level, color: "#a78bfa" },
+              { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
+              { label: "Gems", value: d.gems, color: "#fbbf24" },
+            ];
+
+            stats.forEach((s, i) => {
+              const col = i % 3,
+                row = Math.floor(i / 3);
+              const x = W / 2 - 190 + col * 190,
+                y = 150 + row * 95;
+              this.add
+                .rectangle(x, y, 165, 70, 0x111827, 0.85)
+                .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
+              this.add
+                .text(x, y - 14, s.label, {
+                  fontSize: "11px",
+                  color: "#94a3b8",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(x, y + 12, String(s.value), {
+                  fontSize: "24px",
+                  fontStyle: "bold",
+                  color: s.color,
+                })
+                .setOrigin(0.5);
+            });
+
+            // Badges
+            const badges = [];
+            if (acc >= 90) badges.push("Division Master");
+            if (acc >= 70) badges.push("Skilled Miner");
+            if (d.bestCombo >= 5) badges.push("Combo Expert");
+            if (d.gems >= 10) badges.push("Gem Collector");
+            if (d.level >= 4) badges.push("Deep Space");
+            if (!badges.length) badges.push("Keep Mining!");
+
+            this.add
+              .text(W / 2, 370, "Achievements", {
+                fontSize: "13px",
+                color: "#94a3b8",
+              })
+              .setOrigin(0.5);
+            badges.forEach((b, i) => {
+              const bx = W / 2 + (i - (badges.length - 1) / 2) * 130;
+              this.add
+                .rectangle(bx, 400, 115, 28, 0x1a0d3e, 0.8)
+                .setStrokeStyle(1, 0xa78bfa, 0.5);
+              this.add
+                .text(bx, 400, b, {
+                  fontSize: "11px",
+                  fontStyle: "bold",
+                  color: "#a78bfa",
+                })
+                .setOrigin(0.5);
+            });
+
+            this.add
+              .text(
+                W / 2,
+                455,
+                "Tip: Divide place by place.\nEstimate first, then refine each digit.",
+                {
+                  fontSize: "13px",
+                  color: "#94a3b8",
+                  align: "center",
+                  lineSpacing: 4,
+                },
+              )
+              .setOrigin(0.5);
+
+            // Buttons
+            const btn = this.add
+              .rectangle(W / 2 - 80, 530, 160, 46, 0xfbbf24)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 - 80, 530, "MINE AGAIN", {
+                fontSize: "17px",
+                fontStyle: "bold",
+                color: "#000",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
+            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+            btn.on("pointerdown", () => {
+              sfxLaser();
+              this.scene.start("Game");
+            });
+
+            const menu = this.add
+              .rectangle(W / 2 + 100, 530, 110, 46, 0x111827)
+              .setStrokeStyle(1, 0x61dafb, 0.5)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(W / 2 + 100, 530, "MENU", {
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#61dafb",
+              })
+              .setOrigin(0.5);
+            menu.on("pointerdown", () => this.scene.start("Title"));
+
+            this.input.keyboard.on("keydown-SPACE", () => {
+              sfxLaser();
+              this.scene.start("Game");
+            });
+            this.cameras.main.fadeIn(400);
+
+            if (acc >= 70) {
+              for (let i = 0; i < 20; i++) {
+                const s = this.add
+                  .image(rand(50, W - 50), -20, "gem")
+                  .setScale(1 + Math.random())
+                  .setTint(pick([0xfbbf24, 0xfb923c, 0xa78bfa, 0x61dafb]));
+                this.tweens.add({
+                  targets: s,
+                  y: H + 20,
+                  x: s.x + rand(-80, 80),
+                  angle: 360,
+                  duration: 2000 + rand(0, 1500),
+                  delay: rand(0, 800),
+                  alpha: 0,
+                });
+              }
+            }
+          }
+        }
+
+        config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
+        new Phaser.Game(config);
+      })();
+    </script>
+  </body>
 </html>

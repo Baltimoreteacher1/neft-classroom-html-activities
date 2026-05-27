@@ -867,6 +867,82 @@
 </style>
 </head>
 <body>
+<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+<style>
+#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
+#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
+.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
+@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
+.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
+.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
+.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
+.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
+.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
+.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
+.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
+.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
+.vso-dot.active{background:#6366F1;transform:scale(1.25)}
+.vso-dot.seen{background:#A5B4FC}
+</style>
+<div id="vocabSlideshowOverlay">
+<div class="vso-card">
+  <div class="vso-progress" id="vsoProgress">Word 1 of 4</div>
+  <div class="vso-svg-wrap" id="vsoSvg"></div>
+  <div class="vso-word" id="vsoWord"></div>
+  <div class="vso-def" id="vsoDef"></div>
+  <div class="vso-nav">
+    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
+    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
+    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
+  </div>
+  <div class="vso-dots" id="vsoDots"></div>
+</div>
+</div>
+<script>
+(function(){
+const VSO_ITEMS=[
+  {word: 'Histogram', def: 'A bar graph that shows how often data falls in equal ranges. Bars touch.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="50" y1="240" x2="270" y2="240" stroke="#1E293B" stroke-width="2"/>   <line x1="50" y1="240" x2="50" y2="60" stroke="#1E293B" stroke-width="2"/>   <rect x="55" y="180" width="50" height="60" fill="#60A5FA"/>   <rect x="105" y="120" width="50" height="120" fill="#818CF8"/>   <rect x="155" y="80" width="50" height="160" fill="#6366F1"/>   <rect x="205" y="160" width="50" height="80" fill="#A78BFA"/>   <text x="155" y="50" text-anchor="middle" font-size="16" font-weight="800" fill="#1E293B" font-family="sans-serif">bars touch = ranges</text> </svg>'},
+  {word: 'Frequency', def: 'How many times a value or range appears in a data set.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>'},
+  {word: 'Interval', def: 'A range of values used to group data in a histogram.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>'},
+  {word: 'Data', def: 'Numbers or information collected to study a topic.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>'}
+];
+let vsoIdx=0,vsoSeen=new Set();
+function vsoRender(){
+  const it=VSO_ITEMS[vsoIdx];
+  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
+  document.getElementById('vsoWord').textContent=it.word;
+  document.getElementById('vsoDef').textContent=it.def;
+  document.getElementById('vsoSvg').innerHTML=it.svg;
+  vsoSeen.add(vsoIdx);
+  document.getElementById('vsoPrev').disabled=vsoIdx===0;
+  const isLast=vsoIdx===VSO_ITEMS.length-1;
+  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
+  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
+  const dots=document.getElementById('vsoDots');
+  dots.innerHTML='';
+  VSO_ITEMS.forEach(function(_,i){
+    const d=document.createElement('span');
+    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
+    d.onclick=function(){vsoIdx=i;vsoRender();};
+    dots.appendChild(d);
+  });
+}
+window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
+window.vsoClose=function(){
+  const el=document.getElementById('vocabSlideshowOverlay');
+  el.classList.add('vso-hidden');
+  setTimeout(function(){el.remove();},600);
+};
+vsoRender();
+})();
+</script>
+<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+
+
 
 <!-- XP BAR -->
 <div class="xp-bar">

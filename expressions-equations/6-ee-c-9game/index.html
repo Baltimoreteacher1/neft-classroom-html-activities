@@ -1,661 +1,1223 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<title>Variable Quest — 6.EE.C.9 Adventure Game</title>
-<style>
-* { box-sizing:border-box; margin:0; padding:0; }
-  :root {
-    --gold:#f39c12; --green:#27ae60; --red:#e74c3c; --blue:#3498db;
-    --purple:#8e44ad; --dark:#1a1a2e; --panel:#16213e; --accent:#0f3460;
-    --teal:#11998e; --pink:#e91e63;
-  }
-  body { font-family:'Nunito',Arial,sans-serif; background:var(--dark); color:#fff; min-height:100vh; overflow-x:hidden; }
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Variable Blaster - Space Shooter | 6.EE.C.9</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+      #game-container {
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      // ============================================================
+      // VARIABLE BLASTER — Space Shooter (6.EE.C.9)
+      // Shoot asteroids carrying the correct answer about
+      // dependent/independent variables and equations from tables.
+      // ============================================================
 
-  .screen { display:none; min-height:100vh; }
-  .screen.active { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+      const QUESTIONS = [
+        {
+          scenario:
+            "A car travels on the highway. The longer you drive, the farther it goes.",
+          q: "What is the INDEPENDENT variable?",
+          choices: ["Hours driven", "Miles traveled", "The car", "The highway"],
+          answer: 0,
+          explain: "Hours driven is independent -- you control it.",
+        },
+        {
+          scenario: "A babysitter earns $8 per hour worked.",
+          q: "Which is the DEPENDENT variable?",
+          choices: ["Hours worked", "Money earned", "Babysitter", "Family"],
+          answer: 1,
+          explain: "Money earned depends on hours worked.",
+        },
+        {
+          scenario: "Table: Hours(x): 1,2,3 | Miles(y): 55,110,165.",
+          q: "What is the rate (k)?",
+          choices: ["110", "55", "165", "3"],
+          answer: 1,
+          explain: "k = 55/1 = 55.",
+        },
+        {
+          scenario: "Table: Hours(x): 1,3,5 | Earnings(y): 9,27,45.",
+          q: "What is the equation?",
+          choices: ["y = 3x", "y = 27x", "y = 9x", "y = 45x"],
+          answer: 2,
+          explain: "k = 9/1 = 9, so y = 9x.",
+        },
+        {
+          scenario: "Table: Pizzas(x): 2,4,6 | Cost(y): 26,52,78.",
+          q: "What is the cost per pizza (k)?",
+          choices: ["26", "52", "13", "6"],
+          answer: 2,
+          explain: "k = 26/2 = 13.",
+        },
+        {
+          scenario: "A plant grows taller with more sunlight each day.",
+          q: "Which is the INDEPENDENT variable?",
+          choices: [
+            "Height of plant",
+            "Days of sunlight",
+            "Type of soil",
+            "Water amount",
+          ],
+          answer: 1,
+          explain: "Days of sunlight is what you control.",
+        },
+        {
+          scenario: "A student reads books and earns points.",
+          q: "Which is TRUE?",
+          choices: [
+            "Points = independent",
+            "Books = dependent",
+            "Books = independent",
+            "No relationship",
+          ],
+          answer: 2,
+          explain: "Books read is independent -- points depend on it.",
+        },
+        {
+          scenario: "A line passes through (0,0) and (1,8).",
+          q: "What is the equation?",
+          choices: ["y = 1x", "y = 8x", "y = 0x", "y = 16x"],
+          answer: 1,
+          explain: "k = 8/1 = 8, so y = 8x.",
+        },
+        {
+          scenario: "Graph: line through (0,0),(2,10),(4,20).",
+          q: "What is the equation?",
+          choices: ["y = 2x", "y = 10x", "y = 5x", "y = 20x"],
+          answer: 2,
+          explain: "k = 10/2 = 5, so y = 5x.",
+        },
+        {
+          scenario: "Table: x:3,6,9 | y:21,42,63. Predict y when x=12.",
+          q: "What is y when x = 12?",
+          choices: ["y = 84", "y = 252", "y = 36", "y = 72"],
+          answer: 0,
+          explain: "k = 7, so y = 7*12 = 84.",
+        },
+        {
+          scenario: "A graph: 4 units right, line rises 20. Through (0,0).",
+          q: "What is the equation?",
+          choices: ["y = 4x", "y = 20x", "y = 5x", "y = 80x"],
+          answer: 2,
+          explain: "k = 20/4 = 5, so y = 5x.",
+        },
+        {
+          scenario: "Equation y=15x. x=hours, y=miles. Trip = 180 miles.",
+          q: "How many hours?",
+          choices: ["15", "180", "12", "13"],
+          answer: 2,
+          explain: "180 = 15x, x = 12 hours.",
+        },
+        {
+          scenario: "Streaming service: more songs = more data.",
+          q: "What is the DEPENDENT variable?",
+          choices: [
+            "Songs downloaded",
+            "Total data used",
+            "Streaming service",
+            "Price per song",
+          ],
+          answer: 1,
+          explain: "Data used depends on songs downloaded.",
+        },
+        {
+          scenario: "Table: Weeks(x):1,4,7 | Height(y):6,24,42.",
+          q: "Which equation is correct?",
+          choices: ["y = 4x", "y = 7x", "y = 6x", "y = 42x"],
+          answer: 2,
+          explain: "k = 6/1 = 6, so y = 6x.",
+        },
+        {
+          scenario: "Graph A: (1,3),(2,6),(3,9). Graph B: (1,2),(2,5),(3,9).",
+          q: "Which shows a proportional relationship?",
+          choices: ["Graph A only", "Graph B only", "Both", "Neither"],
+          answer: 0,
+          explain: "Graph A: constant rate 3. Graph B: rate changes.",
+        },
+      ];
 
-  /* TITLE */
-  #titleScreen { background:radial-gradient(ellipse at top,#1a1a4e 0%,#0a0a1a 70%); position:relative; overflow:hidden; }
-  .stars { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
-  .star  { position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; animation:twinkle 3s infinite; }
-  @keyframes twinkle { 0%,100%{opacity:.2} 50%{opacity:1} }
-  .game-title { font-family:'Orbitron',sans-serif; font-size:clamp(28px,5vw,52px); font-weight:900; text-align:center;
-    background:linear-gradient(135deg,#f39c12,#e74c3c,#8e44ad); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    margin-bottom:8px; line-height:1.2; }
-  .game-subtitle { font-size:16px; color:#aaa; text-align:center; margin-bottom:6px; }
-  .game-standard { font-size:13px; color:#667eea; text-align:center; margin-bottom:30px; font-weight:700; }
-  .character-row { display:flex; gap:20px; justify-content:center; margin-bottom:30px; flex-wrap:wrap; }
-  .char-card { background:var(--panel); border-radius:16px; padding:16px 20px; text-align:center; cursor:pointer;
-    border:3px solid transparent; transition:all .25s; width:130px; }
-  .char-card:hover { transform:translateY(-6px); border-color:var(--gold); box-shadow:0 8px 24px rgba(243,156,18,.4); }
-  .char-card.selected { border-color:var(--gold); background:#2a1a00; box-shadow:0 0 20px rgba(243,156,18,.6); }
-  .char-emoji { font-size:42px; display:block; margin-bottom:6px; }
-  .char-name  { font-size:13px; font-weight:900; }
-  .char-desc  { font-size:11px; color:#aaa; margin-top:4px; }
-  .start-btn { padding:16px 48px; font-family:'Orbitron',sans-serif; font-size:18px; font-weight:700;
-    background:linear-gradient(135deg,#f39c12,#e67e22); border:none; border-radius:30px; color:#fff;
-    cursor:pointer; transition:all .25s; box-shadow:0 6px 20px rgba(243,156,18,.5); }
-  .start-btn:hover { transform:scale(1.06); box-shadow:0 10px 30px rgba(243,156,18,.7); }
-  .start-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+      // Audio synth
+      const AudioSys = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        },
+        play(freq, dur, type = "sine", vol = 0.12) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.type = type;
+            o.frequency.value = freq;
+            g.gain.setValueAtTime(vol, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + dur,
+            );
+            o.start();
+            o.stop(this.ctx.currentTime + dur);
+          } catch (e) {}
+        },
+        shoot() {
+          this.play(880, 0.08, "square", 0.06);
+        },
+        hit() {
+          this.play(220, 0.15, "sawtooth", 0.08);
+        },
+        correct() {
+          this.play(660, 0.1);
+          setTimeout(() => this.play(880, 0.12), 80);
+        },
+        wrong() {
+          this.play(180, 0.25, "sawtooth", 0.1);
+        },
+        explode() {
+          this.play(80, 0.3, "sawtooth", 0.15);
+        },
+        levelUp() {
+          this.play(523, 0.1);
+          setTimeout(() => this.play(659, 0.1), 100);
+          setTimeout(() => this.play(784, 0.15), 200);
+        },
+      };
 
-  /* HUD */
-  .hud { position:fixed; top:0; left:0; right:0; z-index:100;
-    background:rgba(22,33,62,.95); backdrop-filter:blur(10px);
-    display:flex; align-items:center; justify-content:space-between;
-    padding:10px 20px; border-bottom:2px solid var(--accent); flex-wrap:wrap; gap:8px; }
-  .hud-left { display:flex; align-items:center; gap:14px; }
-  .hud-char  { font-size:28px; }
-  .hud-name  { font-size:13px; font-weight:900; color:var(--gold); }
-  .hud-level { font-size:11px; color:#aaa; }
-  .stat-bar  { display:flex; align-items:center; gap:6px; }
-  .stat-label{ font-size:11px; color:#aaa; width:32px; }
-  .bar-wrap  { width:90px; height:10px; background:#333; border-radius:10px; overflow:hidden; }
-  .bar-fill  { height:100%; border-radius:10px; transition:width .4s; }
-  .hp-fill   { background:linear-gradient(90deg,#27ae60,#2ecc71); }
-  .xp-fill   { background:linear-gradient(90deg,#3498db,#2980b9); }
-  .hud-score  { font-family:'Orbitron',sans-serif; font-size:16px; font-weight:700; color:var(--gold); }
-  .hud-streak { font-size:13px; color:#e67e22; font-weight:700; }
+      const W = 800,
+        H = 600;
 
-  /* GAME SCREEN */
-  #gameScreen { padding-top:80px; background:radial-gradient(ellipse at center,#1a1a3e 0%,#0a0a1a 100%); }
+      // ========= BOOT SCENE =========
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          // Generate textures
+          const g = this.make.graphics({ add: false });
+          // Ship
+          g.clear();
+          g.fillStyle(0x00ccff, 1);
+          g.fillTriangle(16, 0, 0, 32, 32, 32);
+          g.fillStyle(0x0088ff, 1);
+          g.fillRect(12, 20, 8, 16);
+          g.generateTexture("ship", 32, 36);
+          g.clear();
+          // Bullet
+          g.fillStyle(0x00ffff, 1);
+          g.fillRect(0, 0, 4, 12);
+          g.fillStyle(0xffffff, 0.7);
+          g.fillRect(1, 0, 2, 6);
+          g.generateTexture("bullet", 4, 12);
+          g.clear();
+          // Asteroid
+          g.fillStyle(0x888888, 1);
+          g.fillCircle(24, 24, 24);
+          g.fillStyle(0x666666, 1);
+          g.fillCircle(18, 16, 6);
+          g.fillStyle(0x555555, 1);
+          g.fillCircle(28, 28, 4);
+          g.generateTexture("asteroid", 48, 48);
+          g.clear();
+          // Star particle
+          g.fillStyle(0xffffff, 1);
+          g.fillCircle(2, 2, 2);
+          g.generateTexture("star", 4, 4);
+          g.clear();
+          // Explosion particle
+          g.fillStyle(0xffaa00, 1);
+          g.fillCircle(4, 4, 4);
+          g.generateTexture("spark", 8, 8);
+          g.clear();
+          // Shield powerup
+          g.fillStyle(0x00ff88, 1);
+          g.fillCircle(12, 12, 12);
+          g.fillStyle(0x00ffcc, 0.6);
+          g.fillCircle(12, 12, 8);
+          g.generateTexture("powerup", 24, 24);
+          g.clear();
 
-  .world-map { display:flex; gap:12px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
-  .world-node { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:20px; border:3px solid transparent; transition:all .2s; }
-  .world-node.completed { background:var(--green); border-color:#1a5632; }
-  .world-node.current   { background:var(--gold); border-color:#7a5000; animation:pulse 1.5s infinite; }
-  .world-node.locked    { background:#333; border-color:#555; opacity:.5; }
-  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(243,156,18,.7)} 70%{box-shadow:0 0 0 10px rgba(243,156,18,0)} }
+          g.destroy();
+          this.scene.start("Title");
+        }
+      }
 
-  .question-container {
-    background:var(--panel); border-radius:24px; padding:28px; max-width:700px; width:100%;
-    box-shadow:0 20px 60px rgba(0,0,0,.5); border:1px solid var(--accent); position:relative; overflow:hidden;
-  }
-  .question-container::before { content:''; position:absolute; top:0; left:0; right:0; height:4px;
-    background:linear-gradient(90deg,var(--teal),var(--blue),var(--purple)); }
+      // ========= TITLE SCENE =========
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          AudioSys.init();
+          // Starfield
+          for (let i = 0; i < 120; i++) {
+            const s = this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.FloatBetween(0.5, 2),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.2, 0.8),
+            );
+            this.tweens.add({
+              targets: s,
+              alpha: { from: s.alpha, to: 0.1 },
+              duration: Phaser.Math.Between(1500, 4000),
+              yoyo: true,
+              repeat: -1,
+            });
+          }
 
-  .q-world-badge { display:inline-flex; align-items:center; gap:6px; background:var(--accent);
-    border-radius:20px; padding:4px 12px; font-size:12px; font-weight:700; margin-bottom:12px; color:#aaa; }
-  .q-world-badge span { color:var(--gold); }
-  .q-number   { font-size:12px; color:#667; margin-bottom:8px; }
-  .q-attempts { font-size:12px; color:#e67e22; margin-bottom:8px; font-weight:700; }
+          // Title
+          this.add
+            .text(W / 2, 100, "VARIABLE BLASTER", {
+              fontSize: "48px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ccff",
+              stroke: "#003366",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5);
 
-  .q-scenario { background:rgba(255,255,255,.05); border-left:4px solid var(--teal); border-radius:10px;
-    padding:14px 16px; margin-bottom:16px; font-size:14px; line-height:1.7; }
-  .q-scenario .focus-word { background:rgba(243,156,18,.25); color:var(--gold); border-radius:6px;
-    padding:2px 7px; font-weight:900; border-bottom:2px solid var(--gold); }
+          this.add
+            .text(W / 2, 155, "A Space Shooter Math Adventure", {
+              fontSize: "16px",
+              fontFamily: "Arial",
+              color: "#88ccff",
+            })
+            .setOrigin(0.5);
 
-  .q-text { font-size:16px; font-weight:800; margin-bottom:18px; line-height:1.5; }
-  .q-text .focus { color:var(--gold); }
+          this.add
+            .text(W / 2, 180, "6.EE.C.9 -- Variables, Tables & Equations", {
+              fontSize: "13px",
+              fontFamily: "Arial",
+              color: "#6699cc",
+            })
+            .setOrigin(0.5);
 
-  .choices { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .choice-btn {
-    padding:14px 16px; background:rgba(255,255,255,.06); border:2px solid rgba(255,255,255,.12);
-    border-radius:14px; color:#fff; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700;
-    cursor:pointer; transition:all .2s; text-align:left; line-height:1.4;
-  }
-  .choice-btn:hover:not(:disabled) { background:rgba(102,126,234,.2); border-color:var(--blue); transform:translateX(4px); }
-  .choice-btn.correct { background:rgba(39,174,96,.25)!important; border-color:var(--green)!important; color:#2ecc71!important; animation:correctPop .4s; }
-  .choice-btn.wrong   { background:rgba(231,76,60,.2)!important;  border-color:var(--red)!important;   color:#e74c3c!important; animation:shake .4s; }
-  .choice-btn.reveal  { background:rgba(39,174,96,.15)!important; border-color:var(--green)!important; }
-  @keyframes correctPop { 0%{transform:scale(1)} 50%{transform:scale(1.04)} 100%{transform:scale(1)} }
-  @keyframes shake     { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+          // Ship preview
+          const ship = this.add.image(W / 2, 270, "ship").setScale(3);
+          this.tweens.add({
+            targets: ship,
+            y: 260,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
 
-  /* HINT / RETRY PANEL — shown after wrong answer */
-  .hint-retry-panel {
-    display:none; margin-top:14px; background:rgba(243,156,18,.12); border:2px solid var(--gold);
-    border-radius:16px; padding:16px 18px;
-  }
-  .hint-retry-panel.show { display:block; }
-  .hint-retry-title { font-size:14px; font-weight:900; color:var(--gold); margin-bottom:6px; }
-  .hint-retry-text  { font-size:13px; color:#e0c070; line-height:1.6; margin-bottom:12px; }
-  .retry-btn {
-    padding:9px 24px; background:linear-gradient(135deg,var(--gold),#e67e22);
-    border:none; border-radius:20px; color:#fff; font-family:'Nunito',sans-serif;
-    font-size:13px; font-weight:800; cursor:pointer; transition:all .2s;
-  }
-  .retry-btn:hover { filter:brightness(1.15); transform:scale(1.04); }
+          // Character select
+          this.add
+            .text(W / 2, 340, "Choose Your Pilot:", {
+              fontSize: "18px",
+              fontFamily: "Arial",
+              color: "#aaa",
+            })
+            .setOrigin(0.5);
 
-  /* SUCCESS PANEL */
-  .result-panel { display:none; margin-top:14px; padding:14px 18px; border-radius:14px; font-size:14px; font-weight:700; }
-  .result-panel.show { display:block; }
-  .result-panel.correct { background:rgba(39,174,96,.15); border:2px solid var(--green); color:#2ecc71; }
-  .result-panel .explain { font-size:13px; font-weight:400; color:#ccc; margin-top:6px; line-height:1.5; }
+          const chars = [
+            { name: "Ace", color: 0x00ccff, desc: "Speed boost" },
+            { name: "Nova", color: 0xff44aa, desc: "Extra shield" },
+            { name: "Bolt", color: 0xffcc00, desc: "Rapid fire" },
+            { name: "Sage", color: 0x44ff88, desc: "Double XP" },
+          ];
 
-  .next-btn { margin-top:14px; padding:12px 32px; background:linear-gradient(135deg,var(--teal),var(--blue));
-    border:none; border-radius:24px; color:#fff; font-family:'Nunito',sans-serif; font-size:15px; font-weight:800;
-    cursor:pointer; transition:all .2s; display:none; }
-  .next-btn.show { display:inline-block; }
-  .next-btn:hover { transform:scale(1.05); filter:brightness(1.15); }
+          this.selectedChar = 0;
+          this.charCards = [];
+          chars.forEach((c, i) => {
+            const x = W / 2 - 180 + i * 120;
+            const card = this.add
+              .rectangle(x, 400, 100, 80, c.color, 0.15)
+              .setStrokeStyle(2, c.color, 0.6)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(x, 385, c.name, {
+                fontSize: "15px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, 408, c.desc, {
+                fontSize: "11px",
+                fontFamily: "Arial",
+                color: "#aaa",
+              })
+              .setOrigin(0.5);
+            card.on("pointerdown", () => {
+              this.selectedChar = i;
+              this.charCards.forEach((cc, j) => {
+                cc.setStrokeStyle(
+                  j === i ? 3 : 2,
+                  chars[j].color,
+                  j === i ? 1 : 0.4,
+                );
+                cc.setFillStyle(chars[j].color, j === i ? 0.3 : 0.1);
+              });
+              this.startBtn.setAlpha(1);
+            });
+            this.charCards.push(card);
+          });
+          this.charCards[0]
+            .setStrokeStyle(3, chars[0].color, 1)
+            .setFillStyle(chars[0].color, 0.3);
 
-  /* DRAG */
-  .drag-zone-row    { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px; }
-  .drag-bucket      { border-radius:14px; padding:14px; min-height:120px; border:2.5px dashed; }
-  .drag-bucket.ind-zone { background:rgba(243,156,18,.1); border-color:var(--gold); }
-  .drag-bucket.dep-zone { background:rgba(39,174,96,.1);  border-color:var(--green); }
-  .drag-bucket h4   { font-size:13px; font-weight:900; margin-bottom:8px; text-align:center; }
-  .drag-bucket.ind-zone h4 { color:var(--gold); }
-  .drag-bucket.dep-zone h4 { color:var(--green); }
-  .drag-bucket.over { background:rgba(255,255,255,.1)!important; }
-  .drag-items-pool  { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding:10px;
-    background:rgba(255,255,255,.04); border-radius:12px; margin-bottom:10px; min-height:50px; }
-  .d-chip { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border-radius:10px;
-    padding:8px 14px; font-size:13px; font-weight:700; cursor:grab; user-select:none; transition:transform .15s; }
-  .d-chip:hover { transform:scale(1.04); }
-  .d-chip.correct-chip { background:linear-gradient(135deg,#27ae60,#2ecc71)!important; cursor:default; }
-  .d-chip.wrong-chip   { background:linear-gradient(135deg,#e74c3c,#c0392b)!important; animation:shake .4s; }
+          // Start button
+          this.startBtn = this.add
+            .text(W / 2, 490, "[ LAUNCH MISSION ]", {
+              fontSize: "22px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ffcc",
+              padding: { x: 20, y: 10 },
+              backgroundColor: "rgba(0,255,200,0.1)",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
 
-  /* XP POPUP */
-  .xp-popup { position:fixed; top:100px; right:20px; background:rgba(39,174,96,.9); color:#fff;
-    border-radius:12px; padding:10px 18px; font-weight:900; font-size:14px; z-index:200;
-    animation:slideUp .5s ease-out; pointer-events:none; display:none; }
-  @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+          this.startBtn.on("pointerover", () =>
+            this.startBtn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
+          );
+          this.startBtn.on("pointerout", () =>
+            this.startBtn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
+          );
+          this.startBtn.on("pointerdown", () => {
+            AudioSys.init();
+            this.scene.start("Game", { charIndex: this.selectedChar });
+          });
 
-  /* LEVEL UP OVERLAY */
-  .levelup-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:300;
-    display:none; align-items:center; justify-content:center; flex-direction:column; }
-  .levelup-overlay.show { display:flex; }
-  .levelup-box { background:var(--panel); border-radius:24px; padding:40px; text-align:center;
-    border:3px solid var(--gold); max-width:400px; animation:popIn .4s cubic-bezier(.175,.885,.32,1.275); }
-  @keyframes popIn { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
-  .levelup-title { font-family:'Orbitron',sans-serif; font-size:28px; font-weight:900;
-    background:linear-gradient(135deg,var(--gold),#e74c3c); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
-  .levelup-emoji { font-size:64px; display:block; margin-bottom:12px; }
+          // Info chips
+          const info = [
+            "15 Missions",
+            "3 Lives",
+            "Combo Scoring",
+            "Keyboard + Touch",
+          ];
+          info.forEach((t, i) => {
+            this.add
+              .text(W / 2 - 200 + i * 130, 550, t, {
+                fontSize: "11px",
+                fontFamily: "Arial",
+                color: "#668899",
+                padding: { x: 6, y: 3 },
+                backgroundColor: "rgba(255,255,255,0.05)",
+              })
+              .setOrigin(0.5);
+          });
+        }
+      }
 
-  /* END SCREEN */
-  #endScreen { background:radial-gradient(ellipse at top,#1a1a4e,#0a0a1a); }
-  .final-score { font-family:'Orbitron',sans-serif; font-size:clamp(36px,8vw,80px); font-weight:900;
-    background:linear-gradient(135deg,var(--gold),var(--teal)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .final-grade { font-size:22px; font-weight:700; margin:10px 0; }
-  .stat-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0; max-width:400px; }
-  .stat-box { background:var(--panel); border-radius:14px; padding:14px; text-align:center; border:1px solid var(--accent); }
-  .stat-box .val { font-size:24px; font-weight:900; color:var(--gold); }
-  .stat-box .lab { font-size:11px; color:#aaa; margin-top:4px; }
-  .play-again-btn { padding:14px 40px; background:linear-gradient(135deg,var(--gold),var(--teal));
-    border:none; border-radius:30px; color:#fff; font-family:'Orbitron',sans-serif; font-size:16px; font-weight:700;
-    cursor:pointer; margin-top:20px; transition:all .25s; }
-  .play-again-btn:hover { transform:scale(1.06); }
+      // ========= GAME SCENE =========
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
 
-  .world-header { text-align:center; margin-bottom:16px; }
-  .world-title { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:700; color:var(--gold); }
-  .world-desc  { font-size:13px; color:#aaa; margin-top:4px; }
-  .q-top-row   { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
+        init(data) {
+          this.charIndex = data.charIndex || 0;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          this.bestStreak = 0;
+          this.combo = 1;
+          this.level = 1;
+          this.qIndex = 0;
+          this.totalCorrect = 0;
+          this.totalAnswered = 0;
+          this.questionActive = false;
+          this.shuffledQs = Phaser.Utils.Array.Shuffle([...QUESTIONS]);
+        }
 
-  /* attempt pips */
-  .attempt-pips { display:flex; gap:5px; }
-  .pip { width:12px; height:12px; border-radius:50%; background:#444; }
-  .pip.used { background:var(--red); }
-</style>
-</head>
-<body>
+        create() {
+          // Stars background
+          this.starsBg = [];
+          for (let i = 0; i < 80; i++) {
+            const s = this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.FloatBetween(0.5, 1.5),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.15, 0.6),
+            );
+            this.starsBg.push({
+              obj: s,
+              speed: Phaser.Math.FloatBetween(0.3, 1.2),
+            });
+          }
 
-<div class="xp-popup" id="xpPopup">+50 XP ⭐</div>
+          // Ship
+          this.ship = this.physics.add
+            .image(W / 2, H - 60, "ship")
+            .setCollideWorldBounds(true);
+          this.ship.setDamping(true).setDrag(0.92).setMaxVelocity(350);
 
-<div class="levelup-overlay" id="levelUpOverlay">
-  <div class="levelup-box">
-    <span class="levelup-emoji" id="lvlEmoji">⭐</span>
-    <div class="levelup-title" id="lvlTitle">LEVEL UP!</div>
-    <p id="lvlMsg" style="color:#ccc;font-size:14px;margin:10px 0 20px"></p>
-    <button class="start-btn" style="font-size:14px;padding:10px 30px" onclick="closeLevelUp()">Continue ▶</button>
-  </div>
-</div>
+          // Groups
+          this.bullets = this.physics.add.group({ maxSize: 20 });
+          this.asteroids = this.physics.add.group();
+          this.powerups = this.physics.add.group();
+          this.explosionEmitters = [];
 
-<!-- TITLE -->
-<div class="screen active" id="titleScreen">
-  <div class="stars" id="starsContainer"></div>
-  <div style="position:relative;z-index:1;text-align:center;max-width:600px">
-    <div style="font-size:64px;margin-bottom:12px">⚔️ 📊 🏆</div>
-    <div class="game-title">VARIABLE QUEST</div>
-    <div class="game-subtitle">An Epic Math Adventure</div>
-    <div class="game-standard">Standard 6.EE.C.9 — Writing Equations from Tables &amp; Graphs</div>
-    <p style="color:#888;font-size:13px;margin-bottom:16px">Choose your hero:</p>
-    <div class="character-row">
-      <div class="char-card" onclick="selectChar(this,'🧙','Sage','Master of equations')"><span class="char-emoji">🧙</span><div class="char-name">Sage</div><div class="char-desc">Master of equations</div></div>
-      <div class="char-card" onclick="selectChar(this,'🦸','Hero','Quick thinker')"><span class="char-emoji">🦸</span><div class="char-name">Hero</div><div class="char-desc">Quick thinker</div></div>
-      <div class="char-card" onclick="selectChar(this,'🤖','Bot','Never forgets')"><span class="char-emoji">🤖</span><div class="char-name">Bot</div><div class="char-desc">Never forgets</div></div>
-      <div class="char-card" onclick="selectChar(this,'🦊','Fox','Clever strategist')"><span class="char-emoji">🦊</span><div class="char-name">Fox</div><div class="char-desc">Clever strategist</div></div>
-    </div>
-    <button class="start-btn" id="startBtn" onclick="startGame()" disabled>⚔️ Begin Quest</button>
-  </div>
-</div>
+          // Particle manager
+          this.sparkEmitter = this.add.particles(0, 0, "spark", {
+            speed: { min: 80, max: 250 },
+            angle: { min: 0, max: 360 },
+            lifespan: 400,
+            scale: { start: 1, end: 0 },
+            alpha: { start: 1, end: 0 },
+            blendMode: "ADD",
+            emitting: false,
+          });
 
-<!-- GAME SCREEN -->
-<div class="screen" id="gameScreen">
-  <div class="hud">
-    <div class="hud-left">
-      <div class="hud-char" id="hudChar">🧙</div>
-      <div>
-        <div class="hud-name"  id="hudName">Hero</div>
-        <div class="hud-level" id="hudLevel">Level 1</div>
-      </div>
-      <div>
-        <div class="stat-bar"><span class="stat-label">HP</span><div class="bar-wrap"><div class="bar-fill hp-fill" id="hpBar" style="width:100%"></div></div><span style="font-size:11px;color:#aaa" id="hpText">100/100</span></div>
-        <div class="stat-bar"><span class="stat-label">XP</span><div class="bar-wrap"><div class="bar-fill xp-fill" id="xpBar" style="width:0%"></div></div><span style="font-size:11px;color:#aaa" id="xpText">0/100</span></div>
-      </div>
-    </div>
-    <div style="text-align:center">
-      <div class="hud-score">⭐ <span id="scoreDisplay">0</span></div>
-      <div class="hud-streak" id="streakDisplay"></div>
-    </div>
-    <div style="font-size:12px;color:#aaa;text-align:right">
-      World <span id="worldDisplay" style="color:var(--gold);font-weight:900">1</span> / 4<br>
-      Q <span id="qDisplay" style="color:#fff">1</span> / <span id="qTotal">5</span>
-    </div>
-  </div>
+          // Collision
+          this.physics.add.overlap(
+            this.bullets,
+            this.asteroids,
+            this.hitAsteroid,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.ship,
+            this.powerups,
+            this.collectPowerup,
+            null,
+            this,
+          );
+          this.physics.add.overlap(
+            this.ship,
+            this.asteroids,
+            this.shipHit,
+            null,
+            this,
+          );
 
-  <div style="max-width:700px;width:100%">
-    <div class="world-map" id="worldMap"></div>
-    <div class="world-header">
-      <div class="world-title" id="worldTitle">World 1</div>
-      <div class="world-desc"  id="worldDesc"></div>
-    </div>
+          // Input
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+          this.spaceKey = this.input.keyboard.addKey("SPACE");
+          this.lastShot = 0;
 
-    <div class="question-container" id="qContainer">
-      <div class="q-top-row">
-        <div class="q-world-badge">🌍 <span id="qWorldBadge">World 1</span></div>
-        <div class="attempt-pips" id="attemptPips"></div>
-      </div>
-      <div class="q-number"   id="qNumber">Question 1 of 5</div>
-      <div class="q-scenario" id="qScenario" style="display:none"></div>
-      <div class="q-text"     id="qText"></div>
-      <div id="qContent"></div>
+          // Touch controls
+          this.input.on("pointermove", (p) => {
+            if (p.isDown && !this.questionActive) {
+              this.ship.x = Phaser.Math.Clamp(p.x, 20, W - 20);
+              this.ship.y = Phaser.Math.Clamp(p.y, H / 2, H - 20);
+            }
+          });
+          this.input.on("pointerdown", (p) => {
+            if (!this.questionActive) this.fireWeapon();
+          });
 
-      <!-- HINT + RETRY panel (shown after wrong) -->
-      <div class="hint-retry-panel" id="hintRetryPanel">
-        <div class="hint-retry-title">💡 Hint — Try Again!</div>
-        <div class="hint-retry-text" id="hintRetryText"></div>
-        <button class="retry-btn" onclick="retryQuestion()">🔄 Try Again</button>
-      </div>
+          // HUD
+          this.createHUD();
 
-      <!-- SUCCESS panel (shown after correct) -->
-      <div class="result-panel" id="resultPanel"></div>
-      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next ▶</button>
-    </div>
-  </div>
-</div>
+          // Screen shake camera
+          this.cameras.main.setBackgroundColor(0x000011);
 
-<!-- END SCREEN -->
-<div class="screen" id="endScreen">
-  <div style="text-align:center;max-width:480px">
-    <div style="font-size:72px;margin-bottom:12px" id="endEmoji">🏆</div>
-    <div class="final-score" id="finalScore">1000</div>
-    <div class="final-grade" id="finalGrade">QUEST COMPLETE!</div>
-    <p style="color:#aaa;font-size:13px;margin:8px 0 16px" id="finalMsg"></p>
-    <div class="stat-summary">
-      <div class="stat-box"><div class="val" id="statCorrect">0</div><div class="lab">Correct</div></div>
-      <div class="stat-box"><div class="val" id="statStreak">0</div><div class="lab">Best Streak</div></div>
-      <div class="stat-box"><div class="val" id="statLevel">1</div><div class="lab">Final Level</div></div>
-    </div>
-    <button class="play-again-btn" onclick="location.reload()">⚔️ Play Again</button>
-  </div>
-</div>
+          // Start first question wave
+          this.time.delayedCall(1000, () => this.spawnQuestionWave());
+        }
 
-<script>
-// STARS
-(function(){
-  var c=document.getElementById('starsContainer');
-  for(var i=0;i<80;i++){
-    var s=document.createElement('div'); s.className='star';
-    s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
-    s.style.animationDelay=Math.random()*3+'s'; s.style.opacity=Math.random();
-    c.appendChild(s);
-  }
-})();
+        createHUD() {
+          const hudBg = this.add
+            .rectangle(W / 2, 18, W, 36, 0x000033, 0.8)
+            .setDepth(100);
 
-// STATE
-var player={name:'Hero',char:'🧙',hp:100,maxHp:100,xp:0,level:1,score:0,streak:0,bestStreak:0,correct:0,total:0};
-var currentWorld=0, currentQ=0;
-var answered=false, attempts=0, maxAttempts=3;
-var gameChipDragging=null, gDropped=0, dragAnswers=[];
+          this.scoreText = this.add
+            .text(10, 6, "SCORE: 0", {
+              fontSize: "14px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc00",
+            })
+            .setDepth(101);
 
-// QUESTIONS
-var worlds=[
-  { title:'World 1: Variable Valley', emoji:'🌄', desc:'Identify independent and dependent variables', questions:[
-    { type:'mc', scenario:'🚗 A car travels on the highway. The longer the car drives, the farther it goes.',
-      question:'What is the <span class="focus">independent variable</span>?',
-      choices:['Hours driven','Miles traveled','The car itself','The highway'],
-      answer:0, hint:'The independent variable is what you CONTROL or choose. Ask yourself: which one do you decide before the trip starts?',
-      explain:'Hours driven is the independent variable — it\'s the input you control. Miles traveled depends on it.' },
-    { type:'mc', scenario:'💵 A babysitter earns $8 for each hour worked.',
-      question:'Which is the <span class="focus">dependent variable</span>?',
-      choices:['Hours worked','Money earned','The babysitter','The family'],
-      answer:1, hint:'The dependent variable is the RESULT — it changes because of the other variable. What do you get at the end?',
-      explain:'Money earned is dependent — it\'s the output that results from hours worked.' },
-    { type:'drag', scenario:'🌱 A plant grows taller the more sunlight it receives each day.',
-      question:'Drag each item into the correct box.',
-      items:['Days of sunlight','Height of plant'], answers:['ind','dep'],
-      hint:'Ask: which one CAUSES the change? That\'s independent. Which one is AFFECTED? That\'s dependent.',
-      explain:'Days of sunlight is independent (you control light). Height of plant is dependent — it changes because of sunlight.' },
-    { type:'mc', scenario:'📚 A student reads books and earns points in a reading program.',
-      question:'Which statement is <span class="focus">TRUE</span>?',
-      choices:['Points earned is the independent variable','Books read is the dependent variable','Books read is the independent variable','There is no relationship'],
-      answer:2, hint:'Which one comes first / is the cause? That\'s the independent variable. Books → points, or points → books?',
-      explain:'Books read is independent — it\'s the cause. Points earned depends on books read.' },
-    { type:'mc', scenario:'🎵 A streaming service tracks data usage per song downloaded.',
-      question:'What is the <span class="focus">dependent variable</span>?',
-      choices:['Number of songs downloaded','Total data used','The streaming service','The price per song'],
-      answer:1, hint:'The dependent variable CHANGES as a result of the other. What goes up when you download more songs?',
-      explain:'Total data used is dependent — it changes based on how many songs are downloaded.' }
-  ]},
-  { title:'World 2: Equation Jungle', emoji:'🌿', desc:'Find the rate and write equations from tables', questions:[
-    { type:'mc', scenario:'📊 Table — Hours(x): 1, 2, 3 | Miles(y): 55, 110, 165.',
-      question:'What is the <span class="focus">rate (k)</span>?',
-      choices:['110','55','165','3'],
-      answer:1, hint:'Rate k = y ÷ x. Try the first row: 55 ÷ 1 = ? Check the second row too: 110 ÷ 2 = ?',
-      explain:'k = 55 ÷ 1 = 55. Check: 110 ÷ 2 = 55 ✅. The rate is 55.' },
-    { type:'mc', scenario:'💵 Table — Hours(x): 1, 3, 5 | Earnings(y): 9, 27, 45.',
-      question:'What is the <span class="focus">equation</span>?',
-      choices:['y = 3x','y = 27x','y = 9x','y = 45x'],
-      answer:2, hint:'Step 1: find k = y ÷ x = 9 ÷ 1 = ? Step 2: plug k into y = kx.',
-      explain:'k = 9 ÷ 1 = 9. Check: 27 ÷ 3 = 9 ✅. Equation: y = 9x.' },
-    { type:'mc', scenario:'🍕 Table — Pizzas(x): 2, 4, 6 | Cost(y): 26, 52, 78.',
-      question:'What is the <span class="focus">cost per pizza (k)</span>?',
-      choices:['26','52','13','6'],
-      answer:2, hint:'k = y ÷ x. Try: 26 ÷ 2 = ? Remember: you\'re dividing the OUTPUT by the INPUT.',
-      explain:'k = 26 ÷ 2 = 13. Check: 52 ÷ 4 = 13 ✅. Each pizza costs $13.' },
-    { type:'mc', scenario:'🌱 Table — Weeks(x): 1, 4, 7 | Height cm(y): 6, 24, 42.',
-      question:'Which equation <span class="focus">correctly represents</span> this?',
-      choices:['y = 4x','y = 7x','y = 6x','y = 42x'],
-      answer:2, hint:'k = y ÷ x = 6 ÷ 1 = ? Verify with another row: 24 ÷ 4 = ?',
-      explain:'k = 6 ÷ 1 = 6. Check: 24 ÷ 4 = 6 ✅. Equation: y = 6x.' },
-    { type:'drag', scenario:'🎮 Table — Levels: 1, 2, 3 | Points: 40, 80, 120.',
-      question:'Drag into the correct box.',
-      items:['k = 40 (rate)','y = 40x (equation)'], answers:['rate','eq'],
-      hint:'k is just the number (the unit rate). The equation uses both variables: y = kx.',
-      explain:'k = 40 ÷ 1 = 40 is the rate. y = 40x is the full equation relating levels to points.' }
-  ]},
-  { title:'World 3: Graph Mountain', emoji:'⛰️', desc:'Read graphs to find rates and equations', questions:[
-    { type:'mc', scenario:'📈 A line passes through the origin (0,0) and the point (1, 8).',
-      question:'What is the <span class="focus">equation</span>?',
-      choices:['y = 1x','y = 8x','y = 0x','y = 16x'],
-      answer:1, hint:'k = rise ÷ run = y ÷ x at any point. At point (1, 8): k = 8 ÷ 1 = ?',
-      explain:'At (1,8): k = 8 ÷ 1 = 8. Equation: y = 8x.' },
-    { type:'mc', scenario:'📈 Graph — horizontal axis: "Gallons of gas", vertical axis: "Miles driven". Line passes through (0,0) and (5,175).',
-      question:'What is the <span class="focus">dependent variable</span>?',
-      choices:['Gallons of gas','Miles driven','The car','The slope'],
-      answer:1, hint:'The dependent variable is always on the VERTICAL (up-down) axis of a graph.',
-      explain:'Miles driven is on the vertical (y) axis — it\'s the dependent variable. Miles depend on gallons used.' },
-    { type:'mc', scenario:'📈 A line passes through (0,0), (2,10), (4,20).',
-      question:'What is the <span class="focus">equation</span>?',
-      choices:['y = 2x','y = 10x','y = 5x','y = 20x'],
-      answer:2, hint:'Pick any point and calculate k = y ÷ x. Try (2,10): 10 ÷ 2 = ?',
-      explain:'k = 10 ÷ 2 = 5. Check (4,20): 20 ÷ 4 = 5 ✅. Equation: y = 5x.' },
-    { type:'mc', scenario:'📈 Graph A: points (1,3),(2,6),(3,9). Graph B: points (1,2),(2,5),(3,9).',
-      question:'Which graph shows a <span class="focus">proportional relationship</span>?',
-      choices:['Graph A only','Graph B only','Both graphs','Neither graph'],
-      answer:0, hint:'Check k = y÷x for EVERY point. If k is the same each time → proportional. Graph A: 3÷1, 6÷2, 9÷3 = ?',
-      explain:'Graph A: 3÷1=3, 6÷2=3, 9÷3=3 ✅ constant. Graph B: 2÷1=2, 5÷2=2.5 ❌ changes.' },
-    { type:'mc', scenario:'📈 A line passes through (0,0) and (3,24).',
-      question:'What is the <span class="focus">equation</span>?',
-      choices:['y = 3x','y = 8x','y = 24x','y = 27x'],
-      answer:1, hint:'k = y ÷ x = 24 ÷ 3 = ? Then write y = kx.',
-      explain:'k = 24 ÷ 3 = 8. Equation: y = 8x. Check: 8×3=24 ✅.' }
-  ]},
-  { title:'World 4: Boss Battle Arena', emoji:'⚡', desc:'Apply everything — the hardest challenges!', questions:[
-    { type:'mc', scenario:'🏆 Table: x: 3, 6, 9 | y: 21, 42, 63. Predict a value.',
-      question:'What is the equation, and what is <span class="focus">y when x = 12</span>?',
-      choices:['y=7x → y=84','y=21x → y=252','y=3x → y=36','y=6x → y=72'],
-      answer:0, hint:'Step 1: k = y÷x = 21÷3 = ? Step 2: write the equation. Step 3: substitute x=12.',
-      explain:'k = 21÷3 = 7. Equation: y = 7x. When x=12: y = 7×12 = 84 ✅.' },
-    { type:'mc', scenario:'⚡ A student claims the equation is y = 3x. Table: x:1,y:3 | x:2,y:7 | x:3,y:12.',
-      question:'Is the student <span class="focus">correct or incorrect</span>? Why?',
-      choices:['Correct — 3÷1=3 works','Incorrect — the rate is NOT constant','Correct — all values are related','Incorrect — y should equal x'],
-      answer:1, hint:'Check k for EVERY row: 3÷1=3, 7÷2=3.5, 12÷3=4. Are all three the same?',
-      explain:'3÷1=3, but 7÷2=3.5, 12÷3=4 → rate changes → NOT proportional → y=3x is wrong.' },
-    { type:'drag', scenario:'🔥 Two situations below.',
-      question:'Drag each into the correct category.',
-      items:['y=5x (table: 1→5, 2→10, 3→15)','table: 1→4, 2→9, 3→15 (rate changes)'],
-      answers:['prop','notprop'],
-      hint:'Check y÷x for each row of both tables. A proportional table has the SAME rate every row.',
-      explain:'First: k=5 every row ✅ proportional. Second: 4÷1=4, 9÷2=4.5 ❌ not constant.' },
-    { type:'mc', scenario:'⚡ A graph: for every 4 units right, the line rises 20 units. Passes through (0,0).',
-      question:'What is the <span class="focus">equation</span>?',
-      choices:['y = 4x','y = 20x','y = 5x','y = 80x'],
-      answer:2, hint:'Rate = rise ÷ run = vertical change ÷ horizontal change = 20 ÷ 4 = ?',
-      explain:'Rate k = 20 ÷ 4 = 5. Equation: y = 5x.' },
-    { type:'mc', scenario:'🏆 FINAL! Equation y = 15x. x = hours, y = miles. The trip covers 180 miles.',
-      question:'How many <span class="focus">hours</span> did the trip take?',
-      choices:['15 hours','180 hours','12 hours','13 hours'],
-      answer:2, hint:'If y = 15x and y = 180, solve for x. Divide both sides by 15: x = 180 ÷ 15 = ?',
-      explain:'180 = 15x → x = 180 ÷ 15 = 12. The trip took 12 hours ✅.' }
-  ]}
-];
+          this.livesText = this.add
+            .text(W - 10, 6, "", {
+              fontSize: "16px",
+              fontFamily: "monospace",
+              color: "#ff4444",
+            })
+            .setOrigin(1, 0)
+            .setDepth(101);
+          this.updateLives();
 
-// CHAR SELECT
-function selectChar(card,emoji,name){
-  document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('selected'));
-  card.classList.add('selected');
-  player.char=emoji; player.name=name;
-  document.getElementById('startBtn').disabled=false;
-}
+          this.levelText = this.add
+            .text(W / 2, 6, "LEVEL 1", {
+              fontSize: "13px",
+              fontFamily: "monospace",
+              color: "#00ccff",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
 
-function startGame(){
-  document.getElementById('titleScreen').classList.remove('active');
-  document.getElementById('gameScreen').classList.add('active');
-  document.getElementById('hudChar').textContent=player.char;
-  document.getElementById('hudName').textContent=player.name;
-  buildWorldMap(); loadQuestion();
-}
+          this.streakText = this.add
+            .text(W / 2, 20, "", {
+              fontSize: "11px",
+              fontFamily: "monospace",
+              color: "#ff8800",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
 
-function buildWorldMap(){
-  var map=document.getElementById('worldMap'); map.innerHTML='';
-  worlds.forEach(function(w,i){
-    var n=document.createElement('div'); n.className='world-node';
-    n.textContent=w.emoji;
-    if(i<currentWorld) n.classList.add('completed');
-    else if(i===currentWorld) n.classList.add('current');
-    else n.classList.add('locked');
-    map.appendChild(n);
-  });
-}
+          this.comboText = this.add
+            .text(W - 10, 22, "", {
+              fontSize: "11px",
+              fontFamily: "monospace",
+              color: "#ffcc00",
+            })
+            .setOrigin(1, 0)
+            .setDepth(101);
 
-function buildAttemptPips(){
-  var c=document.getElementById('attemptPips'); c.innerHTML='';
-  for(var i=0;i<maxAttempts;i++){
-    var p=document.createElement('div'); p.className='pip'+(i<attempts?' used':'');
-    c.appendChild(p);
-  }
-}
+          // Question panel (hidden initially)
+          this.qPanel = this.add
+            .container(W / 2, H / 2)
+            .setDepth(200)
+            .setVisible(false);
+          this.qPanelBg = this.add
+            .rectangle(0, 0, 680, 340, 0x0a1a2e, 0.95)
+            .setStrokeStyle(2, 0x00ccff, 0.6);
+          this.qScenarioText = this.add
+            .text(0, -140, "", {
+              fontSize: "13px",
+              fontFamily: "Arial",
+              color: "#88ccff",
+              wordWrap: { width: 620 },
+              align: "center",
+            })
+            .setOrigin(0.5);
+          this.qQuestionText = this.add
+            .text(0, -100, "", {
+              fontSize: "17px",
+              fontFamily: "Arial",
+              fontStyle: "bold",
+              color: "#ffffff",
+              wordWrap: { width: 620 },
+              align: "center",
+            })
+            .setOrigin(0.5);
+          this.qPanel.add([
+            this.qPanelBg,
+            this.qScenarioText,
+            this.qQuestionText,
+          ]);
+          this.qChoiceTexts = [];
+          this.qChoiceBgs = [];
+          for (let i = 0; i < 4; i++) {
+            const y = -40 + i * 48;
+            const bg = this.add
+              .rectangle(0, y, 560, 40, 0x112244, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.6)
+              .setInteractive({ useHandCursor: true });
+            const txt = this.add
+              .text(0, y, "", {
+                fontSize: "15px",
+                fontFamily: "Arial",
+                color: "#ccddff",
+                wordWrap: { width: 520 },
+                align: "center",
+              })
+              .setOrigin(0.5);
+            bg.on("pointerover", () => {
+              if (this.questionActive) bg.setStrokeStyle(2, 0x00ccff, 1);
+            });
+            bg.on("pointerout", () => {
+              if (this.questionActive) bg.setStrokeStyle(1, 0x336699, 0.6);
+            });
+            const idx = i;
+            bg.on("pointerdown", () => this.answerQuestion(idx));
+            this.qPanel.add([bg, txt]);
+            this.qChoiceBgs.push(bg);
+            this.qChoiceTexts.push(txt);
+          }
+          this.qExplainText = this.add
+            .text(0, 160, "", {
+              fontSize: "13px",
+              fontFamily: "Arial",
+              color: "#88ff88",
+              wordWrap: { width: 600 },
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setVisible(false);
+          this.qPanel.add(this.qExplainText);
+        }
 
-function loadQuestion(){
-  answered=false; attempts=0; gDropped=0;
-  var w=worlds[currentWorld], q=w.questions[currentQ];
-  document.getElementById('worldTitle').textContent=w.title;
-  document.getElementById('worldDesc').textContent=w.desc;
-  document.getElementById('qWorldBadge').textContent='World '+(currentWorld+1)+' '+w.emoji;
-  document.getElementById('worldDisplay').textContent=currentWorld+1;
-  document.getElementById('qDisplay').textContent=currentQ+1;
-  document.getElementById('qTotal').textContent=w.questions.length;
-  document.getElementById('qNumber').textContent='Question '+(currentQ+1)+' of '+w.questions.length;
-  document.getElementById('qText').innerHTML=q.question;
+        updateLives() {
+          let h = "";
+          for (let i = 0; i < 3; i++) h += i < this.lives ? "♥" : "♡";
+          this.livesText.setText(h);
+        }
 
-  if(q.scenario){ document.getElementById('qScenario').style.display='block'; document.getElementById('qScenario').innerHTML=q.scenario; }
-  else { document.getElementById('qScenario').style.display='none'; }
+        fireWeapon() {
+          if (this.questionActive) return;
+          const now = this.time.now;
+          if (now - this.lastShot < 200) return;
+          this.lastShot = now;
 
-  document.getElementById('hintRetryPanel').classList.remove('show');
-  var rp=document.getElementById('resultPanel'); rp.className='result-panel'; rp.innerHTML='';
-  document.getElementById('nextBtn').className='next-btn';
-  buildAttemptPips();
-  renderQContent(q);
-}
+          const b = this.bullets.get(this.ship.x, this.ship.y - 20, "bullet");
+          if (b) {
+            b.setActive(true).setVisible(true).setVelocityY(-500);
+            b.body.setSize(4, 12);
+            AudioSys.shoot();
+          }
+        }
 
-function renderQContent(q){
-  var content=document.getElementById('qContent');
-  if(q.type==='mc'){
-    content.innerHTML='<div class="choices">'+q.choices.map(function(c,i){
-      return '<button class="choice-btn" id="cb'+i+'" onclick="checkMC('+i+')">'+String.fromCharCode(65+i)+'. '+c+'</button>';
-    }).join('')+'</div>';
-  } else {
-    dragAnswers=q.answers;
-    var items=q.items.map(function(item,i){
-      return '<div class="d-chip" id="gchip'+i+'" draggable="true" ondragstart="gChipDrag(event)">'+item+'</div>';
-    }).join('');
-    var lbl0=q.answers[0]==='ind'?'🟡 Independent Variable':q.answers[0]==='rate'?'⚡ Rate (k)':'✅ Proportional';
-    var lbl1=q.answers[1]==='dep'?'🟢 Dependent Variable':q.answers[1]==='eq'?'⚖️ Equation (y=kx)':'❌ NOT Proportional';
-    content.innerHTML='<div class="drag-items-pool" id="gPool">'+items+'</div>'+
-      '<div class="drag-zone-row">'+
-      '<div class="drag-bucket ind-zone" id="gBucket0" ondragover="gAllowDrop(event)" ondrop="gDrop(event,0)"><h4>'+lbl0+'</h4></div>'+
-      '<div class="drag-bucket dep-zone" id="gBucket1" ondragover="gAllowDrop(event)" ondrop="gDrop(event,1)"><h4>'+lbl1+'</h4></div>'+
-      '</div>';
-  }
-}
+        spawnQuestionWave() {
+          if (this.qIndex >= this.shuffledQs.length) {
+            this.scene.start("Results", {
+              score: this.score,
+              correct: this.totalCorrect,
+              total: this.totalAnswered,
+              bestStreak: this.bestStreak,
+              level: this.level,
+            });
+            return;
+          }
 
-// MC ANSWER
-function checkMC(idx){
-  if(answered) return;
-  var q=worlds[currentWorld].questions[currentQ];
-  var btns=document.querySelectorAll('.choice-btn');
-  if(idx===q.answer){
-    btns[idx].classList.add('correct');
-    btns.forEach(function(b){b.disabled=true;});
-    answered=true; player.total++;
-    handleCorrect(q);
-    showSuccess(q);
-    document.getElementById('nextBtn').className='next-btn show';
-    document.getElementById('hintRetryPanel').classList.remove('show');
-  } else {
-    btns[idx].classList.add('wrong');
-    attempts++;
-    buildAttemptPips();
-    // re-enable after shake so they can try again
-    btns[idx].disabled=true;
-    setTimeout(function(){ btns[idx].classList.remove('wrong'); btns[idx].disabled=false; },600);
-    if(attempts>=maxAttempts){
-      // out of attempts — reveal answer, move on
-      btns.forEach(function(b){b.disabled=true;});
-      btns[q.answer].classList.add('reveal');
-      answered=true; player.total++; player.streak=0;
-      player.hp=Math.max(0,player.hp-20);
-      updateHUD();
-      document.getElementById('hintRetryPanel').classList.remove('show');
-      var rp=document.getElementById('resultPanel');
-      rp.innerHTML='❌ Out of attempts! <div class="explain">'+q.explain+'</div>';
-      rp.className='result-panel show correct'; // show panel with explanation
-      rp.style.borderColor='var(--red)'; rp.style.background='rgba(231,76,60,.12)'; rp.style.color='#e74c3c';
-      document.getElementById('nextBtn').className='next-btn show';
-    } else {
-      showHintRetry(q);
-    }
-  }
-}
+          const q = this.shuffledQs[this.qIndex];
+          this.currentQuestion = q;
+          this.questionActive = false;
 
-function showHintRetry(q){
-  var p=document.getElementById('hintRetryPanel');
-  document.getElementById('hintRetryText').textContent=q.hint;
-  p.classList.add('show');
-}
+          // Spawn asteroids with choices
+          const positions = [
+            { x: 100, y: -50 },
+            { x: 300, y: -90 },
+            { x: 500, y: -60 },
+            { x: 700, y: -80 },
+          ];
 
-function retryQuestion(){
-  // just hide the panel — choices are already re-enabled
-  document.getElementById('hintRetryPanel').classList.remove('show');
-}
+          this.currentAsteroids = [];
+          q.choices.forEach((choice, i) => {
+            const pos = positions[i];
+            const ast = this.asteroids.create(pos.x, pos.y, "asteroid");
+            ast.setVelocityY(Phaser.Math.Between(30, 50 + this.level * 5));
+            ast.setVelocityX(Phaser.Math.Between(-15, 15));
+            ast.choiceIndex = i;
+            ast.choiceText = choice;
+            ast.hp = 1;
 
-// DRAG
-function gChipDrag(e){ gameChipDragging=e.target.id; }
-function gAllowDrop(e){ e.preventDefault(); e.currentTarget.classList.add('over'); }
-document.addEventListener('dragend',function(){
-  document.querySelectorAll('.d-chip').forEach(d=>d.classList.remove('dragging'));
-  document.querySelectorAll('.drag-bucket').forEach(z=>z.classList.remove('over'));
-});
+            // Label on asteroid
+            const label = this.add
+              .text(pos.x, pos.y, String.fromCharCode(65 + i), {
+                fontSize: "18px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5)
+              .setDepth(50);
+            ast.label = label;
 
-function gDrop(e,bucketIdx){
-  e.preventDefault(); e.currentTarget.classList.remove('over');
-  if(!gameChipDragging) return;
-  var el=document.getElementById(gameChipDragging);
-  var chipIdx=parseInt(gameChipDragging.replace('gchip',''));
-  var q=worlds[currentWorld].questions[currentQ];
-  var correctBucket=dragAnswers[chipIdx];
-  var thisBucket=(bucketIdx===0)?dragAnswers[0]:dragAnswers[1];
+            this.currentAsteroids.push(ast);
+          });
 
-  if(correctBucket===thisBucket){
-    el.classList.add('correct-chip'); el.setAttribute('draggable','false');
-    e.currentTarget.appendChild(el); gDropped++;
-    document.getElementById('hintRetryPanel').classList.remove('show');
-    if(gDropped===q.items.length){
-      answered=true; player.total++;
-      handleCorrect(q); showSuccess(q);
-      document.getElementById('nextBtn').className='next-btn show';
-    }
-  } else {
-    el.classList.add('wrong-chip');
-    attempts++;
-    buildAttemptPips();
-    setTimeout(function(){ el.classList.remove('wrong-chip'); },600);
-    showHintRetry(q);
-  }
-  gameChipDragging=null;
-}
+          // Show scenario & question
+          this.showQuestion(q);
+        }
 
-function handleCorrect(q){
-  player.correct++; player.streak++;
-  if(player.streak>player.bestStreak) player.bestStreak=player.streak;
-  var pts=100+(attempts===0?25:0)+(player.streak>=3?50:0);
-  player.score+=pts;
-  player.xp+=50; if(player.xp>=100){ player.xp-=100; player.level++; showLevelUp(false); }
-  updateHUD();
-  showXpPopup('+'+pts+' pts'+(player.streak>=3?' 🔥×'+player.streak:''));
-}
+        showQuestion(q) {
+          this.questionActive = true;
+          this.qPanel.setVisible(true);
+          this.qScenarioText.setText(q.scenario);
+          this.qQuestionText.setText(q.q);
+          this.qExplainText.setVisible(false);
 
-function showSuccess(q){
-  var rp=document.getElementById('resultPanel');
-  rp.style.borderColor=''; rp.style.background=''; rp.style.color='';
-  rp.innerHTML='✅ Correct! <div class="explain">'+q.explain+'</div>';
-  rp.className='result-panel show correct';
-}
+          q.choices.forEach((c, i) => {
+            this.qChoiceTexts[i].setText(
+              String.fromCharCode(65 + i) + ". " + c,
+            );
+            this.qChoiceBgs[i]
+              .setFillStyle(0x112244, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.6);
+            this.qChoiceBgs[i].setInteractive();
+          });
 
-function updateHUD(){
-  document.getElementById('hpBar').style.width=(player.hp/player.maxHp*100)+'%';
-  document.getElementById('hpText').textContent=player.hp+'/'+player.maxHp;
-  document.getElementById('xpBar').style.width=player.xp+'%';
-  document.getElementById('xpText').textContent=player.xp+'/100';
-  document.getElementById('hudLevel').textContent='Level '+player.level;
-  document.getElementById('scoreDisplay').textContent=player.score.toLocaleString();
-  document.getElementById('streakDisplay').textContent=player.streak>=3?'🔥 Streak ×'+player.streak:'';
-}
+          // Also allow keyboard 1-4
+          this.input.keyboard.once("keydown-ONE", () => this.answerQuestion(0));
+          this.input.keyboard.once("keydown-TWO", () => this.answerQuestion(1));
+          this.input.keyboard.once("keydown-THREE", () =>
+            this.answerQuestion(2),
+          );
+          this.input.keyboard.once("keydown-FOUR", () =>
+            this.answerQuestion(3),
+          );
+        }
 
-function showXpPopup(msg){
-  var p=document.getElementById('xpPopup'); p.textContent=msg; p.style.display='block';
-  setTimeout(function(){p.style.display='none';},1500);
-}
+        answerQuestion(idx) {
+          if (!this.questionActive) return;
+          this.questionActive = false;
+          this.totalAnswered++;
 
-function showLevelUp(isWorld){
-  var o=document.getElementById('levelUpOverlay');
-  if(isWorld){ var w=worlds[currentWorld]; document.getElementById('lvlEmoji').textContent=w.emoji; document.getElementById('lvlTitle').textContent='World '+(currentWorld+1)+' Unlocked!'; document.getElementById('lvlMsg').textContent=w.title+' — '+w.desc; }
-  else { document.getElementById('lvlEmoji').textContent='⭐'; document.getElementById('lvlTitle').textContent='LEVEL '+player.level+'!'; document.getElementById('lvlMsg').textContent='You\'re leveling up! Keep going!'; }
-  o.classList.add('show');
-}
-function closeLevelUp(){ document.getElementById('levelUpOverlay').classList.remove('show'); loadQuestion(); }
+          const q = this.currentQuestion;
+          const correct = idx === q.answer;
 
-function nextQuestion(){
-  currentQ++;
-  if(currentQ>=worlds[currentWorld].questions.length){
-    currentWorld++; currentQ=0;
-    buildWorldMap();
-    if(currentWorld>=worlds.length){ endGame(); return; }
-    showLevelUp(true);
-  } else { loadQuestion(); }
-}
+          // Remove keyboard listeners
+          this.input.keyboard.removeAllListeners("keydown-ONE");
+          this.input.keyboard.removeAllListeners("keydown-TWO");
+          this.input.keyboard.removeAllListeners("keydown-THREE");
+          this.input.keyboard.removeAllListeners("keydown-FOUR");
 
-function endGame(){
-  document.getElementById('gameScreen').classList.remove('active');
-  document.getElementById('endScreen').classList.add('active');
-  var pct=player.total>0?Math.round(player.correct/player.total*100):0;
-  document.getElementById('finalScore').textContent=player.score.toLocaleString();
-  document.getElementById('statCorrect').textContent=player.correct+'/'+player.total;
-  document.getElementById('statStreak').textContent=player.bestStreak;
-  document.getElementById('statLevel').textContent=player.level;
-  var grade,emoji,msg;
-  if(pct>=90){grade='S RANK — MASTER!';emoji='👑';msg='You have mastered 6.EE.C.9!';}
-  else if(pct>=80){grade='A RANK — EXCELLENT!';emoji='🏆';msg='Outstanding! You really understand equations!';}
-  else if(pct>=70){grade='B RANK — GREAT!';emoji='⭐';msg='Great job! Review the equation-writing steps once more.';}
-  else if(pct>=60){grade='C RANK — GOOD TRY!';emoji='💪';msg='Good effort! Practice finding the rate k = y ÷ x.';}
-  else{grade='KEEP PRACTICING!';emoji='📚';msg='Review the definitions and try again — you\'ve got this!';}
-  document.getElementById('endEmoji').textContent=emoji;
-  document.getElementById('finalGrade').textContent=grade;
-  document.getElementById('finalMsg').textContent=msg;
-}
-</script>
-</body>
+          // Visual feedback on panel
+          this.qChoiceBgs.forEach((bg, i) => {
+            bg.disableInteractive();
+            if (i === q.answer) {
+              bg.setFillStyle(0x004400, 0.9).setStrokeStyle(2, 0x00ff88, 1);
+              this.qChoiceTexts[i].setStyle({ color: "#00ff88" });
+            } else if (i === idx && !correct) {
+              bg.setFillStyle(0x440000, 0.9).setStrokeStyle(2, 0xff4444, 1);
+              this.qChoiceTexts[i].setStyle({ color: "#ff4444" });
+            }
+          });
+
+          // Explode wrong asteroids, highlight correct
+          this.currentAsteroids.forEach((ast) => {
+            if (!ast.active) return;
+            if (ast.choiceIndex === q.answer) {
+              // Correct asteroid glows
+              this.tweens.add({ targets: ast, tint: 0x00ff88, duration: 300 });
+            } else {
+              // Wrong asteroids explode
+              this.createExplosion(ast.x, ast.y);
+              if (ast.label) ast.label.destroy();
+              ast.destroy();
+            }
+          });
+
+          if (correct) {
+            this.totalCorrect++;
+            this.streak++;
+            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            this.combo = Math.min(4, 1 + Math.floor(this.streak / 3));
+            const pts = 100 * this.combo;
+            this.score += pts;
+            AudioSys.correct();
+            this.cameras.main.flash(200, 0, 100, 0);
+
+            // Points popup
+            const pop = this.add
+              .text(
+                W / 2,
+                H / 2 - 180,
+                "+" + pts + (this.combo > 1 ? " x" + this.combo : ""),
+                {
+                  fontSize: "28px",
+                  fontFamily: "monospace",
+                  fontStyle: "bold",
+                  color: "#00ff88",
+                },
+              )
+              .setOrigin(0.5)
+              .setDepth(300);
+            this.tweens.add({
+              targets: pop,
+              y: pop.y - 60,
+              alpha: 0,
+              duration: 1200,
+              onComplete: () => pop.destroy(),
+            });
+          } else {
+            this.streak = 0;
+            this.combo = 1;
+            this.lives--;
+            AudioSys.wrong();
+            this.cameras.main.shake(300, 0.01);
+            this.updateLives();
+          }
+
+          this.qExplainText.setText(q.explain).setVisible(true);
+          this.scoreText.setText("SCORE: " + this.score);
+          this.streakText.setText(
+            this.streak >= 2 ? "STREAK x" + this.streak : "",
+          );
+          this.comboText.setText(this.combo > 1 ? "COMBO x" + this.combo : "");
+
+          // Check game over
+          if (this.lives <= 0) {
+            this.time.delayedCall(1500, () => {
+              this.scene.start("Results", {
+                score: this.score,
+                correct: this.totalCorrect,
+                total: this.totalAnswered,
+                bestStreak: this.bestStreak,
+                level: this.level,
+              });
+            });
+            return;
+          }
+
+          // Next question
+          this.time.delayedCall(2000, () => {
+            this.qPanel.setVisible(false);
+            // Clean remaining asteroids
+            this.currentAsteroids.forEach((a) => {
+              if (a.active) {
+                if (a.label) a.label.destroy();
+                a.destroy();
+              }
+            });
+            this.qIndex++;
+            if (this.qIndex % 5 === 0) {
+              this.level++;
+              this.levelText.setText("LEVEL " + this.level);
+              AudioSys.levelUp();
+              this.showLevelUp();
+            } else {
+              this.time.delayedCall(800, () => this.spawnQuestionWave());
+            }
+          });
+        }
+
+        showLevelUp() {
+          const bg = this.add
+            .rectangle(W / 2, H / 2, 400, 120, 0x001133, 0.95)
+            .setStrokeStyle(3, 0xffcc00, 0.8)
+            .setDepth(300);
+          const txt = this.add
+            .text(W / 2, H / 2 - 15, "LEVEL " + this.level, {
+              fontSize: "36px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc00",
+            })
+            .setOrigin(0.5)
+            .setDepth(301);
+          const sub = this.add
+            .text(W / 2, H / 2 + 25, "Asteroids get faster!", {
+              fontSize: "14px",
+              fontFamily: "Arial",
+              color: "#88aacc",
+            })
+            .setOrigin(0.5)
+            .setDepth(301);
+
+          this.time.delayedCall(1800, () => {
+            bg.destroy();
+            txt.destroy();
+            sub.destroy();
+            this.spawnQuestionWave();
+          });
+
+          // Spawn powerup sometimes
+          if (Math.random() < 0.5) {
+            const pu = this.powerups.create(
+              Phaser.Math.Between(100, W - 100),
+              -30,
+              "powerup",
+            );
+            pu.setVelocityY(80);
+          }
+        }
+
+        createExplosion(x, y) {
+          this.sparkEmitter.emitParticleAt(x, y, 20);
+          AudioSys.explode();
+        }
+
+        hitAsteroid(bullet, asteroid) {
+          bullet.setActive(false).setVisible(false).setVelocity(0);
+          this.createExplosion(asteroid.x, asteroid.y);
+          AudioSys.hit();
+
+          // Only destroy if it's a 'wrong' asteroid being shot during free-play
+          // During question mode, shooting doesn't destroy answer asteroids
+        }
+
+        collectPowerup(ship, powerup) {
+          powerup.destroy();
+          if (this.lives < 3) {
+            this.lives++;
+            this.updateLives();
+          }
+          this.score += 50;
+          this.scoreText.setText("SCORE: " + this.score);
+          AudioSys.correct();
+
+          const pop = this.add
+            .text(ship.x, ship.y - 30, "+1 LIFE", {
+              fontSize: "16px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ff88",
+            })
+            .setOrigin(0.5)
+            .setDepth(300);
+          this.tweens.add({
+            targets: pop,
+            y: pop.y - 40,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => pop.destroy(),
+          });
+        }
+
+        shipHit(ship, asteroid) {
+          // Only during non-question time
+          if (this.questionActive) return;
+          this.createExplosion(asteroid.x, asteroid.y);
+          if (asteroid.label) asteroid.label.destroy();
+          asteroid.destroy();
+          this.lives--;
+          this.updateLives();
+          this.cameras.main.shake(400, 0.015);
+          AudioSys.wrong();
+
+          if (this.lives <= 0) {
+            this.time.delayedCall(1000, () => {
+              this.scene.start("Results", {
+                score: this.score,
+                correct: this.totalCorrect,
+                total: this.totalAnswered,
+                bestStreak: this.bestStreak,
+                level: this.level,
+              });
+            });
+          }
+        }
+
+        update() {
+          // Scroll stars
+          this.starsBg.forEach((s) => {
+            s.obj.y += s.speed;
+            if (s.obj.y > H + 5) {
+              s.obj.y = -5;
+              s.obj.x = Phaser.Math.Between(0, W);
+            }
+          });
+
+          // Ship movement
+          if (!this.questionActive) {
+            const spd = 300;
+            if (this.cursors.left.isDown || this.wasd.A.isDown)
+              this.ship.setVelocityX(-spd);
+            else if (this.cursors.right.isDown || this.wasd.D.isDown)
+              this.ship.setVelocityX(spd);
+
+            if (this.cursors.up.isDown || this.wasd.W.isDown)
+              this.ship.setVelocityY(-spd);
+            else if (this.cursors.down.isDown || this.wasd.S.isDown)
+              this.ship.setVelocityY(spd);
+
+            // Auto-fire with space
+            if (this.spaceKey.isDown) this.fireWeapon();
+          }
+
+          // Update asteroid labels
+          this.asteroids.children.iterate((ast) => {
+            if (ast && ast.active && ast.label) {
+              ast.label.setPosition(ast.x, ast.y);
+            }
+            // Remove if off screen
+            if (ast && ast.y > H + 50) {
+              if (ast.label) ast.label.destroy();
+              ast.destroy();
+            }
+          });
+
+          // Remove bullets off screen
+          this.bullets.children.iterate((b) => {
+            if (b && b.active && b.y < -10)
+              b.setActive(false).setVisible(false);
+          });
+        }
+      }
+
+      // ========= RESULTS SCENE =========
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+
+        init(data) {
+          this.finalScore = data.score || 0;
+          this.correct = data.correct || 0;
+          this.total = data.total || 0;
+          this.bestStreak = data.bestStreak || 0;
+          this.level = data.level || 1;
+        }
+
+        create() {
+          // Stars
+          for (let i = 0; i < 80; i++) {
+            this.add.circle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.FloatBetween(0.5, 1.5),
+              0xffffff,
+              Phaser.Math.FloatBetween(0.2, 0.6),
+            );
+          }
+
+          const pct =
+            this.total > 0 ? Math.round((this.correct / this.total) * 100) : 0;
+          let grade, gradeColor;
+          if (pct >= 90) {
+            grade = "S RANK - MASTER!";
+            gradeColor = "#ffcc00";
+          } else if (pct >= 80) {
+            grade = "A RANK - EXCELLENT!";
+            gradeColor = "#00ff88";
+          } else if (pct >= 70) {
+            grade = "B RANK - GREAT!";
+            gradeColor = "#00ccff";
+          } else if (pct >= 60) {
+            grade = "C RANK - GOOD TRY!";
+            gradeColor = "#ff8800";
+          } else {
+            grade = "KEEP PRACTICING!";
+            gradeColor = "#ff4444";
+          }
+
+          this.add
+            .text(W / 2, 60, "MISSION COMPLETE", {
+              fontSize: "40px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc00",
+              stroke: "#664400",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(W / 2, 120, grade, {
+              fontSize: "22px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: gradeColor,
+            })
+            .setOrigin(0.5);
+
+          // Score
+          this.add
+            .text(W / 2, 180, String(this.finalScore), {
+              fontSize: "64px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#ffcc00",
+            })
+            .setOrigin(0.5);
+
+          this.add
+            .text(W / 2, 220, "POINTS", {
+              fontSize: "14px",
+              fontFamily: "monospace",
+              color: "#888",
+            })
+            .setOrigin(0.5);
+
+          // Stats
+          const stats = [
+            { label: "Correct", val: this.correct + "/" + this.total },
+            { label: "Accuracy", val: pct + "%" },
+            { label: "Best Streak", val: String(this.bestStreak) },
+            { label: "Final Level", val: String(this.level) },
+          ];
+
+          stats.forEach((s, i) => {
+            const x = W / 2 - 180 + i * 120;
+            this.add
+              .rectangle(x, 310, 105, 70, 0x112233, 0.8)
+              .setStrokeStyle(1, 0x336699, 0.5);
+            this.add
+              .text(x, 295, s.val, {
+                fontSize: "24px",
+                fontFamily: "monospace",
+                fontStyle: "bold",
+                color: "#00ccff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(x, 325, s.label, {
+                fontSize: "11px",
+                fontFamily: "Arial",
+                color: "#888",
+              })
+              .setOrigin(0.5);
+          });
+
+          // Play Again
+          const btn = this.add
+            .text(W / 2, 420, "[ PLAY AGAIN ]", {
+              fontSize: "22px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ffcc",
+              padding: { x: 24, y: 12 },
+              backgroundColor: "rgba(0,255,200,0.1)",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+
+          btn.on("pointerover", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.25)" }),
+          );
+          btn.on("pointerout", () =>
+            btn.setStyle({ backgroundColor: "rgba(0,255,200,0.1)" }),
+          );
+          btn.on("pointerdown", () => this.scene.start("Title"));
+
+          // Standard reference
+          this.add
+            .text(
+              W / 2,
+              500,
+              "6.EE.C.9 -- Dependent & Independent Variables, Tables, Equations",
+              {
+                fontSize: "12px",
+                fontFamily: "Arial",
+                color: "#556677",
+              },
+            )
+            .setOrigin(0.5);
+        }
+      }
+
+      // ========= CONFIG =========
+      const config = {
+        type: Phaser.AUTO,
+        width: W,
+        height: H,
+        parent: "game-container",
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 0 }, debug: false },
+        },
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        backgroundColor: "#000011",
+      };
+
+      const game = new Phaser.Game(config);
+    </script>
+  </body>
 </html>

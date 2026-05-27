@@ -1,370 +1,1160 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Data Detective | 6.SP.B.5 — Enterprise Statistics Academy</title>
-<style>
-/* [Original CSS unchanged until the broken line...] */
-
-/* Fix the broken rule here */
-.mode-card h3{font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:8px;line-height:1.3}
-.mode-card p{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:0}
-
-/* Add game screen styles */
-#screen-game{
-  flex-direction:column;padding:36px 24px;gap:24px;
-}
-.game-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.game-back{display:flex;align-items:center;gap:8px;color:var(--text-secondary);font-size:14px;font-weight:500;cursor:pointer;transition:var(--transition)}
-.game-back:hover{color:var(--accent-teal)}
-.stats-panel{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px}
-.stat-item{text-align:center}
-.stat-val{font-size:24px;font-weight:800;color:var(--text-primary);margin-bottom:4px}
-.stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px}
-
-/* Question area */
-.question-area{background:var(--bg-card);border:1px solid var(--border-active);border-radius:var(--radius-xl);padding:32px;text-align:center;position:relative;overflow:hidden}
-.question-area::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,170,0.05),rgba(59,130,246,0.05));opacity:0.5}
-.question-title{font-size:20px;font-weight:700;margin-bottom:16px;line-height:1.4}
-.question-data{font-size:16px;color:var(--text-secondary);margin-bottom:24px;line-height:1.6}
-
-/* Answer options */
-.options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:24px}
-.option-btn{
-  background:var(--bg-card);border:2px solid var(--border-subtle);color:var(--text-primary);
-  padding:16px;border-radius:var(--radius-md);cursor:pointer;font-size:14px;font-weight:600;
-  transition:var(--transition);position:relative;overflow:hidden;
-}
-.option-btn:hover{border-color:var(--accent-teal);transform:translateY(-2px);box-shadow:var(--shadow-glow)}
-.option-btn.correct{background:var(--accent-green);border-color:var(--accent-green);color:#000}
-.option-btn.incorrect{background:var(--accent-red);border-color:var(--accent-red);color:#000}
-.option-btn:disabled{cursor:not-allowed;opacity:0.5}
-
-/* Progress and feedback */
-.feedback{display:none;text-align:center;padding:20px;border-radius:var(--radius-md);margin:24px 0}
-.feedback.show{display:block}
-.feedback.success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:var(--accent-green)}
-.feedback.error{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:var(--accent-red)}
-
-/* [Rest of original CSS unchanged] */
-</style>
-</head>
-<body>
-<div class="bg-grid"></div>
-<div class="bg-glow-1"></div>
-<div class="bg-glow-2"></div>
-
-<div class="app">
-  <!-- [Original header unchanged] -->
-
-  <div class="screen active" id="screen-start">
-    <!-- [Original start screen unchanged] -->
-  </div>
-
-  <div class="screen" id="screen-home">
-    <!-- [Original home/missions unchanged] -->
-  </div>
-
-  <div class="screen" id="screen-mode">
-    <div class="mode-header">
-      <h2>Select Game Mode</h2>
-      <p>Choose your challenge level and play style</p>
-    </div>
-    <div class="modes-grid">
-      <div class="mode-card" data-mode="practice">
-        <h3>Practice Mode</h3>
-        <p>Master statistics concepts with guided missions</p>
-      </div>
-      <div class="mode-card locked" data-mode="endless">
-        <h3>Endless Mode</h3>
-        <p>Unlimited challenges - beat your high score</p>
-        <div class="lock-icon">🔒 Unlock at Level 5</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="screen" id="screen-game">
-    <div class="game-header">
-      <div class="game-back" id="gameBack">
-        <span>←</span> Back to Missions
-      </div>
-      <div class="stats-panel">
-        <div class="stat-item">
-          <div class="stat-val" id="currentXP">0</div>
-          <div class="stat-label">XP</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-val" id="levelNum">1</div>
-          <div class="stat-label">Level</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-val" id="questionNum">1</div>
-          <div class="stat-label">of 10</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-val" id="streakNum">0</div>
-          <div class="stat-label">Streak</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="question-area">
-      <h2 class="question-title" id="questionTitle">Summarizing Numerical Data</h2>
-      <div class="question-data" id="questionData">The test scores of 8 students are: 85, 92, 78, 95, 88, 91, 84, 89. What is the median score?</div>
-    </div>
-
-    <div class="options-grid" id="optionsGrid">
-      <!-- Options populated by JS -->
-    </div>
-
-    <div class="feedback" id="feedback">
-      <h3 id="feedbackTitle"></h3>
-      <p id="feedbackText"></p>
-    </div>
-  </div>
-</div>
-
-<script>
-class GameManager {
-  constructor() {
-    this.screens = {
-      start: document.getElementById('screen-start'),
-      home: document.getElementById('screen-home'),
-      mode: document.getElementById('screen-mode'),
-      game: document.getElementById('screen-game')
-    };
-    this.player = {
-      xp: 0,
-      level: 1,
-      streak: 0,
-      completedMissions: [],
-      highScore: 0,
-      lastPlayed: null
-    };
-    this.currentMission = null;
-    this.currentQuestion = 0;
-    this.questions = [];
-    this.gameState = 'menu'; // menu, playing, paused
-    this.init();
-  }
-
-  init() {
-    this.loadProgress();
-    this.updateUI();
-    this.bindEvents();
-    this.showScreen('start');
-    this.generateQuestions();
-  }
-
-  loadProgress() {
-    const saved = localStorage.getItem('dataDetectiveSave');
-    if (saved) {
-      Object.assign(this.player, JSON.parse(saved));
-      const today = new Date().toDateString();
-      if (this.player.lastPlayed !== today) {
-        this.player.streak = 0;
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crime Scene Lab — 6.SP.B.5</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    }
-  }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      (() => {
+        "use strict";
 
-  saveProgress() {
-    this.player.lastPlayed = new Date().toDateString();
-    localStorage.setItem('dataDetectiveSave', JSON.stringify(this.player));
-  }
+        /* =========================================================
+   CRIME SCENE LAB — 6.SP.B.5
+   Summarize numerical data sets — analyze forensic data,
+   calculate measures of center/spread to solve mysteries.
+   Phaser 3 single-file game.
+   ========================================================= */
 
-  updateUI() {
-    // Update header stats
-    document.querySelector('.hstat-val.xp').textContent = this.player.xp;
-    document.querySelector('.hstat-lbl.xp').textContent = `Level ${this.player.level}`;
-    const nextLevelXP = 100 + (this.player.level - 1) * 150;
-    const progress = Math.min((this.player.xp % nextLevelXP) / nextLevelXP * 100, 100);
-    document.querySelector('.xp-bar-fill').style.width = progress + '%';
+        const SFX = {
+          ctx: null,
+          init() {
+            if (!this.ctx) {
+              const A = window.AudioContext || window.webkitAudioContext;
+              if (A) this.ctx = new A();
+            }
+          },
+          play(type) {
+            this.init();
+            if (!this.ctx) return;
+            if (this.ctx.state === "suspended") this.ctx.resume();
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain(),
+              t = this.ctx.currentTime;
+            const P = {
+              correct: { w: "sine", f: [520, 780], d: 0.18, v: 0.06 },
+              wrong: { w: "sawtooth", f: [300, 180], d: 0.22, v: 0.05 },
+              click: { w: "sine", f: [440, 480], d: 0.08, v: 0.04 },
+              combo: { w: "sine", f: [600, 900], d: 0.25, v: 0.06 },
+              whoosh: { w: "sine", f: [200, 600], d: 0.15, v: 0.03 },
+              levelup: { w: "sine", f: [440, 660, 880], d: 0.35, v: 0.06 },
+              scan: { w: "triangle", f: [300, 800], d: 0.2, v: 0.03 },
+              lock: { w: "square", f: [200, 100], d: 0.15, v: 0.04 },
+            };
+            const p = P[type] || P.click;
+            o.type = p.w;
+            o.frequency.setValueAtTime(p.f[0], t);
+            if (p.f.length === 3) {
+              o.frequency.linearRampToValueAtTime(p.f[1], t + p.d * 0.5);
+              o.frequency.linearRampToValueAtTime(p.f[2], t + p.d);
+            } else o.frequency.linearRampToValueAtTime(p.f[1], t + p.d);
+            g.gain.setValueAtTime(0.001, t);
+            g.gain.linearRampToValueAtTime(p.v, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.001, t + p.d);
+            o.connect(g).connect(this.ctx.destination);
+            o.start(t);
+            o.stop(t + p.d + 0.01);
+          },
+        };
 
-    // Update streak
-    document.querySelector('.streak-badge').textContent = `🔥 ${this.player.streak}d`;
+        const W = 960,
+          H = 640;
+        function shuffle(a) {
+          const b = [...a];
+          for (let i = b.length - 1; i > 0; i--) {
+            const j = (Math.random() * i + 1) | 0;
+            [b[i], b[j]] = [b[j], b[i]];
+          }
+          return b;
+        }
+        function mean(arr) {
+          return arr.reduce((a, b) => a + b, 0) / arr.length;
+        }
+        function median(arr) {
+          const s = [...arr].sort((a, b) => a - b);
+          const m = Math.floor(s.length / 2);
+          return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+        function mode(arr) {
+          const f = {};
+          arr.forEach((v) => (f[v] = (f[v] || 0) + 1));
+          const mx = Math.max(...Object.values(f));
+          const modes = Object.keys(f)
+            .filter((k) => f[k] === mx)
+            .map(Number);
+          return modes.length === arr.length ? "No mode" : modes.join(", ");
+        }
+        function range(arr) {
+          return Math.max(...arr) - Math.min(...arr);
+        }
+        function iqr(arr) {
+          const s = [...arr].sort((a, b) => a - b);
+          const q1Med = s.slice(0, Math.floor(s.length / 2));
+          const q3Med = s.slice(Math.ceil(s.length / 2));
+          const q1 = median(q1Med),
+            q3 = median(q3Med);
+          return q3 - q1;
+        }
 
-    // Update game screen stats
-    if (document.getElementById('currentXP')) {
-      document.getElementById('currentXP').textContent = this.player.xp;
-      document.getElementById('levelNum').textContent = this.player.level;
-      document.getElementById('streakNum').textContent = this.player.streak;
-    }
-  }
+        // Question generator
+        function genQ(level) {
+          const types = [
+            "mean",
+            "median",
+            "mode",
+            "range",
+            "describe",
+            "iqr",
+            "outlier",
+            "best_measure",
+          ];
+          // Filter by level
+          let pool;
+          if (level === 1) pool = ["mean", "median", "mode", "range"];
+          else if (level === 2)
+            pool = [
+              "mean",
+              "median",
+              "mode",
+              "range",
+              "describe",
+              "best_measure",
+            ];
+          else
+            pool = [
+              "mean",
+              "median",
+              "mode",
+              "range",
+              "describe",
+              "iqr",
+              "outlier",
+              "best_measure",
+            ];
 
-  bindEvents() {
-    // Start button
-    document.querySelector('.start-cta').addEventListener('click', () => {
-      this.showScreen('home');
-    });
+          const type = pool[Math.floor(Math.random() * pool.length)];
+          let data, question, answer, choices, explain, context;
 
-    // Mission cards
-    document.querySelectorAll('.mission-card:not(.locked)').forEach(card => {
-      card.addEventListener('click', () => {
-        this.currentMission = card.dataset.mission;
-        this.showScreen('mode');
-      });
-    });
+          // Generate data sets based on level
+          const size =
+            level === 1
+              ? 5
+              : level === 2
+                ? 6
+                : 7 + Math.floor(Math.random() * 3);
+          const makeData = (lo, hi) => {
+            const d = [];
+            for (let i = 0; i < size; i++)
+              d.push(lo + Math.floor(Math.random() * (hi - lo + 1)));
+            return d;
+          };
 
-    // Mode selection
-    document.querySelectorAll('.mode-card:not(.locked)').forEach(card => {
-      card.addEventListener('click', () => {
-        this.startGame(card.dataset.mode);
-      });
-    });
+          const contexts = [
+            {
+              theme: "Fingerprint Lab",
+              icon: "🔬",
+              label: "Fingerprint ridge counts",
+            },
+            {
+              theme: "Footprint Analysis",
+              icon: "👟",
+              label: "Shoe sizes at scene",
+            },
+            {
+              theme: "DNA Sample Room",
+              icon: "🧬",
+              label: "Sample concentrations (mg)",
+            },
+            {
+              theme: "Witness Interviews",
+              icon: "🗣️",
+              label: "Estimated suspect height (in)",
+            },
+            {
+              theme: "Surveillance Footage",
+              icon: "📹",
+              label: "Time stamps (minutes)",
+            },
+            {
+              theme: "Ballistics Lab",
+              icon: "🎯",
+              label: "Bullet fragment weights (g)",
+            },
+            {
+              theme: "Toxicology Report",
+              icon: "⚗️",
+              label: "Chemical levels (ppm)",
+            },
+            {
+              theme: "Evidence Vault",
+              icon: "🔒",
+              label: "Evidence tag numbers",
+            },
+          ];
+          context = contexts[Math.floor(Math.random() * contexts.length)];
 
-    // Game back
-    document.getElementById('gameBack').addEventListener('click', () => {
-      this.endGame();
-    });
-  }
+          if (type === "mean") {
+            data = makeData(10, 50);
+            const m = mean(data);
+            const ans = Math.round(m * 10) / 10;
+            question = `What is the mean of the ${context.label.toLowerCase()}?`;
+            answer = ans.toString();
+            const w1 = (ans + 2).toString(),
+              w2 = (ans - 3).toString(),
+              w3 = median(data).toString();
+            choices = shuffle([answer, w1, w2, w3]);
+            explain = `Add all values: ${data.join(" + ")} = ${data.reduce((a, b) => a + b, 0)}. Divide by ${data.length}: ${ans}.`;
+          } else if (type === "median") {
+            data = makeData(5, 40);
+            const m = median(data);
+            question = `What is the median of the ${context.label.toLowerCase()}?`;
+            answer = m.toString();
+            const sorted = [...data].sort((a, b) => a - b);
+            const w1 = mean(data).toFixed(1),
+              w2 = (m + 2).toString(),
+              w3 = sorted[0].toString();
+            choices = shuffle([answer, w1, w2, w3]);
+            explain = `Sort: ${sorted.join(", ")}. The middle value is ${m}.`;
+          } else if (type === "mode") {
+            // Ensure at least one repeat
+            data = makeData(1, 15);
+            const rep = data[0];
+            data[Math.floor(Math.random() * (data.length - 1)) + 1] = rep;
+            const m = mode(data);
+            question = `What is the mode of the ${context.label.toLowerCase()}?`;
+            answer = m;
+            const vals = [...new Set(data)].sort((a, b) => a - b);
+            const wrongs = vals.filter((v) => v.toString() !== m).map(String);
+            while (wrongs.length < 3)
+              wrongs.push((Math.max(...data) + 1).toString());
+            choices = shuffle([answer, ...wrongs.slice(0, 3)]);
+            explain = `Count each value. ${m} appears most often.`;
+          } else if (type === "range") {
+            data = makeData(8, 60);
+            const r = range(data);
+            question = `What is the range of the ${context.label.toLowerCase()}?`;
+            answer = r.toString();
+            const w1 = (r + 3).toString(),
+              w2 = (r - 2).toString(),
+              w3 = Math.max(...data).toString();
+            choices = shuffle([answer, w1, w2, w3]);
+            explain = `Range = max - min = ${Math.max(...data)} - ${Math.min(...data)} = ${r}.`;
+          } else if (type === "iqr") {
+            data = makeData(10, 50);
+            const sorted = [...data].sort((a, b) => a - b);
+            const q1a = sorted.slice(0, Math.floor(sorted.length / 2));
+            const q3a = sorted.slice(Math.ceil(sorted.length / 2));
+            const q1 = median(q1a),
+              q3 = median(q3a),
+              i = q3 - q1;
+            question = `What is the interquartile range (IQR)?`;
+            answer = i.toString();
+            const w1 = (i + 2).toString(),
+              w2 = range(data).toString(),
+              w3 = (i - 1).toString();
+            choices = shuffle([answer, w1, w2, w3]);
+            explain = `Q1=${q1}, Q3=${q3}. IQR = Q3 - Q1 = ${q3} - ${q1} = ${i}.`;
+          } else if (type === "outlier") {
+            data = makeData(20, 35);
+            data.push(90); // add outlier
+            question = `Which value is most likely an outlier?`;
+            answer = "90";
+            const others = data.filter((v) => v !== 90);
+            const wrongs = shuffle(others).slice(0, 3).map(String);
+            choices = shuffle([answer, ...wrongs]);
+            explain = `90 is far away from the rest of the data (${Math.min(...others)}-${Math.max(...others)}). It is an outlier.`;
+          } else if (type === "describe") {
+            data = makeData(10, 50);
+            const m = Math.round(mean(data) * 10) / 10,
+              med = median(data),
+              r = range(data);
+            const descs = [
+              `The center is about ${med} and the spread is ${r}.`,
+              `The mean is ${m} and data ranges from ${Math.min(...data)} to ${Math.max(...data)}.`,
+              `Most values cluster near ${med} with a range of ${r}.`,
+            ];
+            question = `Which best describes the center and spread of this data?`;
+            answer = descs[0];
+            const wrongDescs = [
+              `The center is ${Math.max(...data)} and spread is ${Math.min(...data)}.`,
+              `The range is ${med} and the center is ${r}.`,
+              `All values are the same with no spread.`,
+            ];
+            choices = shuffle([answer, ...wrongDescs.slice(0, 3)]);
+            explain = `Median = ${med} (center). Range = ${r} (spread). The data goes from ${Math.min(...data)} to ${Math.max(...data)}.`;
+          } else {
+            // best_measure
+            data = makeData(15, 35);
+            if (Math.random() > 0.5) data.push(150); // sometimes add outlier
+            const hasOutlier = Math.max(...data) > 100;
+            question = hasOutlier
+              ? `This data has an extreme value. Which measure best represents the center?`
+              : `All values are close together. Which measure best represents the center?`;
+            answer = hasOutlier ? "Median" : "Mean";
+            choices = shuffle(["Mean", "Median", "Mode", "Range"]);
+            explain = hasOutlier
+              ? `The outlier (${Math.max(...data)}) pulls the mean up. Median is a better center.`
+              : `With no outliers, the mean uses all values and is a good center measure.`;
+          }
 
-  showScreen(screenName) {
-    Object.values(this.screens).forEach(screen => {
-      screen.classList.remove('active');
-    });
-    this.screens[screenName].classList.add('active');
-  }
+          return {
+            type,
+            data,
+            question,
+            answer,
+            choices,
+            explain,
+            context,
+            level,
+          };
+        }
 
-  generateQuestions() {
-    // Sample 6.SP.B.5 statistics questions (median, mean, etc.)
-    this.questions = [
-      {
-        title: "Summarizing Numerical Data",
-        data: "Test scores: 85, 92, 78, 95, 88, 91, 84, 89. Median?",
-        options: ["85", "88", "89", "91"],
-        correct: 1,
-        explanation: "Sorted: 78,84,85,88,89,91,92,95. Median is average of 88 & 89 = 88.5, but closest 88."
-      },
-      {
-        title: "Mean Calculation",
-        data: "Daily sales: $200, $250, $180, $300, $220. Mean?",
-        options: ["$230", "$210", "$250", "$240"],
-        correct: 0,
-        explanation: "Sum=1150, mean=1150/5=$230."
-      },
-      // Add 8 more similar questions for full mission
-      // ... (premium feature: procedurally generated)
-    ];
-  }
+        // ═══════════════════════════════════════════════════
+        class BootScene extends Phaser.Scene {
+          constructor() {
+            super("Boot");
+          }
+          create() {
+            const g = this.make.graphics({ add: false });
+            g.fillStyle(0xffffff, 1);
+            g.fillCircle(4, 4, 4);
+            g.generateTexture("dot", 8, 8);
+            g.clear();
+            g.fillStyle(0xf77f00, 1);
+            g.fillRoundedRect(0, 0, 260, 54, 16);
+            g.generateTexture("btn_orange", 260, 54);
+            g.clear();
+            g.fillStyle(0x1b998b, 1);
+            g.fillRoundedRect(0, 0, 260, 54, 16);
+            g.generateTexture("btn_teal", 260, 54);
+            g.clear();
+            g.fillStyle(0x14213d, 1);
+            g.fillRoundedRect(0, 0, 260, 54, 16);
+            g.generateTexture("btn_dark", 260, 54);
+            g.clear();
+            g.fillStyle(0x2a9d5c, 1);
+            g.fillRoundedRect(0, 0, 260, 54, 16);
+            g.generateTexture("btn_green", 260, 54);
+            g.clear();
+            g.destroy();
+            this.scene.start("Title");
+          }
+        }
 
-  startGame(mode) {
-    this.currentQuestion = 0;
-    this.showScreen('game');
-    this.loadQuestion();
-  }
+        // ═══════════════════════════════════════════════════
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+          create() {
+            const cx = W / 2;
+            this.cameras.main.setBackgroundColor(0x0a0f1e);
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x0f1a2e, 0x0f1a2e, 0x0a0f1e, 0x0a0f1e, 1);
+            bg.fillRect(0, 0, W, H);
+            this.add.particles(0, 0, "dot", {
+              x: { min: 0, max: W },
+              y: { min: 0, max: H },
+              scale: { start: 0.25, end: 0 },
+              alpha: { start: 0.3, end: 0 },
+              speed: { min: 8, max: 20 },
+              lifespan: 4000,
+              frequency: 250,
+              blendMode: "ADD",
+              tint: [0x00ff88, 0x00ddff, 0x8855ff],
+            });
+            const icon = this.add
+              .text(cx, 110, "🔬", { fontSize: "72px" })
+              .setOrigin(0.5);
+            this.tweens.add({
+              targets: icon,
+              angle: 5,
+              duration: 2000,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+            this.add
+              .text(cx, 195, "CRIME SCENE\nLAB", {
+                fontSize: "48px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#00ff88",
+                align: "center",
+                lineSpacing: 2,
+                stroke: "#0a0f1e",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx, 280, "Analyze forensic data to solve mysteries", {
+                fontSize: "16px",
+                fontFamily: "Trebuchet MS",
+                color: "#8bc4b8",
+                align: "center",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx, 315, "6.SP.B.5 — Summarize Numerical Data Sets", {
+                fontSize: "13px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#0a0f1e",
+                backgroundColor: "#00ff88",
+                padding: { x: 12, y: 6 },
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(
+                cx,
+                365,
+                "Skills: Mean, Median, Mode, Range, IQR, Outliers, Best Measure",
+                {
+                  fontSize: "12px",
+                  fontFamily: "sans-serif",
+                  color: "#5a8a7e",
+                },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(cx, 400, "Choose Your Clearance Level", {
+                fontSize: "16px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            [
+              {
+                l: "🧪 Junior Analyst (Level 1)",
+                lv: 1,
+                y: 445,
+                k: "btn_teal",
+              },
+              {
+                l: "🔬 Senior Analyst (Level 2)",
+                lv: 2,
+                y: 505,
+                k: "btn_orange",
+              },
+              {
+                l: "🏆 Chief Forensic (Level 3)",
+                lv: 3,
+                y: 565,
+                k: "btn_dark",
+              },
+            ].forEach((m) => {
+              const btn = this.add
+                .image(cx, m.y, m.k)
+                .setInteractive({ useHandCursor: true })
+                .setScale(1, 0.9);
+              this.add
+                .text(cx, m.y, m.l, {
+                  fontSize: "17px",
+                  fontFamily: "Trebuchet MS",
+                  fontStyle: "bold",
+                  color: "#fff",
+                })
+                .setOrigin(0.5);
+              btn.on("pointerover", () => {
+                btn.setScale(1.05, 0.95);
+                SFX.play("click");
+              });
+              btn.on("pointerout", () => btn.setScale(1, 0.9));
+              btn.on("pointerdown", () => {
+                SFX.play("whoosh");
+                this.cameras.main.fade(400);
+                this.time.delayedCall(400, () =>
+                  this.scene.start("Game", { level: m.lv }),
+                );
+              });
+            });
+            this.cameras.main.fadeIn(500);
+          }
+        }
 
-  loadQuestion() {
-    if (this.currentQuestion >= 10) {
-      this.completeMission();
-      return;
-    }
+        // ═══════════════════════════════════════════════════
+        class GameScene extends Phaser.Scene {
+          constructor() {
+            super("Game");
+          }
+          init(data) {
+            this.level = data.level || 1;
+            this.totalQs = this.level === 1 ? 12 : this.level === 2 ? 16 : 20;
+            this.qIdx = 0;
+            this.score = 0;
+            this.combo = 0;
+            this.maxCombo = 0;
+            this.lives = 3;
+            this.correct = 0;
+            this.wrong = 0;
+            this.answering = false;
+            this.casesCleared = 0;
+            this.currentQ = null;
+          }
+          create() {
+            this.cameras.main.setBackgroundColor(0x0a0f1e);
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x0f1a2e, 0x0f1a2e, 0x0a0f1e, 0x0a0f1e, 1);
+            bg.fillRect(0, 0, W, H);
+            // Scan lines effect
+            for (let y = 0; y < H; y += 4) {
+              this.add.rectangle(W / 2, y, W, 1, 0x00ff88, 0.015);
+            }
+            this.createHUD();
+            // Context header
+            this.ctxBg = this.add.graphics();
+            this.ctxIcon = this.add
+              .text(100, 82, "", { fontSize: "28px" })
+              .setOrigin(0.5);
+            this.ctxTitle = this.add.text(130, 75, "", {
+              fontSize: "18px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#00ff88",
+            });
+            this.ctxLabel = this.add.text(130, 98, "", {
+              fontSize: "11px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#5a8a7e",
+              letterSpacing: 2,
+            });
+            // Data display
+            this.dataBg = this.add.graphics();
+            this.dataText = this.add
+              .text(W / 2, 148, "", {
+                fontSize: "22px",
+                fontFamily: "Courier New, monospace",
+                fontStyle: "bold",
+                color: "#00ddff",
+                align: "center",
+                letterSpacing: 2,
+              })
+              .setOrigin(0.5);
+            this.dataLabel = this.add
+              .text(W / 2, 125, "EVIDENCE DATA", {
+                fontSize: "10px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#00ff88",
+                letterSpacing: 3,
+              })
+              .setOrigin(0.5);
+            // Question
+            this.qBg = this.add.graphics();
+            this.qType = this.add
+              .text(W / 2, 185, "", {
+                fontSize: "10px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#00ff88",
+                letterSpacing: 3,
+              })
+              .setOrigin(0.5);
+            this.qText = this.add
+              .text(W / 2, 220, "", {
+                fontSize: "18px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+                wordWrap: { width: W - 180 },
+                lineSpacing: 5,
+              })
+              .setOrigin(0.5);
+            // Choice buttons (4)
+            this.choiceBtns = [];
+            for (let i = 0; i < 4; i++) {
+              const x = i < 2 ? W / 2 - 195 : W / 2 + 195;
+              const y = i % 2 === 0 ? 305 : 375;
+              const c = this.makeChoice(x, y, i);
+              this.choiceBtns.push(c);
+            }
+            // Feedback
+            this.fbBg = this.add.graphics().setAlpha(0);
+            this.fbTitle = this.add
+              .text(W / 2, 435, "", {
+                fontSize: "20px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+                align: "center",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.fbBody = this.add
+              .text(W / 2, 468, "", {
+                fontSize: "13px",
+                fontFamily: "sans-serif",
+                color: "#8bc4b8",
+                align: "center",
+                wordWrap: { width: 600 },
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            // Progress
+            this.add
+              .graphics()
+              .fillStyle(0xffffff, 0.06)
+              .fillRoundedRect(80, 520, W - 160, 12, 6);
+            this.progFill = this.add.graphics();
+            this.progLabel = this.add
+              .text(W / 2, 548, "", {
+                fontSize: "12px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#5a8a7e",
+              })
+              .setOrigin(0.5);
+            // Next button
+            this.nextBtn = this.add
+              .image(W / 2, 590, "btn_green")
+              .setScale(0.7, 0.8)
+              .setInteractive({ useHandCursor: true })
+              .setAlpha(0);
+            this.nextTxt = this.add
+              .text(W / 2, 590, "Analyze Next Evidence →", {
+                fontSize: "14px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.nextBtn.on("pointerdown", () => this.advance());
+            // Particles
+            this.goodP = this.add.particles(W / 2, 340, "dot", {
+              speed: { min: 80, max: 250 },
+              scale: { start: 0.7, end: 0 },
+              alpha: { start: 1, end: 0 },
+              lifespan: 600,
+              tint: [0x00ff88, 0x00ddff],
+              blendMode: "ADD",
+              emitting: false,
+              quantity: 18,
+            });
+            this.badP = this.add.particles(W / 2, 340, "dot", {
+              speed: { min: 60, max: 180 },
+              scale: { start: 0.5, end: 0 },
+              alpha: { start: 0.7, end: 0 },
+              lifespan: 500,
+              tint: [0xff4444, 0xff8888],
+              blendMode: "ADD",
+              emitting: false,
+              quantity: 10,
+            });
+            this.cameras.main.fadeIn(500);
+            this.loadQuestion();
+          }
+          createHUD() {
+            this.add.text(30, 15, "🏆 SCORE", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#00ff88",
+              letterSpacing: 2,
+            });
+            this.scoreTxt = this.add.text(30, 32, "0", {
+              fontSize: "24px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#fff",
+            });
+            this.add.text(170, 15, "🔥 COMBO", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#f77f00",
+              letterSpacing: 2,
+            });
+            this.comboTxt = this.add.text(170, 32, "0x", {
+              fontSize: "24px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#f77f00",
+            });
+            this.add.text(W - 200, 15, "❤️ LIVES", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#ff6b6b",
+              letterSpacing: 2,
+            });
+            this.livesTxt = this.add.text(W - 200, 32, "", {
+              fontSize: "20px",
+            });
+            this.add.text(W - 80, 15, "LEVEL", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#00ddff",
+              letterSpacing: 2,
+            });
+            this.add
+              .text(W - 60, 32, this.level.toString(), {
+                fontSize: "24px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#00ddff",
+              })
+              .setOrigin(0.5, 0);
+          }
+          updateHUD() {
+            this.scoreTxt.setText(this.score.toString());
+            this.comboTxt
+              .setText(this.combo + "x")
+              .setColor(this.combo >= 3 ? "#00ff88" : "#f77f00");
+            let h = "";
+            for (let i = 0; i < 3; i++) h += i < this.lives ? "❤️" : "🖤";
+            this.livesTxt.setText(h);
+            const pct = this.qIdx / this.totalQs;
+            this.progFill.clear();
+            this.progFill.fillStyle(0x00ff88, 1);
+            if (pct > 0)
+              this.progFill.fillRoundedRect(80, 520, (W - 160) * pct, 12, 6);
+            this.progLabel.setText(
+              "Evidence " + this.qIdx + " / " + this.totalQs,
+            );
+          }
+          makeChoice(x, y, idx) {
+            const c = this.add.container(x, y);
+            const bg = this.add.graphics();
+            bg.fillStyle(0xffffff, 0.04);
+            bg.fillRoundedRect(-185, -30, 370, 60, 14);
+            bg.lineStyle(2, 0x00ff88, 0.3);
+            bg.strokeRoundedRect(-185, -30, 370, 60, 14);
+            const letter = this.add
+              .text(-170, 0, ["A", "B", "C", "D"][idx], {
+                fontSize: "16px",
+                fontFamily: "Courier New",
+                fontStyle: "bold",
+                color: "#00ff88",
+              })
+              .setOrigin(0, 0.5);
+            const txt = this.add
+              .text(-145, 0, "", {
+                fontSize: "14px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+                wordWrap: { width: 320 },
+                lineSpacing: 2,
+              })
+              .setOrigin(0, 0.5);
+            c.add([bg, letter, txt]);
+            c.setSize(370, 60).setInteractive({ useHandCursor: true });
+            c.on("pointerover", () =>
+              this.tweens.add({
+                targets: c,
+                scaleX: 1.03,
+                scaleY: 1.03,
+                duration: 80,
+              }),
+            );
+            c.on("pointerout", () =>
+              this.tweens.add({
+                targets: c,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 80,
+              }),
+            );
+            c.on("pointerdown", () => {
+              if (!this.answering) this.checkAnswer(idx);
+            });
+            c._bg = bg;
+            c._txt = txt;
+            c._letter = letter;
+            return c;
+          }
+          loadQuestion() {
+            if (this.qIdx >= this.totalQs) {
+              this.endGame();
+              return;
+            }
+            this.answering = false;
+            const q = genQ(this.level);
+            this.currentQ = q;
+            // Context
+            this.ctxBg.clear();
+            this.ctxBg.fillStyle(0x00ff88, 0.06);
+            this.ctxBg.fillRoundedRect(70, 64, W - 140, 48, 12);
+            this.ctxIcon.setText(q.context.icon);
+            this.ctxTitle.setText(q.context.theme);
+            this.ctxLabel.setText(q.context.label.toUpperCase());
+            // Data
+            this.dataBg.clear();
+            if (q.data) {
+              this.dataBg.fillStyle(0x00ddff, 0.06);
+              this.dataBg.fillRoundedRect(80, 115, W - 160, 50, 12);
+              this.dataBg.lineStyle(1, 0x00ddff, 0.2);
+              this.dataBg.strokeRoundedRect(80, 115, W - 160, 50, 12);
+              this.dataText.setText(q.data.join("   ")).setAlpha(1);
+              this.dataLabel.setAlpha(1);
+            } else {
+              this.dataText.setAlpha(0);
+              this.dataLabel.setAlpha(0);
+            }
+            // Question
+            this.qBg.clear();
+            this.qBg.fillStyle(0xffffff, 0.03);
+            this.qBg.fillRoundedRect(80, 175, W - 160, 70, 14);
+            this.qType.setText(q.type.toUpperCase().replace("_", " "));
+            this.qText.setText(q.question).setAlpha(0);
+            this.tweens.add({ targets: this.qText, alpha: 1, duration: 300 });
+            // Choices
+            q.choices.forEach((ch, i) => {
+              if (i < 4) {
+                const btn = this.choiceBtns[i];
+                btn._txt.setText(ch);
+                btn._bg.clear();
+                btn._bg.fillStyle(0xffffff, 0.04);
+                btn._bg.fillRoundedRect(-185, -30, 370, 60, 14);
+                btn._bg.lineStyle(2, 0x00ff88, 0.3);
+                btn._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
+                btn.setAlpha(1).setInteractive().setScale(1);
+              }
+            });
+            // Hide feedback/next
+            this.fbBg.setAlpha(0);
+            this.fbTitle.setAlpha(0);
+            this.fbBody.setAlpha(0);
+            this.nextBtn.setAlpha(0).disableInteractive();
+            this.nextTxt.setAlpha(0);
+            this.updateHUD();
+          }
+          checkAnswer(idx) {
+            if (this.answering) return;
+            this.answering = true;
+            const q = this.currentQ;
+            const selected = q.choices[idx];
+            const isCorrect = selected === q.answer;
+            this.qIdx++;
+            // Disable all
+            this.choiceBtns.forEach((b, i) => {
+              b.disableInteractive();
+              if (q.choices[i] === q.answer) {
+                b._bg.clear();
+                b._bg.fillStyle(0x00ff88, 0.2);
+                b._bg.fillRoundedRect(-185, -30, 370, 60, 14);
+                b._bg.lineStyle(2, 0x00ff88, 0.8);
+                b._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
+              } else if (i === idx && !isCorrect) {
+                b._bg.clear();
+                b._bg.fillStyle(0xff4444, 0.15);
+                b._bg.fillRoundedRect(-185, -30, 370, 60, 14);
+                b._bg.lineStyle(2, 0xff4444, 0.6);
+                b._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
+              } else {
+                b.setAlpha(0.35);
+              }
+            });
+            if (isCorrect) {
+              SFX.play("correct");
+              this.combo++;
+              this.maxCombo = Math.max(this.maxCombo, this.combo);
+              this.correct++;
+              const bonus = this.combo >= 5 ? 60 : this.combo >= 3 ? 30 : 0;
+              const pts = 120 + bonus;
+              this.score += pts;
+              this.goodP.explode(18, W / 2, 340);
+              if (this.combo >= 3) {
+                SFX.play("combo");
+                this.cameras.main.shake(100, 0.005);
+              }
+              this.showFB(
+                true,
+                this.combo >= 5
+                  ? "🔥 EXCELLENT! +" + pts
+                  : this.combo >= 3
+                    ? "💥 COMBO! +" + pts
+                    : "✅ Correct! +" + pts,
+                q.explain,
+              );
+              const pop = this.add
+                .text(W / 2, 280, "+" + pts, {
+                  fontSize: "26px",
+                  fontFamily: "Trebuchet MS",
+                  fontStyle: "bold",
+                  color: "#00ff88",
+                })
+                .setOrigin(0.5);
+              this.tweens.add({
+                targets: pop,
+                y: 240,
+                alpha: 0,
+                duration: 800,
+                onComplete: () => pop.destroy(),
+              });
+            } else {
+              SFX.play("wrong");
+              this.combo = 0;
+              this.lives--;
+              this.wrong++;
+              this.badP.explode(10, W / 2, 340);
+              this.cameras.main.shake(200, 0.012);
+              this.showFB(false, "❌ Not quite!", q.explain);
+              if (this.lives <= 0) {
+                this.time.delayedCall(1800, () => this.endGame());
+                return;
+              }
+            }
+            this.updateHUD();
+            // Every 4 questions = case cleared
+            if (
+              this.qIdx > 0 &&
+              this.qIdx % 4 === 0 &&
+              this.qIdx < this.totalQs
+            ) {
+              this.casesCleared++;
+              SFX.play("levelup");
+              const b = this.add
+                .text(W / 2, H / 2, "🔓 CASE CRACKED!", {
+                  fontSize: "32px",
+                  fontFamily: "Trebuchet MS",
+                  fontStyle: "bold",
+                  color: "#00ff88",
+                  stroke: "#0a0f1e",
+                  strokeThickness: 5,
+                })
+                .setOrigin(0.5)
+                .setAlpha(0);
+              this.tweens.add({
+                targets: b,
+                alpha: 1,
+                scaleX: 1.2,
+                scaleY: 1.2,
+                duration: 400,
+                yoyo: true,
+                hold: 500,
+                onComplete: () => b.destroy(),
+              });
+            }
+            this.time.delayedCall(600, () => {
+              this.nextBtn.setAlpha(1).setInteractive();
+              this.nextTxt.setAlpha(1);
+            });
+          }
+          showFB(good, title, body) {
+            this.fbBg.clear();
+            this.fbBg.fillStyle(good ? 0x00ff88 : 0xff4444, 0.1);
+            this.fbBg.fillRoundedRect(80, 415, W - 160, 90, 14);
+            this.fbBg.lineStyle(2, good ? 0x00ff88 : 0xff4444, 0.4);
+            this.fbBg.strokeRoundedRect(80, 415, W - 160, 90, 14);
+            this.fbBg.setAlpha(1);
+            this.fbTitle
+              .setText(title)
+              .setAlpha(1)
+              .setColor(good ? "#00ff88" : "#ff6b6b");
+            this.fbBody.setText(body).setAlpha(1);
+          }
+          advance() {
+            SFX.play("click");
+            if (this.lives <= 0 || this.qIdx >= this.totalQs) this.endGame();
+            else this.loadQuestion();
+          }
+          endGame() {
+            this.cameras.main.fade(500);
+            this.time.delayedCall(500, () =>
+              this.scene.start("Results", {
+                score: this.score,
+                correct: this.correct,
+                wrong: this.wrong,
+                total: this.totalQs,
+                combo: this.maxCombo,
+                lives: this.lives,
+                casesCleared: this.casesCleared,
+                level: this.level,
+              }),
+            );
+          }
+        }
 
-    const q = this.questions[this.currentQuestion % this.questions.length];
-    document.getElementById('questionTitle').textContent = q.title;
-    document.getElementById('questionData').textContent = q.data;
-    document.getElementById('questionNum').textContent = this.currentQuestion + 1;
+        // ═══════════════════════════════════════════════════
+        class ResultsScene extends Phaser.Scene {
+          constructor() {
+            super("Results");
+          }
+          init(data) {
+            this.d = data;
+          }
+          create() {
+            const d = this.d,
+              cx = W / 2;
+            this.cameras.main.setBackgroundColor(0x0a0f1e);
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x0f1a2e, 0x0f1a2e, 0x0a0f1e, 0x0a0f1e, 1);
+            bg.fillRect(0, 0, W, H);
+            const pct = Math.round((d.correct / d.total) * 100);
+            if (pct >= 70)
+              this.add.particles(W / 2, -10, "dot", {
+                x: { min: -W / 2, max: W / 2 },
+                speed: { min: 50, max: 200 },
+                angle: { min: 80, max: 100 },
+                scale: { start: 0.5, end: 0 },
+                lifespan: 3000,
+                tint: [0x00ff88, 0x00ddff, 0x8855ff, 0xfbbf24],
+                frequency: 100,
+                quantity: 3,
+                blendMode: "ADD",
+              });
+            let rank = "Lab Intern",
+              emoji = "🧪";
+            if (pct >= 90) {
+              rank = "Chief Forensic Scientist";
+              emoji = "🏆";
+            } else if (pct >= 75) {
+              rank = "Senior Analyst";
+              emoji = "🔬";
+            } else if (pct >= 60) {
+              rank = "Junior Analyst";
+              emoji = "🧬";
+            }
+            this.add.text(cx, 50, emoji, { fontSize: "60px" }).setOrigin(0.5);
+            this.add
+              .text(cx, 110, "LAB REPORT COMPLETE", {
+                fontSize: "34px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#00ff88",
+                stroke: "#0a0f1e",
+                strokeThickness: 4,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx, 150, rank, {
+                fontSize: "18px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#8bc4b8",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx, 195, d.score.toString(), {
+                fontSize: "52px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(cx, 232, "POINTS", {
+                fontSize: "11px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#5a8a7e",
+                letterSpacing: 3,
+              })
+              .setOrigin(0.5);
+            [
+              { l: "Correct", v: d.correct + "/" + d.total, x: cx - 200 },
+              { l: "Accuracy", v: pct + "%", x: cx },
+              { l: "Best Combo", v: d.combo + "x", x: cx + 200 },
+            ].forEach((s) => {
+              const g = this.add.graphics();
+              g.fillStyle(0xffffff, 0.05);
+              g.fillRoundedRect(s.x - 75, 255, 150, 70, 14);
+              this.add
+                .text(s.x, 278, s.v, {
+                  fontSize: "24px",
+                  fontFamily: "Trebuchet MS",
+                  fontStyle: "bold",
+                  color: "#fff",
+                })
+                .setOrigin(0.5);
+              this.add
+                .text(s.x, 308, s.l, {
+                  fontSize: "10px",
+                  fontFamily: "sans-serif",
+                  fontStyle: "bold",
+                  color: "#5a8a7e",
+                  letterSpacing: 2,
+                })
+                .setOrigin(0.5);
+            });
+            const sc =
+              pct >= 90 ? 5 : pct >= 75 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1;
+            let ss = "";
+            for (let i = 0; i < 5; i++) ss += i < sc ? "⭐" : "☆";
+            this.add.text(cx, 355, ss, { fontSize: "30px" }).setOrigin(0.5);
+            // Tips
+            const g2 = this.add.graphics();
+            g2.fillStyle(0x00ff88, 0.08);
+            g2.fillRoundedRect(80, 385, W - 160, 120, 18);
+            g2.lineStyle(2, 0x00ff88, 0.3);
+            g2.strokeRoundedRect(80, 385, W - 160, 120, 18);
+            this.add
+              .text(cx, 405, "💡 KEY CONCEPTS", {
+                fontSize: "12px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#00ff88",
+                letterSpacing: 2,
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(
+                cx,
+                455,
+                "Mean = add all, divide by count.  Median = middle after sorting.\nMode = most frequent.  Range = max minus min.\nIQR = Q3 minus Q1.  Outliers pull the mean away from center.",
+                {
+                  fontSize: "13px",
+                  fontFamily: "Trebuchet MS",
+                  color: "#8bc4b8",
+                  align: "center",
+                  lineSpacing: 5,
+                },
+              )
+              .setOrigin(0.5);
+            const btn = this.add
+              .image(cx, 555, "btn_teal")
+              .setScale(0.85)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(cx, 555, "🔄 Investigate Again", {
+                fontSize: "17px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fff",
+              })
+              .setOrigin(0.5);
+            btn.on("pointerdown", () => {
+              SFX.play("whoosh");
+              this.cameras.main.fade(400);
+              this.time.delayedCall(400, () => this.scene.start("Title"));
+            });
+            this.cameras.main.fadeIn(600);
+            if (pct >= 70) SFX.play("levelup");
+          }
+        }
 
-    const grid = document.getElementById('optionsGrid');
-    grid.innerHTML = '';
-    q.options.forEach((opt, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.textContent = opt;
-      btn.dataset.index = i;
-      btn.addEventListener('click', () => this.selectAnswer(i === q.correct, q.explanation));
-      grid.appendChild(btn);
-    });
-  }
-
-  selectAnswer(isCorrect, explanation) {
-    const buttons = document.querySelectorAll('.option-btn');
-    buttons.forEach((btn, i) => {
-      btn.disabled = true;
-      if (parseInt(btn.dataset.index) === this.questions[this.currentQuestion % this.questions.length].correct) {
-        btn.classList.add('correct');
-      }
-    });
-
-    const feedback = document.getElementById('feedback');
-    const title = document.getElementById('feedbackTitle');
-    const text = document.getElementById('feedbackText');
-
-    if (isCorrect) {
-      this.awardXP(50 + this.player.level * 10);
-      this.player.streak++;
-      title.textContent = 'Correct! 🎉';
-      text.textContent = explanation;
-      feedback.className = 'feedback success show';
-    } else {
-      title.textContent = 'Try Again ❌';
-      text.textContent = explanation;
-      feedback.className = 'feedback error show';
-    }
-
-    setTimeout(() => {
-      feedback.classList.remove('show');
-      this.currentQuestion++;
-      this.loadQuestion();
-    }, 3000);
-  }
-
-  awardXP(amount) {
-    this.player.xp += amount;
-    const prevLevel = this.player.level;
-    while (this.player.xp >= 100 + (this.player.level - 1) * 150) {
-      this.player.xp -= 100 + (this.player.level - 1) * 150;
-      this.player.level++;
-    }
-    if (this.player.level > prevLevel) {
-      this.showLevelUp();
-    }
-    this.updateUI();
-    this.saveProgress();
-  }
-
-  showLevelUp() {
-    // Premium animation toast
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-      position:fixed;top:20px;right:20px;background:linear-gradient(135deg,var(--accent-gold),var(--accent-teal));
-      color:#000;padding:20px 24px;border-radius:var(--radius-xl);font-weight:800;font-size:18px;
-      box-shadow:var(--shadow-glow);z-index:1000;animation:levelUp 0.6s cubic-bezier(0.4,0,0.2,1);
-    `;
-    toast.textContent = `Level Up! 🎖️ Level ${this.player.level}`;
-    toast.innerHTML += '<div style="font-size:12px;margin-top:8px;">New missions unlocked</div>';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
-  }
-
-  completeMission() {
-    this.player.completedMissions.push(this.currentMission);
-    this.awardXP(500);
-    setTimeout(() => {
-      alert('Mission Complete! 🌟\n+500 XP Bonus\nNew missions unlocked');
-      this.endGame();
-    }, 500);
-  }
-
-  endGame() {
-    this.showScreen('home');
-    this.saveProgress();
-  }
-}
-
-// CSS for level up animation (add to <style>)
-const style = document.createElement('style');
-style.textContent = `
-@keyframes levelUp {
-  0% {transform:translateX(100%) scale(0.8);opacity:0;}
-  100% {transform:translateX(0) scale(1);opacity:1;}
-}
-`;
-document.head.appendChild(style);
-
-// Initialize game
-const game = new GameManager();
-</script>
-</body>
+        // ═══════════════════════════════════════════════════
+        new Phaser.Game({
+          type: Phaser.AUTO,
+          width: W,
+          height: H,
+          parent: document.body,
+          backgroundColor: "#0a0f1e",
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          scene: [BootScene, TitleScene, GameScene, ResultsScene],
+          input: { touch: true },
+        });
+      })();
+    </script>
+  </body>
 </html>
