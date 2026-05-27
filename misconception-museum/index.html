@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Misconception Museum | Reveal Math Student Tool</title>
+  <link rel="stylesheet" href="/assets/reveal-math-tools.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --museum-bg: #f6f8fb;
+      --museum-surface: #ffffff;
+      --museum-ink: #1f2933;
+      --museum-muted: #52606d;
+      --museum-line: #d8e0e8;
+      --museum-teal: #126c78;
+      --museum-teal-dark: #0b4f59;
+      --museum-gold: #d99a20;
+      --museum-red: #b84235;
+      --museum-green: #2f7654;
+      --museum-shadow: 0 14px 34px rgba(25, 42, 70, 0.1);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(18, 108, 120, 0.1), rgba(246, 248, 251, 0) 320px),
+        var(--museum-bg);
+      color: var(--museum-ink);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    select,
+    textarea {
+      border-radius: 8px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: -4rem;
+      z-index: 10;
+      padding: 0.75rem 1rem;
+      background: var(--museum-ink);
+      color: #fff;
+      border-radius: 8px;
+      transition: top 0.2s ease;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+
+    .museum-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .museum-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      padding: 28px;
+      border: 1px solid var(--museum-line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--museum-shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--museum-teal-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 14px;
+      font-size: 1.25rem;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .museum-hero p:last-child {
+      margin-bottom: 0;
+      max-width: 62ch;
+      color: var(--museum-muted);
+      line-height: 1.6;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 250px;
+    }
+
+    .button {
+      min-height: 44px;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--museum-line);
+      background: #fff;
+      color: var(--museum-ink);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      border-color: var(--museum-teal);
+      outline: 3px solid rgba(18, 108, 120, 0.16);
+      outline-offset: 1px;
+    }
+
+    .button.primary {
+      border-color: var(--museum-teal);
+      background: var(--museum-teal);
+      color: #fff;
+    }
+
+    .button.danger {
+      color: var(--museum-red);
+    }
+
+    .museum-grid {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--museum-line);
+      border-radius: 12px;
+      background: var(--museum-surface);
+      box-shadow: 0 8px 22px rgba(25, 42, 70, 0.06);
+    }
+
+    .panel-inner {
+      padding: 22px;
+    }
+
+    .selector-panel {
+      position: sticky;
+      top: 14px;
+    }
+
+    label,
+    legend {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 800;
+      color: var(--museum-ink);
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--museum-line);
+      background: #fff;
+      color: var(--museum-ink);
+    }
+
+    select {
+      min-height: 46px;
+      padding: 0 0.8rem;
+    }
+
+    textarea {
+      min-height: 126px;
+      resize: vertical;
+      padding: 0.85rem;
+      line-height: 1.5;
+    }
+
+    select:focus,
+    textarea:focus {
+      border-color: var(--museum-teal);
+      outline: 3px solid rgba(18, 108, 120, 0.16);
+    }
+
+    .cluster-facts {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0 0;
+    }
+
+    .fact {
+      padding: 12px;
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #f9fbfd;
+    }
+
+    .fact dt {
+      margin-bottom: 4px;
+      color: var(--museum-muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .fact dd {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .curator-note {
+      margin-top: 18px;
+      padding: 16px;
+      border-left: 5px solid var(--museum-gold);
+      border-radius: 8px;
+      background: #fff8e8;
+    }
+
+    .curator-note p {
+      margin-bottom: 14px;
+      color: #59421a;
+      line-height: 1.55;
+    }
+
+    .curator-note [hidden] {
+      display: none;
+    }
+
+    .work-area {
+      display: grid;
+      gap: 18px;
+    }
+
+    .exhibit-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .wrong-work {
+      min-height: 260px;
+      padding: 18px;
+      border: 1px solid #f1c8c2;
+      border-radius: 10px;
+      background: #fff7f5;
+      color: #42211d;
+      line-height: 1.55;
+    }
+
+    .wrong-work p {
+      margin-bottom: 10px;
+    }
+
+    .wrong-work ol {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .wrong-work li + li {
+      margin-top: 8px;
+    }
+
+    .model-box {
+      min-height: 260px;
+      padding: 18px;
+      border: 1px solid #c6dde1;
+      border-radius: 10px;
+      background: #f0f8fa;
+    }
+
+    .model-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      margin: 0 8px 8px 0;
+      padding: 0.35rem 0.6rem;
+      border: 1px solid rgba(18, 108, 120, 0.28);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--museum-teal-dark);
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    .model-line {
+      height: 10px;
+      margin: 20px 0 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--museum-teal) 0 38%, #cbd5df 38% 100%);
+    }
+
+    .model-caption {
+      color: var(--museum-muted);
+      line-height: 1.45;
+    }
+
+    fieldset {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .error-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .error-option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      min-height: 56px;
+      padding: 12px;
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .error-option input {
+      margin-top: 3px;
+      accent-color: var(--museum-teal);
+    }
+
+    .writing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .writing-card {
+      min-width: 0;
+    }
+
+    .hint {
+      margin: -2px 0 8px;
+      color: var(--museum-muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      color: var(--museum-muted);
+      font-size: 0.94rem;
+    }
+
+    .status-row strong {
+      color: var(--museum-green);
+    }
+
+    .print-title {
+      display: none;
+    }
+
+    @media (max-width: 920px) {
+      .museum-hero,
+      .museum-grid,
+      .exhibit-layout,
+      .writing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .selector-panel {
+        position: static;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .museum-shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 10px;
+      }
+
+      .museum-hero,
+      .panel-inner {
+        padding: 18px;
+      }
+
+      .error-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .museum-shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .museum-hero,
+      .panel {
+        box-shadow: none;
+      }
+
+      .toolbar,
+      .skip-link,
+      .curator-note .button,
+      .status-row {
+        display: none;
+      }
+
+      .museum-grid,
+      .exhibit-layout,
+      .writing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .selector-panel {
+        position: static;
+      }
+
+      .panel {
+        break-inside: avoid;
+        margin-bottom: 12px;
+      }
+
+      .print-title {
+        display: block;
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#museumWorkspace">Skip to exhibit builder</a>
+  <main class="museum-shell">
+    <header class="museum-hero">
+      <div>
+        <p class="eyebrow">Reveal Math Student Tool</p>
+        <h1>Misconception Museum</h1>
+        <p>Study a tempting wrong solution like a curator. Identify the error, explain why it fooled someone, repair the math, and write a warning label for the next learner.</p>
+      </div>
+      <div class="toolbar" aria-label="Museum controls">
+        <button class="button primary" type="button" id="saveButton">Save Draft</button>
+        <button class="button" type="button" id="copyButton">Copy Exhibit</button>
+        <button class="button danger" type="button" id="clearButton">Clear</button>
+        <button class="button" type="button" id="printButton">Print</button>
+      </div>
+    </header>
+
+    <section class="museum-grid" id="museumWorkspace" aria-label="Misconception Museum workspace">
+      <aside class="panel selector-panel" aria-labelledby="clusterHeading">
+        <div class="panel-inner">
+          <h2 id="clusterHeading">Choose a Cluster</h2>
+          <label for="clusterSelect">Lesson cluster</label>
+          <select id="clusterSelect"></select>
+
+          <dl class="cluster-facts" aria-label="Cluster details">
+            <div class="fact">
+              <dt>Unit</dt>
+              <dd id="unitText">Loading...</dd>
+            </div>
+            <div class="fact">
+              <dt>Lessons</dt>
+              <dd id="lessonText">Loading...</dd>
+            </div>
+            <div class="fact">
+              <dt>Model</dt>
+              <dd id="modelText">Loading...</dd>
+            </div>
+            <div class="fact">
+              <dt>Misconception</dt>
+              <dd id="misconceptionText">Loading...</dd>
+            </div>
+          </dl>
+
+          <section class="curator-note" aria-labelledby="curatorHeading">
+            <h2 id="curatorHeading">Curator Note</h2>
+            <p id="curatorNote" hidden></p>
+            <button class="button" type="button" id="revealNoteButton" aria-expanded="false">Reveal Curator Note</button>
+          </section>
+        </div>
+      </aside>
+
+      <div class="work-area">
+        <section class="panel" aria-labelledby="wrongWorkHeading">
+          <div class="panel-inner">
+            <h2 id="wrongWorkHeading">Exhibit: Tempting Wrong Solution</h2>
+            <p class="print-title" id="printClusterTitle"></p>
+            <div class="exhibit-layout">
+              <article class="wrong-work" id="wrongWork" aria-live="polite"></article>
+              <aside class="model-box" aria-labelledby="modelHeading">
+                <h3 id="modelHeading">Model Clues</h3>
+                <div id="modelChips"></div>
+                <div class="model-line" aria-hidden="true"></div>
+                <p class="model-caption" id="modelCaption"></p>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="diagnosisHeading">
+          <div class="panel-inner">
+            <h2 id="diagnosisHeading">Build the Museum Label</h2>
+            <fieldset>
+              <legend>What kind of error is on display?</legend>
+              <div class="error-grid" id="errorTypeList"></div>
+            </fieldset>
+
+            <div class="writing-grid">
+              <div class="writing-card">
+                <label for="diagnosisText">Diagnosis</label>
+                <p class="hint">Name the first wrong move and explain why it is tempting.</p>
+                <textarea id="diagnosisText" placeholder="The first wrong move is..."></textarea>
+              </div>
+              <div class="writing-card">
+                <label for="repairText">Repair the Work</label>
+                <p class="hint">Show the corrected setup, model, equation, or reasoning.</p>
+                <textarea id="repairText" placeholder="A correct way to solve is..."></textarea>
+              </div>
+              <div class="writing-card">
+                <label for="warningText">Warning Label</label>
+                <p class="hint">Write one sentence a classmate should remember.</p>
+                <textarea id="warningText" placeholder="Warning: before you..."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <div class="status-row">
+      <span id="statusMessage" role="status" aria-live="polite">Draft not saved yet.</span>
+      <span>Saved in this browser only.</span>
+    </div>
+  </main>
+
+  <script src="/assets/reveal-math-data.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var STORAGE_KEY = "reveal-math-misconception-museum-v1";
+      var ERROR_TYPES = [
+        "Operation mismatch",
+        "Model mismatch",
+        "Unit or rate confusion",
+        "Variable or relationship mix-up",
+        "Arithmetic slip",
+        "Missing constraint",
+        "Other"
+      ];
+
+      var fallbackClusters = [
+        { id: "factors-multiples", unit: "Number Systems", title: "Factors and Multiples", lessons: "Prime factors, GCF, LCM", modelKind: "factor web", misconception: "Treats factors and multiples as the same kind of number." },
+        { id: "fraction-division", unit: "Number Systems", title: "Dividing Fractions", lessons: "Fraction division models", modelKind: "tape diagram", misconception: "Inverts the wrong number because keep-change-flip is used without checking the situation." },
+        { id: "ratio-tables", unit: "Ratios and Rates", title: "Ratio Tables", lessons: "Equivalent ratios", modelKind: "ratio table", misconception: "Uses addition instead of multiplication to make equivalent ratios." },
+        { id: "unit-rates", unit: "Ratios and Rates", title: "Unit Rates", lessons: "Rates, unit prices, speed", modelKind: "double number line", misconception: "Compares totals instead of finding the amount for one unit." },
+        { id: "percent-of-number", unit: "Percents", title: "Percent of a Number", lessons: "Percent models", modelKind: "percent bar", misconception: "Uses the percent as a whole number instead of converting it to a rate out of 100." },
+        { id: "decimal-division", unit: "Decimals", title: "Decimal Division", lessons: "Dividing decimals", modelKind: "place-value chart", misconception: "Moves the decimal point without preserving place value." },
+        { id: "negative-numbers", unit: "Rational Numbers", title: "Integers on a Number Line", lessons: "Positive and negative numbers", modelKind: "number line", misconception: "Treats distance from zero as the value and ignores direction." },
+        { id: "coordinate-plane", unit: "Rational Numbers", title: "Coordinate Plane", lessons: "Ordered pairs", modelKind: "coordinate grid", misconception: "Switches the x-coordinate and y-coordinate." },
+        { id: "expressions", unit: "Expressions", title: "Equivalent Expressions", lessons: "Terms, coefficients, combining like terms", modelKind: "expression mat", misconception: "Combines unlike terms because the symbols are near each other." },
+        { id: "one-step-equations", unit: "Equations", title: "One-Step Equations", lessons: "Solving equations", modelKind: "balance model", misconception: "Uses the same operation again instead of the inverse operation." },
+        { id: "inequalities", unit: "Equations", title: "Inequalities", lessons: "Graphing inequalities", modelKind: "number line", misconception: "Includes the boundary point even when the inequality is strict." },
+        { id: "parallelogram-area", unit: "Geometry", title: "Area of Parallelograms", lessons: "Base and height", modelKind: "area model", misconception: "Uses the slanted side as the height." },
+        { id: "triangle-area", unit: "Geometry", title: "Area of Triangles", lessons: "Triangle formulas", modelKind: "grid model", misconception: "Forgets that a triangle is half of a related parallelogram." },
+        { id: "surface-area", unit: "Geometry", title: "Surface Area", lessons: "Nets and area", modelKind: "net", misconception: "Finds volume when the question asks for surface area." },
+        { id: "volume", unit: "Geometry", title: "Volume of Prisms", lessons: "Base area and height", modelKind: "prism model", misconception: "Stops at the area of the base and forgets the height layers." },
+        { id: "center-data", unit: "Statistics", title: "Measures of Center", lessons: "Mean and median", modelKind: "dot plot", misconception: "Uses the mean when the median better describes a skewed data set." },
+        { id: "variability", unit: "Statistics", title: "Variability", lessons: "Range and spread", modelKind: "box plot", misconception: "Treats the range as a typical data value." },
+        { id: "probability", unit: "Probability", title: "Simple Probability", lessons: "Likelihood and outcomes", modelKind: "spinner model", misconception: "Calls a likely event certain because it has the largest section." },
+        { id: "proportional-graphs", unit: "Proportional Relationships", title: "Proportional Graphs", lessons: "Graphs and constants of proportionality", modelKind: "coordinate graph", misconception: "Calls any straight line proportional even when it does not pass through the origin." },
+        { id: "discounts", unit: "Percents", title: "Discounts", lessons: "Percent decrease", modelKind: "double number line", misconception: "Reports the discount amount instead of the final sale price." },
+        { id: "unit-conversion", unit: "Ratios and Rates", title: "Unit Conversion", lessons: "Customary and metric conversions", modelKind: "conversion table", misconception: "Multiplies or divides in the wrong direction for the size of the unit." },
+        { id: "rational-arithmetic", unit: "Rational Numbers", title: "Adding and Subtracting Rational Numbers", lessons: "Signed numbers", modelKind: "chip model", misconception: "Applies a sign rule without thinking about zero pairs or direction." },
+        { id: "exponents", unit: "Expressions", title: "Exponents", lessons: "Powers and repeated multiplication", modelKind: "factor tree", misconception: "Multiplies the base by the exponent instead of using repeated multiplication." },
+        { id: "distributive-property", unit: "Expressions", title: "Distributive Property", lessons: "Expanding expressions", modelKind: "algebra tiles", misconception: "Distributes to the first term only." },
+        { id: "data-displays", unit: "Statistics", title: "Data Displays", lessons: "Histograms and line plots", modelKind: "histogram", misconception: "Reads the scale by ones even when the axis interval is larger." },
+        { id: "geometry-nets", unit: "Geometry", title: "Nets of Solids", lessons: "Representing three-dimensional figures", modelKind: "net", misconception: "Misses a face or counts the same face twice." }
+      ];
+
+      var elements = {
+        clusterSelect: document.getElementById("clusterSelect"),
+        unitText: document.getElementById("unitText"),
+        lessonText: document.getElementById("lessonText"),
+        modelText: document.getElementById("modelText"),
+        misconceptionText: document.getElementById("misconceptionText"),
+        curatorNote: document.getElementById("curatorNote"),
+        revealNoteButton: document.getElementById("revealNoteButton"),
+        wrongWork: document.getElementById("wrongWork"),
+        modelChips: document.getElementById("modelChips"),
+        modelCaption: document.getElementById("modelCaption"),
+        errorTypeList: document.getElementById("errorTypeList"),
+        diagnosisText: document.getElementById("diagnosisText"),
+        repairText: document.getElementById("repairText"),
+        warningText: document.getElementById("warningText"),
+        saveButton: document.getElementById("saveButton"),
+        copyButton: document.getElementById("copyButton"),
+        clearButton: document.getElementById("clearButton"),
+        printButton: document.getElementById("printButton"),
+        statusMessage: document.getElementById("statusMessage"),
+        printClusterTitle: document.getElementById("printClusterTitle")
+      };
+
+      var clusters = getClusters();
+      var currentCluster = clusters[0];
+
+      function getClusters() {
+        var rawClusters = Array.isArray(window.REVEAL_MATH_CLUSTERS) && window.REVEAL_MATH_CLUSTERS.length
+          ? window.REVEAL_MATH_CLUSTERS
+          : fallbackClusters;
+
+        return rawClusters.slice(0, 26).map(function (cluster, index) {
+          return normalizeCluster(cluster, index);
+        });
+      }
+
+      function normalizeCluster(cluster, index) {
+        var unit = resolveUnit(cluster);
+        var lessons = resolveLessons(cluster);
+        var title = textValue(cluster.title || cluster.name || cluster.clusterTitle || cluster.label, "Lesson Cluster " + (index + 1));
+        var misconception = textValue(cluster.misconception || cluster.commonMisconception || cluster.errorPattern, "A tempting shortcut changes the meaning of the math.");
+        var modelKind = textValue(cluster.modelKind || cluster.model || cluster.representation, "math model");
+
+        return {
+          id: textValue(cluster.id || cluster.clusterId || cluster.slug, "cluster-" + (index + 1)),
+          unit: unit,
+          title: title,
+          lessons: lessons,
+          modelKind: modelKind,
+          misconception: misconception,
+          wrongSolution: cluster.wrongSolution || cluster.temptingWrongSolution || cluster.misconceptionExample || null,
+          source: cluster
+        };
+      }
+
+      function resolveUnit(cluster) {
+        if (cluster.unit || cluster.unitTitle || cluster.unitName) {
+          return textValue(cluster.unit || cluster.unitTitle || cluster.unitName, "Reveal Math");
+        }
+
+        if (cluster.unitId && Array.isArray(window.REVEAL_MATH_UNITS)) {
+          var unit = window.REVEAL_MATH_UNITS.find(function (item) {
+            return item.id === cluster.unitId || item.unitId === cluster.unitId;
+          });
+          if (unit) {
+            return textValue(unit.title || unit.name || unit.label, "Reveal Math");
+          }
+        }
+
+        return "Reveal Math";
+      }
+
+      function resolveLessons(cluster) {
+        if (cluster.lessons || cluster.lessonTitles || cluster.lessonRange) {
+          return textValue(cluster.lessons || cluster.lessonTitles || cluster.lessonRange, "Cluster lessons");
+        }
+
+        if (Array.isArray(cluster.lessonIds) && Array.isArray(window.REVEAL_MATH_LESSONS)) {
+          var lessonTitles = cluster.lessonIds.map(function (lessonId) {
+            var lesson = window.REVEAL_MATH_LESSONS.find(function (item) {
+              return item.id === lessonId || item.lessonId === lessonId;
+            });
+            return lesson ? textValue(lesson.title || lesson.name || lesson.label, lessonId) : lessonId;
+          });
+          return lessonTitles.join(", ");
+        }
+
+        return "Cluster lessons";
+      }
+
+      function textValue(value, fallback) {
+        if (Array.isArray(value)) {
+          return value.map(function (item) { return textValue(item, ""); }).filter(Boolean).join(", ") || fallback;
+        }
+
+        if (value && typeof value === "object") {
+          return textValue(value.text || value.title || value.name || value.label || value.description, fallback);
+        }
+
+        if (value === 0) {
+          return "0";
+        }
+
+        return String(value || "").trim() || fallback;
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, function (character) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "\"": "&quot;",
+            "'": "&#39;"
+          }[character];
+        });
+      }
+
+      function populateClusterSelect() {
+        elements.clusterSelect.innerHTML = clusters.map(function (cluster, index) {
+          return '<option value="' + escapeHtml(cluster.id) + '">' + escapeHtml(index + 1 + ". " + cluster.title) + "</option>";
+        }).join("");
+      }
+
+      function populateErrorTypes() {
+        elements.errorTypeList.innerHTML = ERROR_TYPES.map(function (type, index) {
+          var id = "errorType" + index;
+          return [
+            '<label class="error-option" for="' + id + '">',
+            '<input type="radio" id="' + id + '" name="errorType" value="' + escapeHtml(type) + '">',
+            '<span>' + escapeHtml(type) + '</span>',
+            '</label>'
+          ].join("");
+        }).join("");
+      }
+
+      function renderCluster(cluster) {
+        currentCluster = cluster;
+        elements.unitText.textContent = cluster.unit;
+        elements.lessonText.textContent = cluster.lessons;
+        elements.modelText.textContent = cluster.modelKind;
+        elements.misconceptionText.textContent = cluster.misconception;
+        elements.curatorNote.textContent = buildCuratorNote(cluster);
+        elements.curatorNote.hidden = true;
+        elements.revealNoteButton.textContent = "Reveal Curator Note";
+        elements.revealNoteButton.setAttribute("aria-expanded", "false");
+        elements.wrongWork.innerHTML = buildWrongWork(cluster);
+        renderModelClues(cluster);
+        elements.printClusterTitle.textContent = "Cluster: " + cluster.title;
+      }
+
+      function buildWrongWork(cluster) {
+        if (cluster.wrongSolution) {
+          return formatWrongSolution(cluster.wrongSolution);
+        }
+
+        var lowerMisconception = cluster.misconception.toLowerCase();
+        var lowerModel = cluster.modelKind.toLowerCase();
+        var steps;
+
+        if (lowerMisconception.indexOf("addition") !== -1 || lowerMisconception.indexOf("multiplication") !== -1) {
+          steps = [
+            "I made a " + cluster.modelKind + " and looked for a pattern that changed by the same amount each row.",
+            "Since one value increased by 3, I added 3 to the other value too.",
+            "My answer keeps the numbers moving, so the ratios must be equivalent."
+          ];
+        } else if (lowerMisconception.indexOf("percent") !== -1 || lowerMisconception.indexOf("discount") !== -1) {
+          steps = [
+            "I used the percent number directly in the " + cluster.modelKind + ".",
+            "Because the problem says percent, I subtracted or multiplied by that whole number.",
+            "The result looks smaller, so it must answer the question."
+          ];
+        } else if (lowerMisconception.indexOf("height") !== -1 || lowerMisconception.indexOf("area") !== -1 || lowerModel.indexOf("area") !== -1) {
+          steps = [
+            "I chose the longest-looking side in the " + cluster.modelKind + ".",
+            "I multiplied the base by that side because both numbers are on the shape.",
+            "The formula has two measurements, so this should be enough."
+          ];
+        } else if (lowerMisconception.indexOf("origin") !== -1 || lowerMisconception.indexOf("coordinate") !== -1 || lowerModel.indexOf("graph") !== -1) {
+          steps = [
+            "I plotted the points and noticed they almost line up.",
+            "Any straight line on a graph shows the same relationship.",
+            "So I called the relationship proportional without checking the starting point."
+          ];
+        } else if (lowerMisconception.indexOf("inverse") !== -1 || lowerMisconception.indexOf("equation") !== -1 || lowerModel.indexOf("balance") !== -1) {
+          steps = [
+            "I copied the operation from the equation onto both sides of the balance model.",
+            "The equation still has the same operation, so I kept going in that direction.",
+            "The variable is alone after I simplify, so the solution must work."
+          ];
+        } else if (lowerMisconception.indexOf("unit") !== -1 || lowerMisconception.indexOf("rate") !== -1 || lowerModel.indexOf("number line") !== -1) {
+          steps = [
+            "I compared the largest totals in the model.",
+            "The bigger total looked like the better deal or faster rate.",
+            "I did not scale either quantity down to one unit."
+          ];
+        } else {
+          steps = [
+            "I built a " + cluster.modelKind + " and chose the move that looked quickest.",
+            "The shortcut matches part of the lesson, so I used it for every number in the problem.",
+            "The answer looks reasonable, but it depends on this idea: " + cluster.misconception
+          ];
+        }
+
+        return [
+          "<p><strong>Student claim:</strong> This solution works for <em>" + escapeHtml(cluster.title) + "</em>.</p>",
+          "<ol>",
+          steps.map(function (step) { return "<li>" + escapeHtml(step) + "</li>"; }).join(""),
+          "</ol>"
+        ].join("");
+      }
+
+      function formatWrongSolution(solution) {
+        if (Array.isArray(solution)) {
+          return "<ol>" + solution.map(function (step) {
+            return "<li>" + escapeHtml(textValue(step, "")) + "</li>";
+          }).join("") + "</ol>";
+        }
+
+        if (solution && typeof solution === "object") {
+          var heading = textValue(solution.title || solution.prompt || solution.problem, "Tempting wrong solution");
+          var steps = solution.steps || solution.work || solution.reasoning || solution.explanation || "";
+          return "<p><strong>" + escapeHtml(heading) + "</strong></p>" + formatWrongSolution(steps);
+        }
+
+        return "<p>" + escapeHtml(textValue(solution, "A tempting wrong solution is available for this cluster.")).replace(/\n/g, "<br>") + "</p>";
+      }
+
+      function buildCuratorNote(cluster) {
+        return "This mistake is tempting because the " + cluster.modelKind + " shows a pattern that looks useful. The curator move is to ask: does this model actually match the relationship, units, and question? Watch for this misconception: " + cluster.misconception;
+      }
+
+      function renderModelClues(cluster) {
+        var chips = [cluster.modelKind, cluster.unit, "Misconception pattern"];
+        elements.modelChips.innerHTML = chips.map(function (chip) {
+          return '<span class="model-chip">' + escapeHtml(chip) + '</span>';
+        }).join("");
+        elements.modelCaption.textContent = "Use the model clues to decide where the reasoning stopped matching the math. A good repair should make the model, operation, and answer agree.";
+      }
+
+      function selectedErrorType() {
+        var checked = document.querySelector('input[name="errorType"]:checked');
+        return checked ? checked.value : "";
+      }
+
+      function setSelectedErrorType(value) {
+        Array.prototype.forEach.call(document.querySelectorAll('input[name="errorType"]'), function (input) {
+          input.checked = input.value === value;
+        });
+      }
+
+      function saveDraft() {
+        var draft = {
+          clusterId: currentCluster.id,
+          errorType: selectedErrorType(),
+          diagnosis: elements.diagnosisText.value,
+          repair: elements.repairText.value,
+          warning: elements.warningText.value,
+          savedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+        setStatus("Draft saved for this browser.", true);
+      }
+
+      function loadDraft() {
+        try {
+          var rawDraft = localStorage.getItem(STORAGE_KEY);
+          if (!rawDraft) {
+            return;
+          }
+
+          var draft = JSON.parse(rawDraft);
+          var draftCluster = clusters.find(function (cluster) {
+            return cluster.id === draft.clusterId;
+          });
+
+          if (draftCluster) {
+            elements.clusterSelect.value = draftCluster.id;
+            renderCluster(draftCluster);
+          }
+
+          setSelectedErrorType(draft.errorType || "");
+          elements.diagnosisText.value = draft.diagnosis || "";
+          elements.repairText.value = draft.repair || "";
+          elements.warningText.value = draft.warning || "";
+          setStatus("Restored saved draft from this browser.", true);
+        } catch (error) {
+          setStatus("Saved draft could not be restored. You can start a new exhibit.", false);
+        }
+      }
+
+      function clearDraft() {
+        localStorage.removeItem(STORAGE_KEY);
+        setSelectedErrorType("");
+        elements.diagnosisText.value = "";
+        elements.repairText.value = "";
+        elements.warningText.value = "";
+        setStatus("Exhibit cleared.", false);
+      }
+
+      function copyExhibit() {
+        var text = [
+          "Misconception Museum Exhibit",
+          "Cluster: " + currentCluster.title,
+          "Unit: " + currentCluster.unit,
+          "Model: " + currentCluster.modelKind,
+          "Misconception: " + currentCluster.misconception,
+          "Error type: " + (selectedErrorType() || "Not chosen yet"),
+          "",
+          "Diagnosis:",
+          elements.diagnosisText.value || "Not written yet.",
+          "",
+          "Repair:",
+          elements.repairText.value || "Not written yet.",
+          "",
+          "Warning label:",
+          elements.warningText.value || "Not written yet."
+        ].join("\n");
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            setStatus("Exhibit copied to clipboard.", true);
+          }).catch(function () {
+            fallbackCopy(text);
+          });
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        var textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "readonly");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          setStatus("Exhibit copied to clipboard.", true);
+        } catch (error) {
+          setStatus("Copy was not available in this browser. Select your writing and copy it manually.", false);
+        }
+        document.body.removeChild(textarea);
+      }
+
+      function setStatus(message, positive) {
+        elements.statusMessage.innerHTML = positive ? "<strong>" + escapeHtml(message) + "</strong>" : escapeHtml(message);
+      }
+
+      function bindEvents() {
+        elements.clusterSelect.addEventListener("change", function () {
+          var selected = clusters.find(function (cluster) {
+            return cluster.id === elements.clusterSelect.value;
+          }) || clusters[0];
+          renderCluster(selected);
+          setStatus("Cluster changed. Draft not saved yet.", false);
+        });
+
+        elements.revealNoteButton.addEventListener("click", function () {
+          var isHidden = elements.curatorNote.hidden;
+          elements.curatorNote.hidden = !isHidden;
+          elements.revealNoteButton.textContent = isHidden ? "Hide Curator Note" : "Reveal Curator Note";
+          elements.revealNoteButton.setAttribute("aria-expanded", String(isHidden));
+        });
+
+        elements.saveButton.addEventListener("click", saveDraft);
+        elements.copyButton.addEventListener("click", copyExhibit);
+        elements.clearButton.addEventListener("click", clearDraft);
+        elements.printButton.addEventListener("click", function () {
+          window.print();
+        });
+      }
+
+      populateClusterSelect();
+      populateErrorTypes();
+      renderCluster(currentCluster);
+      bindEvents();
+      loadDraft();
+    }());
+  </script>
+</body>
+</html>

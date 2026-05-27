@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reveal Math Evidence Studio</title>
+    <link rel="stylesheet" href="/assets/reveal-math-tools.css" />
+    <style>
+      :root {
+        --studio-ink: #17212f;
+        --studio-muted: #5c6878;
+        --studio-panel: #ffffff;
+        --studio-bg: #f4f7fb;
+        --studio-line: #d8e1ec;
+        --studio-blue: #245ea8;
+        --studio-green: #19765c;
+        --studio-gold: #b26a00;
+        --studio-focus: #123d7a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: var(--studio-bg);
+        color: var(--studio-ink);
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(18, 61, 122, 0.28);
+        outline-offset: 2px;
+      }
+
+      .studio-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 20px;
+      }
+
+      .eyebrow {
+        margin: 0 0 4px;
+        color: var(--studio-blue);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.75rem, 3vw, 2.65rem);
+        line-height: 1.05;
+      }
+
+      .lede {
+        max-width: 760px;
+        margin: 10px 0 0;
+        color: var(--studio-muted);
+        font-size: 1rem;
+      }
+
+      .home-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        padding: 8px 12px;
+        border: 1px solid var(--studio-line);
+        border-radius: 8px;
+        background: var(--studio-panel);
+        color: var(--studio-ink);
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+
+      .panel {
+        border: 1px solid var(--studio-line);
+        border-radius: 8px;
+        background: var(--studio-panel);
+        box-shadow: 0 14px 36px rgba(35, 58, 88, 0.08);
+      }
+
+      .panel-pad {
+        padding: 18px;
+      }
+
+      .selector {
+        position: sticky;
+        top: 12px;
+      }
+
+      label {
+        display: block;
+        margin: 0 0 7px;
+        font-weight: 800;
+      }
+
+      select,
+      textarea,
+      input[type="text"] {
+        width: 100%;
+        border: 1px solid #c5d1df;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--studio-ink);
+      }
+
+      select,
+      input[type="text"] {
+        min-height: 46px;
+        padding: 10px 12px;
+      }
+
+      textarea {
+        min-height: 116px;
+        resize: vertical;
+        padding: 12px;
+      }
+
+      .hint {
+        margin: 8px 0 0;
+        color: var(--studio-muted);
+        font-size: 0.9rem;
+      }
+
+      .lesson-card {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--studio-line);
+      }
+
+      .lesson-title {
+        margin: 0 0 12px;
+        font-size: 1.35rem;
+        line-height: 1.2;
+      }
+
+      .meta-grid {
+        display: grid;
+        gap: 8px;
+      }
+
+      .meta-item {
+        padding: 10px 12px;
+        border: 1px solid #dce5ef;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .meta-label {
+        display: block;
+        color: var(--studio-muted);
+        font-size: 0.74rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .meta-value {
+        display: block;
+        margin-top: 2px;
+        font-weight: 800;
+      }
+
+      .model-panel {
+        overflow: hidden;
+      }
+
+      .model-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--studio-line);
+      }
+
+      .model-header h2,
+      .section-title {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: #eaf2ff;
+        color: #184b8f;
+        font-size: 0.78rem;
+        font-weight: 900;
+      }
+
+      .model-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 0.64fr);
+        gap: 16px;
+        padding: 18px;
+      }
+
+      .svg-frame {
+        display: grid;
+        min-height: 280px;
+        place-items: center;
+        border: 1px solid #dce5ef;
+        border-radius: 8px;
+        background: #fbfdff;
+      }
+
+      .svg-frame svg {
+        width: min(100%, 520px);
+        height: auto;
+      }
+
+      .notice-list {
+        margin: 0;
+        padding-left: 1.1rem;
+        color: var(--studio-muted);
+      }
+
+      .notice-list li + li {
+        margin-top: 8px;
+      }
+
+      .writing-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .field-card {
+        padding: 14px;
+        border: 1px solid var(--studio-line);
+        border-radius: 8px;
+        background: var(--studio-panel);
+      }
+
+      .field-card.full {
+        grid-column: 1 / -1;
+      }
+
+      .field-card p {
+        margin: 0 0 10px;
+        color: var(--studio-muted);
+        font-size: 0.9rem;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .action {
+        min-height: 42px;
+        border: 1px solid #b9c6d6;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--studio-ink);
+        cursor: pointer;
+        font-weight: 900;
+        padding: 9px 13px;
+      }
+
+      .action.primary {
+        border-color: var(--studio-blue);
+        background: var(--studio-blue);
+        color: #fff;
+      }
+
+      .action.warn {
+        border-color: #d2a34d;
+        color: #774600;
+      }
+
+      .action:hover {
+        filter: brightness(0.97);
+      }
+
+      .status {
+        min-height: 24px;
+        margin-top: 10px;
+        color: var(--studio-green);
+        font-weight: 800;
+      }
+
+      .empty-state {
+        padding: 18px;
+        border: 1px dashed #b9c6d6;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--studio-muted);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 900px) {
+        .workspace,
+        .model-stage,
+        .writing-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .selector {
+          position: static;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .studio-shell {
+          width: min(100% - 20px, 1180px);
+          padding-top: 18px;
+        }
+
+        .topbar,
+        .model-header {
+          display: block;
+        }
+
+        .home-link {
+          margin-top: 12px;
+        }
+
+        .model-header .badge {
+          margin-top: 10px;
+        }
+
+        .button-row .action {
+          flex: 1 1 145px;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .home-link,
+        .button-row,
+        .hint,
+        .status {
+          display: none !important;
+        }
+
+        .studio-shell {
+          width: 100%;
+          padding: 0;
+        }
+
+        .workspace,
+        .model-stage,
+        .writing-grid {
+          display: block;
+        }
+
+        .panel,
+        .field-card,
+        .svg-frame,
+        .meta-item {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+
+        .panel,
+        .field-card {
+          margin-bottom: 12px;
+        }
+
+        textarea,
+        input[type="text"] {
+          border: 1px solid #777;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="studio-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Reveal Math Student Tool</p>
+          <h1>Evidence Studio</h1>
+          <p class="lede">
+            Pick a lesson, study the model, then write a clear claim with
+            evidence, reasoning, and a reflection.
+          </p>
+        </div>
+        <a class="home-link" href="/">Classroom Home</a>
+      </header>
+
+      <div class="workspace">
+        <aside class="panel panel-pad selector" aria-labelledby="lesson-picker-title">
+          <h2 class="section-title" id="lesson-picker-title">Lesson Setup</h2>
+          <p class="hint">
+            Choose from the Reveal Math lesson list. Your draft saves on this
+            Chromebook browser.
+          </p>
+
+          <div style="margin-top: 16px">
+            <label for="lessonSelect">Lesson</label>
+            <select id="lessonSelect">
+              <option value="">Loading lessons...</option>
+            </select>
+          </div>
+
+          <section class="lesson-card" aria-live="polite">
+            <h3 class="lesson-title" id="lessonTitle">Choose a lesson</h3>
+            <div class="meta-grid" id="lessonMeta">
+              <div class="empty-state">
+                Lesson details will appear here after the shared Reveal Math data
+                loads.
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <section>
+          <article class="panel model-panel" aria-labelledby="model-title">
+            <div class="model-header">
+              <h2 id="model-title">Model Inspector</h2>
+              <span class="badge" id="modelKind">Model</span>
+            </div>
+            <div class="model-stage">
+              <div class="svg-frame" id="modelFrame" aria-live="polite"></div>
+              <div>
+                <h3 class="section-title">What to Look For</h3>
+                <ul class="notice-list" id="modelPrompts"></ul>
+              </div>
+            </div>
+          </article>
+
+          <form class="writing-grid" id="studioForm">
+            <section class="field-card full">
+              <label for="studentName">Name or initials</label>
+              <input
+                id="studentName"
+                autocomplete="name"
+                type="text"
+                placeholder="Optional"
+              />
+            </section>
+
+            <section class="field-card">
+              <label for="claim">Claim</label>
+              <p>What mathematical idea can you state from this lesson?</p>
+              <textarea
+                id="claim"
+                placeholder="I claim that..."
+                required
+              ></textarea>
+            </section>
+
+            <section class="field-card">
+              <label for="evidence">Evidence</label>
+              <p>What numbers, labels, model parts, or patterns support it?</p>
+              <textarea
+                id="evidence"
+                placeholder="My evidence is..."
+                required
+              ></textarea>
+            </section>
+
+            <section class="field-card">
+              <label for="reasoning">Reasoning</label>
+              <p>Explain how the evidence proves or supports your claim.</p>
+              <textarea
+                id="reasoning"
+                placeholder="This shows..."
+                required
+              ></textarea>
+            </section>
+
+            <section class="field-card">
+              <label for="reflection">Reflection</label>
+              <p>What do you understand better, or what question remains?</p>
+              <textarea
+                id="reflection"
+                placeholder="Now I understand..."
+              ></textarea>
+            </section>
+
+            <section class="field-card full" aria-labelledby="controls-title">
+              <h2 class="section-title" id="controls-title">Finish</h2>
+              <div class="button-row">
+                <button class="action primary" type="button" id="saveDraft">
+                  Save Draft
+                </button>
+                <button class="action" type="button" id="copyCard">
+                  Copy Card
+                </button>
+                <button class="action" type="button" id="printCard">
+                  Print
+                </button>
+                <button class="action warn" type="button" id="clearDraft">
+                  Clear
+                </button>
+              </div>
+              <div class="status" id="statusMessage" role="status"></div>
+            </section>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script src="/assets/reveal-math-data.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        var STORAGE_PREFIX = "revealEvidenceStudio:";
+        var FALLBACK_MODEL = {
+          kind: "comparison",
+          label: "Comparison Model",
+          prompts: [
+            "Notice what quantities are being compared.",
+            "Use labels from the model as evidence.",
+            "Connect the picture to a mathematical sentence."
+          ]
+        };
+
+        var state = {
+          lessons: [],
+          units: [],
+          clusters: [],
+          lesson: null,
+          unit: null,
+          cluster: null
+        };
+
+        var els = {
+          lessonSelect: document.getElementById("lessonSelect"),
+          lessonTitle: document.getElementById("lessonTitle"),
+          lessonMeta: document.getElementById("lessonMeta"),
+          modelKind: document.getElementById("modelKind"),
+          modelFrame: document.getElementById("modelFrame"),
+          modelPrompts: document.getElementById("modelPrompts"),
+          form: document.getElementById("studioForm"),
+          studentName: document.getElementById("studentName"),
+          claim: document.getElementById("claim"),
+          evidence: document.getElementById("evidence"),
+          reasoning: document.getElementById("reasoning"),
+          reflection: document.getElementById("reflection"),
+          saveDraft: document.getElementById("saveDraft"),
+          copyCard: document.getElementById("copyCard"),
+          printCard: document.getElementById("printCard"),
+          clearDraft: document.getElementById("clearDraft"),
+          status: document.getElementById("statusMessage")
+        };
+
+        function asArray(value) {
+          if (Array.isArray(value)) return value;
+          if (value && typeof value === "object") return Object.values(value);
+          return [];
+        }
+
+        function firstText() {
+          for (var i = 0; i < arguments.length; i += 1) {
+            var value = arguments[i];
+            if (value !== undefined && value !== null && String(value).trim()) {
+              return String(value).trim();
+            }
+          }
+          return "";
+        }
+
+        function normalizeId(value) {
+          return firstText(value).toLowerCase().replace(/\s+/g, "-");
+        }
+
+        function lessonNumber(lesson) {
+          return firstText(
+            lesson.lesson,
+            lesson.lessonNumber,
+            lesson.number,
+            lesson.id,
+            lesson.slug
+          );
+        }
+
+        function lessonLabel(lesson) {
+          var number = lessonNumber(lesson);
+          var title = firstText(lesson.title, lesson.name, lesson.topic);
+          if (number && title && title.indexOf(number) !== 0) {
+            return "Lesson " + number + ": " + title;
+          }
+          return title || (number ? "Lesson " + number : "Untitled Lesson");
+        }
+
+        function unitLabel(unit, lesson) {
+          var unitNumber = firstText(
+            unit && unit.unit,
+            unit && unit.number,
+            lesson && lesson.unit,
+            lesson && lesson.unitNumber,
+            lesson && lesson.unitId
+          );
+          var title = firstText(
+            unit && unit.title,
+            unit && unit.name,
+            lesson && lesson.unitTitle,
+            lesson && lesson.unitName
+          );
+          if (unitNumber && title && title.indexOf(unitNumber) !== 0) {
+            return "Unit " + unitNumber + ": " + title;
+          }
+          return title || (unitNumber ? "Unit " + unitNumber : "Unit");
+        }
+
+        function getStandard(lesson, cluster) {
+          return firstText(
+            lesson && lesson.standard,
+            lesson && lesson.standards,
+            lesson && lesson.ccss,
+            cluster && cluster.standard,
+            cluster && cluster.standards
+          );
+        }
+
+        function getClusterName(lesson, cluster) {
+          return firstText(
+            cluster && cluster.title,
+            cluster && cluster.name,
+            lesson && lesson.cluster,
+            lesson && lesson.clusterTitle,
+            lesson && lesson.clusterName,
+            "Cluster"
+          );
+        }
+
+        function findUnit(lesson) {
+          var keys = [
+            lesson.unitId,
+            lesson.unit,
+            lesson.unitNumber,
+            lesson.unitSlug
+          ].map(normalizeId);
+          return state.units.find(function (unit) {
+            var candidates = [
+              unit.id,
+              unit.slug,
+              unit.unit,
+              unit.number,
+              unit.unitNumber
+            ].map(normalizeId);
+            return candidates.some(function (candidate) {
+              return candidate && keys.indexOf(candidate) !== -1;
+            });
+          });
+        }
+
+        function findCluster(lesson) {
+          var keys = [
+            lesson.clusterId,
+            lesson.cluster,
+            lesson.clusterSlug,
+            lesson.standard,
+            lesson.ccss
+          ].map(normalizeId);
+          return state.clusters.find(function (cluster) {
+            var candidates = [
+              cluster.id,
+              cluster.slug,
+              cluster.cluster,
+              cluster.name,
+              cluster.title,
+              cluster.standard,
+              cluster.ccss
+            ].map(normalizeId);
+            return candidates.some(function (candidate) {
+              return candidate && keys.indexOf(candidate) !== -1;
+            });
+          });
+        }
+
+        function modelInfo(cluster, lesson) {
+          var kind = firstText(
+            cluster && cluster.modelKind,
+            lesson && lesson.modelKind,
+            FALLBACK_MODEL.kind
+          );
+          return {
+            kind: kind,
+            label:
+              firstText(cluster && cluster.modelLabel, lesson && lesson.modelLabel) ||
+              kind
+                .replace(/[-_]/g, " ")
+                .replace(/\b\w/g, function (letter) {
+                  return letter.toUpperCase();
+                }),
+            prompts:
+              asArray(cluster && cluster.prompts).length > 0
+                ? asArray(cluster && cluster.prompts)
+                : asArray(lesson && lesson.prompts).length > 0
+                  ? asArray(lesson && lesson.prompts)
+                  : FALLBACK_MODEL.prompts
+          };
+        }
+
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+
+        function metaItem(label, value) {
+          return (
+            '<div class="meta-item"><span class="meta-label">' +
+            escapeHtml(label) +
+            '</span><span class="meta-value">' +
+            escapeHtml(value || "Not listed") +
+            "</span></div>"
+          );
+        }
+
+        function renderLessonPicker() {
+          if (!state.lessons.length) {
+            els.lessonSelect.innerHTML =
+              '<option value="">Shared lesson data not found</option>';
+            renderEmptyData();
+            return;
+          }
+
+          els.lessonSelect.innerHTML = state.lessons
+            .map(function (lesson, index) {
+              return (
+                '<option value="' +
+                index +
+                '">' +
+                escapeHtml(lessonLabel(lesson)) +
+                "</option>"
+              );
+            })
+            .join("");
+          setLesson(0);
+        }
+
+        function renderEmptyData() {
+          els.lessonTitle.textContent = "Shared data needed";
+          els.lessonMeta.innerHTML =
+            '<div class="empty-state">This page expects /assets/reveal-math-data.js to define window.REVEAL_MATH_LESSONS, window.REVEAL_MATH_UNITS, and window.REVEAL_MATH_CLUSTERS.</div>';
+          els.modelKind.textContent = "Model";
+          els.modelFrame.innerHTML = renderSvg("comparison");
+          els.modelPrompts.innerHTML = FALLBACK_MODEL.prompts
+            .map(function (prompt) {
+              return "<li>" + escapeHtml(prompt) + "</li>";
+            })
+            .join("");
+        }
+
+        function setLesson(index) {
+          state.lesson = state.lessons[index] || null;
+          state.unit = state.lesson ? findUnit(state.lesson) : null;
+          state.cluster = state.lesson ? findCluster(state.lesson) : null;
+          renderCurrentLesson();
+          loadDraft();
+        }
+
+        function renderCurrentLesson() {
+          if (!state.lesson) {
+            renderEmptyData();
+            return;
+          }
+
+          var lesson = state.lesson;
+          var unit = state.unit;
+          var cluster = state.cluster;
+          var info = modelInfo(cluster, lesson);
+
+          els.lessonTitle.textContent = lessonLabel(lesson);
+          els.lessonMeta.innerHTML =
+            metaItem("Unit", unitLabel(unit, lesson)) +
+            metaItem("Standard", getStandard(lesson, cluster)) +
+            metaItem("Cluster", getClusterName(lesson, cluster));
+          els.modelKind.textContent = info.label;
+          els.modelFrame.innerHTML = renderSvg(info.kind);
+          els.modelPrompts.innerHTML = info.prompts
+            .map(function (prompt) {
+              return "<li>" + escapeHtml(prompt) + "</li>";
+            })
+            .join("");
+        }
+
+        function renderSvg(kind) {
+          var cleanKind = normalizeId(kind);
+          if (cleanKind.indexOf("number") !== -1 || cleanKind.indexOf("line") !== -1) {
+            return numberLineSvg();
+          }
+          if (cleanKind.indexOf("area") !== -1 || cleanKind.indexOf("array") !== -1) {
+            return areaSvg();
+          }
+          if (cleanKind.indexOf("coordinate") !== -1 || cleanKind.indexOf("graph") !== -1) {
+            return coordinateSvg();
+          }
+          if (cleanKind.indexOf("ratio") !== -1 || cleanKind.indexOf("tape") !== -1) {
+            return ratioSvg();
+          }
+          if (cleanKind.indexOf("data") !== -1 || cleanKind.indexOf("plot") !== -1) {
+            return dataSvg();
+          }
+          if (cleanKind.indexOf("geometry") !== -1 || cleanKind.indexOf("shape") !== -1) {
+            return geometrySvg();
+          }
+          return comparisonSvg();
+        }
+
+        function svgShell(label, inner) {
+          return (
+            '<svg role="img" aria-label="' +
+            escapeHtml(label) +
+            '" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg">' +
+            '<rect width="520" height="320" rx="18" fill="#f8fbff"/>' +
+            inner +
+            "</svg>"
+          );
+        }
+
+        function numberLineSvg() {
+          return svgShell(
+            "Number line model",
+            '<line x1="64" y1="172" x2="456" y2="172" stroke="#23364d" stroke-width="5" stroke-linecap="round"/>' +
+              '<path d="M448 160 L464 172 L448 184" fill="none" stroke="#23364d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
+              [64, 142, 220, 298, 376, 454]
+                .map(function (x, index) {
+                  return (
+                    '<g><line x1="' +
+                    x +
+                    '" y1="154" x2="' +
+                    x +
+                    '" y2="190" stroke="#23364d" stroke-width="4"/><text x="' +
+                    x +
+                    '" y="224" text-anchor="middle" font-size="22" font-weight="700" fill="#17212f">' +
+                    index +
+                    "</text></g>"
+                  );
+                })
+                .join("") +
+              '<path d="M142 140 C180 88 260 88 298 140" fill="none" stroke="#245ea8" stroke-width="6"/>' +
+              '<path d="M298 140 C328 104 350 104 376 140" fill="none" stroke="#19765c" stroke-width="6"/>' +
+              '<text x="220" y="82" text-anchor="middle" font-size="20" font-weight="800" fill="#245ea8">first jump</text>' +
+              '<text x="342" y="100" text-anchor="middle" font-size="20" font-weight="800" fill="#19765c">next jump</text>'
+          );
+        }
+
+        function areaSvg() {
+          var cells = "";
+          for (var row = 0; row < 4; row += 1) {
+            for (var col = 0; col < 6; col += 1) {
+              cells +=
+                '<rect x="' +
+                (94 + col * 52) +
+                '" y="' +
+                (62 + row * 46) +
+                '" width="52" height="46" fill="' +
+                (row < 2 ? "#dcecff" : "#e8f6ef") +
+                '" stroke="#24516f" stroke-width="2"/>';
+            }
+          }
+          return svgShell(
+            "Area or array model",
+            cells +
+              '<text x="250" y="272" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">rows x columns</text>' +
+              '<path d="M94 42 H406" stroke="#245ea8" stroke-width="5" stroke-linecap="round"/>' +
+              '<path d="M74 62 V246" stroke="#19765c" stroke-width="5" stroke-linecap="round"/>'
+          );
+        }
+
+        function coordinateSvg() {
+          return svgShell(
+            "Coordinate graph model",
+            '<line x1="84" y1="252" x2="456" y2="252" stroke="#23364d" stroke-width="5"/>' +
+              '<line x1="84" y1="252" x2="84" y2="50" stroke="#23364d" stroke-width="5"/>' +
+              '<path d="M448 240 L464 252 L448 264" fill="none" stroke="#23364d" stroke-width="5" stroke-linejoin="round"/>' +
+              '<path d="M72 58 L84 42 L96 58" fill="none" stroke="#23364d" stroke-width="5" stroke-linejoin="round"/>' +
+              '<path d="M110 226 L170 194 L230 164 L290 132 L350 104 L420 72" fill="none" stroke="#245ea8" stroke-width="6"/>' +
+              [110, 170, 230, 290, 350, 420]
+                .map(function (x, i) {
+                  var y = [226, 194, 164, 132, 104, 72][i];
+                  return '<circle cx="' + x + '" cy="' + y + '" r="8" fill="#19765c"/>';
+                })
+                .join("") +
+              '<text x="438" y="286" text-anchor="end" font-size="20" font-weight="800" fill="#17212f">x</text>' +
+              '<text x="52" y="68" text-anchor="middle" font-size="20" font-weight="800" fill="#17212f">y</text>'
+          );
+        }
+
+        function ratioSvg() {
+          return svgShell(
+            "Ratio tape diagram model",
+            '<rect x="82" y="78" width="118" height="58" fill="#dcecff" stroke="#24516f" stroke-width="3"/>' +
+              '<rect x="200" y="78" width="118" height="58" fill="#dcecff" stroke="#24516f" stroke-width="3"/>' +
+              '<rect x="318" y="78" width="118" height="58" fill="#dcecff" stroke="#24516f" stroke-width="3"/>' +
+              '<rect x="82" y="184" width="118" height="58" fill="#e8f6ef" stroke="#24516f" stroke-width="3"/>' +
+              '<rect x="200" y="184" width="118" height="58" fill="#e8f6ef" stroke="#24516f" stroke-width="3"/>' +
+              '<text x="54" y="116" text-anchor="middle" font-size="20" font-weight="900" fill="#245ea8">A</text>' +
+              '<text x="54" y="222" text-anchor="middle" font-size="20" font-weight="900" fill="#19765c">B</text>' +
+              '<text x="260" y="290" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">3 parts : 2 parts</text>'
+          );
+        }
+
+        function dataSvg() {
+          return svgShell(
+            "Data plot model",
+            '<line x1="76" y1="244" x2="454" y2="244" stroke="#23364d" stroke-width="5" stroke-linecap="round"/>' +
+              [90, 134, 178, 222, 266, 310, 354, 398, 442]
+                .map(function (x, index) {
+                  return (
+                    '<g><line x1="' +
+                    x +
+                    '" y1="232" x2="' +
+                    x +
+                    '" y2="256" stroke="#23364d" stroke-width="3"/><text x="' +
+                    x +
+                    '" y="286" text-anchor="middle" font-size="16" font-weight="800" fill="#17212f">' +
+                    (index + 1) +
+                    "</text></g>"
+                  );
+                })
+                .join("") +
+              '<circle cx="134" cy="220" r="8" fill="#245ea8"/><circle cx="178" cy="220" r="8" fill="#245ea8"/><circle cx="178" cy="196" r="8" fill="#245ea8"/><circle cx="222" cy="220" r="8" fill="#245ea8"/><circle cx="222" cy="196" r="8" fill="#245ea8"/><circle cx="222" cy="172" r="8" fill="#245ea8"/><circle cx="266" cy="220" r="8" fill="#19765c"/><circle cx="354" cy="220" r="8" fill="#b26a00"/><circle cx="398" cy="220" r="8" fill="#b26a00"/>' +
+              '<text x="258" y="76" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">center, spread, and shape</text>'
+          );
+        }
+
+        function geometrySvg() {
+          return svgShell(
+            "Geometry model",
+            '<polygon points="112,238 220,72 408,238" fill="#dcecff" stroke="#24516f" stroke-width="5" stroke-linejoin="round"/>' +
+              '<line x1="220" y1="72" x2="220" y2="238" stroke="#19765c" stroke-width="5" stroke-dasharray="10 8"/>' +
+              '<rect x="220" y="218" width="20" height="20" fill="none" stroke="#19765c" stroke-width="4"/>' +
+              '<text x="252" y="160" font-size="21" font-weight="900" fill="#19765c">height</text>' +
+              '<text x="260" y="278" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">base</text>'
+          );
+        }
+
+        function comparisonSvg() {
+          return svgShell(
+            "Comparison model",
+            '<rect x="82" y="88" width="316" height="48" rx="8" fill="#dcecff" stroke="#24516f" stroke-width="3"/>' +
+              '<rect x="82" y="184" width="226" height="48" rx="8" fill="#e8f6ef" stroke="#24516f" stroke-width="3"/>' +
+              '<line x1="398" y1="88" x2="398" y2="232" stroke="#b26a00" stroke-width="5" stroke-dasharray="9 7"/>' +
+              '<line x1="308" y1="184" x2="308" y2="232" stroke="#b26a00" stroke-width="5" stroke-dasharray="9 7"/>' +
+              '<path d="M310 158 H396" stroke="#b26a00" stroke-width="5" stroke-linecap="round"/>' +
+              '<path d="M390 148 L404 158 L390 168" fill="none" stroke="#b26a00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
+              '<text x="62" y="120" text-anchor="middle" font-size="20" font-weight="900" fill="#245ea8">A</text>' +
+              '<text x="62" y="216" text-anchor="middle" font-size="20" font-weight="900" fill="#19765c">B</text>' +
+              '<text x="354" y="146" text-anchor="middle" font-size="20" font-weight="900" fill="#b26a00">difference</text>'
+          );
+        }
+
+        function draftKey() {
+          var id = state.lesson
+            ? firstText(state.lesson.id, state.lesson.slug, lessonNumber(state.lesson))
+            : "no-lesson";
+          return STORAGE_PREFIX + id;
+        }
+
+        function formData() {
+          return {
+            studentName: els.studentName.value,
+            claim: els.claim.value,
+            evidence: els.evidence.value,
+            reasoning: els.reasoning.value,
+            reflection: els.reflection.value
+          };
+        }
+
+        function setFormData(data) {
+          els.studentName.value = data.studentName || "";
+          els.claim.value = data.claim || "";
+          els.evidence.value = data.evidence || "";
+          els.reasoning.value = data.reasoning || "";
+          els.reflection.value = data.reflection || "";
+        }
+
+        function saveDraft(showMessage) {
+          if (!state.lesson) return;
+          localStorage.setItem(draftKey(), JSON.stringify(formData()));
+          if (showMessage) setStatus("Draft saved.");
+        }
+
+        function loadDraft() {
+          setFormData({});
+          if (!state.lesson) return;
+          var raw = localStorage.getItem(draftKey());
+          if (!raw) {
+            setStatus("");
+            return;
+          }
+          try {
+            setFormData(JSON.parse(raw));
+            setStatus("Saved draft loaded.");
+          } catch (error) {
+            setStatus("");
+          }
+        }
+
+        function clearDraft() {
+          if (!state.lesson) return;
+          localStorage.removeItem(draftKey());
+          setFormData({});
+          setStatus("Draft cleared.");
+          els.claim.focus();
+        }
+
+        function copyTextFallback(text) {
+          var area = document.createElement("textarea");
+          area.value = text;
+          area.setAttribute("readonly", "");
+          area.style.position = "fixed";
+          area.style.left = "-9999px";
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand("copy");
+          document.body.removeChild(area);
+        }
+
+        function cardText() {
+          var data = formData();
+          return [
+            "Reveal Math Evidence Studio",
+            lessonLabel(state.lesson || {}),
+            "Unit: " + unitLabel(state.unit, state.lesson),
+            "Standard: " + getStandard(state.lesson, state.cluster),
+            "Cluster: " + getClusterName(state.lesson, state.cluster),
+            "",
+            "Name: " + (data.studentName || ""),
+            "",
+            "Claim:",
+            data.claim || "",
+            "",
+            "Evidence:",
+            data.evidence || "",
+            "",
+            "Reasoning:",
+            data.reasoning || "",
+            "",
+            "Reflection:",
+            data.reflection || ""
+          ].join("\n");
+        }
+
+        function copyCard() {
+          var text = cardText();
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(text)
+              .then(function () {
+                setStatus("Evidence card copied.");
+              })
+              .catch(function () {
+                copyTextFallback(text);
+                setStatus("Evidence card copied.");
+              });
+          } else {
+            copyTextFallback(text);
+            setStatus("Evidence card copied.");
+          }
+        }
+
+        function setStatus(message) {
+          els.status.textContent = message;
+          if (message) {
+            window.clearTimeout(setStatus.timer);
+            setStatus.timer = window.setTimeout(function () {
+              els.status.textContent = "";
+            }, 3500);
+          }
+        }
+
+        function init() {
+          state.lessons = asArray(window.REVEAL_MATH_LESSONS);
+          state.units = asArray(window.REVEAL_MATH_UNITS);
+          state.clusters = asArray(window.REVEAL_MATH_CLUSTERS);
+
+          state.lessons.sort(function (a, b) {
+            return lessonNumber(a).localeCompare(lessonNumber(b), undefined, {
+              numeric: true,
+              sensitivity: "base"
+            });
+          });
+
+          renderLessonPicker();
+
+          els.lessonSelect.addEventListener("change", function () {
+            setLesson(Number(els.lessonSelect.value));
+          });
+          els.saveDraft.addEventListener("click", function () {
+            saveDraft(true);
+          });
+          els.copyCard.addEventListener("click", copyCard);
+          els.printCard.addEventListener("click", function () {
+            saveDraft(false);
+            window.print();
+          });
+          els.clearDraft.addEventListener("click", clearDraft);
+          els.form.addEventListener("input", function () {
+            saveDraft(false);
+          });
+        }
+
+        init();
+      })();
+    </script>
+  </body>
+</html>

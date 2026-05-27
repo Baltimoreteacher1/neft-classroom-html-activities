@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Math Lab Missions | Reveal Math Student Tools</title>
+  <link rel="stylesheet" href="/assets/reveal-math-tools.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #5b6573;
+      --paper: #fffdf8;
+      --panel: #ffffff;
+      --line: #d9e1e8;
+      --navy: #23395d;
+      --teal: #207a7a;
+      --gold: #b7791f;
+      --green: #2f7d32;
+      --red: #b42318;
+      --soft-blue: #edf5ff;
+      --soft-teal: #ecf8f6;
+      --soft-gold: #fff6df;
+      --shadow: 0 14px 32px rgba(26, 40, 58, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(32, 122, 122, 0.08), transparent 28rem),
+        linear-gradient(315deg, rgba(183, 121, 31, 0.10), transparent 24rem),
+        var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .page-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 42px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 16px;
+      top: -48px;
+      z-index: 10;
+      padding: 10px 14px;
+      background: var(--navy);
+      color: #ffffff;
+      border-radius: 6px;
+      transition: top 0.2s ease;
+    }
+
+    .skip-link:focus {
+      top: 12px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: clamp(2rem, 5vw, 4.25rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+
+    .hero-main,
+    .control-panel,
+    .mission-card,
+    .phase-panel,
+    .question-panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: clamp(22px, 4vw, 38px);
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .hero-main p {
+      max-width: 720px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      min-height: 88px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft-blue);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.55rem;
+      line-height: 1;
+      color: var(--navy);
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .control-panel {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    select {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid #aeb9c5;
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .button {
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: var(--navy);
+      color: #ffffff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      background: #ffffff;
+      border-color: #aeb9c5;
+      color: var(--navy);
+    }
+
+    .button.ghost {
+      background: var(--soft-teal);
+      border-color: #a7d8d0;
+      color: #135f60;
+    }
+
+    .button:focus-visible,
+    select:focus-visible,
+    .phase-toggle:focus-visible {
+      outline: 3px solid rgba(32, 122, 122, 0.35);
+      outline-offset: 2px;
+    }
+
+    .status-note {
+      min-height: 22px;
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .mission-card {
+      padding: 22px;
+    }
+
+    .mission-card h2,
+    .phase-panel h2,
+    .question-panel h2 {
+      margin-bottom: 12px;
+      color: var(--navy);
+      font-size: 1.45rem;
+    }
+
+    .cluster-kicker {
+      margin-bottom: 8px;
+      color: var(--teal);
+      font-weight: 900;
+    }
+
+    .scenario {
+      font-size: 1.08rem;
+      color: #263242;
+    }
+
+    .section-list {
+      display: grid;
+      gap: 10px;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .section-list li {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .role {
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--soft-teal);
+      border: 1px solid #b9ddd8;
+    }
+
+    .role strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #115e60;
+    }
+
+    .phase-panel,
+    .question-panel {
+      padding: 18px;
+    }
+
+    .timer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      background: var(--soft-gold);
+      border: 1px solid #ead39d;
+    }
+
+    .timer-display {
+      font-variant-numeric: tabular-nums;
+      font-size: 2.4rem;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .phase-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .phase {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .phase-toggle {
+      width: 100%;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .phase-time {
+      min-width: 54px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--soft-blue);
+      color: var(--navy);
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .phase-title {
+      font-weight: 900;
+    }
+
+    .phase-body {
+      display: none;
+      padding: 0 12px 12px;
+      color: var(--muted);
+    }
+
+    .phase.is-open .phase-body {
+      display: block;
+    }
+
+    .hint-box {
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px dashed #8bbab3;
+      border-radius: 8px;
+      background: #f8fffd;
+    }
+
+    .hint-content[hidden] {
+      display: none;
+    }
+
+    .question-panel {
+      margin-top: 18px;
+    }
+
+    .challenge {
+      padding: 14px;
+      margin-bottom: 14px;
+      border-left: 5px solid var(--gold);
+      background: var(--soft-gold);
+      border-radius: 6px;
+    }
+
+    .exit-product {
+      padding: 14px;
+      background: var(--soft-blue);
+      border: 1px solid #bed4ea;
+      border-radius: 8px;
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .mission-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-stats,
+      .role-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page-shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 14px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .timer {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .timer-display {
+        font-size: 2rem;
+      }
+
+      .button {
+        flex: 1 1 140px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .page-shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .topbar,
+      .control-panel,
+      .timer,
+      .hint-box .button,
+      .status-note {
+        display: none !important;
+      }
+
+      .hero,
+      .mission-grid {
+        display: block;
+      }
+
+      .hero-main,
+      .mission-card,
+      .phase-panel,
+      .question-panel {
+        box-shadow: none;
+        border-color: #888888;
+        break-inside: avoid;
+        margin-bottom: 12px;
+      }
+
+      .phase-body,
+      .hint-content {
+        display: block !important;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#mission-content">Skip to mission</a>
+  <main class="page-shell">
+    <div class="topbar" aria-label="Page controls">
+      <div class="brand">
+        <span class="eyebrow">Reveal Math Student Tool</span>
+        <strong>Math Lab Missions</strong>
+      </div>
+      <a class="button secondary" href="../">Back to tools</a>
+    </div>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-main">
+        <div>
+          <span class="eyebrow">Partner and group problem solving</span>
+          <h1 id="page-title">Math Lab Missions</h1>
+          <p>Choose a lesson cluster, take a role, work through timed phases, and prepare a short defense of your strategy and answer.</p>
+        </div>
+        <div class="quick-stats" aria-label="Mission structure">
+          <div class="stat">
+            <strong id="clusterCount">26</strong>
+            <span>lesson clusters</span>
+          </div>
+          <div class="stat">
+            <strong>4</strong>
+            <span>team roles</span>
+          </div>
+          <div class="stat">
+            <strong>18</strong>
+            <span>minute lab cycle</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="control-panel" aria-labelledby="controls-title">
+        <h2 id="controls-title">Mission Setup</h2>
+        <div class="field">
+          <label for="clusterSelect">Lesson cluster</label>
+          <select id="clusterSelect"></select>
+        </div>
+        <div class="button-row">
+          <button class="button" type="button" id="copyMission">Copy mission</button>
+          <button class="button secondary" type="button" id="printMission">Print</button>
+        </div>
+        <p class="status-note" id="statusNote" role="status" aria-live="polite"></p>
+      </aside>
+    </section>
+
+    <div class="mission-grid" id="mission-content">
+      <section class="mission-card" aria-labelledby="mission-title">
+        <p class="cluster-kicker" id="clusterKicker"></p>
+        <h2 id="mission-title"></h2>
+        <p class="scenario" id="scenarioText"></p>
+
+        <h3>Team Roles</h3>
+        <div class="role-grid" id="roleGrid"></div>
+
+        <h3>Lab Materials</h3>
+        <ul class="section-list" id="materialsList"></ul>
+
+        <div class="hint-box">
+          <button class="button ghost" type="button" id="hintToggle" aria-expanded="false" aria-controls="hintContent">Reveal hint</button>
+          <p class="hint-content" id="hintContent" hidden></p>
+        </div>
+      </section>
+
+      <aside>
+        <section class="phase-panel" aria-labelledby="phase-title">
+          <h2 id="phase-title">Timed Lab Phases</h2>
+          <div class="timer" aria-label="Mission timer">
+            <div>
+              <strong id="activePhaseLabel">Ready phase</strong>
+              <div>Use the timer for any phase your teacher assigns.</div>
+            </div>
+            <div class="timer-display" id="timerDisplay" aria-live="polite">03:00</div>
+          </div>
+          <div class="button-row">
+            <button class="button" type="button" id="startTimer">Start</button>
+            <button class="button secondary" type="button" id="pauseTimer">Pause</button>
+            <button class="button secondary" type="button" id="resetTimer">Reset</button>
+          </div>
+          <div class="phase-list" id="phaseList"></div>
+        </section>
+
+        <section class="question-panel" aria-labelledby="challenge-title">
+          <h2 id="challenge-title">Challenge</h2>
+          <div class="challenge" id="challengeText"></div>
+
+          <h3>Defense Questions</h3>
+          <ol id="defenseQuestions"></ol>
+
+          <h3>Exit Product</h3>
+          <div class="exit-product" id="exitProduct"></div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="print-only" aria-label="Student work space">
+      <h2>Work Space</h2>
+      <p>Strategy:</p>
+      <br>
+      <p>Evidence:</p>
+      <br>
+      <p>Final answer and defense:</p>
+      <br>
+    </section>
+  </main>
+
+  <script src="/assets/reveal-math-data.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var fallbackClusters = [
+        { id: "1", unit: "Unit 1", title: "Factors and Multiples", focus: "use factors, multiples, and the distributive property to organize numbers" },
+        { id: "2", unit: "Unit 1", title: "Prime Factorization", focus: "break numbers into prime factors and compare structures" },
+        { id: "3", unit: "Unit 2", title: "Fraction Meanings", focus: "represent fractions with diagrams, number lines, and equations" },
+        { id: "4", unit: "Unit 2", title: "Fraction Operations", focus: "multiply and divide fractions in real situations" },
+        { id: "5", unit: "Unit 3", title: "Ratios and Rates", focus: "compare quantities with ratio language, tables, and tape diagrams" },
+        { id: "6", unit: "Unit 3", title: "Unit Rates", focus: "find and use unit rates to make fair comparisons" },
+        { id: "7", unit: "Unit 3", title: "Percent Reasoning", focus: "connect fractions, decimals, and percents in context" },
+        { id: "8", unit: "Unit 4", title: "Decimal Operations", focus: "add, subtract, multiply, and divide decimals accurately" },
+        { id: "9", unit: "Unit 4", title: "Long Division", focus: "interpret quotients and remainders in multi-step problems" },
+        { id: "10", unit: "Unit 5", title: "Area of Polygons", focus: "compose and decompose shapes to find area" },
+        { id: "11", unit: "Unit 5", title: "Surface Area", focus: "use nets and faces to calculate total surface area" },
+        { id: "12", unit: "Unit 5", title: "Volume", focus: "reason about layers, prisms, and cubic units" },
+        { id: "13", unit: "Unit 6", title: "Expressions", focus: "write, evaluate, and interpret expressions" },
+        { id: "14", unit: "Unit 6", title: "Equivalent Expressions", focus: "use properties to show two expressions match" },
+        { id: "15", unit: "Unit 6", title: "Inequalities", focus: "describe constraints with inequalities and number lines" },
+        { id: "16", unit: "Unit 7", title: "Equations", focus: "solve one-step equations and explain inverse operations" },
+        { id: "17", unit: "Unit 7", title: "Rational Numbers", focus: "compare, order, and interpret signed numbers" },
+        { id: "18", unit: "Unit 7", title: "Coordinate Plane", focus: "plot points and use distance on the coordinate plane" },
+        { id: "19", unit: "Unit 8", title: "Statistical Questions", focus: "tell statistical questions from non-statistical questions" },
+        { id: "20", unit: "Unit 8", title: "Data Displays", focus: "summarize data with dot plots, histograms, and box plots" },
+        { id: "21", unit: "Unit 8", title: "Center and Spread", focus: "use mean, median, range, and IQR to compare data sets" },
+        { id: "22", unit: "Unit 9", title: "Dependent Variables", focus: "connect independent and dependent variables" },
+        { id: "23", unit: "Unit 9", title: "Tables and Graphs", focus: "represent relationships with tables, graphs, and equations" },
+        { id: "24", unit: "Unit 9", title: "Patterns and Rules", focus: "write rules from visible patterns and data" },
+        { id: "25", unit: "Unit 10", title: "Geometry Models", focus: "model real objects with geometric measurements" },
+        { id: "26", unit: "Unit 10", title: "Culminating Design Lab", focus: "choose tools and strategies for a multi-step design challenge" }
+      ];
+
+      var roles = [
+        { name: "Facilitator", task: "Keeps the group moving, invites every voice, and checks the phase timer." },
+        { name: "Model Builder", task: "Creates diagrams, tables, equations, or manipulatives that show the math." },
+        { name: "Precision Checker", task: "Checks units, labels, computation, and whether the answer makes sense." },
+        { name: "Reporter", task: "Prepares the defense: claim, evidence, and one correction the team made." }
+      ];
+
+      var phases = [
+        { title: "Launch", minutes: 3, action: "Read the scenario, choose roles, and underline the question you must answer." },
+        { title: "Build", minutes: 6, action: "Create a model that represents the important quantities and relationships." },
+        { title: "Solve", minutes: 5, action: "Use the model to calculate or reason toward a defendable solution." },
+        { title: "Defend", minutes: 4, action: "Prepare a short explanation and answer the defense questions." }
+      ];
+
+      var scenarioFrames = [
+        "Your team is advising the school planning crew before materials are ordered.",
+        "Your group has been asked to test a design choice before it is shared with the class.",
+        "A student team submitted a solution that might work, but the evidence needs checking.",
+        "The class needs a clear recommendation that can be defended with numbers and words."
+      ];
+
+      function textFrom(value, fallback) {
+        if (typeof value === "string" && value.trim()) {
+          return value.trim();
+        }
+        return fallback;
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, function (character) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "\"": "&quot;",
+            "'": "&#39;"
+          }[character];
+        });
+      }
+
+      function normalizeCluster(item, index) {
+        var lessonIds = Array.isArray(item.lessonIds) ? item.lessonIds : Array.isArray(item.lessons) ? item.lessons : [];
+        var firstLesson = lessonIds.length ? String(lessonIds[0]) : "";
+        var unitIndex = Number(String(item.unitId || item.unit || "").replace(/\D/g, "")) - 1;
+        var sharedUnits = Array.isArray(window.REVEAL_MATH_UNITS) ? window.REVEAL_MATH_UNITS : [];
+        var sharedUnit = sharedUnits[unitIndex] || {};
+        return {
+          id: textFrom(item.id || item.clusterId || firstLesson, String(index + 1)),
+          unit: textFrom(item.unit || item.unitTitle || item.unitName || sharedUnit.title || sharedUnit.name || sharedUnit, "Reveal Math"),
+          title: textFrom(item.title || item.name || item.clusterTitle, "Lesson Cluster " + (index + 1)),
+          focus: textFrom(item.focus || item.bigIdea || item.description || item.standard, "use math evidence to solve a real classroom problem"),
+          lessons: lessonIds
+        };
+      }
+
+      function clustersFromLessons() {
+        var lessons = Array.isArray(window.REVEAL_MATH_LESSONS) ? window.REVEAL_MATH_LESSONS : [];
+        return lessons.slice(0, 26).map(function (lesson, index) {
+          return normalizeCluster({
+            id: lesson.id || lesson.lessonId,
+            unit: lesson.unit || lesson.unitTitle,
+            title: lesson.title || lesson.name,
+            focus: lesson.focus || lesson.objective || lesson.description,
+            lessonIds: [lesson.id || lesson.lessonId || index + 1]
+          }, index);
+        });
+      }
+
+      function getClusters() {
+        var shared = Array.isArray(window.REVEAL_MATH_CLUSTERS) ? window.REVEAL_MATH_CLUSTERS : [];
+        var source = shared.length ? shared : clustersFromLessons();
+        if (!source.length) {
+          source = fallbackClusters;
+        }
+        var normalized = source.slice(0, 26).map(normalizeCluster);
+        return normalized.length >= 26 ? normalized : normalized.concat(fallbackClusters.slice(normalized.length, 26));
+      }
+
+      var clusters = getClusters();
+      var selectedCluster = clusters[0];
+      var remainingSeconds = phases[0].minutes * 60;
+      var activePhaseIndex = 0;
+      var timerId = null;
+
+      var clusterSelect = document.getElementById("clusterSelect");
+      var clusterCount = document.getElementById("clusterCount");
+      var clusterKicker = document.getElementById("clusterKicker");
+      var missionTitle = document.getElementById("mission-title");
+      var scenarioText = document.getElementById("scenarioText");
+      var roleGrid = document.getElementById("roleGrid");
+      var materialsList = document.getElementById("materialsList");
+      var hintToggle = document.getElementById("hintToggle");
+      var hintContent = document.getElementById("hintContent");
+      var challengeText = document.getElementById("challengeText");
+      var defenseQuestions = document.getElementById("defenseQuestions");
+      var exitProduct = document.getElementById("exitProduct");
+      var phaseList = document.getElementById("phaseList");
+      var timerDisplay = document.getElementById("timerDisplay");
+      var activePhaseLabel = document.getElementById("activePhaseLabel");
+      var statusNote = document.getElementById("statusNote");
+
+      function setStatus(message) {
+        statusNote.textContent = message;
+        if (message) {
+          window.setTimeout(function () {
+            if (statusNote.textContent === message) {
+              statusNote.textContent = "";
+            }
+          }, 2600);
+        }
+      }
+
+      function formatTime(seconds) {
+        var minutes = Math.floor(seconds / 60);
+        var rest = seconds % 60;
+        return String(minutes).padStart(2, "0") + ":" + String(rest).padStart(2, "0");
+      }
+
+      function buildMission(cluster) {
+        var frame = scenarioFrames[Number(cluster.id.replace(/\D/g, "")) % scenarioFrames.length] || scenarioFrames[0];
+        return {
+          title: cluster.title + " Mission",
+          scenario: frame + " Use " + cluster.focus + " to make a recommendation. Your final answer must include a model, calculations, labels, and a sentence explaining why your solution fits the situation.",
+          materials: [
+            "Scratch paper or notebook page for the team model",
+            "Pencil, calculator if approved, and one color for revisions",
+            "A shared table, diagram, number line, graph, or equation",
+            "One final response that every teammate can explain"
+          ],
+          hint: "Start by naming the quantities, units, and relationships before calculating. If the first model is messy, revise it instead of erasing the evidence of your thinking.",
+          challenge: "Create two different representations for the same solution. Then decide which representation would be clearest for another sixth grader and explain why.",
+          defense: [
+            "What quantities did your team compare, measure, or relate?",
+            "Where does your model show the key math idea from this cluster?",
+            "How did your team check that the answer is reasonable?",
+            "What would change if one number in the situation were different?"
+          ],
+          exit: "Submit a one-page lab note with your model, final answer, and a three-sentence defense: our claim, our evidence, and our reasonableness check."
+        };
+      }
+
+      function renderOptions() {
+        clusterSelect.innerHTML = clusters.map(function (cluster, index) {
+          return "<option value=\"" + index + "\">" + escapeHtml(cluster.unit) + " - " + escapeHtml(cluster.title) + "</option>";
+        }).join("");
+        clusterCount.textContent = String(clusters.length);
+      }
+
+      function renderRoles() {
+        roleGrid.innerHTML = roles.map(function (role) {
+          return "<div class=\"role\"><strong>" + escapeHtml(role.name) + "</strong><span>" + escapeHtml(role.task) + "</span></div>";
+        }).join("");
+      }
+
+      function renderPhases() {
+        phaseList.innerHTML = phases.map(function (phase, index) {
+          var isOpen = index === activePhaseIndex ? " is-open" : "";
+          return [
+            "<article class=\"phase" + isOpen + "\">",
+            "<button class=\"phase-toggle\" type=\"button\" data-phase=\"" + index + "\" aria-expanded=\"" + (index === activePhaseIndex ? "true" : "false") + "\">",
+            "<span class=\"phase-time\">" + escapeHtml(phase.minutes) + " min</span>",
+            "<span class=\"phase-title\">" + escapeHtml(phase.title) + "</span>",
+            "<span aria-hidden=\"true\">+</span>",
+            "</button>",
+            "<div class=\"phase-body\">" + escapeHtml(phase.action) + "</div>",
+            "</article>"
+          ].join("");
+        }).join("");
+      }
+
+      function renderMission() {
+        var mission = buildMission(selectedCluster);
+        clusterKicker.textContent = selectedCluster.unit;
+        missionTitle.textContent = mission.title;
+        scenarioText.textContent = mission.scenario;
+        materialsList.innerHTML = mission.materials.map(function (item) {
+          return "<li>" + escapeHtml(item) + "</li>";
+        }).join("");
+        hintContent.textContent = mission.hint;
+        hintContent.hidden = true;
+        hintToggle.setAttribute("aria-expanded", "false");
+        hintToggle.textContent = "Reveal hint";
+        challengeText.textContent = mission.challenge;
+        defenseQuestions.innerHTML = mission.defense.map(function (question) {
+          return "<li>" + escapeHtml(question) + "</li>";
+        }).join("");
+        exitProduct.textContent = mission.exit;
+        document.title = mission.title + " | Math Lab Missions";
+      }
+
+      function resetTimerForPhase(index) {
+        activePhaseIndex = index;
+        remainingSeconds = phases[index].minutes * 60;
+        activePhaseLabel.textContent = phases[index].title + " phase";
+        timerDisplay.textContent = formatTime(remainingSeconds);
+        renderPhases();
+      }
+
+      function stopTimer() {
+        if (timerId) {
+          window.clearInterval(timerId);
+          timerId = null;
+        }
+      }
+
+      function missionText() {
+        var mission = buildMission(selectedCluster);
+        return [
+          "Math Lab Mission: " + mission.title,
+          "Cluster: " + selectedCluster.unit + " - " + selectedCluster.title,
+          "",
+          "Scenario: " + mission.scenario,
+          "",
+          "Roles:",
+          roles.map(function (role) { return "- " + role.name + ": " + role.task; }).join("\n"),
+          "",
+          "Phases:",
+          phases.map(function (phase) { return "- " + phase.title + " (" + phase.minutes + " min): " + phase.action; }).join("\n"),
+          "",
+          "Hint: " + mission.hint,
+          "",
+          "Challenge: " + mission.challenge,
+          "",
+          "Defense Questions:",
+          mission.defense.map(function (question, index) { return (index + 1) + ". " + question; }).join("\n"),
+          "",
+          "Exit Product: " + mission.exit
+        ].join("\n");
+      }
+
+      renderOptions();
+      renderRoles();
+      renderPhases();
+      renderMission();
+      resetTimerForPhase(0);
+
+      clusterSelect.addEventListener("change", function () {
+        selectedCluster = clusters[Number(clusterSelect.value)] || clusters[0];
+        stopTimer();
+        resetTimerForPhase(0);
+        renderMission();
+      });
+
+      phaseList.addEventListener("click", function (event) {
+        var toggle = event.target.closest(".phase-toggle");
+        if (!toggle) {
+          return;
+        }
+        stopTimer();
+        resetTimerForPhase(Number(toggle.dataset.phase));
+      });
+
+      hintToggle.addEventListener("click", function () {
+        var willShow = hintContent.hidden;
+        hintContent.hidden = !willShow;
+        hintToggle.setAttribute("aria-expanded", String(willShow));
+        hintToggle.textContent = willShow ? "Hide hint" : "Reveal hint";
+      });
+
+      document.getElementById("startTimer").addEventListener("click", function () {
+        if (timerId) {
+          return;
+        }
+        timerId = window.setInterval(function () {
+          remainingSeconds = Math.max(0, remainingSeconds - 1);
+          timerDisplay.textContent = formatTime(remainingSeconds);
+          if (remainingSeconds === 0) {
+            stopTimer();
+            setStatus("Phase complete.");
+          }
+        }, 1000);
+      });
+
+      document.getElementById("pauseTimer").addEventListener("click", stopTimer);
+
+      document.getElementById("resetTimer").addEventListener("click", function () {
+        stopTimer();
+        resetTimerForPhase(activePhaseIndex);
+      });
+
+      document.getElementById("printMission").addEventListener("click", function () {
+        window.print();
+      });
+
+      document.getElementById("copyMission").addEventListener("click", function () {
+        var text = missionText();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            setStatus("Mission copied.");
+          }).catch(function () {
+            setStatus("Select and copy from the printed view if clipboard is blocked.");
+          });
+        } else {
+          setStatus("Clipboard is not available in this browser.");
+        }
+      });
+    }());
+  </script>
+</body>
+</html>
