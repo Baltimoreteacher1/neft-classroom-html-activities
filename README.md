@@ -1,6 +1,6 @@
 # ESOL, Reading, Writing, and Math
 
-`neft-classroom-html-activities` is a plain static HTML collection for Mr. Neft's ESOL, reading, writing, and math classroom activities. It is designed for Cloudflare Pages and does not use Vite, React, npm, or any build system.
+`neft-classroom-html-activities` is a mostly static HTML collection for Mr. Neft's ESOL, reading, writing, and math classroom activities. It is designed for Cloudflare Pages. Most activities are standalone HTML folders, and the Reveal Math lesson launchers are built with Vite so Cloudflare can publish the complete `dist/` output.
 
 Folder structure:
 
@@ -49,6 +49,16 @@ Folder structure:
   mcap-review/
     index.html
     ...activity-folders/
+  math/
+    index.html
+    unit-1/
+      index.html
+    ...unit-folders/
+  lessons/
+    1-1/
+      index.html
+      config.json
+    ...lesson-folders/
 ```
 
 ## How This Repo Works
@@ -73,6 +83,8 @@ Organized unit and subject folders:
 - `ratios-proportions/`
 - `esol-reading-writing/`
 - `mcap-review/`
+- `math/`
+- `lessons/`
 
 Shared files:
 
@@ -90,16 +102,36 @@ Shared files:
 
 Every activity can have its own `index.html` inside its folder. Cloudflare Pages will serve that folder at a clean URL that follows the folder path.
 
+## Local Development
+
+Install dependencies once:
+
+```sh
+npm install
+```
+
+Build the Cloudflare Pages output:
+
+```sh
+npm run build
+```
+
+Preview the built site locally:
+
+```sh
+npm run preview
+```
+
 ## Cloudflare Pages Setup
 
 Use these settings:
 
-- Framework preset: `None`
-- Build command: leave blank or use `exit 0`
-- Build output directory: `/`
+- Framework preset: `Vite`
+- Build command: `npm run build`
+- Build output directory: `dist`
 - Root directory: leave blank unless deploying a subfolder
 - Production branch: `main`
 
 ## Static Site Notes
 
-This repository is intentionally lightweight. It should work by opening the HTML files directly or by serving the repository as a static site. Keep activities classroom-safe, student-friendly, and Cloudflare Pages-compatible.
+This repository is intentionally lightweight. Standalone activity folders should stay classroom-safe, student-friendly, and Cloudflare Pages-compatible. For deployed changes, use the Vite build so generated lesson pages and copied static folders are published together.
