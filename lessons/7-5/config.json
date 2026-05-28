@@ -10,22 +10,22 @@
     {
       "term": "Number line",
       "definition": "A line that shows numbers in order, used to graph solutions of inequalities",
-      "visual": "A horizontal line with evenly spaced tick marks and numbers"
+      "visual": "A horizontal line with marks at 0, 1, 2, 3, ... showing where values fall"
     },
     {
       "term": "Open circle",
       "definition": "A circle on a number line that shows a value is NOT included in the solution set",
-      "visual": "Used with < or >: the boundary is not part of the solution"
+      "visual": "x > 5: open circle at 5 means 5 itself is NOT a solution, but 5.1, 6, 7, ... are"
     },
     {
       "term": "Closed circle",
       "definition": "A filled-in circle on a number line that shows a value IS included in the solution set",
-      "visual": "Used with ≤ or ≥: the boundary is part of the solution"
+      "visual": "x ≥ 5: closed circle at 5 means 5 IS a solution, and so are 6, 7, 8, ..."
     },
     {
       "term": "Solution set",
       "definition": "All values that make an inequality true",
-      "visual": "For x > 3, the solution set is all numbers greater than 3"
+      "visual": "For x > 3, the solution set includes 3.1, 4, 5, 10, 100 — any number greater than 3"
     }
   ],
   "launch": {
@@ -115,15 +115,46 @@
       },
       {
         "type": "multiple-choice",
-        "stem": "In y = 2x + 1, which is the independent variable?",
+        "stem": "Which graph represents x > 8?",
         "choices": [
-          "x",
-          "y",
-          "2",
-          "1"
+          "Open circle at 8, shaded right",
+          "Closed circle at 8, shaded right",
+          "Open circle at 8, shaded left",
+          "Closed circle at 8, shaded left"
         ],
         "correctIndex": 0,
-        "explanation": "x is the independent variable — its value determines y."
+        "explanation": "x > 8 means 8 is NOT included (open circle) and values greater than 8 are shaded to the right."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which graph represents x ≤ 10?",
+        "choices": [
+          "Closed circle at 10, shaded left",
+          "Open circle at 10, shaded left",
+          "Closed circle at 10, shaded right",
+          "Open circle at 10, shaded right"
+        ],
+        "correctIndex": 0,
+        "explanation": "x ≤ 10 means 10 IS included (closed circle) and values less than or equal to 10 are shaded (left)."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each inequality by the type of circle it uses on a number line.",
+        "categories": [
+          {
+            "label": "Open circle (not included)",
+            "items": ["x > 4", "x < 12", "n > 0"]
+          },
+          {
+            "label": "Closed circle (included)",
+            "items": ["x ≥ 7", "x ≤ 3", "n ≥ 15"]
+          }
+        ],
+        "hints": [
+          "< and > use OPEN circles because the boundary is not included.",
+          "≤ and ≥ use CLOSED circles because the boundary IS included."
+        ],
+        "label": "Sort by circle type: open or closed."
       }
     ],
     "onLevel": [
@@ -142,20 +173,73 @@
           {
             "situation": "x ≥ 1",
             "equation": "Closed circle at 1, shaded right"
+          },
+          {
+            "situation": "x < 9",
+            "equation": "Open circle at 9, shaded left"
           }
+        ]
+      },
+      {
+        "type": "number-line",
+        "instructions": "Read the graph description and write the inequality it represents. Then graph it.",
+        "problems": [
+          {
+            "inequality": "x ≥ 5",
+            "boundary": 5,
+            "circleType": "closed",
+            "direction": "right",
+            "label": "Closed circle at 5, shaded right → write the inequality"
+          },
+          {
+            "inequality": "x < 3",
+            "boundary": 3,
+            "circleType": "open",
+            "direction": "left",
+            "label": "Open circle at 3, shaded left → write the inequality"
+          }
+        ],
+        "hints": [
+          "Closed circle means ≤ or ≥. Shaded right means greater, so ≥.",
+          "Open circle means < or >. Shaded left means less, so <."
         ]
       },
       {
         "type": "multiple-choice",
         "stem": "A number line shows a closed circle at 8 and is shaded to the left. Which inequality does this represent?",
-        "choices": [
-          "x ≤ 8",
-          "x < 8",
-          "x ≥ 8",
-          "x > 8"
-        ],
+        "choices": ["x ≤ 8", "x < 8", "x ≥ 8", "x > 8"],
         "correctIndex": 0,
         "explanation": "Closed circle means the value is included (≤ or ≥). Shaded left means less than or equal to: x ≤ 8."
+      },
+      {
+        "type": "fill-table",
+        "columns": [
+          "Inequality",
+          "Circle Type",
+          "Shade Direction",
+          "Is x = boundary a solution?"
+        ],
+        "rows": [
+          {
+            "inequality": "x > 6",
+            "circleType": "Open",
+            "shadeDirection": "Right",
+            "boundaryIsSolution": "No — 6 > 6 is false"
+          },
+          {
+            "inequality": "x ≥ 6",
+            "circleType": "Closed",
+            "shadeDirection": "Right",
+            "boundaryIsSolution": "Yes — 6 ≥ 6 is true"
+          },
+          {
+            "inequality": "x ≤ 6",
+            "circleType": "Closed",
+            "shadeDirection": "Left",
+            "boundaryIsSolution": "Yes — 6 ≤ 6 is true"
+          }
+        ],
+        "label": "Complete the table comparing how different symbols affect the graph."
       }
     ],
     "extending": [
@@ -189,16 +273,35 @@
       },
       {
         "type": "open-response",
-        "prompt": "Write a real-world situation that can be modeled by the equation 3x + 5 = 20. Solve it and explain what x represents.",
-        "sentenceFrame": "Situation: ___. In this problem, x represents ___. Solving: ___ so x = ___.",
+        "prompt": "A theme park has two rides. Ride A requires height h > 48 inches. Ride B requires height h ≥ 48 inches. A child is exactly 48 inches tall. Which ride can they go on? Explain using number line graphs for both inequalities.",
+        "sentenceFrame": "For Ride A (h > 48), the graph has a ___ circle at 48. Since 48 > 48 is ___, the child ___ ride A. For Ride B (h ≥ 48), the graph has a ___ circle at 48. Since 48 ≥ 48 is ___, the child ___ ride B.",
         "keywords": [
-          "equation",
-          "solve",
-          "variable",
-          "represents",
-          "both sides"
+          "open",
+          "closed",
+          "true",
+          "false",
+          "included",
+          "not included",
+          "boundary"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "number-line",
+        "instructions": "Graph the compound constraint: the suspect's age a is at least 18 AND at most 35. Graph a ≥ 18 and a ≤ 35 on the same number line. What range of ages is possible?",
+        "problems": [
+          {
+            "inequality": "18 ≤ a ≤ 35",
+            "boundary": 18,
+            "circleType": "closed",
+            "direction": "right",
+            "label": "Graph the lower bound: a ≥ 18"
+          }
+        ],
+        "hints": [
+          "a ≥ 18: closed circle at 18, shade right. a ≤ 35: closed circle at 35, shade left.",
+          "The overlap is the solution: all ages from 18 to 35, inclusive."
+        ]
       }
     ]
   },

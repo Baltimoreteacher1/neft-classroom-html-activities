@@ -10,22 +10,22 @@
     {
       "term": "Equation",
       "definition": "A mathematical sentence that uses an equal sign to show two expressions have the same value",
-      "visual": "x + 5 = 12"
+      "visual": "x + 5 = 12 — both sides equal 12 when x = 7"
     },
     {
       "term": "Inverse operation",
       "definition": "Operations that undo each other",
-      "visual": "Addition and subtraction are inverses"
+      "visual": "Addition undoes subtraction: if x − 3 = 10, add 3 to get x = 13"
     },
     {
       "term": "Isolate",
       "definition": "To get a variable alone on one side of the equation",
-      "visual": "x + 5 = 12 → x = 7"
+      "visual": "x + 5 = 12 → subtract 5 from both sides → x = 7 (x is isolated)"
     },
     {
       "term": "Solution",
       "definition": "The value that makes an equation true",
-      "visual": "x = 7 is the solution to x + 5 = 12"
+      "visual": "x = 7 is the solution to x + 5 = 12 because 7 + 5 = 12 ✓"
     }
   ],
   "launch": {
@@ -72,38 +72,48 @@
       {
         "type": "multiple-choice",
         "stem": "Solve: x + 9 = 15",
-        "choices": [
-          "x = 6",
-          "x = 24",
-          "x = 9",
-          "x = 15"
-        ],
+        "choices": ["x = 6", "x = 24", "x = 9", "x = 15"],
         "correctIndex": 0,
         "explanation": "Subtract 9 from both sides: x = 15 − 9 = 6. Check: 6 + 9 = 15 ✓"
       },
       {
         "type": "multiple-choice",
         "stem": "Solve: y − 7 = 20",
-        "choices": [
-          "y = 27",
-          "y = 13",
-          "y = 7",
-          "y = 140"
-        ],
+        "choices": ["y = 27", "y = 13", "y = 7", "y = 140"],
         "correctIndex": 0,
         "explanation": "Add 7 to both sides: y = 20 + 7 = 27. Check: 27 − 7 = 20 ✓"
       },
       {
         "type": "multiple-choice",
-        "stem": "Solve: 3x = 24",
-        "choices": [
-          "x = 8",
-          "x = 21",
-          "x = 72",
-          "x = 27"
-        ],
+        "stem": "Solve: n + 15 = 42",
+        "choices": ["n = 27", "n = 57", "n = 15", "n = 42"],
         "correctIndex": 0,
-        "explanation": "Divide both sides by 3: x = 24 ÷ 3 = 8."
+        "explanation": "Subtract 15 from both sides: n = 42 − 15 = 27. Check: 27 + 15 = 42 ✓"
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Solve: m − 11 = 25",
+        "choices": ["m = 36", "m = 14", "m = 25", "m = 275"],
+        "correctIndex": 0,
+        "explanation": "Add 11 to both sides: m = 25 + 11 = 36. Check: 36 − 11 = 25 ✓"
+      },
+      {
+        "type": "number-line",
+        "instructions": "Use the number line to solve x + 8 = 20. Start at 20 and count back 8 to find x.",
+        "min": 0,
+        "max": 25,
+        "step": 1,
+        "snapToTick": true,
+        "targets": [
+          {
+            "value": 12,
+            "label": "x"
+          }
+        ],
+        "hints": [
+          "Start at 20 on the number line. Since x + 8 = 20, subtract 8 to find x.",
+          "20 − 8 = 12, so x = 12. Place your marker at 12."
+        ]
       }
     ],
     "onLevel": [
@@ -119,16 +129,55 @@
         ]
       },
       {
+        "type": "fill-table",
+        "columns": ["Equation", "Inverse Operation", "Solution", "Check"],
+        "rows": [
+          {
+            "equation": "x + 18 = 45",
+            "inverse": "Subtract 18",
+            "solution": "x = 27",
+            "check": "27 + 18 = 45 ✓"
+          },
+          {
+            "equation": "p − 22 = 19",
+            "inverse": "Add 22",
+            "solution": "p = 41",
+            "check": "41 − 22 = 19 ✓"
+          },
+          {
+            "equation": "w + 3.5 = 10",
+            "inverse": "Subtract 3.5",
+            "solution": "w = 6.5",
+            "check": "6.5 + 3.5 = 10 ✓"
+          }
+        ],
+        "label": "Complete the table: identify the inverse operation, solve, and check."
+      },
+      {
         "type": "multiple-choice",
         "stem": "A shirt costs $d. After a $15 discount, it costs $38. What is d?",
-        "choices": [
-          "$53",
-          "$23",
-          "$38",
-          "$45"
-        ],
+        "choices": ["$53", "$23", "$38", "$45"],
         "correctIndex": 0,
         "explanation": "d − 15 = 38 → d = 38 + 15 = 53."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each equation into the correct inverse operation you would use to solve it.",
+        "categories": [
+          {
+            "label": "Add to both sides",
+            "items": ["x − 9 = 14", "n − 20 = 35", "y − 6 = 8"]
+          },
+          {
+            "label": "Subtract from both sides",
+            "items": ["x + 12 = 30", "n + 7 = 19", "y + 15 = 40"]
+          }
+        ],
+        "hints": [
+          "If the equation has addition (+), use subtraction to undo it.",
+          "If the equation has subtraction (−), use addition to undo it."
+        ],
+        "label": "Sort each equation by the inverse operation needed to solve it."
       }
     ],
     "extending": [
@@ -162,16 +211,29 @@
       },
       {
         "type": "open-response",
-        "prompt": "Write a real-world situation that can be modeled by the equation 3x + 5 = 20. Solve it and explain what x represents.",
-        "sentenceFrame": "Situation: ___. In this problem, x represents ___. Solving: ___ so x = ___.",
+        "prompt": "A detective solved x + 25 = 60 and got x = 35. Another detective solved y − 25 = 60 and got y = 35. Are both correct? Explain using inverse operations and check each answer.",
+        "sentenceFrame": "For x + 25 = 60, the inverse operation is ___, so x = ___. Check: ___. For y − 25 = 60, the inverse operation is ___, so y = ___. Check: ___. Therefore, ___.",
         "keywords": [
-          "equation",
-          "solve",
-          "variable",
-          "represents",
-          "both sides"
+          "inverse",
+          "subtract",
+          "add",
+          "both sides",
+          "check",
+          "35",
+          "85"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "balance-scale",
+        "equation": "x + 2.7 = 9.3",
+        "variable": "x",
+        "answer": 6.6,
+        "label": "Solve using decimals: x + 2.7 = 9.3. Use inverse operations.",
+        "hints": [
+          "Subtract 2.7 from both sides: x = 9.3 − 2.7.",
+          "x = 6.6. Check: 6.6 + 2.7 = 9.3 ✓"
+        ]
       }
     ]
   },
@@ -192,12 +254,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "Solve: p + 2.8 = 9.1",
-      "choices": [
-        "p = 6.3",
-        "p = 11.9",
-        "p = 6.8",
-        "p = 3.25"
-      ],
+      "choices": ["p = 6.3", "p = 11.9", "p = 6.8", "p = 3.25"],
       "correctIndex": 0,
       "explanation": "Subtract 2.8 from both sides: p = 9.1 − 2.8 = 6.3. Check: 6.3 + 2.8 = 9.1 ✓"
     }

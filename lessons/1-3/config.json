@@ -10,27 +10,27 @@
     {
       "term": "Multiple",
       "definition": "The product of a number and any whole number",
-      "visual": "Multiples of 4: 4, 8, 12, 16, 20, ..."
+      "visual": "Multiples of 4: 4, 8, 12, 16, 20 — found by multiplying 4 × 1, 4 × 2, 4 × 3, ..."
     },
     {
       "term": "Least common multiple",
       "definition": "The smallest multiple that two or more numbers share",
-      "visual": "LCM of 4 and 6 is 12"
+      "visual": "Multiples of 4: 4, 8, 12, 16, 20, 24. Multiples of 6: 6, 12, 18, 24. First match: 12 → LCM = 12"
     },
     {
       "term": "Common multiple",
       "definition": "A multiple that two or more numbers share",
-      "visual": "Common multiples of 3 and 4: 12, 24, 36, ..."
+      "visual": "12, 24, and 36 are all common multiples of both 3 and 4"
     },
     {
       "term": "Skip counting",
       "definition": "Counting forward by a number other than 1 to list multiples",
-      "visual": "Skip count by 6: 6, 12, 18, 24, 30, ..."
+      "visual": "Skip count by 6: 6, 12, 18, 24, 30 — each jump adds 6"
     },
     {
-      "term": "Prime number",
-      "definition": "A number with exactly two factors: 1 and itself",
-      "visual": "2, 3, 5, 7, 11, 13..."
+      "term": "Prime factorization",
+      "definition": "Writing a number as a product of primes, useful for finding LCM",
+      "visual": "4 = 2 × 2, 6 = 2 × 3. LCM uses the highest power of each prime: 2² × 3 = 12"
     }
   ],
   "launch": {
@@ -50,56 +50,20 @@
     "type": "drag-sort",
     "instructions": "Here are the first several multiples of 4 and 6 mixed together. Sort them — which are common multiples of BOTH 4 and 6, and which are multiples of only one?",
     "items": [
-      {
-        "text": "12",
-        "category": "common"
-      },
-      {
-        "text": "24",
-        "category": "common"
-      },
-      {
-        "text": "36",
-        "category": "common"
-      },
-      {
-        "text": "48",
-        "category": "common"
-      },
-      {
-        "text": "4",
-        "category": "not-common"
-      },
-      {
-        "text": "8",
-        "category": "not-common"
-      },
-      {
-        "text": "6",
-        "category": "not-common"
-      },
-      {
-        "text": "16",
-        "category": "not-common"
-      },
-      {
-        "text": "18",
-        "category": "not-common"
-      },
-      {
-        "text": "20",
-        "category": "not-common"
-      }
+      { "text": "12", "category": "common" },
+      { "text": "24", "category": "common" },
+      { "text": "36", "category": "common" },
+      { "text": "48", "category": "common" },
+      { "text": "4", "category": "not-common" },
+      { "text": "8", "category": "not-common" },
+      { "text": "6", "category": "not-common" },
+      { "text": "16", "category": "not-common" },
+      { "text": "18", "category": "not-common" },
+      { "text": "20", "category": "not-common" }
     ],
     "categories": [
-      {
-        "id": "common",
-        "label": "Common Multiples of 4 and 6"
-      },
-      {
-        "id": "not-common",
-        "label": "NOT Common Multiples"
-      }
+      { "id": "common", "label": "Common Multiples of 4 and 6" },
+      { "id": "not-common", "label": "NOT Common Multiples" }
     ],
     "discourse": {
       "prompt": "What is the least common multiple of 4 and 6? How did sorting the multiples help you find it?",
@@ -120,102 +84,147 @@
       {
         "type": "multiple-choice",
         "stem": "What is the LCM of 3 and 5?",
-        "choices": [
-          "15",
-          "3",
-          "5",
-          "30"
-        ],
+        "choices": ["15", "3", "5", "30"],
         "correctIndex": 0,
         "explanation": "Multiples of 3: 3, 6, 9, 12, 15, ... Multiples of 5: 5, 10, 15, ... The smallest common multiple is 15."
       },
       {
         "type": "multiple-choice",
         "stem": "What is the LCM of 6 and 8?",
-        "choices": [
-          "24",
-          "48",
-          "14",
-          "6"
-        ],
+        "choices": ["24", "48", "14", "6"],
         "correctIndex": 0,
         "explanation": "Multiples of 6: 6, 12, 18, 24, ... Multiples of 8: 8, 16, 24, ... The smallest common multiple is 24."
       },
       {
         "type": "multiple-choice",
-        "stem": "What is 12.6 × 0.5?",
-        "choices": [
-          "6.3",
-          "6.03",
-          "63",
-          "0.63"
-        ],
+        "stem": "What is the LCM of 4 and 10?",
+        "choices": ["20", "40", "10", "2"],
         "correctIndex": 0,
-        "explanation": "12.6 × 0.5 = 12.6 ÷ 2 = 6.3."
+        "explanation": "Multiples of 4: 4, 8, 12, 16, 20, ... Multiples of 10: 10, 20, ... The smallest common multiple is 20."
+      },
+      {
+        "type": "number-line",
+        "instructions": "On the number line from 0 to 30, mark the multiples of 5 and multiples of 6. Find where they first overlap — that is the LCM.",
+        "label": "Find the LCM of 5 and 6 on the number line",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "targets": [
+          { "value": 5, "label": "5 (mult of 5)" },
+          { "value": 6, "label": "6 (mult of 6)" },
+          { "value": 10, "label": "10 (mult of 5)" },
+          { "value": 12, "label": "12 (mult of 6)" },
+          { "value": 15, "label": "15 (mult of 5)" },
+          { "value": 18, "label": "18 (mult of 6)" },
+          { "value": 20, "label": "20 (mult of 5)" },
+          { "value": 24, "label": "24 (mult of 6)" },
+          { "value": 25, "label": "25 (mult of 5)" },
+          { "value": 30, "label": "30 (BOTH — LCM!)" }
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is the LCM of 2 and 7?",
+        "choices": ["14", "7", "2", "9"],
+        "correctIndex": 0,
+        "explanation": "Since 2 and 7 share no common factors (they are relatively prime), LCM = 2 × 7 = 14."
       }
     ],
     "onLevel": [
       {
         "type": "matching-game",
         "pairs": [
-          {
-            "term": "LCM(2, 5)",
-            "match": "10"
-          },
-          {
-            "term": "LCM(4, 10)",
-            "match": "20"
-          },
-          {
-            "term": "LCM(3, 8)",
-            "match": "24"
-          },
-          {
-            "term": "LCM(6, 9)",
-            "match": "18"
-          },
-          {
-            "term": "LCM(5, 7)",
-            "match": "35"
-          },
-          {
-            "term": "LCM(4, 6)",
-            "match": "12"
-          }
+          { "term": "LCM(2, 5)", "match": "10" },
+          { "term": "LCM(4, 10)", "match": "20" },
+          { "term": "LCM(3, 8)", "match": "24" },
+          { "term": "LCM(6, 9)", "match": "18" },
+          { "term": "LCM(5, 7)", "match": "35" },
+          { "term": "LCM(4, 6)", "match": "12" }
         ],
         "columns": 4,
         "label": "Match each pair of numbers to their LCM."
       },
       {
-        "type": "matching-game",
-        "pairs": [
+        "type": "fill-table",
+        "label": "List multiples of each number until you find the LCM.",
+        "columns": [
+          "Numbers",
+          "Multiples of First",
+          "Multiples of Second",
+          "LCM"
+        ],
+        "rows": [
           {
-            "term": "LCM(3, 4)",
-            "match": "12"
+            "given": "6 and 10",
+            "first": "6, 12, 18, 24, 30",
+            "second": "10, 20, 30",
+            "answer": "30"
           },
           {
-            "term": "GCF(12, 18)",
-            "match": "6"
+            "given": "8 and 12",
+            "first": "8, 16, 24",
+            "second": "12, 24",
+            "answer": "24"
           },
           {
-            "term": "LCM(5, 6)",
-            "match": "30"
+            "given": "9 and 12",
+            "first": "9, 18, 27, 36",
+            "second": "12, 24, 36",
+            "answer": "36"
+          }
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Two buses leave the station at 8:00 AM. Bus A returns every 15 minutes and Bus B returns every 20 minutes. When is the next time both buses are at the station together?",
+        "choices": [
+          "9:00 AM (60 minutes later)",
+          "8:30 AM (30 minutes later)",
+          "8:40 AM (40 minutes later)",
+          "9:20 AM (80 minutes later)"
+        ],
+        "correctIndex": 0,
+        "explanation": "LCM(15, 20) = 60 minutes. Both buses return together 60 minutes after 8:00 AM, at 9:00 AM."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each pair: does the LCM equal the product of the two numbers, or is the LCM less than the product?",
+        "items": [
+          {
+            "text": "3 and 7 → LCM = 21 = 3 × 7",
+            "category": "equals-product"
           },
           {
-            "term": "GCF(20, 30)",
-            "match": "10"
+            "text": "5 and 11 → LCM = 55 = 5 × 11",
+            "category": "equals-product"
           },
           {
-            "term": "LCM(8, 12)",
-            "match": "24"
+            "text": "2 and 9 → LCM = 18 = 2 × 9",
+            "category": "equals-product"
           },
           {
-            "term": "GCF(16, 24)",
-            "match": "8"
+            "text": "4 and 6 → LCM = 12 < 4 × 6 = 24",
+            "category": "less-than-product"
+          },
+          {
+            "text": "6 and 8 → LCM = 24 < 6 × 8 = 48",
+            "category": "less-than-product"
+          },
+          {
+            "text": "10 and 15 → LCM = 30 < 10 × 15 = 150",
+            "category": "less-than-product"
           }
         ],
-        "label": "Match each problem to its answer.",
-        "columns": 4
+        "categories": [
+          {
+            "id": "equals-product",
+            "label": "LCM = Product (no shared factors)"
+          },
+          {
+            "id": "less-than-product",
+            "label": "LCM < Product (shared factors)"
+          }
+        ]
       }
     ],
     "extending": [
@@ -227,22 +236,10 @@
             "label": "Find LCM of 8 and 12",
             "work": "List multiples of 8 and 12"
           },
-          {
-            "label": "Multiples of 8",
-            "work": "8, 16, 24, 32, 40, 48"
-          },
-          {
-            "label": "Multiples of 12",
-            "work": "12, 24, 36, 48"
-          },
-          {
-            "label": "Common multiples",
-            "work": "24, 48"
-          },
-          {
-            "label": "Choose LCM",
-            "work": "LCM = 48"
-          }
+          { "label": "Multiples of 8", "work": "8, 16, 24, 32, 40, 48" },
+          { "label": "Multiples of 12", "work": "12, 24, 36, 48" },
+          { "label": "Common multiples", "work": "24, 48" },
+          { "label": "Choose LCM", "work": "LCM = 48" }
         ],
         "errorStep": 4,
         "correctWork": "LCM = 24 (the least common multiple is the SMALLEST shared multiple, not just any common multiple)",
@@ -253,17 +250,44 @@
       },
       {
         "type": "open-response",
-        "prompt": "Create your own GCF or LCM word problem using two numbers of your choice. Show the solution and explain your reasoning.",
-        "sentenceFrame": "I chose the numbers ___ and ___ because ___. The GCF/LCM is ___ because ___.",
+        "prompt": "Hot dogs come in packs of 8 and buns come in packs of 6. What is the fewest of each you can buy so you have the same number of hot dogs and buns with none left over? Explain how the LCM solves this problem.",
+        "sentenceFrame": "The LCM of 8 and 6 is ___. I need to buy ___ packs of hot dogs and ___ packs of buns to get ___ of each. This works because ___.",
         "keywords": [
-          "factor",
-          "multiple",
-          "common",
-          "greatest",
+          "LCM",
           "least",
-          "divide"
+          "common",
+          "multiple",
+          "24",
+          "packs",
+          "equal",
+          "none left over"
         ],
         "minLength": 30
+      },
+      {
+        "type": "fill-table",
+        "label": "Use prime factorization to find the LCM. Take the highest power of each prime factor.",
+        "columns": ["Numbers", "Prime Factorizations", "Highest Powers", "LCM"],
+        "rows": [
+          {
+            "given": "12 and 18",
+            "pf": "12 = 2² × 3, 18 = 2 × 3²",
+            "powers": "2² × 3²",
+            "answer": "36"
+          },
+          {
+            "given": "15 and 20",
+            "pf": "15 = 3 × 5, 20 = 2² × 5",
+            "powers": "2² × 3 × 5",
+            "answer": "60"
+          },
+          {
+            "given": "8 and 14",
+            "pf": "8 = 2³, 14 = 2 × 7",
+            "powers": "2³ × 7",
+            "answer": "56"
+          }
+        ]
       }
     ]
   },
@@ -285,12 +309,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "What is the LCM of 9 and 12?",
-      "choices": [
-        "36",
-        "108",
-        "3",
-        "72"
-      ],
+      "choices": ["36", "108", "3", "72"],
       "correctIndex": 0,
       "explanation": "Multiples of 9: 9, 18, 27, 36, ... Multiples of 12: 12, 24, 36, ... The smallest common multiple is 36."
     }

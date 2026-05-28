@@ -25,15 +25,15 @@
     <script>
       // Expression Engine — Factory Assembly Line
       // Grade 6: 6.EE.1–6.EE.4 (Write & evaluate expressions)
-      // Neft Teacher
+      // Neft Teacher — Enhanced with juice, particles, streaks, star rating, high scores, power-ups
 
       const W = 1024,
         H = 768;
+      const LS_KEY = "expression_engine_highscore";
 
       // --- QUESTION BANK (procedurally generated + curated) ---
       function generateQuestions() {
         const qs = [];
-        // Helper
         function shuffle(a) {
           const b = [...a];
           for (let i = b.length - 1; i > 0; i--) {
@@ -183,6 +183,27 @@
             o.stop(this.ctx.currentTime + dur);
           } catch (e) {}
         }
+        noise(dur, vol = 0.08) {
+          if (!this.ctx) return;
+          try {
+            const bufSize = this.ctx.sampleRate * dur;
+            const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const src = this.ctx.createBufferSource();
+            src.buffer = buf;
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(vol, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + dur,
+            );
+            src.connect(g);
+            g.connect(this.ctx.destination);
+            src.start();
+            src.stop(this.ctx.currentTime + dur);
+          } catch (e) {}
+        }
         correct() {
           this.play(523, 0.12);
           setTimeout(() => this.play(659, 0.12), 80);
@@ -191,6 +212,11 @@
         wrong() {
           this.play(200, 0.3, "sawtooth");
           setTimeout(() => this.play(150, 0.3, "sawtooth"), 100);
+        }
+        glassBreak() {
+          this.noise(0.2, 0.12);
+          this.play("800", 0.05, "square", 0.08);
+          setTimeout(() => this.play(600, 0.06, "square", 0.06), 50);
         }
         click() {
           this.play(440, 0.06);
@@ -202,9 +228,44 @@
         convey() {
           this.play(120, 0.08, "triangle", 0.03);
         }
+        streak3() {
+          [523, 659, 784].forEach((f, i) =>
+            setTimeout(() => this.play(f, 0.15, "sine", 0.2), i * 60),
+          );
+        }
+        streak5() {
+          [523, 659, 784, 988, 1175].forEach((f, i) =>
+            setTimeout(() => this.play(f, 0.18, "sine", 0.25), i * 50),
+          );
+        }
+        streak7() {
+          [523, 659, 784, 988, 1175, 1318, 1568].forEach((f, i) =>
+            setTimeout(() => this.play(f, 0.2, "sine", 0.3), i * 45),
+          );
+        }
+        powerUp() {
+          [440, 554, 659, 880].forEach((f, i) =>
+            setTimeout(() => this.play(f, 0.12, "triangle", 0.2), i * 70),
+          );
+        }
+        phaseTransition() {
+          [392, 440, 523, 659, 784, 880].forEach((f, i) =>
+            setTimeout(() => this.play(f, 0.2, "sine", 0.2), i * 60),
+          );
+        }
         levelUp() {
           [523, 659, 784, 1047].forEach((f, i) =>
             setTimeout(() => this.play(f, 0.15), i * 100),
+          );
+        }
+        win3star() {
+          [523, 659, 784, 880, 1047, 1175, 1318, 1568].forEach((f, i) =>
+            setTimeout(() => this.play(f, 0.3, "sine", 0.3), i * 100),
+          );
+        }
+        highScore() {
+          [523, 784, 1047, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play(f, 0.2, "sine", 0.3), i * 120),
           );
         }
         gameOver() {
@@ -221,6 +282,24 @@
           super("Boot");
         }
         create() {
+          // Generate textures
+          const g = this.make.graphics({ add: false });
+          // Confetti
+          g.fillStyle(0xffffff);
+          g.fillRect(0, 0, 6, 3);
+          g.generateTexture("confetti", 6, 3);
+          g.clear();
+          // Glow
+          g.fillStyle(0xffffff);
+          g.fillCircle(8, 8, 8);
+          g.generateTexture("glow_tex", 16, 16);
+          g.clear();
+          // Spark
+          g.fillStyle(0xffffff);
+          g.fillCircle(3, 3, 3);
+          g.generateTexture("spark_tex", 6, 6);
+          g.clear();
+          g.destroy();
           this.scene.start("Title");
         }
       }
@@ -234,8 +313,22 @@
           sfx.init();
           const cx = W / 2,
             cy = H / 2;
-          // Background
           this.cameras.main.setBackgroundColor("#0d1117");
+
+          // Ambient background particles (floating sparks)
+          this.add.particles(0, 0, "spark_tex", {
+            x: { min: 0, max: W },
+            y: { min: 0, max: H },
+            speed: { min: 3, max: 15 },
+            angle: { min: 260, max: 280 },
+            scale: { start: 0.3, end: 0 },
+            alpha: { start: 0.4, end: 0 },
+            lifespan: { min: 3000, max: 7000 },
+            frequency: 300,
+            tint: [0xfbbf24, 0x3b82f6, 0x475569],
+            blendMode: "ADD",
+          });
+
           // Animated gears
           for (let i = 0; i < 6; i++) {
             const g = this.add.graphics();
@@ -274,35 +367,79 @@
               },
             });
           }
-          // Title
-          this.add
+
+          // Title with animated entrance
+          const titleExp = this.add
             .text(cx, 140, "EXPRESSION", {
               fontSize: "64px",
               fontFamily: "monospace",
               color: "#f59e0b",
               fontStyle: "bold",
             })
-            .setOrigin(0.5);
-          this.add
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5);
+          this.tweens.add({
+            targets: titleExp,
+            alpha: 1,
+            scale: 1,
+            duration: 800,
+            ease: "Back.easeOut",
+            delay: 200,
+          });
+
+          const titleEng = this.add
             .text(cx, 210, "ENGINE", {
               fontSize: "72px",
               fontFamily: "monospace",
               color: "#ef4444",
               fontStyle: "bold",
             })
-            .setOrigin(0.5);
-          this.add
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5);
+          this.tweens.add({
+            targets: titleEng,
+            alpha: 1,
+            scale: 1,
+            duration: 800,
+            ease: "Back.easeOut",
+            delay: 500,
+          });
+
+          // Title pulse
+          this.tweens.add({
+            targets: [titleExp, titleEng],
+            scaleX: { from: 1, to: 1.02 },
+            scaleY: { from: 1, to: 1.02 },
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            delay: 1500,
+          });
+
+          const subtitle = this.add
             .text(cx, 270, "Factory Assembly Line", {
               fontSize: "22px",
               color: "#94a3b8",
             })
-            .setOrigin(0.5);
+            .setOrigin(0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: subtitle,
+            alpha: 1,
+            y: { from: 285, to: 270 },
+            duration: 600,
+            delay: 900,
+          });
+
           this.add
             .text(cx, 305, "6.EE.1 – 6.EE.4 | Neft Teacher", {
               fontSize: "14px",
               color: "#64748b",
             })
             .setOrigin(0.5);
+
           // Robot mascot
           const robot = this.add.graphics();
           robot.setPosition(cx, 410);
@@ -327,6 +464,19 @@
             repeat: -1,
             ease: "Sine.easeInOut",
           });
+
+          // High score display
+          const hs = localStorage.getItem(LS_KEY);
+          if (hs) {
+            this.add
+              .text(cx, 480, `HIGH SCORE: ${hs}`, {
+                fontSize: "14px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+          }
+
           // Difficulty buttons
           const diffs = [
             { label: "EASY", color: 0x22c55e, sub: "Tier 1 only" },
@@ -339,26 +489,61 @@
             const bg = this.add
               .rectangle(bx, by, 170, 70, d.color, 0.15)
               .setStrokeStyle(2, d.color)
-              .setInteractive({ useHandCursor: true });
-            this.add
+              .setInteractive({ useHandCursor: true })
+              .setScale(0)
+              .setAlpha(0);
+            // Animated entrance
+            this.tweens.add({
+              targets: bg,
+              scale: 1,
+              alpha: 1,
+              duration: 500,
+              ease: "Back.easeOut",
+              delay: 1000 + i * 150,
+            });
+            const lbl = this.add
               .text(bx, by - 10, d.label, {
                 fontSize: "22px",
                 color: "#" + d.color.toString(16).padStart(6, "0"),
                 fontStyle: "bold",
               })
-              .setOrigin(0.5);
-            this.add
+              .setOrigin(0.5)
+              .setAlpha(0);
+            const sub = this.add
               .text(bx, by + 14, d.sub, { fontSize: "12px", color: "#94a3b8" })
-              .setOrigin(0.5);
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: [lbl, sub],
+              alpha: 1,
+              duration: 400,
+              delay: 1200 + i * 150,
+            });
             bg.on("pointerover", () => {
               bg.setFillStyle(d.color, 0.3);
+              this.tweens.add({
+                targets: bg,
+                scaleX: 1.08,
+                scaleY: 1.08,
+                duration: 120,
+              });
+              sfx.click();
             });
             bg.on("pointerout", () => {
               bg.setFillStyle(d.color, 0.15);
+              this.tweens.add({
+                targets: bg,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 120,
+              });
             });
             bg.on("pointerdown", () => {
               sfx.click();
-              this.scene.start("Game", { difficulty: i });
+              this.cameras.main.fadeOut(400);
+              this.time.delayedCall(400, () =>
+                this.scene.start("Game", { difficulty: i }),
+              );
             });
           });
           // Controls info
@@ -378,6 +563,8 @@
               { fontSize: "12px", color: "#475569" },
             )
             .setOrigin(0.5);
+
+          this.cameras.main.fadeIn(500);
         }
       }
 
@@ -418,8 +605,32 @@
           this.startTime = Date.now();
           this.conveyorSpeed = this.difficulty === 2 ? 2.5 : 1.5;
           this.selectedIdx = -1;
+          this.questionStartTime = 0;
+          // Power-ups
+          this.powerUps = { fiftyFifty: 1, doublePoints: 1 };
+          this.doublePointsActive = false;
+          this.removedChoices = [];
+          this.totalCorrect = 0;
+
           // Factory background
           this.drawFactory();
+
+          // Ambient particles (floating sparks in factory)
+          this.ambientParticles = this.add
+            .particles(0, 0, "spark_tex", {
+              x: { min: 0, max: W },
+              y: { min: 100, max: 500 },
+              speed: { min: 5, max: 15 },
+              angle: { min: 250, max: 290 },
+              scale: { start: 0.2, end: 0 },
+              alpha: { start: 0.25, end: 0 },
+              lifespan: { min: 3000, max: 6000 },
+              frequency: 500,
+              tint: [0xfbbf24, 0x475569],
+              blendMode: "ADD",
+            })
+            .setDepth(0);
+
           // HUD
           this.hudBg = this.add
             .rectangle(W / 2, 28, W, 56, 0x1e293b)
@@ -432,24 +643,44 @@
             })
             .setDepth(11);
           this.hudScore = this.add
-            .text(180, 16, "", {
+            .text(160, 16, "", {
               fontSize: "16px",
               color: "#fbbf24",
               fontStyle: "bold",
             })
             .setDepth(11);
           this.hudLives = this.add
-            .text(380, 16, "", { fontSize: "16px", color: "#ef4444" })
+            .text(330, 16, "", { fontSize: "16px", color: "#ef4444" })
             .setDepth(11);
+
+          // Streak counter with visual pulse container
+          this.streakContainer = this.add.container(520, 28).setDepth(12);
+          this.streakBg = this.add
+            .rectangle(0, 0, 0, 0, 0xf59e0b, 0)
+            .setOrigin(0.5);
+          this.streakContainer.add(this.streakBg);
           this.hudStreak = this.add
-            .text(560, 16, "", { fontSize: "16px", color: "#f59e0b" })
-            .setDepth(11);
+            .text(0, -12, "", {
+              fontSize: "16px",
+              color: "#f59e0b",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.streakContainer.add(this.hudStreak);
+
           this.hudTimer = this.add
             .text(W - 120, 16, "", { fontSize: "16px", color: "#94a3b8" })
             .setDepth(11);
           this.hudCombo = this.add
             .text(W - 280, 16, "", { fontSize: "16px", color: "#a78bfa" })
             .setDepth(11);
+
+          // Speed indicator
+          this.speedIndicator = this.add
+            .text(W - 120, 38, "", { fontSize: "11px", color: "#22c55e" })
+            .setDepth(11)
+            .setAlpha(0);
+
           // Progress bar
           this.progBg = this.add
             .rectangle(W / 2, 54, W - 40, 6, 0x334155)
@@ -458,7 +689,8 @@
             .rectangle(20, 54, 0, 6, 0x3b82f6)
             .setOrigin(0, 0.5)
             .setDepth(10);
-          // Question display area (top of factory)
+
+          // Question display area
           this.qPanel = this.add
             .rectangle(W / 2, 120, 700, 80, 0x1e293b, 0.9)
             .setStrokeStyle(2, 0x3b82f6)
@@ -481,6 +713,38 @@
             })
             .setOrigin(0.5)
             .setDepth(6);
+
+          // Power-up buttons
+          this.puBtns = [];
+          const puDefs = [
+            { key: "fiftyFifty", label: "50/50 [Q]", color: 0x3b82f6, x: 80 },
+            {
+              key: "doublePoints",
+              label: "2x PTS [W]",
+              color: 0xfbbf24,
+              x: 220,
+            },
+          ];
+          puDefs.forEach((pu) => {
+            const bg = this.add
+              .rectangle(pu.x, 185, 120, 28, pu.color, 0.2)
+              .setStrokeStyle(1, pu.color)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(6);
+            const txt = this.add
+              .text(pu.x, 185, "", {
+                fontSize: "12px",
+                color: "#e2e8f0",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(7);
+            bg.on("pointerover", () => bg.setFillStyle(pu.color, 0.4));
+            bg.on("pointerout", () => bg.setFillStyle(pu.color, 0.2));
+            bg.on("pointerdown", () => this.activatePowerUp(pu.key));
+            this.puBtns.push({ bg, txt, key: pu.key, label: pu.label });
+          });
+
           // Conveyor belt
           this.conveyorParts = [];
           for (let i = 0; i < 30; i++) {
@@ -492,9 +756,11 @@
           }
           this.add.rectangle(W / 2, 480, W + 20, 4, 0x64748b).setDepth(1);
           this.add.rectangle(W / 2, 476, W + 20, 2, 0x94a3b8, 0.3).setDepth(1);
+
           // Answer boxes on conveyor
           this.answerBoxes = [];
           this.answerTexts = [];
+
           // Robot
           this.robotG = this.add
             .graphics()
@@ -509,6 +775,7 @@
             repeat: -1,
             ease: "Sine.easeInOut",
           });
+
           // Feedback text
           this.fbText = this.add
             .text(W / 2, 680, "", {
@@ -519,6 +786,7 @@
             })
             .setOrigin(0.5)
             .setDepth(8);
+
           // Hint text
           this.hintText = this.add
             .text(W / 2, 720, "", {
@@ -529,18 +797,35 @@
             })
             .setOrigin(0.5)
             .setDepth(8);
+
           // Lever
           this.lever = this.add
             .graphics()
             .setPosition(W - 80, 380)
             .setDepth(5);
           this.drawLever(this.lever, false);
-          // Particles for effects
+
+          // Confetti particle emitter
+          this.confettiEmitter = this.add
+            .particles(0, 0, "confetti", {
+              speed: { min: 80, max: 300 },
+              angle: { min: 0, max: 360 },
+              scale: { start: 1.5, end: 0.2 },
+              rotate: { min: 0, max: 360 },
+              lifespan: 1200,
+              emitting: false,
+              quantity: 25,
+              tint: [0xfbbf24, 0x3b82f6, 0x22c55e, 0xef4444, 0xa78bfa],
+              gravityY: 200,
+            })
+            .setDepth(20);
+
+          // Spark particles for correct
           this.sparkEmitter = this.add
-            .particles(0, 0, "__WHITE", {
+            .particles(0, 0, "spark_tex", {
               speed: { min: 50, max: 200 },
               angle: { min: 0, max: 360 },
-              scale: { start: 0.4, end: 0 },
+              scale: { start: 0.6, end: 0 },
               lifespan: 600,
               blendMode: "ADD",
               tint: 0xfbbf24,
@@ -548,9 +833,10 @@
               quantity: 15,
             })
             .setDepth(9);
+
           // Smoke for wrong answers
           this.smokeEmitter = this.add
-            .particles(0, 0, "__WHITE", {
+            .particles(0, 0, "spark_tex", {
               speed: { min: 20, max: 60 },
               angle: { min: 250, max: 290 },
               scale: { start: 0.6, end: 0 },
@@ -561,8 +847,31 @@
               quantity: 10,
             })
             .setDepth(9);
+
+          // Red flash overlay
+          this.redFlash = this.add
+            .rectangle(W / 2, H / 2, W, H, 0xff0000, 0)
+            .setDepth(30);
+
+          // Phase transition overlay
+          this.transitionOverlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x0f172a, 0)
+            .setDepth(50);
+          this.transitionText = this.add
+            .text(W / 2, H / 2, "", {
+              fontSize: "42px",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              stroke: "#000",
+              strokeThickness: 5,
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0);
+
           // Keyboard
           this.input.keyboard.on("keydown", this.handleKey, this);
+
           // Start first question
           this.loadQuestion();
           // Timer
@@ -571,20 +880,18 @@
             callback: () => {},
             loop: true,
           });
+
+          this.cameras.main.fadeIn(500);
         }
 
         drawFactory() {
-          // Background panels
           this.add.rectangle(W / 2, H / 2, W, H, 0x0f172a);
-          // Girders
           for (let i = 0; i < 5; i++) {
             this.add.rectangle(i * 260 + 20, H / 2, 8, H, 0x1e293b).setDepth(0);
           }
-          // Floor
           this.add.rectangle(W / 2, H - 20, W, 40, 0x1e293b).setDepth(0);
-          // Warning stripes
           for (let i = 0; i < 25; i++) {
-            const stripe = this.add
+            this.add
               .rectangle(
                 i * 50,
                 H - 2,
@@ -595,12 +902,10 @@
               .setOrigin(0, 0.5)
               .setDepth(1);
           }
-          // Pipes
           this.add.rectangle(50, 200, 12, 300, 0x334155).setDepth(0);
           this.add.rectangle(W - 50, 200, 12, 300, 0x334155).setDepth(0);
           this.add.circle(50, 60, 15, 0x475569).setDepth(0);
           this.add.circle(W - 50, 60, 15, 0x475569).setDepth(0);
-          // Gears in background
           for (let i = 0; i < 4; i++) {
             const g = this.add
               .graphics()
@@ -648,7 +953,6 @@
           g.fillStyle(0x475569);
           g.fillRect(-22, 10, 12, 30);
           g.fillRect(10, 10, 12, 30);
-          // Antenna
           g.lineStyle(2, 0x94a3b8);
           g.lineBetween(0, -45, 0, -58);
           g.fillStyle(0xef4444);
@@ -665,6 +969,92 @@
           g.strokeRect(-8, -5, 16, 70);
         }
 
+        activatePowerUp(key) {
+          if (this.answered || this.qIndex >= this.totalQ) return;
+          if (this.powerUps[key] <= 0) return;
+
+          if (key === "fiftyFifty") {
+            this.powerUps.fiftyFifty--;
+            sfx.powerUp();
+            const q = this.questions[this.qIndex];
+            const wrongIndices = [];
+            this.answerBoxes.forEach((b, i) => {
+              if (b.optText !== q.correct && !this.removedChoices.includes(i)) {
+                wrongIndices.push(i);
+              }
+            });
+            const toRemove = wrongIndices
+              .sort(() => Math.random() - 0.5)
+              .slice(0, 2);
+            toRemove.forEach((i) => {
+              const box = this.answerBoxes[i];
+              box.bg.setFillStyle(0x111122, 0.3).setStrokeStyle(1, 0x333344);
+              box.txt.setText("--");
+              box.bg.removeInteractive();
+              this.removedChoices.push(i);
+            });
+            this.showFloatingText(W / 2, 350, "50/50!", "#3b82f6");
+          } else if (key === "doublePoints") {
+            this.powerUps.doublePoints--;
+            this.doublePointsActive = true;
+            sfx.powerUp();
+            this.showFloatingText(W / 2, 350, "DOUBLE POINTS!", "#fbbf24");
+          }
+          this.updatePowerUpHUD();
+        }
+
+        showFloatingText(x, y, text, color, size) {
+          const ft = this.add
+            .text(x, y, text, {
+              fontSize: size || "24px",
+              fontStyle: "bold",
+              color: color || "#fbbf24",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(40);
+          this.tweens.add({
+            targets: ft,
+            y: y - 60,
+            alpha: { from: 1, to: 0 },
+            scale: { from: 1, to: 1.5 },
+            duration: 1000,
+            onComplete: () => ft.destroy(),
+          });
+        }
+
+        showPhaseTransition(text) {
+          sfx.phaseTransition();
+          this.transitionOverlay.setAlpha(0);
+          this.transitionText.setText(text).setAlpha(0).setScale(0.5);
+          this.tweens.add({
+            targets: this.transitionOverlay,
+            alpha: 0.7,
+            duration: 300,
+            yoyo: true,
+            hold: 800,
+          });
+          this.tweens.add({
+            targets: this.transitionText,
+            alpha: 1,
+            scale: 1.3,
+            duration: 400,
+            yoyo: true,
+            hold: 600,
+            ease: "Back.easeOut",
+            onComplete: () => this.transitionText.setAlpha(0),
+          });
+        }
+
+        updatePowerUpHUD() {
+          this.puBtns.forEach((pu) => {
+            const count = this.powerUps[pu.key];
+            pu.txt.setText(`${pu.label} (${count})`);
+            pu.bg.setAlpha(count > 0 ? 1 : 0.3);
+          });
+        }
+
         loadQuestion() {
           if (this.qIndex >= this.totalQ || this.lives <= 0) {
             this.endGame();
@@ -672,9 +1062,21 @@
           }
           this.answered = false;
           this.selectedIdx = -1;
+          this.doublePointsActive = false;
+          this.removedChoices = [];
+          this.questionStartTime = Date.now();
           const q = this.questions[this.qIndex];
+
+          // Phase transition at question 6 and 11
+          if (this.qIndex === 5) {
+            this.showPhaseTransition("PHASE 2: PICKING UP SPEED!");
+          } else if (this.qIndex === 10) {
+            this.showPhaseTransition("PHASE 3: FINAL STRETCH!");
+          }
+
           // Update HUD
           this.updateHUD();
+          this.updatePowerUpHUD();
           // Progress
           this.progFill.width = (this.qIndex / this.totalQ) * (W - 40);
           // Tier badge
@@ -687,13 +1089,21 @@
             fontSize: "13px",
             padding: { x: 8, y: 3 },
           });
-          // Question text
-          this.qText.setText(q.text);
+          // Question text with entrance animation
+          this.qText.setText(q.text).setAlpha(0).setScale(0.8);
+          this.tweens.add({
+            targets: this.qText,
+            alpha: 1,
+            scale: 1,
+            duration: 300,
+            ease: "Back.easeOut",
+          });
           // Clear old answer boxes
           this.answerBoxes.forEach((b) => {
             b.bg.destroy();
             b.txt.destroy();
             b.highlight.destroy();
+            if (b.numLabel) b.numLabel.destroy();
           });
           this.answerBoxes = [];
           // Create new answer boxes on conveyor
@@ -725,17 +1135,31 @@
               })
               .setDepth(4);
             bg.on("pointerover", () => {
-              if (!this.answered) {
+              if (!this.answered && !this.removedChoices.includes(i)) {
                 bg.setStrokeStyle(3, 0xfbbf24);
+                this.tweens.add({
+                  targets: bg,
+                  scaleX: 1.06,
+                  scaleY: 1.06,
+                  duration: 100,
+                });
                 sfx.click();
               }
             });
             bg.on("pointerout", () => {
-              if (!this.answered && this.selectedIdx !== i)
+              if (!this.answered && this.selectedIdx !== i) {
                 bg.setStrokeStyle(2, 0x3b82f6);
+                this.tweens.add({
+                  targets: bg,
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 100,
+                });
+              }
             });
             bg.on("pointerdown", () => {
-              if (!this.answered) this.selectAnswer(i);
+              if (!this.answered && !this.removedChoices.includes(i))
+                this.selectAnswer(i);
             });
             this.answerBoxes.push({
               bg,
@@ -761,22 +1185,26 @@
           // Reset feedback
           this.fbText.setText("");
           this.hintText.setText("");
+          this.speedIndicator.setAlpha(0);
           this.drawLever(this.lever, false);
         }
 
         selectAnswer(idx) {
           if (this.answered) return;
+          if (this.removedChoices.includes(idx)) return;
           // Deselect previous
-          this.answerBoxes.forEach((b) => {
-            b.bg.setStrokeStyle(2, 0x3b82f6);
-            b.highlight.setAlpha(0);
+          this.answerBoxes.forEach((b, i) => {
+            if (!this.removedChoices.includes(i)) {
+              b.bg.setStrokeStyle(2, 0x3b82f6);
+              b.highlight.setAlpha(0);
+            }
           });
           this.selectedIdx = idx;
           const box = this.answerBoxes[idx];
           box.bg.setStrokeStyle(3, 0xfbbf24);
           box.highlight.setAlpha(0.15);
           sfx.click();
-          // Auto-submit after short delay (or press Enter)
+          // Auto-submit after short delay
           this.time.delayedCall(200, () => {
             if (this.selectedIdx === idx && !this.answered)
               this.submitAnswer(idx);
@@ -789,34 +1217,129 @@
           const q = this.questions[this.qIndex];
           const chosen = this.answerBoxes[idx].optText;
           const correct = chosen === q.correct;
+          const answerTime = (Date.now() - this.questionStartTime) / 1000;
+
           // Pull lever animation
           this.drawLever(this.lever, true);
           sfx.lever();
+
           if (correct) {
-            this.score += q.tier * 10 * (1 + Math.min(this.streak, 5) * 0.1);
-            this.score = Math.round(this.score);
+            this.totalCorrect++;
+            let pts = q.tier * 10 * (1 + Math.min(this.streak, 5) * 0.1);
+            pts = Math.round(pts);
+
+            // Time bonus
+            let timeBonus = 0;
+            if (answerTime < 3) {
+              timeBonus = 15;
+              this.speedIndicator
+                .setText("SPEED BONUS +15")
+                .setColor("#22c55e")
+                .setAlpha(1);
+            } else if (answerTime < 5) {
+              timeBonus = 8;
+              this.speedIndicator
+                .setText("QUICK +8")
+                .setColor("#94a3b8")
+                .setAlpha(1);
+            }
+            pts += timeBonus;
+
+            // Double points
+            if (this.doublePointsActive) {
+              pts *= 2;
+              this.showFloatingText(W / 2, 300, "DOUBLED!", "#fbbf24", "18px");
+            }
+
+            this.score += pts;
             this.streak++;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
             this.combo = Math.min(this.streak, 5);
+
             // Green flash on correct box
             this.answerBoxes[idx].bg.setFillStyle(0x22c55e);
             this.answerBoxes[idx].bg.setStrokeStyle(3, 0x22c55e);
-            this.fbText.setText(
-              "CORRECT! +" +
-                Math.round(
-                  q.tier * 10 * (1 + Math.min(this.streak - 1, 5) * 0.1),
-                ) +
-                " pts" +
-                (this.streak >= 3 ? " STREAK x" + this.streak + "!" : ""),
-            );
+
+            // Click feedback
+            this.tweens.add({
+              targets: this.answerBoxes[idx].bg,
+              scaleX: { from: 1.15, to: 1 },
+              scaleY: { from: 1.15, to: 1 },
+              duration: 200,
+            });
+
+            const streakText =
+              this.streak >= 3 ? ` STREAK x${this.streak}!` : "";
+            this.fbText.setText(`CORRECT! +${pts} pts${streakText}`);
             this.fbText.setColor("#22c55e");
             sfx.correct();
-            // Sparks
+
+            // Floating score text
             const box = this.answerBoxes[idx];
+            this.showFloatingText(
+              box.bg.x,
+              box.bg.y - 40,
+              `+${pts}`,
+              "#22c55e",
+              "28px",
+            );
+
+            // Streak milestone effects
+            if (this.streak === 3) {
+              sfx.streak3();
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 50,
+                "STREAK x3!",
+                "#f59e0b",
+                "32px",
+              );
+            } else if (this.streak === 5) {
+              sfx.streak5();
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 50,
+                "STREAK x5! AMAZING!",
+                "#ef4444",
+                "34px",
+              );
+            } else if (this.streak === 7) {
+              sfx.streak7();
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 50,
+                "STREAK x7! UNSTOPPABLE!",
+                "#a78bfa",
+                "36px",
+              );
+            }
+
+            // Streak counter pulse
+            if (this.streak >= 2) {
+              this.hudStreak.setText(`STREAK: ${this.streak}x`);
+              this.streakBg.setSize(130, 28).setFillStyle(0xf59e0b, 0.15);
+              this.tweens.add({
+                targets: this.streakContainer,
+                scaleX: { from: 1.3, to: 1 },
+                scaleY: { from: 1.3, to: 1 },
+                duration: 300,
+                ease: "Back.easeOut",
+              });
+            }
+
+            // Confetti burst — scales with streak
+            const confettiCount = Math.min(10 + this.streak * 5, 40);
+            this.confettiEmitter.setQuantity(confettiCount);
+            this.confettiEmitter.emitParticleAt(box.bg.x, box.bg.y);
+
+            // Sparks
             this.sparkEmitter.setPosition(box.bg.x, box.bg.y);
             this.sparkEmitter.explode(20);
-            // Screen shake
-            this.cameras.main.shake(150, 0.005);
+
+            // Screen shake scales with streak
+            const shakeIntensity = Math.min(0.004 + this.streak * 0.003, 0.025);
+            this.cameras.main.shake(150, shakeIntensity);
+
             // Animate correct box sliding right (accepted)
             this.tweens.add({
               targets: [box.bg, box.txt],
@@ -843,6 +1366,9 @@
             this.lives--;
             this.streak = 0;
             this.combo = 1;
+            this.hudStreak.setText("");
+            this.streakBg.setFillStyle(0x000000, 0);
+
             // Red flash
             this.answerBoxes[idx].bg.setFillStyle(0xef4444);
             this.answerBoxes[idx].bg.setStrokeStyle(3, 0xef4444);
@@ -858,13 +1384,29 @@
             this.fbText.setColor("#ef4444");
             this.hintText.setText(q.hint);
             sfx.wrong();
+            sfx.glassBreak();
+
+            // Dramatic wrong answer effects
+            this.cameras.main.shake(350, 0.025);
+
+            // Red screen flash
+            this.redFlash.setAlpha(0.35);
+            this.tweens.add({
+              targets: this.redFlash,
+              alpha: 0,
+              duration: 500,
+            });
+
             // Smoke
             this.smokeEmitter.setPosition(
               this.answerBoxes[idx].bg.x,
               this.answerBoxes[idx].bg.y,
             );
             this.smokeEmitter.explode(15);
-            this.cameras.main.shake(200, 0.01);
+
+            // Floating wrong text
+            this.showFloatingText(W / 2, 400, "DEFECTIVE!", "#ef4444", "30px");
+
             // Robot turns red briefly
             this.drawRobot(this.robotG, 0xef4444);
             this.time.delayedCall(500, () =>
@@ -877,7 +1419,6 @@
             this.qIndex++;
             if (this.qIndex < this.totalQ && this.lives > 0) {
               this.loadQuestion();
-              // Speed up conveyor on later questions
               if (this.difficulty === 2)
                 this.conveyorSpeed = Math.min(4, this.conveyorSpeed + 0.1);
             } else {
@@ -890,7 +1431,17 @@
           if (this.answered) return;
           if (e.key >= "1" && e.key <= "4") {
             const idx = parseInt(e.key) - 1;
-            if (idx < this.answerBoxes.length) this.selectAnswer(idx);
+            if (
+              idx < this.answerBoxes.length &&
+              !this.removedChoices.includes(idx)
+            )
+              this.selectAnswer(idx);
+          }
+          if (e.key === "q" || e.key === "Q") {
+            this.activatePowerUp("fiftyFifty");
+          }
+          if (e.key === "w" || e.key === "W") {
+            this.activatePowerUp("doublePoints");
           }
           if (e.key === "ArrowRight") {
             this.selectedIdx = Math.min(
@@ -898,19 +1449,37 @@
               this.answerBoxes.length - 1,
             );
             if (this.selectedIdx < 0) this.selectedIdx = 0;
+            // Skip removed choices
+            while (
+              this.removedChoices.includes(this.selectedIdx) &&
+              this.selectedIdx < this.answerBoxes.length - 1
+            ) {
+              this.selectedIdx++;
+            }
             this.highlightSelected();
           }
           if (e.key === "ArrowLeft") {
             this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            while (
+              this.removedChoices.includes(this.selectedIdx) &&
+              this.selectedIdx > 0
+            ) {
+              this.selectedIdx--;
+            }
             this.highlightSelected();
           }
-          if (e.key === "Enter" && this.selectedIdx >= 0) {
+          if (
+            e.key === "Enter" &&
+            this.selectedIdx >= 0 &&
+            !this.removedChoices.includes(this.selectedIdx)
+          ) {
             this.submitAnswer(this.selectedIdx);
           }
         }
 
         highlightSelected() {
           this.answerBoxes.forEach((b, i) => {
+            if (this.removedChoices.includes(i)) return;
             if (i === this.selectedIdx) {
               b.bg.setStrokeStyle(3, 0xfbbf24);
               b.highlight.setAlpha(0.15);
@@ -926,11 +1495,14 @@
           this.hudQ.setText(`PART ${this.qIndex + 1}/${this.totalQ}`);
           this.hudScore.setText(`SCORE: ${this.score}`);
           this.hudLives.setText(
-            "LIVES: " + "■".repeat(this.lives) + "□".repeat(3 - this.lives),
+            "LIVES: " +
+              "■".repeat(Math.max(0, this.lives)) +
+              "□".repeat(Math.max(0, 3 - this.lives)),
           );
-          this.hudStreak.setText(
-            this.streak >= 2 ? `STREAK: ${this.streak}x` : "",
-          );
+          if (this.streak < 2) {
+            this.hudStreak.setText("");
+            this.streakBg.setFillStyle(0x000000, 0);
+          }
           this.hudCombo.setText(this.combo > 1 ? `COMBO x${this.combo}` : "");
           const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
           const m = Math.floor(elapsed / 60),
@@ -950,13 +1522,16 @@
 
         endGame() {
           const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-          this.scene.start("Results", {
-            score: this.score,
-            total: this.totalQ,
-            correct: this.qIndex - (3 - this.lives),
-            bestStreak: this.bestStreak,
-            time: elapsed,
-            difficulty: this.difficulty,
+          this.cameras.main.fadeOut(400);
+          this.time.delayedCall(400, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              total: this.totalQ,
+              correct: this.totalCorrect,
+              bestStreak: this.bestStreak,
+              time: elapsed,
+              difficulty: this.difficulty,
+            });
           });
         }
       }
@@ -976,20 +1551,31 @@
           this.cameras.main.setBackgroundColor("#0f172a");
           const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
           const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
-          // Particles celebration
+
+          // High score check
+          const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+          const isNewHigh = d.score > prevHigh;
+          if (isNewHigh && d.score > 0) {
+            localStorage.setItem(LS_KEY, String(d.score));
+          }
+
+          // Celebration particles
           if (stars >= 2) {
-            for (let i = 0; i < 3; i++) {
+            const burstCount = stars === 3 ? 8 : 5;
+            for (let i = 0; i < burstCount; i++) {
               this.time.delayedCall(i * 300, () => {
                 const e = this.add.particles(
                   Phaser.Math.Between(200, W - 200),
                   0,
-                  "__WHITE",
+                  "confetti",
                   {
                     speed: { min: 100, max: 300 },
                     angle: { min: 60, max: 120 },
-                    scale: { start: 0.5, end: 0 },
+                    scale: { start: 1.5, end: 0.2 },
+                    rotate: { min: 0, max: 360 },
                     lifespan: 1500,
-                    tint: [0xfbbf24, 0x3b82f6, 0x22c55e, 0xef4444],
+                    tint: [0xfbbf24, 0x3b82f6, 0x22c55e, 0xef4444, 0xa78bfa],
+                    gravityY: 200,
                     quantity: 20,
                     emitting: false,
                   },
@@ -997,10 +1583,15 @@
                 e.explode(25);
               });
             }
-            sfx.levelUp();
+            if (stars === 3) {
+              sfx.win3star();
+            } else {
+              sfx.levelUp();
+            }
           } else {
             sfx.gameOver();
           }
+
           // Title
           const titles = [
             "Keep Practicing!",
@@ -1008,32 +1599,98 @@
             "Great Work!",
             "FACTORY MASTER!",
           ];
-          this.add
-            .text(cx, 60, titles[stars], {
+          const titleText = this.add
+            .text(cx, 50, titles[stars], {
               fontSize: "42px",
               color: stars >= 2 ? "#fbbf24" : "#94a3b8",
               fontStyle: "bold",
             })
-            .setOrigin(0.5);
-          // Stars
-          let starStr = "";
-          for (let i = 0; i < 3; i++) starStr += i < stars ? "★ " : "☆ ";
-          this.add
-            .text(cx, 120, starStr, { fontSize: "48px", color: "#fbbf24" })
-            .setOrigin(0.5);
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5);
+          this.tweens.add({
+            targets: titleText,
+            alpha: 1,
+            scale: 1,
+            duration: 600,
+            ease: "Back.easeOut",
+          });
+
+          // Star rating with animated fill
+          const starY = 110;
+          for (let i = 0; i < 3; i++) {
+            const sx = cx - 60 + i * 60;
+            this.add
+              .text(sx, starY, "☆", {
+                fontSize: "48px",
+                color: "#334155",
+              })
+              .setOrigin(0.5);
+
+            if (i < stars) {
+              const fullStar = this.add
+                .text(sx, starY, "★", {
+                  fontSize: "48px",
+                  color: "#fbbf24",
+                })
+                .setOrigin(0.5)
+                .setAlpha(0)
+                .setScale(0);
+              this.tweens.add({
+                targets: fullStar,
+                alpha: 1,
+                scale: 1,
+                duration: 400,
+                delay: 600 + i * 300,
+                ease: "Back.easeOut",
+                onStart: () => sfx.click(),
+              });
+            }
+          }
+
+          // NEW HIGH SCORE banner
+          if (isNewHigh && d.score > 0) {
+            sfx.highScore();
+            const hsText = this.add
+              .text(cx, 155, "NEW HIGH SCORE!", {
+                fontSize: "24px",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5);
+            this.tweens.add({
+              targets: hsText,
+              scaleX: { from: 0.8, to: 1.1 },
+              scaleY: { from: 0.8, to: 1.1 },
+              duration: 600,
+              yoyo: true,
+              repeat: -1,
+            });
+          }
+
           // Score circle
-          this.add.circle(cx, 220, 70, 0x1e293b).setStrokeStyle(4, 0x3b82f6);
+          const circleY = isNewHigh ? 210 : 195;
           this.add
-            .text(cx, 210, String(pct) + "%", {
-              fontSize: "36px",
+            .circle(cx, circleY, 60, 0x1e293b)
+            .setStrokeStyle(4, 0x3b82f6);
+          this.add
+            .text(cx, circleY - 8, String(pct) + "%", {
+              fontSize: "32px",
               color: "#e2e8f0",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
           this.add
-            .text(cx, 240, "Accuracy", { fontSize: "14px", color: "#64748b" })
+            .text(cx, circleY + 22, "Accuracy", {
+              fontSize: "13px",
+              color: "#64748b",
+            })
             .setOrigin(0.5);
+
           // Stats grid
+          const statsY = isNewHigh ? 320 : 310;
           const stats = [
             { label: "Score", val: d.score, color: "#fbbf24" },
             {
@@ -1050,36 +1707,58 @@
           ];
           stats.forEach((s, i) => {
             const x = cx - 250 + i * 170,
-              y = 350;
+              y = statsY;
             this.add
               .rectangle(x, y, 140, 70, 0x1e293b)
               .setStrokeStyle(1, 0x334155);
-            this.add
+            const valText = this.add
               .text(x, y - 12, String(s.val), {
                 fontSize: "24px",
                 color: s.color,
                 fontStyle: "bold",
               })
-              .setOrigin(0.5);
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: valText,
+              alpha: 1,
+              y: { from: y - 2, to: y - 12 },
+              duration: 400,
+              delay: 300 + i * 150,
+            });
             this.add
               .text(x, y + 16, s.label, { fontSize: "12px", color: "#64748b" })
               .setOrigin(0.5);
           });
+
           // Difficulty label
           const diffLabels = ["Easy", "Standard", "Hard"];
           this.add
-            .text(cx, 410, `Mode: ${diffLabels[d.difficulty]}`, {
+            .text(cx, statsY + 55, `Mode: ${diffLabels[d.difficulty]}`, {
               fontSize: "14px",
               color: "#475569",
             })
             .setOrigin(0.5);
+
+          // Personal best
+          const bestScore = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+          if (bestScore > 0 && !isNewHigh) {
+            this.add
+              .text(cx, statsY + 78, `Personal Best: ${bestScore}`, {
+                fontSize: "13px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+          }
+
           // Buttons
+          const btnY = statsY + 120;
           const playAgain = this.add
-            .rectangle(cx - 120, 500, 200, 55, 0x3b82f6)
+            .rectangle(cx - 120, btnY, 200, 55, 0x3b82f6)
             .setStrokeStyle(2, 0x60a5fa)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx - 120, 500, "PLAY AGAIN", {
+            .text(cx - 120, btnY, "PLAY AGAIN", {
               fontSize: "18px",
               color: "#fff",
               fontStyle: "bold",
@@ -1087,16 +1766,36 @@
             .setOrigin(0.5);
           playAgain.on("pointerdown", () => {
             sfx.click();
-            this.scene.start("Game", { difficulty: d.difficulty });
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () =>
+              this.scene.start("Game", { difficulty: d.difficulty }),
+            );
           });
-          playAgain.on("pointerover", () => playAgain.setFillStyle(0x2563eb));
-          playAgain.on("pointerout", () => playAgain.setFillStyle(0x3b82f6));
+          playAgain.on("pointerover", () => {
+            playAgain.setFillStyle(0x2563eb);
+            this.tweens.add({
+              targets: playAgain,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          playAgain.on("pointerout", () => {
+            playAgain.setFillStyle(0x3b82f6);
+            this.tweens.add({
+              targets: playAgain,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
           const menu = this.add
-            .rectangle(cx + 120, 500, 200, 55, 0x334155)
+            .rectangle(cx + 120, btnY, 200, 55, 0x334155)
             .setStrokeStyle(2, 0x475569)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx + 120, 500, "MAIN MENU", {
+            .text(cx + 120, btnY, "MAIN MENU", {
               fontSize: "18px",
               color: "#94a3b8",
               fontStyle: "bold",
@@ -1104,10 +1803,28 @@
             .setOrigin(0.5);
           menu.on("pointerdown", () => {
             sfx.click();
-            this.scene.start("Title");
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () => this.scene.start("Title"));
           });
-          menu.on("pointerover", () => menu.setFillStyle(0x475569));
-          menu.on("pointerout", () => menu.setFillStyle(0x334155));
+          menu.on("pointerover", () => {
+            menu.setFillStyle(0x475569);
+            this.tweens.add({
+              targets: menu,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          menu.on("pointerout", () => {
+            menu.setFillStyle(0x334155);
+            this.tweens.add({
+              targets: menu,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
           // Footer
           this.add
             .text(
@@ -1117,12 +1834,22 @@
               { fontSize: "12px", color: "#475569" },
             )
             .setOrigin(0.5);
+
           // Keyboard
           this.input.keyboard.on("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ")
-              this.scene.start("Game", { difficulty: d.difficulty });
-            if (e.key === "Escape") this.scene.start("Title");
+            if (e.key === "Enter" || e.key === " ") {
+              this.cameras.main.fadeOut(300);
+              this.time.delayedCall(300, () =>
+                this.scene.start("Game", { difficulty: d.difficulty }),
+              );
+            }
+            if (e.key === "Escape") {
+              this.cameras.main.fadeOut(300);
+              this.time.delayedCall(300, () => this.scene.start("Title"));
+            }
           });
+
+          this.cameras.main.fadeIn(600);
         }
       }
 

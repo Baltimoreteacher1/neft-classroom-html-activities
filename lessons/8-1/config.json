@@ -11,27 +11,27 @@
     {
       "term": "Statistical Question",
       "definition": "A question that anticipates variability in the data collected to answer it",
-      "visual": "\"How tall are the players on the team?\" → heights will vary"
+      "visual": "\"How tall are the players on the team?\" → answers vary: 60 in, 63 in, 58 in, 65 in"
     },
     {
       "term": "Data",
       "definition": "Information collected by observation, measurement, or survey",
-      "visual": "Player heights: 60 in, 63 in, 58 in, 65 in"
+      "visual": "Player heights: 60 in, 63 in, 58 in, 65 in — four different measurements"
     },
     {
       "term": "Variability",
       "definition": "How spread out or different the values in a data set are",
-      "visual": "Scores of 10, 12, 11 have low variability; 2, 15, 30 have high variability"
+      "visual": "Scores 10, 12, 11 are close together (low variability); scores 2, 15, 30 are far apart (high variability)"
     },
     {
       "term": "Survey",
       "definition": "A method of collecting data by asking people questions",
-      "visual": "\"What is your favorite sport?\" asked to 50 students"
+      "visual": "Asking 50 students 'What is your favorite sport?' and recording the answers"
     },
     {
       "term": "Data distribution",
       "definition": "The shape and spread of a data set",
-      "visual": "Symmetric, skewed left, or skewed right"
+      "visual": "If most scores cluster in the middle with fewer at the edges, the distribution is symmetric"
     }
   ],
   "launch": {
@@ -51,10 +51,7 @@
   "explore": {
     "type": "drag-sort",
     "label": "Sort each question into the correct category: Statistical Question or Not a Statistical Question.",
-    "categories": [
-      "Statistical Question",
-      "Not a Statistical Question"
-    ],
+    "categories": ["Statistical Question", "Not a Statistical Question"],
     "cards": [
       {
         "text": "How many points does each player on the team score per game?",
@@ -118,6 +115,30 @@
         "explanation": "\"How many points did each player score?\" is statistical because different players will have different scores — there is variability in the data."
       },
       {
+        "type": "multiple-choice",
+        "stem": "Which question is NOT a statistical question?",
+        "choices": [
+          "How many innings are in a baseball game?",
+          "How many home runs did each player hit this year?",
+          "How many miles does each runner train per week?",
+          "How tall is each player on the basketball team?"
+        ],
+        "correctIndex": 0,
+        "explanation": "\"How many innings are in a baseball game?\" has one fixed answer (9) — no variability. The other questions all produce different answers for different people."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Why is 'How many hours of sleep did each student get last night?' a statistical question?",
+        "choices": [
+          "Because different students got different amounts of sleep",
+          "Because it asks about sleep",
+          "Because hours are numbers",
+          "Because the answer is always 8 hours"
+        ],
+        "correctIndex": 0,
+        "explanation": "A statistical question anticipates variability — different students slept different amounts, so the data will vary."
+      },
+      {
         "type": "matching",
         "stem": "Match each question to its type.",
         "pairs": [
@@ -140,16 +161,29 @@
         ]
       },
       {
-        "type": "multiple-choice",
-        "stem": "Find the mean of: 4, 7, 10, 3, 6",
-        "choices": [
-          "6",
-          "7",
-          "5",
-          "30"
+        "type": "drag-sort",
+        "instructions": "Sort these questions into Statistical or Not Statistical.",
+        "categories": [
+          {
+            "label": "Statistical Question",
+            "items": [
+              "How many books did each student read this month?",
+              "What grade did each student earn on the test?"
+            ]
+          },
+          {
+            "label": "Not a Statistical Question",
+            "items": [
+              "How many days are in a week?",
+              "What is the school mascot?"
+            ]
+          }
         ],
-        "correctIndex": 0,
-        "explanation": "Sum = 4 + 7 + 10 + 3 + 6 = 30. Mean = 30 ÷ 5 = 6."
+        "hints": [
+          "Statistical questions expect different answers from different people or observations.",
+          "Non-statistical questions have one fixed answer that doesn't change."
+        ],
+        "label": "Sort each question by type."
       }
     ],
     "onLevel": [
@@ -164,6 +198,28 @@
         ],
         "correctIndex": 0,
         "explanation": "A statistical question anticipates variability. Different athletes sleep different amounts, so the data collected will vary."
+      },
+      {
+        "type": "fill-table",
+        "columns": ["Question", "Statistical?", "Why?"],
+        "rows": [
+          {
+            "question": "How many push-ups can each student do in one minute?",
+            "statistical": "Yes",
+            "why": "Different students can do different amounts — there is variability."
+          },
+          {
+            "question": "How many sides does a basketball court have?",
+            "statistical": "No",
+            "why": "There is one fixed answer (4 sides) — no variability."
+          },
+          {
+            "question": "How far does each player kick the ball?",
+            "statistical": "Yes",
+            "why": "Different players kick different distances — the data varies."
+          }
+        ],
+        "label": "Decide if each question is statistical and explain why."
       },
       {
         "type": "matching",
@@ -186,6 +242,29 @@
             "right": "One answer — Not Statistical"
           }
         ]
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Each non-statistical question below has been rewritten to become statistical. Match the original to its rewritten version.",
+        "categories": [
+          {
+            "label": "Original: 'How many students are in 6th grade?'",
+            "items": [
+              "Rewritten: 'How many hours does each 6th grader study per week?'"
+            ]
+          },
+          {
+            "label": "Original: 'What time does school start?'",
+            "items": [
+              "Rewritten: 'What time does each student arrive at school?'"
+            ]
+          }
+        ],
+        "hints": [
+          "To make a question statistical, add variability by asking about 'each' person or observation.",
+          "The rewritten version should produce different answers for different people."
+        ],
+        "label": "Match each non-statistical question with its statistical rewrite."
       }
     ],
     "extending": [
@@ -215,17 +294,38 @@
       },
       {
         "type": "open-response",
-        "prompt": "Two students measured their height every month for 5 months. Student A's MAD is 0.5 inches. Student B's MAD is 2.3 inches. What does this tell you?",
-        "sentenceFrame": "Student A's measurements are more ___ because ___. Student B's measurements ___ because ___.",
+        "prompt": "Write one statistical question and one non-statistical question about your school's cafeteria. Explain why each question is or is not statistical, and describe what the data would look like for the statistical question.",
+        "sentenceFrame": "Statistical question: ___. This is statistical because ___. The data might look like: ___. Non-statistical question: ___. This is not statistical because ___.",
         "keywords": [
-          "consistent",
-          "spread",
           "variability",
-          "MAD",
-          "mean",
-          "average distance"
+          "different answers",
+          "one answer",
+          "data",
+          "varies",
+          "fixed"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "fill-table",
+        "columns": [
+          "Non-Statistical Question",
+          "Rewritten as Statistical",
+          "What Variability Exists?"
+        ],
+        "rows": [
+          {
+            "nonStatistical": "How many players are on the team?",
+            "rewritten": "How many minutes does each player on the team play per game?",
+            "variability": "Different players get different amounts of playing time."
+          },
+          {
+            "nonStatistical": "What sport does this league play?",
+            "rewritten": "How many games does each team in this league win per season?",
+            "variability": "Different teams win different numbers of games."
+          }
+        ],
+        "label": "Rewrite each non-statistical question to make it statistical and explain the variability."
       }
     ]
   },

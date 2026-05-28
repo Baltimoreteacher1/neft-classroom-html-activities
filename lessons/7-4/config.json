@@ -10,22 +10,22 @@
     {
       "term": "Inequality",
       "definition": "A mathematical sentence that compares two expressions using <, >, ≤, or ≥",
-      "visual": "x > 5 means x is greater than 5"
+      "visual": "x > 5 means x can be 6, 7, 8, ... — any number greater than 5"
     },
     {
       "term": "Greater than",
       "definition": "A symbol (>) showing that one value is larger than another",
-      "visual": "8 > 3"
+      "visual": "8 > 3 — eight is larger than three"
     },
     {
       "term": "Less than",
       "definition": "A symbol (<) showing that one value is smaller than another",
-      "visual": "2 < 7"
+      "visual": "2 < 7 — two is smaller than seven"
     },
     {
       "term": "At least / At most",
       "definition": "'At least' means greater than or equal to (≥); 'at most' means less than or equal to (≤)",
-      "visual": "At least 10: x ≥ 10; At most 5: x ≤ 5"
+      "visual": "'At least 10 players' → p ≥ 10 (could be 10, 11, 12, ...); 'At most 5 tries' → t ≤ 5 (could be 5, 4, 3, ...)"
     }
   ],
   "launch": {
@@ -48,17 +48,11 @@
     "categories": [
       {
         "label": "> (greater than)",
-        "items": [
-          "More than 50 clues",
-          "Over $100 in stolen goods"
-        ]
+        "items": ["More than 50 clues", "Over $100 in stolen goods"]
       },
       {
         "label": "< (less than)",
-        "items": [
-          "Fewer than 10 suspects",
-          "Under 6 hours on the scene"
-        ]
+        "items": ["Fewer than 10 suspects", "Under 6 hours on the scene"]
       },
       {
         "label": "≥ (greater than or equal to)",
@@ -98,38 +92,52 @@
       {
         "type": "multiple-choice",
         "stem": "Which inequality represents: 'The temperature is less than 40 degrees'?",
-        "choices": [
-          "t < 40",
-          "t > 40",
-          "t ≤ 40",
-          "t = 40"
-        ],
+        "choices": ["t < 40", "t > 40", "t ≤ 40", "t = 40"],
         "correctIndex": 0,
         "explanation": "'Less than' means <, so the inequality is t < 40."
       },
       {
         "type": "multiple-choice",
         "stem": "Which inequality represents: 'You must be at least 48 inches tall to ride'?",
-        "choices": [
-          "h ≥ 48",
-          "h > 48",
-          "h < 48",
-          "h ≤ 48"
-        ],
+        "choices": ["h ≥ 48", "h > 48", "h < 48", "h ≤ 48"],
         "correctIndex": 0,
         "explanation": "'At least' means greater than or equal to, so h ≥ 48."
       },
       {
         "type": "multiple-choice",
-        "stem": "Solve: n/4 = 9",
-        "choices": [
-          "n = 36",
-          "n = 13",
-          "n = 5",
-          "n = 2.25"
-        ],
+        "stem": "Which inequality represents: 'A store can hold no more than 75 people'?",
+        "choices": ["p ≤ 75", "p < 75", "p ≥ 75", "p > 75"],
         "correctIndex": 0,
-        "explanation": "Multiply both sides by 4: n = 9 × 4 = 36."
+        "explanation": "'No more than' means less than or equal to, so p ≤ 75."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which inequality represents: 'The speed limit is more than 25 mph'?",
+        "choices": ["s > 25", "s ≥ 25", "s < 25", "s = 25"],
+        "correctIndex": 0,
+        "explanation": "'More than' means strictly greater than, so s > 25."
+      },
+      {
+        "type": "number-line",
+        "instructions": "Place markers on the number line for each value, then decide: is 5 > 3 true or false? Is 2 ≥ 7 true or false?",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "snapToTick": true,
+        "targets": [
+          {
+            "value": 5,
+            "label": "5"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ],
+        "hints": [
+          "On a number line, greater numbers are to the right. 5 is to the right of 3, so 5 > 3 is true.",
+          "2 is to the LEFT of 7, so 2 ≥ 7 is false."
+        ]
       }
     ],
     "onLevel": [
@@ -148,20 +156,63 @@
           {
             "situation": "The crime happened fewer than 3 hours ago.",
             "equation": "t < 3"
+          },
+          {
+            "situation": "The vault requires at least 5 digit codes.",
+            "equation": "d ≥ 5"
           }
         ]
       },
       {
-        "type": "multiple-choice",
-        "stem": "A vault requires at least 5 digit codes. Which inequality represents the number of digits d?",
-        "choices": [
-          "d ≥ 5",
-          "d > 5",
-          "d ≤ 5",
-          "d = 5"
+        "type": "fill-table",
+        "columns": ["Situation", "Key Phrase", "Symbol", "Inequality"],
+        "rows": [
+          {
+            "situation": "A package weighs less than 50 pounds.",
+            "keyPhrase": "less than",
+            "symbol": "<",
+            "inequality": "w < 50"
+          },
+          {
+            "situation": "You need at least $25 to buy the game.",
+            "keyPhrase": "at least",
+            "symbol": "≥",
+            "inequality": "m ≥ 25"
+          },
+          {
+            "situation": "No more than 30 students can join the club.",
+            "keyPhrase": "no more than",
+            "symbol": "≤",
+            "inequality": "s ≤ 30"
+          }
         ],
+        "label": "Identify the key phrase, symbol, and write the inequality for each situation."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each inequality into whether x = 10 is a solution.",
+        "categories": [
+          {
+            "label": "x = 10 IS a solution",
+            "items": ["x ≥ 10", "x ≤ 15", "x > 8"]
+          },
+          {
+            "label": "x = 10 is NOT a solution",
+            "items": ["x > 10", "x < 10", "x ≤ 5"]
+          }
+        ],
+        "hints": [
+          "Substitute 10 for x and check if the statement is true.",
+          "Remember: ≥ means 10 counts (10 ≥ 10 is true), but > means 10 does not count (10 > 10 is false)."
+        ],
+        "label": "Test x = 10 in each inequality. Sort by whether it works."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A parking garage charges if your stay is more than 2 hours. Which inequality represents times t that are charged?",
+        "choices": ["t > 2", "t ≥ 2", "t < 2", "t ≤ 2"],
         "correctIndex": 0,
-        "explanation": "'At least 5' means 5 or more, so d ≥ 5."
+        "explanation": "'More than 2 hours' means strictly greater than: t > 2. Exactly 2 hours is not charged."
       }
     ],
     "extending": [
@@ -191,16 +242,39 @@
       },
       {
         "type": "open-response",
-        "prompt": "Write a real-world situation that can be modeled by the equation 3x + 5 = 20. Solve it and explain what x represents.",
-        "sentenceFrame": "Situation: ___. In this problem, x represents ___. Solving: ___ so x = ___.",
+        "prompt": "Write two different real-world situations: one that uses > and one that uses ≥. Explain why the situations need different symbols even though both mean 'bigger.'",
+        "sentenceFrame": "Situation 1 (>): ___. This uses > because ___. Situation 2 (≥): ___. This uses ≥ because ___. The difference is that ≥ includes ___ while > does not.",
         "keywords": [
-          "equation",
-          "solve",
-          "variable",
-          "represents",
-          "both sides"
+          "greater than",
+          "at least",
+          "equal to",
+          "included",
+          "not included",
+          "boundary"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "fill-table",
+        "columns": ["Equation or Inequality?", "Model", "Why?"],
+        "rows": [
+          {
+            "situation": "A detective has exactly 12 cases.",
+            "model": "c = 12",
+            "why": "'Exactly' means one specific value → equation"
+          },
+          {
+            "situation": "A detective has more than 12 cases.",
+            "model": "c > 12",
+            "why": "'More than' means many possible values → inequality"
+          },
+          {
+            "situation": "A detective has at most 12 cases.",
+            "model": "c ≤ 12",
+            "why": "'At most' means 12 or fewer → inequality with ≤"
+          }
+        ],
+        "label": "For each situation, decide if it needs an equation or inequality and explain why."
       }
     ]
   },
@@ -221,12 +295,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "Which inequality represents: 'A number n is at least 14'?",
-      "choices": [
-        "n ≥ 14",
-        "n > 14",
-        "n ≤ 14",
-        "n < 14"
-      ],
+      "choices": ["n ≥ 14", "n > 14", "n ≤ 14", "n < 14"],
       "correctIndex": 0,
       "explanation": "'At least 14' means 14 or greater, so n ≥ 14."
     }

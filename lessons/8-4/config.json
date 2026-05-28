@@ -11,32 +11,32 @@
     {
       "term": "Mean",
       "definition": "The sum of all values divided by the number of values (average)",
-      "visual": "Mean of 10, 20, 30 = 60 ÷ 3 = 20"
+      "visual": "Mean of 10, 20, 30 = (10+20+30) ÷ 3 = 20"
     },
     {
       "term": "Median",
       "definition": "The middle value when data is ordered from least to greatest",
-      "visual": "In 5, 8, 12, 15, 20 → median is 12"
+      "visual": "Data: 5, 8, 12, 15, 20 → median is 12 (the 3rd of 5 values)"
     },
     {
       "term": "Outlier",
       "definition": "A value that is much greater or less than most other values in a data set",
-      "visual": "In 12, 14, 13, 15, 45 → 45 is an outlier"
+      "visual": "Data: 12, 14, 13, 15, 45 → 45 is far from the cluster, so it is an outlier"
     },
     {
       "term": "Skewed",
       "definition": "When data bunches toward one end with a tail stretching to the other",
-      "visual": "Most players score 5–10 points, but one scores 35 → skewed right"
+      "visual": "Scores: 5, 6, 7, 8, 8, 35 → most scores are low, but 35 creates a tail to the right (skewed right)"
     },
     {
       "term": "Data distribution",
       "definition": "The shape and spread of a data set",
-      "visual": "Symmetric, skewed left, or skewed right"
+      "visual": "Symmetric = even on both sides. Skewed = bunched on one side with a tail"
     },
     {
       "term": "Variability",
       "definition": "How spread out the values in a data set are",
-      "visual": "Low variability = values close together"
+      "visual": "88, 90, 89, 91 (low variability) vs. 50, 70, 95, 100 (high variability)"
     }
   ],
   "launch": {
@@ -56,10 +56,7 @@
   "explore": {
     "type": "drag-sort",
     "label": "Sort each sports data scenario into the correct category: Use Mean or Use Median.",
-    "categories": [
-      "Use Mean",
-      "Use Median"
-    ],
+    "categories": ["Use Mean", "Use Median"],
     "cards": [
       {
         "text": "Basketball: Points per game — 18, 20, 19, 22, 21, 20 (no outliers, symmetric)",
@@ -115,6 +112,18 @@
         "explanation": "The data is symmetric with no outliers, so the mean (8.7) best represents the typical score."
       },
       {
+        "type": "multiple-choice",
+        "stem": "A runner's mile times are: 7:10, 7:15, 7:12, 7:20, 12:00. The 12:00 was due to a cramp. Which measure best represents a typical mile?",
+        "choices": [
+          "Median — the outlier 12:00 pulls the mean too high",
+          "Mean — it uses all the data",
+          "Mode — it shows the most common time",
+          "Neither measure works"
+        ],
+        "correctIndex": 0,
+        "explanation": "The 12:00 is an outlier that pulls the mean up. The median (7:15) better represents the runner's typical time."
+      },
+      {
         "type": "matching",
         "stem": "Match each data description with the best measure of center.",
         "pairs": [
@@ -138,15 +147,42 @@
       },
       {
         "type": "multiple-choice",
-        "stem": "The mean of 5 numbers is 12. What is their sum?",
+        "stem": "Data set: 5, 6, 7, 7, 8, 50. The mean is about 13.8 and the median is 7. Which better represents the typical value?",
         "choices": [
-          "60",
-          "12",
-          "5",
-          "17"
+          "Median (7) — the outlier 50 inflates the mean",
+          "Mean (13.8) — it includes all values",
+          "Both are equally good",
+          "Neither works for this data"
         ],
         "correctIndex": 0,
-        "explanation": "Mean = Sum ÷ Count. 12 = Sum ÷ 5. Sum = 12 × 5 = 60."
+        "explanation": "The mean (13.8) is higher than 5 of the 6 values because the outlier 50 pulls it up. The median (7) better represents a typical value."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each data feature into whether it suggests using the mean or the median.",
+        "categories": [
+          {
+            "label": "Use Mean",
+            "items": [
+              "No outliers in the data",
+              "Data is symmetric",
+              "All values are close together"
+            ]
+          },
+          {
+            "label": "Use Median",
+            "items": [
+              "Data has one or more outliers",
+              "Data is skewed to one side",
+              "One extreme value pulls the average"
+            ]
+          }
+        ],
+        "hints": [
+          "The mean is sensitive to extreme values — outliers pull it up or down.",
+          "The median stays in the middle regardless of how extreme the highest or lowest values are."
+        ],
+        "label": "Sort each feature by which measure of center it supports."
       }
     ],
     "onLevel": [
@@ -161,6 +197,56 @@
         ],
         "correctIndex": 0,
         "explanation": "The .110 is an outlier that pulls the mean down to .260. The median (.2875) better represents typical performance because it isn't affected by the extreme value."
+      },
+      {
+        "type": "fill-table",
+        "headers": ["Data Set", "Mean", "Median", "Outlier?", "Best Measure"],
+        "rows": [
+          ["15, 18, 16, 17, 15", "", "", "", ""],
+          ["15, 18, 16, 17, 72", "", "", "", ""]
+        ],
+        "editableCells": [
+          {
+            "row": 0,
+            "col": 1,
+            "answer": "16.2"
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "answer": "16"
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "answer": "No"
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "answer": "Mean (no outlier, data is clustered)"
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "answer": "27.6"
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "answer": "17"
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "answer": "Yes (72)"
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "answer": "Median (72 pulls the mean to 27.6, higher than 4 of 5 values)"
+          }
+        ]
       },
       {
         "type": "matching",
@@ -182,6 +268,28 @@
             "left": "All values are clustered close together",
             "right": "Use Mean"
           }
+        ]
+      },
+      {
+        "type": "number-line",
+        "label": "Data: 10, 12, 11, 13, 50. Place the mean (19.2) and median (12) on the number line. Notice how far apart they are because of the outlier.",
+        "min": 5,
+        "max": 55,
+        "step": 5,
+        "snapToTick": true,
+        "targets": [
+          {
+            "value": 20,
+            "label": "Mean ≈ 19.2"
+          },
+          {
+            "value": 12,
+            "label": "Median = 12"
+          }
+        ],
+        "hints": [
+          "The mean (19.2) is pulled toward the outlier 50. The median (12) stays near the cluster of data.",
+          "When the mean and median are far apart, that is a sign of skewed data or an outlier."
         ]
       }
     ],
@@ -216,17 +324,44 @@
       },
       {
         "type": "open-response",
-        "prompt": "Two students measured their height every month for 5 months. Student A's MAD is 0.5 inches. Student B's MAD is 2.3 inches. What does this tell you?",
-        "sentenceFrame": "Student A's measurements are more ___ because ___. Student B's measurements ___ because ___.",
+        "prompt": "A local newspaper reports that the average home price in a neighborhood is $450,000. The actual prices are: $180K, $200K, $190K, $210K, $195K, $1,725K. Is the reporter's claim misleading? Calculate the mean and median and explain which better represents a 'typical' home price.",
+        "sentenceFrame": "Mean = ___. Median = ___. The reporter's claim is ___ because the outlier ($1,725K) pulls the mean ___. The ___ (about $___) better represents a typical home price because ___.",
         "keywords": [
-          "consistent",
-          "spread",
-          "variability",
-          "MAD",
           "mean",
-          "average distance"
+          "median",
+          "outlier",
+          "misleading",
+          "pulls",
+          "higher",
+          "typical",
+          "skewed"
         ],
-        "minLength": 30
+        "minLength": 50
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each real-world situation into whether the mean or median is more commonly reported.",
+        "categories": [
+          {
+            "label": "Mean is typically reported",
+            "items": [
+              "Average temperature for the month",
+              "Average test score for a class (no outliers)"
+            ]
+          },
+          {
+            "label": "Median is typically reported",
+            "items": [
+              "Median household income in a city",
+              "Median home price in a neighborhood"
+            ]
+          }
+        ],
+        "hints": [
+          "Income and home prices often have extreme outliers (billionaires, mansions), so median is used.",
+          "Temperature and test scores are often symmetric, so mean works well."
+        ],
+        "label": "Sort by which measure is typically used in real life."
       }
     ]
   },

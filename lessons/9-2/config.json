@@ -10,27 +10,27 @@
     {
       "term": "Integer",
       "definition": "A whole number that can be positive, negative, or zero",
-      "visual": "... -3, -2, -1, 0, 1, 2, 3 ..."
+      "visual": "... -3, -2, -1, 0, 1, 2, 3 ... shown on a number line with 0 in the center"
     },
     {
       "term": "Positive",
       "definition": "A number greater than zero, located to the right of zero on a number line",
-      "visual": "Numbers like 1, 2, 3 are to the right of 0"
+      "visual": "+5 means 5 above zero, like 5 floors above ground level"
     },
     {
       "term": "Negative",
       "definition": "A number less than zero, located to the left of zero on a number line",
-      "visual": "Numbers like -1, -2, -3 are to the left of 0"
+      "visual": "-3 means 3 below zero, like 3 floors underground"
     },
     {
       "term": "Absolute value",
       "definition": "The distance a number is from zero on a number line, always positive or zero",
-      "visual": "|-5| = 5 because -5 is 5 units from 0"
+      "visual": "|-5| = 5 and |5| = 5 — both are 5 units from 0"
     },
     {
-      "term": "Reflection",
-      "definition": "A mirror image across an axis",
-      "visual": "(3, 2) reflected over x-axis = (3, −2)"
+      "term": "Opposite",
+      "definition": "Two numbers that are the same distance from zero but on different sides",
+      "visual": "3 and -3 are opposites — both are 3 units from 0"
     }
   ],
   "launch": {
@@ -96,14 +96,23 @@
       {
         "type": "multiple-choice",
         "stem": "What is the absolute value of -9?",
-        "choices": [
-          "9",
-          "-9",
-          "0",
-          "1"
-        ],
+        "choices": ["9", "-9", "0", "1"],
         "correctIndex": 0,
         "explanation": "Absolute value is the distance from zero. -9 is 9 units from zero, so |-9| = 9."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which integer has the GREATEST absolute value: -3, 7, -5, 2?",
+        "choices": ["7", "-5", "-3", "2"],
+        "correctIndex": 0,
+        "explanation": "|-3| = 3, |7| = 7, |-5| = 5, |2| = 2. The greatest absolute value is 7."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is |0|?",
+        "choices": ["0", "1", "-1", "There is no answer"],
+        "correctIndex": 0,
+        "explanation": "Zero is 0 units from itself on the number line, so |0| = 0."
       },
       {
         "type": "matching-game",
@@ -137,16 +146,18 @@
         "label": "Match each integer to its absolute value."
       },
       {
-        "type": "multiple-choice",
-        "stem": "Point A is at (−3, 4). In which quadrant is it?",
-        "choices": [
-          "Quadrant II",
-          "Quadrant I",
-          "Quadrant III",
-          "Quadrant IV"
-        ],
-        "correctIndex": 0,
-        "explanation": "Negative x, positive y = Quadrant II (top-left)."
+        "type": "number-line",
+        "label": "Plot these integers on the number line: -6, -2, 0, 4, 7",
+        "min": -8,
+        "max": 8,
+        "step": 1,
+        "targets": [
+          { "value": -6, "label": "-6" },
+          { "value": -2, "label": "-2" },
+          { "value": 0, "label": "0" },
+          { "value": 4, "label": "4" },
+          { "value": 7, "label": "7" }
+        ]
       }
     ],
     "onLevel": [
@@ -157,62 +168,55 @@
         "max": 8,
         "step": 1,
         "targets": [
-          {
-            "value": -6,
-            "label": "A"
-          },
-          {
-            "value": 6,
-            "label": "B"
-          },
-          {
-            "value": -2,
-            "label": "C"
-          },
-          {
-            "value": 2,
-            "label": "D"
-          },
-          {
-            "value": -4,
-            "label": "E"
-          },
-          {
-            "value": 4,
-            "label": "F"
-          }
+          { "value": -6, "label": "A" },
+          { "value": 6, "label": "B" },
+          { "value": -2, "label": "C" },
+          { "value": 2, "label": "D" },
+          { "value": -4, "label": "E" },
+          { "value": 4, "label": "F" }
         ]
       },
       {
-        "type": "matching-game",
-        "pairs": [
-          {
-            "term": "(3, 2)",
-            "match": "Quadrant I"
-          },
-          {
-            "term": "(−4, 5)",
-            "match": "Quadrant II"
-          },
-          {
-            "term": "(−2, −6)",
-            "match": "Quadrant III"
-          },
-          {
-            "term": "(7, −1)",
-            "match": "Quadrant IV"
-          },
-          {
-            "term": "(0, 3)",
-            "match": "y-axis"
-          },
-          {
-            "term": "(5, 0)",
-            "match": "x-axis"
-          }
+        "type": "fill-table",
+        "instructions": "Complete the table with each integer's absolute value and its opposite.",
+        "headers": ["Integer", "Absolute Value", "Opposite"],
+        "rows": [
+          ["-7", "", ""],
+          ["4", "", ""],
+          ["-12", "", ""],
+          ["0", "", ""],
+          ["9", "", ""]
         ],
-        "label": "Match each point to its location.",
-        "columns": 4
+        "editableCells": [
+          { "row": 0, "col": 1, "answer": "7" },
+          { "row": 0, "col": 2, "answer": "7" },
+          { "row": 1, "col": 1, "answer": "4" },
+          { "row": 1, "col": 2, "answer": "-4" },
+          { "row": 2, "col": 1, "answer": "12" },
+          { "row": 2, "col": 2, "answer": "12" },
+          { "row": 3, "col": 1, "answer": "0" },
+          { "row": 3, "col": 2, "answer": "0" },
+          { "row": 4, "col": 1, "answer": "9" },
+          { "row": 4, "col": 2, "answer": "-9" }
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "label": "Sort these integers from the GREATEST absolute value to the LEAST absolute value.",
+        "items": ["-2", "8", "-5", "1", "-10", "3"],
+        "correctOrder": ["-10", "8", "-5", "3", "-2", "1"]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which statement about absolute value is TRUE?",
+        "choices": [
+          "|-4| = |4| because both are 4 units from zero",
+          "|-4| = -4 because the number is negative",
+          "|4| > |-4| because positive is always bigger",
+          "|-4| = 0 because negatives cancel out"
+        ],
+        "correctIndex": 0,
+        "explanation": "Absolute value measures distance from zero. Both -4 and 4 are 4 units from zero, so |-4| = |4| = 4."
       }
     ],
     "extending": [
@@ -222,7 +226,7 @@
         "workedExample": [
           {
             "label": "Problem",
-            "work": "Find |−6|"
+            "work": "Find |-6|"
           },
           {
             "label": "Student thinking",
@@ -230,11 +234,11 @@
           },
           {
             "label": "Student answer",
-            "work": "|−6| = 6, and since we take the opposite, the answer is -6"
+            "work": "|-6| = 6, and since we take the opposite, the answer is -6"
           }
         ],
         "errorStep": 2,
-        "correctWork": "Absolute value gives the DISTANCE from zero, which is always positive or zero. |−6| = 6. The student incorrectly applied 'opposite' a second time.",
+        "correctWork": "Absolute value gives the DISTANCE from zero, which is always positive or zero. |-6| = 6. The student incorrectly applied 'opposite' a second time.",
         "hints": [
           "Absolute value measures distance. Can a distance ever be negative?",
           "The student found 6 first, then incorrectly negated it. Distance from zero is always non-negative."
@@ -242,17 +246,26 @@
       },
       {
         "type": "open-response",
-        "prompt": "Explain how to find the distance between two points that share the same x-coordinate, like (3, −2) and (3, 5). What if they share the same y-coordinate instead?",
-        "sentenceFrame": "When points share the same x-coordinate, the distance is ___. I find it by ___.",
+        "prompt": "A submarine is at -150 meters and a bird is flying at +150 meters. A student says the submarine is closer to sea level because -150 is less than 150. Is the student correct? Explain using absolute value.",
+        "sentenceFrame": "The student is ___ because absolute value measures ___. Since |-150| = ___ and |150| = ___, both are ___ from sea level. The student confused ___ with ___.",
         "keywords": [
           "absolute value",
-          "subtract",
           "distance",
-          "horizontal",
-          "vertical",
-          "coordinate"
+          "sea level",
+          "zero",
+          "equal",
+          "negative",
+          "less than",
+          "position"
         ],
         "minLength": 30
+      },
+      {
+        "type": "balance-scale",
+        "label": "Use absolute value to decide which side is greater, or if they are equal.",
+        "left": "|-8| + |3|",
+        "right": "|7| + |-4|",
+        "instructions": "Calculate each side. Left: |-8| + |3| = 8 + 3 = 11. Right: |7| + |-4| = 7 + 4 = 11. Are they balanced?"
       }
     ]
   },
@@ -275,12 +288,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "Which integer has an absolute value of 8 and is located to the LEFT of zero on the number line?",
-      "choices": [
-        "8",
-        "-8",
-        "0",
-        "-80"
-      ],
+      "choices": ["8", "-8", "0", "-80"],
       "correctIndex": 1,
       "explanation": "To the left of zero means negative. The integer -8 has an absolute value of 8 because it is 8 units from zero."
     }

@@ -26,6 +26,25 @@
     <script>
       // ── FRACTION KITCHEN — Cooking Tycoon ──
       // Phaser 3 single-file game for Grade 6 ESOL — Fraction Operations
+      // Enhanced with particles, streaks, star ratings, high scores, power-ups
+
+      // ── localStorage ──
+      const LS_KEY = "fractionKitchen_highScores";
+      function getHighScore(diff) {
+        try {
+          const d = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+          return d[diff] || 0;
+        } catch (e) {
+          return 0;
+        }
+      }
+      function setHighScore(diff, score) {
+        try {
+          const d = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+          d[diff] = score;
+          localStorage.setItem(LS_KEY, JSON.stringify(d));
+        } catch (e) {}
+      }
 
       const SFX = {
         ctx: null,
@@ -38,6 +57,22 @@
           const c = this.ctx,
             o = c.createOscillator(),
             g = c.createGain();
+          if (type === "noise") {
+            const bufSize = c.sampleRate * dur;
+            const buf = c.createBuffer(1, bufSize, c.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const src = c.createBufferSource();
+            src.buffer = buf;
+            const gn = c.createGain();
+            gn.gain.setValueAtTime(vol, c.currentTime);
+            gn.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+            src.connect(gn);
+            gn.connect(c.destination);
+            src.start();
+            src.stop(c.currentTime + dur);
+            return;
+          }
           o.type = type;
           o.frequency.value = freq;
           g.gain.setValueAtTime(vol, c.currentTime);
@@ -54,6 +89,11 @@
         wrong() {
           this.play("sawtooth", 200, 0.25, 0.2);
         },
+        glassBreak() {
+          this.play("noise", 3000, 0.12, 0.2);
+          this.play("noise", 5000, 0.08, 0.15);
+          this.play("square", 100, 0.15, 0.1);
+        },
         sizzle() {
           this.play("noise", 800, 0.12, 0.08);
         },
@@ -68,14 +108,44 @@
         tick() {
           this.play("square", 600, 0.03, 0.1);
         },
+        streak3() {
+          [784, 988, 1175].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.12, 0.25), i * 60),
+          );
+        },
+        streak5() {
+          [784, 988, 1175, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.1, 0.3), i * 50),
+          );
+        },
+        streak7() {
+          [523, 659, 784, 988, 1175, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.1, 0.35), i * 40),
+          );
+        },
         upgrade() {
           [523, 659, 784, 1047].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.15, 0.25), i * 80),
           );
         },
+        phaseTransition() {
+          [330, 440, 550, 660].forEach((f, i) =>
+            setTimeout(() => this.play("triangle", f, 0.15, 0.2), i * 100),
+          );
+        },
         win() {
           [523, 659, 784, 880, 1047].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.2, 0.3), i * 120),
+          );
+        },
+        win3Star() {
+          [523, 659, 784, 880, 1047, 1175, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.35), i * 80),
+          );
+        },
+        newHighScore() {
+          [1047, 1319, 1568, 1047, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("triangle", f, 0.15, 0.3), i * 100),
           );
         },
         lose() {
@@ -85,6 +155,18 @@
         },
         chop() {
           this.play("noise", 2000, 0.05, 0.15);
+        },
+        doublePoints() {
+          this.play("sine", 880, 0.1, 0.2);
+          this.play("sine", 1100, 0.12, 0.25);
+        },
+        fiftyFifty() {
+          this.play("triangle", 600, 0.1, 0.2);
+          this.play("triangle", 800, 0.12, 0.2);
+        },
+        speedBonus() {
+          this.play("sine", 1047, 0.08, 0.2);
+          this.play("sine", 1319, 0.1, 0.25);
         },
       };
 
@@ -116,16 +198,16 @@
       function generateOrders(difficulty) {
         const orders = [];
         const recipes = [
-          { name: "Pancakes", emoji: "🥞", color: 0xf5d6a0 },
-          { name: "Pizza", emoji: "🍕", color: 0xe84040 },
-          { name: "Cookies", emoji: "🍪", color: 0xc8956e },
-          { name: "Tacos", emoji: "🌮", color: 0xf0c040 },
-          { name: "Smoothie", emoji: "🥤", color: 0xd060d0 },
-          { name: "Soup", emoji: "🍲", color: 0x60b060 },
-          { name: "Cake", emoji: "🎂", color: 0xff88cc },
-          { name: "Salad", emoji: "🥗", color: 0x40c040 },
-          { name: "Pasta", emoji: "🍝", color: 0xf0a040 },
-          { name: "Sandwich", emoji: "🥪", color: 0xd4a050 },
+          { name: "Pancakes", emoji: "\u{1F95E}", color: 0xf5d6a0 },
+          { name: "Pizza", emoji: "\u{1F355}", color: 0xe84040 },
+          { name: "Cookies", emoji: "\u{1F36A}", color: 0xc8956e },
+          { name: "Tacos", emoji: "\u{1F32E}", color: 0xf0c040 },
+          { name: "Smoothie", emoji: "\u{1F964}", color: 0xd060d0 },
+          { name: "Soup", emoji: "\u{1F372}", color: 0x60b060 },
+          { name: "Cake", emoji: "\u{1F382}", color: 0xff88cc },
+          { name: "Salad", emoji: "\u{1F957}", color: 0x40c040 },
+          { name: "Pasta", emoji: "\u{1F35D}", color: 0xf0a040 },
+          { name: "Sandwich", emoji: "\u{1F96A}", color: 0xd4a050 },
         ];
 
         const easyDenoms = [2, 3, 4, 6];
@@ -278,6 +360,7 @@
           BootScene,
           TitleScene,
           DifficultyScene,
+          TransitionScene,
           GameScene,
           UpgradeScene,
           ResultScene,
@@ -356,10 +439,64 @@
         g.generateTexture("star", 8, 8);
         g.clear();
 
+        // Star big (for rating)
+        g.fillStyle(0xffdd00);
+        g.fillCircle(16, 16, 16);
+        g.generateTexture("star_big", 32, 32);
+        g.clear();
+
+        // Star empty
+        g.lineStyle(2, 0xffdd00);
+        g.strokeCircle(16, 16, 16);
+        g.generateTexture("star_empty", 32, 32);
+        g.clear();
+
+        // Confetti
+        g.fillStyle(0xff4488);
+        g.fillRect(0, 0, 6, 10);
+        g.generateTexture("confetti", 6, 10);
+        g.clear();
+
+        // Steam particle
+        g.fillStyle(0xffffff);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("steam", 8, 8);
+        g.clear();
+
+        // Ambient spice particle
+        g.fillStyle(0xf59e0b);
+        g.fillCircle(2, 2, 2);
+        g.generateTexture("spice", 4, 4);
+        g.clear();
+
         // Timer bar bg
         g.fillStyle(0x333333);
         g.fillRoundedRect(0, 0, 300, 14, 4);
         g.generateTexture("timerBg", 300, 14);
+        g.clear();
+
+        // Progress bar bg
+        g.fillStyle(0x3d2010);
+        g.fillRoundedRect(0, 0, 200, 8, 4);
+        g.generateTexture("progbar_bg", 200, 8);
+        g.clear();
+
+        // Progress bar fill
+        g.fillStyle(0xf59e0b);
+        g.fillRoundedRect(0, 0, 200, 8, 4);
+        g.generateTexture("progbar_fill", 200, 8);
+        g.clear();
+
+        // Red flash overlay
+        g.fillStyle(0xff0000);
+        g.fillRect(0, 0, W, H);
+        g.generateTexture("red_flash", W, H);
+        g.clear();
+
+        // Speed indicator
+        g.fillStyle(0x00ff88);
+        g.fillCircle(6, 6, 6);
+        g.generateTexture("speed_dot", 12, 12);
         g.clear();
 
         g.destroy();
@@ -382,18 +519,32 @@
           this.add.rectangle(cx, i * 8, W, 8, 0xd97706, 0.03 * (20 - i));
         }
 
+        // Ambient spice particles
+        this.add.particles(0, 0, "spice", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 3, max: 12 },
+          scale: { start: 0.6, end: 0 },
+          alpha: { start: 0.3, end: 0 },
+          lifespan: { min: 5000, max: 9000 },
+          frequency: 300,
+          quantity: 1,
+          tint: [0xf59e0b, 0xd97706, 0xff6644, 0xef4444],
+          angle: { min: 260, max: 280 },
+        });
+
         // Floating food emojis
         const foods = [
-          "🥞",
-          "🍕",
-          "🍪",
-          "🌮",
-          "🥤",
-          "🍲",
-          "🎂",
-          "🥗",
-          "🍝",
-          "🥪",
+          "\u{1F95E}",
+          "\u{1F355}",
+          "\u{1F36A}",
+          "\u{1F32E}",
+          "\u{1F964}",
+          "\u{1F372}",
+          "\u{1F382}",
+          "\u{1F957}",
+          "\u{1F35D}",
+          "\u{1F96A}",
         ];
         for (let i = 0; i < 12; i++) {
           const txt = this.add
@@ -414,9 +565,31 @@
           });
         }
 
-        // Title
-        this.add.text(cx, 80, "🍳", { fontSize: "72px" }).setOrigin(0.5);
-        this.add
+        // Title with animated entrance
+        const egg = this.add
+          .text(cx, 80, "\u{1F373}", { fontSize: "72px" })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.3);
+        this.tweens.add({
+          targets: egg,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: "Back.easeOut",
+          delay: 100,
+        });
+        // Wobble the egg
+        this.tweens.add({
+          targets: egg,
+          angle: { from: -5, to: 5 },
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          delay: 800,
+        });
+
+        const titleFraction = this.add
           .text(cx, 150, "FRACTION", {
             fontSize: "56px",
             fontFamily: "Impact,sans-serif",
@@ -424,8 +597,19 @@
             stroke: "#5c3a0a",
             strokeThickness: 5,
           })
-          .setOrigin(0.5);
-        this.add
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: titleFraction,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: "Back.easeOut",
+          delay: 200,
+        });
+
+        const titleKitchen = this.add
           .text(cx, 210, "KITCHEN", {
             fontSize: "56px",
             fontFamily: "Impact,sans-serif",
@@ -433,14 +617,52 @@
             stroke: "#5c0a0a",
             strokeThickness: 5,
           })
-          .setOrigin(0.5);
-        this.add
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: titleKitchen,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: "Back.easeOut",
+          delay: 350,
+        });
+
+        // Pulsing glow on titles
+        this.tweens.add({
+          targets: titleFraction,
+          scaleX: { from: 1, to: 1.03 },
+          scaleY: { from: 1, to: 1.03 },
+          duration: 1500,
+          yoyo: true,
+          repeat: -1,
+          delay: 1000,
+        });
+        this.tweens.add({
+          targets: titleKitchen,
+          scaleX: { from: 1, to: 1.03 },
+          scaleY: { from: 1, to: 1.03 },
+          duration: 1500,
+          yoyo: true,
+          repeat: -1,
+          delay: 1200,
+        });
+
+        const subtitle = this.add
           .text(cx, 260, "COOKING TYCOON", {
             fontSize: "18px",
             color: "#d4a050",
             letterSpacing: 6,
           })
-          .setOrigin(0.5);
+          .setOrigin(0.5)
+          .setAlpha(0);
+        this.tweens.add({
+          targets: subtitle,
+          alpha: 1,
+          duration: 400,
+          delay: 600,
+        });
 
         this.add
           .text(cx, 310, "Add  •  Subtract  •  Multiply  •  Divide Fractions", {
@@ -455,7 +677,7 @@
           })
           .setOrigin(0.5);
 
-        // Animated plate
+        // Animated plate and bowl
         const plate = this.add.image(cx - 100, 420, "plate").setScale(1.5);
         const bowl = this.add.image(cx + 100, 420, "bowl").setScale(1.2);
         this.tweens.add({
@@ -473,7 +695,18 @@
           repeat: -1,
         });
 
-        // Start
+        // Steam from bowl
+        this.add.particles(cx + 100, 400, "steam", {
+          speed: { min: 10, max: 30 },
+          scale: { start: 0.6, end: 0 },
+          alpha: { start: 0.4, end: 0 },
+          lifespan: 1500,
+          frequency: 400,
+          quantity: 1,
+          angle: { min: -100, max: -80 },
+        });
+
+        // Start button with hover
         const btn = this.add
           .rectangle(cx, 510, 260, 56, 0xd97706)
           .setInteractive({ useHandCursor: true });
@@ -484,13 +717,37 @@
             color: "#fff",
           })
           .setOrigin(0.5);
+
+        // Button glow
+        const btnGlow = this.add.rectangle(cx, 510, 270, 66, 0xd97706, 0.3);
         this.tweens.add({
-          targets: [btn, btnTxt],
-          scaleX: { from: 1, to: 1.05 },
-          scaleY: { from: 1, to: 1.05 },
-          duration: 900,
+          targets: btnGlow,
+          alpha: { from: 0.1, to: 0.35 },
+          scaleX: { from: 1, to: 1.06 },
+          scaleY: { from: 1, to: 1.06 },
+          duration: 1000,
           yoyo: true,
           repeat: -1,
+        });
+
+        btn.on("pointerover", () => {
+          this.tweens.add({
+            targets: [btn, btnTxt],
+            scaleX: 1.08,
+            scaleY: 1.08,
+            duration: 150,
+            ease: "Back.easeOut",
+          });
+          btn.setFillStyle(0xf59e0b);
+        });
+        btn.on("pointerout", () => {
+          this.tweens.add({
+            targets: [btn, btnTxt],
+            scaleX: 1,
+            scaleY: 1,
+            duration: 150,
+          });
+          btn.setFillStyle(0xd97706);
         });
 
         btn.on("pointerdown", () => {
@@ -519,6 +776,18 @@
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x2d1508);
 
+        // Ambient particles
+        this.add.particles(0, 0, "spice", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 3, max: 10 },
+          scale: { start: 0.4, end: 0 },
+          alpha: { start: 0.2, end: 0 },
+          lifespan: 5000,
+          frequency: 400,
+          tint: [0xf59e0b, 0xd97706],
+        });
+
         this.add
           .text(cx, 60, "CHOOSE YOUR KITCHEN", {
             fontSize: "32px",
@@ -538,59 +807,177 @@
             key: "easy",
             label: "HOME KITCHEN",
             sub: "Simple fractions, 35s timer",
-            emoji: "🏠",
+            emoji: "\u{1F3E0}",
             color: 0x22c55e,
             y: 200,
+            hs: getHighScore("easy"),
           },
           {
             key: "medium",
             label: "RESTAURANT",
             sub: "Mixed operations, 28s timer",
-            emoji: "🍽️",
+            emoji: "\u{1F37D}️",
             color: 0xf59e0b,
             y: 320,
+            hs: getHighScore("medium"),
           },
           {
             key: "hard",
             label: "MASTER CHEF",
             sub: "Complex fractions, 22s timer",
-            emoji: "👨‍🍳",
+            emoji: "\u{1F468}‍\u{1F373}",
             color: 0xef4444,
             y: 440,
+            hs: getHighScore("hard"),
           },
         ];
 
-        diffs.forEach((d) => {
+        diffs.forEach((d, idx) => {
           const btn = this.add
             .rectangle(cx, d.y, 360, 90, d.color, 0.9)
-            .setInteractive({ useHandCursor: true });
-          this.add
+            .setInteractive({ useHandCursor: true })
+            .setAlpha(0)
+            .setScale(0.8);
+          const emojiTxt = this.add
             .text(cx - 140, d.y - 14, d.emoji, { fontSize: "36px" })
-            .setOrigin(0, 0.5);
-          this.add
+            .setOrigin(0, 0.5)
+            .setAlpha(0);
+          const labelTxt = this.add
             .text(cx + 10, d.y - 14, d.label, {
               fontSize: "26px",
               fontStyle: "bold",
               color: "#fff",
             })
-            .setOrigin(0.5);
-          this.add
+            .setOrigin(0.5)
+            .setAlpha(0);
+          const subTxt = this.add
             .text(cx + 10, d.y + 16, d.sub, {
               fontSize: "13px",
               color: "#ffffffcc",
             })
-            .setOrigin(0.5);
-          btn.on("pointerover", () => btn.setFillStyle(d.color, 1));
-          btn.on("pointerout", () => btn.setFillStyle(d.color, 0.9));
+            .setOrigin(0.5)
+            .setAlpha(0);
+          const hsTxt = this.add
+            .text(cx + 10, d.y + 34, d.hs > 0 ? `Best: ${d.hs}` : "", {
+              fontSize: "11px",
+              color: "#ffffffaa",
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+
+          // Entrance animation
+          this.tweens.add({
+            targets: [btn, emojiTxt, labelTxt, subTxt, hsTxt],
+            alpha: 1,
+            scale: 1,
+            duration: 400,
+            delay: idx * 150,
+            ease: "Back.easeOut",
+          });
+
+          btn.on("pointerover", () => {
+            btn.setFillStyle(d.color, 1);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1.04,
+              scaleY: 1.04,
+              duration: 120,
+            });
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(d.color, 0.9);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 120,
+            });
+          });
           btn.on("pointerdown", () => {
             SFX.bell();
             this.cameras.main.fadeOut(300);
             this.time.delayedCall(300, () =>
-              this.scene.start("Game", { difficulty: d.key }),
+              this.scene.start("Transition", {
+                difficulty: d.key,
+                text: d.label,
+              }),
             );
           });
         });
         this.cameras.main.fadeIn(400);
+      };
+
+      // ── TRANSITION SCENE ──
+      function TransitionScene() {
+        return new Phaser.Scene("Transition");
+      }
+      TransitionScene.prototype = Object.create(Phaser.Scene.prototype);
+      TransitionScene.prototype.constructor = TransitionScene;
+      TransitionScene.prototype.init = function (data) {
+        this.transData = data;
+      };
+      TransitionScene.prototype.create = function () {
+        const cx = W / 2,
+          cy = H / 2;
+        const data = this.transData;
+
+        this.add.rectangle(cx, cy, W, H, 0x2d1508);
+        SFX.phaseTransition();
+
+        const mainText = this.add
+          .text(cx, cy - 20, data.text || "ORDER UP!", {
+            fontSize: "44px",
+            fontFamily: "Impact, sans-serif",
+            color: "#f59e0b",
+            stroke: "#5c3a0a",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(3);
+
+        const subText = this.add
+          .text(cx, cy + 35, "Solve fractions to fill orders!", {
+            fontSize: "16px",
+            color: "#d4a050",
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        this.tweens.add({
+          targets: mainText,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: "Back.easeOut",
+        });
+        this.tweens.add({
+          targets: subText,
+          alpha: 1,
+          duration: 400,
+          delay: 300,
+        });
+
+        // Food burst particles
+        this.time.delayedCall(200, () => {
+          const p = this.add.particles(0, 0, "star", {
+            speed: { min: 80, max: 250 },
+            scale: { start: 2, end: 0 },
+            lifespan: 600,
+            quantity: 20,
+            tint: [0xf59e0b, 0xef4444, 0x22c55e, 0xffdd00],
+          });
+          p.emitParticleAt(cx, cy);
+        });
+
+        this.time.delayedCall(1200, () => {
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () => {
+            this.scene.start("Game", { difficulty: data.difficulty });
+          });
+        });
+
+        this.cameras.main.fadeIn(300);
       };
 
       // ── GAME SCENE ──
@@ -616,6 +1003,10 @@
         this.timeLeft = 0;
         this.kitchenLevel = data.kitchenLevel || 1;
         this.timerBonus = data.timerBonus || 0;
+        this.doublePointsActive = false;
+        this.streakMilestoneShown = 0;
+        this.hasFiftyFifty = data.hasFiftyFifty || false;
+        this.hasDoublePoints = data.hasDoublePoints || false;
       };
 
       GameScene.prototype.create = function () {
@@ -639,6 +1030,33 @@
             );
           }
         }
+
+        // Ambient steam particles from stoves
+        for (let i = 0; i < 3; i++) {
+          const sx = 150 + i * 250;
+          this.add.particles(sx, H - 100, "steam", {
+            speed: { min: 8, max: 25 },
+            scale: { start: 0.5, end: 0 },
+            alpha: { start: 0.3, end: 0 },
+            lifespan: { min: 1500, max: 3000 },
+            frequency: 600,
+            quantity: 1,
+            angle: { min: -100, max: -80 },
+          });
+        }
+
+        // Ambient spice particles
+        this.add.particles(0, 0, "spice", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H - 130 },
+          speed: { min: 2, max: 8 },
+          scale: { start: 0.3, end: 0 },
+          alpha: { start: 0.15, end: 0 },
+          lifespan: 6000,
+          frequency: 500,
+          tint: [0xf59e0b, 0xd97706, 0xaa6600],
+        });
+
         // Stove burners
         for (let i = 0; i < 3; i++) {
           this.add
@@ -663,6 +1081,12 @@
           });
         }
 
+        // Red flash overlay
+        this.redFlash = this.add
+          .image(W / 2, H / 2, "red_flash")
+          .setAlpha(0)
+          .setDepth(100);
+
         // HUD top bar
         this.add.rectangle(W / 2, 0, W, 50, 0x000000, 0.6).setOrigin(0.5, 0);
         this.scoreText = this.add.text(16, 12, "Score: 0", {
@@ -677,14 +1101,66 @@
           .text(W / 2, 12, "", { fontSize: "16px", color: "#ffdd00" })
           .setOrigin(0.5, 0);
 
+        // Streak counter (visual)
+        this.streakContainer = this.add.container(W - 50, 70);
+        this.streakBg = this.add.circle(0, 0, 26, 0xff8800, 0.15);
+        this.streakLabel = this.add
+          .text(0, -8, "", {
+            fontSize: "24px",
+            fontStyle: "bold",
+            color: "#ff8800",
+            stroke: "#000",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5);
+        this.streakSub = this.add
+          .text(0, 16, "STREAK", {
+            fontSize: "8px",
+            color: "#ff8800",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+        this.streakContainer.add([
+          this.streakBg,
+          this.streakLabel,
+          this.streakSub,
+        ]);
+        this.streakContainer.setAlpha(0);
+
         // Satisfaction meter
         this.add.rectangle(W / 2, 42, 204, 10, 0x333333).setOrigin(0.5);
         this.satBar = this.add
           .rectangle(W / 2 - 100, 42, 200, 8, 0x22c55e)
           .setOrigin(0, 0.5);
         this.add
-          .text(W / 2 - 120, 42, "😊", { fontSize: "14px" })
+          .text(W / 2 - 120, 42, "\u{1F60A}", { fontSize: "14px" })
           .setOrigin(1, 0.5);
+
+        // Progress bar (bottom)
+        this.progBg = this.add.image(W / 2, H - 8, "progbar_bg");
+        this.progFill = this.add
+          .image(W / 2 - 100, H - 8, "progbar_fill")
+          .setOrigin(0, 0.5);
+        this.progFill.setDisplaySize(0, 8);
+        this.progLabel = this.add
+          .text(W / 2, H - 20, "", { fontSize: "10px", color: "#d4a050" })
+          .setOrigin(0.5);
+
+        // Power-up indicator
+        this.puIndicator = this.add
+          .text(16, 55, "", { fontSize: "12px", color: "#ffdd00" })
+          .setDepth(10);
+
+        // Speed bonus indicator
+        this.speedIndicator = this.add
+          .text(W - 16, 55, "", {
+            fontSize: "12px",
+            color: "#22ff88",
+            fontStyle: "bold",
+          })
+          .setOrigin(1, 0)
+          .setAlpha(0);
 
         // Order ticket area
         this.orderBg = this.add
@@ -720,6 +1196,7 @@
         // Answer bowls (4 choices)
         this.bowls = [];
         this.bowlTexts = [];
+        this.bowlLetterBgs = [];
         const bowlY = 280;
         for (let i = 0; i < 4; i++) {
           const x = 110 + i * 200;
@@ -744,19 +1221,28 @@
             .setOrigin(0.5);
 
           bowl.on("pointerover", () => {
-            bowl.setScale(1.55);
-            this.tweens.add({
-              targets: bowl,
-              angle: { from: -3, to: 3 },
-              duration: 100,
-              yoyo: true,
-            });
+            if (!this.answered) {
+              bowl.setScale(1.55);
+              letterBg.setFillStyle(0xf59e0b);
+              this.tweens.add({
+                targets: bowl,
+                angle: { from: -3, to: 3 },
+                duration: 100,
+                yoyo: true,
+              });
+            }
           });
-          bowl.on("pointerout", () => bowl.setScale(1.4));
+          bowl.on("pointerout", () => {
+            if (!this.answered) {
+              bowl.setScale(1.4);
+              letterBg.setFillStyle(0xd97706);
+            }
+          });
           bowl.on("pointerdown", () => this.selectAnswer(i));
 
           this.bowls.push(bowl);
           this.bowlTexts.push(label);
+          this.bowlLetterBgs.push(letterBg);
         }
 
         // Keyboard shortcuts 1-4
@@ -787,14 +1273,26 @@
           tint: [0xf59e0b, 0xef4444, 0x22c55e, 0xffffff],
         });
 
-        this.steamParticles = this.add.particles(0, 0, "particle", {
+        this.confettiParticles = this.add.particles(0, 0, "confetti", {
+          speed: { min: 100, max: 350 },
+          scale: { start: 1.2, end: 0.2 },
+          lifespan: 1000,
+          emitting: false,
+          quantity: 25,
+          angle: { min: -120, max: -60 },
+          rotate: { min: 0, max: 360 },
+          tint: [0xff4488, 0x44ff88, 0xf59e0b, 0xffdd00, 0xff6644, 0xdd44ff],
+          gravityY: 200,
+        });
+
+        this.steamParticles = this.add.particles(0, 0, "steam", {
           speed: { min: 10, max: 40 },
           scale: { start: 0.8, end: 0 },
           lifespan: 800,
           emitting: false,
           quantity: 5,
           tint: [0xffffff, 0xdddddd],
-          angle: { min: -100, to: -80 },
+          angle: { min: -100, max: -80 },
         });
 
         // Load first order
@@ -820,14 +1318,26 @@
           if (i < 4) this.bowlTexts[i].setText(c);
         });
 
-        // Reset bowls
-        this.bowls.forEach((b) => {
+        // Reset bowls with entrance animation
+        this.bowls.forEach((b, i) => {
           b.setTint(0xffffff);
-          b.setScale(1.4);
+          b.setScale(0.8);
           b.setAlpha(1);
+          this.tweens.add({
+            targets: b,
+            scaleX: 1.4,
+            scaleY: 1.4,
+            duration: 250,
+            delay: i * 60,
+            ease: "Back.easeOut",
+          });
         });
+        this.bowlLetterBgs.forEach((bg) => bg.setFillStyle(0xd97706));
         this.feedbackText.setAlpha(0);
         this.answered = false;
+        this.doublePointsActive = this.hasDoublePoints
+          ? this.doublePointsActive
+          : false;
 
         // Timer
         this.timeLeft = o.timeLimit + this.timerBonus;
@@ -837,7 +1347,14 @@
         this.timerBar.setFillStyle(0x22c55e);
         this.timerText.setText(`${this.timeLeft}s`);
 
-        // Entrance animation
+        // Update progress bar
+        const pct = this.currentOrder / this.orders.length;
+        this.progFill.setDisplaySize(200 * pct, 8);
+        this.progLabel.setText(
+          `Order ${this.currentOrder + 1}/${this.orders.length}`,
+        );
+
+        // Entrance animation for ticket
         this.tweens.add({
           targets: this.orderBg,
           scaleX: { from: 0.8, to: 1 },
@@ -850,6 +1367,40 @@
         this.steamParticles.emitParticleAt(150 + randInt(0, 2) * 250, H - 100);
 
         SFX.bell();
+      };
+
+      GameScene.prototype.showStreakMilestone = function (text, color) {
+        const milestone = this.add
+          .text(W / 2, H / 2 - 40, text, {
+            fontSize: "34px",
+            fontStyle: "bold",
+            color: Phaser.Display.Color.IntegerToColor(color).rgba,
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.3)
+          .setDepth(50);
+
+        this.tweens.add({
+          targets: milestone,
+          alpha: 1,
+          scale: 1.2,
+          duration: 400,
+          ease: "Back.easeOut",
+          onComplete: () => {
+            this.tweens.add({
+              targets: milestone,
+              alpha: 0,
+              scale: 1.5,
+              y: milestone.y - 30,
+              duration: 500,
+              delay: 400,
+              onComplete: () => milestone.destroy(),
+            });
+          },
+        });
       };
 
       GameScene.prototype.selectAnswer = function (idx) {
@@ -868,46 +1419,190 @@
           this.totalCorrect++;
           this.ordersComplete++;
 
+          // Time bonus calculation
           let pts = 100 + Math.floor(this.timeLeft * 5);
+          const timeRatio = this.timeLeft / this.maxTime;
+
+          // Speed bonus indicator
+          if (timeRatio > 0.7) {
+            SFX.speedBonus();
+            const speedBonus = 50;
+            pts += speedBonus;
+            this.speedIndicator.setText(`SPEED +${speedBonus}`).setAlpha(1);
+            this.tweens.add({
+              targets: this.speedIndicator,
+              alpha: 0,
+              y: 45,
+              duration: 800,
+              onComplete: () => {
+                this.speedIndicator.y = 55;
+              },
+            });
+          }
+
+          // Combo multiplier
           if (this.combo >= 3) pts = Math.floor(pts * 1.5);
           if (this.combo >= 5) pts = Math.floor(pts * 2);
+          if (this.combo >= 7) pts = Math.floor(pts * 2.5);
+
+          // Double points power-up
+          if (this.doublePointsActive) pts *= 2;
+
           this.score += pts;
-
           this.satisfaction = Math.min(100, this.satisfaction + 5);
-          this.bowls[idx].setTint(0x22cc66);
-          this.feedbackText
-            .setText(`✓ Correct! +${pts}`)
-            .setColor("#22c55e")
-            .setAlpha(1);
-          this.sparkles.emitParticleAt(this.bowls[idx].x, this.bowls[idx].y);
-          this.cameras.main.shake(80, 0.005);
 
+          // Bowl visual
+          this.bowls[idx].setTint(0x22cc66);
+
+          // Streak counter
+          this.streakContainer.setAlpha(1);
+          this.streakLabel.setText(`${this.combo}`);
+          this.streakSub.setAlpha(1);
+          this.tweens.add({
+            targets: this.streakContainer,
+            scaleX: { from: 1.4, to: 1 },
+            scaleY: { from: 1.4, to: 1 },
+            duration: 300,
+            ease: "Back.easeOut",
+          });
+
+          // Screen shake scales with streak
+          const shakeIntensity = Math.min(0.004 + this.combo * 0.002, 0.02);
+          const shakeDuration = Math.min(80 + this.combo * 15, 250);
+          this.cameras.main.shake(shakeDuration, shakeIntensity);
+
+          // Streak milestone effects
+          if (this.combo === 3 && this.streakMilestoneShown < 3) {
+            this.streakMilestoneShown = 3;
+            SFX.streak3();
+            this.showStreakMilestone("STREAK x3!", 0xffdd00);
+            this.confettiParticles.emitParticleAt(W / 2, 280);
+          } else if (this.combo === 5 && this.streakMilestoneShown < 5) {
+            this.streakMilestoneShown = 5;
+            SFX.streak5();
+            this.showStreakMilestone("STREAK x5!", 0xff8800);
+            this.confettiParticles.emitParticleAt(W / 4, 280);
+            this.confettiParticles.emitParticleAt((3 * W) / 4, 280);
+          } else if (this.combo === 7 && this.streakMilestoneShown < 7) {
+            this.streakMilestoneShown = 7;
+            SFX.streak7();
+            this.showStreakMilestone("STREAK x7! ON FIRE!", 0xff4444);
+            this.confettiParticles.emitParticleAt(W / 4, 250);
+            this.confettiParticles.emitParticleAt(W / 2, 250);
+            this.confettiParticles.emitParticleAt((3 * W) / 4, 250);
+          }
+
+          // Combo text
           if (this.combo >= 3) {
-            this.comboText.setText(`🔥 Combo x${this.combo}!`);
+            const fireCount = Math.min(this.combo - 2, 5);
+            const fires = "\u{1F525}".repeat(fireCount);
+            this.comboText.setText(`${fires} Combo x${this.combo}!`);
             this.tweens.add({
               targets: this.comboText,
               scale: { from: 1.3, to: 1 },
               duration: 300,
             });
           }
+
+          // Feedback text with varied messages
+          let feedMsg = `✓ Correct! +${pts}`;
+          if (this.doublePointsActive) feedMsg = `✓ +${pts} (2X!)`;
+          if (this.combo >= 5) feedMsg = `✓ AMAZING! +${pts}`;
+          if (this.combo >= 7) feedMsg = `✓ LEGENDARY! +${pts}`;
+          this.feedbackText.setText(feedMsg).setColor("#22c55e").setAlpha(1);
+
+          // Sparkle particles at bowl
+          this.sparkles.emitParticleAt(this.bowls[idx].x, this.bowls[idx].y);
+
+          // Floating score popup
+          const popupColor =
+            this.combo >= 5
+              ? "#ffdd00"
+              : this.combo >= 3
+                ? "#ff8800"
+                : "#22c55e";
+          const popupSize =
+            this.combo >= 5 ? "26px" : this.combo >= 3 ? "22px" : "18px";
+          const popup = this.add
+            .text(this.bowls[idx].x, this.bowls[idx].y - 10, `+${pts}`, {
+              fontSize: popupSize,
+              color: popupColor,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: popup,
+            y: popup.y - 50,
+            alpha: 0,
+            scale: { from: 1, to: 1.5 },
+            duration: 700,
+            onComplete: () => popup.destroy(),
+          });
         } else {
+          // WRONG — dramatic punishment
           SFX.wrong();
+          SFX.glassBreak();
           this.combo = 0;
+          this.streakMilestoneShown = 0;
           this.comboText.setText("");
           this.totalWrong++;
           this.lives--;
           this.satisfaction = Math.max(0, this.satisfaction - 15);
+
+          // Hide streak
+          this.tweens.add({
+            targets: this.streakContainer,
+            alpha: 0,
+            duration: 300,
+          });
+
           this.bowls[idx].setTint(0xff3333);
+
+          // Red flash
+          this.redFlash.setAlpha(0.3);
+          this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 400 });
+
+          // Dramatic camera shake
+          this.cameras.main.shake(300, 0.018);
 
           // Highlight correct
           const correctIdx = o.choices.indexOf(o.answer);
-          if (correctIdx >= 0) this.bowls[correctIdx].setTint(0x22cc66);
+          if (correctIdx >= 0) {
+            this.bowls[correctIdx].setTint(0x22cc66);
+            // Pulse correct answer
+            this.tweens.add({
+              targets: this.bowls[correctIdx],
+              scaleX: { from: 1.4, to: 1.6 },
+              scaleY: { from: 1.4, to: 1.6 },
+              duration: 300,
+              yoyo: true,
+            });
+          }
 
           this.feedbackText
             .setText(`✗ Answer: ${o.answer}`)
             .setColor("#ef4444")
             .setAlpha(1);
-          this.cameras.main.shake(200, 0.015);
+
+          // Wrong popup
+          const wrongPopup = this.add
+            .text(this.bowls[idx].x, this.bowls[idx].y + 20, "WRONG!", {
+              fontSize: "16px",
+              color: "#ff4444",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 2,
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: wrongPopup,
+            y: wrongPopup.y - 30,
+            alpha: 0,
+            duration: 800,
+            onComplete: () => wrongPopup.destroy(),
+          });
         }
 
         this.updateHUD();
@@ -936,6 +1631,8 @@
               orders: this.orders,
               kitchenLevel: this.kitchenLevel,
               timerBonus: this.timerBonus,
+              hasFiftyFifty: this.hasFiftyFifty,
+              hasDoublePoints: this.hasDoublePoints,
             });
           } else {
             this.loadOrder();
@@ -983,11 +1680,29 @@
             // Time's up
             this.answered = true;
             SFX.wrong();
+            SFX.glassBreak();
             this.combo = 0;
+            this.streakMilestoneShown = 0;
             this.comboText.setText("");
             this.totalWrong++;
             this.lives--;
             this.satisfaction = Math.max(0, this.satisfaction - 20);
+
+            // Red flash
+            this.redFlash.setAlpha(0.25);
+            this.tweens.add({
+              targets: this.redFlash,
+              alpha: 0,
+              duration: 400,
+            });
+
+            // Hide streak
+            this.tweens.add({
+              targets: this.streakContainer,
+              alpha: 0,
+              duration: 300,
+            });
+
             const o = this.orders[this.currentOrder];
             const correctIdx = o.choices.indexOf(o.answer);
             if (correctIdx >= 0) this.bowls[correctIdx].setTint(0x22cc66);
@@ -995,7 +1710,7 @@
               .setText(`⏱ Time up! Answer: ${o.answer}`)
               .setColor("#f59e0b")
               .setAlpha(1);
-            this.cameras.main.shake(150, 0.01);
+            this.cameras.main.shake(200, 0.012);
             this.updateHUD();
             this.time.delayedCall(1500, () => {
               this.currentOrder++;
@@ -1010,13 +1725,12 @@
           );
           this.timerText.setText(`${Math.ceil(this.timeLeft)}s`);
 
-          // Tick sound in last 5 seconds
+          // Tick sound + pulse in last 5 seconds
           if (
             this.timeLeft <= 5 &&
             this.timeLeft > 0 &&
             Math.floor(this.timeLeft * 2) % 2 === 0
           ) {
-            // Visual pulse
             this.timerBar.setAlpha(this.timerBar.alpha > 0.7 ? 0.5 : 1);
           }
         }
@@ -1037,7 +1751,20 @@
         SFX.upgrade();
 
         this.add.rectangle(cx, H / 2, W, H, 0x2d1508);
-        this.add
+
+        // Ambient particles
+        this.add.particles(0, 0, "spice", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 3, max: 10 },
+          scale: { start: 0.4, end: 0 },
+          alpha: { start: 0.2, end: 0 },
+          lifespan: 4000,
+          frequency: 300,
+          tint: [0xf59e0b, 0xffdd00],
+        });
+
+        const title = this.add
           .text(cx, 50, "⬆ KITCHEN UPGRADE!", {
             fontSize: "36px",
             fontStyle: "bold",
@@ -1045,7 +1772,17 @@
             stroke: "#5c3a0a",
             strokeThickness: 3,
           })
-          .setOrigin(0.5);
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: title,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: "Back.easeOut",
+        });
+
         this.add
           .text(
             cx,
@@ -1065,12 +1802,27 @@
           )
           .setOrigin(0.5);
 
-        // Upgrade options
+        // Celebration particles
+        for (let i = 0; i < 3; i++) {
+          this.time.delayedCall(i * 300, () => {
+            const p = this.add.particles(0, 0, "star", {
+              speed: { min: 50, max: 150 },
+              scale: { start: 1.5, end: 0 },
+              lifespan: 600,
+              quantity: 8,
+              tint: [0xf59e0b, 0x22c55e, 0xffdd00],
+            });
+            p.emitParticleAt(randInt(200, W - 200), randInt(60, 130));
+            this.time.delayedCall(700, () => p.destroy());
+          });
+        }
+
+        // Upgrade options (now includes power-ups)
         const upgrades = [
           {
             label: "Faster Stove",
             sub: "+3 seconds per order",
-            emoji: "🔥",
+            emoji: "\u{1F525}",
             action: () => {
               d.timerBonus += 3;
             },
@@ -1094,33 +1846,69 @@
         ];
 
         shuffle(upgrades).forEach((u, i) => {
-          const y = 240 + i * 110;
+          const y = 220 + i * 100;
           const btn = this.add
             .rectangle(cx, y, 380, 85, 0x5c3a0a, 0.9)
             .setInteractive({ useHandCursor: true })
-            .setStrokeStyle(2, 0xd97706);
-          this.add
+            .setStrokeStyle(2, 0xd97706)
+            .setAlpha(0)
+            .setScale(0.8);
+          const emojiTxt = this.add
             .text(cx - 150, y - 10, u.emoji, { fontSize: "36px" })
-            .setOrigin(0, 0.5);
-          this.add
+            .setOrigin(0, 0.5)
+            .setAlpha(0);
+          const labelTxt = this.add
             .text(cx, y - 12, u.label, {
               fontSize: "22px",
               fontStyle: "bold",
               color: "#f59e0b",
             })
-            .setOrigin(0.5);
-          this.add
+            .setOrigin(0.5)
+            .setAlpha(0);
+          const subTxt = this.add
             .text(cx, y + 14, u.sub, { fontSize: "14px", color: "#d4a050" })
-            .setOrigin(0.5);
+            .setOrigin(0.5)
+            .setAlpha(0);
 
-          btn.on("pointerover", () => btn.setFillStyle(0x7c5a2a, 1));
-          btn.on("pointerout", () => btn.setFillStyle(0x5c3a0a, 0.9));
+          // Entrance animation
+          this.tweens.add({
+            targets: [btn, emojiTxt, labelTxt, subTxt],
+            alpha: 1,
+            scale: 1,
+            duration: 350,
+            delay: 200 + i * 120,
+            ease: "Back.easeOut",
+          });
+
+          btn.on("pointerover", () => {
+            btn.setFillStyle(0x7c5a2a, 1);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1.04,
+              scaleY: 1.04,
+              duration: 100,
+            });
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(0x5c3a0a, 0.9);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
           btn.on("pointerdown", () => {
             SFX.upgrade();
             u.action();
             d.kitchenLevel++;
             this.cameras.main.fadeOut(400);
-            this.time.delayedCall(400, () => this.scene.start("Game", d));
+            this.time.delayedCall(400, () =>
+              this.scene.start("Transition", {
+                difficulty: d.difficulty,
+                text: `ROUND ${Math.floor(d.currentOrder / 6) + 2}`,
+              }),
+            );
           });
         });
 
@@ -1142,6 +1930,24 @@
         this.add.rectangle(cx, H / 2, W, H, 0x2d1508);
 
         const won = d.lives > 0;
+        const pct =
+          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+
+        // High score check
+        const prevBest = getHighScore(d.difficulty);
+        const isNewHighScore = d.score > prevBest;
+        if (isNewHighScore) setHighScore(d.difficulty, d.score);
+
+        // SFX based on performance
+        if (won) {
+          if (stars === 3) SFX.win3Star();
+          else SFX.win();
+          if (isNewHighScore)
+            this.time.delayedCall(800, () => SFX.newHighScore());
+        } else {
+          SFX.lose();
+        }
 
         // Celebration particles
         if (won) {
@@ -1158,28 +1964,135 @@
               this.time.delayedCall(800, () => p.destroy());
             });
           }
+
+          if (stars === 3) {
+            for (let i = 0; i < 3; i++) {
+              this.time.delayedCall(i * 500, () => {
+                const c = this.add.particles(0, 0, "confetti", {
+                  speed: { min: 80, max: 300 },
+                  scale: { start: 1, end: 0.2 },
+                  lifespan: 1200,
+                  quantity: 20,
+                  tint: [0xff4488, 0x44ff88, 0xf59e0b, 0xffdd00],
+                  rotate: { min: 0, max: 360 },
+                  gravityY: 150,
+                });
+                c.emitParticleAt(randInt(100, W - 100), 50);
+                this.time.delayedCall(1500, () => c.destroy());
+              });
+            }
+          }
         }
 
-        this.add
-          .text(cx, 40, won ? "SHIFT COMPLETE!" : "KITCHEN CLOSED!", {
-            fontSize: "38px",
+        // Title with entrance animation
+        const titleText = this.add
+          .text(cx, 35, won ? "SHIFT COMPLETE!" : "KITCHEN CLOSED!", {
+            fontSize: "36px",
             fontStyle: "bold",
             color: won ? "#22c55e" : "#ef4444",
             stroke: "#000",
             strokeThickness: 4,
           })
-          .setOrigin(0.5);
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.5);
+        this.tweens.add({
+          targets: titleText,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          ease: "Back.easeOut",
+        });
+
         this.add
           .text(
             cx,
-            80,
+            70,
             won ? "Great cooking today!" : "Better luck next time!",
-            { fontSize: "16px", color: "#d4a050" },
+            { fontSize: "14px", color: "#d4a050" },
           )
           .setOrigin(0.5);
 
+        // Star rating
+        const starY = 100;
+        for (let i = 0; i < 3; i++) {
+          const sx = cx - 50 + i * 50;
+          const emptyStarImg = this.add
+            .image(sx, starY, "star_empty")
+            .setScale(1.2)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: emptyStarImg,
+            alpha: 1,
+            duration: 300,
+            delay: 400 + i * 200,
+          });
+
+          if (i < stars) {
+            const filledStar = this.add
+              .image(sx, starY, "star_big")
+              .setScale(0)
+              .setAlpha(0)
+              .setDepth(1);
+            this.tweens.add({
+              targets: filledStar,
+              alpha: 1,
+              scale: 1.2,
+              duration: 400,
+              delay: 600 + i * 300,
+              ease: "Back.easeOut",
+              onStart: () => {
+                const sp = this.add.particles(0, 0, "star", {
+                  speed: { min: 30, max: 100 },
+                  scale: { start: 1, end: 0 },
+                  lifespan: 500,
+                  quantity: 8,
+                  tint: [0xffdd00, 0xff8800],
+                });
+                sp.emitParticleAt(sx, starY);
+                this.time.delayedCall(600, () => sp.destroy());
+              },
+            });
+          }
+        }
+
+        // NEW HIGH SCORE banner
+        if (isNewHighScore && d.score > 0) {
+          const hsText = this.add
+            .text(cx, 130, "NEW HIGH SCORE!", {
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffdd00",
+              stroke: "#885500",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
+          this.tweens.add({
+            targets: hsText,
+            alpha: 1,
+            duration: 500,
+            delay: 1800,
+          });
+          this.tweens.add({
+            targets: hsText,
+            scaleX: { from: 1, to: 1.05 },
+            scaleY: { from: 1, to: 1.05 },
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            delay: 2000,
+          });
+        }
+
+        const statsStartY = isNewHighScore && d.score > 0 ? 155 : 135;
         const stats = [
           { label: "Final Score", val: String(d.score), color: "#f59e0b" },
+          {
+            label: "Best Score",
+            val: String(Math.max(d.score, prevBest)),
+            color: "#ffdd00",
+          },
           {
             label: "Orders Served",
             val: `${d.ordersComplete}/${d.totalCorrect + d.totalWrong}`,
@@ -1201,14 +2114,14 @@
         ];
 
         stats.forEach((s, i) => {
-          const y = 125 + i * 48;
-          this.add.rectangle(cx, y, 380, 38, 0x3d2010, 0.8);
+          const y = statsStartY + i * 40;
+          this.add.rectangle(cx, y, 380, 32, 0x3d2010, 0.8);
           this.add
-            .text(cx - 160, y, s.label, { fontSize: "16px", color: "#aa8855" })
+            .text(cx - 160, y, s.label, { fontSize: "14px", color: "#aa8855" })
             .setOrigin(0, 0.5);
           const v = this.add
             .text(cx + 160, y, s.val, {
-              fontSize: "20px",
+              fontSize: "17px",
               fontStyle: "bold",
               color: s.color,
             })
@@ -1219,13 +2132,11 @@
             alpha: 1,
             x: { from: cx + 200, to: cx + 160 },
             duration: 350,
-            delay: i * 120,
+            delay: i * 100,
           });
         });
 
         // Grade
-        const pct =
-          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
         const grade =
           pct >= 90
             ? "A+"
@@ -1236,50 +2147,101 @@
                 : pct >= 60
                   ? "C"
                   : "D";
-        this.add
-          .text(cx, 480, grade, {
-            fontSize: "56px",
+        const gradeY = statsStartY + stats.length * 40 + 20;
+        const gradeText = this.add
+          .text(cx, gradeY, grade, {
+            fontSize: "48px",
             fontStyle: "bold",
             color: pct >= 80 ? "#22c55e" : pct >= 60 ? "#f59e0b" : "#ef4444",
             stroke: "#000",
             strokeThickness: 4,
           })
-          .setOrigin(0.5);
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setScale(0.3);
+        this.tweens.add({
+          targets: gradeText,
+          alpha: 1,
+          scale: 1,
+          duration: 500,
+          delay: stats.length * 100 + 200,
+          ease: "Back.easeOut",
+        });
         this.add
-          .text(cx, 516, `${Math.round(pct)}% Accuracy`, {
-            fontSize: "16px",
+          .text(cx, gradeY + 30, `${Math.round(pct)}% Accuracy`, {
+            fontSize: "14px",
             color: "#d4a050",
           })
           .setOrigin(0.5);
 
-        // Buttons
+        // Buttons with hover effects
+        const btnY = gradeY + 60;
         const retry = this.add
-          .rectangle(cx - 100, 560, 170, 44, 0xd97706)
+          .rectangle(cx - 100, btnY, 170, 44, 0xd97706)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(cx - 100, 560, "COOK AGAIN", {
+          .text(cx - 100, btnY, "COOK AGAIN", {
             fontSize: "17px",
             fontStyle: "bold",
             color: "#fff",
           })
           .setOrigin(0.5);
+        retry.on("pointerover", () => {
+          retry.setFillStyle(0xf59e0b);
+          this.tweens.add({
+            targets: retry,
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 100,
+          });
+        });
+        retry.on("pointerout", () => {
+          retry.setFillStyle(0xd97706);
+          this.tweens.add({
+            targets: retry,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 100,
+          });
+        });
         retry.on("pointerdown", () => {
           this.cameras.main.fadeOut(300);
           this.time.delayedCall(300, () =>
-            this.scene.start("Game", { difficulty: d.difficulty }),
+            this.scene.start("Transition", {
+              difficulty: d.difficulty,
+              text: "NEW SHIFT!",
+            }),
           );
         });
 
         const menu = this.add
-          .rectangle(cx + 100, 560, 170, 44, 0x5c3a0a)
+          .rectangle(cx + 100, btnY, 170, 44, 0x5c3a0a)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(cx + 100, 560, "MAIN MENU", {
+          .text(cx + 100, btnY, "MAIN MENU", {
             fontSize: "17px",
             fontStyle: "bold",
             color: "#d4a050",
           })
           .setOrigin(0.5);
+        menu.on("pointerover", () => {
+          menu.setFillStyle(0x7c5a2a);
+          this.tweens.add({
+            targets: menu,
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 100,
+          });
+        });
+        menu.on("pointerout", () => {
+          menu.setFillStyle(0x5c3a0a);
+          this.tweens.add({
+            targets: menu,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 100,
+          });
+        });
         menu.on("pointerdown", () => {
           this.cameras.main.fadeOut(300);
           this.time.delayedCall(300, () => this.scene.start("Title"));

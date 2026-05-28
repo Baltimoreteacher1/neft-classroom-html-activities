@@ -10,27 +10,27 @@
     {
       "term": "Dividend",
       "definition": "The number being divided",
-      "visual": "In 3 ÷ 1/4, the dividend is 3"
+      "visual": "In 3 ÷ 1/4 = 12, the dividend is 3 — it is the total being split"
     },
     {
       "term": "Divisor",
       "definition": "The number you divide by",
-      "visual": "In 3 ÷ 1/4, the divisor is 1/4"
+      "visual": "In 3 ÷ 1/4 = 12, the divisor is 1/4 — it is the size of each piece"
     },
     {
       "term": "Quotient",
       "definition": "The result of division",
-      "visual": "In 12 ÷ 4 = 3, the quotient is 3"
+      "visual": "In 3 ÷ 1/4 = 12, the quotient is 12 — there are 12 quarter-size pieces in 3"
     },
     {
       "term": "Reciprocal",
       "definition": "A fraction flipped — the numerator and denominator switch",
-      "visual": "The reciprocal of 1/4 is 4/1, or 4"
+      "visual": "The reciprocal of 1/4 is 4/1 = 4. Multiplying by the reciprocal gives the same result as dividing."
     },
     {
       "term": "Unit fraction",
       "definition": "A fraction with a numerator of 1",
-      "visual": "1/2, 1/3, 1/4, 1/5 are all unit fractions"
+      "visual": "1/2, 1/3, 1/4, 1/5 — each represents one equal part of a whole"
     }
   ],
   "launch": {
@@ -48,31 +48,18 @@
     ]
   },
   "explore": {
-    "type": "drag-sort",
-    "instructions": "Match each division expression with the visual model that represents it.",
-    "label": "Match Division Expressions to Visual Models",
-    "items": [
-      {
-        "expression": "3 ÷ 1/4",
-        "model": "3 wholes each split into 4 equal parts → 12 parts",
-        "answer": "12"
-      },
-      {
-        "expression": "2 ÷ 1/3",
-        "model": "2 wholes each split into 3 equal parts → 6 parts",
-        "answer": "6"
-      },
-      {
-        "expression": "1 ÷ 1/5",
-        "model": "1 whole split into 5 equal parts → 5 parts",
-        "answer": "5"
-      },
-      {
-        "expression": "4 ÷ 1/2",
-        "model": "4 wholes each split into 2 equal parts → 8 parts",
-        "answer": "8"
-      }
+    "type": "bar-model",
+    "instructions": "Use the bar model to see how many 1/4-size pieces fit into 3 wholes.",
+    "label": "Model 3 ÷ 1/4 with a bar model",
+    "bars": [
+      { "value": 1, "label": "1/4", "annotation": "piece 1" },
+      { "value": 1, "label": "1/4", "annotation": "piece 2" },
+      { "value": 1, "label": "1/4", "annotation": "piece 3" },
+      { "value": 1, "label": "1/4", "annotation": "piece 4" }
     ],
+    "totalLabel": "1 whole = 4 fourths, so 3 wholes = 12 fourths",
+    "questionText": "How many 1/4-size pieces fit into 3 wholes?",
+    "answer": "12",
     "discourse": {
       "prompt": "Why does dividing by a unit fraction always give a number larger than the dividend?",
       "sentenceFrame": "Dividing by 1/4 means finding how many ___ fit into ___, so the quotient is ___ than the dividend.",
@@ -113,29 +100,44 @@
         "choices": ["8 pieces", "2 pieces", "4 pieces", "1/2 piece"],
         "correctIndex": 0,
         "explanation": "4 ÷ 1/2 = 4 × 2 = 8 pieces. Each whole foot contains 2 halves, and 4 × 2 = 8."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each statement: does dividing by the fraction give a result GREATER than the dividend, or LESS than the dividend?",
+        "items": [
+          { "text": "5 ÷ 1/3 = 15 (greater than 5)", "category": "greater" },
+          { "text": "8 ÷ 1/2 = 16 (greater than 8)", "category": "greater" },
+          { "text": "6 ÷ 1/4 = 24 (greater than 6)", "category": "greater" },
+          { "text": "4 ÷ 2 = 2 (less than 4)", "category": "less" },
+          { "text": "10 ÷ 5 = 2 (less than 10)", "category": "less" },
+          { "text": "12 ÷ 3 = 4 (less than 12)", "category": "less" }
+        ],
+        "categories": [
+          { "id": "greater", "label": "Quotient GREATER Than Dividend" },
+          { "id": "less", "label": "Quotient LESS Than Dividend" }
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is 6 ÷ 1/5?",
+        "choices": ["30", "6/5", "5/6", "1"],
+        "correctIndex": 0,
+        "explanation": "6 ÷ 1/5 means how many 1/5-size pieces fit into 6. Each whole has 5 fifths, so 6 × 5 = 30."
       }
     ],
     "onLevel": [
       {
-        "type": "matching",
-        "label": "Match each division expression with its meaning and quotient",
+        "type": "matching-game",
         "pairs": [
-          {
-            "expression": "5 ÷ 1/2",
-            "meaning": "How many halves are in 5",
-            "answer": "10"
-          },
-          {
-            "expression": "6 ÷ 1/3",
-            "meaning": "How many thirds are in 6",
-            "answer": "18"
-          },
-          {
-            "expression": "2 ÷ 1/6",
-            "meaning": "How many sixths are in 2",
-            "answer": "12"
-          }
-        ]
+          { "term": "5 ÷ 1/2", "match": "10" },
+          { "term": "6 ÷ 1/3", "match": "18" },
+          { "term": "2 ÷ 1/6", "match": "12" },
+          { "term": "4 ÷ 1/4", "match": "16" },
+          { "term": "3 ÷ 1/5", "match": "15" },
+          { "term": "7 ÷ 1/2", "match": "14" }
+        ],
+        "columns": 4,
+        "label": "Match each division expression to its quotient."
       },
       {
         "type": "bar-model",
@@ -152,6 +154,32 @@
         "totalLabel": "1 whole = 6 sixths → 3 wholes = 18 sixths",
         "questionText": "How many 1/6-size pieces fit into 3 wholes?",
         "answer": "18"
+      },
+      {
+        "type": "number-line",
+        "instructions": "Plot the quotient of each expression on the number line.",
+        "label": "Place each result on the number line",
+        "min": 0,
+        "max": 24,
+        "step": 2,
+        "snapToTick": true,
+        "targets": [
+          { "value": 12, "label": "3 ÷ 1/4 = 12" },
+          { "value": 20, "label": "4 ÷ 1/5 = 20" },
+          { "value": 6, "label": "2 ÷ 1/3 = 6" }
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A shelf is 5 feet long. Books are each 1/4 foot wide. How many books fit on the shelf? Which expression represents this?",
+        "choices": [
+          "5 ÷ 1/4 = 20 books",
+          "5 × 1/4 = 1 1/4 books",
+          "1/4 ÷ 5 = 1/20 book",
+          "5 + 1/4 = 5 1/4 books"
+        ],
+        "correctIndex": 0,
+        "explanation": "You are finding how many 1/4-foot pieces fit into 5 feet, which is 5 ÷ 1/4 = 5 × 4 = 20 books."
       }
     ],
     "extending": [
@@ -172,8 +200,8 @@
       },
       {
         "type": "open-response",
-        "stem": "Dividing 6 by 1/2 gives 12, but dividing 6 by 2 gives 3. How can dividing by a smaller number (1/2) give a bigger answer than dividing by a larger number (2)? Explain using a real-world example.",
-        "sampleAnswer": "Dividing by 2 means splitting into 2 equal groups, giving 3 per group. Dividing by 1/2 means finding how many half-size pieces fit into 6. Since halves are much smaller than wholes, more of them fit. For example, if you have 6 pizzas and cut each into halves, you get 12 half-pizzas.",
+        "prompt": "Dividing 6 by 1/2 gives 12, but dividing 6 by 2 gives 3. How can dividing by a smaller number (1/2) give a bigger answer than dividing by a larger number (2)? Explain using a real-world example.",
+        "sentenceFrame": "When I divide 6 by 2, I am ___. When I divide 6 by 1/2, I am ___. The answer is bigger because ___.",
         "keywords": [
           "smaller pieces",
           "more fit",
@@ -181,6 +209,35 @@
           "groups",
           "12",
           "3"
+        ],
+        "minLength": 30
+      },
+      {
+        "type": "fill-table",
+        "label": "Complete the pattern: as the unit fraction divisor gets smaller, what happens to the quotient?",
+        "columns": ["Expression", "Quotient", "Pattern"],
+        "rows": [
+          { "given": "2 ÷ 1/2", "answer": "4", "pattern": "" },
+          {
+            "given": "2 ÷ 1/3",
+            "answer": "6",
+            "pattern": "quotient increases"
+          },
+          {
+            "given": "2 ÷ 1/4",
+            "answer": "8",
+            "pattern": "quotient increases"
+          },
+          {
+            "given": "2 ÷ 1/6",
+            "answer": "12",
+            "pattern": "quotient increases"
+          },
+          {
+            "given": "2 ÷ 1/10",
+            "answer": "20",
+            "pattern": "smaller divisor → larger quotient"
+          }
         ]
       }
     ]

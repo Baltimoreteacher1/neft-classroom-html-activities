@@ -24,8 +24,10 @@
   </head>
   <body>
     <script>
-      // ── RATIO RALLY — Top-Down Racing Game ──
+      // ── RATIO RALLY — Top-Down Racing Game (Enhanced) ──
       // Phaser 3 — Grade 6 ESOL — Equivalent Ratios, Proportions, Unit Rates
+
+      const LS_KEY = "ratio_rally_hiscore";
 
       const SFX = {
         ctx: null,
@@ -47,6 +49,22 @@
           o.start();
           o.stop(c.currentTime + d);
         },
+        noise(d, v = 0.1) {
+          this.init();
+          const c = this.ctx;
+          const bufferSize = c.sampleRate * d;
+          const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+          const src = c.createBufferSource();
+          src.buffer = buffer;
+          const g = c.createGain();
+          g.gain.setValueAtTime(v, c.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+          src.connect(g);
+          g.connect(c.destination);
+          src.start();
+        },
         engine() {
           this.play("sawtooth", 80, 0.08, 0.06);
         },
@@ -61,6 +79,7 @@
         },
         wrong() {
           this.play("sawtooth", 180, 0.3, 0.2);
+          this.noise(0.15, 0.12);
         },
         checkpoint() {
           this.play("triangle", 523, 0.08);
@@ -68,7 +87,7 @@
           this.play("triangle", 784, 0.12);
         },
         crash() {
-          this.play("noise", 100, 0.2, 0.15);
+          this.noise(0.2, 0.15);
           this.play("square", 80, 0.15, 0.1);
         },
         countdown() {
@@ -82,6 +101,11 @@
             setTimeout(() => this.play("sine", f, 0.25, 0.3), i * 120),
           );
         },
+        winElaborate() {
+          [523, 659, 784, 1047, 1319, 1047, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 100),
+          );
+        },
         lose() {
           [400, 350, 300, 200].forEach((f, i) =>
             setTimeout(() => this.play("sawtooth", f, 0.3, 0.15), i * 180),
@@ -90,6 +114,46 @@
         lap() {
           this.play("sine", 1047, 0.15, 0.2);
           this.play("sine", 1319, 0.2, 0.2);
+        },
+        streak3() {
+          [784, 988, 1175].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.1, 0.25), i * 60),
+          );
+        },
+        streak5() {
+          [784, 988, 1175, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("triangle", f, 0.12, 0.28), i * 50),
+          );
+        },
+        streak7() {
+          [523, 659, 784, 988, 1175, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.14, 0.3), i * 45),
+          );
+        },
+        glassBreak() {
+          this.noise(0.25, 0.2);
+          this.play("square", 150, 0.1, 0.15);
+          this.play("square", 100, 0.15, 0.1);
+        },
+        phaseTransition() {
+          [440, 554, 659, 880].forEach((f, i) =>
+            setTimeout(() => this.play("triangle", f, 0.15, 0.2), i * 80),
+          );
+        },
+        powerUp() {
+          [660, 880, 1100, 1320].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.08, 0.25), i * 50),
+          );
+        },
+        newRecord() {
+          [523, 659, 784, 1047, 784, 1047, 1319, 1568].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.3), i * 90),
+          );
+        },
+        crowd(level) {
+          // Ambient crowd noise that builds
+          const v = Math.min(0.08, 0.02 + level * 0.01);
+          this.noise(0.3, v);
         },
       };
 
@@ -120,7 +184,6 @@
           let q, answer, choices, prompt;
 
           if (type === 0) {
-            // Simple ratio
             const a = randInt(2, 10),
               b = randInt(2, 10);
             prompt = `A bag has ${a} red and ${b} blue marbles. Ratio of red to blue?`;
@@ -128,7 +191,6 @@
             const g = gcd(a, b);
             choices = [answer, `${b}:${a}`, `${a + 1}:${b}`, `${a}:${b + 2}`];
           } else if (type === 1) {
-            // Equivalent ratio
             const a = randInt(2, 6),
               b = randInt(2, 6);
             const mult = randInt(2, 5);
@@ -141,7 +203,6 @@
               `${a + b}:${b * 2}`,
             ];
           } else if (type === 2) {
-            // Ratio table
             const a = randInt(2, 6),
               b = randInt(2, 8);
             const mult = randInt(2, 5);
@@ -154,7 +215,6 @@
               String(a * mult),
             ];
           } else if (type === 3) {
-            // Unit rate
             const items = randInt(3, 12);
             const cost = items * randInt(2, 5);
             const rate = cost / items;
@@ -167,7 +227,6 @@
               `$${items}`,
             ];
           } else {
-            // Proportion solving
             const a = randInt(2, 8),
               b = randInt(2, 8),
               mult = randInt(2, 5);
@@ -181,7 +240,6 @@
             ];
           }
 
-          // Ensure unique choices
           choices = [...new Set(choices)];
           while (choices.length < 4) choices.push(String(randInt(1, 50)));
           choices = choices.slice(0, 4);
@@ -232,13 +290,13 @@
         g.fillStyle(0x00aaff);
         g.fillRoundedRect(0, 0, 30, 50, 6);
         g.fillStyle(0x0088cc);
-        g.fillRect(4, 4, 22, 14); // windshield
+        g.fillRect(4, 4, 22, 14);
         g.fillStyle(0x333333);
         g.fillRect(0, 0, 6, 12);
-        g.fillRect(24, 0, 6, 12); // rear wheels
+        g.fillRect(24, 0, 6, 12);
         g.fillStyle(0x333333);
         g.fillRect(0, 38, 6, 12);
-        g.fillRect(24, 38, 6, 12); // front wheels
+        g.fillRect(24, 38, 6, 12);
         g.generateTexture("car_player", 30, 50);
         g.clear();
 
@@ -333,12 +391,48 @@
         g.generateTexture("star", 8, 8);
         g.clear();
 
+        // Big star for results
+        g.fillStyle(0xffdd00);
+        g.fillCircle(16, 16, 16);
+        g.generateTexture("bigstar", 32, 32);
+        g.clear();
+
+        // Empty star
+        g.lineStyle(3, 0x666666);
+        g.strokeCircle(16, 16, 15);
+        g.generateTexture("emptystar", 32, 32);
+        g.clear();
+
+        // Confetti piece
+        g.fillStyle(0xff4488);
+        g.fillRect(0, 0, 6, 4);
+        g.generateTexture("confetti", 6, 4);
+        g.clear();
+
+        // Spark
+        g.fillStyle(0xffffff);
+        g.fillCircle(2, 2, 2);
+        g.generateTexture("spark", 4, 4);
+        g.clear();
+
         // Tree
         g.fillStyle(0x2d5a1e);
         g.fillCircle(12, 12, 12);
         g.fillStyle(0x3a7028);
         g.fillCircle(12, 10, 9);
         g.generateTexture("tree", 24, 24);
+        g.clear();
+
+        // Dust particle for ambient
+        g.fillStyle(0xffffee);
+        g.fillCircle(2, 2, 2);
+        g.generateTexture("dust", 4, 4);
+        g.clear();
+
+        // Glow circle
+        g.fillStyle(0xffffff);
+        g.fillCircle(8, 8, 8);
+        g.generateTexture("glow", 16, 16);
         g.clear();
 
         g.destroy();
@@ -359,6 +453,18 @@
         // Road in background
         this.add.image(cx, H / 2, "road").setAlpha(0.3);
 
+        // Ambient floating dust particles
+        this.ambientParticles = this.add.particles(0, 0, "dust", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 5, max: 20 },
+          scale: { start: 0.5, end: 0 },
+          alpha: { start: 0.3, end: 0 },
+          lifespan: { min: 3000, max: 6000 },
+          frequency: 200,
+          tint: [0x88ff88, 0x44cc44, 0xaaffaa],
+        });
+
         // Scrolling road lines effect
         for (let i = 0; i < 8; i++) {
           const line = this.add.rectangle(cx, i * 80, 4, 30, 0xffff00, 0.4);
@@ -371,12 +477,17 @@
           });
         }
 
-        // Cars racing
+        // Cars racing with more dynamic animation
         const pc = this.add.image(cx - 40, 400, "car_player").setScale(1.8);
         const ai1 = this.add.image(cx + 50, 440, "car_ai1").setScale(1.5);
+        const ai2 = this.add
+          .image(cx + 10, 380, "car_ai2")
+          .setScale(1.3)
+          .setAlpha(0.7);
         this.tweens.add({
           targets: pc,
-          y: { from: 420, to: 380 },
+          y: { from: 420, to: 370 },
+          angle: { from: -3, to: 3 },
           duration: 400,
           yoyo: true,
           repeat: -1,
@@ -388,9 +499,29 @@
           yoyo: true,
           repeat: -1,
         });
+        this.tweens.add({
+          targets: ai2,
+          y: { from: 400, to: 360 },
+          x: { from: cx, to: cx + 20 },
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
 
-        // Title
-        this.add
+        // Exhaust particles from title cars
+        this.titleExhaust = this.add.particles(0, 0, "particle", {
+          speed: { min: 10, max: 30 },
+          scale: { start: 0.4, end: 0 },
+          lifespan: 400,
+          frequency: 80,
+          tint: [0x888888, 0x666666],
+          angle: { min: 80, max: 100 },
+          follow: pc,
+          followOffset: { x: 0, y: 25 },
+        });
+
+        // Title with animated glow
+        const titleRatio = this.add
           .text(cx, 60, "RATIO", {
             fontSize: "72px",
             fontFamily: "Impact,sans-serif",
@@ -399,7 +530,7 @@
             strokeThickness: 6,
           })
           .setOrigin(0.5);
-        this.add
+        const titleRally = this.add
           .text(cx, 130, "RALLY", {
             fontSize: "72px",
             fontFamily: "Impact,sans-serif",
@@ -408,6 +539,28 @@
             strokeThickness: 6,
           })
           .setOrigin(0.5);
+
+        // Pulsing glow on title
+        this.tweens.add({
+          targets: titleRatio,
+          scaleX: { from: 1, to: 1.05 },
+          scaleY: { from: 1, to: 1.05 },
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+        this.tweens.add({
+          targets: titleRally,
+          scaleX: { from: 1, to: 1.05 },
+          scaleY: { from: 1, to: 1.05 },
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+          delay: 200,
+        });
+
         this.add
           .text(cx, 180, "TOP-DOWN RACING", {
             fontSize: "18px",
@@ -429,10 +582,21 @@
           })
           .setOrigin(0.5);
 
-        // Environments
+        // High score display
+        const hiScore = parseInt(localStorage.getItem(LS_KEY) || "0");
+        if (hiScore > 0) {
+          this.add
+            .text(cx, 272, `Personal Best: ${hiScore}`, {
+              fontSize: "13px",
+              color: "#ffdd00",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+        }
+
         const envs = ["🏜️ Desert", "🏙️ City", "🚀 Space"];
         this.add
-          .text(cx, 290, `Tracks: ${envs.join("  |  ")}`, {
+          .text(cx, 296, `Tracks: ${envs.join("  |  ")}`, {
             fontSize: "13px",
             color: "#669977",
           })
@@ -455,6 +619,14 @@
           duration: 800,
           yoyo: true,
           repeat: -1,
+        });
+
+        // Button hover glow
+        btn.on("pointerover", () => {
+          btn.setFillStyle(0x44ddff);
+        });
+        btn.on("pointerout", () => {
+          btn.setFillStyle(0x00ccff);
         });
 
         btn.on("pointerdown", () => {
@@ -481,6 +653,19 @@
       DiffScene.prototype.create = function () {
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x0a1628);
+
+        // Ambient particles
+        this.add.particles(0, 0, "dust", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 3, max: 12 },
+          scale: { start: 0.3, end: 0 },
+          alpha: { start: 0.2, end: 0 },
+          lifespan: 4000,
+          frequency: 300,
+          tint: [0x4488ff, 0x88aaff],
+        });
+
         this.add
           .text(cx, 60, "CHOOSE YOUR TRACK", {
             fontSize: "32px",
@@ -515,7 +700,7 @@
             y: 450,
           },
         ];
-        diffs.forEach((d) => {
+        diffs.forEach((d, idx) => {
           const btn = this.add
             .rectangle(cx, d.y, 380, 95, d.color, 0.85)
             .setInteractive({ useHandCursor: true });
@@ -535,14 +720,39 @@
               color: "#ffffffcc",
             })
             .setOrigin(0.5);
-          btn.on("pointerover", () => btn.setFillStyle(d.color, 1));
-          btn.on("pointerout", () => btn.setFillStyle(d.color, 0.85));
+
+          // Hover effects
+          btn.on("pointerover", () => {
+            btn.setFillStyle(d.color, 1);
+            this.tweens.add({
+              targets: btn,
+              scaleX: 1.03,
+              scaleY: 1.03,
+              duration: 100,
+            });
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(d.color, 0.85);
+            btn.setScale(1);
+          });
           btn.on("pointerdown", () => {
             SFX.countdown();
             this.cameras.main.fadeOut(300);
             this.time.delayedCall(300, () =>
               this.scene.start("Game", { difficulty: d.key }),
             );
+          });
+
+          // Entrance animation
+          btn.setAlpha(0).setScale(0.8);
+          this.tweens.add({
+            targets: btn,
+            alpha: 0.85,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 400,
+            delay: idx * 150,
+            ease: "Back.easeOut",
           });
         });
         this.cameras.main.fadeIn(400);
@@ -589,6 +799,12 @@
             : this.difficulty === "medium"
               ? { grass: 0x334455, road: 0x555555 }
               : { grass: 0x1a0a33, road: 0x333344 };
+        // Power-ups state
+        this.powerups = { fiftyFifty: 1, doublePoints: 1, extraTime: 0 };
+        this.doublePointsActive = false;
+        this.questionStartTime = 0;
+        this.crowdLevel = 0;
+        this.lastCrowdTime = 0;
       };
 
       GameScene.prototype.create = function () {
@@ -597,12 +813,29 @@
         // Environment background
         this.add.rectangle(W / 2, H / 2, W, H, this.envColors.grass);
 
+        // Ambient background particles
+        const ambientTint =
+          this.difficulty === "easy"
+            ? [0xffddaa, 0xffcc88] // desert dust
+            : this.difficulty === "medium"
+              ? [0xaaaacc, 0x8888aa] // city smog
+              : [0x8844ff, 0x6622cc, 0xffffff]; // space stars
+
+        this.ambientBg = this.add.particles(0, 0, "dust", {
+          x: { min: 0, max: W },
+          y: { min: 0, max: H },
+          speed: { min: 3, max: 15 },
+          scale: { start: 0.4, end: 0 },
+          alpha: { start: 0.25, end: 0 },
+          lifespan: { min: 3000, max: 7000 },
+          frequency: 150,
+          tint: ambientTint,
+        });
+
         // Road
         this.roadGroup = this.add.group();
-        // Shoulder lines and road surface
-        this.add.rectangle(W / 2, H / 2, ROAD_W + 20, H, 0x888888); // shoulder
-        this.add.rectangle(W / 2, H / 2, ROAD_W, H, this.envColors.road); // road surface
-        // Lane dividers
+        this.add.rectangle(W / 2, H / 2, ROAD_W + 20, H, 0x888888);
+        this.add.rectangle(W / 2, H / 2, ROAD_W, H, this.envColors.road);
         this.laneLines = [];
         for (let y = -40; y < H + 40; y += 60) {
           const line = this.add.rectangle(W / 2, y, 4, 25, 0xffff00, 0.7);
@@ -653,7 +886,6 @@
           this.speed = Math.max(1, this.speed - 1);
           this.cameras.main.shake(200, 0.02);
           o.destroy();
-          // Slow effect
           const slowTxt = this.add
             .text(p.x, p.y - 30, "SLOW!", {
               fontSize: "18px",
@@ -691,8 +923,10 @@
             .setOrigin(0.5);
           this.tweens.add({
             targets: txt,
-            y: txt.y - 40,
+            y: txt.y - 60,
             alpha: 0,
+            scaleX: 1.5,
+            scaleY: 1.5,
             duration: 600,
             onComplete: () => txt.destroy(),
           });
@@ -711,15 +945,36 @@
         this.speedText = this.add
           .text(W / 2, 26, "", { fontSize: "14px", color: "#88ff88" })
           .setOrigin(0.5, 0);
-        this.comboText = this.add
-          .text(W / 2, 48, "", { fontSize: "14px", color: "#ffdd00" })
-          .setOrigin(0.5, 0);
 
-        // Progress bar
+        // Streak counter (visual, grows/pulses)
+        this.streakContainer = this.add.container(W / 2, 52);
+        this.streakBg = this.add
+          .rectangle(0, 0, 120, 22, 0xff8800, 0)
+          .setOrigin(0.5);
+        this.streakLabel = this.add
+          .text(0, 0, "", {
+            fontSize: "15px",
+            color: "#ffdd00",
+            fontStyle: "bold",
+            stroke: "#000",
+            strokeThickness: 2,
+          })
+          .setOrigin(0.5);
+        this.streakContainer.add([this.streakBg, this.streakLabel]);
+        this.streakContainer.setDepth(5);
+
+        // Question counter / progress bar
         this.add.rectangle(W / 2, 8, W - 100, 8, 0x333333);
         this.progressBar = this.add
           .rectangle(50, 8, 0, 6, 0x00ccff)
           .setOrigin(0, 0.5);
+        this.progressLabel = this.add
+          .text(W / 2, 8, "", {
+            fontSize: "9px",
+            color: "#ffffff",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
         this.add.text(28, 8, "🏁", { fontSize: "12px" }).setOrigin(0.5);
         this.add.text(W - 28, 8, "🏁", { fontSize: "12px" }).setOrigin(0.5);
 
@@ -736,7 +991,7 @@
           .setAlpha(0)
           .setDepth(10);
 
-        // Particles
+        // Exhaust Particles
         this.exhaustParticles = this.add.particles(0, 0, "particle", {
           speed: { min: 10, max: 40 },
           scale: { start: 0.5, end: 0 },
@@ -745,6 +1000,30 @@
           quantity: 2,
           tint: [0x888888, 0x666666],
           angle: { min: 80, to: 100 },
+        });
+
+        // Confetti emitter (for correct answers)
+        this.confettiEmitter = this.add.particles(0, 0, "confetti", {
+          speed: { min: 80, max: 250 },
+          scale: { start: 1.2, end: 0 },
+          lifespan: 800,
+          emitting: false,
+          quantity: 20,
+          tint: [0xff4488, 0x44ff88, 0x4488ff, 0xffdd00, 0xff8800, 0xaa44ff],
+          angle: { min: 0, max: 360 },
+          rotate: { min: 0, max: 360 },
+          gravityY: 200,
+        });
+
+        // Sparkle emitter (for streaks)
+        this.sparkleEmitter = this.add.particles(0, 0, "spark", {
+          speed: { min: 50, max: 150 },
+          scale: { start: 1.5, end: 0 },
+          lifespan: 500,
+          emitting: false,
+          quantity: 15,
+          tint: [0xffdd00, 0xffffff, 0xff8800],
+          angle: { min: 0, max: 360 },
         });
 
         // Input
@@ -806,12 +1085,25 @@
           "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
         );
         this.speedText.setText(`Speed: ${Math.round(this.speed * 20)} mph`);
-        if (this.combo >= 3) this.comboText.setText(`Streak: ${this.combo}x`);
+
+        // Streak display
+        if (this.combo >= 2) {
+          this.streakBg.setAlpha(0.6);
+          this.streakLabel.setText(`STREAK x${this.combo}`);
+          // Scale streak counter based on combo
+          const s = Math.min(1.5, 1 + this.combo * 0.05);
+          this.streakContainer.setScale(s);
+        } else {
+          this.streakBg.setAlpha(0);
+          this.streakLabel.setText("");
+          this.streakContainer.setScale(1);
+        }
 
         // Progress
         const totalDist = this.checkpointInterval * this.totalCheckpoints;
         const pct = Math.min(1, this.distance / totalDist);
         this.progressBar.setDisplaySize((W - 100) * pct, 6);
+        this.progressLabel.setText(`${this.currentQ}/${this.totalCheckpoints}`);
       };
 
       GameScene.prototype.update = function (time, delta) {
@@ -915,6 +1207,20 @@
           if (b.y > H + 50) b.destroy();
         });
 
+        // Ambient crowd sound builds with streak
+        if (this.combo >= 3 && time - this.lastCrowdTime > 4000) {
+          this.lastCrowdTime = time;
+          SFX.crowd(this.combo);
+        }
+
+        // Streak pulse animation
+        if (this.combo >= 3 && this.streakContainer) {
+          const pulse = 1 + Math.sin(time * 0.005) * 0.05;
+          this.streakContainer.setScale(
+            Math.min(1.5, 1 + this.combo * 0.05) * pulse,
+          );
+        }
+
         // Checkpoint check
         if (
           this.distance >= this.nextCheckpoint &&
@@ -938,15 +1244,20 @@
             onComplete: () => banner.destroy(),
           });
 
-          this.cpText.setText(`CHECKPOINT ${this.checkpointsHit}`).setAlpha(1);
+          // Phase transition animation
+          this.cpText
+            .setText(`CHECKPOINT ${this.checkpointsHit}`)
+            .setAlpha(1)
+            .setY(H / 2);
           this.tweens.add({
             targets: this.cpText,
             alpha: 0,
             y: H / 2 - 40,
+            scaleX: { from: 1.3, to: 1 },
+            scaleY: { from: 1.3, to: 1 },
             duration: 800,
           });
 
-          // Show question overlay
           this.time.delayedCall(600, () => {
             this.showCheckpointQuestion();
           });
@@ -961,7 +1272,16 @@
         ) {
           this.raceFinished = true;
           SFX.win();
-          this.time.delayedCall(1000, () => {
+          // Finish line confetti
+          for (let i = 0; i < 5; i++) {
+            this.time.delayedCall(i * 200, () => {
+              this.confettiEmitter.emitParticleAt(
+                randInt(100, W - 100),
+                randInt(100, 300),
+              );
+            });
+          }
+          this.time.delayedCall(1500, () => {
             this.scene.start("Results", {
               score: this.score,
               maxCombo: this.maxCombo,
@@ -987,17 +1307,29 @@
           return;
         }
 
+        this.questionStartTime = Date.now();
+
         // Overlay
         const overlay = this.add
           .rectangle(W / 2, H / 2, W, H, 0x000000, 0.75)
           .setDepth(15);
         const panel = this.add
-          .rectangle(W / 2, H / 2, 550, 320, 0x1a2a4a, 0.95)
+          .rectangle(W / 2, H / 2, 550, 360, 0x1a2a4a, 0.95)
           .setStrokeStyle(3, 0x00ccff)
           .setDepth(16);
 
+        // Panel entrance animation
+        panel.setScale(0.8);
+        this.tweens.add({
+          targets: panel,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 250,
+          ease: "Back.easeOut",
+        });
+
         const pText = this.add
-          .text(W / 2, H / 2 - 120, "CHECKPOINT CHALLENGE", {
+          .text(W / 2, H / 2 - 140, "CHECKPOINT CHALLENGE", {
             fontSize: "20px",
             color: "#00ccff",
             fontStyle: "bold",
@@ -1005,7 +1337,7 @@
           .setOrigin(0.5)
           .setDepth(17);
         const qText = this.add
-          .text(W / 2, H / 2 - 70, q.prompt, {
+          .text(W / 2, H / 2 - 85, q.prompt, {
             fontSize: "20px",
             color: "#ffffff",
             fontStyle: "bold",
@@ -1015,12 +1347,25 @@
           .setOrigin(0.5)
           .setDepth(17);
 
-        const elems = [overlay, panel, pText, qText];
+        // Speed indicator
+        const speedInd = this.add
+          .text(W / 2, H / 2 - 50, "Answer fast for bonus points!", {
+            fontSize: "11px",
+            color: "#88ccaa",
+          })
+          .setOrigin(0.5)
+          .setDepth(17);
+
+        const elems = [overlay, panel, pText, qText, speedInd];
         const btns = [];
+        const allBtnElems = [];
+
+        // Determine active choices (for 50/50)
+        let activeIndices = [0, 1, 2, 3];
 
         q.choices.forEach((c, i) => {
           const x = W / 2 - 180 + i * 120;
-          const y = H / 2 + 30;
+          const y = H / 2 + 20;
           const btn = this.add
             .rectangle(x, y, 105, 55, 0x224466)
             .setInteractive({ useHandCursor: true })
@@ -1042,26 +1387,105 @@
             .setDepth(17);
           elems.push(btn, txt, val);
           btns.push(btn);
+          allBtnElems.push({ btn, txt, val });
 
-          btn.on("pointerover", () => btn.setFillStyle(0x336688));
-          btn.on("pointerout", () => btn.setFillStyle(0x224466));
+          // Hover effects
+          btn.on("pointerover", () => {
+            btn.setFillStyle(0x336688);
+            this.tweens.add({
+              targets: [btn, txt, val],
+              scaleX: 1.08,
+              scaleY: 1.08,
+              duration: 80,
+            });
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(0x224466);
+            btn.setScale(1);
+            txt.setScale(1);
+            val.setScale(1);
+          });
           btn.on("pointerdown", () => {
-            // Disable all
             btns.forEach((b) => b.disableInteractive());
 
             const isCorrect = c === q.answer;
+            const answerTime = (Date.now() - this.questionStartTime) / 1000;
+
             if (isCorrect) {
               SFX.correct();
               this.combo++;
               if (this.combo > this.maxCombo) this.maxCombo = this.combo;
               this.totalCorrect++;
-              let pts = 150 + this.combo * 25;
+
+              // Time bonus: faster = more points
+              let timeBonus = Math.max(0, Math.floor((10 - answerTime) * 10));
+              let pts = 150 + this.combo * 25 + timeBonus;
+              if (this.doublePointsActive) {
+                pts *= 2;
+                this.doublePointsActive = false;
+              }
               this.score += pts;
               this.speed = Math.min(this.baseSpeed + 2, this.speed + 1);
 
               btn.setFillStyle(0x22cc66);
+
+              // Screen shake scales with streak
+              const shakeIntensity = Math.min(
+                0.025,
+                0.005 + this.combo * 0.003,
+              );
+              this.cameras.main.shake(150, shakeIntensity);
+
+              // Confetti burst
+              this.confettiEmitter.emitParticleAt(W / 2, H / 2);
+
+              // Floating score text
+              let scoreLabel = `+${pts}`;
+              if (timeBonus > 0) scoreLabel += ` (FAST!)`;
+              const floatTxt = this.add
+                .text(W / 2, H / 2 - 20, scoreLabel, {
+                  fontSize: "28px",
+                  color: "#ffdd00",
+                  fontStyle: "bold",
+                  stroke: "#000",
+                  strokeThickness: 3,
+                })
+                .setOrigin(0.5)
+                .setDepth(18);
+              this.tweens.add({
+                targets: floatTxt,
+                y: floatTxt.y - 60,
+                alpha: 0,
+                scaleX: 1.3,
+                scaleY: 1.3,
+                duration: 900,
+                onComplete: () => floatTxt.destroy(),
+              });
+
+              // Streak milestone effects
+              if (this.combo === 3) {
+                SFX.streak3();
+                this.showStreakMilestone("STREAK x3!", 0xff8800);
+              } else if (this.combo === 5) {
+                SFX.streak5();
+                this.showStreakMilestone("STREAK x5!!", 0xff4400);
+                this.sparkleEmitter.emitParticleAt(W / 2, H / 2);
+              } else if (this.combo === 7) {
+                SFX.streak7();
+                this.showStreakMilestone("STREAK x7!!!", 0xff0000);
+                this.sparkleEmitter.emitParticleAt(W / 2, H / 2 - 40);
+                this.sparkleEmitter.emitParticleAt(W / 2, H / 2 + 40);
+              } else if (this.combo >= 10) {
+                SFX.streak7();
+                this.showStreakMilestone(
+                  `UNSTOPPABLE x${this.combo}!`,
+                  0xaa00ff,
+                );
+                this.sparkleEmitter.emitParticleAt(W / 2, H / 2);
+              }
+
               const fb = this.add
-                .text(W / 2, H / 2 + 100, `Correct! +${pts} — Speed Boost!`, {
+                .text(W / 2, H / 2 + 110, `Correct! +${pts} — Speed Boost!`, {
                   fontSize: "20px",
                   color: "#22cc66",
                   fontStyle: "bold",
@@ -1070,11 +1494,12 @@
                 })
                 .setOrigin(0.5)
                 .setDepth(17);
-              elems.push(fb);
+              elems.push(fb, floatTxt);
             } else {
-              SFX.wrong();
+              SFX.glassBreak();
               this.combo = 0;
-              this.comboText.setText("");
+              this.streakLabel.setText("");
+              this.streakBg.setAlpha(0);
               this.totalWrong++;
               this.lives--;
               this.speed = Math.max(1, this.speed - 0.5);
@@ -1083,8 +1508,22 @@
               const ci = q.choices.indexOf(q.answer);
               if (ci >= 0) btns[ci].setFillStyle(0x22cc66);
 
+              // Red flash overlay
+              const redFlash = this.add
+                .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.3)
+                .setDepth(14);
+              this.tweens.add({
+                targets: redFlash,
+                alpha: 0,
+                duration: 400,
+                onComplete: () => redFlash.destroy(),
+              });
+
+              // Strong camera shake for wrong
+              this.cameras.main.shake(350, 0.03);
+
               const fb = this.add
-                .text(W / 2, H / 2 + 100, `Wrong! Answer: ${q.answer}`, {
+                .text(W / 2, H / 2 + 110, `Wrong! Answer: ${q.answer}`, {
                   fontSize: "20px",
                   color: "#ff4444",
                   fontStyle: "bold",
@@ -1093,13 +1532,14 @@
                 })
                 .setOrigin(0.5)
                 .setDepth(17);
-              elems.push(fb);
-              this.cameras.main.shake(200, 0.015);
+              elems.push(fb, redFlash);
 
               if (this.lives <= 0) {
                 SFX.lose();
                 this.time.delayedCall(1500, () => {
-                  elems.forEach((e) => e.destroy());
+                  elems.forEach((e) => {
+                    if (e && e.destroy) e.destroy();
+                  });
                   this.scene.start("Results", {
                     score: this.score,
                     maxCombo: this.maxCombo,
@@ -1118,11 +1558,124 @@
             this.updateHUD();
 
             this.time.delayedCall(1200, () => {
-              elems.forEach((e) => e.destroy());
+              elems.forEach((e) => {
+                if (e && e.destroy) e.destroy();
+              });
               this.paused = false;
             });
           });
         });
+
+        // Power-up buttons
+        const puY = H / 2 + 85;
+        const puElems = [];
+
+        // 50/50
+        if (this.powerups.fiftyFifty > 0) {
+          const pu5050 = this.add
+            .rectangle(W / 2 - 120, puY, 100, 32, 0x664488)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(17);
+          const pu5050T = this.add
+            .text(W / 2 - 120, puY, "50/50", {
+              fontSize: "13px",
+              color: "#ddaaff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(17);
+          elems.push(pu5050, pu5050T);
+
+          pu5050.on("pointerover", () => {
+            pu5050.setFillStyle(0x8866aa);
+            this.tweens.add({
+              targets: pu5050,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 80,
+            });
+          });
+          pu5050.on("pointerout", () => {
+            pu5050.setFillStyle(0x664488);
+            pu5050.setScale(1);
+          });
+          pu5050.on("pointerdown", () => {
+            if (this.powerups.fiftyFifty <= 0) return;
+            this.powerups.fiftyFifty--;
+            SFX.powerUp();
+            pu5050.disableInteractive();
+            pu5050.setAlpha(0.3);
+            // Remove 2 wrong answers
+            let removed = 0;
+            q.choices.forEach((c, i) => {
+              if (c !== q.answer && removed < 2) {
+                allBtnElems[i].btn.setAlpha(0.2);
+                allBtnElems[i].btn.disableInteractive();
+                allBtnElems[i].val.setAlpha(0.2);
+                allBtnElems[i].txt.setAlpha(0.2);
+                removed++;
+              }
+            });
+          });
+        }
+
+        // Double Points
+        if (this.powerups.doublePoints > 0) {
+          const puDbl = this.add
+            .rectangle(W / 2, puY, 100, 32, 0x448866)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(17);
+          const puDblT = this.add
+            .text(W / 2, puY, "2x PTS", {
+              fontSize: "13px",
+              color: "#aaffcc",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(17);
+          elems.push(puDbl, puDblT);
+
+          puDbl.on("pointerover", () => {
+            puDbl.setFillStyle(0x66aa88);
+            this.tweens.add({
+              targets: puDbl,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 80,
+            });
+          });
+          puDbl.on("pointerout", () => {
+            puDbl.setFillStyle(0x448866);
+            puDbl.setScale(1);
+          });
+          puDbl.on("pointerdown", () => {
+            if (this.powerups.doublePoints <= 0) return;
+            this.powerups.doublePoints--;
+            SFX.powerUp();
+            this.doublePointsActive = true;
+            puDbl.disableInteractive();
+            puDbl.setAlpha(0.3);
+            // Visual indicator
+            const dblTxt = this.add
+              .text(W / 2, H / 2 - 30, "DOUBLE POINTS ACTIVE!", {
+                fontSize: "16px",
+                color: "#aaffcc",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 2,
+              })
+              .setOrigin(0.5)
+              .setDepth(18);
+            this.tweens.add({
+              targets: dblTxt,
+              y: dblTxt.y - 30,
+              alpha: 0,
+              duration: 1000,
+              onComplete: () => dblTxt.destroy(),
+            });
+            elems.push(dblTxt);
+          });
+        }
 
         // Keyboard 1-4
         const keyHandler = (idx) => {
@@ -1140,6 +1693,29 @@
         this.input.keyboard.once("keydown-FOUR", () => keyHandler(3));
       };
 
+      GameScene.prototype.showStreakMilestone = function (text, color) {
+        const milestone = this.add
+          .text(W / 2, H / 2 - 60, text, {
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#" + color.toString(16).padStart(6, "0"),
+            stroke: "#000",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(19);
+        this.tweens.add({
+          targets: milestone,
+          y: milestone.y - 50,
+          scaleX: { from: 0.5, to: 1.5 },
+          scaleY: { from: 0.5, to: 1.5 },
+          alpha: { from: 1, to: 0 },
+          duration: 1200,
+          ease: "Cubic.easeOut",
+          onComplete: () => milestone.destroy(),
+        });
+      };
+
       // ── RESULTS ──
       function ResultScene() {
         return new Phaser.Scene("Results");
@@ -1155,27 +1731,46 @@
         this.add.rectangle(cx, H / 2, W, H, 0x0a1628);
 
         const won = d.lives > 0;
-        if (won) SFX.win();
-        else SFX.lose();
+        const pct =
+          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+
+        // Check high score
+        const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0");
+        const isNewHighScore = d.score > prevHigh;
+        if (isNewHighScore) {
+          localStorage.setItem(LS_KEY, String(d.score));
+        }
 
         if (won) {
-          for (let i = 0; i < 6; i++) {
-            this.time.delayedCall(i * 300, () => {
-              const p = this.add.particles(0, 0, "star", {
-                speed: { min: 60, max: 200 },
+          if (stars === 3) SFX.winElaborate();
+          else SFX.win();
+        } else {
+          SFX.lose();
+        }
+
+        // Victory confetti
+        if (won) {
+          for (let i = 0; i < 8; i++) {
+            this.time.delayedCall(i * 250, () => {
+              const p = this.add.particles(0, 0, "confetti", {
+                speed: { min: 60, max: 250 },
                 scale: { start: 1.5, end: 0 },
-                lifespan: 700,
-                quantity: 12,
-                tint: [0x00ccff, 0xff8800, 0x22cc66],
+                lifespan: 900,
+                quantity: 15,
+                tint: [0x00ccff, 0xff8800, 0x22cc66, 0xff4488, 0xffdd00],
+                angle: { min: 0, max: 360 },
+                rotate: { min: 0, max: 360 },
+                gravityY: 150,
               });
-              p.emitParticleAt(randInt(100, W - 100), randInt(80, 250));
-              this.time.delayedCall(800, () => p.destroy());
+              p.emitParticleAt(randInt(100, W - 100), randInt(50, 200));
+              this.time.delayedCall(1000, () => p.destroy());
             });
           }
         }
 
         this.add
-          .text(cx, 40, won ? "RACE COMPLETE!" : "RACE OVER!", {
+          .text(cx, 30, won ? "RACE COMPLETE!" : "RACE OVER!", {
             fontSize: "40px",
             fontStyle: "bold",
             color: won ? "#22cc66" : "#ff4444",
@@ -1186,14 +1781,71 @@
         this.add
           .text(
             cx,
-            82,
+            68,
             won ? "You crossed the finish line!" : "Better luck next race!",
             { fontSize: "16px", color: "#88aacc" },
           )
           .setOrigin(0.5);
 
+        // Star rating with animated fill
+        const starY = 100;
+        for (let i = 0; i < 3; i++) {
+          const sx = cx - 50 + i * 50;
+          // Empty star first
+          this.add.image(sx, starY, "emptystar").setScale(1.5).setDepth(1);
+          if (i < stars) {
+            this.time.delayedCall(500 + i * 400, () => {
+              const filledStar = this.add
+                .image(sx, starY, "bigstar")
+                .setScale(0)
+                .setDepth(2);
+              this.tweens.add({
+                targets: filledStar,
+                scaleX: 1.5,
+                scaleY: 1.5,
+                duration: 400,
+                ease: "Back.easeOut",
+              });
+              // Star sparkle
+              const sparkle = this.add.particles(0, 0, "spark", {
+                speed: { min: 30, max: 80 },
+                scale: { start: 1, end: 0 },
+                lifespan: 400,
+                quantity: 8,
+                tint: [0xffdd00, 0xffaa00],
+              });
+              sparkle.emitParticleAt(sx, starY);
+              this.time.delayedCall(500, () => sparkle.destroy());
+              SFX.checkpoint();
+            });
+          }
+        }
+
+        // New High Score banner
+        if (isNewHighScore && d.score > 0) {
+          SFX.newRecord();
+          const nhs = this.add
+            .text(cx, 135, "NEW HIGH SCORE!", {
+              fontSize: "24px",
+              fontStyle: "bold",
+              color: "#ffdd00",
+              stroke: "#664400",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: nhs,
+            scaleX: { from: 1, to: 1.15 },
+            scaleY: { from: 1, to: 1.15 },
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+          });
+        }
+
         // Podium-style display
-        const car = this.add.image(cx, 130, "car_player").setScale(2);
+        const carY = isNewHighScore ? 165 : 150;
+        const car = this.add.image(cx, carY, "car_player").setScale(2);
         this.tweens.add({
           targets: car,
           angle: { from: -5, to: 5 },
@@ -1202,6 +1854,7 @@
           repeat: -1,
         });
 
+        const statsStartY = carY + 40;
         const stats = [
           { label: "Final Score", val: String(d.score), color: "#00ccff" },
           {
@@ -1214,15 +1867,22 @@
           { label: "Max Streak", val: `x${d.maxCombo}`, color: "#ffdd00" },
           { label: "Track", val: d.difficulty.toUpperCase(), color: "#aaccff" },
         ];
+        if (prevHigh > 0 && !isNewHighScore) {
+          stats.push({
+            label: "Personal Best",
+            val: String(prevHigh),
+            color: "#ffdd00",
+          });
+        }
         stats.forEach((s, i) => {
-          const y = 185 + i * 46;
-          this.add.rectangle(cx, y, 380, 36, 0x1a2a4a, 0.8);
+          const y = statsStartY + i * 42;
+          this.add.rectangle(cx, y, 380, 34, 0x1a2a4a, 0.8);
           this.add
-            .text(cx - 160, y, s.label, { fontSize: "16px", color: "#6688aa" })
+            .text(cx - 160, y, s.label, { fontSize: "15px", color: "#6688aa" })
             .setOrigin(0, 0.5);
           const v = this.add
             .text(cx + 160, y, s.val, {
-              fontSize: "19px",
+              fontSize: "18px",
               fontStyle: "bold",
               color: s.color,
             })
@@ -1237,8 +1897,7 @@
           });
         });
 
-        const pct =
-          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const gradeY = statsStartY + stats.length * 42 + 18;
         const grade =
           pct >= 90
             ? "A+"
@@ -1250,8 +1909,8 @@
                   ? "C"
                   : "D";
         this.add
-          .text(cx, 480, grade, {
-            fontSize: "56px",
+          .text(cx, gradeY, grade, {
+            fontSize: "48px",
             fontStyle: "bold",
             color: pct >= 80 ? "#22cc66" : pct >= 60 ? "#ffaa00" : "#ff4444",
             stroke: "#000",
@@ -1259,22 +1918,25 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 518, `${Math.round(pct)}% Accuracy`, {
-            fontSize: "16px",
+          .text(cx, gradeY + 34, `${Math.round(pct)}% Accuracy`, {
+            fontSize: "15px",
             color: "#88aacc",
           })
           .setOrigin(0.5);
 
+        const btnY = Math.min(575, gradeY + 70);
         const retry = this.add
-          .rectangle(cx - 100, 560, 170, 44, 0x00ccff)
+          .rectangle(cx - 100, btnY, 170, 44, 0x00ccff)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(cx - 100, 560, "RACE AGAIN", {
+          .text(cx - 100, btnY, "RACE AGAIN", {
             fontSize: "17px",
             fontStyle: "bold",
             color: "#002244",
           })
           .setOrigin(0.5);
+        retry.on("pointerover", () => retry.setFillStyle(0x44ddff));
+        retry.on("pointerout", () => retry.setFillStyle(0x00ccff));
         retry.on("pointerdown", () => {
           this.cameras.main.fadeOut(300);
           this.time.delayedCall(300, () =>
@@ -1283,15 +1945,17 @@
         });
 
         const menu = this.add
-          .rectangle(cx + 100, 560, 170, 44, 0x1a2a4a)
+          .rectangle(cx + 100, btnY, 170, 44, 0x1a2a4a)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(cx + 100, 560, "MAIN MENU", {
+          .text(cx + 100, btnY, "MAIN MENU", {
             fontSize: "17px",
             fontStyle: "bold",
             color: "#88aacc",
           })
           .setOrigin(0.5);
+        menu.on("pointerover", () => menu.setFillStyle(0x2a3a5a));
+        menu.on("pointerout", () => menu.setFillStyle(0x1a2a4a));
         menu.on("pointerdown", () => {
           this.cameras.main.fadeOut(300);
           this.time.delayedCall(300, () => this.scene.start("Title"));

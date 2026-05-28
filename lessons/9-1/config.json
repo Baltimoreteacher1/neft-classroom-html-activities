@@ -10,32 +10,32 @@
     {
       "term": "Coordinate plane",
       "definition": "A grid formed by a horizontal x-axis and a vertical y-axis that intersect at the origin",
-      "visual": "Two perpendicular number lines forming four quadrants"
+      "visual": "A grid with a horizontal line (x-axis) crossing a vertical line (y-axis), making four sections"
     },
     {
       "term": "Ordered pair",
       "definition": "A pair of numbers (x, y) that identifies a point on the coordinate plane",
-      "visual": "(3, 5) means go right 3, up 5"
+      "visual": "(3, 5) means move right 3 from the origin, then up 5"
     },
     {
       "term": "Origin",
       "definition": "The point (0, 0) where the x-axis and y-axis intersect",
-      "visual": "The center crossing point of the grid"
+      "visual": "The starting point at the center where both axes cross — (0, 0)"
     },
     {
       "term": "Quadrant",
       "definition": "One of four sections of the coordinate plane",
-      "visual": "I (top-right), II (top-left), III (bottom-left), IV (bottom-right)"
+      "visual": "I (+,+) top-right, II (-,+) top-left, III (-,-) bottom-left, IV (+,-) bottom-right"
     },
     {
       "term": "Reflection",
       "definition": "A mirror image across an axis",
-      "visual": "(3, 2) reflected over x-axis = (3, −2)"
+      "visual": "(3, 2) reflected over the x-axis becomes (3, -2) — same x, opposite y"
     },
     {
       "term": "Integer",
       "definition": "Whole numbers and their opposites, including zero",
-      "visual": "..., −3, −2, −1, 0, 1, 2, 3, ..."
+      "visual": "..., -3, -2, -1, 0, 1, 2, 3, ..."
     }
   ],
   "launch": {
@@ -102,14 +102,44 @@
       {
         "type": "multiple-choice",
         "stem": "Which ordered pair names a point 3 units right and 7 units up from the origin?",
-        "choices": [
-          "(3, 7)",
-          "(7, 3)",
-          "(3, 3)",
-          "(0, 7)"
-        ],
+        "choices": ["(3, 7)", "(7, 3)", "(3, 3)", "(0, 7)"],
         "correctIndex": 0,
         "explanation": "The first coordinate is horizontal (right 3), the second is vertical (up 7). So (3, 7)."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What are the coordinates of the origin?",
+        "choices": ["(0, 0)", "(1, 1)", "(0, 1)", "(1, 0)"],
+        "correctIndex": 0,
+        "explanation": "The origin is where the x-axis and y-axis cross, at (0, 0)."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A point is at (6, 2). What does the 6 tell you?",
+        "choices": [
+          "Move 6 units to the right",
+          "Move 6 units up",
+          "Move 6 units to the left",
+          "The point is in Quadrant 6"
+        ],
+        "correctIndex": 0,
+        "explanation": "The first number (x-coordinate) tells you horizontal movement. 6 means go right 6 units from the origin."
+      },
+      {
+        "type": "drag-sort",
+        "label": "Put these steps in order for plotting the point (4, 5).",
+        "items": [
+          "Start at the origin (0, 0)",
+          "Move 4 units to the right along the x-axis",
+          "Move 5 units up from that spot",
+          "Place a dot at the point (4, 5)"
+        ],
+        "correctOrder": [
+          "Start at the origin (0, 0)",
+          "Move 4 units to the right along the x-axis",
+          "Move 5 units up from that spot",
+          "Place a dot at the point (4, 5)"
+        ]
       },
       {
         "type": "matching-game",
@@ -141,18 +171,6 @@
         ],
         "columns": 4,
         "label": "Match each ordered pair to its description."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "What are the coordinates of the origin?",
-        "choices": [
-          "(0, 0)",
-          "(1, 1)",
-          "(0, 1)",
-          "(1, 0)"
-        ],
-        "correctIndex": 0,
-        "explanation": "The origin is where the x-axis and y-axis cross, at (0, 0)."
       }
     ],
     "onLevel": [
@@ -199,15 +217,15 @@
             "match": "Quadrant I"
           },
           {
-            "term": "(−4, 5)",
+            "term": "(-4, 5)",
             "match": "Quadrant II"
           },
           {
-            "term": "(−2, −6)",
+            "term": "(-2, -6)",
             "match": "Quadrant III"
           },
           {
-            "term": "(7, −1)",
+            "term": "(7, -1)",
             "match": "Quadrant IV"
           },
           {
@@ -219,8 +237,31 @@
             "match": "x-axis"
           }
         ],
-        "label": "Match each point to its location.",
+        "label": "Match each point to its quadrant or axis.",
         "columns": 4
+      },
+      {
+        "type": "fill-table",
+        "instructions": "Complete the table. Write the ordered pair for each description.",
+        "headers": ["Description", "Ordered Pair"],
+        "rows": [
+          ["Right 7, Up 2", ""],
+          ["Right 0, Up 5", ""],
+          ["Right 4, Up 0", ""],
+          ["Right 3, Up 3", ""]
+        ],
+        "editableCells": [
+          { "row": 0, "col": 1, "answer": "(7, 2)" },
+          { "row": 1, "col": 1, "answer": "(0, 5)" },
+          { "row": 2, "col": 1, "answer": "(4, 0)" },
+          { "row": 3, "col": 1, "answer": "(3, 3)" }
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "label": "Sort these ordered pairs by their x-coordinate from smallest to largest.",
+        "items": ["(5, 3)", "(1, 7)", "(3, 2)", "(0, 4)", "(7, 1)"],
+        "correctOrder": ["(0, 4)", "(1, 7)", "(3, 2)", "(5, 3)", "(7, 1)"]
       }
     ],
     "extending": [
@@ -254,17 +295,38 @@
       },
       {
         "type": "open-response",
-        "prompt": "Explain how to find the distance between two points that share the same x-coordinate, like (3, −2) and (3, 5). What if they share the same y-coordinate instead?",
-        "sentenceFrame": "When points share the same x-coordinate, the distance is ___. I find it by ___.",
+        "prompt": "A student says that (3, 5) and (5, 3) are the same point because they use the same numbers. Is the student correct? Explain why or why not, and describe where each point is located on the coordinate plane.",
+        "sentenceFrame": "The student is ___ because (3, 5) means ___ while (5, 3) means ___. The ORDER matters because ___.",
         "keywords": [
-          "absolute value",
-          "subtract",
-          "distance",
+          "order",
+          "x-coordinate",
+          "y-coordinate",
           "horizontal",
           "vertical",
-          "coordinate"
+          "different",
+          "right",
+          "up"
         ],
         "minLength": 30
+      },
+      {
+        "type": "coordinate-grid",
+        "label": "Plot the points (2, 3), (2, 7), (6, 7), (6, 3). Connect them. Name the shape and find its perimeter using the coordinates.",
+        "xMin": 0,
+        "xMax": 8,
+        "yMin": 0,
+        "yMax": 9,
+        "xStep": 1,
+        "yStep": 1,
+        "xLabel": "x",
+        "yLabel": "y",
+        "showLine": true,
+        "targets": [
+          { "x": 2, "y": 3, "label": "A" },
+          { "x": 2, "y": 7, "label": "B" },
+          { "x": 6, "y": 7, "label": "C" },
+          { "x": 6, "y": 3, "label": "D" }
+        ]
       }
     ]
   },
@@ -287,12 +349,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "Point P is located 6 units right and 3 units up from the origin. What ordered pair names point P?",
-      "choices": [
-        "(6, 3)",
-        "(3, 6)",
-        "(6, 0)",
-        "(0, 3)"
-      ],
+      "choices": ["(6, 3)", "(3, 6)", "(6, 0)", "(0, 3)"],
       "correctIndex": 0,
       "explanation": "Right 6 = x-coordinate of 6, Up 3 = y-coordinate of 3. The ordered pair is (6, 3)."
     }

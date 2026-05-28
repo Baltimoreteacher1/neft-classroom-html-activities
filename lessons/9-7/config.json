@@ -10,27 +10,27 @@
     {
       "term": "Reflection",
       "definition": "A mirror image of a point across a line; the reflected point is the same distance from the line but on the opposite side",
-      "visual": "(3, 2) reflected over the y-axis becomes (-3, 2)"
+      "visual": "(3, 2) reflected over the y-axis becomes (-3, 2) — x changes sign, y stays"
     },
     {
       "term": "x-axis",
       "definition": "The horizontal axis on the coordinate plane; reflecting over the x-axis changes the sign of the y-coordinate",
-      "visual": "(4, 3) reflected over the x-axis is (4, -3)"
+      "visual": "(4, 3) → (4, -3): the y flips from +3 to -3, like folding the paper along the horizontal line"
     },
     {
       "term": "y-axis",
       "definition": "The vertical axis on the coordinate plane; reflecting over the y-axis changes the sign of the x-coordinate",
-      "visual": "(4, 3) reflected over the y-axis is (-4, 3)"
+      "visual": "(4, 3) → (-4, 3): the x flips from +4 to -4, like folding the paper along the vertical line"
     },
     {
       "term": "Symmetry",
       "definition": "When a shape or arrangement looks the same on both sides of a line of reflection",
-      "visual": "A butterfly's wings are symmetric across its body"
+      "visual": "A butterfly's wings are symmetric — fold it down the middle and both sides match"
     },
     {
       "term": "Integer",
       "definition": "Whole numbers and their opposites, including zero",
-      "visual": "..., −3, −2, −1, 0, 1, 2, 3, ..."
+      "visual": "..., -3, -2, -1, 0, 1, 2, 3, ..."
     }
   ],
   "launch": {
@@ -114,14 +114,23 @@
       {
         "type": "multiple-choice",
         "stem": "What is the reflection of (4, -3) over the x-axis?",
-        "choices": [
-          "(-4, -3)",
-          "(4, 3)",
-          "(-4, 3)",
-          "(3, -4)"
-        ],
+        "choices": ["(-4, -3)", "(4, 3)", "(-4, 3)", "(3, -4)"],
         "correctIndex": 1,
         "explanation": "Reflecting over the x-axis changes the sign of the y-coordinate. The x stays the same (4), and the y changes from -3 to 3. The answer is (4, 3)."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is the reflection of (-2, 6) over the y-axis?",
+        "choices": ["(2, 6)", "(-2, -6)", "(2, -6)", "(6, -2)"],
+        "correctIndex": 0,
+        "explanation": "Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -2 to 2, and y stays 6. The answer is (2, 6)."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which point is on the y-axis?",
+        "choices": ["(0, 5)", "(5, 0)", "(3, 3)", "(-2, 4)"],
+        "correctIndex": 0,
+        "explanation": "Points on the y-axis have x-coordinate = 0. (0, 5) is on the y-axis."
       },
       {
         "type": "matching-game",
@@ -155,16 +164,22 @@
         "label": "Match each point and axis to its reflection."
       },
       {
-        "type": "multiple-choice",
-        "stem": "Which point is on the y-axis?",
-        "choices": [
-          "(0, 5)",
-          "(5, 0)",
-          "(3, 3)",
-          "(−2, 4)"
+        "type": "drag-sort",
+        "label": "Put the steps in order for reflecting (5, -3) over the y-axis.",
+        "items": [
+          "Start with the point (5, -3)",
+          "Identify the axis of reflection: y-axis",
+          "The y-axis is vertical, so the x-coordinate changes sign",
+          "Change x from 5 to -5, keep y as -3",
+          "The reflection is (-5, -3)"
         ],
-        "correctIndex": 0,
-        "explanation": "Points on the y-axis have x-coordinate = 0."
+        "correctOrder": [
+          "Start with the point (5, -3)",
+          "Identify the axis of reflection: y-axis",
+          "The y-axis is vertical, so the x-coordinate changes sign",
+          "Change x from 5 to -5, keep y as -3",
+          "The reflection is (-5, -3)"
+        ]
       }
     ],
     "onLevel": [
@@ -181,58 +196,70 @@
         "yLabel": "y",
         "showLine": false,
         "targets": [
-          {
-            "x": 1,
-            "y": 4,
-            "label": "Original"
-          },
-          {
-            "x": 1,
-            "y": -4,
-            "label": "Over x-axis"
-          },
-          {
-            "x": -1,
-            "y": 4,
-            "label": "Over y-axis"
-          },
-          {
-            "x": -1,
-            "y": -4,
-            "label": "Over both"
-          }
+          { "x": 1, "y": 4, "label": "Original" },
+          { "x": 1, "y": -4, "label": "Over x-axis" },
+          { "x": -1, "y": 4, "label": "Over y-axis" },
+          { "x": -1, "y": -4, "label": "Over both" }
+        ]
+      },
+      {
+        "type": "fill-table",
+        "instructions": "Find the reflection of each point over the given axis.",
+        "headers": ["Original Point", "Axis", "Reflected Point"],
+        "rows": [
+          ["(3, -7)", "x-axis", ""],
+          ["(-5, 2)", "y-axis", ""],
+          ["(8, -1)", "x-axis", ""],
+          ["(-4, -6)", "y-axis", ""],
+          ["(0, 9)", "x-axis", ""],
+          ["(-3, 0)", "y-axis", ""]
+        ],
+        "editableCells": [
+          { "row": 0, "col": 2, "answer": "(3, 7)" },
+          { "row": 1, "col": 2, "answer": "(5, 2)" },
+          { "row": 2, "col": 2, "answer": "(8, 1)" },
+          { "row": 3, "col": 2, "answer": "(4, -6)" },
+          { "row": 4, "col": 2, "answer": "(0, -9)" },
+          { "row": 5, "col": 2, "answer": "(3, 0)" }
         ]
       },
       {
         "type": "matching-game",
         "pairs": [
           {
-            "term": "(3, 2)",
-            "match": "Quadrant I"
+            "term": "Over x-axis",
+            "match": "y-coordinate changes sign"
           },
           {
-            "term": "(−4, 5)",
-            "match": "Quadrant II"
+            "term": "Over y-axis",
+            "match": "x-coordinate changes sign"
           },
           {
-            "term": "(−2, −6)",
-            "match": "Quadrant III"
+            "term": "Over both axes",
+            "match": "Both coordinates change sign"
           },
           {
-            "term": "(7, −1)",
-            "match": "Quadrant IV"
+            "term": "Point on x-axis",
+            "match": "Reflects to itself over x-axis"
           },
           {
-            "term": "(0, 3)",
-            "match": "y-axis"
+            "term": "Point on y-axis",
+            "match": "Reflects to itself over y-axis"
           },
           {
-            "term": "(5, 0)",
-            "match": "x-axis"
+            "term": "(0, 0)",
+            "match": "Reflects to itself over any axis"
           }
         ],
-        "label": "Match each point to its location.",
+        "label": "Match each reflection rule to its description.",
         "columns": 4
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Point A is at (-3, 5). It is reflected over the x-axis to A', then A' is reflected over the y-axis to A''. What are the coordinates of A''?",
+        "choices": ["(3, -5)", "(-3, -5)", "(3, 5)", "(-3, 5)"],
+        "correctIndex": 0,
+        "explanation": "Over x-axis: (-3, 5) → (-3, -5). Then over y-axis: (-3, -5) → (3, -5). Both coordinates changed sign."
       }
     ],
     "extending": [
@@ -262,17 +289,38 @@
       },
       {
         "type": "open-response",
-        "prompt": "Explain how to find the distance between two points that share the same x-coordinate, like (3, −2) and (3, 5). What if they share the same y-coordinate instead?",
-        "sentenceFrame": "When points share the same x-coordinate, the distance is ___. I find it by ___.",
+        "prompt": "A triangle has vertices at A(1, 2), B(4, 2), and C(4, 6). If you reflect the entire triangle over the y-axis, what are the new vertices? What do you notice about the size and shape of the reflected triangle compared to the original?",
+        "sentenceFrame": "The reflected vertices are A'(___), B'(___), C'(___). I found each by ___. The reflected triangle is ___ compared to the original because reflections ___.",
         "keywords": [
-          "absolute value",
-          "subtract",
-          "distance",
-          "horizontal",
-          "vertical",
-          "coordinate"
+          "reflection",
+          "y-axis",
+          "x-coordinate",
+          "opposite",
+          "congruent",
+          "same size",
+          "same shape",
+          "mirror"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "coordinate-grid",
+        "label": "Plot the point (-2, 3). Reflect it over the x-axis, then reflect that result over the y-axis. Where do you end up? Now start over and reflect (-2, 3) over the y-axis first, then over the x-axis. Do you get the same final point?",
+        "xMin": -5,
+        "xMax": 5,
+        "yMin": -5,
+        "yMax": 5,
+        "xStep": 1,
+        "yStep": 1,
+        "xLabel": "x",
+        "yLabel": "y",
+        "showLine": false,
+        "targets": [
+          { "x": -2, "y": 3, "label": "Start" },
+          { "x": -2, "y": -3, "label": "After x-axis" },
+          { "x": 2, "y": -3, "label": "Then y-axis" },
+          { "x": 2, "y": 3, "label": "After y-axis (path 2)" }
+        ]
       }
     ]
   },
@@ -295,12 +343,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "What is the reflection of (-5, 2) over the y-axis?",
-      "choices": [
-        "(-5, -2)",
-        "(5, -2)",
-        "(5, 2)",
-        "(2, -5)"
-      ],
+      "choices": ["(-5, -2)", "(5, -2)", "(5, 2)", "(2, -5)"],
       "correctIndex": 2,
       "explanation": "Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -5 to 5, and y stays 2. The reflection is (5, 2)."
     }

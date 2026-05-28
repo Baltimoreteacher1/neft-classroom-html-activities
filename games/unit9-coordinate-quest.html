@@ -29,6 +29,7 @@
 
       const W = 1024,
         H = 768;
+      const LS_KEY = "coordquest_highscore";
 
       // --- SFX ---
       class SFX {
@@ -61,6 +62,26 @@
             o.stop(this.ctx.currentTime + d);
           } catch (e) {}
         }
+        noise(d, v = 0.04) {
+          if (!this.ctx) return;
+          try {
+            const bufSize = this.ctx.sampleRate * d;
+            const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const src = this.ctx.createBufferSource();
+            src.buffer = buf;
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            src.connect(g);
+            g.connect(this.ctx.destination);
+            src.start();
+          } catch (e) {}
+        }
         warp() {
           [300, 500, 800, 1200].forEach((f, i) =>
             setTimeout(() => this.tone(f, 0.1), i * 50),
@@ -90,6 +111,16 @@
             setTimeout(() => this.tone(f, 0.12), i * 70),
           );
         }
+        winBig() {
+          [523, 659, 784, 1047, 1319, 1568, 2093].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "sine", 0.1), i * 80),
+          );
+          setTimeout(() => {
+            [1047, 1319, 1568].forEach((f, i) =>
+              setTimeout(() => this.tone(f, 0.25, "triangle", 0.06), i * 60),
+            );
+          }, 600);
+        }
         lose() {
           [500, 400, 300, 200].forEach((f, i) =>
             setTimeout(() => this.tone(f, 0.2, "sawtooth"), i * 100),
@@ -98,6 +129,37 @@
         alarm() {
           this.tone(400, 0.1, "square");
           setTimeout(() => this.tone(600, 0.1, "square"), 100);
+        }
+        glassBreak() {
+          this.noise(0.3, 0.08);
+          this.tone(800, 0.05, "square", 0.06);
+          setTimeout(() => this.noise(0.15, 0.04), 50);
+          setTimeout(() => this.tone(400, 0.08, "sawtooth", 0.05), 80);
+        }
+        streakMilestone(level) {
+          const base = 600 + level * 100;
+          [base, base + 200, base + 400, base + 600].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.08, "sine", 0.07), i * 40),
+          );
+        }
+        powerUp() {
+          [400, 600, 800, 1000, 1200].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.06, "sine", 0.06), i * 30),
+          );
+        }
+        phaseTransition() {
+          [200, 300, 400, 600, 800, 1000, 1200].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.12, "triangle", 0.06), i * 60),
+          );
+        }
+        speedBonus() {
+          this.tone(1200, 0.06, "sine", 0.06);
+          setTimeout(() => this.tone(1500, 0.08, "sine", 0.05), 40);
+        }
+        crowdCheer(intensity) {
+          const v = Math.min(0.03 + intensity * 0.005, 0.08);
+          this.noise(0.4, v);
+          this.tone(300 + intensity * 40, 0.3, "triangle", v * 0.5);
         }
       }
       const sfx = new SFX();
@@ -286,7 +348,7 @@
         for (let i = 0; i < 3; i++) {
           const nx = Phaser.Math.Between(100, W - 100),
             ny = Phaser.Math.Between(100, H - 100);
-          const neb = scene.add
+          scene.add
             .circle(
               nx,
               ny,
@@ -296,6 +358,26 @@
             )
             .setDepth(0);
         }
+      }
+
+      // --- AMBIENT PARTICLES ---
+      function createAmbientParticles(scene) {
+        // Floating space dust
+        scene.add
+          .particles(W / 2, H / 2, "__WHITE", {
+            x: { min: 0, max: W },
+            y: { min: 0, max: H },
+            speed: { min: 3, max: 12 },
+            angle: { min: 250, max: 290 },
+            scale: { start: 0.15, end: 0 },
+            alpha: { start: 0.3, end: 0 },
+            lifespan: { min: 4000, max: 8000 },
+            tint: [0x4361ee, 0x7c3aed, 0x22d3ee, 0xffffff],
+            quantity: 1,
+            frequency: 300,
+            blendMode: "ADD",
+          })
+          .setDepth(0);
       }
 
       // --- BOOT ---
@@ -318,21 +400,39 @@
           const cx = W / 2;
           this.cameras.main.setBackgroundColor("#020617");
           createStarfield(this);
+          createAmbientParticles(this);
+
+          // Animated shooting stars
+          this.time.addEvent({
+            delay: 2000,
+            loop: true,
+            callback: () => {
+              const sx = Phaser.Math.Between(0, W);
+              const star = this.add
+                .circle(sx, -5, 2, 0x22d3ee, 0.8)
+                .setDepth(1);
+              this.tweens.add({
+                targets: star,
+                x: sx + Phaser.Math.Between(-200, 200),
+                y: H + 10,
+                alpha: 0,
+                duration: Phaser.Math.Between(800, 1500),
+                onComplete: () => star.destroy(),
+              });
+            },
+          });
+
           // Spaceship
           const ship = this.add.graphics().setPosition(cx, 380);
-          // Body
           ship.fillStyle(0x64748b);
           ship.fillTriangle(0, -40, 25, 20, -25, 20);
           ship.fillStyle(0x3b82f6);
           ship.fillTriangle(0, -30, 18, 15, -18, 15);
-          // Wings
           ship.fillStyle(0x475569);
           ship.fillTriangle(-18, 10, -40, 25, -15, 25);
           ship.fillTriangle(18, 10, 40, 25, 15, 25);
-          // Cockpit
           ship.fillStyle(0x22d3ee);
           ship.fillCircle(0, -10, 7);
-          // Engine glow
           ship.fillStyle(0xf97316);
           ship.fillTriangle(-8, 20, 8, 20, 0, 35);
           this.tweens.add({
@@ -354,8 +454,9 @@
             frequency: 60,
             blendMode: "ADD",
           });
-          // Title
-          this.add
+
+          // Title with animated glow
+          const titleCoord = this.add
             .text(cx, 70, "COORDINATE", {
               fontSize: "52px",
               fontFamily: "monospace",
@@ -363,7 +464,16 @@
               fontStyle: "bold",
             })
             .setOrigin(0.5);
-          this.add
+          this.tweens.add({
+            targets: titleCoord,
+            alpha: 0.7,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
+          const titleQuest = this.add
             .text(cx, 135, "QUEST", {
               fontSize: "68px",
               fontFamily: "monospace",
@@ -371,6 +481,16 @@
               fontStyle: "bold",
             })
             .setOrigin(0.5);
+          this.tweens.add({
+            targets: titleQuest,
+            scaleX: 1.03,
+            scaleY: 1.03,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
           this.add
             .text(cx, 195, "Space Navigation", {
               fontSize: "22px",
@@ -383,42 +503,60 @@
               color: "#64748b",
             })
             .setOrigin(0.5);
+
+          // High score display
+          const hi = parseInt(localStorage.getItem(LS_KEY)) || 0;
+          if (hi > 0) {
+            this.add
+              .text(cx, 250, `HIGH SCORE: ${hi}`, {
+                fontSize: "14px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+          }
+
           // Mini coordinate grid preview
           const gx = cx,
-            gy = 300;
-          const gs = 60;
-          // Axes
+            gy = 300,
+            gs = 60;
           this.add.line(gx, gy, -gs * 2, 0, gs * 2, 0, 0x334155).setDepth(1);
           this.add.line(gx, gy, 0, -gs * 2, 0, gs * 2, 0x334155).setDepth(1);
-          // Quadrant labels
-          this.add
-            .text(gx + gs / 2, gy - gs, "QI", {
-              fontSize: "10px",
-              color: "#22c55e",
-            })
-            .setOrigin(0.5)
-            .setDepth(1);
-          this.add
-            .text(gx - gs / 2, gy - gs, "QII", {
-              fontSize: "10px",
-              color: "#3b82f6",
-            })
-            .setOrigin(0.5)
-            .setDepth(1);
-          this.add
-            .text(gx - gs / 2, gy + gs / 2, "QIII", {
-              fontSize: "10px",
-              color: "#f59e0b",
-            })
-            .setOrigin(0.5)
-            .setDepth(1);
-          this.add
-            .text(gx + gs / 2, gy + gs / 2, "QIV", {
-              fontSize: "10px",
-              color: "#ef4444",
-            })
-            .setOrigin(0.5)
-            .setDepth(1);
+          // Quadrant labels with pulsing
+          const qlabels = [
+            { x: gx + gs / 2, y: gy - gs, t: "QI", c: "#22c55e" },
+            { x: gx - gs / 2, y: gy - gs, t: "QII", c: "#3b82f6" },
+            { x: gx - gs / 2, y: gy + gs / 2, t: "QIII", c: "#f59e0b" },
+            { x: gx + gs / 2, y: gy + gs / 2, t: "QIV", c: "#ef4444" },
+          ];
+          qlabels.forEach((q, i) => {
+            const lbl = this.add
+              .text(q.x, q.y, q.t, { fontSize: "10px", color: q.c })
+              .setOrigin(0.5)
+              .setDepth(1);
+            this.tweens.add({
+              targets: lbl,
+              alpha: 0.4,
+              duration: 1200 + i * 200,
+              yoyo: true,
+              repeat: -1,
+            });
+          });
+
+          // Animated dot on grid
+          const dot = this.add
+            .circle(gx + gs, gy - gs, 4, 0x22d3ee)
+            .setDepth(2);
+          this.tweens.add({
+            targets: dot,
+            x: gx - gs,
+            y: gy + gs / 2,
+            duration: 3000,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
           // Features
           const feats = [
             { t: "Navigate all 4 quadrants", c: "#22d3ee" },
@@ -426,30 +564,66 @@
             { t: "Calculate distances", c: "#f59e0b" },
           ];
           feats.forEach((f, i) => {
-            this.add
+            const ft = this.add
               .text(cx, 475 + i * 28, "● " + f.t, {
                 fontSize: "14px",
                 color: f.c,
               })
-              .setOrigin(0.5);
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: ft,
+              alpha: 1,
+              y: ft.y - 5,
+              duration: 400,
+              delay: 300 + i * 150,
+              ease: "Back.easeOut",
+            });
           });
-          // Start
+
+          // Start button with pulse
           const btn = this.add
             .rectangle(cx, 600, 260, 60, 0x7c3aed)
             .setStrokeStyle(2, 0xa78bfa)
             .setInteractive({ useHandCursor: true });
-          this.add
+          const btnText = this.add
             .text(cx, 600, "LAUNCH MISSION", {
               fontSize: "24px",
               color: "#fff",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
-          btn.on("pointerover", () => btn.setFillStyle(0x6d28d9));
-          btn.on("pointerout", () => btn.setFillStyle(0x7c3aed));
+          this.tweens.add({
+            targets: btn,
+            scaleX: 1.04,
+            scaleY: 1.04,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          btn.on("pointerover", () => {
+            btn.setFillStyle(0x6d28d9);
+            this.tweens.add({
+              targets: [btn, btnText],
+              scaleX: 1.08,
+              scaleY: 1.08,
+              duration: 150,
+            });
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(0x7c3aed);
+            this.tweens.add({
+              targets: [btn, btnText],
+              scaleX: 1,
+              scaleY: 1,
+              duration: 150,
+            });
+          });
           btn.on("pointerdown", () => {
             sfx.warp();
-            this.scene.start("Game");
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Game"));
           });
           this.add
             .text(cx, 660, "Keys 1-4 or click | Arrows + Enter", {
@@ -460,7 +634,8 @@
           this.input.keyboard.on("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
               sfx.warp();
-              this.scene.start("Game");
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
             }
           });
         }
@@ -479,21 +654,28 @@
           this.lives = 3;
           this.streak = 0;
           this.bestStreak = 0;
+          this.multiplier = 1;
           this.totalQ = Math.min(15, this.questions.length);
           this.answered = false;
           this.startTime = Date.now();
+          this.questionStartTime = Date.now();
           this.selectedIdx = -1;
+          this.currentTier = 0;
+          this.powerUps = { fiftyFifty: 1, doublePoints: 1, extraTime: 0 };
+          this.doublePointsActive = false;
           this.cameras.main.setBackgroundColor("#020617");
+          this.cameras.main.fadeIn(500);
           createStarfield(this);
+          createAmbientParticles(this);
           this.buildGrid();
           this.buildShip();
           this.buildHUD();
+          this.buildPowerUpButtons();
           this.loadQuestion();
           this.input.keyboard.on("keydown", this.handleKey, this);
         }
 
         buildGrid() {
-          // Coordinate grid (right side, compact)
           this.gridX = 720;
           this.gridY = 380;
           this.gridSize = 25;
@@ -502,7 +684,6 @@
             gy = this.gridY,
             gs = this.gridSize,
             gr = this.gridRange;
-          // Grid background
           this.add
             .rectangle(
               gx,
@@ -514,7 +695,6 @@
             )
             .setStrokeStyle(1, 0x1e293b)
             .setDepth(1);
-          // Grid lines
           for (let i = -gr; i <= gr; i++) {
             const alpha = i === 0 ? 0.6 : 0.15;
             const color = i === 0 ? 0x64748b : 0x334155;
@@ -525,7 +705,6 @@
               .line(gx, gy, -gr * gs, i * gs, gr * gs, i * gs, color, alpha)
               .setDepth(2);
           }
-          // Axis labels
           this.add
             .text(gx + gr * gs + 5, gy, "x", {
               fontSize: "11px",
@@ -539,7 +718,6 @@
             })
             .setOrigin(0.5)
             .setDepth(3);
-          // Number labels
           for (let i = -gr; i <= gr; i += 2) {
             if (i !== 0) {
               this.add
@@ -561,7 +739,6 @@
           this.add
             .text(gx - 10, gy + 10, "0", { fontSize: "8px", color: "#475569" })
             .setDepth(3);
-          // Quadrant labels
           this.add
             .text(gx + (gr * gs) / 2, gy - (gr * gs) / 2, "QI", {
               fontSize: "10px",
@@ -594,7 +771,6 @@
             })
             .setOrigin(0.5)
             .setDepth(2);
-          // Waypoint marker (will be positioned per question)
           this.waypoint = this.add.graphics().setDepth(5);
           this.waypointLabel = this.add
             .text(0, 0, "", {
@@ -603,7 +779,6 @@
               fontStyle: "bold",
             })
             .setDepth(5);
-          // Ship marker on grid
           this.shipMarker = this.add.graphics().setDepth(6);
         }
 
@@ -613,7 +788,6 @@
           if (!coord) return;
           const px = this.gridX + coord.x * this.gridSize;
           const py = this.gridY - coord.y * this.gridSize;
-          // Pulsing ring
           this.waypoint.lineStyle(2, 0x22d3ee);
           this.waypoint.strokeCircle(px, py, 8);
           this.waypoint.fillStyle(0x22d3ee, 0.3);
@@ -621,7 +795,6 @@
           this.waypointLabel
             .setText(`(${coord.x},${coord.y})`)
             .setPosition(px + 10, py - 12);
-          // Pulse tween
           if (this.wpTween) this.wpTween.remove();
           this.wpTween = this.tweens.add({
             targets: this.waypoint,
@@ -656,7 +829,6 @@
         }
 
         buildShip() {
-          // Main ship on left side
           this.ship = this.add.graphics().setPosition(160, 400).setDepth(4);
           this.drawShip(this.ship);
           this.tweens.add({
@@ -667,7 +839,6 @@
             repeat: -1,
             ease: "Sine.easeInOut",
           });
-          // Engine particles
           this.engineParticles = this.add
             .particles(160, 430, "__WHITE", {
               speed: { min: 10, max: 40 },
@@ -724,13 +895,216 @@
           this.hudTimer = this.add
             .text(W - 100, 10, "", { fontSize: "14px", color: "#94a3b8" })
             .setDepth(11);
+
+          // Multiplier display
+          this.hudMultiplier = this.add
+            .text(W - 220, 10, "", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+
+          // Progress bar
           this.progBg = this.add
-            .rectangle(W / 2, 44, W - 20, 4, 0x1e293b)
+            .rectangle(W / 2, 44, W - 20, 6, 0x1e293b)
             .setDepth(10);
           this.progFill = this.add
-            .rectangle(10, 44, 0, 4, 0x7c3aed)
+            .rectangle(10, 44, 0, 6, 0x7c3aed)
             .setOrigin(0, 0.5)
             .setDepth(10);
+
+          // Question counter dots
+          this.qDots = [];
+          for (let i = 0; i < this.totalQ; i++) {
+            const dot = this.add
+              .circle(15 + i * 18, 56, 4, 0x1e293b)
+              .setStrokeStyle(1, 0x334155)
+              .setDepth(10);
+            this.qDots.push(dot);
+          }
+
+          // Streak counter (visual)
+          this.streakContainer = this.add.container(W / 2, H - 30).setDepth(15);
+          this.streakBg = this.add
+            .rectangle(0, 0, 200, 28, 0x000000, 0)
+            .setDepth(15);
+          this.streakText = this.add
+            .text(0, 0, "", {
+              fontSize: "16px",
+              color: "#a78bfa",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(15);
+          this.streakContainer.add([this.streakBg, this.streakText]);
+
+          // Speed indicator
+          this.speedIndicator = this.add
+            .text(400, 56, "", {
+              fontSize: "11px",
+              color: "#22d3ee",
+            })
+            .setDepth(11);
+        }
+
+        buildPowerUpButtons() {
+          this.puGroup = this.add.container(0, 0).setDepth(12);
+          // 50/50 button
+          const pu1bg = this.add
+            .rectangle(430, H - 30, 80, 24, 0x1e293b)
+            .setStrokeStyle(1, 0x7c3aed)
+            .setInteractive({ useHandCursor: true });
+          this.pu1text = this.add
+            .text(430, H - 30, "50/50 (1)", {
+              fontSize: "11px",
+              color: "#a78bfa",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          pu1bg.on("pointerdown", () => this.usePowerUp("fiftyFifty"));
+          pu1bg.on("pointerover", () => pu1bg.setFillStyle(0x334155));
+          pu1bg.on("pointerout", () => pu1bg.setFillStyle(0x1e293b));
+          this.pu1bg = pu1bg;
+
+          // Double Points button
+          const pu2bg = this.add
+            .rectangle(540, H - 30, 90, 24, 0x1e293b)
+            .setStrokeStyle(1, 0xfbbf24)
+            .setInteractive({ useHandCursor: true });
+          this.pu2text = this.add
+            .text(540, H - 30, "2x PTS (1)", {
+              fontSize: "11px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          pu2bg.on("pointerdown", () => this.usePowerUp("doublePoints"));
+          pu2bg.on("pointerover", () => pu2bg.setFillStyle(0x334155));
+          pu2bg.on("pointerout", () => pu2bg.setFillStyle(0x1e293b));
+          this.pu2bg = pu2bg;
+
+          this.puGroup.add([pu1bg, this.pu1text, pu2bg, this.pu2text]);
+        }
+
+        usePowerUp(type) {
+          if (this.answered) return;
+          if (type === "fiftyFifty" && this.powerUps.fiftyFifty > 0) {
+            this.powerUps.fiftyFifty--;
+            sfx.powerUp();
+            const q = this.questions[this.qIndex];
+            let removed = 0;
+            this.answerBtns.forEach((b) => {
+              if (b.optText !== q.correct && removed < 2) {
+                b.bg.setAlpha(0.3);
+                b.txt.setAlpha(0.3);
+                b.bg.disableInteractive();
+                b.eliminated = true;
+                removed++;
+              }
+            });
+            this.pu1text.setText(
+              this.powerUps.fiftyFifty > 0
+                ? `50/50 (${this.powerUps.fiftyFifty})`
+                : "50/50 --",
+            );
+            if (this.powerUps.fiftyFifty <= 0) this.pu1bg.setAlpha(0.4);
+            this.showFloatingText(430, H - 50, "50/50!", "#a78bfa", 18);
+          }
+          if (type === "doublePoints" && this.powerUps.doublePoints > 0) {
+            this.powerUps.doublePoints--;
+            this.doublePointsActive = true;
+            sfx.powerUp();
+            this.pu2text.setText(
+              this.powerUps.doublePoints > 0
+                ? `2x PTS (${this.powerUps.doublePoints})`
+                : "2x PTS --",
+            );
+            if (this.powerUps.doublePoints <= 0) this.pu2bg.setAlpha(0.4);
+            this.showFloatingText(540, H - 50, "DOUBLE POINTS!", "#fbbf24", 18);
+            // Glow effect
+            this.cameras.main.flash(200, 251, 191, 36, false, (_, progress) => {
+              if (progress >= 1) this.doublePointsActive = true;
+            });
+          }
+        }
+
+        showFloatingText(x, y, text, color, size = 22) {
+          const ft = this.add
+            .text(x, y, text, {
+              fontSize: `${size}px`,
+              color: color,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(20);
+          this.tweens.add({
+            targets: ft,
+            y: y - 60,
+            alpha: 0,
+            scaleX: 1.3,
+            scaleY: 1.3,
+            duration: 1000,
+            ease: "Power2",
+            onComplete: () => ft.destroy(),
+          });
+        }
+
+        showPhaseTransition(tierName, tierColor) {
+          const overlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.7)
+            .setDepth(50);
+          const label = this.add
+            .text(W / 2, H / 2 - 20, tierName, {
+              fontSize: "48px",
+              color: tierColor,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0)
+            .setScale(0.3);
+          const sub = this.add
+            .text(W / 2, H / 2 + 30, "ENTERING NEW SECTOR", {
+              fontSize: "16px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0);
+
+          sfx.phaseTransition();
+
+          this.tweens.add({
+            targets: label,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 400,
+            ease: "Back.easeOut",
+          });
+          this.tweens.add({
+            targets: sub,
+            alpha: 1,
+            duration: 400,
+            delay: 200,
+          });
+          this.time.delayedCall(1200, () => {
+            this.tweens.add({
+              targets: [overlay, label, sub],
+              alpha: 0,
+              duration: 400,
+              onComplete: () => {
+                overlay.destroy();
+                label.destroy();
+                sub.destroy();
+              },
+            });
+          });
         }
 
         loadQuestion() {
@@ -740,15 +1114,35 @@
           }
           this.answered = false;
           this.selectedIdx = -1;
+          this.questionStartTime = Date.now();
           const q = this.questions[this.qIndex];
+
+          // Phase transition
+          if (q.tier !== this.currentTier) {
+            this.currentTier = q.tier;
+            const tierNames = ["SECTOR 1", "SECTOR 2", "SECTOR 3"];
+            const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
+            if (this.qIndex > 0) {
+              this.showPhaseTransition(
+                tierNames[q.tier - 1],
+                tierColors[q.tier - 1],
+              );
+            }
+          }
+
           this.updateHUD();
-          this.progFill.width = (this.qIndex / this.totalQ) * (W - 20);
-          // Plot waypoint if question has coordinates
+          // Animate progress bar
+          this.tweens.add({
+            targets: this.progFill,
+            width: (this.qIndex / this.totalQ) * (W - 20),
+            duration: 300,
+            ease: "Power2",
+          });
+
           this.plotWaypoint(q.coord);
-          // Clean old
+
           if (this.qGroup) this.qGroup.destroy(true);
           this.qGroup = this.add.group();
-          // Question panel (left side, above ship)
           const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
           const tierNames = ["Sector 1", "Sector 2", "Sector 3"];
           const panel = this.add
@@ -776,7 +1170,27 @@
             .setOrigin(0.5)
             .setDepth(6);
           this.qGroup.add(qtext);
-          // Answer options (left column)
+
+          // Animate question entrance
+          panel.setAlpha(0).setScale(0.9);
+          qtext.setAlpha(0);
+          badge.setAlpha(0);
+          this.tweens.add({
+            targets: panel,
+            alpha: 0.9,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 300,
+            ease: "Back.easeOut",
+          });
+          this.tweens.add({
+            targets: [qtext, badge],
+            alpha: 1,
+            duration: 300,
+            delay: 100,
+          });
+
+          // Answer options
           this.answerBtns = [];
           q.options.forEach((opt, i) => {
             const by = 240 + i * 55;
@@ -799,15 +1213,48 @@
               })
               .setOrigin(0.5)
               .setDepth(7);
+
+            // Animate entrance
+            bg.setAlpha(0).setX(180);
+            txt.setAlpha(0);
+            num.setAlpha(0);
+            this.tweens.add({
+              targets: bg,
+              alpha: 1,
+              x: 200,
+              duration: 250,
+              delay: 150 + i * 60,
+              ease: "Power2",
+            });
+            this.tweens.add({
+              targets: [txt, num],
+              alpha: 1,
+              duration: 250,
+              delay: 200 + i * 60,
+            });
+
             bg.on("pointerover", () => {
               if (!this.answered) {
                 bg.setStrokeStyle(3, 0x22d3ee);
+                this.tweens.add({
+                  targets: [bg],
+                  scaleX: 1.03,
+                  scaleY: 1.03,
+                  duration: 100,
+                });
                 sfx.click();
               }
             });
             bg.on("pointerout", () => {
-              if (!this.answered && this.selectedIdx !== i)
+              if (!this.answered && this.selectedIdx !== i) {
                 bg.setStrokeStyle(2, 0x334155);
+                this.tweens.add({
+                  targets: [bg],
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 100,
+                });
+              }
             });
             bg.on("pointerdown", () => {
               if (!this.answered) this.submitAnswer(i);
@@ -815,8 +1262,15 @@
             this.qGroup.add(bg);
             this.qGroup.add(txt);
             this.qGroup.add(num);
-            this.answerBtns.push({ bg, txt, num, optText: opt });
+            this.answerBtns.push({
+              bg,
+              txt,
+              num,
+              optText: opt,
+              eliminated: false,
+            });
           });
+
           // Feedback
           this.fbObj = this.add
             .text(200, 490, "", {
@@ -838,50 +1292,143 @@
             .setOrigin(0.5)
             .setDepth(8);
           this.qGroup.add(this.hintObj);
+
+          // Reset double points indicator
+          if (!this.doublePointsActive) {
+            // nothing to reset
+          }
         }
 
         submitAnswer(idx) {
           if (this.answered) return;
+          if (this.answerBtns[idx].eliminated) return;
           this.answered = true;
           const q = this.questions[this.qIndex];
           const chosen = this.answerBtns[idx].optText;
           const correct = chosen === q.correct;
+          const answerTime = (Date.now() - this.questionStartTime) / 1000;
+
           if (correct) {
-            const pts = q.tier * 10 + Math.min(this.streak, 5) * 5;
+            // Score calculation
+            let pts = q.tier * 10 + Math.min(this.streak, 5) * 5;
+            let timeBonus = 0;
+            if (answerTime < 5) {
+              timeBonus = 15;
+              this.showFloatingText(
+                300,
+                470,
+                "SPEED BONUS! +15",
+                "#22d3ee",
+                14,
+              );
+              sfx.speedBonus();
+            } else if (answerTime < 10) {
+              timeBonus = 8;
+              this.showFloatingText(300, 470, "QUICK! +8", "#22d3ee", 12);
+            }
+            pts += timeBonus;
+
+            // Multiplier from streak
+            this.multiplier = 1 + Math.floor(this.streak / 2) * 0.5;
+            pts = Math.round(pts * this.multiplier);
+
+            if (this.doublePointsActive) {
+              pts *= 2;
+              this.doublePointsActive = false;
+              this.showFloatingText(200, 180, "DOUBLE!", "#fbbf24", 20);
+            }
+
             this.score += pts;
             this.streak++;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+
             this.answerBtns[idx].bg.setFillStyle(0x22c55e);
             this.answerBtns[idx].bg.setStrokeStyle(3, 0x22c55e);
-            this.fbObj.setText(
-              "WAYPOINT REACHED! +" +
-                pts +
-                (this.streak >= 3 ? " WARP x" + this.streak : ""),
-            );
+
+            // Floating score text
+            this.showFloatingText(200, 210, `+${pts}`, "#22c55e", 28);
+
+            // Streak milestone effects
+            if (this.streak === 3) {
+              this.showFloatingText(W / 2, H / 2, "WARP x3!", "#a78bfa", 36);
+              sfx.streakMilestone(1);
+              sfx.crowdCheer(3);
+            } else if (this.streak === 5) {
+              this.showFloatingText(W / 2, H / 2, "WARP x5!!", "#fbbf24", 42);
+              sfx.streakMilestone(2);
+              sfx.crowdCheer(5);
+              // Bonus confetti
+              for (let i = 0; i < 3; i++) {
+                this.time.delayedCall(i * 100, () => {
+                  this.add
+                    .particles(
+                      Phaser.Math.Between(100, W - 100),
+                      Phaser.Math.Between(100, 300),
+                      "__WHITE",
+                      {
+                        speed: { min: 80, max: 200 },
+                        angle: { min: 0, max: 360 },
+                        scale: { start: 0.4, end: 0 },
+                        lifespan: 800,
+                        tint: [0xfbbf24, 0xa78bfa, 0x22d3ee, 0x22c55e],
+                        quantity: 10,
+                        emitting: false,
+                        blendMode: "ADD",
+                      },
+                    )
+                    .explode(12);
+                });
+              }
+            } else if (this.streak === 7) {
+              this.showFloatingText(
+                W / 2,
+                H / 2,
+                "HYPERDRIVE x7!!!",
+                "#ef4444",
+                48,
+              );
+              sfx.streakMilestone(3);
+              sfx.crowdCheer(7);
+              this.cameras.main.flash(300, 100, 50, 200);
+            }
+
+            let fbText = "WAYPOINT REACHED! +" + pts;
+            if (this.streak >= 3) fbText += " WARP x" + this.streak;
+            if (this.multiplier > 1) fbText += ` (${this.multiplier}x)`;
+            this.fbObj.setText(fbText);
             this.fbObj.setColor("#22c55e");
             sfx.collect();
-            // Move ship to waypoint on grid
+
             if (q.coord) this.moveShipToGrid(q.coord);
-            // Particles
+
+            // Confetti burst with scaling intensity
+            const particleCount = 15 + this.streak * 3;
             const spark = this.add
               .particles(
                 this.gridX + (q.coord ? q.coord.x * this.gridSize : 0),
                 this.gridY - (q.coord ? q.coord.y * this.gridSize : 0),
                 "__WHITE",
                 {
-                  speed: { min: 30, max: 120 },
+                  speed: { min: 30, max: 120 + this.streak * 15 },
                   angle: { min: 0, max: 360 },
                   scale: { start: 0.3, end: 0 },
-                  lifespan: 500,
-                  tint: [0x22d3ee, 0xa78bfa, 0x22c55e],
-                  quantity: 15,
+                  lifespan: 500 + this.streak * 50,
+                  tint: [0x22d3ee, 0xa78bfa, 0x22c55e, 0xfbbf24],
+                  quantity: particleCount,
                   emitting: false,
                   blendMode: "ADD",
                 },
               )
               .setDepth(8);
-            spark.explode(18);
-            this.cameras.main.shake(100, 0.003);
+            spark.explode(particleCount);
+
+            // Screen shake scales with streak
+            const shakeIntensity = 0.003 + this.streak * 0.001;
+            this.cameras.main.shake(
+              100 + this.streak * 20,
+              Math.min(shakeIntensity, 0.015),
+            );
+
             // Ship pulse
             this.tweens.add({
               targets: this.ship,
@@ -890,9 +1437,26 @@
               duration: 150,
               yoyo: true,
             });
+
+            // Update streak display
+            this.updateStreakDisplay();
+
+            // Update question dot
+            if (this.qDots[this.qIndex]) {
+              this.qDots[this.qIndex].setFillStyle(0x22c55e);
+              this.tweens.add({
+                targets: this.qDots[this.qIndex],
+                scaleX: 1.5,
+                scaleY: 1.5,
+                duration: 200,
+                yoyo: true,
+              });
+            }
           } else {
             this.lives--;
             this.streak = 0;
+            this.multiplier = 1;
+            this.doublePointsActive = false;
             this.answerBtns[idx].bg.setFillStyle(0xef4444);
             this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
             const ci = this.answerBtns.findIndex(
@@ -905,19 +1469,59 @@
             this.fbObj.setText("ASTEROID HIT! Answer: " + q.correct);
             this.fbObj.setColor("#ef4444");
             this.hintObj.setText(q.explain);
-            sfx.hit();
+
+            sfx.glassBreak();
             sfx.alarm();
-            this.cameras.main.shake(250, 0.015);
-            this.cameras.main.flash(150, 255, 50, 50);
+
+            // More dramatic wrong answer effects
+            this.cameras.main.shake(350, 0.02);
+            this.cameras.main.flash(200, 255, 50, 50);
+
+            // Red vignette pulse
+            const vignette = this.add
+              .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
+              .setDepth(25);
+            this.tweens.add({
+              targets: vignette,
+              alpha: 0,
+              duration: 600,
+              onComplete: () => vignette.destroy(),
+            });
+
             // Ship damage flash
             this.drawShipDamaged();
             this.time.delayedCall(400, () => this.drawShip(this.ship));
+
+            // Update streak display
+            this.updateStreakDisplay();
+
+            // Update question dot
+            if (this.qDots[this.qIndex]) {
+              this.qDots[this.qIndex].setFillStyle(0xef4444);
+            }
           }
           this.updateHUD();
           this.time.delayedCall(correct ? 1500 : 2500, () => {
             this.qIndex++;
             this.loadQuestion();
           });
+        }
+
+        updateStreakDisplay() {
+          if (this.streak >= 2) {
+            this.streakBg.setFillStyle(0x7c3aed, 0.3);
+            this.streakText.setText(`WARP STREAK: ${this.streak}x`);
+            this.tweens.add({
+              targets: this.streakText,
+              scaleX: 1.2,
+              scaleY: 1.2,
+              duration: 150,
+              yoyo: true,
+            });
+          } else {
+            this.streakBg.setFillStyle(0x000000, 0);
+            this.streakText.setText("");
+          }
         }
 
         drawShipDamaged() {
@@ -937,30 +1541,65 @@
           if (this.answered) return;
           if (e.key >= "1" && e.key <= "4") {
             const i = parseInt(e.key) - 1;
-            if (i < this.answerBtns.length) this.submitAnswer(i);
+            if (i < this.answerBtns.length && !this.answerBtns[i].eliminated)
+              this.submitAnswer(i);
           }
           if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-            this.selectedIdx = Math.min(
-              this.selectedIdx + 1,
-              this.answerBtns.length - 1,
+            do {
+              this.selectedIdx = Math.min(
+                this.selectedIdx + 1,
+                this.answerBtns.length - 1,
+              );
+            } while (
+              this.answerBtns[this.selectedIdx].eliminated &&
+              this.selectedIdx < this.answerBtns.length - 1
             );
             if (this.selectedIdx < 0) this.selectedIdx = 0;
             this.highlightSel();
           }
           if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-            this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            do {
+              this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            } while (
+              this.answerBtns[this.selectedIdx].eliminated &&
+              this.selectedIdx > 0
+            );
             this.highlightSel();
           }
-          if (e.key === "Enter" && this.selectedIdx >= 0)
+          if (
+            e.key === "Enter" &&
+            this.selectedIdx >= 0 &&
+            !this.answerBtns[this.selectedIdx].eliminated
+          )
             this.submitAnswer(this.selectedIdx);
+          // Power-up hotkeys
+          if (e.key === "q" || e.key === "Q") this.usePowerUp("fiftyFifty");
+          if (e.key === "w" || e.key === "W") this.usePowerUp("doublePoints");
         }
 
         highlightSel() {
           this.answerBtns.forEach((b, i) => {
-            b.bg.setStrokeStyle(
-              i === this.selectedIdx ? 3 : 2,
-              i === this.selectedIdx ? 0x22d3ee : 0x334155,
-            );
+            if (!b.eliminated) {
+              b.bg.setStrokeStyle(
+                i === this.selectedIdx ? 3 : 2,
+                i === this.selectedIdx ? 0x22d3ee : 0x334155,
+              );
+              if (i === this.selectedIdx) {
+                this.tweens.add({
+                  targets: b.bg,
+                  scaleX: 1.03,
+                  scaleY: 1.03,
+                  duration: 100,
+                });
+              } else {
+                this.tweens.add({
+                  targets: b.bg,
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 100,
+                });
+              }
+            }
           });
           sfx.click();
         }
@@ -974,10 +1613,27 @@
           this.hudStreak.setText(
             this.streak >= 2 ? `WARP x${this.streak}` : "",
           );
+          this.hudMultiplier.setText(
+            this.multiplier > 1 ? `${this.multiplier}x` : "",
+          );
           const el = Math.floor((Date.now() - this.startTime) / 1000);
           const m = Math.floor(el / 60),
             s = el % 60;
           this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
+
+          // Speed indicator
+          if (!this.answered) {
+            const elapsed = (Date.now() - this.questionStartTime) / 1000;
+            if (elapsed < 5) {
+              this.speedIndicator.setText("FAST").setColor("#22c55e");
+            } else if (elapsed < 10) {
+              this.speedIndicator.setText("GOOD").setColor("#22d3ee");
+            } else {
+              this.speedIndicator.setText("").setColor("#94a3b8");
+            }
+          } else {
+            this.speedIndicator.setText("");
+          }
         }
 
         update() {
@@ -987,12 +1643,15 @@
         endGame() {
           const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
           const correct = this.qIndex - (3 - this.lives);
-          this.scene.start("Results", {
-            score: this.score,
-            total: this.totalQ,
-            correct: Math.max(0, correct),
-            bestStreak: this.bestStreak,
-            time: elapsed,
+          this.cameras.main.fade(500, 0, 0, 0);
+          this.time.delayedCall(500, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              total: this.totalQ,
+              correct: Math.max(0, correct),
+              bestStreak: this.bestStreak,
+              time: elapsed,
+            });
           });
         }
       }
@@ -1010,62 +1669,179 @@
           const d = this.d,
             cx = W / 2;
           this.cameras.main.setBackgroundColor("#020617");
+          this.cameras.main.fadeIn(500);
           createStarfield(this);
+          createAmbientParticles(this);
+
           const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
           const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+
+          // High score check
+          const prevHigh = parseInt(localStorage.getItem(LS_KEY)) || 0;
+          const isNewHigh = d.score > prevHigh;
+          if (isNewHigh) {
+            localStorage.setItem(LS_KEY, d.score);
+          }
+
           if (stars >= 2) {
-            sfx.win();
-            for (let i = 0; i < 4; i++) {
+            if (stars === 3) sfx.winBig();
+            else sfx.win();
+            // Elaborate confetti for high star counts
+            const bursts = stars === 3 ? 8 : 4;
+            for (let i = 0; i < bursts; i++) {
               this.time.delayedCall(i * 200, () => {
                 this.add
                   .particles(
-                    Phaser.Math.Between(150, W - 150),
-                    Phaser.Math.Between(50, 200),
+                    Phaser.Math.Between(100, W - 100),
+                    Phaser.Math.Between(30, 200),
                     "__WHITE",
                     {
-                      speed: { min: 60, max: 180 },
+                      speed: { min: 60, max: 220 },
                       angle: { min: 0, max: 360 },
-                      scale: { start: 0.3, end: 0 },
-                      lifespan: 1000,
-                      tint: [0x22d3ee, 0xa78bfa, 0xfbbf24],
-                      quantity: 12,
+                      scale: { start: 0.35, end: 0 },
+                      lifespan: 1200,
+                      tint: [0x22d3ee, 0xa78bfa, 0xfbbf24, 0x22c55e, 0xef4444],
+                      quantity: 15,
                       emitting: false,
                       blendMode: "ADD",
                     },
                   )
-                  .explode(15);
+                  .explode(18);
               });
             }
           } else sfx.lose();
+
           const titles = [
             "Lost in Space",
             "Cadet Pilot",
             "Star Navigator!",
             "GALACTIC COMMANDER!",
           ];
-          this.add
+
+          const titleText = this.add
             .text(cx, 60, titles[stars], {
               fontSize: "40px",
               color: stars >= 2 ? "#22d3ee" : "#94a3b8",
               fontStyle: "bold",
             })
-            .setOrigin(0.5);
-          let starStr = "";
-          for (let i = 0; i < 3; i++) starStr += i < stars ? "★ " : "☆ ";
-          this.add
-            .text(cx, 115, starStr, { fontSize: "48px", color: "#fbbf24" })
-            .setOrigin(0.5);
-          this.add.circle(cx, 215, 60, 0x0f172a).setStrokeStyle(4, 0x7c3aed);
-          this.add
-            .text(cx, 205, pct + "%", {
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5);
+          this.tweens.add({
+            targets: titleText,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 600,
+            ease: "Back.easeOut",
+          });
+
+          // Animated star fill
+          for (let i = 0; i < 3; i++) {
+            const starChar = i < stars ? "★" : "☆";
+            const s = this.add
+              .text(cx - 60 + i * 60, 115, starChar, {
+                fontSize: "48px",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0)
+              .setScale(0);
+            this.tweens.add({
+              targets: s,
+              alpha: 1,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 400,
+              delay: 600 + i * 300,
+              ease: "Back.easeOut",
+              onStart: () => {
+                if (i < stars) sfx.collect();
+              },
+            });
+          }
+
+          // New High Score banner
+          if (isNewHigh && d.score > 0) {
+            const hsBanner = this.add
+              .text(cx, 160, "NEW HIGH SCORE!", {
+                fontSize: "28px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: hsBanner,
+              alpha: 1,
+              duration: 400,
+              delay: 1500,
+            });
+            this.tweens.add({
+              targets: hsBanner,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 500,
+              yoyo: true,
+              repeat: -1,
+              delay: 1500,
+            });
+            // Extra celebration particles
+            this.time.delayedCall(1500, () => {
+              for (let i = 0; i < 3; i++) {
+                this.time.delayedCall(i * 150, () => {
+                  this.add
+                    .particles(
+                      cx + Phaser.Math.Between(-100, 100),
+                      160,
+                      "__WHITE",
+                      {
+                        speed: { min: 40, max: 120 },
+                        angle: { min: 0, max: 360 },
+                        scale: { start: 0.3, end: 0 },
+                        lifespan: 600,
+                        tint: [0xfbbf24, 0xf59e0b],
+                        quantity: 8,
+                        emitting: false,
+                        blendMode: "ADD",
+                      },
+                    )
+                    .explode(10);
+                });
+              }
+            });
+          }
+
+          // Score circle
+          const scoreY = isNewHigh ? 230 : 215;
+          this.add.circle(cx, scoreY, 60, 0x0f172a).setStrokeStyle(4, 0x7c3aed);
+          const pctText = this.add
+            .text(cx, scoreY - 10, "0%", {
               fontSize: "32px",
               color: "#e2e8f0",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
+          // Animate percentage count up
+          this.tweens.addCounter({
+            from: 0,
+            to: pct,
+            duration: 1000,
+            delay: 500,
+            onUpdate: (t) => {
+              pctText.setText(Math.round(t.getValue()) + "%");
+            },
+          });
           this.add
-            .text(cx, 230, "Accuracy", { fontSize: "12px", color: "#64748b" })
+            .text(cx, scoreY + 20, "Accuracy", {
+              fontSize: "12px",
+              color: "#64748b",
+            })
             .setOrigin(0.5);
+
+          const statsY = isNewHigh ? 345 : 340;
           const stats = [
             { l: "Score", v: d.score, c: "#22d3ee" },
             { l: "Waypoints", v: `${d.correct}/${d.total}`, c: "#22c55e" },
@@ -1078,35 +1854,60 @@
           ];
           stats.forEach((s, i) => {
             const x = cx - 240 + i * 165,
-              y = 340;
-            this.add
+              y = statsY;
+            const card = this.add
               .rectangle(x, y, 135, 60, 0x0f172a)
-              .setStrokeStyle(1, 0x1e293b);
-            this.add
+              .setStrokeStyle(1, 0x1e293b)
+              .setAlpha(0);
+            const val = this.add
               .text(x, y - 8, String(s.v), {
                 fontSize: "22px",
                 color: s.c,
                 fontStyle: "bold",
               })
-              .setOrigin(0.5);
-            this.add
+              .setOrigin(0.5)
+              .setAlpha(0);
+            const lbl = this.add
               .text(x, y + 14, s.l, { fontSize: "11px", color: "#64748b" })
-              .setOrigin(0.5);
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: [card, val, lbl],
+              alpha: 1,
+              duration: 300,
+              delay: 800 + i * 100,
+            });
           });
+
+          // Previous high score
+          if (prevHigh > 0 && !isNewHigh) {
+            this.add
+              .text(cx, statsY + 45, `Personal Best: ${prevHigh}`, {
+                fontSize: "12px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+          }
+
           this.add
             .text(
               cx,
-              400,
+              statsY + 60,
               `Sectors explored: ${Math.min(d.correct, 15)} of ${d.total}`,
-              { fontSize: "14px", color: "#94a3b8" },
+              {
+                fontSize: "14px",
+                color: "#94a3b8",
+              },
             )
             .setOrigin(0.5);
+
+          const btnY = statsY + 120;
           const btn1 = this.add
-            .rectangle(cx - 110, 480, 190, 50, 0x7c3aed)
+            .rectangle(cx - 110, btnY, 190, 50, 0x7c3aed)
             .setStrokeStyle(2, 0xa78bfa)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx - 110, 480, "NEW MISSION", {
+            .text(cx - 110, btnY, "NEW MISSION", {
               fontSize: "17px",
               color: "#fff",
               fontStyle: "bold",
@@ -1114,16 +1915,34 @@
             .setOrigin(0.5);
           btn1.on("pointerdown", () => {
             sfx.click();
-            this.scene.start("Game");
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Game"));
           });
-          btn1.on("pointerover", () => btn1.setFillStyle(0x6d28d9));
-          btn1.on("pointerout", () => btn1.setFillStyle(0x7c3aed));
+          btn1.on("pointerover", () => {
+            btn1.setFillStyle(0x6d28d9);
+            this.tweens.add({
+              targets: btn1,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          btn1.on("pointerout", () => {
+            btn1.setFillStyle(0x7c3aed);
+            this.tweens.add({
+              targets: btn1,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
           const btn2 = this.add
-            .rectangle(cx + 110, 480, 190, 50, 0x1e293b)
+            .rectangle(cx + 110, btnY, 190, 50, 0x1e293b)
             .setStrokeStyle(2, 0x334155)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx + 110, 480, "MAIN MENU", {
+            .text(cx + 110, btnY, "MAIN MENU", {
               fontSize: "17px",
               color: "#94a3b8",
               fontStyle: "bold",
@@ -1131,21 +1950,49 @@
             .setOrigin(0.5);
           btn2.on("pointerdown", () => {
             sfx.click();
-            this.scene.start("Title");
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Title"));
           });
-          btn2.on("pointerover", () => btn2.setFillStyle(0x334155));
-          btn2.on("pointerout", () => btn2.setFillStyle(0x1e293b));
+          btn2.on("pointerover", () => {
+            btn2.setFillStyle(0x334155);
+            this.tweens.add({
+              targets: btn2,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          btn2.on("pointerout", () => {
+            btn2.setFillStyle(0x1e293b);
+            this.tweens.add({
+              targets: btn2,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
           this.add
             .text(
               cx,
               H - 25,
               "Coordinate Quest — Neft Teacher — 6.NS.5–6.NS.8",
-              { fontSize: "11px", color: "#475569" },
+              {
+                fontSize: "11px",
+                color: "#475569",
+              },
             )
             .setOrigin(0.5);
+
           this.input.keyboard.on("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") this.scene.start("Game");
-            if (e.key === "Escape") this.scene.start("Title");
+            if (e.key === "Enter" || e.key === " ") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            }
+            if (e.key === "Escape") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Title"));
+            }
           });
         }
       }

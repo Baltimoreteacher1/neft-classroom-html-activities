@@ -21,7 +21,7 @@
     {
       "term": "Less than 1%",
       "definition": "A percent that represents a very small part of the whole",
-      "visual": "0.5% means only 5 out of 10,000"
+      "visual": "0.5% of 1,000 = only 5 items — a tiny sliver"
     },
     {
       "term": "Equivalent",
@@ -29,9 +29,9 @@
       "visual": "150% = 1.5 = 3/2"
     },
     {
-      "term": "Discount",
-      "definition": "The amount subtracted from the original price",
-      "visual": "$40 shirt at 25% off: discount = $10"
+      "term": "Mixed number",
+      "definition": "A number made of a whole number and a fraction, used to represent percents greater than 100%",
+      "visual": "150% = 1 and 1/2 = 1.5"
     }
   ],
   "launch": {
@@ -132,82 +132,100 @@
       {
         "type": "multiple-choice",
         "stem": "Which of the following is greater than 100%?",
-        "choices": [
-          "0.75",
-          "3/4",
-          "1.25",
-          "99/100"
-        ],
+        "choices": ["0.75", "3/4", "1.25", "99/100"],
         "correctIndex": 2,
         "explanation": "1.25 = 125%, which is greater than 100%. The other values are all less than 1 (less than 100%)."
       },
       {
         "type": "multiple-choice",
-        "stem": "A shirt costs $40. It is 15% off. What is the discount?",
-        "choices": [
-          "$6",
-          "$34",
-          "$8",
-          "$5"
-        ],
+        "stem": "What is 200% written as a decimal?",
+        "choices": ["2.0", "0.2", "20.0", "0.02"],
         "correctIndex": 0,
-        "explanation": "15% of $40 = 0.15 × 40 = $6."
+        "explanation": "200% ÷ 100 = 2.0. Percents greater than 100% become decimals greater than 1."
       },
       {
         "type": "multiple-choice",
-        "stem": "A jacket normally costs $80. It is 30% off. What is the sale price?",
-        "choices": [
-          "$56",
-          "$24",
-          "$50",
-          "$60"
-        ],
+        "stem": "What is 0.5% written as a decimal?",
+        "choices": ["0.005", "0.05", "0.5", "5.0"],
         "correctIndex": 0,
-        "explanation": "Discount = 30% of 80 = $24. Sale price = 80 − 24 = $56."
+        "explanation": "0.5% ÷ 100 = 0.005. Move the decimal two places to the left."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which percent is less than 1%?",
+        "choices": ["0.75%", "7.5%", "75%", "1.5%"],
+        "correctIndex": 0,
+        "explanation": "0.75% is less than 1%. All the other choices are greater than 1%."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each value: is the percent greater than 100%, between 1% and 100%, or less than 1%?",
+        "items": [
+          { "text": "2.5 (as a decimal)", "category": "greater" },
+          { "text": "0.003 (as a decimal)", "category": "less" },
+          { "text": "0.45 (as a decimal)", "category": "between" },
+          { "text": "3/2 (as a fraction)", "category": "greater" },
+          { "text": "1/500 (as a fraction)", "category": "less" },
+          { "text": "7/10 (as a fraction)", "category": "between" }
+        ],
+        "categories": [
+          { "id": "greater", "label": "Greater than 100%" },
+          { "id": "between", "label": "Between 1% and 100%" },
+          { "id": "less", "label": "Less than 1%" }
+        ]
       }
     ],
     "onLevel": [
       {
-        "type": "matching",
+        "type": "matching-game",
         "instructions": "Match each value to its equivalent percent.",
         "pairs": [
-          {
-            "left": "1.5",
-            "right": "150%"
-          },
-          {
-            "left": "0.003",
-            "right": "0.3%"
-          },
-          {
-            "left": "2.75",
-            "right": "275%"
-          },
-          {
-            "left": "0.008",
-            "right": "0.8%"
-          },
-          {
-            "left": "3/2",
-            "right": "150%"
-          },
-          {
-            "left": "1/200",
-            "right": "0.5%"
-          }
+          { "term": "1.5", "match": "150%" },
+          { "term": "0.003", "match": "0.3%" },
+          { "term": "2.75", "match": "275%" },
+          { "term": "0.008", "match": "0.8%" },
+          { "term": "3/2", "match": "150%" },
+          { "term": "1/200", "match": "0.5%" }
         ]
       },
       {
         "type": "multiple-choice",
         "stem": "A player scored 0.4% of the bonus points. Which decimal represents this percent?",
-        "choices": [
-          "0.4",
-          "0.04",
-          "0.004",
-          "4.0"
-        ],
+        "choices": ["0.4", "0.04", "0.004", "4.0"],
         "correctIndex": 2,
         "explanation": "0.4% = 0.4 ÷ 100 = 0.004. Move the decimal point two places to the left."
+      },
+      {
+        "type": "fill-table",
+        "instructions": "Convert each percent to a decimal and a fraction.",
+        "headers": ["Percent", "Decimal", "Fraction"],
+        "rows": [
+          ["150%", "1.5", "3/2"],
+          ["250%", "", ""],
+          ["0.5%", "", ""],
+          ["0.25%", "", ""]
+        ],
+        "editableCells": [
+          { "row": 1, "col": 1, "answer": "2.5" },
+          { "row": 1, "col": 2, "answer": "5/2" },
+          { "row": 2, "col": 1, "answer": "0.005" },
+          { "row": 2, "col": 2, "answer": "1/200" },
+          { "row": 3, "col": 1, "answer": "0.0025" },
+          { "row": 3, "col": 2, "answer": "1/400" }
+        ]
+      },
+      {
+        "type": "number-line",
+        "label": "Place these percents on a number line from 0 to 3: A = 50%, B = 150%, C = 275%",
+        "min": 0,
+        "max": 3,
+        "step": 0.5,
+        "snapToTick": false,
+        "targets": [
+          { "value": 0.5, "label": "A: 50%" },
+          { "value": 1.5, "label": "B: 150%" },
+          { "value": 2.75, "label": "C: 275%" }
+        ]
       }
     ],
     "extending": [
@@ -215,18 +233,9 @@
         "type": "error-analysis",
         "title": "Find the Percent Error",
         "workedExample": [
-          {
-            "label": "Convert 0.6% to a decimal",
-            "work": "0.6%"
-          },
-          {
-            "label": "Move the decimal two places left",
-            "work": "0.6 → 0.06"
-          },
-          {
-            "label": "Final answer",
-            "work": "0.6% = 0.06"
-          }
+          { "label": "Convert 0.6% to a decimal", "work": "0.6%" },
+          { "label": "Move the decimal two places left", "work": "0.6 → 0.06" },
+          { "label": "Final answer", "work": "0.6% = 0.06" }
         ],
         "errorStep": 1,
         "correctWork": "0.6% means 0.6 out of 100. Move the decimal two places left: 0.6 → 0.006. The correct answer is 0.6% = 0.006.",
@@ -237,16 +246,36 @@
       },
       {
         "type": "open-response",
-        "prompt": "A store has a 20% off sale, then takes an additional 10% off the sale price. Is this the same as 30% off? Explain.",
-        "sentenceFrame": "This is NOT the same as 30% off because ___. The actual discount is ___.",
+        "prompt": "A game character has 300% of its original health after picking up a power-up. If the original health was 80 points, how many health points does the character have now? A student says 240 points. Another says 380 points. Who is correct and why?",
+        "sentenceFrame": "The student who said ___ is correct because 300% means ___ times the original, so ___ × 80 = ___.",
         "keywords": [
-          "percent",
-          "original",
-          "sale price",
-          "less than",
-          "discount"
+          "300%",
+          "3",
+          "240",
+          "multiply",
+          "greater than 100",
+          "whole"
         ],
         "minLength": 30
+      },
+      {
+        "type": "fill-table",
+        "instructions": "A bacteria population starts at 500. Complete the table showing what each percent of the original population equals.",
+        "headers": ["Percent of Original", "Calculation", "Number of Bacteria"],
+        "rows": [
+          ["100%", "1.0 × 500", "500"],
+          ["175%", "", ""],
+          ["0.5%", "", ""],
+          ["300%", "", ""]
+        ],
+        "editableCells": [
+          { "row": 1, "col": 1, "answer": "1.75 × 500" },
+          { "row": 1, "col": 2, "answer": "875" },
+          { "row": 2, "col": 1, "answer": "0.005 × 500" },
+          { "row": 2, "col": 2, "answer": "2.5" },
+          { "row": 3, "col": 1, "answer": "3.0 × 500" },
+          { "row": 3, "col": 2, "answer": "1500" }
+        ]
       }
     ]
   },
@@ -254,14 +283,7 @@
     "scenario": "An arcade machine has a jackpot that pays out 250% of your tokens if you win. You inserted 40 tokens. Your friend says the jackpot is 100 tokens. Another friend says it's 60 tokens.",
     "promptQuestion": "Who is correct, and how many tokens does the jackpot pay?",
     "prompt": "The friend who said ___ tokens is correct because 250% of 40 = ___ × 40 = ___. The other friend found ___% of 40 instead.",
-    "keywords": [
-      "100",
-      "2.5",
-      "250",
-      "150",
-      "greater",
-      "whole"
-    ]
+    "keywords": ["100", "2.5", "250", "150", "greater", "whole"]
   },
   "reflect": {
     "exitTicket": {
