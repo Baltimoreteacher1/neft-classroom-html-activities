@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      9C Compare &amp; Order Integers ESOL Study Guide | Neft Teacher
+    </title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>9C | Compare &amp; Order Integers ESOL Study Guide</h1>
+        <div class="guide-meta">
+          Unit 7: Integers &bull; Lesson 7.4 &bull; Standard: 6.NS.7a, 6.NS.7b
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Integer</strong> &mdash; a whole number that can be positive,
+          negative, or zero. Examples: &minus;3, 0, 7.
+          <span class="spanish">(n&uacute;mero entero)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Compare</strong> &mdash; to decide if one number is greater
+          than, less than, or equal to another.
+          <span class="spanish">(comparar)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Order</strong> &mdash; to arrange numbers from least to
+          greatest or greatest to least.
+          <span class="spanish">(ordenar)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Greater than (&gt;)</strong> &mdash; the number on the left is
+          larger.
+          <span class="spanish">(mayor que)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Less than (&lt;)</strong> &mdash; the number on the left is
+          smaller.
+          <span class="spanish">(menor que)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Number Line</strong> &mdash; a line showing numbers in order
+          from least to greatest, left to right.
+          <span class="spanish">(recta num&eacute;rica)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>Visual Example &mdash; Number Line</h2>
+        <div class="example-box">
+          <pre style="font-size: 1rem; line-height: 1.5; text-align: center">
+  &larr;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&rarr;
+ &minus;7  &minus;6  &minus;5  &minus;4  &minus;3  &minus;2  &minus;1   0   1   2   3   4   5
+  SMALLER ----&gt;                               ----&gt; BIGGER
+
+  Numbers to the RIGHT are GREATER.
+  Numbers to the LEFT are LESS.</pre
+          >
+        </div>
+        <div class="example-box">
+          <strong>Comparing negatives:</strong><br />
+          &minus;3 vs &minus;7 &rarr; &minus;3 is to the RIGHT of &minus;7 on
+          the number line<br />
+          So <strong>&minus;3 &gt; &minus;7</strong> (&minus;3 is greater than
+          &minus;7)<br /><br />
+          <strong>Think:</strong> With negatives, the number closer to zero is
+          GREATER.
+        </div>
+      </div>
+
+      <!-- STEPS -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step: Comparing Integers</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span>
+            <strong>Draw or picture a number line</strong> in your mind.
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <strong>Find both numbers</strong> on the number line.
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <strong>The number farther RIGHT is greater.</strong> The number
+            farther LEFT is less.
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <strong>Write the comparison</strong> using &gt;, &lt;, or =.
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>Key rules:</strong><br />
+          &bull; Any positive number &gt; any negative number (5 &gt;
+          &minus;100)<br />
+          &bull; Zero &gt; any negative number (0 &gt; &minus;4)<br />
+          &bull; For negatives: closer to zero = greater (&minus;2 &gt;
+          &minus;9)
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>&minus;3 &gt; &minus;7</strong> even though 7 is "bigger"
+            than 3. With negatives, closer to zero is greater!
+          </li>
+          <li>
+            <strong>Don't confuse absolute value with value.</strong> |&minus;7|
+            = 7 is larger, but &minus;7 itself is less than &minus;3.
+          </li>
+          <li>
+            <strong>Zero is greater than all negative numbers</strong> and less
+            than all positive numbers.
+          </li>
+          <li>
+            <strong>Remember the alligator:</strong> The symbol &gt; or &lt;
+            always "eats" the bigger number. 5 &gt; 3 (eats the 5).
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> Compare: &minus;4 ___ 2. Type &gt;, &lt;, or =.
+          </p>
+          <input type="text" id="q1" placeholder="Type >, <, or =" />
+          <button class="check-btn" onclick="checkAnswer('q1', '<', 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> Compare: &minus;3 ___ &minus;8. Type &gt;, &lt;,
+            or =.
+          </p>
+          <input type="text" id="q2" placeholder="Type >, <, or =" />
+          <button class="check-btn" onclick="checkAnswer('q2', '>', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> Compare: 0 ___ &minus;5. Type &gt;, &lt;, or =.
+          </p>
+          <input type="text" id="q3" placeholder="Type >, <, or =" />
+          <button class="check-btn" onclick="checkAnswer('q3', '>', 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> Order these from LEAST to GREATEST: 3, &minus;1,
+            &minus;6, 0, 5.<br />Type them separated by commas (example:
+            &minus;6, &minus;1, 0, 3, 5).
+          </p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkOrder('q4', 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "");
+        var correct = String(correctAnswer).replace(/\s+/g, "");
+        if (val === correct) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+      function checkOrder(inputId, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.replace(/\s+/g, "").replace(/−/g, "-");
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+          return;
+        }
+        if (val === "-6,-1,0,3,5") {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent =
+            "Not quite. Remember: negatives with larger absolute values are least. Try again!";
+        }
+      }
+    </script>
+  </body>
+</html>

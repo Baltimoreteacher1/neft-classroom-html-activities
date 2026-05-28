@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>10A Volume ESOL Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>10A | Volume ESOL Study Guide</h1>
+        <div class="guide-meta">
+          Unit 5: Area &amp; Volume &bull; Lesson 5.5 &bull; Standard: 6.G.2
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Volume</strong> &mdash; the amount of space inside a 3D
+          (three-dimensional) shape, measured in cubic units.
+          <span class="spanish">(volumen)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Rectangular Prism</strong> &mdash; a 3D shape with 6
+          rectangular faces (like a box).
+          <span class="spanish">(prisma rectangular)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Length</strong> &mdash; how long the shape is.
+          <span class="spanish">(largo)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Width</strong> &mdash; how wide the shape is.
+          <span class="spanish">(ancho)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Height</strong> &mdash; how tall the shape is.
+          <span class="spanish">(altura)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Cubic Units</strong> &mdash; the unit for measuring volume
+          (cm&sup3;, in&sup3;, ft&sup3;).
+          <span class="spanish">(unidades c&uacute;bicas)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>Visual &mdash; Rectangular Prism</h2>
+        <div class="example-box">
+          <pre style="font-size: 1rem; line-height: 1.4">
+        +----------+
+       /|         /|
+      / |        / |  height (h) = 3 cm
+     +----------+  |
+     |  |       |  |
+     |  +-------|--+
+     | /        | /   width (w) = 4 cm
+     |/         |/
+     +----------+
+      length (l) = 5 cm
+
+  V = l &times; w &times; h = 5 &times; 4 &times; 3 = 60 cm&sup3;</pre
+          >
+        </div>
+      </div>
+
+      <!-- STEPS -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step: Finding Volume</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span> <strong>Identify</strong> the
+            length, width, and height of the rectangular prism.
+          </li>
+          <li>
+            <span class="step-num">2</span> <strong>Multiply</strong> length
+            &times; width &times; height.
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <strong>Write the answer in cubic units</strong> (cm&sup3;,
+            in&sup3;, ft&sup3;, etc.).
+          </li>
+        </ol>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>Formula Box</h2>
+        <div class="formula-highlight">V = l &times; w &times; h</div>
+        <div class="formula-highlight">
+          V = B &times; h &nbsp; (where B = area of the base)
+        </div>
+        <p
+          style="
+            text-align: center;
+            margin-top: 0.5rem;
+            color: var(--guide-muted);
+          "
+        >
+          Both formulas give the same answer. B = l &times; w (the area of the
+          bottom face).
+        </p>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>Volume is in CUBIC units</strong> (cm&sup3;, in&sup3;). Area
+            is in SQUARE units (cm&sup2;, in&sup2;). Don't mix them up!
+          </li>
+          <li>
+            <strong>Make sure all measurements use the same unit</strong> before
+            multiplying.
+          </li>
+          <li>
+            <strong>A cube is a special rectangular prism</strong> where l = w =
+            h. Volume of a cube = s&sup3;.
+          </li>
+          <li>
+            <strong>Volume measures the INSIDE space,</strong> not the surface.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> Find the volume of a rectangular prism with
+            length = 6 cm, width = 3 cm, height = 4 cm.
+          </p>
+          <input type="text" id="q1" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q1', '72', 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> A box is 10 in long, 5 in wide, and 8 in tall.
+            What is its volume?
+          </p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q2', '400', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> A cube has sides of 7 cm. What is its volume?
+          </p>
+          <input type="text" id="q3" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q3', '343', 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> The base area of a prism is 24 ft&sup2; and the
+            height is 5 ft. What is the volume?
+          </p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q4', '120', 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+    </script>
+  </body>
+</html>

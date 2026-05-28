@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>3B Ratio Tables &amp; Graphs ESOL Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .tip-section {
+        background: var(--guide-tip);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input,
+      .practice-problem textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus,
+      .practice-problem textarea:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      .ratio-table {
+        border-collapse: collapse;
+        margin: 0.5rem auto;
+      }
+      .ratio-table th,
+      .ratio-table td {
+        border: 2px solid var(--guide-primary);
+        padding: 0.5rem 1rem;
+        text-align: center;
+        font-size: 1rem;
+      }
+      .ratio-table th {
+        background: var(--guide-primary);
+        color: #fff;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>📊 3B | Ratio Tables &amp; Graphs ESOL Study Guide</h1>
+        <div class="guide-meta">
+          Unit 3: Ratios &amp; Proportions &bull; Lesson 3.2 &bull; Standard:
+          6.RP.3a
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>📘 Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Ratio Table</strong> &mdash; a table that shows pairs of
+          numbers that have the same ratio.
+          <span class="spanish">(tabla de razones)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Equivalent Ratio</strong> &mdash; two ratios that are equal;
+          they make the same comparison.
+          <span class="spanish">(raz&oacute;n equivalente)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Coordinate Graph</strong> &mdash; a grid with an x-axis
+          (horizontal) and a y-axis (vertical) used to plot points.
+          <span class="spanish">(gr&aacute;fico de coordenadas)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Ordered Pair</strong> &mdash; a pair of numbers (x, y) that
+          shows a point on a coordinate graph.
+          <span class="spanish">(par ordenado)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Origin</strong> &mdash; the point (0, 0) where the x-axis and
+          y-axis cross. <span class="spanish">(origen)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>📋 Visual Example &mdash; Ratio Table</h2>
+        <p>
+          A recipe uses <strong>2 cups of flour</strong> for every
+          <strong>3 cups of milk</strong>. Build a ratio table:
+        </p>
+        <table class="ratio-table">
+          <tr>
+            <th>Flour (cups)</th>
+            <td>2</td>
+            <td>4</td>
+            <td>6</td>
+            <td>8</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <th>Milk (cups)</th>
+            <td>3</td>
+            <td>6</td>
+            <td>9</td>
+            <td>12</td>
+            <td>15</td>
+          </tr>
+        </table>
+        <div class="example-box">
+          <strong>Pattern:</strong> Each column is found by multiplying both
+          parts of the ratio by the same number.<br />
+          &times;1 &rarr; (2, 3) &nbsp;|&nbsp; &times;2 &rarr; (4, 6)
+          &nbsp;|&nbsp; &times;3 &rarr; (6, 9) &nbsp;|&nbsp; &times;4 &rarr; (8,
+          12) &nbsp;|&nbsp; &times;5 &rarr; (10, 15)
+        </div>
+      </div>
+
+      <!-- GRAPHING VISUAL -->
+      <div class="guide-section">
+        <h2>📈 Plotting Ratios on a Coordinate Graph</h2>
+        <div class="example-box">
+          <p>
+            Each column in the ratio table becomes an ordered pair (x, y) on the
+            graph:
+          </p>
+          <p style="margin: 0.5rem 0; font-weight: 600">
+            (2, 3) &nbsp; (4, 6) &nbsp; (6, 9) &nbsp; (8, 12) &nbsp; (10, 15)
+          </p>
+          <pre
+            style="font-size: 0.95rem; line-height: 1.3; margin-top: 0.75rem"
+          >
+  y (Milk)
+  15 |                         *
+  12 |                   *
+   9 |             *
+   6 |       *
+   3 | *
+   0 +---+---+---+---+---+--- x (Flour)
+     0   2   4   6   8  10
+        </pre
+          >
+          <p style="margin-top: 0.5rem">
+            <strong>Key idea:</strong> If the points form a
+            <strong>straight line through the origin (0,0)</strong>, the ratios
+            are equivalent!
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP-BY-STEP -->
+      <div class="guide-section steps-section">
+        <h2>🔢 Step-by-Step &mdash; Extending a Ratio Table</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span> <strong>Identify</strong> the
+            starting ratio from the first column.
+          </li>
+          <li>
+            <span class="step-num">2</span> <strong>Multiply</strong> both parts
+            of the ratio by the same number to find the next column.
+          </li>
+          <li>
+            <span class="step-num">3</span> <strong>Repeat</strong> to fill in
+            more columns.
+          </li>
+          <li>
+            <span class="step-num">4</span> To go backwards (make smaller),
+            <strong>divide</strong> both parts by the same number.
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>Example:</strong> Ratio is 5 : 2. Fill in the table.<br /><br />
+          <table class="ratio-table">
+            <tr>
+              <th>x</th>
+              <td>5</td>
+              <td>10</td>
+              <td>15</td>
+              <td>20</td>
+            </tr>
+            <tr>
+              <th>y</th>
+              <td>2</td>
+              <td>4</td>
+              <td>6</td>
+              <td>8</td>
+            </tr>
+          </table>
+          <p style="margin-top: 0.5rem">
+            Each column: multiply both by 1, 2, 3, 4...
+          </p>
+        </div>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>📐 Formula Box</h2>
+        <div class="formula-highlight">
+          To extend a ratio table: Multiply (or divide) BOTH parts by the SAME
+          number
+        </div>
+        <div class="formula-highlight">
+          Ordered Pair = (first quantity, second quantity) = (x, y)
+        </div>
+        <div class="formula-highlight">
+          Equivalent ratios form a straight line through the origin on a graph
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>⚠️ Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>You must multiply or divide BOTH parts</strong> of the ratio
+            by the same number. Changing only one side breaks the ratio!
+          </li>
+          <li>
+            <strong>On a graph, x comes first, y comes second</strong> in an
+            ordered pair (x, y). Don't mix them up!
+          </li>
+          <li>
+            <strong>The line must go through (0, 0)</strong> for equivalent
+            ratios. If it doesn't pass through the origin, the relationship is
+            not a proportional ratio.
+          </li>
+          <li>
+            <strong
+              >Adding the same number to both parts does NOT keep the ratio
+              equivalent.</strong
+            >
+            You must multiply or divide.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>✏️ Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p>
+            <strong>1.</strong> Complete the ratio table. The ratio is 3 : 4.
+          </p>
+          <table class="ratio-table" style="margin-bottom: 0.5rem">
+            <tr>
+              <th>x</th>
+              <td>3</td>
+              <td>6</td>
+              <td>9</td>
+              <td>?</td>
+            </tr>
+            <tr>
+              <th>y</th>
+              <td>4</td>
+              <td>8</td>
+              <td>12</td>
+              <td>?</td>
+            </tr>
+          </table>
+          <p>What are the missing values? Type as: x,y (example: 12,16)</p>
+          <input type="text" id="q1" placeholder="Type x,y..." />
+          <button class="check-btn" onclick="checkPair('q1', 12, 16, 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> The ratio of pencils to erasers is 5 : 2. If
+            there are 20 pencils, how many erasers are there?
+          </p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q2', '8', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> Complete the ratio table. The ratio is 7 : 3.
+          </p>
+          <table class="ratio-table" style="margin-bottom: 0.5rem">
+            <tr>
+              <th>x</th>
+              <td>7</td>
+              <td>14</td>
+              <td>?</td>
+            </tr>
+            <tr>
+              <th>y</th>
+              <td>3</td>
+              <td>6</td>
+              <td>?</td>
+            </tr>
+          </table>
+          <p>What are the missing values? Type as: x,y</p>
+          <input type="text" id="q3" placeholder="Type x,y..." />
+          <button class="check-btn" onclick="checkPair('q3', 21, 9, 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> Which ordered pair belongs on the graph of the
+            ratio 2 : 5?
+          </p>
+          <p style="color: var(--guide-muted); font-size: 0.9rem">
+            A) (4, 10) &nbsp;&nbsp; B) (4, 7) &nbsp;&nbsp; C) (6, 14)
+            &nbsp;&nbsp; D) (3, 8)
+          </p>
+          <input type="text" id="q4" placeholder="Type A, B, C, or D..." />
+          <button class="check-btn" onclick="checkAnswer('q4', 'a', 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "✓ Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+      function checkPair(inputId, correctX, correctY, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "");
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+          return;
+        }
+        var parts = val.split(",");
+        if (parts.length === 2) {
+          var x = parseInt(parts[0]),
+            y = parseInt(parts[1]);
+          if (x === correctX && y === correctY) {
+            feedback.className = "feedback correct";
+            feedback.textContent = "✓ Correct! Great work!";
+            return;
+          }
+        }
+        feedback.className = "feedback incorrect";
+        feedback.textContent =
+          "Not quite. Multiply both parts of the ratio by the same number!";
+      }
+    </script>
+  </body>
+</html>

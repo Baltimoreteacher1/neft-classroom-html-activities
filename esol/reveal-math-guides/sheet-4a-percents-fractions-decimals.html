@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      4A Percents, Fractions &amp; Decimals ESOL Study Guide | Neft Teacher
+    </title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .tip-section {
+        background: var(--guide-tip);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>4A | Percents, Fractions &amp; Decimals ESOL Study Guide</h1>
+        <div class="guide-meta">
+          Unit 4: Percents &amp; Proportional Reasoning &bull; Lesson 4.1 &bull;
+          Standard: 6.RP.3c
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Percent</strong> &mdash; a ratio that compares a number to
+          100. "Per cent" means "per hundred."
+          <span class="spanish">(porcentaje)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Fraction</strong> &mdash; a part of a whole written as one
+          number over another (numerator/denominator).
+          <span class="spanish">(fracci&oacute;n)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Decimal</strong> &mdash; a number written using a decimal
+          point to show tenths, hundredths, etc.
+          <span class="spanish">(decimal)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Equivalent</strong> &mdash; having the same value, even if
+          written differently.
+          <span class="spanish">(equivalente)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Convert</strong> &mdash; to change from one form to another
+          (e.g., fraction to decimal).
+          <span class="spanish">(convertir)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>Conversion Triangle</h2>
+        <p>
+          Percents, fractions, and decimals are three ways to write the same
+          value. Use this triangle to remember how to convert between them:
+        </p>
+        <div class="example-box" style="text-align: center">
+          <pre
+            style="
+              font-size: 1rem;
+              line-height: 1.5;
+              display: inline-block;
+              text-align: center;
+            "
+          >
+        PERCENT
+        /      \
+  &times;100 /        \ &divide;100
+      /          \
+ DECIMAL &mdash;&mdash;&mdash;&mdash; FRACTION
+     divide numerator
+     by denominator
+          </pre>
+        </div>
+        <div class="example-box">
+          <strong>Example:</strong> 3/4 &rarr; 0.75 &rarr; 75%<br />
+          3 &divide; 4 = 0.75 &nbsp;&nbsp;|&nbsp;&nbsp; 0.75 &times; 100 = 75%
+        </div>
+      </div>
+
+      <!-- STEP-BY-STEP -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step Conversions</h2>
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap">
+          <div style="flex: 1; min-width: 220px">
+            <h3 style="color: var(--guide-primary); margin-bottom: 0.5rem">
+              Fraction &rarr; Decimal
+            </h3>
+            <ol class="step-list">
+              <li>
+                <span class="step-num">1</span> Divide the numerator by the
+                denominator.
+              </li>
+              <li>
+                <span class="step-num">2</span> The quotient is the decimal.
+              </li>
+            </ol>
+            <div class="example-box">
+              1/4 &rarr; 1 &divide; 4 = <strong>0.25</strong>
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 220px">
+            <h3 style="color: var(--guide-primary); margin-bottom: 0.5rem">
+              Decimal &rarr; Percent
+            </h3>
+            <ol class="step-list">
+              <li>
+                <span class="step-num">1</span> Multiply the decimal by 100.
+              </li>
+              <li><span class="step-num">2</span> Add the % symbol.</li>
+            </ol>
+            <div class="example-box">
+              0.25 &times; 100 = <strong>25%</strong>
+            </div>
+          </div>
+        </div>
+        <div
+          style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem"
+        >
+          <div style="flex: 1; min-width: 220px">
+            <h3 style="color: var(--guide-primary); margin-bottom: 0.5rem">
+              Percent &rarr; Fraction
+            </h3>
+            <ol class="step-list">
+              <li>
+                <span class="step-num">1</span> Write the percent over 100.
+              </li>
+              <li><span class="step-num">2</span> Simplify the fraction.</li>
+            </ol>
+            <div class="example-box">
+              40% &rarr; 40/100 &rarr; <strong>2/5</strong>
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 220px">
+            <h3 style="color: var(--guide-primary); margin-bottom: 0.5rem">
+              Percent &rarr; Decimal
+            </h3>
+            <ol class="step-list">
+              <li>
+                <span class="step-num">1</span> Divide the percent by 100.
+              </li>
+              <li>
+                <span class="step-num">2</span> (Move the decimal point 2 places
+                left.)
+              </li>
+            </ol>
+            <div class="example-box">
+              75% &divide; 100 = <strong>0.75</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULA BOX -->
+      <div class="guide-section formula-section">
+        <h2>Formula Box</h2>
+        <div class="formula-highlight">
+          % = (part &divide; whole) &times; 100
+        </div>
+        <div class="formula-highlight">
+          Fraction &rarr; Decimal: divide top by bottom<br />
+          Decimal &rarr; Percent: multiply by 100
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>50% = 0.50 = 1/2</strong> &mdash; NOT 50! The percent sign
+            means "out of 100."
+          </li>
+          <li>
+            <strong>Decimal point moves 2 places:</strong> To go from percent to
+            decimal, move the point 2 places LEFT. To go from decimal to
+            percent, move it 2 places RIGHT.
+          </li>
+          <li>
+            <strong>Always simplify fractions:</strong> 50/100 should be written
+            as 1/2.
+          </li>
+          <li>
+            <strong>Percents can be greater than 100%:</strong> 150% = 1.5 =
+            3/2. This means MORE than the whole.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p><strong>1.</strong> Convert 3/4 to a percent.</p>
+          <input
+            type="text"
+            id="q1"
+            placeholder="Type your answer (e.g., 75%)..."
+          />
+          <button class="check-btn" onclick="checkAnswer('q1', '75%', 'fb1')">
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>2.</strong> Convert 0.35 to a percent.</p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q2', '35%', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>3.</strong> Convert 60% to a fraction in simplest form.</p>
+          <input
+            type="text"
+            id="q3"
+            placeholder="Type your answer (e.g., 3/5)..."
+          />
+          <button class="check-btn" onclick="checkAnswer('q3', '3/5', 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>4.</strong> Convert 125% to a decimal.</p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q4', '1.25', 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (
+          val === correct ||
+          (val === correct.replace("%", "") &&
+            correct.includes("%") &&
+            val + "%" === correct) ||
+          (parseFloat(val) === parseFloat(correct) && !isNaN(parseFloat(val)))
+        ) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>6D Words to Algebra ESOL Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .tip-section {
+        background: var(--guide-tip);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      table.keyword-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0.75rem 0;
+      }
+      table.keyword-table th,
+      table.keyword-table td {
+        border: 1px solid #cbd5e1;
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+      }
+      table.keyword-table th {
+        background: var(--guide-primary);
+        color: #fff;
+        font-weight: 700;
+      }
+      table.keyword-table tr:nth-child(even) {
+        background: #f1f5f9;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>6D | Words to Algebra ESOL Study Guide</h1>
+        <div class="guide-meta">
+          Unit 6: Expressions &amp; Equations &bull; Lesson 6.8 &bull; Standard:
+          6.EE.2a
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Translate</strong> &mdash; to change words into math symbols
+          (numbers, variables, and operations).
+          <span class="spanish">(traducir)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Phrase &rarr; Expression</strong> &mdash; a word phrase
+          becomes a math expression (no equals sign).
+        </div>
+        <div class="vocab-term">
+          <strong>Sentence &rarr; Equation</strong> &mdash; a word sentence with
+          "is" or "equals" becomes an equation (has = sign).
+        </div>
+      </div>
+
+      <!-- VISUAL: KEY WORDS TABLE -->
+      <div class="guide-section">
+        <h2>Key Words &rarr; Operations</h2>
+        <table class="keyword-table">
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>Key Words</th>
+              <th>Example (Words)</th>
+              <th>Example (Algebra)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Addition (+)</strong></td>
+              <td>sum, more than, plus, increased by, total</td>
+              <td>"5 more than x"</td>
+              <td>x + 5</td>
+            </tr>
+            <tr>
+              <td><strong>Subtraction (&minus;)</strong></td>
+              <td>difference, less than, minus, decreased by, fewer</td>
+              <td>"7 less than n"</td>
+              <td>n &minus; 7</td>
+            </tr>
+            <tr>
+              <td><strong>Multiplication (&times;)</strong></td>
+              <td>product, times, of, twice, double, triple</td>
+              <td>"the product of 3 and x"</td>
+              <td>3x</td>
+            </tr>
+            <tr>
+              <td><strong>Division (&divide;)</strong></td>
+              <td>quotient, divided by, per, split equally</td>
+              <td>"a number divided by 6"</td>
+              <td>n &divide; 6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- STEP-BY-STEP -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span> <strong>Read</strong> the phrase or
+            sentence carefully.
+          </li>
+          <li>
+            <span class="step-num">2</span> <strong>Underline</strong> the key
+            math words (sum, less than, product, etc.).
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <strong>Choose a variable</strong> for "a number" or "an unknown."
+          </li>
+          <li>
+            <span class="step-num">4</span> <strong>Write</strong> the
+            expression or equation using symbols.
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>"Twelve decreased by twice a number"</strong><br />
+          &bull; "decreased by" = subtract<br />
+          &bull; "twice a number" = 2n<br />
+          &bull; Answer: <strong>12 &minus; 2n</strong>
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>"5 less THAN x" = x &minus; 5</strong>, NOT 5 &minus; x!
+            With "less than," the order is reversed. The variable comes first.
+          </li>
+          <li>
+            <strong>"The product OF 3 AND x" = 3x.</strong> "Of" and "and"
+            connect the two things being multiplied.
+          </li>
+          <li>
+            <strong>"Is" or "equals" means =.</strong> If you see "is," you are
+            writing an equation, not just an expression.
+          </li>
+          <li>
+            <strong>"More than" and "added to" flip the order too:</strong> "8
+            more than y" = y + 8 (same result either way for addition, but read
+            carefully).
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+        <p style="margin-bottom: 0.75rem; color: var(--guide-muted)">
+          Use <strong>n</strong> for the variable. Write expressions without
+          spaces (e.g., n+5 or 3n-2).
+        </p>
+
+        <div class="practice-problem">
+          <p><strong>1.</strong> Translate: "the sum of a number and 9"</p>
+          <input type="text" id="q1" placeholder="Type your expression..." />
+          <button
+            class="check-btn"
+            onclick="checkExpr('q1', ['n+9', '9+n'], 'fb1')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>2.</strong> Translate: "4 less than a number"</p>
+          <input type="text" id="q2" placeholder="Type your expression..." />
+          <button class="check-btn" onclick="checkExpr('q2', ['n-4'], 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>3.</strong> Translate: "triple a number decreased by 7"</p>
+          <input type="text" id="q3" placeholder="Type your expression..." />
+          <button class="check-btn" onclick="checkExpr('q3', ['3n-7'], 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p><strong>4.</strong> Translate: "a number divided by 5, plus 2"</p>
+          <input type="text" id="q4" placeholder="Type your expression..." />
+          <button class="check-btn" onclick="checkExpr('q4', ['n/5+2'], 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().toLowerCase().replace(/\s+/g, "");
+        var correct = String(correctAnswer).toLowerCase().replace(/\s+/g, "");
+        if (val === correct) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+      function checkExpr(inputId, accepted, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value.trim().replace(/\s+/g, "").toLowerCase();
+        if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else if (accepted.indexOf(val) !== -1) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent =
+            "Not quite. Check the key words table and try again!";
+        }
+      }
+    </script>
+  </body>
+</html>
