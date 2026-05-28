@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>engine3d demo — Cube Sum</title>
+    <link rel="stylesheet" href="../../assets/design-tokens.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--navy, #12355b);
+      }
+      #game {
+        position: fixed;
+        inset: 0;
+      }
+      .e3d-hint {
+        position: absolute;
+        left: 50%;
+        bottom: 14px;
+        transform: translateX(-50%);
+        color: #fff;
+        font-family: var(--font-body, system-ui, sans-serif);
+        font-size: 13px;
+        opacity: 0.7;
+        z-index: 16;
+        pointer-events: none;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="game"></div>
+    <div class="e3d-hint">
+      Click cubes (or tap / Space) to reach the target sum.
+    </div>
+
+    <script type="module">
+      import { mountGame } from "./index.js";
+
+      // Minimal example unit game: click numbered cubes to hit a target sum.
+      const cubeSumGame = {
+        id: "demo-cube-sum",
+        vocab: [
+          {
+            term: "Sum",
+            definition: "The answer when you add numbers together.",
+            emoji: "➕",
+          },
+          {
+            term: "Target",
+            definition: "The number you are trying to reach.",
+            emoji: "🎯",
+          },
+        ],
+        createGame(ctx) {
+          const {
+            scene,
+            camera,
+            input,
+            hud,
+            feel,
+            announce,
+            THREE,
+            level,
+            onScore,
+          } = ctx;
+          const cubes = [];
+          let target = 0;
+          let current = 0;
+          let unbindFrame = null;
+
+          const targetMax = level === 2 ? 30 : 15;
+          const cubeCount = level === 2 ? 8 : 5;
+
+          function newRound() {
+            cubes.forEach((c) => scene.remove(c.mesh));
+            cubes.length = 0;
+            current = 0;
+            target = 5 + Math.floor(Math.random() * targetMax);
+            hud.setObjective(`Reach a sum of ${target}`);
+            announce(`New target: ${target}`);
+
+            for (let i = 0; i < cubeCount; i++) {
+              const value = 1 + Math.floor(Math.random() * 9);
+              const geo = new THREE.BoxGeometry(1, 1, 1);
+              const mat = new THREE.MeshStandardMaterial({ color: 0x1fa6a2 });
+              const mesh = new THREE.Mesh(geo, mat);
+              mesh.position.set((i - (cubeCount - 1) / 2) * 1.6, 0, 0);
+              mesh.userData.value = value;
+              scene.add(mesh);
+              cubes.push({ mesh, value });
+            }
+          }
+
+          function pick(mesh) {
+            const cube = cubes.find((c) => c.mesh === mesh);
+            if (!cube || cube.picked) return;
+            cube.picked = true;
+            current += cube.value;
+            cube.mesh.material.color.set(0xf2c15b);
+            feel.burst(cube.mesh.position, { color: 0xf2c15b });
+            announce(`Picked ${cube.value}. Sum is ${current}.`);
+
+            if (current === target) {
+              onScore(10, { detail: "exact" });
+              feel.shake(0.3);
+              hud.message("Exactly right! +10", { tone: "ok" });
+              setTimeout(newRound, 1200);
+            } else if (current > target) {
+              hud.message("Over the target — try again", { tone: "warn" });
+              feel.shake(0.25);
+              setTimeout(newRound, 1200);
+            }
+          }
+
+          function tryPickFromPointer() {
+            const hits = input.raycast(
+              camera,
+              cubes.map((c) => c.mesh),
+            );
+            if (hits.length) pick(hits[0].object);
+          }
+
+          return {
+            start() {
+              newRound();
+              input.onTap(tryPickFromPointer);
+              input.onPress((a) => {
+                if (a === "action" || a === "confirm") {
+                  const next = cubes.find((c) => !c.picked);
+                  if (next) pick(next.mesh);
+                }
+              });
+              unbindFrame = ctx.onFrame((dt) => {
+                cubes.forEach((c) => (c.mesh.rotation.y += dt * 0.6));
+              });
+            },
+            dispose() {
+              if (unbindFrame) unbindFrame();
+            },
+          };
+        },
+      };
+
+      mountGame(document.getElementById("game"), cubeSumGame, {});
+    </script>
+  </body>
+</html>
