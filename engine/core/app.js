@@ -1,6 +1,7 @@
 import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
+import { reportScore } from "./score-reporter.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 
@@ -137,6 +138,16 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   state.subscribe(() => {
     updateSidebar(sidebar, state, phaseConfigs);
+  });
+
+  let scoreReported = false;
+  state.subscribe(() => {
+    if (scoreReported) return;
+    const phases = state.get().phases;
+    if (phases.length && phases.every((p) => p.status === "completed")) {
+      scoreReported = true;
+      reportScore(state, config);
+    }
   });
 
   updateSidebar(sidebar, state, phaseConfigs);

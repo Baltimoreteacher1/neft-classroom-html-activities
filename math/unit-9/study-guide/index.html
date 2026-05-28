@@ -334,6 +334,43 @@
           font-size: 1.5rem;
         }
       }
+      @media print {
+        body {
+          background: #fff !important;
+          color: #000 !important;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 11pt;
+          line-height: 1.4;
+        }
+        .shell {
+          max-width: 100%;
+          padding: 0;
+        }
+        .breadcrumb,
+        .tabs {
+          display: none !important;
+        }
+        .lesson {
+          display: block !important;
+          page-break-inside: avoid;
+          margin-bottom: 18pt;
+        }
+        .card,
+        .example,
+        .quiz {
+          border: 1pt solid #999;
+          box-shadow: none !important;
+          page-break-inside: avoid;
+        }
+        a[href]::after {
+          content: " (" attr(href) ")";
+          font-size: 9pt;
+          color: #666;
+        }
+        @page {
+          margin: 0.75in;
+        }
+      }
     </style>
   </head>
   <body>

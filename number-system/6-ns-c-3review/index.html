@@ -1,1465 +1,2363 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Integer Operations – Interactive Review Suite</title>
-<style>
-/* ───────── ROOT TOKENS ───────── */
-:root{
-  --bg:#06090f;
-  --surface:#0d1527;
-  --card:#131f3e;
-  --card2:#1a2a52;
-  --border:#1e2d54;
-  --accent:#38bdf8;
-  --gold:#fbbf24;
-  --green:#4ade80;
-  --red:#f87171;
-  --purple:#c084fc;
-  --orange:#fb923c;
-  --text:#e5e7eb;
-  --muted:#6b7280;
-  --radius:14px;
-  --shadow:0 8px 32px rgba(0,0,0,.55);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:var(--bg);
-  font-family:'Inter',system-ui;
-  color:var(--text);
-  min-height:100vh;
-  background-image:
-    radial-gradient(ellipse 90% 40% at 50% 0%,#1a3a6c2a,transparent 60%),
-    radial-gradient(ellipse 40% 30% at 85% 85%,#38bdf81a,transparent 50%);
-}
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integer Operations – Interactive Review Suite</title>
+    <style>
+      /* ───────── ROOT TOKENS ───────── */
+      :root {
+        --bg: #06090f;
+        --surface: #0d1527;
+        --card: #131f3e;
+        --card2: #1a2a52;
+        --border: #1e2d54;
+        --accent: #38bdf8;
+        --gold: #fbbf24;
+        --green: #4ade80;
+        --red: #f87171;
+        --purple: #c084fc;
+        --orange: #fb923c;
+        --text: #e5e7eb;
+        --muted: #6b7280;
+        --radius: 14px;
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        font-family: "Inter", system-ui;
+        color: var(--text);
+        min-height: 100vh;
+        background-image:
+          radial-gradient(
+            ellipse 90% 40% at 50% 0%,
+            #1a3a6c2a,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 40% 30% at 85% 85%,
+            #38bdf81a,
+            transparent 50%
+          );
+      }
 
-/* ───────── HEADER ───────── */
-#header{
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  padding:18px 32px 0;
-  position:sticky;
-  top:0;
-  z-index:100;
-  box-shadow:0 4px 24px rgba(0,0,0,.4);
-}
-#header-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:14px;
-}
-#suite-title{
-  font-family:'Cinzel',serif;
-  font-size:1.35rem;
-  background:linear-gradient(135deg,#fbbf24,#38bdf8,#c084fc);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  letter-spacing:1.5px;
-}
-#suite-sub{font-size:.72rem;color:var(--muted);margin-top:2px;letter-spacing:.5px}
-#score-badge{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:50px;
-  padding:6px 18px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  font-size:.8rem;
-}
-.badge-item{text-align:center}
-.badge-val{font-weight:800;font-size:1rem;color:var(--gold)}
-.badge-label{color:var(--muted);font-size:.65rem;text-transform:uppercase;letter-spacing:.5px}
+      /* ───────── HEADER ───────── */
+      #header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 18px 32px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      }
+      #header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      #suite-title {
+        font-family: "Cinzel", serif;
+        font-size: 1.35rem;
+        background: linear-gradient(135deg, #fbbf24, #38bdf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 1.5px;
+      }
+      #suite-sub {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 2px;
+        letter-spacing: 0.5px;
+      }
+      #score-badge {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 50px;
+        padding: 6px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.8rem;
+      }
+      .badge-item {
+        text-align: center;
+      }
+      .badge-val {
+        font-weight: 800;
+        font-size: 1rem;
+        color: var(--gold);
+      }
+      .badge-label {
+        color: var(--muted);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-/* ───────── TABS ───────── */
-#tab-bar{
-  display:flex;
-  gap:4px;
-  overflow-x:auto;
-  padding-bottom:0;
-  scrollbar-width:none;
-}
-#tab-bar::-webkit-scrollbar{display:none}
-.tab{
-  padding:10px 22px;
-  border-radius:10px 10px 0 0;
-  border:1px solid transparent;
-  border-bottom:none;
-  cursor:pointer;
-  font-size:.8rem;
-  font-weight:600;
-  color:var(--muted);
-  transition:.2s;
-  white-space:nowrap;
-  position:relative;
-  top:1px;
-  background:transparent;
-}
-.tab:hover{color:var(--text);background:var(--card)}
-.tab.active{
-  background:var(--bg);
-  color:var(--accent);
-  border-color:var(--border);
-  border-bottom-color:var(--bg);
-}
-.tab .tab-icon{margin-right:6px;font-size:.9rem}
+      /* ───────── TABS ───────── */
+      #tab-bar {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        padding-bottom: 0;
+        scrollbar-width: none;
+      }
+      #tab-bar::-webkit-scrollbar {
+        display: none;
+      }
+      .tab {
+        padding: 10px 22px;
+        border-radius: 10px 10px 0 0;
+        border: 1px solid transparent;
+        border-bottom: none;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        transition: 0.2s;
+        white-space: nowrap;
+        position: relative;
+        top: 1px;
+        background: transparent;
+      }
+      .tab:hover {
+        color: var(--text);
+        background: var(--card);
+      }
+      .tab.active {
+        background: var(--bg);
+        color: var(--accent);
+        border-color: var(--border);
+        border-bottom-color: var(--bg);
+      }
+      .tab .tab-icon {
+        margin-right: 6px;
+        font-size: 0.9rem;
+      }
 
-/* ───────── MAIN ───────── */
-#main{padding:28px 32px;max-width:1100px;margin:0 auto}
-.activity{display:none}
-.activity.active{display:block}
+      /* ───────── MAIN ───────── */
+      #main {
+        padding: 28px 32px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .activity {
+        display: none;
+      }
+      .activity.active {
+        display: block;
+      }
 
-/* ───────── ACTIVITY HEADER ───────── */
-.act-header{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  margin-bottom:22px;
-  flex-wrap:wrap;
-  gap:10px;
-}
-.act-title-block h2{
-  font-family:'Cinzel',serif;
-  font-size:1.4rem;
-  color:var(--text);
-  margin-bottom:4px;
-}
-.act-title-block p{font-size:.82rem;color:var(--muted);max-width:500px;line-height:1.5}
-.act-controls{display:flex;gap:8px;align-items:center}
-.btn{
-  padding:9px 20px;
-  border-radius:9px;
-  border:none;
-  font-weight:700;
-  font-size:.8rem;
-  cursor:pointer;
-  transition:.15s;
-  font-family:'Inter',system-ui;
-}
-.btn:active{transform:scale(.96)}
-.btn-primary{background:linear-gradient(135deg,var(--accent),#818cf8);color:white}
-.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
-.btn-danger{background:linear-gradient(135deg,#ef4444,#f97316);color:white}
-.btn-success{background:linear-gradient(135deg,var(--green),#16a34a);color:white}
+      /* ───────── ACTIVITY HEADER ───────── */
+      .act-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .act-title-block h2 {
+        font-family: "Cinzel", serif;
+        font-size: 1.4rem;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .act-title-block p {
+        font-size: 0.82rem;
+        color: var(--muted);
+        max-width: 500px;
+        line-height: 1.5;
+      }
+      .act-controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn {
+        padding: 9px 20px;
+        border-radius: 9px;
+        border: none;
+        font-weight: 700;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: 0.15s;
+        font-family: "Inter", system-ui;
+      }
+      .btn:active {
+        transform: scale(0.96);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), #818cf8);
+        color: white;
+      }
+      .btn-secondary {
+        background: var(--card2);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-danger {
+        background: linear-gradient(135deg, #ef4444, #f97316);
+        color: white;
+      }
+      .btn-success {
+        background: linear-gradient(135deg, var(--green), #16a34a);
+        color: white;
+      }
 
-/* ───────── PROGRESS BAR ───────── */
-.progress-wrap{margin-bottom:20px}
-.progress-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:5px}
-.progress-bar{height:6px;background:var(--card2);border-radius:4px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:4px;transition:width .4s ease}
+      /* ───────── PROGRESS BAR ───────── */
+      .progress-wrap {
+        margin-bottom: 20px;
+      }
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .progress-bar {
+        height: 6px;
+        background: var(--card2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--purple));
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
 
-/* ───────── FEEDBACK TOAST ───────── */
-#toast{
-  position:fixed;
-  bottom:28px;
-  left:50%;
-  transform:translateX(-50%) translateY(80px);
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:12px 28px;
-  font-weight:700;
-  font-size:.9rem;
-  z-index:999;
-  transition:.3s;
-  pointer-events:none;
-  box-shadow:var(--shadow);
-}
-#toast.show{transform:translateX(-50%) translateY(0)}
-#toast.correct{border-color:var(--green);color:var(--green)}
-#toast.wrong{border-color:var(--red);color:var(--red)}
-#toast.info{border-color:var(--accent);color:var(--accent)}
+      /* ───────── FEEDBACK TOAST ───────── */
+      #toast {
+        position: fixed;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 28px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        z-index: 999;
+        transition: 0.3s;
+        pointer-events: none;
+        box-shadow: var(--shadow);
+      }
+      #toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+      #toast.correct {
+        border-color: var(--green);
+        color: var(--green);
+      }
+      #toast.wrong {
+        border-color: var(--red);
+        color: var(--red);
+      }
+      #toast.info {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    TAB 1 – DRAG-TO-CATEGORY (Sort)
 ═══════════════════════════════════════ */
-#cat-bank{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:18px;
-  min-height:70px;
-  margin-bottom:22px;
-}
-.drag-chip{
-  background:var(--card2);
-  border:2px solid var(--border);
-  border-radius:8px;
-  padding:10px 16px;
-  font-size:.9rem;
-  font-weight:700;
-  cursor:grab;
-  user-select:none;
-  transition:.15s;
-}
-.drag-chip:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 16px rgba(56,189,248,.2)}
-.drag-chip.dragging{opacity:.4;cursor:grabbing}
-.drag-chip.placed{cursor:default}
+      #cat-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px;
+        min-height: 70px;
+        margin-bottom: 22px;
+      }
+      .drag-chip {
+        background: var(--card2);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: grab;
+        user-select: none;
+        transition: 0.15s;
+      }
+      .drag-chip:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(56, 189, 248, 0.2);
+      }
+      .drag-chip.dragging {
+        opacity: 0.4;
+        cursor: grabbing;
+      }
+      .drag-chip.placed {
+        cursor: default;
+      }
 
-.cat-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:14px;
-}
-.cat-zone{
-  background:var(--surface);
-  border:2px dashed var(--border);
-  border-radius:var(--radius);
-  padding:14px;
-  min-height:160px;
-  transition:.2s;
-}
-.cat-zone.drag-over{border-color:var(--accent);background:rgba(56,189,248,.05)}
-.cat-zone.correct{border-color:var(--green)!important;background:rgba(74,222,128,.05)}
-.cat-zone.wrong{border-color:var(--red)!important;background:rgba(248,113,113,.05)}
-.cat-zone-title{
-  font-size:.75rem;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  margin-bottom:10px;
-  padding-bottom:8px;
-  border-bottom:1px solid var(--border);
-}
-.cat-items{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  min-height:40px;
-}
+      .cat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+      }
+      .cat-zone {
+        background: var(--surface);
+        border: 2px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        min-height: 160px;
+        transition: 0.2s;
+      }
+      .cat-zone.drag-over {
+        border-color: var(--accent);
+        background: rgba(56, 189, 248, 0.05);
+      }
+      .cat-zone.correct {
+        border-color: var(--green) !important;
+        background: rgba(74, 222, 128, 0.05);
+      }
+      .cat-zone.wrong {
+        border-color: var(--red) !important;
+        background: rgba(248, 113, 113, 0.05);
+      }
+      .cat-zone-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+      .cat-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        min-height: 40px;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    TAB 2 – MATCHING PAIRS
 ═══════════════════════════════════════ */
-.match-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:24px;
-  margin-bottom:18px;
-}
-.match-col h3{
-  font-size:.75rem;
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  color:var(--muted);
-  margin-bottom:12px;
-}
-.match-card{
-  background:var(--card);
-  border:2px solid var(--border);
-  border-radius:11px;
-  padding:14px 16px;
-  margin-bottom:8px;
-  cursor:pointer;
-  font-size:.95rem;
-  font-weight:600;
-  transition:.2s;
-  position:relative;
-  user-select:none;
-}
-.match-card:hover{border-color:var(--accent);transform:translateX(2px)}
-.match-card.selected{border-color:var(--gold);background:rgba(251,191,36,.08);box-shadow:0 0 12px rgba(251,191,36,.2)}
-.match-card.matched{border-color:var(--green)!important;background:rgba(74,222,128,.08)!important;cursor:default;opacity:.7}
-.match-card.wrong-flash{border-color:var(--red)!important;animation:wrongFlash .4s}
-@keyframes wrongFlash{50%{background:rgba(248,113,113,.15)}}
-.match-num{
-  position:absolute;
-  top:-8px;right:-8px;
-  background:var(--purple);
-  color:white;
-  font-size:.6rem;
-  font-weight:800;
-  width:18px;height:18px;
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  display:none;
-}
-.match-card.matched .match-num{display:flex;background:var(--green)}
+      .match-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 18px;
+      }
+      .match-col h3 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .match-card {
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 11px;
+        padding: 14px 16px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: 0.2s;
+        position: relative;
+        user-select: none;
+      }
+      .match-card:hover {
+        border-color: var(--accent);
+        transform: translateX(2px);
+      }
+      .match-card.selected {
+        border-color: var(--gold);
+        background: rgba(251, 191, 36, 0.08);
+        box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+      }
+      .match-card.matched {
+        border-color: var(--green) !important;
+        background: rgba(74, 222, 128, 0.08) !important;
+        cursor: default;
+        opacity: 0.7;
+      }
+      .match-card.wrong-flash {
+        border-color: var(--red) !important;
+        animation: wrongFlash 0.4s;
+      }
+      @keyframes wrongFlash {
+        50% {
+          background: rgba(248, 113, 113, 0.15);
+        }
+      }
+      .match-num {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--purple);
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 800;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        display: none;
+      }
+      .match-card.matched .match-num {
+        display: flex;
+        background: var(--green);
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    TAB 3 – NUMBER LINE MOVER
 ═══════════════════════════════════════ */
-#nl-container{
-  background:var(--surface);
-  border-radius:var(--radius);
-  border:1px solid var(--border);
-  padding:28px 24px;
-  margin-bottom:22px;
-  position:relative;
-}
-#nl-problem{
-  font-size:2.4rem;
-  font-weight:900;
-  font-family:'Cinzel',serif;
-  text-align:center;
-  background:linear-gradient(135deg,#fff,var(--accent));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  margin-bottom:28px;
-}
-#nl-track{
-  position:relative;
-  height:60px;
-  margin:0 20px 12px;
-}
-#nl-line{
-  position:absolute;
-  left:0;right:0;
-  top:50%;
-  height:3px;
-  background:var(--card2);
-  border-radius:2px;
-}
-.nl-tick{
-  position:absolute;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  transform:translateX(-50%);
-  top:50%;
-}
-.nl-tick-bar{width:2px;height:12px;background:var(--muted);margin-top:-6px}
-.nl-tick-label{font-size:.65rem;color:var(--muted);margin-top:14px}
-.nl-tick.zero .nl-tick-bar{background:var(--accent);height:20px;margin-top:-10px}
-.nl-tick.zero .nl-tick-label{color:var(--accent);font-weight:700}
+      #nl-container {
+        background: var(--surface);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        padding: 28px 24px;
+        margin-bottom: 22px;
+        position: relative;
+      }
+      #nl-problem {
+        font-size: 2.4rem;
+        font-weight: 900;
+        font-family: "Cinzel", serif;
+        text-align: center;
+        background: linear-gradient(135deg, #fff, var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 28px;
+      }
+      #nl-track {
+        position: relative;
+        height: 60px;
+        margin: 0 20px 12px;
+      }
+      #nl-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 3px;
+        background: var(--card2);
+        border-radius: 2px;
+      }
+      .nl-tick {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transform: translateX(-50%);
+        top: 50%;
+      }
+      .nl-tick-bar {
+        width: 2px;
+        height: 12px;
+        background: var(--muted);
+        margin-top: -6px;
+      }
+      .nl-tick-label {
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-top: 14px;
+      }
+      .nl-tick.zero .nl-tick-bar {
+        background: var(--accent);
+        height: 20px;
+        margin-top: -10px;
+      }
+      .nl-tick.zero .nl-tick-label {
+        color: var(--accent);
+        font-weight: 700;
+      }
 
-#nl-marker{
-  position:absolute;
-  top:50%;
-  width:28px;height:28px;
-  background:linear-gradient(135deg,var(--gold),var(--orange));
-  border-radius:50%;
-  border:3px solid white;
-  transform:translate(-50%,-50%);
-  cursor:grab;
-  box-shadow:0 0 18px rgba(251,191,36,.5);
-  z-index:5;
-  transition:box-shadow .2s;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.7rem;font-weight:800;color:#000;
-}
-#nl-marker:active{cursor:grabbing;box-shadow:0 0 28px rgba(251,191,36,.8)}
+      #nl-marker {
+        position: absolute;
+        top: 50%;
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, var(--gold), var(--orange));
+        border-radius: 50%;
+        border: 3px solid white;
+        transform: translate(-50%, -50%);
+        cursor: grab;
+        box-shadow: 0 0 18px rgba(251, 191, 36, 0.5);
+        z-index: 5;
+        transition: box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #000;
+      }
+      #nl-marker:active {
+        cursor: grabbing;
+        box-shadow: 0 0 28px rgba(251, 191, 36, 0.8);
+      }
 
-#nl-answer-zone{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:16px;
-  margin-top:12px;
-}
-#nl-current{
-  font-size:1.6rem;
-  font-weight:900;
-  color:var(--gold);
-  min-width:60px;
-  text-align:center;
-}
-#nl-hint{
-  font-size:.78rem;
-  color:var(--muted);
-  text-align:center;
-  margin-top:8px;
-}
-.nl-arrow-btn{
-  background:var(--card2);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:8px 14px;
-  color:var(--text);
-  font-size:1rem;
-  font-weight:700;
-  cursor:pointer;
-  transition:.15s;
-}
-.nl-arrow-btn:hover{background:var(--card);border-color:var(--accent);color:var(--accent)}
+      #nl-answer-zone {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 12px;
+      }
+      #nl-current {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--gold);
+        min-width: 60px;
+        text-align: center;
+      }
+      #nl-hint {
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 8px;
+      }
+      .nl-arrow-btn {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 14px;
+        color: var(--text);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .nl-arrow-btn:hover {
+        background: var(--card);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
 
-#nl-feedback{
-  text-align:center;
-  min-height:28px;
-  font-weight:700;
-  font-size:.9rem;
-  margin-top:10px;
-}
+      #nl-feedback {
+        text-align: center;
+        min-height: 28px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    TAB 4 – TRUE / FALSE SORT
 ═══════════════════════════════════════ */
-.tf-card-deck{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:0;
-  margin-bottom:24px;
-}
-.tf-card{
-  background:var(--card);
-  border:2px solid var(--border);
-  border-radius:16px;
-  padding:22px 28px;
-  font-size:1.1rem;
-  font-weight:700;
-  text-align:center;
-  width:100%;
-  max-width:500px;
-  min-height:80px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:var(--shadow);
-  transition:.3s;
-  position:relative;
-}
-.tf-card.card-hidden{display:none}
-.tf-statement{font-size:1.05rem;line-height:1.4}
+      .tf-card-deck {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 24px;
+      }
+      .tf-card {
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 16px;
+        padding: 22px 28px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-align: center;
+        width: 100%;
+        max-width: 500px;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow);
+        transition: 0.3s;
+        position: relative;
+      }
+      .tf-card.card-hidden {
+        display: none;
+      }
+      .tf-statement {
+        font-size: 1.05rem;
+        line-height: 1.4;
+      }
 
-.tf-btn-row{
-  display:flex;
-  justify-content:center;
-  gap:16px;
-  margin-top:16px;
-}
-.tf-btn{
-  padding:14px 40px;
-  border-radius:12px;
-  border:2px solid;
-  font-size:1rem;
-  font-weight:800;
-  cursor:pointer;
-  transition:.15s;
-}
-.tf-true{border-color:var(--green);color:var(--green);background:rgba(74,222,128,.08)}
-.tf-true:hover{background:rgba(74,222,128,.2)}
-.tf-false{border-color:var(--red);color:var(--red);background:rgba(248,113,113,.08)}
-.tf-false:hover{background:rgba(248,113,113,.2)}
-.tf-btn:active{transform:scale(.95)}
+      .tf-btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 16px;
+      }
+      .tf-btn {
+        padding: 14px 40px;
+        border-radius: 12px;
+        border: 2px solid;
+        font-size: 1rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .tf-true {
+        border-color: var(--green);
+        color: var(--green);
+        background: rgba(74, 222, 128, 0.08);
+      }
+      .tf-true:hover {
+        background: rgba(74, 222, 128, 0.2);
+      }
+      .tf-false {
+        border-color: var(--red);
+        color: var(--red);
+        background: rgba(248, 113, 113, 0.08);
+      }
+      .tf-false:hover {
+        background: rgba(248, 113, 113, 0.2);
+      }
+      .tf-btn:active {
+        transform: scale(0.95);
+      }
 
-.tf-sorted-piles{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-  margin-top:22px;
-}
-.tf-pile{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:14px;
-  min-height:80px;
-}
-.tf-pile h4{
-  font-size:.72rem;
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  margin-bottom:10px;
-  padding-bottom:8px;
-  border-bottom:1px solid var(--border);
-}
-.tf-pile.true-pile h4{color:var(--green)}
-.tf-pile.false-pile h4{color:var(--red)}
-.tf-sorted-item{
-  font-size:.78rem;
-  padding:6px 10px;
-  background:var(--card);
-  border-radius:7px;
-  margin-bottom:5px;
-  border:1px solid var(--border);
-}
-.tf-sorted-item.correct-sort{border-color:var(--green)}
-.tf-sorted-item.wrong-sort{border-color:var(--red)}
+      .tf-sorted-piles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 22px;
+      }
+      .tf-pile {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        min-height: 80px;
+      }
+      .tf-pile h4 {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+      .tf-pile.true-pile h4 {
+        color: var(--green);
+      }
+      .tf-pile.false-pile h4 {
+        color: var(--red);
+      }
+      .tf-sorted-item {
+        font-size: 0.78rem;
+        padding: 6px 10px;
+        background: var(--card);
+        border-radius: 7px;
+        margin-bottom: 5px;
+        border: 1px solid var(--border);
+      }
+      .tf-sorted-item.correct-sort {
+        border-color: var(--green);
+      }
+      .tf-sorted-item.wrong-sort {
+        border-color: var(--red);
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    TAB 5 – EQUATION BUILDER (Tile Drag)
 ═══════════════════════════════════════ */
-.eq-problem-box{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:20px 24px;
-  margin-bottom:18px;
-  text-align:center;
-}
-.eq-problem-box .eq-prompt{font-size:.78rem;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.7px}
-.eq-problem-box .eq-target{
-  font-size:2rem;font-weight:900;
-  font-family:'Cinzel',serif;
-  color:var(--gold);
-}
+      .eq-problem-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 24px;
+        margin-bottom: 18px;
+        text-align: center;
+      }
+      .eq-problem-box .eq-prompt {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+      }
+      .eq-problem-box .eq-target {
+        font-size: 2rem;
+        font-weight: 900;
+        font-family: "Cinzel", serif;
+        color: var(--gold);
+      }
 
-.eq-drop-row{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  margin-bottom:20px;
-  flex-wrap:wrap;
-}
-.eq-slot{
-  width:64px;height:56px;
-  background:var(--card);
-  border:2px dashed var(--border);
-  border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.3rem;font-weight:800;
-  transition:.2s;
-  position:relative;
-}
-.eq-slot.drag-over{border-color:var(--accent);background:rgba(56,189,248,.08)}
-.eq-slot.filled{border-style:solid;border-color:var(--purple);background:rgba(192,132,252,.08)}
-.eq-slot.correct{border-color:var(--green)!important;background:rgba(74,222,128,.1)!important}
-.eq-slot.wrong{border-color:var(--red)!important;animation:wrongFlash .4s}
-.eq-operator{font-size:1.5rem;font-weight:900;color:var(--muted);padding:0 4px}
-.eq-equals{font-size:1.5rem;font-weight:900;color:var(--accent);padding:0 4px}
-.eq-result{
-  font-size:1.5rem;font-weight:900;
-  color:var(--gold);padding:0 8px;
-  min-width:48px;text-align:center;
-}
+      .eq-drop-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .eq-slot {
+        width: 64px;
+        height: 56px;
+        background: var(--card);
+        border: 2px dashed var(--border);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 800;
+        transition: 0.2s;
+        position: relative;
+      }
+      .eq-slot.drag-over {
+        border-color: var(--accent);
+        background: rgba(56, 189, 248, 0.08);
+      }
+      .eq-slot.filled {
+        border-style: solid;
+        border-color: var(--purple);
+        background: rgba(192, 132, 252, 0.08);
+      }
+      .eq-slot.correct {
+        border-color: var(--green) !important;
+        background: rgba(74, 222, 128, 0.1) !important;
+      }
+      .eq-slot.wrong {
+        border-color: var(--red) !important;
+        animation: wrongFlash 0.4s;
+      }
+      .eq-operator {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--muted);
+        padding: 0 4px;
+      }
+      .eq-equals {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--accent);
+        padding: 0 4px;
+      }
+      .eq-result {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--gold);
+        padding: 0 8px;
+        min-width: 48px;
+        text-align: center;
+      }
 
-.eq-tile-bank{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:center;
-  padding:16px;
-  background:var(--surface);
-  border-radius:var(--radius);
-  border:1px solid var(--border);
-  margin-bottom:16px;
-}
-.eq-tile{
-  width:52px;height:48px;
-  background:linear-gradient(135deg,var(--card2),var(--card));
-  border:2px solid var(--border);
-  border-radius:9px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;font-weight:800;
-  cursor:grab;
-  transition:.15s;
-  user-select:none;
-}
-.eq-tile:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 14px rgba(56,189,248,.2)}
-.eq-tile.used{opacity:.25;cursor:default;pointer-events:none}
+      .eq-tile-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        padding: 16px;
+        background: var(--surface);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .eq-tile {
+        width: 52px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--card2), var(--card));
+        border: 2px solid var(--border);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: grab;
+        transition: 0.15s;
+        user-select: none;
+      }
+      .eq-tile:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2);
+      }
+      .eq-tile.used {
+        opacity: 0.25;
+        cursor: default;
+        pointer-events: none;
+      }
 
-/* ═══════════════════════════════════════
+      /* ═══════════════════════════════════════
    TAB 6 – VOCABULARY MATCH (Cards)
 ═══════════════════════════════════════ */
-.vocab-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
-  gap:10px;
-  margin-bottom:18px;
-}
-.vocab-card{
-  background:var(--card);
-  border:2px solid var(--border);
-  border-radius:12px;
-  padding:16px 10px;
-  text-align:center;
-  cursor:pointer;
-  font-size:.85rem;
-  font-weight:700;
-  min-height:70px;
-  display:flex;align-items:center;justify-content:center;
-  transition:.2s;
-  user-select:none;
-  line-height:1.3;
-}
-.vocab-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.vocab-card.selected{border-color:var(--gold);background:rgba(251,191,36,.1);box-shadow:0 0 14px rgba(251,191,36,.2)}
-.vocab-card.matched{border-color:var(--green);background:rgba(74,222,128,.08);cursor:default;opacity:.6}
-.vocab-card.wrong-flash{border-color:var(--red);animation:wrongFlash .5s}
-.vocab-card.term-card{color:var(--accent)}
-.vocab-card.def-card{color:var(--text);font-size:.78rem;font-weight:600}
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .vocab-card {
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 10px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 700;
+        min-height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+        user-select: none;
+        line-height: 1.3;
+      }
+      .vocab-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .vocab-card.selected {
+        border-color: var(--gold);
+        background: rgba(251, 191, 36, 0.1);
+        box-shadow: 0 0 14px rgba(251, 191, 36, 0.2);
+      }
+      .vocab-card.matched {
+        border-color: var(--green);
+        background: rgba(74, 222, 128, 0.08);
+        cursor: default;
+        opacity: 0.6;
+      }
+      .vocab-card.wrong-flash {
+        border-color: var(--red);
+        animation: wrongFlash 0.5s;
+      }
+      .vocab-card.term-card {
+        color: var(--accent);
+      }
+      .vocab-card.def-card {
+        color: var(--text);
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
 
-/* ───────── RESULTS PANEL ───────── */
-.results-banner{
-  background:linear-gradient(135deg,var(--card2),var(--card));
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:20px 24px;
-  text-align:center;
-  margin-top:20px;
-}
-.results-banner h3{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold);margin-bottom:8px}
-.results-score{font-size:2.5rem;font-weight:900;color:var(--green);margin-bottom:6px}
-.results-detail{font-size:.8rem;color:var(--muted)}
+      /* ───────── RESULTS PANEL ───────── */
+      .results-banner {
+        background: linear-gradient(135deg, var(--card2), var(--card));
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 24px;
+        text-align: center;
+        margin-top: 20px;
+      }
+      .results-banner h3 {
+        font-family: "Cinzel", serif;
+        font-size: 1.2rem;
+        color: var(--gold);
+        margin-bottom: 8px;
+      }
+      .results-score {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--green);
+        margin-bottom: 6px;
+      }
+      .results-detail {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
 
-/* ───────── MISC ───────── */
-.chip-correct{border-color:var(--green)!important;background:rgba(74,222,128,.12)!important;color:var(--green)}
-.chip-wrong{border-color:var(--red)!important;background:rgba(248,113,113,.12)!important;color:var(--red)}
-.empty-hint{font-size:.75rem;color:#374151;font-style:italic;width:100%;text-align:center;padding:8px}
-</style>
-</head>
-<body>
-<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
-<style>
-#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
-#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
-.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
-@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
-.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
-.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
-.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
-.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
-.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
-.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
-.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
-.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
-.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
-.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
-.vso-dot.active{background:#6366F1;transform:scale(1.25)}
-.vso-dot.seen{background:#A5B4FC}
-</style>
-<div id="vocabSlideshowOverlay">
-<div class="vso-card">
-  <div class="vso-progress" id="vsoProgress">Word 1 of 6</div>
-  <div class="vso-svg-wrap" id="vsoSvg"></div>
-  <div class="vso-word" id="vsoWord"></div>
-  <div class="vso-def" id="vsoDef"></div>
-  <div class="vso-nav">
-    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
-    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
-    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
-  </div>
-  <div class="vso-dots" id="vsoDots"></div>
-</div>
-</div>
-<script>
-(function(){
-const VSO_ITEMS=[
-  {word: 'Integer', def: 'A whole number that can be positive, negative, or zero.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="3" marker-end="url(#arrNL)"/>   <defs><marker id="arrNL" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <circle cx="150" cy="150" r="8" fill="#059669"/>   <text x="150" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="150" r="8" fill="#DC2626"/>   <text x="90" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-2</text>   <circle cx="60" cy="150" r="8" fill="#DC2626"/>   <text x="60" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="150" r="8" fill="#3B82F6"/>   <text x="210" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">2</text>   <circle cx="240" cy="150" r="8" fill="#3B82F6"/>   <text x="240" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">3</text>   <text x="150" y="100" text-anchor="middle" font-size="22" font-weight="800" fill="#1E293B" font-family="sans-serif">...-3, -2, -1, 0, 1, 2, 3...</text> </svg>'},
-  {word: 'Absolute Value', def: 'The distance a number is from zero on a number line. Always positive.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="180" x2="270" y2="180" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="180" r="6" fill="#059669"/>   <text x="150" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="80" cy="180" r="10" fill="#DC2626"/>   <text x="80" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-5</text>   <path d="M80,165 L150,165" stroke="#6366F1" stroke-width="4"/>   <text x="115" y="155" text-anchor="middle" font-size="18" font-weight="800" fill="#6366F1" font-family="sans-serif">5 units</text>   <text x="150" y="90" text-anchor="middle" font-size="36" font-weight="900" fill="#6366F1" font-family="sans-serif">|-5| = 5</text> </svg>'},
-  {word: 'Opposite', def: 'Two numbers the same distance from zero but on different sides.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="160" x2="270" y2="160" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="160" r="6" fill="#059669"/>   <text x="150" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="160" r="10" fill="#DC2626"/>   <text x="90" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="160" r="10" fill="#3B82F6"/>   <text x="210" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#3B82F6" font-family="sans-serif">+3</text>   <path d="M90,140 Q150,90 210,140" stroke="#F59E0B" stroke-width="3" fill="none" stroke-dasharray="6,4"/>   <text x="150" y="100" text-anchor="middle" font-size="18" font-weight="700" fill="#F59E0B" font-family="sans-serif">same distance</text> </svg>'},
-  {word: 'Negative Number', def: 'A number less than zero. Written with a minus sign.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="80" width="110" height="100" rx="16" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="85" y="125" text-anchor="middle" font-size="40" font-weight="900" fill="#3B82F6" font-family="sans-serif">+5</text>   <text x="85" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#3B82F6" font-family="sans-serif">above zero</text>   <rect x="160" y="80" width="110" height="100" rx="16" fill="#FEE2E2" stroke="#DC2626" stroke-width="3"/>   <text x="215" y="125" text-anchor="middle" font-size="40" font-weight="900" fill="#DC2626" font-family="sans-serif">-5</text>   <text x="215" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#DC2626" font-family="sans-serif">below zero</text> </svg>'},
-  {word: 'Positive Number', def: 'A number greater than zero.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="80" width="110" height="100" rx="16" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="85" y="125" text-anchor="middle" font-size="40" font-weight="900" fill="#3B82F6" font-family="sans-serif">+5</text>   <text x="85" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#3B82F6" font-family="sans-serif">above zero</text>   <rect x="160" y="80" width="110" height="100" rx="16" fill="#FEE2E2" stroke="#DC2626" stroke-width="3"/>   <text x="215" y="125" text-anchor="middle" font-size="40" font-weight="900" fill="#DC2626" font-family="sans-serif">-5</text>   <text x="215" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#DC2626" font-family="sans-serif">below zero</text> </svg>'},
-  {word: 'Number Line', def: 'A line with numbers placed at equal distances along it.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="20" y1="150" x2="280" y2="150" stroke="#1E293B" stroke-width="4" marker-end="url(#arrNL2)"/>   <defs><marker id="arrNL2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <line x1="50" y1="140" x2="50" y2="160" stroke="#1E293B" stroke-width="2"/><text x="50" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">0</text>   <line x1="100" y1="140" x2="100" y2="160" stroke="#1E293B" stroke-width="2"/><text x="100" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">1</text>   <line x1="150" y1="140" x2="150" y2="160" stroke="#1E293B" stroke-width="2"/><text x="150" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">2</text>   <line x1="200" y1="140" x2="200" y2="160" stroke="#1E293B" stroke-width="2"/><text x="200" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">3</text>   <line x1="250" y1="140" x2="250" y2="160" stroke="#1E293B" stroke-width="2"/><text x="250" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">4</text>   <circle cx="150" cy="150" r="10" fill="#DC2626"/> </svg>'}
-];
-let vsoIdx=0,vsoSeen=new Set();
-function vsoRender(){
-  const it=VSO_ITEMS[vsoIdx];
-  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
-  document.getElementById('vsoWord').textContent=it.word;
-  document.getElementById('vsoDef').textContent=it.def;
-  document.getElementById('vsoSvg').innerHTML=it.svg;
-  vsoSeen.add(vsoIdx);
-  document.getElementById('vsoPrev').disabled=vsoIdx===0;
-  const isLast=vsoIdx===VSO_ITEMS.length-1;
-  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
-  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
-  const dots=document.getElementById('vsoDots');
-  dots.innerHTML='';
-  VSO_ITEMS.forEach(function(_,i){
-    const d=document.createElement('span');
-    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
-    d.onclick=function(){vsoIdx=i;vsoRender();};
-    dots.appendChild(d);
-  });
-}
-window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
-window.vsoClose=function(){
-  const el=document.getElementById('vocabSlideshowOverlay');
-  el.classList.add('vso-hidden');
-  setTimeout(function(){el.remove();},600);
-};
-vsoRender();
-})();
-</script>
-<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+      /* ───────── MISC ───────── */
+      .chip-correct {
+        border-color: var(--green) !important;
+        background: rgba(74, 222, 128, 0.12) !important;
+        color: var(--green);
+      }
+      .chip-wrong {
+        border-color: var(--red) !important;
+        background: rgba(248, 113, 113, 0.12) !important;
+        color: var(--red);
+      }
+      .empty-hint {
+        font-size: 0.75rem;
+        color: #374151;
+        font-style: italic;
+        width: 100%;
+        text-align: center;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="#main" class="sr-only">Skip to content</a>
+    <!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+    <style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+      #vocabSlideshowOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Nunito", Arial, Helvetica, sans-serif;
+        transition: opacity 0.5s;
+      }
+      #vocabSlideshowOverlay.vso-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .vso-card {
+        background: #fff;
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 680px;
+        width: 92%;
+        padding: 40px 36px 32px;
+        text-align: center;
+        animation: vsoIn 0.4s ease-out;
+      }
+      @keyframes vsoIn {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      .vso-progress {
+        font-size: 14px;
+        font-weight: 700;
+        color: #8b5cf6;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+      }
+      .vso-word {
+        font-size: clamp(42px, 8vw, 68px);
+        font-weight: 900;
+        color: #1e293b;
+        margin: 10px 0 8px;
+        line-height: 1.1;
+      }
+      .vso-def {
+        font-size: clamp(17px, 3vw, 22px);
+        color: #475569;
+        font-weight: 600;
+        line-height: 1.5;
+        margin-bottom: 18px;
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .vso-svg-wrap {
+        margin: 0 auto 20px;
+        max-width: 300px;
+      }
+      .vso-svg-wrap svg {
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+      }
+      .vso-nav {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .vso-btn {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 50px;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #fff;
+      }
+      .vso-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+      }
+      .vso-btn-prev {
+        background: #94a3b8;
+      }
+      .vso-btn-next {
+        background: #6366f1;
+      }
+      .vso-btn-start {
+        background: #10b981;
+        font-size: 18px;
+        padding: 14px 36px;
+      }
+      .vso-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+        transform: none;
+      }
+      .vso-dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .vso-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        transition: all 0.3s;
+      }
+      .vso-dot.active {
+        background: #6366f1;
+        transform: scale(1.25);
+      }
+      .vso-dot.seen {
+        background: #a5b4fc;
+      }
+    </style>
+    <div id="vocabSlideshowOverlay">
+      <div class="vso-card">
+        <div class="vso-progress" id="vsoProgress">Word 1 of 6</div>
+        <div class="vso-svg-wrap" id="vsoSvg"></div>
+        <div class="vso-word" id="vsoWord"></div>
+        <div class="vso-def" id="vsoDef"></div>
+        <div class="vso-nav">
+          <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">
+            &#8592; Previous
+          </button>
+          <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">
+            Next &#8594;
+          </button>
+          <button
+            class="vso-btn vso-btn-start"
+            id="vsoStart"
+            style="display: none"
+            onclick="vsoClose()"
+          >
+            Start Activities &#8594;
+          </button>
+        </div>
+        <div class="vso-dots" id="vsoDots"></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const VSO_ITEMS = [
+          {
+            word: "Integer",
+            def: "A whole number that can be positive, negative, or zero.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="3" marker-end="url(#arrNL)"/>   <defs><marker id="arrNL" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <circle cx="150" cy="150" r="8" fill="#059669"/>   <text x="150" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="150" r="8" fill="#DC2626"/>   <text x="90" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-2</text>   <circle cx="60" cy="150" r="8" fill="#DC2626"/>   <text x="60" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="150" r="8" fill="#3B82F6"/>   <text x="210" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">2</text>   <circle cx="240" cy="150" r="8" fill="#3B82F6"/>   <text x="240" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">3</text>   <text x="150" y="100" text-anchor="middle" font-size="22" font-weight="800" fill="#1E293B" font-family="sans-serif">...-3, -2, -1, 0, 1, 2, 3...</text> </svg>',
+          },
+          {
+            word: "Absolute Value",
+            def: "The distance a number is from zero on a number line. Always positive.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="180" x2="270" y2="180" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="180" r="6" fill="#059669"/>   <text x="150" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="80" cy="180" r="10" fill="#DC2626"/>   <text x="80" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-5</text>   <path d="M80,165 L150,165" stroke="#6366F1" stroke-width="4"/>   <text x="115" y="155" text-anchor="middle" font-size="18" font-weight="800" fill="#6366F1" font-family="sans-serif">5 units</text>   <text x="150" y="90" text-anchor="middle" font-size="36" font-weight="900" fill="#6366F1" font-family="sans-serif">|-5| = 5</text> </svg>',
+          },
+          {
+            word: "Opposite",
+            def: "Two numbers the same distance from zero but on different sides.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="160" x2="270" y2="160" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="160" r="6" fill="#059669"/>   <text x="150" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="160" r="10" fill="#DC2626"/>   <text x="90" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="160" r="10" fill="#3B82F6"/>   <text x="210" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#3B82F6" font-family="sans-serif">+3</text>   <path d="M90,140 Q150,90 210,140" stroke="#F59E0B" stroke-width="3" fill="none" stroke-dasharray="6,4"/>   <text x="150" y="100" text-anchor="middle" font-size="18" font-weight="700" fill="#F59E0B" font-family="sans-serif">same distance</text> </svg>',
+          },
+          {
+            word: "Negative Number",
+            def: "A number less than zero. Written with a minus sign.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="80" width="110" height="100" rx="16" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="85" y="125" text-anchor="middle" font-size="40" font-weight="900" fill="#3B82F6" font-family="sans-serif">+5</text>   <text x="85" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#3B82F6" font-family="sans-serif">above zero</text>   <rect x="160" y="80" width="110" height="100" rx="16" fill="#FEE2E2" stroke="#DC2626" stroke-width="3"/>   <text x="215" y="125" text-anchor="middle" font-size="40" font-weight="900" fill="#DC2626" font-family="sans-serif">-5</text>   <text x="215" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#DC2626" font-family="sans-serif">below zero</text> </svg>',
+          },
+          {
+            word: "Positive Number",
+            def: "A number greater than zero.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="30" y="80" width="110" height="100" rx="16" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <text x="85" y="125" text-anchor="middle" font-size="40" font-weight="900" fill="#3B82F6" font-family="sans-serif">+5</text>   <text x="85" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#3B82F6" font-family="sans-serif">above zero</text>   <rect x="160" y="80" width="110" height="100" rx="16" fill="#FEE2E2" stroke="#DC2626" stroke-width="3"/>   <text x="215" y="125" text-anchor="middle" font-size="40" font-weight="900" fill="#DC2626" font-family="sans-serif">-5</text>   <text x="215" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#DC2626" font-family="sans-serif">below zero</text> </svg>',
+          },
+          {
+            word: "Number Line",
+            def: "A line with numbers placed at equal distances along it.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="20" y1="150" x2="280" y2="150" stroke="#1E293B" stroke-width="4" marker-end="url(#arrNL2)"/>   <defs><marker id="arrNL2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <line x1="50" y1="140" x2="50" y2="160" stroke="#1E293B" stroke-width="2"/><text x="50" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">0</text>   <line x1="100" y1="140" x2="100" y2="160" stroke="#1E293B" stroke-width="2"/><text x="100" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">1</text>   <line x1="150" y1="140" x2="150" y2="160" stroke="#1E293B" stroke-width="2"/><text x="150" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">2</text>   <line x1="200" y1="140" x2="200" y2="160" stroke="#1E293B" stroke-width="2"/><text x="200" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">3</text>   <line x1="250" y1="140" x2="250" y2="160" stroke="#1E293B" stroke-width="2"/><text x="250" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B" font-family="sans-serif">4</text>   <circle cx="150" cy="150" r="10" fill="#DC2626"/> </svg>',
+          },
+        ];
+        let vsoIdx = 0,
+          vsoSeen = new Set();
+        function vsoRender() {
+          const it = VSO_ITEMS[vsoIdx];
+          document.getElementById("vsoProgress").textContent =
+            "Word " + (vsoIdx + 1) + " of " + VSO_ITEMS.length;
+          document.getElementById("vsoWord").textContent = it.word;
+          document.getElementById("vsoDef").textContent = it.def;
+          document.getElementById("vsoSvg").innerHTML = it.svg;
+          vsoSeen.add(vsoIdx);
+          document.getElementById("vsoPrev").disabled = vsoIdx === 0;
+          const isLast = vsoIdx === VSO_ITEMS.length - 1;
+          document.getElementById("vsoNext").style.display = isLast
+            ? "none"
+            : "inline-block";
+          document.getElementById("vsoStart").style.display =
+            vsoSeen.size === VSO_ITEMS.length ? "inline-block" : "none";
+          const dots = document.getElementById("vsoDots");
+          dots.innerHTML = "";
+          VSO_ITEMS.forEach(function (_, i) {
+            const d = document.createElement("span");
+            d.className =
+              "vso-dot" +
+              (i === vsoIdx ? " active" : "") +
+              (vsoSeen.has(i) ? " seen" : "");
+            d.onclick = function () {
+              vsoIdx = i;
+              vsoRender();
+            };
+            dots.appendChild(d);
+          });
+        }
+        window.vsoGo = function (dir) {
+          vsoIdx = Math.max(0, Math.min(VSO_ITEMS.length - 1, vsoIdx + dir));
+          vsoRender();
+        };
+        window.vsoClose = function () {
+          const el = document.getElementById("vocabSlideshowOverlay");
+          el.classList.add("vso-hidden");
+          setTimeout(function () {
+            el.remove();
+          }, 600);
+        };
+        vsoRender();
+      })();
+    </script>
+    <!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
+    <span id="main"></span>
 
+    <!-- ─── HEADER ─── -->
+    <div id="header">
+      <div id="header-top">
+        <div>
+          <div id="suite-title">✨ Integer Operations · Review Suite</div>
+          <div id="suite-sub">
+            6 Interactive Activities · Drag, Match, Move, Sort · CCSS 6.NS.C.5–8
+          </div>
+        </div>
+        <div id="score-badge">
+          <div class="badge-item">
+            <div class="badge-val" id="total-score">0</div>
+            <div class="badge-label">Score</div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-val" id="total-correct">0</div>
+            <div class="badge-label">Correct</div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-val" id="total-pct">—</div>
+            <div class="badge-label">Accuracy</div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-bar">
+        <div class="tab active" onclick="switchTab(0)">
+          <span class="tab-icon">📦</span>Drag-to-Category
+        </div>
+        <div class="tab" onclick="switchTab(1)">
+          <span class="tab-icon">🔗</span>Matching Pairs
+        </div>
+        <div class="tab" onclick="switchTab(2)">
+          <span class="tab-icon">📏</span>Number Line
+        </div>
+        <div class="tab" onclick="switchTab(3)">
+          <span class="tab-icon">✅</span>True / False Sort
+        </div>
+        <div class="tab" onclick="switchTab(4)">
+          <span class="tab-icon">🧩</span>Equation Builder
+        </div>
+        <div class="tab" onclick="switchTab(5)">
+          <span class="tab-icon">📚</span>Vocab Match
+        </div>
+      </div>
+    </div>
 
+    <!-- ─── MAIN ─── -->
+    <div id="main">
+      <!-- ══════════════ TAB 0 – DRAG TO CATEGORY ══════════════ -->
+      <div class="activity active" id="act-0">
+        <div class="act-header">
+          <div class="act-title-block">
+            <h2>📦 Drag-to-Category Sort</h2>
+            <p>
+              Drag each integer expression into the correct category based on
+              whether the result is <b>Positive</b>, <b>Negative</b>, or
+              <b>Zero</b>.
+            </p>
+          </div>
+          <div class="act-controls">
+            <button class="btn btn-secondary" onclick="initCat()">
+              🔄 Reset
+            </button>
+            <button class="btn btn-primary" onclick="checkCat()">
+              ✔ Check
+            </button>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Progress</span><span id="cat-prog-label">0 / 12</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="cat-prog" style="width: 0%"></div>
+          </div>
+        </div>
+        <div id="cat-bank"></div>
+        <div class="cat-grid" id="cat-grid"></div>
+        <div
+          id="cat-results"
+          style="display: none"
+          class="results-banner"
+          aria-live="polite"
+        >
+          <h3>🎉 Sort Complete!</h3>
+          <div class="results-score" id="cat-score-display">0/12</div>
+          <div class="results-detail" id="cat-detail"></div>
+        </div>
+      </div>
 
-<!-- ─── HEADER ─── -->
-<div id="header">
-  <div id="header-top">
-    <div>
-      <div id="suite-title">✨ Integer Operations · Review Suite</div>
-      <div id="suite-sub">6 Interactive Activities · Drag, Match, Move, Sort · CCSS 6.NS.C.5–8</div>
-    </div>
-    <div id="score-badge">
-      <div class="badge-item"><div class="badge-val" id="total-score">0</div><div class="badge-label">Score</div></div>
-      <div class="badge-item"><div class="badge-val" id="total-correct">0</div><div class="badge-label">Correct</div></div>
-      <div class="badge-item"><div class="badge-val" id="total-pct">—</div><div class="badge-label">Accuracy</div></div>
-    </div>
-  </div>
-  <div id="tab-bar">
-    <div class="tab active" onclick="switchTab(0)"><span class="tab-icon">📦</span>Drag-to-Category</div>
-    <div class="tab" onclick="switchTab(1)"><span class="tab-icon">🔗</span>Matching Pairs</div>
-    <div class="tab" onclick="switchTab(2)"><span class="tab-icon">📏</span>Number Line</div>
-    <div class="tab" onclick="switchTab(3)"><span class="tab-icon">✅</span>True / False Sort</div>
-    <div class="tab" onclick="switchTab(4)"><span class="tab-icon">🧩</span>Equation Builder</div>
-    <div class="tab" onclick="switchTab(5)"><span class="tab-icon">📚</span>Vocab Match</div>
-  </div>
-</div>
+      <!-- ══════════════ TAB 1 – MATCHING PAIRS ══════════════ -->
+      <div class="activity" id="act-1">
+        <div class="act-header">
+          <div class="act-title-block">
+            <h2>🔗 Matching Pairs</h2>
+            <p>
+              Click an expression on the left, then click its matching result on
+              the right to form a pair.
+            </p>
+          </div>
+          <div class="act-controls">
+            <button class="btn btn-secondary" onclick="initMatch()">
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Pairs found</span><span id="match-prog-label">0 / 8</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="match-prog" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="match-grid">
+          <div class="match-col">
+            <h3>💡 Expression</h3>
+            <div id="match-left"></div>
+          </div>
+          <div class="match-col">
+            <h3>🎯 Value</h3>
+            <div id="match-right"></div>
+          </div>
+        </div>
+        <div
+          id="match-results"
+          style="display: none"
+          class="results-banner"
+          aria-live="polite"
+        >
+          <h3>🎉 All Pairs Matched!</h3>
+          <div class="results-score" id="match-score-display"></div>
+          <div class="results-detail" id="match-detail"></div>
+        </div>
+      </div>
 
-<!-- ─── MAIN ─── -->
-<div id="main">
+      <!-- ══════════════ TAB 2 – NUMBER LINE MOVER ══════════════ -->
+      <div class="activity" id="act-2">
+        <div class="act-header">
+          <div class="act-title-block">
+            <h2>📏 Move Along the Number Line</h2>
+            <p>
+              Drag the marker (or use arrow buttons) to place it at the correct
+              integer answer on the number line.
+            </p>
+          </div>
+          <div class="act-controls">
+            <button class="btn btn-secondary" onclick="initNL()">
+              🔄 Reset
+            </button>
+            <button class="btn btn-primary" onclick="checkNL()">
+              ✔ Submit
+            </button>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Questions</span><span id="nl-prog-label">0 / 8</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="nl-prog" style="width: 0%"></div>
+          </div>
+        </div>
+        <div id="nl-container">
+          <div id="nl-problem">? + ? = ?</div>
+          <div id="nl-track">
+            <div id="nl-line"></div>
+            <!-- ticks rendered by JS -->
+            <div id="nl-marker" title="Drag me!">?</div>
+          </div>
+          <div id="nl-hint">
+            ← Drag the gold marker, or use the buttons below →
+          </div>
+          <div id="nl-answer-zone">
+            <button class="nl-arrow-btn" onclick="moveNLMarker(-1)">◀</button>
+            <div id="nl-current">0</div>
+            <button class="nl-arrow-btn" onclick="moveNLMarker(1)">▶</button>
+          </div>
+          <div id="nl-feedback"></div>
+        </div>
+        <div
+          id="nl-results"
+          style="display: none"
+          class="results-banner"
+          aria-live="polite"
+        >
+          <h3>📏 Number Line Complete!</h3>
+          <div class="results-score" id="nl-score-display"></div>
+          <div class="results-detail" id="nl-detail"></div>
+        </div>
+      </div>
 
-<!-- ══════════════ TAB 0 – DRAG TO CATEGORY ══════════════ -->
-<div class="activity active" id="act-0">
-  <div class="act-header">
-    <div class="act-title-block">
-      <h2>📦 Drag-to-Category Sort</h2>
-      <p>Drag each integer expression into the correct category based on whether the result is <b>Positive</b>, <b>Negative</b>, or <b>Zero</b>.</p>
-    </div>
-    <div class="act-controls">
-      <button class="btn btn-secondary" onclick="initCat()">🔄 Reset</button>
-      <button class="btn btn-primary" onclick="checkCat()">✔ Check</button>
-    </div>
-  </div>
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Progress</span><span id="cat-prog-label">0 / 12</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="cat-prog" style="width:0%"></div></div>
-  </div>
-  <div id="cat-bank"></div>
-  <div class="cat-grid" id="cat-grid"></div>
-  <div id="cat-results" style="display:none" class="results-banner">
-    <h3>🎉 Sort Complete!</h3>
-    <div class="results-score" id="cat-score-display">0/12</div>
-    <div class="results-detail" id="cat-detail"></div>
-  </div>
-</div>
+      <!-- ══════════════ TAB 3 – TRUE / FALSE SORT ══════════════ -->
+      <div class="activity" id="act-3">
+        <div class="act-header">
+          <div class="act-title-block">
+            <h2>✅ True / False Sort</h2>
+            <p>
+              Read each statement about integers. Is it TRUE or FALSE? Sort them
+              all!
+            </p>
+          </div>
+          <div class="act-controls">
+            <button class="btn btn-secondary" onclick="initTF()">
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Sorted</span><span id="tf-prog-label">0 / 10</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="tf-prog" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="tf-card-deck" id="tf-deck"></div>
+        <div class="tf-btn-row">
+          <button class="tf-btn tf-true" onclick="sortTF(true)">✅ TRUE</button>
+          <button class="tf-btn tf-false" onclick="sortTF(false)">
+            ❌ FALSE
+          </button>
+        </div>
+        <div class="tf-sorted-piles">
+          <div class="tf-pile true-pile">
+            <h4>✅ True Pile</h4>
+            <div id="tf-true-pile"></div>
+          </div>
+          <div class="tf-pile false-pile">
+            <h4>❌ False Pile</h4>
+            <div id="tf-false-pile"></div>
+          </div>
+        </div>
+        <div
+          id="tf-results"
+          style="display: none"
+          class="results-banner"
+          aria-live="polite"
+        >
+          <h3>✅ Sort Complete!</h3>
+          <div class="results-score" id="tf-score-display"></div>
+          <div class="results-detail" id="tf-detail"></div>
+        </div>
+      </div>
 
-<!-- ══════════════ TAB 1 – MATCHING PAIRS ══════════════ -->
-<div class="activity" id="act-1">
-  <div class="act-header">
-    <div class="act-title-block">
-      <h2>🔗 Matching Pairs</h2>
-      <p>Click an expression on the left, then click its matching result on the right to form a pair.</p>
-    </div>
-    <div class="act-controls">
-      <button class="btn btn-secondary" onclick="initMatch()">🔄 Reset</button>
-    </div>
-  </div>
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Pairs found</span><span id="match-prog-label">0 / 8</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="match-prog" style="width:0%"></div></div>
-  </div>
-  <div class="match-grid">
-    <div class="match-col"><h3>💡 Expression</h3><div id="match-left"></div></div>
-    <div class="match-col"><h3>🎯 Value</h3><div id="match-right"></div></div>
-  </div>
-  <div id="match-results" style="display:none" class="results-banner">
-    <h3>🎉 All Pairs Matched!</h3>
-    <div class="results-score" id="match-score-display"></div>
-    <div class="results-detail" id="match-detail"></div>
-  </div>
-</div>
+      <!-- ══════════════ TAB 4 – EQUATION BUILDER ══════════════ -->
+      <div class="activity" id="act-4">
+        <div class="act-header">
+          <div class="act-title-block">
+            <h2>🧩 Equation Builder</h2>
+            <p>
+              Drag the correct integer tiles into the blank slots to complete
+              each equation.
+            </p>
+          </div>
+          <div class="act-controls">
+            <button class="btn btn-secondary" onclick="initEQ()">
+              🔄 Reset
+            </button>
+            <button class="btn btn-primary" onclick="checkEQ()">✔ Check</button>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Equations</span><span id="eq-prog-label">0 / 8</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="eq-prog" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="eq-problem-box">
+          <div class="eq-prompt">Complete the Equation</div>
+          <div class="eq-target" id="eq-display">Loading…</div>
+        </div>
+        <div class="eq-drop-row" id="eq-drop-row"></div>
+        <div class="eq-tile-bank" id="eq-tile-bank"></div>
+        <div
+          id="eq-feedback"
+          style="
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            min-height: 24px;
+            margin-bottom: 12px;
+          "
+        ></div>
+        <div style="display: flex; justify-content: center">
+          <button
+            class="btn btn-success"
+            id="eq-next-btn"
+            style="display: none"
+            onclick="nextEQ()"
+          >
+            Next Equation ➜
+          </button>
+        </div>
+        <div
+          id="eq-results"
+          style="display: none"
+          class="results-banner"
+          aria-live="polite"
+        >
+          <h3>🧩 Builder Complete!</h3>
+          <div class="results-score" id="eq-score-display"></div>
+          <div class="results-detail" id="eq-detail"></div>
+        </div>
+      </div>
 
-<!-- ══════════════ TAB 2 – NUMBER LINE MOVER ══════════════ -->
-<div class="activity" id="act-2">
-  <div class="act-header">
-    <div class="act-title-block">
-      <h2>📏 Move Along the Number Line</h2>
-      <p>Drag the marker (or use arrow buttons) to place it at the correct integer answer on the number line.</p>
+      <!-- ══════════════ TAB 5 – VOCAB MATCH ══════════════ -->
+      <div class="activity" id="act-5">
+        <div class="act-header">
+          <div class="act-title-block">
+            <h2>📚 Vocabulary Match</h2>
+            <p>
+              Click a <span style="color: var(--accent)">term</span> on the left
+              (blue), then click its matching
+              <span style="color: var(--text)">definition or example</span> on
+              the right to link them.
+            </p>
+          </div>
+          <div class="act-controls">
+            <button class="btn btn-secondary" onclick="initVocab()">
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Matched</span><span id="vocab-prog-label">0 / 8</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="vocab-prog" style="width: 0%"></div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px">
+          <div>
+            <h3
+              style="
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              📘 Terms
+            </h3>
+            <div
+              id="vocab-terms"
+              class="vocab-grid"
+              style="grid-template-columns: 1fr"
+            ></div>
+          </div>
+          <div>
+            <h3
+              style="
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              📖 Definitions / Examples
+            </h3>
+            <div
+              id="vocab-defs"
+              class="vocab-grid"
+              style="grid-template-columns: 1fr"
+            ></div>
+          </div>
+        </div>
+        <div
+          id="vocab-results"
+          style="display: none; margin-top: 20px"
+          class="results-banner"
+          aria-live="polite"
+        >
+          <h3>📚 Vocab Mastered!</h3>
+          <div class="results-score" id="vocab-score-display"></div>
+          <div class="results-detail" id="vocab-detail"></div>
+        </div>
+      </div>
     </div>
-    <div class="act-controls">
-      <button class="btn btn-secondary" onclick="initNL()">🔄 Reset</button>
-      <button class="btn btn-primary" onclick="checkNL()">✔ Submit</button>
-    </div>
-  </div>
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Questions</span><span id="nl-prog-label">0 / 8</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="nl-prog" style="width:0%"></div></div>
-  </div>
-  <div id="nl-container">
-    <div id="nl-problem">? + ? = ?</div>
-    <div id="nl-track">
-      <div id="nl-line"></div>
-      <!-- ticks rendered by JS -->
-      <div id="nl-marker" title="Drag me!">?</div>
-    </div>
-    <div id="nl-hint">← Drag the gold marker, or use the buttons below →</div>
-    <div id="nl-answer-zone">
-      <button class="nl-arrow-btn" onclick="moveNLMarker(-1)">◀</button>
-      <div id="nl-current">0</div>
-      <button class="nl-arrow-btn" onclick="moveNLMarker(1)">▶</button>
-    </div>
-    <div id="nl-feedback"></div>
-  </div>
-  <div id="nl-results" style="display:none" class="results-banner">
-    <h3>📏 Number Line Complete!</h3>
-    <div class="results-score" id="nl-score-display"></div>
-    <div class="results-detail" id="nl-detail"></div>
-  </div>
-</div>
+    <!-- /main -->
+    <div id="toast">Message</div>
 
-<!-- ══════════════ TAB 3 – TRUE / FALSE SORT ══════════════ -->
-<div class="activity" id="act-3">
-  <div class="act-header">
-    <div class="act-title-block">
-      <h2>✅ True / False Sort</h2>
-      <p>Read each statement about integers. Is it TRUE or FALSE? Sort them all!</p>
-    </div>
-    <div class="act-controls">
-      <button class="btn btn-secondary" onclick="initTF()">🔄 Reset</button>
-    </div>
-  </div>
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Sorted</span><span id="tf-prog-label">0 / 10</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="tf-prog" style="width:0%"></div></div>
-  </div>
-  <div class="tf-card-deck" id="tf-deck"></div>
-  <div class="tf-btn-row">
-    <button class="tf-btn tf-true" onclick="sortTF(true)">✅ TRUE</button>
-    <button class="tf-btn tf-false" onclick="sortTF(false)">❌ FALSE</button>
-  </div>
-  <div class="tf-sorted-piles">
-    <div class="tf-pile true-pile"><h4>✅ True Pile</h4><div id="tf-true-pile"></div></div>
-    <div class="tf-pile false-pile"><h4>❌ False Pile</h4><div id="tf-false-pile"></div></div>
-  </div>
-  <div id="tf-results" style="display:none" class="results-banner">
-    <h3>✅ Sort Complete!</h3>
-    <div class="results-score" id="tf-score-display"></div>
-    <div class="results-detail" id="tf-detail"></div>
-  </div>
-</div>
-
-<!-- ══════════════ TAB 4 – EQUATION BUILDER ══════════════ -->
-<div class="activity" id="act-4">
-  <div class="act-header">
-    <div class="act-title-block">
-      <h2>🧩 Equation Builder</h2>
-      <p>Drag the correct integer tiles into the blank slots to complete each equation.</p>
-    </div>
-    <div class="act-controls">
-      <button class="btn btn-secondary" onclick="initEQ()">🔄 Reset</button>
-      <button class="btn btn-primary" onclick="checkEQ()">✔ Check</button>
-    </div>
-  </div>
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Equations</span><span id="eq-prog-label">0 / 8</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="eq-prog" style="width:0%"></div></div>
-  </div>
-  <div class="eq-problem-box">
-    <div class="eq-prompt">Complete the Equation</div>
-    <div class="eq-target" id="eq-display">Loading…</div>
-  </div>
-  <div class="eq-drop-row" id="eq-drop-row"></div>
-  <div class="eq-tile-bank" id="eq-tile-bank"></div>
-  <div id="eq-feedback" style="text-align:center;font-size:.85rem;font-weight:700;min-height:24px;margin-bottom:12px"></div>
-  <div style="display:flex;justify-content:center">
-    <button class="btn btn-success" id="eq-next-btn" style="display:none" onclick="nextEQ()">Next Equation ➜</button>
-  </div>
-  <div id="eq-results" style="display:none" class="results-banner">
-    <h3>🧩 Builder Complete!</h3>
-    <div class="results-score" id="eq-score-display"></div>
-    <div class="results-detail" id="eq-detail"></div>
-  </div>
-</div>
-
-<!-- ══════════════ TAB 5 – VOCAB MATCH ══════════════ -->
-<div class="activity" id="act-5">
-  <div class="act-header">
-    <div class="act-title-block">
-      <h2>📚 Vocabulary Match</h2>
-      <p>Click a <span style="color:var(--accent)">term</span> on the left (blue), then click its matching <span style="color:var(--text)">definition or example</span> on the right to link them.</p>
-    </div>
-    <div class="act-controls">
-      <button class="btn btn-secondary" onclick="initVocab()">🔄 Reset</button>
-    </div>
-  </div>
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Matched</span><span id="vocab-prog-label">0 / 8</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="vocab-prog" style="width:0%"></div></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px">
-    <div><h3 style="font-size:.75rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:12px">📘 Terms</h3><div id="vocab-terms" class="vocab-grid" style="grid-template-columns:1fr"></div></div>
-    <div><h3 style="font-size:.75rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:12px">📖 Definitions / Examples</h3><div id="vocab-defs" class="vocab-grid" style="grid-template-columns:1fr"></div></div>
-  </div>
-  <div id="vocab-results" style="display:none;margin-top:20px" class="results-banner">
-    <h3>📚 Vocab Mastered!</h3>
-    <div class="results-score" id="vocab-score-display"></div>
-    <div class="results-detail" id="vocab-detail"></div>
-  </div>
-</div>
-
-</div><!-- /main -->
-<div id="toast">Message</div>
-
-<!-- ══════════════════════════════════════════
+    <!-- ══════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════ -->
-<script>
-/* ────────── GLOBAL SCORE TRACKER ────────── */
-let globalScore=0,globalCorrect=0,globalAttempts=0;
-function addScore(pts,correct){
-  globalScore+=pts;
-  if(correct){globalCorrect++;}
-  globalAttempts++;
-  document.getElementById('total-score').innerText=globalScore;
-  document.getElementById('total-correct').innerText=globalCorrect;
-  const pct=globalAttempts>0?Math.round(globalCorrect/globalAttempts*100):0;
-  document.getElementById('total-pct').innerText=pct+'%';
-}
+    <script>
+      /* ────────── GLOBAL SCORE TRACKER ────────── */
+      let globalScore = 0,
+        globalCorrect = 0,
+        globalAttempts = 0;
+      function addScore(pts, correct) {
+        globalScore += pts;
+        if (correct) {
+          globalCorrect++;
+        }
+        globalAttempts++;
+        document.getElementById("total-score").innerText = globalScore;
+        document.getElementById("total-correct").innerText = globalCorrect;
+        const pct =
+          globalAttempts > 0
+            ? Math.round((globalCorrect / globalAttempts) * 100)
+            : 0;
+        document.getElementById("total-pct").innerText = pct + "%";
+      }
 
-/* ────────── TABS ────────── */
-function switchTab(i){
-  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
-  document.querySelectorAll('.activity').forEach((a,j)=>a.classList.toggle('active',i===j));
-}
+      /* ────────── TABS ────────── */
+      function switchTab(i) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t, j) => t.classList.toggle("active", i === j));
+        document
+          .querySelectorAll(".activity")
+          .forEach((a, j) => a.classList.toggle("active", i === j));
+      }
 
-/* ────────── TOAST ────────── */
-let toastTimer;
-function toast(msg,type='info'){
-  const el=document.getElementById('toast');
-  el.innerText=msg;
-  el.className='show '+type;
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.className='',2200);
-}
+      /* ────────── TOAST ────────── */
+      let toastTimer;
+      function toast(msg, type = "info") {
+        const el = document.getElementById("toast");
+        el.innerText = msg;
+        el.className = "show " + type;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => (el.className = ""), 2200);
+      }
 
-/* ══════════════════════════════════════════
+      /* ══════════════════════════════════════════
    TAB 0 – DRAG TO CATEGORY
 ══════════════════════════════════════════ */
-const CAT_DATA={
-  categories:[
-    {id:'pos',label:'➕ Positive Result',color:'var(--green)'},
-    {id:'neg',label:'➖ Negative Result',color:'var(--red)'},
-    {id:'zero',label:'⚬ Zero',color:'var(--accent)'}
-  ],
-  items:[
-    {text:'-3 + (-5)',cat:'neg'},{text:'8 + (-8)',cat:'zero'},
-    {text:'-4 × (-3)',cat:'pos'},{text:'6 - 10',cat:'neg'},
-    {text:'-7 + 12',cat:'pos'},{text:'(-2) × 0',cat:'zero'},
-    {text:'-9 - (-9)',cat:'zero'},{text:'-6 × 4',cat:'neg'},
-    {text:'5 + (-2)',cat:'pos'},{text:'-3 × (-4)',cat:'pos'},
-    {text:'-10 + 3',cat:'neg'},{text:'0 - 0',cat:'zero'},
-  ]
-};
-let catPlaced={};
-function initCat(){
-  catPlaced={};
-  const bank=document.getElementById('cat-bank');
-  bank.innerHTML='';
-  // shuffle
-  const items=[...CAT_DATA.items].sort(()=>Math.random()-.5);
-  items.forEach(item=>{
-    const chip=makeChip(item);
-    bank.appendChild(chip);
-  });
-  // render zones
-  const grid=document.getElementById('cat-grid');
-  grid.innerHTML='';
-  CAT_DATA.categories.forEach(cat=>{
-    const zone=document.createElement('div');
-    zone.className='cat-zone';
-    zone.dataset.cat=cat.id;
-    zone.innerHTML=`<div class="cat-zone-title" style="color:${cat.color}">${cat.label}</div><div class="cat-items" id="items-${cat.id}"><span class="empty-hint">Drop here…</span></div>`;
-    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over')});
-    zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
-    zone.addEventListener('drop',e=>{
-      e.preventDefault();
-      zone.classList.remove('drag-over');
-      const id=e.dataTransfer.getData('text/plain');
-      const chip=document.getElementById('chip-'+id);
-      if(!chip) return;
-      const itemsEl=document.getElementById('items-'+cat.id);
-      const hint=itemsEl.querySelector('.empty-hint');
-      if(hint) hint.remove();
-      itemsEl.appendChild(chip);
-      catPlaced[id]=cat.id;
-      updateCatProg();
-    });
-    grid.appendChild(zone);
-  });
-  document.getElementById('cat-results').style.display='none';
-  updateCatProg();
-}
-function makeChip(item){
-  const chip=document.createElement('div');
-  chip.className='drag-chip';
-  chip.id='chip-'+item.text;
-  chip.innerText=item.text;
-  chip.draggable=true;
-  chip.addEventListener('dragstart',e=>{
-    e.dataTransfer.setData('text/plain',item.text);
-    chip.classList.add('dragging');
-  });
-  chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
-  return chip;
-}
-function updateCatProg(){
-  const n=Object.keys(catPlaced).length;
-  const total=CAT_DATA.items.length;
-  document.getElementById('cat-prog').style.width=(n/total*100)+'%';
-  document.getElementById('cat-prog-label').innerText=n+' / '+total;
-}
-function checkCat(){
-  let correct=0;
-  CAT_DATA.items.forEach(item=>{
-    const chip=document.getElementById('chip-'+item.text);
-    if(!chip) return;
-    const placed=catPlaced[item.text];
-    if(placed===item.cat){correct++;chip.classList.add('chip-correct');chip.classList.remove('chip-wrong');}
-    else if(placed){chip.classList.add('chip-wrong');chip.classList.remove('chip-correct');}
-  });
-  const total=CAT_DATA.items.length;
-  const pct=Math.round(correct/total*100);
-  document.getElementById('cat-results').style.display='block';
-  document.getElementById('cat-score-display').innerText=correct+'/'+total;
-  document.getElementById('cat-detail').innerText=pct+'% correct · '+(correct===total?'Perfect!':'Check the highlighted chips and try again.');
-  addScore(correct*10, correct===total);
-  toast(correct===total?'🎉 Perfect Sort!':'⚡ '+correct+'/'+total+' correct — review the red ones!',correct===total?'correct':'wrong');
-}
+      const CAT_DATA = {
+        categories: [
+          { id: "pos", label: "➕ Positive Result", color: "var(--green)" },
+          { id: "neg", label: "➖ Negative Result", color: "var(--red)" },
+          { id: "zero", label: "⚬ Zero", color: "var(--accent)" },
+        ],
+        items: [
+          { text: "-3 + (-5)", cat: "neg" },
+          { text: "8 + (-8)", cat: "zero" },
+          { text: "-4 × (-3)", cat: "pos" },
+          { text: "6 - 10", cat: "neg" },
+          { text: "-7 + 12", cat: "pos" },
+          { text: "(-2) × 0", cat: "zero" },
+          { text: "-9 - (-9)", cat: "zero" },
+          { text: "-6 × 4", cat: "neg" },
+          { text: "5 + (-2)", cat: "pos" },
+          { text: "-3 × (-4)", cat: "pos" },
+          { text: "-10 + 3", cat: "neg" },
+          { text: "0 - 0", cat: "zero" },
+        ],
+      };
+      let catPlaced = {};
+      function initCat() {
+        catPlaced = {};
+        const bank = document.getElementById("cat-bank");
+        bank.innerHTML = "";
+        // shuffle
+        const items = [...CAT_DATA.items].sort(() => Math.random() - 0.5);
+        items.forEach((item) => {
+          const chip = makeChip(item);
+          bank.appendChild(chip);
+        });
+        // render zones
+        const grid = document.getElementById("cat-grid");
+        grid.innerHTML = "";
+        CAT_DATA.categories.forEach((cat) => {
+          const zone = document.createElement("div");
+          zone.className = "cat-zone";
+          zone.dataset.cat = cat.id;
+          zone.innerHTML = `<div class="cat-zone-title" style="color:${cat.color}">${cat.label}</div><div class="cat-items" id="items-${cat.id}"><span class="empty-hint">Drop here…</span></div>`;
+          zone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            zone.classList.add("drag-over");
+          });
+          zone.addEventListener("dragleave", () =>
+            zone.classList.remove("drag-over"),
+          );
+          zone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            zone.classList.remove("drag-over");
+            const id = e.dataTransfer.getData("text/plain");
+            const chip = document.getElementById("chip-" + id);
+            if (!chip) return;
+            const itemsEl = document.getElementById("items-" + cat.id);
+            const hint = itemsEl.querySelector(".empty-hint");
+            if (hint) hint.remove();
+            itemsEl.appendChild(chip);
+            catPlaced[id] = cat.id;
+            updateCatProg();
+          });
+          grid.appendChild(zone);
+        });
+        document.getElementById("cat-results").style.display = "none";
+        updateCatProg();
+      }
+      function makeChip(item) {
+        const chip = document.createElement("div");
+        chip.className = "drag-chip";
+        chip.id = "chip-" + item.text;
+        chip.innerText = item.text;
+        chip.draggable = true;
+        chip.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", item.text);
+          chip.classList.add("dragging");
+        });
+        chip.addEventListener("dragend", () =>
+          chip.classList.remove("dragging"),
+        );
+        return chip;
+      }
+      function updateCatProg() {
+        const n = Object.keys(catPlaced).length;
+        const total = CAT_DATA.items.length;
+        document.getElementById("cat-prog").style.width =
+          (n / total) * 100 + "%";
+        document.getElementById("cat-prog-label").innerText = n + " / " + total;
+      }
+      function checkCat() {
+        let correct = 0;
+        CAT_DATA.items.forEach((item) => {
+          const chip = document.getElementById("chip-" + item.text);
+          if (!chip) return;
+          const placed = catPlaced[item.text];
+          if (placed === item.cat) {
+            correct++;
+            chip.classList.add("chip-correct");
+            chip.classList.remove("chip-wrong");
+          } else if (placed) {
+            chip.classList.add("chip-wrong");
+            chip.classList.remove("chip-correct");
+          }
+        });
+        const total = CAT_DATA.items.length;
+        const pct = Math.round((correct / total) * 100);
+        document.getElementById("cat-results").style.display = "block";
+        document.getElementById("cat-score-display").innerText =
+          correct + "/" + total;
+        document.getElementById("cat-detail").innerText =
+          pct +
+          "% correct · " +
+          (correct === total
+            ? "Perfect!"
+            : "Check the highlighted chips and try again.");
+        addScore(correct * 10, correct === total);
+        toast(
+          correct === total
+            ? "🎉 Perfect Sort!"
+            : "⚡ " + correct + "/" + total + " correct — review the red ones!",
+          correct === total ? "correct" : "wrong",
+        );
+      }
 
-/* ══════════════════════════════════════════
+      /* ══════════════════════════════════════════
    TAB 1 – MATCHING PAIRS
 ══════════════════════════════════════════ */
-const MATCH_DATA=[
-  {expr:'-5 + (-3)',val:'-8'},{expr:'7 - 12',val:'-5'},
-  {expr:'-4 × 3',val:'-12'},{expr:'-6 × (-2)',val:'12'},
-  {expr:'0 - (-9)',val:'9'},{expr:'-15 ÷ 3',val:'-5'},
-  {expr:'(-3)²',val:'9'},{expr:'-8 + 15',val:'7'},
-];
-let matchSelected=null,matchPairs=0;
-function initMatch(){
-  matchSelected=null; matchPairs=0;
-  document.getElementById('match-left').innerHTML='';
-  document.getElementById('match-right').innerHTML='';
-  document.getElementById('match-results').style.display='none';
-  const shuffled=[...MATCH_DATA].sort(()=>Math.random()-.5);
-  const vals=[...MATCH_DATA].map(d=>d.val).sort(()=>Math.random()-.5);
-  shuffled.forEach(item=>{
-    const card=makeMatchCard(item.expr,'left','expr');
-    document.getElementById('match-left').appendChild(card);
-  });
-  vals.forEach(v=>{
-    const card=makeMatchCard(v,'right','val');
-    document.getElementById('match-right').appendChild(card);
-  });
-  document.getElementById('match-prog').style.width='0%';
-  document.getElementById('match-prog-label').innerText='0 / 8';
-}
-function makeMatchCard(text,side,type){
-  const card=document.createElement('div');
-  card.className='match-card';
-  card.dataset.text=text; card.dataset.side=side; card.dataset.type=type;
-  card.innerText=text;
-  const num=document.createElement('div');
-  num.className='match-num';
-  card.appendChild(num);
-  card.onclick=()=>handleMatchClick(card);
-  return card;
-}
-function handleMatchClick(card){
-  if(card.classList.contains('matched')) return;
-  if(!matchSelected){
-    document.querySelectorAll('.match-card.selected').forEach(c=>c.classList.remove('selected'));
-    card.classList.add('selected');
-    matchSelected=card;
-    return;
-  }
-  if(card===matchSelected){ card.classList.remove('selected'); matchSelected=null; return; }
-  // must select from opposite side
-  if(card.dataset.side===matchSelected.dataset.side){
-    document.querySelectorAll('.match-card.selected').forEach(c=>c.classList.remove('selected'));
-    card.classList.add('selected');
-    matchSelected=card;
-    return;
-  }
-  // check match
-  let expr, val;
-  if(matchSelected.dataset.type==='expr'){expr=matchSelected.dataset.text; val=card.dataset.text;}
-  else{val=matchSelected.dataset.text; expr=card.dataset.text;}
-  const correct=MATCH_DATA.find(d=>d.expr===expr&&d.val===val);
-  if(correct){
-    matchPairs++;
-    [matchSelected,card].forEach(c=>{c.classList.remove('selected');c.classList.add('matched');});
-    toast('✅ Correct match!','correct');
-    addScore(20,true);
-    document.getElementById('match-prog').style.width=(matchPairs/8*100)+'%';
-    document.getElementById('match-prog-label').innerText=matchPairs+' / 8';
-    if(matchPairs===8){
-      document.getElementById('match-results').style.display='block';
-      document.getElementById('match-score-display').innerText='8/8 ⭐';
-      document.getElementById('match-detail').innerText='All pairs matched — excellent work!';
-    }
-  } else {
-    [matchSelected,card].forEach(c=>{c.classList.add('wrong-flash');setTimeout(()=>c.classList.remove('wrong-flash'),500)});
-    toast('❌ Not a match — try again','wrong');
-    addScore(0,false);
-  }
-  matchSelected=null;
-  document.querySelectorAll('.match-card.selected').forEach(c=>c.classList.remove('selected'));
-}
+      const MATCH_DATA = [
+        { expr: "-5 + (-3)", val: "-8" },
+        { expr: "7 - 12", val: "-5" },
+        { expr: "-4 × 3", val: "-12" },
+        { expr: "-6 × (-2)", val: "12" },
+        { expr: "0 - (-9)", val: "9" },
+        { expr: "-15 ÷ 3", val: "-5" },
+        { expr: "(-3)²", val: "9" },
+        { expr: "-8 + 15", val: "7" },
+      ];
+      let matchSelected = null,
+        matchPairs = 0;
+      function initMatch() {
+        matchSelected = null;
+        matchPairs = 0;
+        document.getElementById("match-left").innerHTML = "";
+        document.getElementById("match-right").innerHTML = "";
+        document.getElementById("match-results").style.display = "none";
+        const shuffled = [...MATCH_DATA].sort(() => Math.random() - 0.5);
+        const vals = [...MATCH_DATA]
+          .map((d) => d.val)
+          .sort(() => Math.random() - 0.5);
+        shuffled.forEach((item) => {
+          const card = makeMatchCard(item.expr, "left", "expr");
+          document.getElementById("match-left").appendChild(card);
+        });
+        vals.forEach((v) => {
+          const card = makeMatchCard(v, "right", "val");
+          document.getElementById("match-right").appendChild(card);
+        });
+        document.getElementById("match-prog").style.width = "0%";
+        document.getElementById("match-prog-label").innerText = "0 / 8";
+      }
+      function makeMatchCard(text, side, type) {
+        const card = document.createElement("div");
+        card.className = "match-card";
+        card.dataset.text = text;
+        card.dataset.side = side;
+        card.dataset.type = type;
+        card.innerText = text;
+        const num = document.createElement("div");
+        num.className = "match-num";
+        card.appendChild(num);
+        card.onclick = () => handleMatchClick(card);
+        return card;
+      }
+      function handleMatchClick(card) {
+        if (card.classList.contains("matched")) return;
+        if (!matchSelected) {
+          document
+            .querySelectorAll(".match-card.selected")
+            .forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+          matchSelected = card;
+          return;
+        }
+        if (card === matchSelected) {
+          card.classList.remove("selected");
+          matchSelected = null;
+          return;
+        }
+        // must select from opposite side
+        if (card.dataset.side === matchSelected.dataset.side) {
+          document
+            .querySelectorAll(".match-card.selected")
+            .forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+          matchSelected = card;
+          return;
+        }
+        // check match
+        let expr, val;
+        if (matchSelected.dataset.type === "expr") {
+          expr = matchSelected.dataset.text;
+          val = card.dataset.text;
+        } else {
+          val = matchSelected.dataset.text;
+          expr = card.dataset.text;
+        }
+        const correct = MATCH_DATA.find(
+          (d) => d.expr === expr && d.val === val,
+        );
+        if (correct) {
+          matchPairs++;
+          [matchSelected, card].forEach((c) => {
+            c.classList.remove("selected");
+            c.classList.add("matched");
+          });
+          toast("✅ Correct match!", "correct");
+          addScore(20, true);
+          document.getElementById("match-prog").style.width =
+            (matchPairs / 8) * 100 + "%";
+          document.getElementById("match-prog-label").innerText =
+            matchPairs + " / 8";
+          if (matchPairs === 8) {
+            document.getElementById("match-results").style.display = "block";
+            document.getElementById("match-score-display").innerText = "8/8 ⭐";
+            document.getElementById("match-detail").innerText =
+              "All pairs matched — excellent work!";
+          }
+        } else {
+          [matchSelected, card].forEach((c) => {
+            c.classList.add("wrong-flash");
+            setTimeout(() => c.classList.remove("wrong-flash"), 500);
+          });
+          toast("❌ Not a match — try again", "wrong");
+          addScore(0, false);
+        }
+        matchSelected = null;
+        document
+          .querySelectorAll(".match-card.selected")
+          .forEach((c) => c.classList.remove("selected"));
+      }
 
-/* ══════════════════════════════════════════
+      /* ══════════════════════════════════════════
    TAB 2 – NUMBER LINE MOVER
 ══════════════════════════════════════════ */
-const NL_QUESTIONS=[
-  {expr:'-3 + 5',ans:2},{expr:'4 + (-7)',ans:-3},{expr:'-6 + (-2)',ans:-8},
-  {expr:'0 - 4',ans:-4},{expr:'-5 + 8',ans:3},{expr:'7 - 10',ans:-3},
-  {expr:'-1 + (-6)',ans:-7},{expr:'9 + (-4)',ans:5}
-];
-let nlQ=0, nlPos=0, nlMarkerX=0, nlDragging=false, nlAttempts=0, nlCorrect=0;
-const NL_MIN=-10, NL_MAX=10;
-function initNL(){
-  nlQ=0; nlAttempts=0; nlCorrect=0; nlPos=0;
-  document.getElementById('nl-results').style.display='none';
-  document.getElementById('nl-prog').style.width='0%';
-  document.getElementById('nl-prog-label').innerText='0 / '+NL_QUESTIONS.length;
-  renderNLTicks();
-  loadNLQuestion();
-}
-function renderNLTicks(){
-  const track=document.getElementById('nl-track');
-  // clear old ticks
-  track.querySelectorAll('.nl-tick').forEach(t=>t.remove());
-  for(let v=NL_MIN;v<=NL_MAX;v++){
-    if(v%2!==0&&v!==0) continue;
-    const tick=document.createElement('div');
-    tick.className='nl-tick'+(v===0?' zero':'');
-    tick.style.left=nlPct(v)+'%';
-    tick.innerHTML=`<div class="nl-tick-bar"></div><div class="nl-tick-label">${v}</div>`;
-    track.appendChild(tick);
-  }
-}
-function nlPct(v){return((v-NL_MIN)/(NL_MAX-NL_MIN))*100}
-function nlValFromPct(pct){return Math.round((pct/100)*(NL_MAX-NL_MIN)+NL_MIN)}
-function loadNLQuestion(){
-  if(nlQ>=NL_QUESTIONS.length){showNLResults();return;}
-  nlPos=0;
-  updateNLMarker();
-  const q=NL_QUESTIONS[nlQ];
-  document.getElementById('nl-problem').innerText=q.expr+' = ?';
-  document.getElementById('nl-feedback').innerText='';
-  document.getElementById('nl-current').innerText=nlPos;
-  document.getElementById('nl-hint').innerText='← Drag the gold marker or use ◀ ▶ buttons →';
-}
-function updateNLMarker(){
-  const marker=document.getElementById('nl-marker');
-  marker.style.left=nlPct(nlPos)+'%';
-  marker.innerText=nlPos;
-  document.getElementById('nl-current').innerText=nlPos;
-}
-function moveNLMarker(dir){
-  nlPos=Math.max(NL_MIN,Math.min(NL_MAX,nlPos+dir));
-  updateNLMarker();
-}
-function checkNL(){
-  const q=NL_QUESTIONS[nlQ];
-  const correct=nlPos===q.ans;
-  if(correct){
-    nlCorrect++;
-    document.getElementById('nl-feedback').innerHTML=`<span style="color:var(--green)">✅ Correct! ${q.expr} = ${q.ans}</span>`;
-    addScore(15,true);
-    toast('✅ Correct!','correct');
-    nlQ++;
-    document.getElementById('nl-prog').style.width=(nlQ/NL_QUESTIONS.length*100)+'%';
-    document.getElementById('nl-prog-label').innerText=nlQ+' / '+NL_QUESTIONS.length;
-    setTimeout(loadNLQuestion,900);
-  } else {
-    document.getElementById('nl-feedback').innerHTML=`<span style="color:var(--red)">❌ Not quite — try again! (Hint: check your direction)</span>`;
-    addScore(0,false);
-    toast('❌ Try again!','wrong');
-  }
-}
-function showNLResults(){
-  document.getElementById('nl-results').style.display='block';
-  document.getElementById('nl-score-display').innerText=nlCorrect+'/'+NL_QUESTIONS.length;
-  document.getElementById('nl-detail').innerText=Math.round(nlCorrect/NL_QUESTIONS.length*100)+'% accuracy';
-  document.getElementById('nl-problem').innerText='🏆 All done!';
-}
-// Drag marker
-(function(){
-  const marker=document.getElementById('nl-marker');
-  let startX, startPos;
-  marker.addEventListener('mousedown',e=>{
-    nlDragging=true; startX=e.clientX; startPos=nlPos;
-    e.preventDefault();
-  });
-  marker.addEventListener('touchstart',e=>{
-    nlDragging=true; startX=e.touches[0].clientX; startPos=nlPos;
-  },{passive:true});
-  document.addEventListener('mousemove',e=>{
-    if(!nlDragging) return;
-    const track=document.getElementById('nl-track');
-    const rect=track.getBoundingClientRect();
-    const pct=((e.clientX-rect.left)/rect.width)*100;
-    nlPos=Math.max(NL_MIN,Math.min(NL_MAX,nlValFromPct(pct)));
-    updateNLMarker();
-  });
-  document.addEventListener('touchmove',e=>{
-    if(!nlDragging) return;
-    const track=document.getElementById('nl-track');
-    const rect=track.getBoundingClientRect();
-    const pct=((e.touches[0].clientX-rect.left)/rect.width)*100;
-    nlPos=Math.max(NL_MIN,Math.min(NL_MAX,nlValFromPct(pct)));
-    updateNLMarker();
-  },{passive:true});
-  document.addEventListener('mouseup',()=>nlDragging=false);
-  document.addEventListener('touchend',()=>nlDragging=false);
-})();
+      const NL_QUESTIONS = [
+        { expr: "-3 + 5", ans: 2 },
+        { expr: "4 + (-7)", ans: -3 },
+        { expr: "-6 + (-2)", ans: -8 },
+        { expr: "0 - 4", ans: -4 },
+        { expr: "-5 + 8", ans: 3 },
+        { expr: "7 - 10", ans: -3 },
+        { expr: "-1 + (-6)", ans: -7 },
+        { expr: "9 + (-4)", ans: 5 },
+      ];
+      let nlQ = 0,
+        nlPos = 0,
+        nlMarkerX = 0,
+        nlDragging = false,
+        nlAttempts = 0,
+        nlCorrect = 0;
+      const NL_MIN = -10,
+        NL_MAX = 10;
+      function initNL() {
+        nlQ = 0;
+        nlAttempts = 0;
+        nlCorrect = 0;
+        nlPos = 0;
+        document.getElementById("nl-results").style.display = "none";
+        document.getElementById("nl-prog").style.width = "0%";
+        document.getElementById("nl-prog-label").innerText =
+          "0 / " + NL_QUESTIONS.length;
+        renderNLTicks();
+        loadNLQuestion();
+      }
+      function renderNLTicks() {
+        const track = document.getElementById("nl-track");
+        // clear old ticks
+        track.querySelectorAll(".nl-tick").forEach((t) => t.remove());
+        for (let v = NL_MIN; v <= NL_MAX; v++) {
+          if (v % 2 !== 0 && v !== 0) continue;
+          const tick = document.createElement("div");
+          tick.className = "nl-tick" + (v === 0 ? " zero" : "");
+          tick.style.left = nlPct(v) + "%";
+          tick.innerHTML = `<div class="nl-tick-bar"></div><div class="nl-tick-label">${v}</div>`;
+          track.appendChild(tick);
+        }
+      }
+      function nlPct(v) {
+        return ((v - NL_MIN) / (NL_MAX - NL_MIN)) * 100;
+      }
+      function nlValFromPct(pct) {
+        return Math.round((pct / 100) * (NL_MAX - NL_MIN) + NL_MIN);
+      }
+      function loadNLQuestion() {
+        if (nlQ >= NL_QUESTIONS.length) {
+          showNLResults();
+          return;
+        }
+        nlPos = 0;
+        updateNLMarker();
+        const q = NL_QUESTIONS[nlQ];
+        document.getElementById("nl-problem").innerText = q.expr + " = ?";
+        document.getElementById("nl-feedback").innerText = "";
+        document.getElementById("nl-current").innerText = nlPos;
+        document.getElementById("nl-hint").innerText =
+          "← Drag the gold marker or use ◀ ▶ buttons →";
+      }
+      function updateNLMarker() {
+        const marker = document.getElementById("nl-marker");
+        marker.style.left = nlPct(nlPos) + "%";
+        marker.innerText = nlPos;
+        document.getElementById("nl-current").innerText = nlPos;
+      }
+      function moveNLMarker(dir) {
+        nlPos = Math.max(NL_MIN, Math.min(NL_MAX, nlPos + dir));
+        updateNLMarker();
+      }
+      function checkNL() {
+        const q = NL_QUESTIONS[nlQ];
+        const correct = nlPos === q.ans;
+        if (correct) {
+          nlCorrect++;
+          document.getElementById("nl-feedback").innerHTML =
+            `<span style="color:var(--green)">✅ Correct! ${q.expr} = ${q.ans}</span>`;
+          addScore(15, true);
+          toast("✅ Correct!", "correct");
+          nlQ++;
+          document.getElementById("nl-prog").style.width =
+            (nlQ / NL_QUESTIONS.length) * 100 + "%";
+          document.getElementById("nl-prog-label").innerText =
+            nlQ + " / " + NL_QUESTIONS.length;
+          setTimeout(loadNLQuestion, 900);
+        } else {
+          document.getElementById("nl-feedback").innerHTML =
+            `<span style="color:var(--red)">❌ Not quite — try again! (Hint: check your direction)</span>`;
+          addScore(0, false);
+          toast("❌ Try again!", "wrong");
+        }
+      }
+      function showNLResults() {
+        document.getElementById("nl-results").style.display = "block";
+        document.getElementById("nl-score-display").innerText =
+          nlCorrect + "/" + NL_QUESTIONS.length;
+        document.getElementById("nl-detail").innerText =
+          Math.round((nlCorrect / NL_QUESTIONS.length) * 100) + "% accuracy";
+        document.getElementById("nl-problem").innerText = "🏆 All done!";
+      }
+      // Drag marker
+      (function () {
+        const marker = document.getElementById("nl-marker");
+        let startX, startPos;
+        marker.addEventListener("mousedown", (e) => {
+          nlDragging = true;
+          startX = e.clientX;
+          startPos = nlPos;
+          e.preventDefault();
+        });
+        marker.addEventListener(
+          "touchstart",
+          (e) => {
+            nlDragging = true;
+            startX = e.touches[0].clientX;
+            startPos = nlPos;
+          },
+          { passive: true },
+        );
+        document.addEventListener("mousemove", (e) => {
+          if (!nlDragging) return;
+          const track = document.getElementById("nl-track");
+          const rect = track.getBoundingClientRect();
+          const pct = ((e.clientX - rect.left) / rect.width) * 100;
+          nlPos = Math.max(NL_MIN, Math.min(NL_MAX, nlValFromPct(pct)));
+          updateNLMarker();
+        });
+        document.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!nlDragging) return;
+            const track = document.getElementById("nl-track");
+            const rect = track.getBoundingClientRect();
+            const pct = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+            nlPos = Math.max(NL_MIN, Math.min(NL_MAX, nlValFromPct(pct)));
+            updateNLMarker();
+          },
+          { passive: true },
+        );
+        document.addEventListener("mouseup", () => (nlDragging = false));
+        document.addEventListener("touchend", () => (nlDragging = false));
+      })();
 
-/* ══════════════════════════════════════════
+      /* ══════════════════════════════════════════
    TAB 3 – TRUE / FALSE SORT
 ══════════════════════════════════════════ */
-const TF_DATA=[
-  {stmt:'A negative × a negative = a positive.',ans:true},
-  {stmt:'Adding two negative integers always gives a positive result.',ans:false},
-  {stmt:'-5 is greater than -2 on the number line.',ans:false},
-  {stmt:'The absolute value of -7 is 7.',ans:true},
-  {stmt:'0 is neither positive nor negative.',ans:true},
-  {stmt:'-3 + 3 = 0.',ans:true},
-  {stmt:'A positive ÷ a negative = a positive.',ans:false},
-  {stmt:'The opposite of -4 is 4.',ans:true},
-  {stmt:'(-2) × (-3) = -6.',ans:false},
-  {stmt:'-10 is to the right of -3 on the number line.',ans:false},
-];
-let tfIdx=0, tfCorrect=0;
-let tfShuffled=[];
-function initTF(){
-  tfIdx=0; tfCorrect=0;
-  tfShuffled=[...TF_DATA].sort(()=>Math.random()-.5);
-  document.getElementById('tf-true-pile').innerHTML='';
-  document.getElementById('tf-false-pile').innerHTML='';
-  document.getElementById('tf-results').style.display='none';
-  document.getElementById('tf-prog').style.width='0%';
-  document.getElementById('tf-prog-label').innerText='0 / '+TF_DATA.length;
-  renderTFCard();
-}
-function renderTFCard(){
-  const deck=document.getElementById('tf-deck');
-  deck.innerHTML='';
-  if(tfIdx>=tfShuffled.length){showTFResults();return;}
-  const card=document.createElement('div');
-  card.className='tf-card';
-  card.innerHTML=`<div class="tf-statement">${tfShuffled[tfIdx].stmt}</div>`;
-  deck.appendChild(card);
-}
-function sortTF(userAns){
-  if(tfIdx>=tfShuffled.length) return;
-  const item=tfShuffled[tfIdx];
-  const correct=userAns===item.ans;
-  const pileId=userAns?'tf-true-pile':'tf-false-pile';
-  const el=document.createElement('div');
-  el.className='tf-sorted-item '+(correct?'correct-sort':'wrong-sort');
-  el.innerText=(correct?'✅ ':'❌ ')+item.stmt;
-  document.getElementById(pileId).appendChild(el);
-  if(correct){tfCorrect++; addScore(10,true); toast('✅ Correct!','correct');}
-  else{addScore(0,false); toast('❌ That one was '+(!userAns?'True':'False'),'wrong');}
-  tfIdx++;
-  document.getElementById('tf-prog').style.width=(tfIdx/TF_DATA.length*100)+'%';
-  document.getElementById('tf-prog-label').innerText=tfIdx+' / '+TF_DATA.length;
-  renderTFCard();
-}
-function showTFResults(){
-  document.getElementById('tf-results').style.display='block';
-  document.getElementById('tf-score-display').innerText=tfCorrect+'/'+TF_DATA.length;
-  document.getElementById('tf-detail').innerText=Math.round(tfCorrect/TF_DATA.length*100)+'% correct';
-  document.getElementById('tf-deck').innerHTML='<div style="text-align:center;font-size:1.5rem;padding:20px">🏆 All sorted!</div>';
-}
+      const TF_DATA = [
+        { stmt: "A negative × a negative = a positive.", ans: true },
+        {
+          stmt: "Adding two negative integers always gives a positive result.",
+          ans: false,
+        },
+        { stmt: "-5 is greater than -2 on the number line.", ans: false },
+        { stmt: "The absolute value of -7 is 7.", ans: true },
+        { stmt: "0 is neither positive nor negative.", ans: true },
+        { stmt: "-3 + 3 = 0.", ans: true },
+        { stmt: "A positive ÷ a negative = a positive.", ans: false },
+        { stmt: "The opposite of -4 is 4.", ans: true },
+        { stmt: "(-2) × (-3) = -6.", ans: false },
+        { stmt: "-10 is to the right of -3 on the number line.", ans: false },
+      ];
+      let tfIdx = 0,
+        tfCorrect = 0;
+      let tfShuffled = [];
+      function initTF() {
+        tfIdx = 0;
+        tfCorrect = 0;
+        tfShuffled = [...TF_DATA].sort(() => Math.random() - 0.5);
+        document.getElementById("tf-true-pile").innerHTML = "";
+        document.getElementById("tf-false-pile").innerHTML = "";
+        document.getElementById("tf-results").style.display = "none";
+        document.getElementById("tf-prog").style.width = "0%";
+        document.getElementById("tf-prog-label").innerText =
+          "0 / " + TF_DATA.length;
+        renderTFCard();
+      }
+      function renderTFCard() {
+        const deck = document.getElementById("tf-deck");
+        deck.innerHTML = "";
+        if (tfIdx >= tfShuffled.length) {
+          showTFResults();
+          return;
+        }
+        const card = document.createElement("div");
+        card.className = "tf-card";
+        card.innerHTML = `<div class="tf-statement">${tfShuffled[tfIdx].stmt}</div>`;
+        deck.appendChild(card);
+      }
+      function sortTF(userAns) {
+        if (tfIdx >= tfShuffled.length) return;
+        const item = tfShuffled[tfIdx];
+        const correct = userAns === item.ans;
+        const pileId = userAns ? "tf-true-pile" : "tf-false-pile";
+        const el = document.createElement("div");
+        el.className =
+          "tf-sorted-item " + (correct ? "correct-sort" : "wrong-sort");
+        el.innerText = (correct ? "✅ " : "❌ ") + item.stmt;
+        document.getElementById(pileId).appendChild(el);
+        if (correct) {
+          tfCorrect++;
+          addScore(10, true);
+          toast("✅ Correct!", "correct");
+        } else {
+          addScore(0, false);
+          toast("❌ That one was " + (!userAns ? "True" : "False"), "wrong");
+        }
+        tfIdx++;
+        document.getElementById("tf-prog").style.width =
+          (tfIdx / TF_DATA.length) * 100 + "%";
+        document.getElementById("tf-prog-label").innerText =
+          tfIdx + " / " + TF_DATA.length;
+        renderTFCard();
+      }
+      function showTFResults() {
+        document.getElementById("tf-results").style.display = "block";
+        document.getElementById("tf-score-display").innerText =
+          tfCorrect + "/" + TF_DATA.length;
+        document.getElementById("tf-detail").innerText =
+          Math.round((tfCorrect / TF_DATA.length) * 100) + "% correct";
+        document.getElementById("tf-deck").innerHTML =
+          '<div style="text-align:center;font-size:1.5rem;padding:20px">🏆 All sorted!</div>';
+      }
 
-/* ══════════════════════════════════════════
+      /* ══════════════════════════════════════════
    TAB 4 – EQUATION BUILDER
 ══════════════════════════════════════════ */
-const EQ_DATA=[
-  {prompt:'___ + 5 = 3',slots:[{ans:-2}],display:'___ + 5 = 3'},
-  {prompt:'-6 + ___ = -10',slots:[{ans:-4}],display:'-6 + ___ = -10'},
-  {prompt:'___ × (-3) = 12',slots:[{ans:-4}],display:'___ × (-3) = 12'},
-  {prompt:'-8 - ___ = -3',slots:[{ans:-5}],display:'-8 - ___ = -3'},
-  {prompt:'___ + (-7) = 0',slots:[{ans:7}],display:'___ + (-7) = 0'},
-  {prompt:'4 × ___ = -20',slots:[{ans:-5}],display:'4 × ___ = -20'},
-  {prompt:'-9 + ___ = -4',slots:[{ans:5}],display:'-9 + ___ = 4  → actual: -9+_=-4'},
-  {prompt:'___ - 6 = -10',slots:[{ans:-4}],display:'___ - 6 = -10'},
-];
-// Cleaner display text
-const EQ_DISPLAY=[
-  '___ + 5 = 3',
-  '-6 + ___ = -10',
-  '___ × (−3) = 12',
-  '−8 − ___ = −3',
-  '___ + (−7) = 0',
-  '4 × ___ = −20',
-  '−9 + ___ = −4',
-  '___ − 6 = −10',
-];
-let eqIdx=0, eqCorrect=0, eqSlotFilled=null, eqChecked=false;
-function initEQ(){
-  eqIdx=0; eqCorrect=0; eqChecked=false;
-  document.getElementById('eq-results').style.display='none';
-  document.getElementById('eq-prog').style.width='0%';
-  document.getElementById('eq-prog-label').innerText='0 / '+EQ_DATA.length;
-  document.getElementById('eq-next-btn').style.display='none';
-  loadEQ();
-}
-function loadEQ(){
-  if(eqIdx>=EQ_DATA.length){showEQResults();return;}
-  eqChecked=false; eqSlotFilled=null;
-  document.getElementById('eq-display').innerText=EQ_DISPLAY[eqIdx];
-  document.getElementById('eq-feedback').innerText='';
-  document.getElementById('eq-next-btn').style.display='none';
-  // build slot
-  const row=document.getElementById('eq-drop-row');
-  row.innerHTML='';
-  const slot=document.createElement('div');
-  slot.className='eq-slot';
-  slot.id='eq-slot-0';
-  slot.dataset.ans=EQ_DATA[eqIdx].slots[0].ans;
-  slot.innerText='?';
-  slot.addEventListener('dragover',e=>{e.preventDefault();slot.classList.add('drag-over')});
-  slot.addEventListener('dragleave',()=>slot.classList.remove('drag-over'));
-  slot.addEventListener('drop',e=>{
-    e.preventDefault();
-    slot.classList.remove('drag-over');
-    const val=e.dataTransfer.getData('text/plain');
-    slot.innerText=val;
-    slot.classList.add('filled');
-    eqSlotFilled=parseInt(val);
-    // un-use old, use new
-    document.querySelectorAll('.eq-tile').forEach(t=>{
-      t.classList.toggle('used',parseInt(t.dataset.val)===eqSlotFilled&&!eqChecked);
-    });
-  });
-  row.appendChild(slot);
-  // tile bank: answer + distractors
-  const ans=EQ_DATA[eqIdx].slots[0].ans;
-  const pool=new Set([ans]);
-  while(pool.size<8){const d=ans+Math.floor(Math.random()*9)-4; if(d!==ans) pool.add(d);}
-  const tiles=[...pool].sort(()=>Math.random()-.5);
-  const bank=document.getElementById('eq-tile-bank');
-  bank.innerHTML='';
-  tiles.forEach(v=>{
-    const tile=document.createElement('div');
-    tile.className='eq-tile';
-    tile.draggable=true;
-    tile.dataset.val=v;
-    tile.innerText=v;
-    tile.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',String(v));tile.classList.add('used')});
-    tile.addEventListener('dragend',()=>{if(eqSlotFilled!==v) tile.classList.remove('used')});
-    bank.appendChild(tile);
-  });
-}
-function checkEQ(){
-  if(eqChecked) return;
-  const slot=document.getElementById('eq-slot-0');
-  if(eqSlotFilled===null){toast('Drag a tile into the slot first!','info');return;}
-  const ans=EQ_DATA[eqIdx].slots[0].ans;
-  const correct=eqSlotFilled===ans;
-  eqChecked=true;
-  if(correct){
-    slot.classList.add('correct');
-    document.getElementById('eq-feedback').innerHTML=`<span style="color:var(--green)">✅ Correct! The answer is ${ans}.</span>`;
-    eqCorrect++;
-    addScore(15,true);
-    toast('✅ Correct!','correct');
-  } else {
-    slot.classList.add('wrong');
-    document.getElementById('eq-feedback').innerHTML=`<span style="color:var(--red)">❌ Not quite. The correct answer was ${ans}.</span>`;
-    addScore(0,false);
-    toast('❌ Wrong — the answer was '+ans,'wrong');
-  }
-  document.getElementById('eq-next-btn').style.display='block';
-  eqIdx++;
-  document.getElementById('eq-prog').style.width=(eqIdx/EQ_DATA.length*100)+'%';
-  document.getElementById('eq-prog-label').innerText=eqIdx+' / '+EQ_DATA.length;
-}
-function nextEQ(){loadEQ();}
-function showEQResults(){
-  document.getElementById('eq-results').style.display='block';
-  document.getElementById('eq-score-display').innerText=eqCorrect+'/'+EQ_DATA.length;
-  document.getElementById('eq-detail').innerText=Math.round(eqCorrect/EQ_DATA.length*100)+'% correct';
-  document.getElementById('eq-display').innerText='🏆 All equations complete!';
-  document.getElementById('eq-drop-row').innerHTML='';
-  document.getElementById('eq-tile-bank').innerHTML='';
-}
+      const EQ_DATA = [
+        { prompt: "___ + 5 = 3", slots: [{ ans: -2 }], display: "___ + 5 = 3" },
+        {
+          prompt: "-6 + ___ = -10",
+          slots: [{ ans: -4 }],
+          display: "-6 + ___ = -10",
+        },
+        {
+          prompt: "___ × (-3) = 12",
+          slots: [{ ans: -4 }],
+          display: "___ × (-3) = 12",
+        },
+        {
+          prompt: "-8 - ___ = -3",
+          slots: [{ ans: -5 }],
+          display: "-8 - ___ = -3",
+        },
+        {
+          prompt: "___ + (-7) = 0",
+          slots: [{ ans: 7 }],
+          display: "___ + (-7) = 0",
+        },
+        {
+          prompt: "4 × ___ = -20",
+          slots: [{ ans: -5 }],
+          display: "4 × ___ = -20",
+        },
+        {
+          prompt: "-9 + ___ = -4",
+          slots: [{ ans: 5 }],
+          display: "-9 + ___ = 4  → actual: -9+_=-4",
+        },
+        {
+          prompt: "___ - 6 = -10",
+          slots: [{ ans: -4 }],
+          display: "___ - 6 = -10",
+        },
+      ];
+      // Cleaner display text
+      const EQ_DISPLAY = [
+        "___ + 5 = 3",
+        "-6 + ___ = -10",
+        "___ × (−3) = 12",
+        "−8 − ___ = −3",
+        "___ + (−7) = 0",
+        "4 × ___ = −20",
+        "−9 + ___ = −4",
+        "___ − 6 = −10",
+      ];
+      let eqIdx = 0,
+        eqCorrect = 0,
+        eqSlotFilled = null,
+        eqChecked = false;
+      function initEQ() {
+        eqIdx = 0;
+        eqCorrect = 0;
+        eqChecked = false;
+        document.getElementById("eq-results").style.display = "none";
+        document.getElementById("eq-prog").style.width = "0%";
+        document.getElementById("eq-prog-label").innerText =
+          "0 / " + EQ_DATA.length;
+        document.getElementById("eq-next-btn").style.display = "none";
+        loadEQ();
+      }
+      function loadEQ() {
+        if (eqIdx >= EQ_DATA.length) {
+          showEQResults();
+          return;
+        }
+        eqChecked = false;
+        eqSlotFilled = null;
+        document.getElementById("eq-display").innerText = EQ_DISPLAY[eqIdx];
+        document.getElementById("eq-feedback").innerText = "";
+        document.getElementById("eq-next-btn").style.display = "none";
+        // build slot
+        const row = document.getElementById("eq-drop-row");
+        row.innerHTML = "";
+        const slot = document.createElement("div");
+        slot.className = "eq-slot";
+        slot.id = "eq-slot-0";
+        slot.dataset.ans = EQ_DATA[eqIdx].slots[0].ans;
+        slot.innerText = "?";
+        slot.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          slot.classList.add("drag-over");
+        });
+        slot.addEventListener("dragleave", () =>
+          slot.classList.remove("drag-over"),
+        );
+        slot.addEventListener("drop", (e) => {
+          e.preventDefault();
+          slot.classList.remove("drag-over");
+          const val = e.dataTransfer.getData("text/plain");
+          slot.innerText = val;
+          slot.classList.add("filled");
+          eqSlotFilled = parseInt(val);
+          // un-use old, use new
+          document.querySelectorAll(".eq-tile").forEach((t) => {
+            t.classList.toggle(
+              "used",
+              parseInt(t.dataset.val) === eqSlotFilled && !eqChecked,
+            );
+          });
+        });
+        row.appendChild(slot);
+        // tile bank: answer + distractors
+        const ans = EQ_DATA[eqIdx].slots[0].ans;
+        const pool = new Set([ans]);
+        while (pool.size < 8) {
+          const d = ans + Math.floor(Math.random() * 9) - 4;
+          if (d !== ans) pool.add(d);
+        }
+        const tiles = [...pool].sort(() => Math.random() - 0.5);
+        const bank = document.getElementById("eq-tile-bank");
+        bank.innerHTML = "";
+        tiles.forEach((v) => {
+          const tile = document.createElement("div");
+          tile.className = "eq-tile";
+          tile.draggable = true;
+          tile.dataset.val = v;
+          tile.innerText = v;
+          tile.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", String(v));
+            tile.classList.add("used");
+          });
+          tile.addEventListener("dragend", () => {
+            if (eqSlotFilled !== v) tile.classList.remove("used");
+          });
+          bank.appendChild(tile);
+        });
+      }
+      function checkEQ() {
+        if (eqChecked) return;
+        const slot = document.getElementById("eq-slot-0");
+        if (eqSlotFilled === null) {
+          toast("Drag a tile into the slot first!", "info");
+          return;
+        }
+        const ans = EQ_DATA[eqIdx].slots[0].ans;
+        const correct = eqSlotFilled === ans;
+        eqChecked = true;
+        if (correct) {
+          slot.classList.add("correct");
+          document.getElementById("eq-feedback").innerHTML =
+            `<span style="color:var(--green)">✅ Correct! The answer is ${ans}.</span>`;
+          eqCorrect++;
+          addScore(15, true);
+          toast("✅ Correct!", "correct");
+        } else {
+          slot.classList.add("wrong");
+          document.getElementById("eq-feedback").innerHTML =
+            `<span style="color:var(--red)">❌ Not quite. The correct answer was ${ans}.</span>`;
+          addScore(0, false);
+          toast("❌ Wrong — the answer was " + ans, "wrong");
+        }
+        document.getElementById("eq-next-btn").style.display = "block";
+        eqIdx++;
+        document.getElementById("eq-prog").style.width =
+          (eqIdx / EQ_DATA.length) * 100 + "%";
+        document.getElementById("eq-prog-label").innerText =
+          eqIdx + " / " + EQ_DATA.length;
+      }
+      function nextEQ() {
+        loadEQ();
+      }
+      function showEQResults() {
+        document.getElementById("eq-results").style.display = "block";
+        document.getElementById("eq-score-display").innerText =
+          eqCorrect + "/" + EQ_DATA.length;
+        document.getElementById("eq-detail").innerText =
+          Math.round((eqCorrect / EQ_DATA.length) * 100) + "% correct";
+        document.getElementById("eq-display").innerText =
+          "🏆 All equations complete!";
+        document.getElementById("eq-drop-row").innerHTML = "";
+        document.getElementById("eq-tile-bank").innerHTML = "";
+      }
 
-/* ══════════════════════════════════════════
+      /* ══════════════════════════════════════════
    TAB 5 – VOCAB MATCH
 ══════════════════════════════════════════ */
-const VOCAB_DATA=[
-  {term:'Integer',def:'A whole number, its opposite, or zero (e.g. …−2,−1,0,1,2…)'},
-  {term:'Absolute Value',def:'Distance from zero; always ≥ 0 (e.g. |−6| = 6)'},
-  {term:'Opposite',def:'Two numbers the same distance from 0 on opposite sides (e.g. 4 and −4)'},
-  {term:'Negative Integer',def:'A whole number less than zero (e.g. −3, −10)'},
-  {term:'Additive Inverse',def:'The number that sums with another to give zero (−5 + 5 = 0)'},
-  {term:'Number Line',def:'A line where every point corresponds to a real number'},
-  {term:'Zero Pair',def:'A positive and negative integer that cancel each other out (e.g. +3 and −3)'},
-  {term:'Product',def:'The result of multiplying (e.g. (−4)×(−2) = 8)'},
-];
-let vocabSelected=null, vocabMatched=0;
-function initVocab(){
-  vocabSelected=null; vocabMatched=0;
-  document.getElementById('vocab-results').style.display='none';
-  document.getElementById('vocab-prog').style.width='0%';
-  document.getElementById('vocab-prog-label').innerText='0 / '+VOCAB_DATA.length;
-  const terms=document.getElementById('vocab-terms');
-  const defs=document.getElementById('vocab-defs');
-  terms.innerHTML=''; defs.innerHTML='';
-  const shuffledDefs=[...VOCAB_DATA].sort(()=>Math.random()-.5);
-  VOCAB_DATA.forEach(item=>{
-    const card=document.createElement('div');
-    card.className='vocab-card term-card';
-    card.dataset.term=item.term;
-    card.dataset.type='term';
-    card.innerText=item.term;
-    card.onclick=()=>handleVocabClick(card);
-    terms.appendChild(card);
-  });
-  shuffledDefs.forEach(item=>{
-    const card=document.createElement('div');
-    card.className='vocab-card def-card';
-    card.dataset.term=item.term;
-    card.dataset.type='def';
-    card.innerText=item.def;
-    card.onclick=()=>handleVocabClick(card);
-    defs.appendChild(card);
-  });
-}
-function handleVocabClick(card){
-  if(card.classList.contains('matched')) return;
-  if(!vocabSelected){
-    document.querySelectorAll('.vocab-card.selected').forEach(c=>c.classList.remove('selected'));
-    card.classList.add('selected');
-    vocabSelected=card;
-    return;
-  }
-  if(card===vocabSelected){card.classList.remove('selected');vocabSelected=null;return;}
-  if(card.dataset.type===vocabSelected.dataset.type){
-    document.querySelectorAll('.vocab-card.selected').forEach(c=>c.classList.remove('selected'));
-    card.classList.add('selected');
-    vocabSelected=card;
-    return;
-  }
-  const correct=card.dataset.term===vocabSelected.dataset.term;
-  if(correct){
-    [vocabSelected,card].forEach(c=>{c.classList.remove('selected');c.classList.add('matched')});
-    vocabMatched++;
-    addScore(20,true);
-    toast('✅ Correct match!','correct');
-    document.getElementById('vocab-prog').style.width=(vocabMatched/VOCAB_DATA.length*100)+'%';
-    document.getElementById('vocab-prog-label').innerText=vocabMatched+' / '+VOCAB_DATA.length;
-    if(vocabMatched===VOCAB_DATA.length){
-      document.getElementById('vocab-results').style.display='block';
-      document.getElementById('vocab-score-display').innerText='8/8 ⭐';
-      document.getElementById('vocab-detail').innerText='All vocabulary mastered!';
-    }
-  } else {
-    [vocabSelected,card].forEach(c=>{c.classList.add('wrong-flash');setTimeout(()=>c.classList.remove('wrong-flash'),500)});
-    toast('❌ Not a match — try again','wrong');
-    addScore(0,false);
-  }
-  vocabSelected=null;
-  document.querySelectorAll('.vocab-card.selected').forEach(c=>c.classList.remove('selected'));
-}
+      const VOCAB_DATA = [
+        {
+          term: "Integer",
+          def: "A whole number, its opposite, or zero (e.g. …−2,−1,0,1,2…)",
+        },
+        {
+          term: "Absolute Value",
+          def: "Distance from zero; always ≥ 0 (e.g. |−6| = 6)",
+        },
+        {
+          term: "Opposite",
+          def: "Two numbers the same distance from 0 on opposite sides (e.g. 4 and −4)",
+        },
+        {
+          term: "Negative Integer",
+          def: "A whole number less than zero (e.g. −3, −10)",
+        },
+        {
+          term: "Additive Inverse",
+          def: "The number that sums with another to give zero (−5 + 5 = 0)",
+        },
+        {
+          term: "Number Line",
+          def: "A line where every point corresponds to a real number",
+        },
+        {
+          term: "Zero Pair",
+          def: "A positive and negative integer that cancel each other out (e.g. +3 and −3)",
+        },
+        {
+          term: "Product",
+          def: "The result of multiplying (e.g. (−4)×(−2) = 8)",
+        },
+      ];
+      let vocabSelected = null,
+        vocabMatched = 0;
+      function initVocab() {
+        vocabSelected = null;
+        vocabMatched = 0;
+        document.getElementById("vocab-results").style.display = "none";
+        document.getElementById("vocab-prog").style.width = "0%";
+        document.getElementById("vocab-prog-label").innerText =
+          "0 / " + VOCAB_DATA.length;
+        const terms = document.getElementById("vocab-terms");
+        const defs = document.getElementById("vocab-defs");
+        terms.innerHTML = "";
+        defs.innerHTML = "";
+        const shuffledDefs = [...VOCAB_DATA].sort(() => Math.random() - 0.5);
+        VOCAB_DATA.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "vocab-card term-card";
+          card.dataset.term = item.term;
+          card.dataset.type = "term";
+          card.innerText = item.term;
+          card.onclick = () => handleVocabClick(card);
+          terms.appendChild(card);
+        });
+        shuffledDefs.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "vocab-card def-card";
+          card.dataset.term = item.term;
+          card.dataset.type = "def";
+          card.innerText = item.def;
+          card.onclick = () => handleVocabClick(card);
+          defs.appendChild(card);
+        });
+      }
+      function handleVocabClick(card) {
+        if (card.classList.contains("matched")) return;
+        if (!vocabSelected) {
+          document
+            .querySelectorAll(".vocab-card.selected")
+            .forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+          vocabSelected = card;
+          return;
+        }
+        if (card === vocabSelected) {
+          card.classList.remove("selected");
+          vocabSelected = null;
+          return;
+        }
+        if (card.dataset.type === vocabSelected.dataset.type) {
+          document
+            .querySelectorAll(".vocab-card.selected")
+            .forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+          vocabSelected = card;
+          return;
+        }
+        const correct = card.dataset.term === vocabSelected.dataset.term;
+        if (correct) {
+          [vocabSelected, card].forEach((c) => {
+            c.classList.remove("selected");
+            c.classList.add("matched");
+          });
+          vocabMatched++;
+          addScore(20, true);
+          toast("✅ Correct match!", "correct");
+          document.getElementById("vocab-prog").style.width =
+            (vocabMatched / VOCAB_DATA.length) * 100 + "%";
+          document.getElementById("vocab-prog-label").innerText =
+            vocabMatched + " / " + VOCAB_DATA.length;
+          if (vocabMatched === VOCAB_DATA.length) {
+            document.getElementById("vocab-results").style.display = "block";
+            document.getElementById("vocab-score-display").innerText = "8/8 ⭐";
+            document.getElementById("vocab-detail").innerText =
+              "All vocabulary mastered!";
+          }
+        } else {
+          [vocabSelected, card].forEach((c) => {
+            c.classList.add("wrong-flash");
+            setTimeout(() => c.classList.remove("wrong-flash"), 500);
+          });
+          toast("❌ Not a match — try again", "wrong");
+          addScore(0, false);
+        }
+        vocabSelected = null;
+        document
+          .querySelectorAll(".vocab-card.selected")
+          .forEach((c) => c.classList.remove("selected"));
+      }
 
-/* ══════════════════════════════════════════
+      /* ══════════════════════════════════════════
    BOOT
 ══════════════════════════════════════════ */
-initCat();
-initMatch();
-initNL();
-initTF();
-initEQ();
-initVocab();
-</script>
-</body>
+      initCat();
+      initMatch();
+      initNL();
+      initTF();
+      initEQ();
+      initVocab();
+    </script>
+  </body>
 </html>
