@@ -1,112 +1,1773 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Data Studio Master — Neft Teacher Professional Analytics</title>
-    <meta
-      name="description"
-      content="A professional local-first classroom data analysis studio with advanced statistical modeling, dynamic visualization, and plain-language pedagogical recommendations. By Neft Teacher."
-    />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230d3b66'/><text x='50' y='68' font-size='52' font-weight='900' text-anchor='middle' fill='%2314b8a6' font-family='system-ui'>DS</text></svg>"
-    />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  </head>
-  <body>
-    <!-- Skip to content link for keyboard/screen reader users -->
-    <a href="#mainContent" class="skip-to-content">Skip to main content</a>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics of My Life | 6th Grade Math Project</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-light: #e0f2fe;
+            --primary-dark: #0369a1;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --info: #0ea5e9;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
 
-    <!-- Application Root -->
-    <div id="app" class="app" role="application" aria-label="Data Studio Analytics"></div>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    <!-- Accessible Live Region for announcements -->
-    <div
-      id="liveAnnouncer"
-      class="sr-only"
-      aria-live="polite"
-      aria-atomic="true"
-      role="status"
-    ></div>
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-    <!-- Explanation & Translation Modal -->
-    <div
-      id="modalBackdrop"
-      class="modal-backdrop"
-      data-action="close-modal"
-      aria-hidden="true"
-    ></div>
-    <div
-      id="explainModal"
-      class="modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modalTitle"
-      aria-describedby="modalBody"
-    >
-      <div class="modal-header">
-        <h2 id="modalTitle" class="modal-title">Statistical Meaning</h2>
-        <button
-          data-action="close-modal"
-          aria-label="Close dialog"
-          style="font-size: 1.5rem; font-weight: 700; color: var(--text-muted)"
-        >
-          &times;
-        </button>
-      </div>
-      <div id="modalBody" class="modal-body"></div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" data-action="close-modal">Got it</button>
-      </div>
+        h1, h2, h3, h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+            border-radius: var(--radius-lg);
+            padding: 60px 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(2, 132, 199, 0.2);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 10%;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transform: rotate(45deg);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .nav-wrapper {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            margin-bottom: 30px;
+        }
+
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 8px;
+            border-radius: 20px;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-bar::-webkit-scrollbar { display: none; }
+
+        .nav-btn {
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-radius: 14px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        /* Sections */
+        section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .time-badge {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid #f1f5f9;
+            height: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+
+        /* Vocabulary Cards */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .vocab-card {
+            background: #f8fafc;
+            border: 2px solid #f1f5f9;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .vocab-card:hover {
+            border-color: var(--primary-light);
+            background: white;
+            transform: translateY(-5px);
+        }
+
+        .vocab-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .vocab-card b {
+            display: block;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .vocab-card p {
+            font-size: 0.9rem;
+            margin: 0;
+            color: var(--text-muted);
+        }
+
+        /* Questions Grid */
+        .questions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .q-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .q-card:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .q-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .q-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--bg);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .q-text b {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .q-text span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: block;
+            line-height: 1.3;
+        }
+
+        .q-input-wrapper {
+            position: relative;
+            margin-top: auto;
+        }
+
+        .q-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .q-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .timer-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .progress-track {
+            height: 12px;
+            background: #f1f5f9;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Chips / Data Display */
+        .chip-board {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            border: 2px dashed #e2e8f0;
+            min-height: 100px;
+        }
+
+        .data-chip {
+            background: white;
+            border: 2px solid var(--primary-light);
+            color: var(--primary-dark);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Statistics Panel */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid #f1f5f9;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* Calculation Rows */
+        .calc-card {
+            background: #fdfdfd;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+        }
+
+        .calc-row {
+            display: grid;
+            grid-template-columns: 1fr 200px 120px;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #f1f5f9;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .calc-row { grid-template-columns: 1fr; gap: 10px; }
+        }
+
+        .calc-info b { font-size: 1.1rem; color: var(--primary-dark); }
+        .calc-info p { margin: 4px 0 0; font-size: 0.85rem; color: var(--text-muted); }
+
+        .calc-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .feedback-badge {
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .feedback-badge.correct { color: var(--success); }
+        .feedback-badge.wrong { color: var(--danger); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        .btn-secondary { background: var(--primary-light); color: var(--primary-dark); }
+        .btn-secondary:hover { background: #d1d5db; }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: var(--text-muted); }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid #e2e8f0;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 16px;
+            text-align: left;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 500;
+        }
+
+        tr:hover td { background: #fdfdfd; }
+
+        /* Global Compare Meter */
+        .meter-container {
+            margin: 30px 0;
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: var(--radius-md);
+        }
+
+        .meter-track {
+            height: 24px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            position: relative;
+            margin: 40px 0 20px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 999px;
+            transition: width 1s ease;
+        }
+
+        .meter-marker {
+            position: absolute;
+            top: -30px;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .marker-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            white-space: nowrap;
+            background: var(--text-main);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .marker-line {
+            width: 2px;
+            height: 40px;
+            background: var(--text-main);
+        }
+
+        .my-marker .marker-label { background: var(--success); }
+        .my-marker .marker-line { background: var(--success); width: 3px; }
+
+        /* Spanish Support */
+        .es-text {
+            display: none;
+            font-style: italic;
+            color: var(--primary-dark);
+            font-size: 0.9em;
+            margin-top: 4px;
+            border-left: 3px solid var(--primary-light);
+            padding-left: 8px;
+        }
+
+        body.show-spanish .es-text {
+            display: block;
+        }
+
+        /* Report Area */
+        .report-box {
+            background: #f1f5f9;
+            padding: 30px;
+            border-radius: var(--radius-md);
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-main);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 999px;
+            font-weight: 700;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Utility */
+        .mb-20 { margin-bottom: 20px; }
+        .mt-20 { margin-top: 20px; }
+        .text-center { text-align: center; }
+
+        @media print {
+            .nav-wrapper, .btn, .no-print { display: none !important; }
+            section { display: block !important; opacity: 1 !important; transform: none !important; }
+            .container { max-width: 100%; padding: 0; }
+            .hero { padding: 30px; margin-bottom: 20px; background: #eee; color: black; box-shadow: none; }
+            .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="hero-badge">📊 ESOL Math & Data Project</div>
+            <h1>Statistics of My Life</h1>
+            <p>Explore your world through numbers! Build a data set, interview a classmate, and compare your results to students around the globe.</p>
+            <div class="mt-20 no-print">
+                <button class="btn btn-primary" onclick="goTo('mydata')">Get Started</button>
+                <button class="btn btn-outline" style="color:white; border-color:rgba(255,255,255,0.5)" onclick="window.print()">Print / PDF</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav-wrapper no-print">
+            <nav class="nav-bar">
+                <button class="nav-btn active" data-target="notes">1. Notes</button>
+                <button class="nav-btn" data-target="mydata">2. My Data</button>
+                <button class="nav-btn" data-target="mystats">3. My Stats</button>
+                <button class="nav-btn" data-target="interview">4. Interview</button>
+                <button class="nav-btn" data-target="partnerstats">5. Partner Stats</button>
+                <button class="nav-btn" data-target="world">6. World Compare</button>
+                <button class="nav-btn" data-target="report">7. Final Report</button>
+                <div style="margin-left: auto; display: flex; gap: 4px;">
+                    <button class="nav-btn" onclick="toggleSpanish()" id="langBtn">ES/EN Help</button>
+                    <button class="nav-btn" onclick="resetAll()">Reset</button>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Section 1: Notes -->
+        <section id="notes" class="active">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="time-badge">10 Minutes</span>
+                    <h2>Visual Math Notes</h2>
+                    <p class="section-subtitle">What do these four important words mean?</p>
+                </div>
+            </div>
+
+            <div class="card mb-20">
+                <h3><span style="color:var(--primary)">Vocabulary Map</span></h3>
+                <div class="vocab-grid">
+                    <div class="vocab-card">
+                        <span class="vocab-icon">⚖️</span>
+                        <b>Mean</b>
+                        <p>The "Fair Share" average. Add all numbers, then divide by the count.</p>
+                        <div class="es-text">Promedio: Suma los números y divide por la cantidad.</div>
+                    </div>
+                    <div class="vocab-card">
+                        <span class="vocab-icon">🎯</span>
+                        <b>Median</b>
+                        <p>The middle number. Put numbers in order from least to greatest first!</p>
+                        <div class="es-text">Mediana: El número del medio en una lista ordenada.</div>
+                    </div>
+                    <div class="vocab-card">
+                        <span class="vocab-icon">🔄</span>
+                        <b>Mode</b>
+                        <p>The most common number. Look for the value that repeats most often.</p>
+                        <div class="es-text">Moda: El número que más se repite.</div>
+                    </div>
+                    <div class="vocab-card">
+                        <span class="vocab-icon">↔️</span>
+                        <b>Range</b>
+                        <p>The spread of data. Greatest value minus the smallest value.</p>
+                        <div class="es-text">Rango: El número mayor menos el número menor.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Quick Formulas</h3>
+                    <div class="calc-card">
+                        <div class="calc-row" style="grid-template-columns: 100px 1fr; border-bottom: 1px solid #f1f5f9;">
+                            <div style="font-weight:800; color:var(--primary)">MEAN</div>
+                            <div>Total Sum ÷ Count</div>
+                        </div>
+                        <div class="calc-row" style="grid-template-columns: 100px 1fr; border-bottom: 1px solid #f1f5f9;">
+                            <div style="font-weight:800; color:var(--primary)">MEDIAN</div>
+                            <div>Order → Find Middle</div>
+                        </div>
+                        <div class="calc-row" style="grid-template-columns: 100px 1fr; border-bottom: 1px solid #f1f5f9;">
+                            <div style="font-weight:800; color:var(--primary)">MODE</div>
+                            <div>Most Frequent</div>
+                        </div>
+                        <div class="calc-row" style="grid-template-columns: 100px 1fr;">
+                            <div style="font-weight:800; color:var(--primary)">RANGE</div>
+                            <div>Max - Min</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="background: var(--primary-light); border:none;">
+                    <h3>Sentence Frames</h3>
+                    <p>Use these to talk about your data:</p>
+                    <ul style="padding-left: 20px; font-weight: 600;">
+                        <li>"The data shows ___ because ___."</li>
+                        <div class="es-text">"Los datos muestran ___ porque ___."</div>
+                        <li class="mt-20">"My mean is higher than yours, which means ___."</li>
+                        <div class="es-text">"Mi promedio es más alto que el tuyo, lo que significa ___."</div>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center mt-20 no-print">
+                <button class="btn btn-primary" onclick="goTo('mydata')">Continue to My Data →</button>
+            </div>
+        </section>
+
+        <!-- Section 2: My Data -->
+        <section id="mydata">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="time-badge">15 Minutes</span>
+                    <h2>Part 1: My Data</h2>
+                    <p class="section-subtitle">Choose at least 15 questions to build your personal data set.</p>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-info">
+                    <span id="myProgressLabel">0 of 15 Questions Answered</span>
+                    <span id="myPercentLabel">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div id="myProgressBar" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div id="myQuestions" class="questions-container">
+                <!-- Questions injected by JS -->
+            </div>
+
+            <div class="text-center mt-20 no-print">
+                <button class="btn btn-primary" onclick="buildPersonalData(true)">Build My Data Set & Continue</button>
+            </div>
+        </section>
+
+        <!-- Section 3: My Stats -->
+        <section id="mystats">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="time-badge">15 Minutes</span>
+                    <h2>My Statistics Calculations</h2>
+                    <p class="section-subtitle">Now, let's find the "story" in your numbers.</p>
+                </div>
+            </div>
+
+            <div class="grid-2 mb-20">
+                <div class="card">
+                    <h3>Raw Data Set</h3>
+                    <p class="section-subtitle">These are the numbers from the questions you answered.</p>
+                    <div id="myRawBoard" class="chip-board mb-20"></div>
+                    <div class="no-print">
+                        <button class="btn btn-secondary" onclick="sortData('my')">Sort Smallest to Greatest</button>
+                        <button class="btn btn-outline" onclick="shuffleBoard('my')">Shuffle</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Sorted Data Set</h3>
+                    <p class="section-subtitle">Type your numbers in order here (separated by commas).</p>
+                    <textarea id="mySortedInput" class="q-input" style="height: 120px; font-size: 1rem;" placeholder="Example: 2, 4, 5, 5, 10..."></textarea>
+                    <div id="mySortFeedback" class="mt-20"></div>
+                    <button class="btn btn-primary mt-20 no-print" onclick="checkSorted('my')">Check My Sorting</button>
+                </div>
+            </div>
+
+            <div class="card mb-20">
+                <h3>Auto-Calculated Stats</h3>
+                <div id="myAutoStats" class="stats-grid">
+                    <!-- Stats injected by JS -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Show Your Work</h3>
+                <p class="section-subtitle">Calculate these yourself and check if you are correct!</p>
+                <div class="calc-card">
+                    <div class="calc-row">
+                        <div class="calc-info">
+                            <b>Mean</b>
+                            <p id="meanHint">Add all values, then divide by the count.</p>
+                        </div>
+                        <input id="myMean" type="number" step="0.01" class="calc-input" placeholder="0.00">
+                        <div id="myMeanFb" class="feedback-badge"></div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="calc-info">
+                            <b>Median</b>
+                            <p id="medianHint">Find the middle number in your sorted list.</p>
+                        </div>
+                        <input id="myMedian" type="number" step="0.01" class="calc-input" placeholder="0.00">
+                        <div id="myMedianFb" class="feedback-badge"></div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="calc-info">
+                            <b>Mode</b>
+                            <p>The most frequent number (or "none").</p>
+                        </div>
+                        <input id="myMode" type="text" class="calc-input" placeholder="none">
+                        <div id="myModeFb" class="feedback-badge"></div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="calc-info">
+                            <b>Range</b>
+                            <p>Max value minus Min value.</p>
+                        </div>
+                        <input id="myRange" type="number" step="0.01" class="calc-input" placeholder="0">
+                        <div id="myRangeFb" class="feedback-badge"></div>
+                    </div>
+                </div>
+                <div class="text-center mt-20 no-print">
+                    <button class="btn btn-success" onclick="checkStats('my')">Check My Answers</button>
+                </div>
+            </div>
+
+            <div class="grid-2 mt-20">
+                <div class="card">
+                    <h3>Data Story</h3>
+                    <p class="section-subtitle">What does your data tell someone about your life?</p>
+                    <textarea id="myStory" class="q-input" style="height: 100px; font-size: 1rem;" placeholder="My data shows that..."></textarea>
+                </div>
+                <div class="card">
+                    <h3>Outlier Detective 🔍</h3>
+                    <p class="section-subtitle">Is there a number that is much smaller or larger than the others?</p>
+                    <textarea id="myOutlier" class="q-input" style="height: 100px; font-size: 1rem;" placeholder="I think ___ is an outlier because..."></textarea>
+                </div>
+            </div>
+
+            <div class="text-center mt-20 no-print">
+                <button class="btn btn-primary" onclick="goTo('interview')">Go to Interview Section →</button>
+            </div>
+        </section>
+
+        <!-- Section 4: Interview -->
+        <section id="interview">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="time-badge">15 Minutes</span>
+                    <h2>Part 2: Classmate Interview</h2>
+                    <p class="section-subtitle">Interview a friend to collect a second data set.</p>
+                </div>
+            </div>
+
+            <div class="grid-2 mb-20">
+                <div class="card">
+                    <h3>Partner Info</h3>
+                    <div class="q-input-wrapper">
+                        <label style="font-weight: 700; display: block; margin-bottom: 8px;">Partner's Name</label>
+                        <input id="partnerName" type="text" class="q-input" placeholder="First name or initials">
+                    </div>
+                </div>
+                <div class="card" style="background: var(--primary-light); border:none;">
+                    <h3>Interview Tips</h3>
+                    <p>Ask clearly:</p>
+                    <ul style="font-weight: 600;">
+                        <li>"What number should I write for ___?"</li>
+                        <li>"Can you repeat that number, please?"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-info">
+                    <span id="partnerProgressLabel">0 of 10 Questions Answered</span>
+                    <span id="partnerPercentLabel">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div id="partnerProgressBar" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div id="partnerQuestions" class="questions-container">
+                <!-- Questions injected by JS -->
+            </div>
+
+            <div class="text-center mt-20 no-print">
+                <button class="btn btn-primary" onclick="buildPartnerData(true)">Build Partner Data & Continue</button>
+            </div>
+        </section>
+
+        <!-- Section 5: Partner Stats -->
+        <section id="partnerstats">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="time-badge">15 Minutes</span>
+                    <h2>Partner Data Analysis</h2>
+                    <p class="section-subtitle">How do your partner's numbers compare to yours?</p>
+                </div>
+            </div>
+
+            <div class="grid-2 mb-20">
+                <div class="card">
+                    <h3>Partner's Raw Data</h3>
+                    <div id="partnerRawBoard" class="chip-board mb-20"></div>
+                    <div class="no-print">
+                        <button class="btn btn-secondary" onclick="sortData('partner')">Sort Data</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Sorted Partner Data</h3>
+                    <textarea id="partnerSortedInput" class="q-input" style="height: 120px; font-size: 1rem;" placeholder="Sorted list..."></textarea>
+                    <div id="partnerSortFeedback" class="mt-20"></div>
+                    <button class="btn btn-primary mt-20 no-print" onclick="checkSorted('partner')">Check Sorting</button>
+                </div>
+            </div>
+
+            <div class="card mb-20">
+                <h3>Partner's Stats</h3>
+                <div id="partnerAutoStats" class="stats-grid"></div>
+                <div class="calc-card mt-20">
+                    <div class="calc-row">
+                        <div class="calc-info"><b>Partner Mean</b></div>
+                        <input id="partnerMean" type="number" step="0.01" class="calc-input">
+                        <div id="partnerMeanFb" class="feedback-badge"></div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="calc-info"><b>Partner Median</b></div>
+                        <input id="partnerMedian" type="number" step="0.01" class="calc-input">
+                        <div id="partnerMedianFb" class="feedback-badge"></div>
+                    </div>
+                </div>
+                <div class="text-center mt-20 no-print">
+                    <button class="btn btn-success" onclick="checkStats('partner')">Check Partner Stats</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Me vs. My Classmate</h3>
+                <div id="pairCompare" class="stats-grid"></div>
+                <div class="mt-20">
+                    <label style="font-weight: 700;">Which data set has the greater spread (Range)? How do you know?</label>
+                    <textarea id="pairReflection" class="q-input mt-20" style="height: 100px;" placeholder="The data set with the greater range is..."></textarea>
+                </div>
+            </div>
+
+            <div class="text-center mt-20 no-print">
+                <button class="btn btn-primary" onclick="goTo('world')">Compare to the World →</button>
+            </div>
+        </section>
+
+        <!-- Section 6: World Compare -->
+        <section id="world">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="time-badge">20 Minutes</span>
+                    <h2>Part 3: Global Comparison</h2>
+                    <p class="section-subtitle">See how your life compares to students in other countries.</p>
+                </div>
+            </div>
+
+            <div class="card mb-20">
+                <h3>Global Student Snapshot</h3>
+                <div class="table-container">
+                    <table id="worldTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Place</th>
+                                <th>Sleep (h)</th>
+                                <th>Creative (m)</th>
+                                <th>Screen (m)</th>
+                                <th>Languages</th>
+                                <th>Household</th>
+                                <th>Books</th>
+                                <th>Water (c)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Visual Comparison</h3>
+                    <div class="q-input-wrapper mb-20">
+                        <label style="font-weight: 700;">Select Category</label>
+                        <select id="worldCategory" class="q-input" onchange="renderWorldCompare()">
+                            <option value="sleep">Hours of Sleep</option>
+                            <option value="creative">Creative Minutes</option>
+                            <option value="screen">Screen Time Minutes</option>
+                            <option value="languages">Languages Spoken</option>
+                            <option value="household">People in Home</option>
+                            <option value="books">Books Read</option>
+                            <option value="water">Cups of Water</option>
+                        </select>
+                    </div>
+                    <div class="q-input-wrapper">
+                        <label style="font-weight: 700;">My Number for this Category</label>
+                        <input id="myWorldValue" type="number" class="q-input" oninput="renderWorldCompare()">
+                    </div>
+
+                    <div id="worldMeter" class="meter-container">
+                        <!-- Meter injected by JS -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>"What-If" Global Lab</h3>
+                    <p class="section-subtitle">Add a new imaginary student to the world data. How does the mean change?</p>
+                    <div class="q-input-wrapper mb-20">
+                        <label style="font-weight: 700;">New Student Value</label>
+                        <input id="newWorldValue" type="number" class="q-input" placeholder="Enter a number">
+                    </div>
+                    <button class="btn btn-secondary no-print" onclick="runWhatIfWorld()">Run Test</button>
+                    <div id="whatIfWorld" class="mt-20 p-20" style="background:#f8fafc; border-radius:12px; font-size:0.9rem;">
+                        Add a value and click test to see the impact!
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-20">
+                <h3>Reflections</h3>
+                <div class="grid-2">
+                    <div class="q-input-wrapper">
+                        <label style="font-weight: 700;">Is your number below, near, or above the global mean?</label>
+                        <textarea id="worldQ1" class="q-input mt-20" style="height: 80px;"></textarea>
+                    </div>
+                    <div class="q-input-wrapper">
+                        <label style="font-weight: 700;">Why should we be careful when comparing people with numbers?</label>
+                        <textarea id="ethicsQ" class="q-input mt-20" style="height: 80px;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-20 no-print">
+                <button class="btn btn-primary" onclick="goTo('report')">Finish & Generate Report →</button>
+            </div>
+        </section>
+
+        <!-- Section 7: Final Report -->
+        <section id="report">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="time-badge">Final Step</span>
+                    <h2>My Statistics Report</h2>
+                    <p class="section-subtitle">Congratulations! Here is your complete data story.</p>
+                </div>
+            </div>
+
+            <div class="grid-2 mb-20">
+                <div class="card">
+                    <h3>Final Checklist</h3>
+                    <ul style="padding-left: 20px; font-weight: 600; line-height: 2;">
+                        <li style="color:var(--success)">Answered 20 questions</li>
+                        <li style="color:var(--success)">Sorted data correctly</li>
+                        <li style="color:var(--success)">Calculated personal stats</li>
+                        <li style="color:var(--success)">Interviewed a classmate</li>
+                        <li style="color:var(--success)">Compared to the world</li>
+                    </ul>
+                    <div class="mt-20 no-print">
+                        <button class="btn btn-primary" onclick="generateReport()">Generate Final Report</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Actions</h3>
+                    <p>What would you like to do with your report?</p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;" class="no-print">
+                        <button class="btn btn-secondary" onclick="copyReport()">Copy to Clipboard</button>
+                        <button class="btn btn-secondary" onclick="downloadReport()">Download as .TXT</button>
+                        <button class="btn btn-secondary" onclick="downloadCsv()">Download Data as .CSV</button>
+                        <button class="btn btn-outline" onclick="window.print()">Print / Save as PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Final Report Content</h3>
+                <div id="finalReport" class="report-box">
+                    Click "Generate Final Report" to see your work here.
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 Student Data Project • Built for ESOL Grade 6 Math</p>
+            <div class="no-print mt-20">
+                <button class="btn btn-outline btn-sm" onclick="saveProgress()">Save Progress</button>
+                <button class="btn btn-outline btn-sm" onclick="loadProgress()">Load Saved Work</button>
+            </div>
+        </footer>
     </div>
 
-    <!-- Diagnostics Panel -->
-    <div
-      id="diagnosticsPanel"
-      class="diagnostics-panel"
-      role="complementary"
-      aria-label="System diagnostics"
-      aria-hidden="true"
-    >
-      <div class="diag-header">
-        <span class="diag-title">SYSTEM DIAGNOSTICS & PERFORMANCE MATRIX (Ctrl + D)</span>
-        <button
-          data-action="toggle-diagnostics"
-          aria-label="Close diagnostics panel"
-          style="color: hsl(120, 80%, 40%); font-weight: 800; font-size: 1.15rem"
-        >
-          [CLOSE]
-        </button>
-      </div>
-      <div
-        id="diagSuiteStatus"
-        style="font-weight: 800; border-bottom: 1px dashed hsl(120, 80%, 20%); padding-bottom: 6px"
-        role="status"
-        aria-label="Test suite status"
-      ></div>
-      <div
-        id="diagLogs"
-        class="diag-log-container"
-        role="log"
-        aria-label="Diagnostic log entries"
-      ></div>
-    </div>
+    <div id="toast">Message goes here</div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+    <script>
+        // --- Data ---
+        const myQuestions = [
+            {id:'age', icon:'🎂', label:'How old are you?', help:'Write your age in years.', min:8, max:15},
+            {id:'grade', icon:'🏫', label:'What grade are you in?', help:'Example: 6', min:1, max:12},
+            {id:'household', icon:'🏠', label:'How many people live in your home?', help:'Count yourself too.', min:1, max:20},
+            {id:'siblings', icon:'👥', label:'How many siblings do you have?', help:'Brothers, sisters, step-siblings, etc.', min:0, max:20},
+            {id:'pets', icon:'🐾', label:'How many pets do you have?', help:'Use 0 if none.', min:0, max:20},
+            {id:'languages', icon:'🌍', label:'How many languages do you speak or learn?', help:'Include English and any language you are learning.', min:1, max:10},
+            {id:'letters', icon:'🔤', label:'How many letters are in your first name?', help:'Count only letters.', min:1, max:30},
+            {id:'wake', icon:'⏰', label:'What hour did you wake up today?', help:'Use the hour only. Example: 6 for 6:30.', min:1, max:12},
+            {id:'bed', icon:'🌙', label:'What hour did you go to bed last night?', help:'Use the hour only. Example: 10 for 10:15.', min:1, max:12},
+            {id:'sleep', icon:'😴', label:'How many hours did you sleep last night?', help:'Estimate to the nearest hour.', min:0, max:16},
+            {id:'reading', icon:'📚', label:'How many minutes did you read yesterday?', help:'School or home reading.', min:0, max:240},
+            {id:'math', icon:'➕', label:'How many minutes did you spend on math?', help:'Classwork, homework, or practice.', min:0, max:240},
+            {id:'creative', icon:'🎨', label:'How many minutes did you spend on a hobby?', help:'Drawing, music, building, writing, etc.', min:0, max:240},
+            {id:'screen', icon:'📱', label:'How many minutes of screen time?', help:'Games, videos, texting, TV, etc.', min:0, max:600},
+            {id:'jersey', icon:'🏀', label:'Choose a favorite/lucky number.', help:'Any number from 0 to 99.', min:0, max:99},
+            {id:'hobbies', icon:'🎾', label:'How many hobbies/clubs this week?', help:'Use 0 if none.', min:0, max:30},
+            {id:'chores', icon:'✅', label:'How many chores did you do this week?', help:'Estimate.', min:0, max:50},
+            {id:'countries', icon:'🗺️', label:'How many countries can you name in 30s?', help:'Use the timer or estimate.', min:0, max:80, timer:30},
+            {id:'songs', icon:'🎧', label:'How many songs did you listen to?', help:'Estimate.', min:0, max:200},
+            {id:'water', icon:'💧', label:'How many cups of water yesterday?', help:'Estimate.', min:0, max:30}
+        ];
 
-    <!-- Scatter Plot Tooltip -->
-    <div id="scatterTooltip" class="scatter-tooltip" role="tooltip" aria-hidden="true"></div>
+        const partnerQuestions = [
+            {id:'p_letters', icon:'🔤', label:'Letters in your name?', help:'Count only letters.', min:1, max:30, mapsTo:'letters'},
+            {id:'p_household', icon:'🏠', label:'People in your home?', help:'Count yourself too.', min:1, max:20, mapsTo:'household'},
+            {id:'p_pets', icon:'🐾', label:'How many pets?', help:'Use 0 if none.', min:0, max:20, mapsTo:'pets'},
+            {id:'p_languages', icon:'🌍', label:'Languages you speak?', help:'Include English.', min:1, max:10, mapsTo:'languages'},
+            {id:'p_sleep', icon:'😴', label:'Hours of sleep last night?', help:'Nearest hour.', min:0, max:16, mapsTo:'sleep'},
+            {id:'p_creative', icon:'🎨', label:'Creative minutes yesterday?', help:'Hobby time.', min:0, max:240, mapsTo:'creative'},
+            {id:'p_reading', icon:'📚', label:'Reading minutes yesterday?', help:'Any language.', min:0, max:240, mapsTo:'reading'},
+            {id:'p_books', icon:'📖', label:'Books read this month?', help:'Books, chapters, or articles.', min:0, max:30, mapsTo:'books'},
+            {id:'p_water', icon:'💧', label:'Cups of water yesterday?', help:'Estimate.', min:0, max:30, mapsTo:'water'},
+            {id:'p_lucky', icon:'⭐', label:'Lucky number (0-99)?', help:'Any number.', min:0, max:99, mapsTo:'jersey'}
+        ];
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay" aria-hidden="true" role="status">
-      <div class="loading-spinner" aria-label="Loading data"></div>
-      <p class="loading-text" id="loadingText">Processing your data...</p>
-    </div>
+        const worldStudents = [
+            {student:'Amina', flag:'🇰🇪', place:'Kenya', sleep:9, creative:45, screen:75, languages:3, household:6, books:3, water:6},
+            {student:'Ren', flag:'🇯🇵', place:'Japan', sleep:8, creative:35, screen:95, languages:2, household:4, books:4, water:5},
+            {student:'Lia', flag:'🇧🇷', place:'Brazil', sleep:9, creative:50, screen:120, languages:2, household:5, books:2, water:7},
+            {student:'Sofía', flag:'🇲🇽', place:'Mexico', sleep:8, creative:40, screen:105, languages:2, household:5, books:3, water:6},
+            {student:'Noah', flag:'🇨🇦', place:'Canada', sleep:10, creative:55, screen:110, languages:2, household:4, books:5, water:8},
+            {student:'Aarav', flag:'🇮🇳', place:'India', sleep:8, creative:30, screen:90, languages:3, household:5, books:4, water:7},
+            {student:'Mariam', flag:'🇪🇬', place:'Egypt', sleep:9, creative:35, screen:85, languages:2, household:6, books:2, water:6},
+            {student:'Camille', flag:'🇫🇷', place:'France', sleep:9, creative:60, screen:80, languages:3, household:4, books:6, water:7},
+            {student:'Min-jun', flag:'🇰🇷', place:'South Korea', sleep:7, creative:45, screen:130, languages:2, household:4, books:4, water:5},
+            {student:'Mia', flag:'🇦🇺', place:'Australia', sleep:10, creative:70, screen:100, languages:1, household:4, books:5, water:8},
+            {student:'Diego', flag:'🇪🇸', place:'Spain', sleep:9, creative:50, screen:95, languages:2, household:4, books:4, water:6},
+            {student:'Thabo', flag:'🇿🇦', place:'South Africa', sleep:8, creative:50, screen:70, languages:3, household:6, books:3, water:7}
+        ];
 
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+        const worldLabels = {
+            sleep:'Hours of sleep', creative:'Creative/hobby minutes', screen:'Minutes screen time', languages:'Languages', household:'People in household', books:'Books or long texts this month', water:'Cups of water'
+        };
+
+        // --- State Management ---
+        const state = {
+            myData: [],
+            partnerData: [],
+            myStats: null,
+            partnerStats: null,
+            spanish: false
+        };
+
+        // --- Core Functions ---
+        function goTo(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.querySelector(`.nav-btn[data-target="${id}"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            // Trigger specific section logic
+            if(id === 'mystats') { buildPersonalData(false); renderMyStats(); }
+            if(id === 'partnerstats') { buildPartnerData(false); renderPartnerStats(); renderPairCompare(); }
+            if(id === 'world') { buildPersonalData(false); renderWorldTable(); renderWorldCompare(); }
+            if(id === 'report') generateReport();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleSpanish() {
+            state.spanish = !state.spanish;
+            document.body.classList.toggle('show-spanish', state.spanish);
+            const btn = document.getElementById('langBtn');
+            btn.textContent = state.spanish ? 'English Only' : 'ES/EN Help';
+            showToast(state.spanish ? "Spanish support enabled" : "Spanish support disabled");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // --- Rendering ---
+        function renderQuestions() {
+            const myContainer = document.getElementById('myQuestions');
+            myContainer.innerHTML = myQuestions.map(q => `
+                <div class="q-card">
+                    <div class="q-header">
+                        <div class="q-icon">${q.icon}</div>
+                        <div class="q-text">
+                            <b>${q.label}</b>
+                            <span>${q.help}</span>
+                        </div>
+                    </div>
+                    <div class="q-input-wrapper">
+                        <input type="number" id="my_${q.id}" class="q-input" min="${q.min}" max="${q.max}" placeholder="#" oninput="updateProgress()">
+                        ${q.timer ? `<button class="timer-btn" onclick="startTimer(${q.timer}, this)">${q.timer}s Timer</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            const partnerContainer = document.getElementById('partnerQuestions');
+            partnerContainer.innerHTML = partnerQuestions.map(q => `
+                <div class="q-card">
+                    <div class="q-header">
+                        <div class="q-icon">${q.icon}</div>
+                        <div class="q-text">
+                            <b>${q.label}</b>
+                            <span>${q.help}</span>
+                        </div>
+                    </div>
+                    <div class="q-input-wrapper">
+                        <input type="number" id="partner_${q.id}" class="q-input" min="${q.min}" max="${q.max}" placeholder="#" oninput="updateProgress()">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateProgress() {
+            // My Progress
+            const myInputs = myQuestions.map(q => document.getElementById(`my_${q.id}`).value);
+            const myCount = myInputs.filter(v => v !== '').length;
+            const myPercent = Math.min(100, Math.round((myCount / 15) * 100));
+            document.getElementById('myProgressLabel').textContent = `${myCount} of 15 Questions Answered ${myCount >= 15 ? '✅' : ''}`;
+            document.getElementById('myPercentLabel').textContent = `${myPercent}%`;
+            document.getElementById('myProgressBar').style.width = `${myPercent}%`;
+
+            // Partner Progress
+            const pInputs = partnerQuestions.map(q => document.getElementById(`partner_${q.id}`).value);
+            const pCount = pInputs.filter(v => v !== '').length;
+            const pPercent = Math.round((pCount / partnerQuestions.length) * 100);
+            document.getElementById('partnerProgressLabel').textContent = `${pCount} of ${partnerQuestions.length} Questions Answered`;
+            document.getElementById('partnerPercentLabel').textContent = `${pPercent}%`;
+            document.getElementById('partnerProgressBar').style.width = `${pPercent}%`;
+        }
+
+        function startTimer(seconds, btn) {
+            if (btn.disabled) return;
+            btn.disabled = true;
+            let timeLeft = seconds;
+            const originalText = btn.textContent;
+            const interval = setInterval(() => {
+                timeLeft--;
+                btn.textContent = `${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    btn.textContent = "Time's Up!";
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                    }, 2000);
+                    showToast("Time is up! Write down your number.");
+                }
+            }, 1000);
+        }
+
+        // --- Data Logic ---
+        function buildPersonalData(shouldNavigate) {
+            state.myData = myQuestions
+                .map(q => parseFloat(document.getElementById(`my_${q.id}`).value))
+                .filter(v => !isNaN(v));
+            
+            if (shouldNavigate) {
+                if (state.myData.length < 15) {
+                    showToast("Please answer at least 15 questions first!");
+                } else {
+                    goTo('mystats');
+                }
+            }
+        }
+
+        function buildPartnerData(shouldNavigate) {
+            state.partnerData = partnerQuestions
+                .map(q => parseFloat(document.getElementById(`partner_${q.id}`).value))
+                .filter(v => !isNaN(v));
+            
+            if (shouldNavigate) {
+                if (state.partnerData.length < 3) {
+                    showToast("Please answer more interview questions!");
+                } else {
+                    goTo('partnerstats');
+                }
+            }
+        }
+
+        function computeStats(arr) {
+            if (arr.length === 0) return null;
+            const sorted = [...arr].sort((a, b) => a - b);
+            const sum = arr.reduce((a, b) => a + b, 0);
+            const mean = sum / arr.length;
+            
+            let median;
+            const mid = Math.floor(sorted.length / 2);
+            if (sorted.length % 2 === 0) {
+                median = (sorted[mid - 1] + sorted[mid]) / 2;
+            } else {
+                median = sorted[mid];
+            }
+
+            const counts = {};
+            arr.forEach(v => counts[v] = (counts[v] || 0) + 1);
+            let maxCount = 0;
+            let modes = [];
+            for (const v in counts) {
+                if (counts[v] > maxCount) {
+                    maxCount = counts[v];
+                    modes = [parseFloat(v)];
+                } else if (counts[v] === maxCount && maxCount > 1) {
+                    modes.push(parseFloat(v));
+                }
+            }
+            if (maxCount <= 1) modes = [];
+
+            const range = sorted[sorted.length - 1] - sorted[0];
+
+            return { mean, median, modes, range, min: sorted[0], max: sorted[sorted.length - 1], count: arr.length };
+        }
+
+        function renderMyStats() {
+            const board = document.getElementById('myRawBoard');
+            board.innerHTML = state.myData.map(v => `<div class="data-chip">${v}</div>`).join('');
+            
+            state.myStats = computeStats(state.myData);
+            renderStatGrid('myAutoStats', state.myStats);
+            
+            // Update hints based on count
+            const count = state.myData.length;
+            if (count > 0) {
+                document.getElementById('meanHint').textContent = `Add all ${count} values, then divide by ${count}.`;
+                if (count % 2 === 0) {
+                    const m1 = count / 2;
+                    const m2 = m1 + 1;
+                    document.getElementById('medianHint').textContent = `Average of the ${m1}${getOrdinal(m1)} and ${m2}${getOrdinal(m2)} numbers.`;
+                } else {
+                    const mid = Math.ceil(count / 2);
+                    document.getElementById('medianHint').textContent = `The ${mid}${getOrdinal(mid)} number is the middle.`;
+                }
+            }
+        }
+
+        function getOrdinal(n) {
+            const s = ["th", "st", "nd", "rd"], v = n % 100;
+            return (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
+        function renderPartnerStats() {
+            const board = document.getElementById('partnerRawBoard');
+            board.innerHTML = state.partnerData.map(v => `<div class="data-chip">${v}</div>`).join('');
+            
+            state.partnerStats = computeStats(state.partnerData);
+            renderStatGrid('partnerAutoStats', state.partnerStats);
+        }
+
+        function renderStatGrid(containerId, stats) {
+            const container = document.getElementById(containerId);
+            if (!stats) {
+                container.innerHTML = "<p>No data available yet.</p>";
+                return;
+            }
+            container.innerHTML = `
+                <div class="stat-box">
+                    <span class="stat-label">Mean</span>
+                    <span class="stat-value">${stats.mean.toFixed(2)}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Median</span>
+                    <span class="stat-value">${stats.median}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Mode</span>
+                    <span class="stat-value">${stats.modes.length ? stats.modes.join(', ') : 'None'}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Range</span>
+                    <span class="stat-value">${stats.range}</span>
+                </div>
+            `;
+        }
+
+        function sortData(type) {
+            if (type === 'my') {
+                state.myData.sort((a, b) => a - b);
+                renderMyStats();
+            } else {
+                state.partnerData.sort((a, b) => a - b);
+                renderPartnerStats();
+            }
+            showToast("Data sorted least to greatest!");
+        }
+
+        function shuffleBoard(type) {
+            if (type === 'my') {
+                state.myData.sort(() => Math.random() - 0.5);
+                renderMyStats();
+            }
+            showToast("Data shuffled!");
+        }
+
+        function checkSorted(type) {
+            const input = document.getElementById(`${type}SortedInput`).value;
+            const userArr = input.split(/[ ,]+/).filter(v => v !== '').map(Number);
+            const actual = [...(type === 'my' ? state.myData : state.partnerData)].sort((a, b) => a - b);
+            
+            const feedback = document.getElementById(`${type}SortFeedback`);
+            if (userArr.length === 0) {
+                feedback.innerHTML = "⚠️ Please type your numbers first.";
+                return;
+            }
+
+            const isCorrect = userArr.length === actual.length && userArr.every((v, i) => v === actual[i]);
+            if (isCorrect) {
+                feedback.innerHTML = "<span style='color:var(--success); font-weight:800;'>✅ Perfect! Your list is sorted correctly.</span>";
+            } else {
+                feedback.innerHTML = "<span style='color:var(--danger); font-weight:800;'>❌ Not quite. Check your order or make sure you have all numbers.</span>";
+            }
+        }
+
+        function checkStats(type) {
+            const stats = type === 'my' ? state.myStats : state.partnerStats;
+            if (!stats) return;
+
+            const fields = ['Mean', 'Median', 'Mode', 'Range'];
+            fields.forEach(f => {
+                const inputEl = document.getElementById(`${type}${f}`);
+                const fbEl = document.getElementById(`${type}${f}Fb`);
+                const val = inputEl.value.toLowerCase().trim();
+                
+                let correct = false;
+                if (f === 'Mean') correct = Math.abs(parseFloat(val) - stats.mean) < 0.1;
+                else if (f === 'Median') correct = parseFloat(val) === stats.median;
+                else if (f === 'Mode') {
+                    const expected = stats.modes.length ? stats.modes.join(',') : 'none';
+                    correct = val.replace(/\s/g, '') === expected.replace(/\s/g, '');
+                }
+                else if (f === 'Range') correct = parseFloat(val) === stats.range;
+
+                fbEl.textContent = correct ? "CORRECT" : "TRY AGAIN";
+                fbEl.className = `feedback-badge ${correct ? 'correct' : 'wrong'}`;
+            });
+        }
+
+        function renderPairCompare() {
+            const el = document.getElementById('pairCompare');
+            if (!state.myStats || !state.partnerStats) {
+                el.innerHTML = "<p>Complete both sets to see comparison.</p>";
+                return;
+            }
+
+            const metrics = [
+                { label: 'Mean Diff', val: Math.abs(state.myStats.mean - state.partnerStats.mean).toFixed(2) },
+                { label: 'Median Diff', val: Math.abs(state.myStats.median - state.partnerStats.median) },
+                { label: 'Range Diff', val: Math.abs(state.myStats.range - state.partnerStats.range) }
+            ];
+
+            el.innerHTML = metrics.map(m => `
+                <div class="stat-box">
+                    <span class="stat-label">${m.label}</span>
+                    <span class="stat-value">${m.val}</span>
+                </div>
+            `).join('');
+        }
+
+        // --- World Section ---
+        function renderWorldTable() {
+            const tbody = document.querySelector('#worldTable tbody');
+            tbody.innerHTML = worldStudents.map(s => `
+                <tr>
+                    <td>${s.flag} ${s.student}</td>
+                    <td>${s.place}</td>
+                    <td>${s.sleep}</td>
+                    <td>${s.creative}</td>
+                    <td>${s.screen}</td>
+                    <td>${s.languages}</td>
+                    <td>${s.household}</td>
+                    <td>${s.books}</td>
+                    <td>${s.water}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderWorldCompare() {
+            const cat = document.getElementById('worldCategory').value;
+            const myVal = parseFloat(document.getElementById('myWorldValue').value);
+            const container = document.getElementById('worldMeter');
+            
+            const values = worldStudents.map(s => s[cat]);
+            const stats = computeStats(values);
+            
+            if (isNaN(myVal)) {
+                container.innerHTML = "<p class='text-center'>Type your number above to see where you land on the map!</p>";
+                return;
+            }
+
+            const min = Math.min(stats.min, myVal);
+            const max = Math.max(stats.max, myVal);
+            const range = max - min;
+            
+            const meanPos = ((stats.mean - min) / range) * 100;
+            const myPos = ((myVal - min) / range) * 100;
+
+            container.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-weight:800; font-size:0.8rem;">
+                    <span>Min: ${min}</span>
+                    <span>Max: ${max}</span>
+                </div>
+                <div class="meter-track">
+                    <div class="meter-fill" style="width: 0%"></div>
+                    <div class="meter-marker" style="left: ${meanPos}%">
+                        <span class="marker-label">World Mean: ${stats.mean.toFixed(1)}</span>
+                        <div class="marker-line"></div>
+                    </div>
+                    <div class="meter-marker my-marker" style="left: ${myPos}%">
+                        <span class="marker-label">ME: ${myVal}</span>
+                        <div class="marker-line"></div>
+                    </div>
+                </div>
+                <p class="text-center mt-20" style="font-weight:700;">
+                    Your value is <b>${myVal > stats.mean ? 'Above' : (myVal < stats.mean ? 'Below' : 'Exactly at')}</b> the world sample mean.
+                </p>
+            `;
+            
+            setTimeout(() => {
+                const fill = container.querySelector('.meter-fill');
+                if(fill) fill.style.width = `${Math.max(meanPos, myPos)}%`;
+            }, 100);
+        }
+
+        function runWhatIfWorld() {
+            const cat = document.getElementById('worldCategory').value;
+            const newVal = parseFloat(document.getElementById('newWorldValue').value);
+            const box = document.getElementById('whatIfWorld');
+            
+            if (isNaN(newVal)) {
+                showToast("Enter a number first!");
+                return;
+            }
+
+            const originalValues = worldStudents.map(s => s[cat]);
+            const before = computeStats(originalValues);
+            const after = computeStats([...originalValues, newVal]);
+
+            box.innerHTML = `
+                <div class="grid-2">
+                    <div>
+                        <b>Before:</b><br>
+                        Mean: ${before.mean.toFixed(2)}<br>
+                        Median: ${before.median}<br>
+                        Range: ${before.range}
+                    </div>
+                    <div>
+                        <b>After adding ${newVal}:</b><br>
+                        Mean: ${after.mean.toFixed(2)}<br>
+                        Median: ${after.median}<br>
+                        Range: ${after.range}
+                    </div>
+                </div>
+                <p class="mt-20"><b>Observation:</b> The ${Math.abs(after.mean - before.mean) > Math.abs(after.median - before.median) ? 'Mean' : 'Median'} changed more!</p>
+            `;
+        }
+
+        // --- Report & Storage ---
+        function generateReport() {
+            const pName = document.getElementById('partnerName').value || "Classmate";
+            const myStatsText = state.myStats ? `Mean: ${state.myStats.mean.toFixed(2)} | Median: ${state.myStats.median} | Mode: ${state.myStats.modes.length ? state.myStats.modes.join(',') : 'none'} | Range: ${state.myStats.range}` : "Not calculated";
+            const pStatsText = state.partnerStats ? `Mean: ${state.partnerStats.mean.toFixed(2)} | Median: ${state.partnerStats.median} | Mode: ${state.partnerStats.modes.length ? state.partnerStats.modes.join(',') : 'none'} | Range: ${state.partnerStats.range}` : "Not calculated";
+
+            const report = `
+STATISTICS OF MY LIFE REPORT
+============================
+
+PART 1: MY DATA
+My Data Set: ${state.myData.join(', ')}
+My Statistics: ${myStatsText}
+
+My Data Story:
+${document.getElementById('myStory').value || "No story written yet."}
+
+Outlier Detective:
+${document.getElementById('myOutlier').value || "No outlier noted."}
+
+PART 2: CLASSMATE INTERVIEW
+Partner: ${pName}
+Partner Data Set: ${state.partnerData.join(', ')}
+Partner Statistics: ${pStatsText}
+
+Comparison Reflection:
+${document.getElementById('pairReflection').value || "No reflection written yet."}
+
+PART 3: GLOBAL COMPARISON
+Global Thinking: ${document.getElementById('worldQ1').value || "No answer."}
+Ethics Reflection: ${document.getElementById('ethicsQ').value || "No answer."}
+
+FINAL CLAIM:
+Statistics help me describe data because they show the center (mean/median), 
+the repeats (mode), and the spread (range) of my life.
+            `;
+            document.getElementById('finalReport').textContent = report.trim();
+            return report.trim();
+        }
+
+        function copyReport() {
+            const text = generateReport();
+            navigator.clipboard.writeText(text).then(() => showToast("Report copied to clipboard!"));
+        }
+
+        function downloadReport() {
+            const text = generateReport();
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'my_statistics_report.txt';
+            a.click();
+        }
+
+        function downloadCsv() {
+            const rows = [
+                ['Category', 'My Value', 'Partner Value'],
+                ...myQuestions.map(q => {
+                    const myVal = document.getElementById(`my_${q.id}`).value;
+                    const pMatch = partnerQuestions.find(pq => pq.mapsTo === q.id);
+                    const pVal = pMatch ? document.getElementById(`partner_${pMatch.id}`).value : '';
+                    return [q.label, myVal, pVal];
+                })
+            ];
+            const csv = rows.map(r => r.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'my_life_data.csv';
+            a.click();
+        }
+
+        function saveProgress() {
+            const data = {};
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.id) data[el.id] = el.value;
+            });
+            localStorage.setItem('lifeStatsProject_v2', JSON.stringify(data));
+            showToast("Progress saved on this browser!");
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('lifeStatsProject_v2');
+            if (!saved) {
+                showToast("No saved progress found.");
+                return;
+            }
+            const data = JSON.parse(saved);
+            Object.keys(data).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = data[id];
+            });
+            updateProgress();
+            showToast("Progress loaded!");
+        }
+
+        function resetAll() {
+            if (confirm("Are you sure? This will delete all your work!")) {
+                localStorage.removeItem('lifeStatsProject_v2');
+                location.reload();
+            }
+        }
+
+        // Initialize
+        renderQuestions();
+        renderWorldTable();
+    </script>
+</body>
 </html>
+
+    <script>
+        // Add navigation listeners
+        document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+            btn.addEventListener('click', () => goTo(btn.dataset.target));
+        });
+    </script>
