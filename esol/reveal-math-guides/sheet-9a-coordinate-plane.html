@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>9A Coordinate Plane ESOL Study Guide | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --guide-primary: #1e50a0;
+        --guide-primary-light: #dceeff;
+        --guide-vocab: #dceeff;
+        --guide-steps: #dcffdc;
+        --guide-formula: #dcffdc;
+        --guide-warning: #ffe6e6;
+        --guide-practice: #f0f0ff;
+        --guide-tip: #fff5dc;
+        --guide-bg: #f8fafc;
+        --guide-surface: #ffffff;
+        --guide-ink: #1e293b;
+        --guide-muted: #64748b;
+        --guide-radius: 12px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--guide-ink);
+        background: var(--guide-bg);
+        line-height: 1.6;
+      }
+      body {
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .guide-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .guide-header {
+        background: var(--guide-primary);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: var(--guide-radius);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .guide-header h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+      }
+      .guide-header .guide-meta {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+      .guide-section {
+        background: var(--guide-surface);
+        border-radius: var(--guide-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .guide-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--guide-primary);
+        margin-bottom: 0.75rem;
+      }
+      .vocab-section {
+        background: var(--guide-vocab);
+      }
+      .steps-section {
+        background: var(--guide-steps);
+      }
+      .formula-section {
+        background: var(--guide-formula);
+      }
+      .warning-section {
+        background: var(--guide-warning);
+      }
+      .practice-section {
+        background: var(--guide-practice);
+      }
+      .vocab-term {
+        margin-bottom: 0.5rem;
+      }
+      .vocab-term strong {
+        color: var(--guide-primary);
+      }
+      .vocab-term .spanish {
+        color: var(--guide-muted);
+        font-style: italic;
+      }
+      .step-list {
+        list-style: none;
+        padding: 0;
+      }
+      .step-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .step-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background: var(--guide-primary);
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+      }
+      .practice-problem {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .practice-problem input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+      .practice-problem input:focus {
+        border-color: var(--guide-primary);
+        outline: none;
+      }
+      .check-btn {
+        background: var(--guide-primary);
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .feedback.incorrect {
+        display: block;
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .example-box {
+        background: #f1f5f9;
+        border-left: 4px solid var(--guide-primary);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin: 0.75rem 0;
+      }
+      .formula-highlight {
+        background: #fff;
+        border: 2px solid var(--guide-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0.75rem 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .check-btn {
+          display: none;
+        }
+        .guide-section {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-header h1 {
+          font-size: 1.3rem;
+        }
+        body {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="guide-container">
+      <nav style="margin-bottom: 1rem">
+        <a
+          href="/esol/reveal-math-guides/"
+          style="
+            color: var(--guide-primary);
+            text-decoration: none;
+            font-weight: 600;
+          "
+          >&larr; Back to All Guides</a
+        >
+      </nav>
+
+      <!-- HEADER -->
+      <div class="guide-header">
+        <h1>9A | Coordinate Plane ESOL Study Guide</h1>
+        <div class="guide-meta">
+          Unit 7: Integers &amp; Coordinate Plane &bull; Lesson 7.5 &bull;
+          Standard: 6.NS.6b, 6.NS.6c
+        </div>
+      </div>
+
+      <!-- VOCABULARY -->
+      <div class="guide-section vocab-section">
+        <h2>Key Vocabulary</h2>
+        <div class="vocab-term">
+          <strong>Coordinate Plane</strong> &mdash; a flat surface formed by two
+          number lines that cross at a right angle.
+          <span class="spanish">(plano de coordenadas)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>X-axis</strong> &mdash; the horizontal (left-right) number
+          line.
+          <span class="spanish">(eje x)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Y-axis</strong> &mdash; the vertical (up-down) number line.
+          <span class="spanish">(eje y)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Origin</strong> &mdash; the point where the x-axis and y-axis
+          cross, at (0, 0).
+          <span class="spanish">(origen)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Ordered Pair</strong> &mdash; two numbers (x, y) that name a
+          point on the coordinate plane.
+          <span class="spanish">(par ordenado)</span>
+        </div>
+        <div class="vocab-term">
+          <strong>Quadrant</strong> &mdash; one of four sections of the
+          coordinate plane.
+          <span class="spanish">(cuadrante)</span>
+        </div>
+      </div>
+
+      <!-- VISUAL EXAMPLE -->
+      <div class="guide-section">
+        <h2>Visual &mdash; The Four Quadrants</h2>
+        <div class="example-box">
+          <pre style="font-size: 1rem; line-height: 1.5; text-align: center">
+              y-axis
+                |
+     II         |        I
+   (&minus;, +)       |      (+, +)
+                |
+  &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;(0,0)&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash; x-axis
+                |
+    III         |       IV
+   (&minus;, &minus;)       |      (+, &minus;)
+                |</pre
+          >
+        </div>
+        <div class="example-box">
+          <strong>Quadrant I:</strong> x is positive, y is positive (+, +)<br />
+          <strong>Quadrant II:</strong> x is negative, y is positive (&minus;,
+          +)<br />
+          <strong>Quadrant III:</strong> x is negative, y is negative (&minus;,
+          &minus;)<br />
+          <strong>Quadrant IV:</strong> x is positive, y is negative (+,
+          &minus;)
+        </div>
+      </div>
+
+      <!-- STEPS -->
+      <div class="guide-section steps-section">
+        <h2>Step-by-Step: Plotting a Point</h2>
+        <ol class="step-list">
+          <li>
+            <span class="step-num">1</span>
+            <strong>Start at the origin</strong> (0, 0).
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <strong>Move left or right</strong> for the x-value (first number).
+            Positive = right, Negative = left.
+          </li>
+          <li>
+            <span class="step-num">3</span> <strong>Move up or down</strong> for
+            the y-value (second number). Positive = up, Negative = down.
+          </li>
+          <li>
+            <span class="step-num">4</span> <strong>Mark the point</strong> and
+            label it with the ordered pair.
+          </li>
+        </ol>
+        <div class="example-box">
+          <strong>Example:</strong> Plot (3, &minus;2)<br />
+          Start at (0, 0) &rarr; move RIGHT 3 &rarr; move DOWN 2 &rarr; mark the
+          point.<br />
+          This point is in <strong>Quadrant IV</strong>.
+        </div>
+      </div>
+
+      <!-- WATCH OUT -->
+      <div class="guide-section warning-section">
+        <h2>Watch Out!</h2>
+        <ul style="padding-left: 1.25rem">
+          <li>
+            <strong>(x, y) order matters!</strong> (3, 5) and (5, 3) are
+            DIFFERENT points.
+          </li>
+          <li>
+            <strong>x comes FIRST</strong> (left/right),
+            <strong>y comes SECOND</strong> (up/down). Remember: "x before y,
+            walk before you fly!"
+          </li>
+          <li>
+            <strong>Negative x = move LEFT.</strong> Negative y = move DOWN.
+          </li>
+          <li>
+            <strong>Points on an axis</strong> are NOT in any quadrant. For
+            example, (0, 4) is on the y-axis.
+          </li>
+        </ul>
+      </div>
+
+      <!-- PRACTICE PROBLEMS -->
+      <div class="guide-section practice-section">
+        <h2>Practice Problems</h2>
+
+        <div class="practice-problem">
+          <p><strong>1.</strong> What is the name of the point (0, 0)?</p>
+          <input type="text" id="q1" placeholder="Type your answer..." />
+          <button
+            class="check-btn"
+            onclick="checkAnswer('q1', 'origin', 'fb1')"
+          >
+            Check
+          </button>
+          <div class="feedback" id="fb1"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>2.</strong> In which quadrant is the point (4, 3)?<br />Type
+            a Roman numeral: I, II, III, or IV.
+          </p>
+          <input type="text" id="q2" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q2', 'i', 'fb2')">
+            Check
+          </button>
+          <div class="feedback" id="fb2"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>3.</strong> In which quadrant is the point (&minus;5,
+            &minus;2)?<br />Type a Roman numeral: I, II, III, or IV.
+          </p>
+          <input type="text" id="q3" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q3', 'iii', 'fb3')">
+            Check
+          </button>
+          <div class="feedback" id="fb3"></div>
+        </div>
+
+        <div class="practice-problem">
+          <p>
+            <strong>4.</strong> To plot (−3, 5), you start at the origin, move
+            LEFT 3 and then move _____. Type "up 5" or "down 5".
+          </p>
+          <input type="text" id="q4" placeholder="Type your answer..." />
+          <button class="check-btn" onclick="checkAnswer('q4', 'up5', 'fb4')">
+            Check
+          </button>
+          <div class="feedback" id="fb4"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkAnswer(inputId, correctAnswer, feedbackId) {
+        var input = document.getElementById(inputId);
+        var feedback = document.getElementById(feedbackId);
+        var val = input.value
+          .trim()
+          .toLowerCase()
+          .replace(/[\s-]+/g, "");
+        var correct = String(correctAnswer)
+          .toLowerCase()
+          .replace(/[\s-]+/g, "");
+        if (val === correct) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "Correct! Great work!";
+        } else if (!val) {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Please enter an answer.";
+        } else {
+          feedback.className = "feedback incorrect";
+          feedback.textContent = "Not quite. Try again!";
+        }
+      }
+    </script>
+  </body>
+</html>
