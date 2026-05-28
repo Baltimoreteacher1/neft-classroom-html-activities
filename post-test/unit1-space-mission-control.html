@@ -867,6 +867,336 @@
         }
       }
 
+      /* ══ ENHANCEMENT: Animations ══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 8px rgba(240, 192, 64, 0.3);
+        }
+        50% {
+          box-shadow:
+            0 0 20px rgba(240, 192, 64, 0.3),
+            0 0 40px rgba(34, 211, 238, 0.2);
+        }
+      }
+      @keyframes statCountUp {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes badgePop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .phase.active .card,
+      .phase.active .task {
+        animation: cardEntrance 0.5s ease-out both;
+      }
+      .phase.active .card:nth-child(2),
+      .phase.active .task:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .phase.active .card:nth-child(3),
+      .phase.active .task:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .phase.active .card:nth-child(4),
+      .phase.active .task:nth-child(4) {
+        animation-delay: 0.24s;
+      }
+      .btn:active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      /* ══ ENHANCEMENT: XP Bar ══ */
+      .xp-bar-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 16px;
+        margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .xp-bar-container .xp-label {
+        color: var(--space-gold);
+        white-space: nowrap;
+        min-width: 70px;
+      }
+      .xp-bar-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-bar-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--space-gold),
+          var(--space-teal)
+        );
+        border-radius: 99px;
+        transition: width 0.6s ease;
+        width: 0%;
+      }
+      .xp-bar-container .xp-value {
+        color: var(--space-muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ══ ENHANCEMENT: Validation Feedback ══ */
+      .validation-feedback {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-top: 6px;
+        padding: 4px 10px;
+        border-radius: 8px;
+        animation: cardEntrance 0.3s ease;
+      }
+      .validation-feedback.correct {
+        background: rgba(52, 211, 153, 0.08);
+        color: var(--space-success);
+      }
+      .validation-feedback.incorrect {
+        background: rgba(248, 113, 113, 0.08);
+        color: var(--space-error, #f87171);
+      }
+      .form-input.input-correct,
+      .form-textarea.input-correct {
+        border-color: var(--space-success) !important;
+      }
+      .form-input.input-incorrect,
+      .form-textarea.input-incorrect {
+        border-color: var(--space-error, #f87171) !important;
+      }
+
+      /* ══ ENHANCEMENT: Word Bank ══ */
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        margin: 8px 0;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 10px;
+        border: 1px dashed var(--space-line);
+      }
+      .word-bank-title {
+        width: 100%;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--space-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--space-line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--space-text);
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+      }
+      .word-chip:hover {
+        border-color: var(--space-gold);
+        transform: translateY(-1px);
+      }
+
+      /* ══ ENHANCEMENT: Show Example Toggle ══ */
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--space-teal);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        margin-top: 6px;
+      }
+      .example-toggle:hover {
+        color: var(--space-gold);
+      }
+      .example-box {
+        display: none;
+        margin-top: 8px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border-left: 3px solid var(--space-teal);
+        border-radius: 0 10px 10px 0;
+        font-size: 0.9rem;
+        color: var(--space-muted);
+      }
+      .example-box.visible {
+        display: block;
+        animation: cardEntrance 0.3s ease;
+      }
+
+      /* ══ ENHANCEMENT: Certificate Screen ══ */
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: var(--space-card);
+        border: 3px solid var(--space-gold);
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+        animation: badgePop 0.5s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(240, 192, 64, 0.3),
+          transparent 50%,
+          rgba(34, 211, 238, 0.2)
+        );
+        pointer-events: none;
+      }
+      .certificate-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 12px;
+        animation: float 3s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--space-gold);
+        margin-bottom: 4px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--space-text);
+        margin-bottom: 16px;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .cert-stat {
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--space-line);
+        animation: statCountUp 0.5s ease both;
+      }
+      .cert-stat:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .cert-stat:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .cert-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--space-gold);
+      }
+      .cert-stat-label {
+        font-size: 0.75rem;
+        color: var(--space-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 12px;
+        background: var(--space-gold);
+        color: var(--space-deep);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      @media (max-width: 500px) {
+        .cert-stats {
+          grid-template-columns: 1fr;
+        }
+        .certificate-card {
+          padding: 24px;
+        }
+      }
+      @media print {
+        .xp-bar-container,
+        .certificate-overlay,
+        .example-toggle,
+        .word-bank {
+          display: none !important;
+        }
+      }
+
       /* ── Scrollbar ── */
       ::-webkit-scrollbar {
         width: 8px;
@@ -904,6 +1234,15 @@
           <div class="phase-dot" data-phase="5"></div>
         </div>
         <div class="progress-label" id="progressLabel">Phase 1 of 5</div>
+      </div>
+
+      <!-- Enhancement: XP Bar -->
+      <div class="xp-bar-container" id="xpBarContainer">
+        <span class="xp-label">Mission XP</span>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBarFill"></div>
+        </div>
+        <span class="xp-value" id="xpValue">0 / 500 XP</span>
       </div>
 
       <!-- ══════════════════════════════════════ -->
@@ -3839,6 +4178,9 @@
             <button class="btn btn-outline" onclick="window.print()">
               &#128424; Print
             </button>
+            <button class="btn btn-gold" onclick="showCertificate()">
+              &#128640; View Certificate
+            </button>
           </div>
         </div>
 
@@ -4240,6 +4582,240 @@
             .split("T")[0];
         }
       });
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: XP & Points System
+      // ══════════════════════════════════════
+      var _xp = 0;
+      var _xpMax = 500;
+      var _fieldsAwarded = {};
+
+      function addXP(amount, fieldId) {
+        if (fieldId && _fieldsAwarded[fieldId]) return;
+        if (fieldId) _fieldsAwarded[fieldId] = true;
+        _xp = Math.min(_xp + amount, _xpMax);
+        updateXPBar();
+        if (amount > 0) playSound("xp");
+        saveEnhancementState();
+      }
+
+      function updateXPBar() {
+        var bar = document.getElementById("xpBarFill");
+        var val = document.getElementById("xpValue");
+        if (bar) bar.style.width = Math.round((_xp / _xpMax) * 100) + "%";
+        if (val) val.textContent = _xp + " / " + _xpMax + " XP";
+      }
+
+      // Award XP when fields are filled
+      document.addEventListener("input", function (e) {
+        var el = e.target;
+        if (!el.id) return;
+        if (
+          (el.classList.contains("form-input") ||
+            el.classList.contains("form-textarea") ||
+            el.tagName === "TEXTAREA" ||
+            el.tagName === "INPUT") &&
+          el.value &&
+          el.value.trim().length > 2
+        ) {
+          addXP(5, "field_" + el.id);
+        }
+      });
+
+      // Award XP for phase completion
+      var _origGoToPhase = goToPhase;
+      goToPhase = function (n) {
+        var prev = currentPhase;
+        _origGoToPhase(n);
+        if (n > prev) {
+          addXP(25, "phase_" + prev);
+        }
+      };
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: Sound Effects (Web Audio)
+      // ══════════════════════════════════════
+      var _audioCtx = null;
+      function getAudioCtx() {
+        if (!_audioCtx) {
+          try {
+            _audioCtx = new (
+              window.AudioContext || window.webkitAudioContext
+            )();
+          } catch (e) {}
+        }
+        return _audioCtx;
+      }
+
+      function playSound(type) {
+        var ctx = getAudioCtx();
+        if (!ctx) return;
+        try {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          gain.gain.value = 0.08;
+          if (type === "xp") {
+            osc.frequency.value = 440;
+            osc.type = "sine";
+            gain.gain.exponentialRampToValueAtTime(
+              0.01,
+              ctx.currentTime + 0.15,
+            );
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.15);
+          } else if (type === "correct") {
+            osc.frequency.value = 440;
+            osc.type = "sine";
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+            var osc2 = ctx.createOscillator();
+            var g2 = ctx.createGain();
+            osc2.connect(g2);
+            g2.connect(ctx.destination);
+            osc2.frequency.value = 550;
+            osc2.type = "sine";
+            g2.gain.value = 0.06;
+            g2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+            osc2.start(ctx.currentTime + 0.12);
+            osc2.stop(ctx.currentTime + 0.35);
+          } else if (type === "incorrect") {
+            osc.frequency.value = 330;
+            osc.type = "square";
+            gain.gain.value = 0.04;
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.2);
+          } else if (type === "complete") {
+            var notes = [1, 1.25, 1.5, 2];
+            notes.forEach(function (n, i) {
+              var o = ctx.createOscillator();
+              var g = ctx.createGain();
+              o.connect(g);
+              g.connect(ctx.destination);
+              o.frequency.value = 440 * n;
+              o.type = "sine";
+              g.gain.value = 0.06;
+              g.gain.exponentialRampToValueAtTime(
+                0.01,
+                ctx.currentTime + 0.15 * (i + 1) + 0.2,
+              );
+              o.start(ctx.currentTime + 0.15 * i);
+              o.stop(ctx.currentTime + 0.15 * (i + 1) + 0.2);
+            });
+          }
+        } catch (e) {}
+      }
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: Show Example Toggle
+      // ══════════════════════════════════════
+      window.toggleExample = function (id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle("visible");
+      };
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: Certificate
+      // ══════════════════════════════════════
+      window.showCertificate = function () {
+        var nameEl = document.getElementById("studentName");
+        var name = nameEl ? nameEl.value || "Cadet" : "Cadet";
+        document.getElementById("certStudentName").textContent = name;
+        document.getElementById("certXP").textContent = _xp;
+        var fields = document.querySelectorAll('input[type="text"], textarea');
+        var filled = 0;
+        fields.forEach(function (f) {
+          if (f.value && f.value.trim().length > 0) filled++;
+        });
+        document.getElementById("certTasks").textContent = filled;
+        var pct =
+          fields.length > 0 ? Math.round((filled / fields.length) * 100) : 0;
+        document.getElementById("certAccuracy").textContent = pct + "%";
+        document.getElementById("certificateOverlay").classList.add("visible");
+        playSound("complete");
+        addXP(50, "certificate_earned");
+      };
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: Save/Load Enhancement State
+      // ══════════════════════════════════════
+      function saveEnhancementState() {
+        try {
+          localStorage.setItem(
+            "neft_space_mission_v2_enhance",
+            JSON.stringify({ xp: _xp, fields: _fieldsAwarded }),
+          );
+        } catch (e) {}
+      }
+
+      function loadEnhancementState() {
+        try {
+          var raw = localStorage.getItem("neft_space_mission_v2_enhance");
+          if (raw) {
+            var d = JSON.parse(raw);
+            if (d.xp) _xp = d.xp;
+            if (d.fields) _fieldsAwarded = d.fields;
+            updateXPBar();
+          }
+        } catch (e) {}
+      }
+
+      // Init enhancements
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () {
+          loadEnhancementState();
+          updateXPBar();
+        });
+      } else {
+        loadEnhancementState();
+        updateXPBar();
+      }
     </script>
+
+    <!-- Enhancement: Certificate Overlay -->
+    <div class="certificate-overlay" id="certificateOverlay">
+      <div class="certificate-card">
+        <div class="cert-badge">&#128640;</div>
+        <div class="cert-title">Mission Commander Certificate</div>
+        <div class="cert-name" id="certStudentName">Cadet Name</div>
+        <p
+          style="
+            color: var(--space-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+          "
+        >
+          Has demonstrated outstanding mathematical skills and earned the rank
+          of <strong>Commander</strong>.
+        </p>
+        <div class="cert-stats">
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certXP">0</div>
+            <div class="cert-stat-label">Total XP</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certTasks">0</div>
+            <div class="cert-stat-label">Tasks Done</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certAccuracy">0%</div>
+            <div class="cert-stat-label">Completion</div>
+          </div>
+        </div>
+        <button
+          class="cert-close"
+          onclick="
+            document
+              .getElementById('certificateOverlay')
+              .classList.remove('visible')
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
   </body>
 </html>

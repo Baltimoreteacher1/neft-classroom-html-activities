@@ -928,6 +928,280 @@
         text-align: center;
       }
 
+      /* ══ ENHANCEMENT: Animations ══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes statCountUp {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes badgePop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .phase-section:not([hidden]) .task-card {
+        animation: cardEntrance 0.5s ease-out both;
+      }
+      .phase-section:not([hidden]) .task-card:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .phase-section:not([hidden]) .task-card:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .btn:active {
+        transform: translateY(0) scale(0.98) !important;
+      }
+      .xp-bar-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        margin-bottom: 14px;
+        background: var(--park-surface);
+        border: 1px solid var(--park-line);
+        border-radius: 12px;
+        box-shadow: var(--park-shadow);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .xp-bar-container .xp-label {
+        color: var(--park-purple);
+        white-space: nowrap;
+        min-width: 70px;
+      }
+      .xp-bar-track {
+        flex: 1;
+        height: 8px;
+        background: var(--park-purple-light);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-bar-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--park-purple),
+          var(--park-orange)
+        );
+        border-radius: 99px;
+        transition: width 0.6s ease;
+        width: 0%;
+      }
+      .xp-bar-container .xp-value {
+        color: var(--park-muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        margin: 8px 0;
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        border: 1px dashed var(--park-line);
+      }
+      .word-bank-title {
+        width: 100%;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--park-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        padding: 4px 12px;
+        background: #fff;
+        border: 1px solid var(--park-line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .word-chip:hover {
+        border-color: var(--park-purple);
+        transform: translateY(-1px);
+      }
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--park-cyan);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        margin-top: 6px;
+      }
+      .example-toggle:hover {
+        color: var(--park-purple);
+      }
+      .example-box {
+        display: none;
+        margin-top: 8px;
+        padding: 14px;
+        background: rgba(0, 0, 0, 0.02);
+        border-left: 3px solid var(--park-cyan);
+        border-radius: 0 10px 10px 0;
+        font-size: 0.9rem;
+        color: var(--park-muted);
+      }
+      .example-box.visible {
+        display: block;
+        animation: cardEntrance 0.3s ease;
+      }
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: #fff;
+        border: 3px solid var(--park-purple);
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+        animation: badgePop 0.5s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(124, 58, 237, 0.08),
+          transparent 50%,
+          rgba(234, 88, 12, 0.06)
+        );
+        pointer-events: none;
+      }
+      .certificate-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 12px;
+        animation: float 3s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--park-purple);
+        margin-bottom: 4px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .cert-stat {
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--park-line);
+        animation: statCountUp 0.5s ease both;
+      }
+      .cert-stat:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .cert-stat:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .cert-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--park-purple);
+      }
+      .cert-stat-label {
+        font-size: 0.75rem;
+        color: var(--park-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 12px;
+        background: var(--park-purple);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      @media (max-width: 500px) {
+        .cert-stats {
+          grid-template-columns: 1fr;
+        }
+        .certificate-card {
+          padding: 24px;
+        }
+      }
+      @media print {
+        .xp-bar-container,
+        .certificate-overlay,
+        .example-toggle,
+        .word-bank {
+          display: none !important;
+        }
+      }
+
       /* Confetti canvas */
       #confetti-canvas {
         position: fixed;
@@ -1059,6 +1333,15 @@
      MAIN CONTENT
      ═══════════════════════════════════════════════ -->
     <main class="main-container">
+      <!-- Enhancement: XP Bar -->
+      <div class="xp-bar-container" id="xpBarContainer">
+        <span class="xp-label">Engineer XP</span>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBarFill"></div>
+        </div>
+        <span class="xp-value" id="xpValue">0 / 500 XP</span>
+      </div>
+
       <!-- Mode Toggle -->
       <div class="mode-toggle-bar no-print">
         <button class="mode-btn" id="modeSupport" onclick="setMode('support')">
@@ -3895,6 +4178,12 @@
                 </svg>
                 Submit to Google Classroom
               </button>
+              <button
+                class="btn btn-primary btn-lg"
+                onclick="showCertificate()"
+              >
+                &#127906; View Certificate
+              </button>
             </div>
           </div>
 
@@ -4237,7 +4526,176 @@
             .toISOString()
             .split("T")[0];
         }
+
+        // ══ ENHANCEMENT: XP System ══
+        var _xp = 0,
+          _xpMax = 500,
+          _fieldsAwarded = {};
+        function _addXP(a, id) {
+          if (id && _fieldsAwarded[id]) return;
+          if (id) _fieldsAwarded[id] = true;
+          _xp = Math.min(_xp + a, _xpMax);
+          _updateXPBar();
+          if (a > 0) _playSound("xp");
+          _saveEnhState();
+        }
+        function _updateXPBar() {
+          var b = document.getElementById("xpBarFill"),
+            v = document.getElementById("xpValue");
+          if (b) b.style.width = Math.round((_xp / _xpMax) * 100) + "%";
+          if (v) v.textContent = _xp + " / " + _xpMax + " XP";
+        }
+        document.addEventListener("input", function (e) {
+          var el = e.target;
+          if (!el.id) return;
+          if (el.value && el.value.trim().length > 2)
+            _addXP(5, "field_" + el.id);
+        });
+        var _origGTP2 = window.goToPhase;
+        window.goToPhase = function (n) {
+          var p = currentPhase;
+          _origGTP2(n);
+          if (n > p) _addXP(25, "phase_" + p);
+        };
+
+        // ══ ENHANCEMENT: Sound Effects ══
+        var _audioCtx2 = null;
+        function _getAC() {
+          if (!_audioCtx2)
+            try {
+              _audioCtx2 = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          return _audioCtx2;
+        }
+        function _playSound(t) {
+          var c = _getAC();
+          if (!c) return;
+          try {
+            var o = c.createOscillator(),
+              g = c.createGain();
+            o.connect(g);
+            g.connect(c.destination);
+            g.gain.value = 0.08;
+            if (t === "xp") {
+              o.frequency.value = 466;
+              o.type = "sine";
+              g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.15);
+              o.start(c.currentTime);
+              o.stop(c.currentTime + 0.15);
+            } else if (t === "complete") {
+              [1, 1.25, 1.5, 2].forEach(function (n, i) {
+                var o2 = c.createOscillator(),
+                  g2 = c.createGain();
+                o2.connect(g2);
+                g2.connect(c.destination);
+                o2.frequency.value = 466 * n;
+                o2.type = "sine";
+                g2.gain.value = 0.06;
+                g2.gain.exponentialRampToValueAtTime(
+                  0.01,
+                  c.currentTime + 0.15 * (i + 1) + 0.2,
+                );
+                o2.start(c.currentTime + 0.15 * i);
+                o2.stop(c.currentTime + 0.15 * (i + 1) + 0.2);
+              });
+              return;
+            }
+          } catch (e) {}
+        }
+
+        // ══ ENHANCEMENT: Certificate ══
+        window.toggleExample = function (id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.toggle("visible");
+        };
+        window.showCertificate = function () {
+          var n = document.getElementById("studentName");
+          n = n ? n.value || "Engineer" : "Engineer";
+          document.getElementById("certStudentName").textContent = n;
+          document.getElementById("certXP").textContent = _xp;
+          var fs = document.querySelectorAll('input[type="text"],textarea'),
+            f = 0;
+          fs.forEach(function (x) {
+            if (x.value && x.value.trim().length > 0) f++;
+          });
+          document.getElementById("certTasks").textContent = f;
+          document.getElementById("certAccuracy").textContent =
+            (fs.length > 0 ? Math.round((f / fs.length) * 100) : 0) + "%";
+          document
+            .getElementById("certificateOverlay")
+            .classList.add("visible");
+          _playSound("complete");
+          _addXP(50, "certificate_earned");
+        };
+
+        // ══ ENHANCEMENT: Save/Load ══
+        function _saveEnhState() {
+          try {
+            localStorage.setItem(
+              "neft_unit5_theme_park_v2_enhance",
+              JSON.stringify({ xp: _xp, fields: _fieldsAwarded }),
+            );
+          } catch (e) {}
+        }
+        function _loadEnhState() {
+          try {
+            var r = localStorage.getItem("neft_unit5_theme_park_v2_enhance");
+            if (r) {
+              var d = JSON.parse(r);
+              if (d.xp) _xp = d.xp;
+              if (d.fields) _fieldsAwarded = d.fields;
+              _updateXPBar();
+            }
+          } catch (e) {}
+        }
+        _loadEnhState();
+        _updateXPBar();
       })();
     </script>
+
+    <!-- Enhancement: Certificate Overlay -->
+    <div class="certificate-overlay" id="certificateOverlay">
+      <div class="certificate-card">
+        <div class="cert-badge">&#127906;</div>
+        <div class="cert-title">Theme Park Engineer Certificate</div>
+        <div class="cert-name" id="certStudentName">Engineer Name</div>
+        <p
+          style="
+            color: var(--park-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+          "
+        >
+          Has demonstrated outstanding mathematical skills and earned the rank
+          of <strong>Lead Engineer</strong>.
+        </p>
+        <div class="cert-stats">
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certXP">0</div>
+            <div class="cert-stat-label">Total XP</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certTasks">0</div>
+            <div class="cert-stat-label">Tasks Done</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certAccuracy">0%</div>
+            <div class="cert-stat-label">Completion</div>
+          </div>
+        </div>
+        <button
+          class="cert-close"
+          onclick="
+            document
+              .getElementById('certificateOverlay')
+              .classList.remove('visible')
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
   </body>
 </html>
