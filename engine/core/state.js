@@ -1,4 +1,30 @@
 const STORAGE_PREFIX = "rma_";
+const PROGRESS_API = "https://eduwonderlab.pages.dev/api/progress";
+
+export async function loadFromServer(lessonId, studentName) {
+  try {
+    const url = `${PROGRESS_API}?lessonId=${encodeURIComponent(lessonId)}&studentName=${encodeURIComponent(studentName)}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data && data.ok && data.item ? data.item.state : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+export function syncToServer(lessonId, state, studentName, studentPeriod) {
+  try {
+    fetch(PROGRESS_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ studentName, studentPeriod, lessonId, state }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch (_) {
+    /* fire-and-forget */
+  }
+}
 
 export function normalizeStudentId(name) {
   return (name || "")
@@ -60,6 +86,21 @@ export function createState(lessonId, studentId) {
   };
 
   let state = load();
+  let lastServerSync = 0;
+  let serverSyncTimer = null;
+
+  function scheduleServerSync() {
+    if (!state.studentName) return;
+    const now = Date.now();
+    const elapsed = now - lastServerSync;
+    const delay = Math.max(0, 30000 - elapsed);
+    if (serverSyncTimer) return;
+    serverSyncTimer = setTimeout(() => {
+      serverSyncTimer = null;
+      lastServerSync = Date.now();
+      syncToServer(lessonId, state, state.studentName, state.studentPeriod);
+    }, delay);
+  }
 
   function load() {
     try {
@@ -81,6 +122,7 @@ export function createState(lessonId, studentId) {
     } catch (_) {
       /* storage full — silent fail */
     }
+    scheduleServerSync();
   }
 
   function notify() {
@@ -105,6 +147,26 @@ export function createState(lessonId, studentId) {
 
   return {
     get: () => state,
+
+    async hydrateFromServer() {
+      const name = state.studentName;
+      if (!name) return false;
+      const remote = await loadFromServer(lessonId, name);
+      if (!remote) return false;
+      const remoteSaved = remote.savedAt || remote.lastSavedAt || 0;
+      const localSaved = state.lastSavedAt || 0;
+      if (remoteSaved > localSaved) {
+        state = { ...defaults, ...remote };
+        try {
+          localStorage.setItem(key, JSON.stringify(state));
+        } catch (_) {
+          /* storage full — silent fail */
+        }
+        notify();
+        return true;
+      }
+      return false;
+    },
 
     set(patch) {
       Object.assign(state, patch);
