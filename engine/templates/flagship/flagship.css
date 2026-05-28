@@ -1,0 +1,186 @@
+/* Flagship lesson template — immersive narrative styling.
+   Uses shared design tokens (assets/design-tokens.css). */
+
+/* ── Mission intro overlay ── */
+.flagship-mission {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-5);
+  background:
+    radial-gradient(
+      circle at 30% 20%,
+      rgba(31, 166, 162, 0.35),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 75% 80%,
+      rgba(242, 193, 91, 0.3),
+      transparent 55%
+    ),
+    var(--navy);
+  animation: flagshipFade 0.4s var(--ease-out, ease) both;
+}
+.flagship-mission.leaving {
+  animation: flagshipFadeOut 0.35s ease forwards;
+}
+.flagship-mission-card {
+  max-width: 600px;
+  width: 100%;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-8) var(--sp-7);
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+  animation: flagshipRise 0.5s var(--ease-spring, ease) both 0.1s;
+}
+.flagship-mission-emoji {
+  font-size: 3.4rem;
+  line-height: 1;
+  margin-bottom: var(--sp-3);
+}
+.flagship-mission-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--teal);
+  margin-bottom: var(--sp-2);
+}
+.flagship-mission-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--navy);
+  margin: 0 0 var(--sp-4);
+}
+.flagship-mission-story {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ink);
+  margin: 0 0 var(--sp-5);
+}
+.flagship-mission-objective {
+  background: var(--teal-light);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  text-align: left;
+  margin-bottom: var(--sp-5);
+}
+.flagship-mission-objective span {
+  font-weight: 800;
+  color: var(--teal);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.flagship-mission-objective p {
+  margin: var(--sp-2) 0 0;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.flagship-mission-start {
+  width: 100%;
+}
+
+/* ── Scene HUD (per-phase narrative banner) ── */
+.flagship-scene-hud {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: center;
+  background: linear-gradient(
+    100deg,
+    rgba(18, 53, 91, 0.06),
+    rgba(31, 166, 162, 0.08)
+  );
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4) var(--sp-5);
+  margin-bottom: var(--sp-5);
+  animation: flagshipRise 0.4s var(--ease-out, ease) both;
+}
+.flagship-scene-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.flagship-scene-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--navy);
+  font-size: 1.02rem;
+}
+.flagship-scene-text {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+/* ── Completion finale ── */
+.flagship-finale {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.flagship-finale.visible {
+  opacity: 1;
+}
+.flagship-finale-card {
+  text-align: center;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-7) var(--sp-8);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  transform: scale(0.9);
+  transition: transform 0.4s var(--ease-spring, ease);
+}
+.flagship-finale.visible .flagship-finale-card {
+  transform: scale(1);
+}
+.flagship-finale-emoji {
+  font-size: 3.6rem;
+}
+.flagship-finale-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--navy);
+  margin: var(--sp-3) 0 var(--sp-2);
+}
+.flagship-finale-text {
+  color: var(--muted);
+  max-width: 420px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+@keyframes flagshipFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes flagshipFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes flagshipRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
