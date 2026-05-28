@@ -17,3 +17,4 @@ export { renderAlgebraTiles } from "./algebra-tiles.js";
 export { renderFractionBars } from "./fraction-bars.js";
 export { renderNetFolder } from "./net-folder.js";
 export { renderCoordinatePlane } from "./coordinate-plane.js";
+export { renderRemediation } from "./remediation-panel.js";
