@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>3D Vocab Gate — Demo — Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/design-tokens.css" />
+    <style>
+      body {
+        margin: 0;
+        font-family: var(--font-body, system-ui, sans-serif);
+        background: var(--navy, #12355b);
+        color: var(--ink, #21313f);
+        padding: 24px;
+      }
+      .vocab-gate {
+        max-width: 880px;
+        margin: 0 auto;
+        background: var(--cream, #f7f4ec);
+        border-radius: var(--radius-lg, 22px);
+        padding: 24px;
+      }
+      .vg-heading {
+        font-family: var(--font-display, sans-serif);
+        color: var(--navy);
+        margin: 0 0 4px;
+      }
+      .vg-sub {
+        color: var(--muted, #5f6f80);
+        margin: 0 0 20px;
+      }
+      .vg-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 16px;
+      }
+      .vg-card {
+        background: var(--card, #fff);
+        border: 1px solid var(--line, #d7e2ed);
+        border-radius: var(--radius-md, 14px);
+        padding: 14px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+      }
+      .vg-img {
+        width: 100%;
+        max-width: 180px;
+        aspect-ratio: 4 / 3;
+        object-fit: contain;
+        border-radius: var(--radius-md, 14px);
+        background: var(--card, #fff);
+        border: 1px solid var(--line, #d7e2ed);
+      }
+      .vg-emoji {
+        font-size: 56px;
+        line-height: 1;
+      }
+      .vg-term {
+        font-family: var(--font-display, sans-serif);
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .vg-def {
+        font-size: 0.9rem;
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      .vg-unlock {
+        display: block;
+        margin: 24px auto 0;
+        padding: 12px 22px;
+        border: 0;
+        border-radius: var(--radius-md, 14px);
+        background: var(--teal, #1fa6a2);
+        color: #fff;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .vg-status {
+        text-align: center;
+        color: #fff;
+        margin-top: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="gate"></div>
+    <div class="vg-status" id="status"></div>
+    <script type="module">
+      import { renderVocabGate } from "./vocab-gate.js";
+
+      // Mixed entries: some omit `image` (resolver supplies SVG), one provides
+      // an explicit image, one is emoji-only to exercise the fallback chain.
+      const terms = [
+        { term: "Ratio", definition: "A comparison of two quantities." },
+        { term: "Unit rate", definition: "A rate with a denominator of 1." },
+        { term: "Area", definition: "The space inside a 2D shape." },
+        { term: "Integer", definition: "A whole number or its opposite." },
+        { term: "Mean", definition: "The average of a set of numbers." },
+        {
+          term: "Volume",
+          definition: "The space inside a 3D solid.",
+          emoji: "🧊",
+        },
+        {
+          term: "Mystery bonus",
+          definition: "A surprise term with no SVG — emoji fallback.",
+          emoji: "🎁",
+          image: "",
+        },
+      ];
+
+      renderVocabGate(document.getElementById("gate"), {
+        terms,
+        onUnlock: () => {
+          document.getElementById("status").textContent = "Level unlocked! ✔";
+        },
+      });
+    </script>
+  </body>
+</html>
