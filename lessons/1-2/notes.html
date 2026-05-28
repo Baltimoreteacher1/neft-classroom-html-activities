@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Greatest Common Factor — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 1 · Standard 6.NS.4</p>
+    <h1>Greatest Common Factor</h1>
+    <p class="meta">Lesson 1-2</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section vocab">
+  <h2>Vocabulary</h2>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <h3 class="vocab-term">Factor</h3>
+  <p class="vocab-def">A number that divides evenly into another number</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/factor.svg" alt="A number that divides evenly into another number" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Factors of 12: 1, 2, 3, 4, 6, 12 — each divides 12 with no remainder</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Greatest Common Factor</h3>
+  <p class="vocab-def">The largest factor shared by two or more numbers</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/greatest-common-factor.svg" alt="The largest factor shared by two or more numbers" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Factors of 12: {1, 2, 3, 4, 6, 12}. Factors of 18: {1, 2, 3, 6, 9, 18}. Shared: 1, 2, 3, 6. GCF = 6</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Common factor</h3>
+  <p class="vocab-def">A factor that two or more numbers share</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/common-factor.svg" alt="A factor that two or more numbers share" onerror="this.style.display='none'" />
+    <p class="vocab-caption">8 and 12 both divide evenly by 1, 2, and 4 — those are their common factors</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Divisible</h3>
+  <p class="vocab-def">A number that can be divided by another with no remainder</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/divisible.svg" alt="A number that can be divided by another with no remainder" onerror="this.style.display='none'" />
+    <p class="vocab-caption">15 ÷ 3 = 5 with no remainder, so 15 is divisible by 3</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Prime factorization</h3>
+  <p class="vocab-def">Writing a number as a product of its prime factors, useful for finding GCF</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/prime-factorization.svg" alt="Writing a number as a product of its prime factors, useful for finding GCF" onerror="this.style.display='none'" />
+    <p class="vocab-caption">12 = 2 × 2 × 3 and 18 = 2 × 3 × 3. Shared primes: 2 × 3 = 6 = GCF</p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>Mission Control needs to organize 24 food packs and 36 water containers into equal groups for the crew pods.</li><li>Each pod must get the same number of food packs AND the same number of water containers.</li><li>What is the largest number of pods they can fill equally?</li><li>Sort these numbers — which are factors of BOTH 24 and 36 (common factors), and which are factors of only one?</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>What two quantities need to be divided equally?</li><li>What numbers could divide into both 24 and 36?</li><li>What's the biggest number of equal groups we can make?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">What is the GCF of 8 and 12?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Factors of 8: 1, 2, 4, 8. Factors of 12: 1, 2, 3, 4, 6, 12. The largest common factor is 4.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 4</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">Which pair of numbers has a GCF of 5?</p>
+    <p class="ex-solution"><strong>Solution:</strong> 15 = 3 × 5, 25 = 5 × 5. Both share the factor 5, and 5 is the largest shared factor.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 15 and 25</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">What is the GCF of 14 and 21?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Factors of 14: 1, 2, 7, 14. Factors of 21: 1, 3, 7, 21. The largest common factor is 7.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 7</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. What is the GCF of 9 and 15?</p>
+  <ol class="try-choices" type="A"><li>3</li><li>1</li><li>9</li><li>45</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A teacher has 36 pencils and 48 erasers. She wants to make identical supply bags with no items left over. What is the greatest number of bags she can make?</p>
+  <ol class="try-choices" type="A"><li>12 bags</li><li>6 bags</li><li>4 bags</li><li>36 bags</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">What is the GCF of 18 and 27?</p>
+  <ol class="try-choices" type="A"><li>9</li><li>3</li><li>6</li><li>18</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 3 <span class="ak-why">— Factors of 9: 1, 3, 9. Factors of 15: 1, 3, 5, 15. The largest common factor is 3.</span></li><li><strong>Try It 2:</strong> A. 12 bags <span class="ak-why">— GCF(36, 48) = 12. She can make 12 bags, each with 3 pencils and 4 erasers.</span></li><li><strong>Exit Ticket:</strong> A. 9 <span class="ak-why">— Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 27: 1, 3, 9, 27. Common: 1, 3, 9. GCF = 9.</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 1-2 · Standard 6.NS.4</footer>
+</main>
+</body>
+</html>
