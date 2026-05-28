@@ -1387,3 +1387,58 @@ body:has(.identity-screen) .export-toolbar {
     margin-top: 38px;
   }
 }
+
+/* ── Level 1 / Level 2 selector ── */
+.level-selector {
+  margin-bottom: var(--sp-5);
+}
+.level-selector-intro {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: var(--sp-3);
+}
+.level-selector-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+}
+.level-option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  text-align: left;
+  padding: 12px 14px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 64px;
+}
+.level-option:hover {
+  border-color: var(--teal);
+}
+.level-option.selected {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+.level-option:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+.level-option-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--navy);
+}
+.level-option-blurb {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+@media (max-width: 640px) {
+  .level-selector-row {
+    grid-template-columns: 1fr;
+  }
+}
