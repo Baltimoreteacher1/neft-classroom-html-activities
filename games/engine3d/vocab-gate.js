@@ -1,4 +1,5 @@
 import { onActivate } from "./a11y.js";
+import { resolveVocabImage } from "../../engine/core/vocab-images.js";
 
 /**
  * Level 1 vocab intro. Shows word + plain-language definition + image for each
@@ -80,8 +81,9 @@ export function showVocabGate(
 }
 
 function mediaFor(t) {
-  if (t.image) {
-    return `<img src="${escapeAttr(t.image)}" alt="${escapeAttr(t.term)}" class="e3d-vocab-img"
+  const src = t.image || resolveVocabImage(t.term);
+  if (src) {
+    return `<img src="${escapeAttr(src)}" alt="${escapeAttr(t.term)}" class="e3d-vocab-img"
       onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'e3d-vocab-emoji',textContent:'${escapeAttr(t.emoji || letterFor(t.term))}'}))" />`;
   }
   return `<div class="e3d-vocab-emoji">${escapeHtml(t.emoji || letterFor(t.term))}</div>`;

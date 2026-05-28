@@ -1,3 +1,18 @@
+import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
+
+function vocabImageEl(term, definition, max = 96) {
+  const img = document.createElement("img");
+  img.src = resolveVocabImage(term);
+  img.alt = vocabImageAlt(term, definition);
+  img.loading = "lazy";
+  img.style.cssText = `
+    display:block; width:${max}px; aspect-ratio:4 / 3; flex:0 0 auto;
+    border-radius:var(--radius-sm); background:var(--card);
+    border:1px solid var(--line); object-fit:contain;
+  `;
+  return img;
+}
+
 export function renderVocabSort(container, { terms, onComplete }) {
   const wrapper = document.createElement("div");
 
@@ -83,13 +98,19 @@ export function renderVocabSort(container, { terms, onComplete }) {
     bucket.style.cssText +=
       "min-height:120px; transition:all var(--duration-fast) ease;";
 
-    const bucketLabel = document.createElement("div");
-    bucketLabel.style.cssText = `
-      font-weight:800; font-size:0.95rem; color:var(--navy); margin-bottom:var(--sp-2);
+    const labelRow = document.createElement("div");
+    labelRow.style.cssText = `
+      display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2);
       padding-bottom:var(--sp-2); border-bottom:2px solid var(--line);
     `;
+    labelRow.append(vocabImageEl(t.term, t.definition));
+
+    const bucketLabel = document.createElement("div");
+    bucketLabel.style.cssText =
+      "font-weight:800; font-size:0.95rem; color:var(--navy);";
     bucketLabel.textContent = t.term;
-    bucket.append(bucketLabel);
+    labelRow.append(bucketLabel);
+    bucket.append(labelRow);
 
     const bucketHint = document.createElement("div");
     bucketHint.style.cssText =
