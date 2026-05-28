@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Area of Trapezoids — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 5 · Standard 6.G.1</p>
+    <h1>Area of Trapezoids</h1>
+    <p class="meta">Lesson 5-2</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section vocab">
+  <h2>Vocabulary</h2>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <h3 class="vocab-term">Trapezoid</h3>
+  <p class="vocab-def">A quadrilateral with exactly one pair of parallel sides</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/trapezoid.svg" alt="A quadrilateral with exactly one pair of parallel sides" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A table top wider than the bottom shelf — the top and bottom edges are parallel, the two sides slant inward</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Base 1 (b1)</h3>
+  <p class="vocab-def">One of the two parallel sides of a trapezoid</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/base-1-b1.svg" alt="One of the two parallel sides of a trapezoid" onerror="this.style.display='none'" />
+    <p class="vocab-caption">If the bottom of the trapezoid is 10 ft, then b₁ = 10 ft in the formula A = ½(b₁ + b₂) × h</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Base 2 (b2)</h3>
+  <p class="vocab-def">The other parallel side of a trapezoid</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/base-2-b2.svg" alt="The other parallel side of a trapezoid" onerror="this.style.display='none'" />
+    <p class="vocab-caption">If the top of the trapezoid is 6 ft, then b₂ = 6 ft; both bases are parallel to each other</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Height</h3>
+  <p class="vocab-def">The perpendicular distance between the two parallel bases</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/height.svg" alt="The perpendicular distance between the two parallel bases" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A dashed vertical line from the top base straight down to the bottom base at a 90° angle — NOT the slanted side</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Area</h3>
+  <p class="vocab-def">The amount of space inside a two-dimensional figure</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/area.svg" alt="The amount of space inside a two-dimensional figure" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A trapezoid with b₁ = 10, b₂ = 6, h = 4 has area = ½(10 + 6) × 4 = 32 sq units</p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>Your architecture firm is designing a trapezoidal window for a modern building.</li><li>The glass supplier charges by the square foot, so the team must calculate the exact area.</li><li>The window has a top edge of 4 feet, a bottom edge of 8 feet, and a height of 5 feet.</li><li>Plot the vertices of a trapezoid with bases of 8 and 4, and height of 5. Place points at (0, 0), (8, 0), (6, 5), and (2, 5).</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>What shape is the window?</li><li>How many parallel sides does it have?</li><li>What measurements are given?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">What is the area of a trapezoid with bases 6 cm and 10 cm, and height 4 cm?</p>
+    <p class="ex-solution"><strong>Solution:</strong> A = ½ × (b₁ + b₂) × h = ½ × (6 + 10) × 4 = ½ × 16 × 4 = 32 sq cm.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 32 sq cm</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">A trapezoid has an area of 45 sq ft, bases of 7 ft and 11 ft. What is the height?</p>
+    <p class="ex-solution"><strong>Solution:</strong> A = ½ × (b₁ + b₂) × h → 45 = ½ × 18 × h → 45 = 9h → h = 5 ft.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 5 ft</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">What is the first step when finding the area of a trapezoid?</p>
+    <p class="ex-solution"><strong>Solution:</strong> The formula is A = ½ × (b₁ + b₂) × h. The first step is to add the two parallel bases.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. Add the two bases together</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. What is the first step when finding the area of a trapezoid?</p>
+  <ol class="try-choices" type="A"><li>Add the two bases together</li><li>Multiply the two bases</li><li>Subtract the shorter base from the longer base</li><li>Divide the height by 2</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A trapezoid has bases of 5 in and 9 in, and a height of 6 in. What is its area?</p>
+  <ol class="try-choices" type="A"><li>42 sq in</li><li>84 sq in</li><li>27 sq in</li><li>30 sq in</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">A trapezoid has bases of 9 inches and 5 inches, and a height of 6 inches. What is its area?</p>
+  <ol class="try-choices" type="A"><li>42 sq in</li><li>84 sq in</li><li>27 sq in</li><li>42 in</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. Add the two bases together <span class="ak-why">— The formula is A = ½ × (b₁ + b₂) × h. The first step is to add the two parallel bases.</span></li><li><strong>Try It 2:</strong> A. 42 sq in <span class="ak-why">— A = ½ × (5 + 9) × 6 = ½ × 14 × 6 = ½ × 84 = 42 sq in.</span></li><li><strong>Exit Ticket:</strong> A. 42 sq in <span class="ak-why">— A = 1/2 x (b1 + b2) x h = 1/2 x (9 + 5) x 6 = 1/2 x 14 x 6 = 42 square inches.</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 5-2 · Standard 6.G.1</footer>
+</main>
+</body>
+</html>

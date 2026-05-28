@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Display Data: Histograms — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 8 · Standard 6.SP.4</p>
+    <h1>Display Data: Histograms</h1>
+    <p class="meta">Lesson 8-6</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section vocab">
+  <h2>Vocabulary</h2>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <h3 class="vocab-term">Histogram</h3>
+  <p class="vocab-def">A bar graph that shows the frequency of data within equal intervals; bars touch with no gaps</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/histogram.svg" alt="A bar graph that shows the frequency of data within equal intervals; bars touch with no gaps" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Bars side by side: 0-9 pts (3 players), 10-19 pts (8 players), 20-29 pts (4 players)</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Frequency</h3>
+  <p class="vocab-def">The number of times a data value or group of values occurs</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/frequency.svg" alt="The number of times a data value or group of values occurs" onerror="this.style.display='none'" />
+    <p class="vocab-caption">If 5 players scored 10-19 points, the frequency for that interval is 5</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Interval</h3>
+  <p class="vocab-def">A range of values used to group data in a histogram</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/interval.svg" alt="A range of values used to group data in a histogram" onerror="this.style.display='none'" />
+    <p class="vocab-caption">0-9, 10-19, 20-29 are intervals of width 10 — each covers 10 values</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Distribution</h3>
+  <p class="vocab-def">The way data values are spread out or arranged across possible values</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/distribution.svg" alt="The way data values are spread out or arranged across possible values" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Most data in the middle with fewer at the ends = bell-shaped; most on one side with a tail = skewed</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Data distribution</h3>
+  <p class="vocab-def">The shape and spread of a data set</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/data-distribution.svg" alt="The shape and spread of a data set" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A histogram that is tallest in the middle and shorter on both sides is symmetric</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Variability</h3>
+  <p class="vocab-def">How spread out the values in a data set are</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/variability.svg" alt="How spread out the values in a data set are" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Data in just 2 intervals = low variability. Data across 6 intervals = high variability</p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>The basketball league has 30 players and wants to display everyone's points-per-game average in a way that shows how the data is distributed.</li><li>The raw averages are: 2, 5, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 28, 30, 32.</li><li>Listing all 30 numbers is hard to read — a histogram will reveal the pattern!</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>Where do most of the scoring averages seem to cluster?</li><li>Are there many players at the very low or very high end?</li><li>How could you group these numbers to see a pattern?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Add all frequencies: 3 + 8 + 12 + 5 = 28 players.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 28</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">In a histogram, what does the height of each bar represent?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Each bar's height shows the frequency — how many data values fall within that interval.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. The frequency (count) of data in that interval</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">How is a histogram different from a regular bar graph?</p>
+    <p class="ex-solution"><strong>Solution:</strong> In a histogram, bars touch because each interval connects to the next (0–9, 10–19, etc.) — the data is continuous.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. Histogram bars touch (no gaps) because the intervals are continuous ranges</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. A histogram has intervals: 0–4, 5–9, 10–14, 15–19. What is the width of each interval?</p>
+  <ol class="try-choices" type="A"><li>5</li><li>4</li><li>10</li><li>19</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A histogram of test scores shows: 50–59: 2, 60–69: 5, 70–79: 10, 80–89: 8, 90–99: 3. Which interval has the most students?</p>
+  <ol class="try-choices" type="A"><li>70–79 with 10 students</li><li>80–89 with 8 students</li><li>60–69 with 5 students</li><li>90–99 with 3 students</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">A histogram of player heights shows: 60–63 in: 2, 64–67 in: 7, 68–71 in: 9, 72–75 in: 4. Which interval has the most players?</p>
+  <ol class="try-choices" type="A"><li>68–71 inches</li><li>64–67 inches</li><li>72–75 inches</li><li>60–63 inches</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 5 <span class="ak-why">— Each interval covers 5 values (0,1,2,3,4 then 5,6,7,8,9 etc.), so the width is 5.</span></li><li><strong>Try It 2:</strong> A. 70–79 with 10 students <span class="ak-why">— The 70–79 interval has the highest frequency of 10 students.</span></li><li><strong>Exit Ticket:</strong> A. 68–71 inches <span class="ak-why">— The 68–71 inch interval has the highest frequency of 9 players.</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-6 · Standard 6.SP.4</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Integers and Absolute Value — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 9 · Standard 6.NS.7</p>
+    <h1>Integers and Absolute Value</h1>
+    <p class="meta">Lesson 9-2</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section vocab">
+  <h2>Vocabulary</h2>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <h3 class="vocab-term">Integer</h3>
+  <p class="vocab-def">A whole number that can be positive, negative, or zero</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/integer.svg" alt="A whole number that can be positive, negative, or zero" onerror="this.style.display='none'" />
+    <p class="vocab-caption">... -3, -2, -1, 0, 1, 2, 3 ... shown on a number line with 0 in the center</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Positive</h3>
+  <p class="vocab-def">A number greater than zero, located to the right of zero on a number line</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/positive.svg" alt="A number greater than zero, located to the right of zero on a number line" onerror="this.style.display='none'" />
+    <p class="vocab-caption">+5 means 5 above zero, like 5 floors above ground level</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Negative</h3>
+  <p class="vocab-def">A number less than zero, located to the left of zero on a number line</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/negative.svg" alt="A number less than zero, located to the left of zero on a number line" onerror="this.style.display='none'" />
+    <p class="vocab-caption">-3 means 3 below zero, like 3 floors underground</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Absolute value</h3>
+  <p class="vocab-def">The distance a number is from zero on a number line, always positive or zero</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/absolute-value.svg" alt="The distance a number is from zero on a number line, always positive or zero" onerror="this.style.display='none'" />
+    <p class="vocab-caption">|-5| = 5 and |5| = 5 — both are 5 units from 0</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Opposite</h3>
+  <p class="vocab-def">Two numbers that are the same distance from zero but on different sides</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/opposite.svg" alt="Two numbers that are the same distance from zero but on different sides" onerror="this.style.display='none'" />
+    <p class="vocab-caption">3 and -3 are opposites — both are 3 units from 0</p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>Captain Vega's treasure map has clues hidden at different elevations!</li><li>Some treasures are buried underground (below sea level) and some are on mountaintops (above sea level).</li><li>Sea level is marked as 0.</li><li>A treasure chest is at -4 (4 meters below sea level) and a lookout tower is at +6 (6 meters above sea level).</li><li>Plot each integer on the number line and find its absolute value (distance from zero).</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>What does the negative sign tell you about the treasure chest's location?</li><li>Which location is farther from sea level — the chest at -4 or the tower at +6?</li><li>How can you find the distance from sea level without worrying about direction?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">What is the absolute value of -9?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Absolute value is the distance from zero. -9 is 9 units from zero, so |-9| = 9.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 9</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p>
+    <p class="ex-solution"><strong>Solution:</strong> |-3| = 3, |7| = 7, |-5| = 5, |2| = 2. The greatest absolute value is 7.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 7</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">What is |0|?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Zero is 0 units from itself on the number line, so |0| = 0.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 0</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. What is |0|?</p>
+  <ol class="try-choices" type="A"><li>0</li><li>1</li><li>-1</li><li>There is no answer</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. Which statement about absolute value is TRUE?</p>
+  <ol class="try-choices" type="A"><li>|-4| = |4| because both are 4 units from zero</li><li>|-4| = -4 because the number is negative</li><li>|4| &gt; |-4| because positive is always bigger</li><li>|-4| = 0 because negatives cancel out</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">Which integer has an absolute value of 8 and is located to the LEFT of zero on the number line?</p>
+  <ol class="try-choices" type="A"><li>8</li><li>-8</li><li>0</li><li>-80</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 0 <span class="ak-why">— Zero is 0 units from itself on the number line, so |0| = 0.</span></li><li><strong>Try It 2:</strong> A. |-4| = |4| because both are 4 units from zero <span class="ak-why">— Absolute value measures distance from zero. Both -4 and 4 are 4 units from zero, so |-4| = |4| = 4.</span></li><li><strong>Exit Ticket:</strong> B. -8 <span class="ak-why">— To the left of zero means negative. The integer -8 has an absolute value of 8 because it is 8 units from zero.</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 9-2 · Standard 6.NS.7</footer>
+</main>
+</body>
+</html>
