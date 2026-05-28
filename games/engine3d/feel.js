@@ -121,14 +121,25 @@ export function createFeel(ctx2 = {}) {
       bursts.add({ points, vel, count, age: 0, life });
     },
 
-    /** Screen-shake. Magnitude in world units. */
+    /**
+     * Screen-shake. Magnitude in world units. Does NOT re-anchor the base
+     * camera position: shake offsets are applied relative to a stable
+     * baseCamPos captured at construction. Overlapping shakes (or a shake
+     * fired while a previous one is still settling) therefore never compound
+     * or drift the camera from its real resting position. If the game moves
+     * the camera deliberately, call syncCamera() to re-base.
+     */
     shake(magnitude = 0.4, duration = 0.3) {
       if (reduced || !camera) return;
-      baseCamPos = camera.position.clone();
+      if (!baseCamPos) baseCamPos = camera.position.clone();
       shake = { t: 0, dur: duration, mag: magnitude };
     },
 
-    /** Update the shake anchor if the camera was moved by the game. */
+    /**
+     * Explicitly re-base the shake anchor to the camera's current position.
+     * Call after the game intentionally repositions the camera so the next
+     * shake settles to the new resting point instead of the old one.
+     */
     syncCamera() {
       if (camera) baseCamPos = camera.position.clone();
     },

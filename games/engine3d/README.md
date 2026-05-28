@@ -23,7 +23,7 @@ import map so it stays offline-cacheable.
 <div id="game" style="position:fixed;inset:0"></div>
 <script type="module">
   import { mountGame } from "/games/engine3d/index.js";
-  import myGame from "/games/3d/unit-5/index.js"; // your unit game module
+  import myGame from "/games/3d/unit-5/game.js"; // your unit game module
   mountGame(document.getElementById("game"), myGame, {});
 </script>
 ```
@@ -165,7 +165,11 @@ Branch your difficulty on `ctx.level`. Never surface the word "ESOL" in UI or co
 - `ctx.announce(text)` narrates state changes to screen readers (aria-live).
 - Provide a keyboard path: use `input.onPress` (`action`/`confirm`) so the game
   is playable without a pointer. On-screen touch controls appear automatically
-  on touch devices.
+  on touch devices. Those d-pad/action buttons call `stopPropagation` on their
+  pointer events, so a game wiring `input.onTap` on the canvas will **not**
+  double-fire when a student presses an on-screen control. If you add your own
+  DOM controls over the canvas, do the same (`e.stopPropagation()` in the
+  pointer handler) to avoid spurious taps.
 - `feel` checks `prefers-reduced-motion` and reduces/disables particles, tweens,
   and screen-shake automatically (`feel.reducedMotion` exposes the result).
 
@@ -180,7 +184,7 @@ prefer `MeshStandardMaterial`/`MeshBasicMaterial`. Dispose anything you add in
 ## Minimal example unit game
 
 ```js
-// games/3d/unit-X/index.js
+// games/3d/unit-X/game.js
 export default {
   id: "unit-x-demo",
   vocab: [
@@ -236,19 +240,106 @@ export default {
 
 ---
 
+## Spatial helpers (grids, exact math, world labels)
+
+Spatial/geometry games (area, volume, coordinate-plane units) must **not**
+re-derive grid math or approximate area by counting cells. Use these shared,
+exact helpers instead.
+
+### `grid.js` — `createGrid(ctx, { n=8, cell=1, origin })`
+
+Builds a floor plate + `GridHelper` + an invisible raycast **pick-plane** sized
+to the grid, all on the XZ plane at `origin.y`. Cells are indexed `i` (along +X)
+and `j` (along +Z), `0..n-1`; vertices are `0..n`. Coordinates are exact and
+consistent across all the conversions.
+
+```js
+import { createGrid } from "/games/engine3d/grid.js";
+
+const grid = createGrid(ctx, { n: 8, cell: 1 }); // adds grid.group to ctx.scene
+const center = grid.cellCenter(2, 3); // THREE.Vector3 world center of cell (2,3)
+grid.highlightCell(2, 3); // translucent highlight; null/out-of-bounds hides it
+
+// Raycast a tap through the camera onto the grid:
+input.onTap(() => {
+  const hits = input.raycast(camera, [grid.pickPlane]);
+  if (hits.length) {
+    const { i, j, inBounds } = grid.worldToCell(hits[0].point);
+    if (inBounds) grid.highlightCell(i, j);
+  }
+});
+
+const v = grid.vertexWorld(0, 0); // corner vertex world position
+const nv = grid.worldToVertex(somePoint); // -> { i, j, inBounds } nearest vertex
+grid.dispose(); // removes group + frees geometry/materials
+```
+
+Returns: `{ group, pickPlane, n, cell, origin, cellCenter(i,j), worldToCell(p),
+vertexWorld(i,j), worldToVertex(p), highlightCell(i,j), dispose() }`.
+
+### `geometry-math.js` — exact area/volume (pure, unit-tested)
+
+Pure functions (no Three.js) so they are testable in Node and guarantee
+mathematically correct values.
+
+```js
+import {
+  rectArea, // (w, h) -> w*h
+  triangleArea, // (base, height) -> base*height/2
+  polygonArea, // (points[{x,y}|{x,z}]) -> shoelace area (winding-independent)
+  compositeArea, // (parts[]) -> signed sum; part.sign:-1 subtracts (holes)
+  prismVolume, // (l, w, h) -> l*w*h
+  decompose, // (parts[]) -> { parts:[{...,area,signedArea}], total }
+} from "/games/engine3d/geometry-math.js";
+
+rectArea(4, 3); // 12
+triangleArea(6, 4); // 12
+compositeArea([
+  { type: "rect", w: 4, h: 3 },
+  { type: "triangle", base: 4, height: 2 },
+]); // 16
+prismVolume(2, 3, 4); // 24
+```
+
+Part shapes for `compositeArea`/`decompose`: `{ type:"rect", w, h }`,
+`{ type:"triangle", base, height }`, `{ type:"polygon", points }`. Any part may
+add `sign: -1` to subtract it (cut-out).
+
+Run the tests: `node games/engine3d/geometry-math.test.mjs`.
+
+### `label3d.js` — world-space text sprites
+
+```js
+import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+
+const label = makeLabel("4×3=12", { scale: 0.9 }); // -> THREE.Sprite
+label.position.copy(grid.cellCenter(2, 3));
+label.position.y += 0.5;
+scene.add(label);
+updateLabel(label, "4×3=12 ✓"); // re-render text in place, stays crisp
+```
+
+Canvas size is capped (`maxWidth`, default 1024px) so labels stay crisp on
+Chromebooks without blowing texture memory.
+
+---
+
 ## Module map
 
-| File            | Export(s)                                                            |
-| --------------- | -------------------------------------------------------------------- |
-| `core.js`       | `createScene(mountEl, opts)`                                         |
-| `input.js`      | `createInput(domEl)`                                                 |
-| `hud.js`        | `createHUD(mountEl)`                                                 |
-| `vocab-gate.js` | `showVocabGate(mountEl, { terms, onComplete, announce })`            |
-| `levels.js`     | `showLevelSelect`, `levelInfo`, `LEVELS`                             |
-| `feel.js`       | `createFeel(ctx2)`                                                   |
-| `a11y.js`       | `createAnnouncer`, `prefersReducedMotion`, `trapFocus`, `onActivate` |
-| `progress.js`   | `reportScore`, `saveProgress`, `loadProgress`, `flushQueue`          |
-| `game-base.js`  | `mountGame(mountEl, gameModule, options)`                            |
-| `index.js`      | barrel re-export of all of the above                                 |
+| File               | Export(s)                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `core.js`          | `createScene(mountEl, opts)`                                                           |
+| `input.js`         | `createInput(domEl)`                                                                   |
+| `hud.js`           | `createHUD(mountEl)`                                                                   |
+| `vocab-gate.js`    | `showVocabGate(mountEl, { terms, onComplete, announce })`                              |
+| `levels.js`        | `showLevelSelect`, `levelInfo`, `LEVELS`                                               |
+| `feel.js`          | `createFeel(ctx2)`                                                                     |
+| `a11y.js`          | `createAnnouncer`, `prefersReducedMotion`, `trapFocus`, `onActivate`                   |
+| `progress.js`      | `reportScore`, `saveProgress`, `loadProgress`, `flushQueue`                            |
+| `grid.js`          | `createGrid(ctx, { n, cell, origin })`                                                 |
+| `geometry-math.js` | `rectArea`, `triangleArea`, `polygonArea`, `compositeArea`, `prismVolume`, `decompose` |
+| `label3d.js`       | `makeLabel(text, opts)`, `updateLabel(sprite, text)`                                   |
+| `game-base.js`     | `mountGame(mountEl, gameModule, options)`                                              |
+| `index.js`         | barrel re-export of all of the above                                                   |
 
 See `demo.html` for a complete, runnable Cube-Sum game using the full pipeline.

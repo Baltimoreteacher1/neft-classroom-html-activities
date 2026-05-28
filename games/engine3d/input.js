@@ -146,6 +146,9 @@ function buildTouchUi(host, state, fireAction) {
     const dir = btn.getAttribute("data-dir");
     const down = (e) => {
       e.preventDefault();
+      // Stop the event reaching the canvas so a game using onTap on the
+      // canvas does not also fire a tap when the on-screen control is pressed.
+      e.stopPropagation();
       if (dir === "action") {
         state.action = true;
         fireAction();
@@ -155,6 +158,7 @@ function buildTouchUi(host, state, fireAction) {
     };
     const up = (e) => {
       e.preventDefault();
+      e.stopPropagation();
       if (dir === "action") state.action = false;
       else state[dir] = false;
     };

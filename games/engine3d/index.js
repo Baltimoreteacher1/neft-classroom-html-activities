@@ -17,3 +17,13 @@ export {
   flushQueue,
 } from "./progress.js";
 export { mountGame } from "./game-base.js";
+export { createGrid } from "./grid.js";
+export { makeLabel, updateLabel } from "./label3d.js";
+export {
+  rectArea,
+  triangleArea,
+  polygonArea,
+  compositeArea,
+  prismVolume,
+  decompose,
+} from "./geometry-math.js";
