@@ -10,22 +10,22 @@
     {
       "term": "Solve",
       "definition": "To find the value or values that make an equation or inequality true",
-      "visual": "x + 3 > 10 → x > 7"
+      "visual": "x + 3 > 10 → subtract 3 → x > 7 — any number greater than 7 works"
     },
     {
       "term": "Graph",
       "definition": "To represent solutions on a number line using circles and shading",
-      "visual": "x > 7: open circle at 7, shade right"
+      "visual": "x > 7: open circle at 7, shade right — shows all solutions at a glance"
     },
     {
       "term": "Solution",
       "definition": "A value that makes an equation or inequality true when substituted for the variable",
-      "visual": "x = 8 is a solution to x > 7 because 8 > 7 is true"
+      "visual": "x = 8 is a solution to x > 7 because 8 > 7 is true; x = 5 is not because 5 > 7 is false"
     },
     {
       "term": "Substitute",
       "definition": "To replace a variable with a specific value to check if it makes the statement true",
-      "visual": "Substitute x = 5 into x + 3 > 10: 5 + 3 = 8 > 10? No."
+      "visual": "Substitute x = 5 into x + 3 > 10: 5 + 3 = 8, and 8 > 10 is false, so x = 5 is not a solution"
     }
   ],
   "launch": {
@@ -94,38 +94,48 @@
       {
         "type": "multiple-choice",
         "stem": "Solve: x + 6 > 14",
-        "choices": [
-          "x > 8",
-          "x > 20",
-          "x < 8",
-          "x = 8"
-        ],
+        "choices": ["x > 8", "x > 20", "x < 8", "x = 8"],
         "correctIndex": 0,
         "explanation": "Subtract 6 from both sides: x > 14 − 6 = 8. Graph: open circle at 8, shade right."
       },
       {
         "type": "multiple-choice",
         "stem": "Solve: x − 9 ≤ 3",
-        "choices": [
-          "x ≤ 12",
-          "x ≤ 6",
-          "x ≥ 12",
-          "x = 12"
-        ],
+        "choices": ["x ≤ 12", "x ≤ 6", "x ≥ 12", "x = 12"],
         "correctIndex": 0,
         "explanation": "Add 9 to both sides: x ≤ 3 + 9 = 12. Graph: closed circle at 12, shade left."
       },
       {
         "type": "multiple-choice",
-        "stem": "Solve: x − 12 = 30",
-        "choices": [
-          "x = 42",
-          "x = 18",
-          "x = 30",
-          "x = 360"
-        ],
+        "stem": "Solve: x + 10 ≥ 25",
+        "choices": ["x ≥ 15", "x ≥ 35", "x ≤ 15", "x = 15"],
         "correctIndex": 0,
-        "explanation": "Add 12 to both sides: x = 30 + 12 = 42."
+        "explanation": "Subtract 10 from both sides: x ≥ 25 − 10 = 15. Graph: closed circle at 15, shade right."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Solve: x − 4 < 11",
+        "choices": ["x < 15", "x < 7", "x > 15", "x = 15"],
+        "correctIndex": 0,
+        "explanation": "Add 4 to both sides: x < 11 + 4 = 15. Graph: open circle at 15, shade left."
+      },
+      {
+        "type": "number-line",
+        "instructions": "Solve x + 3 > 9, then graph the solution on the number line.",
+        "problems": [
+          {
+            "inequality": "x + 3 > 9",
+            "solveWork": "x > 9 − 3 → x > 6",
+            "boundary": 6,
+            "circleType": "open",
+            "direction": "right",
+            "label": "Solve and graph: x + 3 > 9"
+          }
+        ],
+        "hints": [
+          "Subtract 3 from both sides: x > 6.",
+          "Open circle at 6, shade to the right."
+        ]
       }
     ],
     "onLevel": [
@@ -133,25 +143,31 @@
         "type": "fill-table",
         "columns": [
           "Inequality",
-          "Solve",
+          "Inverse Operation",
           "Solution",
           "Graph Description"
         ],
         "rows": [
           {
             "inequality": "x + 11 ≥ 20",
-            "solve": "Subtract 11 from both sides",
+            "inverse": "Subtract 11",
             "solution": "x ≥ 9",
             "graphDescription": "Closed circle at 9, shade right"
           },
           {
             "inequality": "x − 3 < 7",
-            "solve": "Add 3 to both sides",
+            "inverse": "Add 3",
             "solution": "x < 10",
             "graphDescription": "Open circle at 10, shade left"
+          },
+          {
+            "inequality": "x + 8 ≤ 20",
+            "inverse": "Subtract 8",
+            "solution": "x ≤ 12",
+            "graphDescription": "Closed circle at 12, shade left"
           }
         ],
-        "label": "Solve each inequality and describe the graph."
+        "label": "Solve each inequality, describe the inverse operation, and describe the graph."
       },
       {
         "type": "multiple-choice",
@@ -164,6 +180,44 @@
         ],
         "correctIndex": 0,
         "explanation": "Substitute: 5 + 4 = 9. Since 9 > 12 is false, x = 5 is NOT a solution."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Solve each inequality first, then sort by whether x = 10 is a solution.",
+        "categories": [
+          {
+            "label": "x = 10 IS a solution",
+            "items": [
+              "x + 2 > 8 (x > 6)",
+              "x − 5 ≥ 3 (x ≥ 8)",
+              "x + 1 ≤ 15 (x ≤ 14)"
+            ]
+          },
+          {
+            "label": "x = 10 is NOT a solution",
+            "items": [
+              "x + 3 > 15 (x > 12)",
+              "x − 2 ≥ 9 (x ≥ 11)",
+              "x + 6 < 10 (x < 4)"
+            ]
+          }
+        ],
+        "hints": [
+          "First solve the inequality to find the solution set. Then check if 10 is in that set.",
+          "For x > 12: is 10 > 12? No. For x > 6: is 10 > 6? Yes."
+        ],
+        "label": "Solve each inequality, then test if x = 10 is a solution."
+      },
+      {
+        "type": "balance-scale",
+        "equation": "x + 7 ≥ 19",
+        "variable": "x",
+        "answer": 12,
+        "label": "Solve the inequality x + 7 ≥ 19 using the balance scale. What is the boundary value?",
+        "hints": [
+          "Subtract 7 from both sides: x ≥ 19 − 7 = 12.",
+          "The boundary is 12. x can be 12 or any number greater than 12."
+        ]
       }
     ],
     "extending": [
@@ -197,16 +251,37 @@
       },
       {
         "type": "open-response",
-        "prompt": "Write a real-world situation that can be modeled by the equation 3x + 5 = 20. Solve it and explain what x represents.",
-        "sentenceFrame": "Situation: ___. In this problem, x represents ___. Solving: ___ so x = ___.",
+        "prompt": "A detective has a budget of at most $100 for supplies. She already spent $37 on gloves. Write an inequality for the remaining amount r she can spend, solve it, graph it, and name three possible values for r.",
+        "sentenceFrame": "Inequality: 37 + r ≤ ___. Solving: r ≤ ___ − 37 = ___. Graph: ___ circle at ___, shade ___. Three possible values: ___.",
         "keywords": [
-          "equation",
-          "solve",
-          "variable",
-          "represents",
-          "both sides"
+          "100",
+          "63",
+          "at most",
+          "closed",
+          "left",
+          "less than or equal to",
+          "solution set"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "fill-table",
+        "columns": ["Inequality", "Solution", "Test x = 5", "Test x = 20"],
+        "rows": [
+          {
+            "inequality": "x + 8 > 15",
+            "solution": "x > 7",
+            "testX5": "5 + 8 = 13 > 15? No",
+            "testX20": "20 + 8 = 28 > 15? Yes"
+          },
+          {
+            "inequality": "x − 6 ≤ 10",
+            "solution": "x ≤ 16",
+            "testX5": "5 − 6 = −1 ≤ 10? Yes",
+            "testX20": "20 − 6 = 14 ≤ 10? No"
+          }
+        ],
+        "label": "Solve each inequality and verify by testing two values."
       }
     ]
   },

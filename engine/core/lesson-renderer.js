@@ -14,6 +14,7 @@ import {
   renderVocabDragMatch,
   renderVocabCloze,
   renderVocabSort,
+  renderVocabIntro,
 } from "../components/index.js";
 
 export function bootLesson(config) {
@@ -233,7 +234,10 @@ function renderVocabPhase(el, state, ctx, config) {
     const stepLabel = document.createElement("div");
     stepLabel.style.cssText =
       "font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:var(--sp-3);";
-    stepLabel.textContent = `Vocabulary — Activity ${actIdx + 1} of ${activities.length}`;
+    stepLabel.textContent =
+      activity === "intro"
+        ? "Vocabulary — Study the Words"
+        : `Vocabulary — Activity ${actIdx} of ${activities.length - 1}`;
     el.append(stepLabel);
 
     const onDone = (correct, total) => {
@@ -244,6 +248,12 @@ function renderVocabPhase(el, state, ctx, config) {
     };
 
     switch (activity) {
+      case "intro":
+        renderVocabIntro(el, {
+          terms: config.vocabulary,
+          onComplete: onDone,
+        });
+        break;
       case "builder":
         renderVocabBuilder(el, {
           terms: config.vocabulary,
@@ -295,10 +305,11 @@ function renderVocabPhase(el, state, ctx, config) {
 
 function resolveVocabActivities(config) {
   if (config.vocabActivities && config.vocabActivities.length) {
-    return config.vocabActivities;
+    const acts = config.vocabActivities;
+    return acts[0] === "intro" ? acts : ["intro", ...acts];
   }
-  if (config.vocabMode === "matching") return ["matching", "cloze"];
-  return ["builder", "drag-match"];
+  if (config.vocabMode === "matching") return ["intro", "matching", "cloze"];
+  return ["intro", "builder", "drag-match"];
 }
 
 // ── Phase 3: Explore ──

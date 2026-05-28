@@ -10,32 +10,32 @@
     {
       "term": "Distance",
       "definition": "The number of units between two points; always positive or zero",
-      "visual": "The distance from -3 to 4 on a number line is 7 units"
+      "visual": "The distance from -3 to 4 on a number line is |-3| + |4| = 3 + 4 = 7 units"
     },
     {
       "term": "Absolute value",
       "definition": "The distance a number is from zero; used to calculate distances between points",
-      "visual": "|-3| + |4| = 3 + 4 = 7"
+      "visual": "|-3| = 3 and |4| = 4; to find distance: |4 - (-3)| = 7"
     },
     {
       "term": "Horizontal distance",
       "definition": "The distance between two points measured left-right (same y-coordinate)",
-      "visual": "From (-2, 3) to (5, 3), the horizontal distance is 7"
+      "visual": "From (-2, 3) to (5, 3): count from -2 to 5 = 7 units across"
     },
     {
       "term": "Vertical distance",
       "definition": "The distance between two points measured up-down (same x-coordinate)",
-      "visual": "From (4, -1) to (4, 6), the vertical distance is 7"
+      "visual": "From (4, -1) to (4, 6): count from -1 to 6 = 7 units up"
     },
     {
-      "term": "Reflection",
-      "definition": "A mirror image across an axis",
-      "visual": "(3, 2) reflected over x-axis = (3, −2)"
+      "term": "Coordinate plane",
+      "definition": "A grid formed by a horizontal x-axis and vertical y-axis intersecting at the origin",
+      "visual": "Two number lines crossing at (0, 0), creating four quadrants"
     },
     {
       "term": "Integer",
       "definition": "Whole numbers and their opposites, including zero",
-      "visual": "..., −3, −2, −1, 0, 1, 2, 3, ..."
+      "visual": "..., -3, -2, -1, 0, 1, 2, 3, ..."
     }
   ],
   "launch": {
@@ -108,62 +108,52 @@
       {
         "type": "multiple-choice",
         "stem": "What is the distance between (-4, 3) and (2, 3)?",
-        "choices": [
-          "2 units",
-          "4 units",
-          "6 units",
-          "8 units"
-        ],
+        "choices": ["2 units", "4 units", "6 units", "8 units"],
         "correctIndex": 2,
-        "explanation": "Both points have y = 3, so this is a horizontal distance. |-4| + |2| = 4 + 2 = 6 units. (Or: |2 - (-4)| = |6| = 6 units.)"
+        "explanation": "Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is the distance between (5, -2) and (5, 4)?",
+        "choices": ["2 units", "4 units", "6 units", "10 units"],
+        "correctIndex": 2,
+        "explanation": "Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A rectangle has vertices at (1, 1), (5, 1), (5, 4), (1, 4). What is its perimeter?",
+        "choices": ["14 units", "12 units", "20 units", "8 units"],
+        "correctIndex": 0,
+        "explanation": "Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14."
       },
       {
         "type": "fill-table",
         "label": "Find the distance between each pair of points.",
-        "columns": [
-          "Point 1",
-          "Point 2",
-          "Shared Coordinate",
-          "Distance"
-        ],
+        "instructions": "Both points in each row share a coordinate. Find the distance.",
+        "headers": ["Point 1", "Point 2", "Shared Coordinate", "Distance"],
         "rows": [
-          {
-            "point1": "(-5, 1)",
-            "point2": "(3, 1)",
-            "shared": "y = 1",
-            "distance": "8"
-          },
-          {
-            "point1": "(2, -4)",
-            "point2": "(2, 6)",
-            "shared": "x = 2",
-            "distance": "10"
-          },
-          {
-            "point1": "(-3, -2)",
-            "point2": "(-3, 4)",
-            "shared": "x = -3",
-            "distance": "6"
-          },
-          {
-            "point1": "(-1, 5)",
-            "point2": "(4, 5)",
-            "shared": "y = 5",
-            "distance": "5"
-          }
+          ["(-5, 1)", "(3, 1)", "y = 1", ""],
+          ["(2, -4)", "(2, 6)", "x = 2", ""],
+          ["(-3, -2)", "(-3, 4)", "x = -3", ""],
+          ["(-1, 5)", "(4, 5)", "y = 5", ""]
+        ],
+        "editableCells": [
+          { "row": 0, "col": 3, "answer": "8" },
+          { "row": 1, "col": 3, "answer": "10" },
+          { "row": 2, "col": 3, "answer": "6" },
+          { "row": 3, "col": 3, "answer": "5" }
         ]
       },
       {
-        "type": "multiple-choice",
-        "stem": "A rectangle has vertices at (1,1), (5,1), (5,4), (1,4). What is its perimeter?",
-        "choices": [
-          "14 units",
-          "12 units",
-          "20 units",
-          "8 units"
-        ],
-        "correctIndex": 0,
-        "explanation": "Width = 5 − 1 = 4. Height = 4 − 1 = 3. Perimeter = 2(4 + 3) = 14."
+        "type": "number-line",
+        "label": "Plot -4 and 2 on the number line. Count the distance between them.",
+        "min": -6,
+        "max": 6,
+        "step": 1,
+        "targets": [
+          { "value": -4, "label": "Point A" },
+          { "value": 2, "label": "Point B" }
+        ]
       }
     ],
     "onLevel": [
@@ -180,58 +170,54 @@
         "yLabel": "y",
         "showLine": true,
         "targets": [
-          {
-            "x": -5,
-            "y": 3,
-            "label": "A"
-          },
-          {
-            "x": 2,
-            "y": 3,
-            "label": "B"
-          },
-          {
-            "x": 4,
-            "y": -2,
-            "label": "C"
-          },
-          {
-            "x": 4,
-            "y": 4,
-            "label": "D"
-          }
+          { "x": -5, "y": 3, "label": "A" },
+          { "x": 2, "y": 3, "label": "B" },
+          { "x": 4, "y": -2, "label": "C" },
+          { "x": 4, "y": 4, "label": "D" }
         ]
       },
       {
-        "type": "matching-game",
-        "pairs": [
+        "type": "fill-table",
+        "instructions": "Find the perimeter of each rectangle using its vertex coordinates.",
+        "headers": ["Rectangle", "Vertices", "Width", "Height", "Perimeter"],
+        "rows": [
+          ["Rect 1", "(-3, 1), (4, 1), (4, 5), (-3, 5)", "", "", ""],
+          ["Rect 2", "(-2, -4), (6, -4), (6, 2), (-2, 2)", "", "", ""]
+        ],
+        "editableCells": [
+          { "row": 0, "col": 2, "answer": "7" },
+          { "row": 0, "col": 3, "answer": "4" },
+          { "row": 0, "col": 4, "answer": "22" },
+          { "row": 1, "col": 2, "answer": "8" },
+          { "row": 1, "col": 3, "answer": "6" },
+          { "row": 1, "col": 4, "answer": "28" }
+        ]
+      },
+      {
+        "type": "bar-model",
+        "label": "A horizontal segment goes from (-6, 3) to (4, 3). Show the total distance as the sum of two parts: from -6 to 0, and from 0 to 4.",
+        "bars": [
           {
-            "term": "(3, 2)",
-            "match": "Quadrant I"
+            "value": 6,
+            "label": "|-6| = 6",
+            "annotation": "Left of origin"
           },
           {
-            "term": "(−4, 5)",
-            "match": "Quadrant II"
-          },
-          {
-            "term": "(−2, −6)",
-            "match": "Quadrant III"
-          },
-          {
-            "term": "(7, −1)",
-            "match": "Quadrant IV"
-          },
-          {
-            "term": "(0, 3)",
-            "match": "y-axis"
-          },
-          {
-            "term": "(5, 0)",
-            "match": "x-axis"
+            "value": 4,
+            "label": "|4| = 4",
+            "annotation": "Right of origin"
           }
         ],
-        "label": "Match each point to its location.",
-        "columns": 4
+        "totalLabel": "Total distance: 10 units",
+        "questionText": "What is the total distance from (-6, 3) to (4, 3)?",
+        "answer": "10"
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Two points are at (-3, -7) and (-3, 5). What is the distance between them?",
+        "choices": ["12 units", "2 units", "7 units", "8 units"],
+        "correctIndex": 0,
+        "explanation": "Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units."
       }
     ],
     "extending": [
@@ -261,17 +247,38 @@
       },
       {
         "type": "open-response",
-        "prompt": "Explain how to find the distance between two points that share the same x-coordinate, like (3, −2) and (3, 5). What if they share the same y-coordinate instead?",
-        "sentenceFrame": "When points share the same x-coordinate, the distance is ___. I find it by ___.",
+        "prompt": "A rectangle has vertices at (-4, -2), (3, -2), (3, 5), and (-4, 5). Find the length, width, perimeter, and area of the rectangle. Show your work using absolute value.",
+        "sentenceFrame": "The width is |___ - (___)| = ___ units. The height is |___ - (___)| = ___ units. The perimeter is 2(___ + ___) = ___ units. The area is ___ × ___ = ___ square units.",
         "keywords": [
           "absolute value",
-          "subtract",
           "distance",
-          "horizontal",
-          "vertical",
-          "coordinate"
+          "perimeter",
+          "area",
+          "width",
+          "height",
+          "7",
+          "49"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "coordinate-grid",
+        "label": "Plot a rectangle with one vertex in each quadrant. Label the vertices and calculate the perimeter.",
+        "xMin": -6,
+        "xMax": 6,
+        "yMin": -6,
+        "yMax": 6,
+        "xStep": 1,
+        "yStep": 1,
+        "xLabel": "x",
+        "yLabel": "y",
+        "showLine": true,
+        "targets": [
+          { "x": -4, "y": 3, "label": "A (II)" },
+          { "x": 4, "y": 3, "label": "B (I)" },
+          { "x": 4, "y": -3, "label": "C (IV)" },
+          { "x": -4, "y": -3, "label": "D (III)" }
+        ]
       }
     ]
   },
@@ -293,12 +300,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "What is the distance between the points (3, -2) and (3, 5)?",
-      "choices": [
-        "3 units",
-        "5 units",
-        "7 units",
-        "9 units"
-      ],
+      "choices": ["3 units", "5 units", "7 units", "9 units"],
       "correctIndex": 2,
       "explanation": "Both points share x = 3, so this is a vertical distance. |5 - (-2)| = |5 + 2| = 7 units."
     }

@@ -12,3 +12,4 @@ export { renderBalanceScale } from "./balance-scale.js";
 export { renderVocabDragMatch } from "./vocab-drag-match.js";
 export { renderVocabCloze } from "./vocab-cloze.js";
 export { renderVocabSort } from "./vocab-sort.js";
+export { renderVocabIntro } from "./vocab-intro.js";

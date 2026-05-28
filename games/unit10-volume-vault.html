@@ -29,6 +29,7 @@
 
       const W = 1024,
         H = 768;
+      const LS_KEY = "volumevault_highscore";
 
       // --- SFX ---
       class SFX {
@@ -59,6 +60,26 @@
             g.connect(this.ctx.destination);
             o.start();
             o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        }
+        noise(d, v = 0.04) {
+          if (!this.ctx) return;
+          try {
+            const bufSize = this.ctx.sampleRate * d;
+            const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const src = this.ctx.createBufferSource();
+            src.buffer = buf;
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            src.connect(g);
+            g.connect(this.ctx.destination);
+            src.start();
           } catch (e) {}
         }
         crack() {
@@ -93,6 +114,16 @@
             setTimeout(() => this.tone(f, 0.1), i * 60),
           );
         }
+        winBig() {
+          [523, 659, 784, 1047, 1319, 1568, 2093].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "sine", 0.1), i * 80),
+          );
+          setTimeout(() => {
+            [1047, 1319, 1568].forEach((f, i) =>
+              setTimeout(() => this.tone(f, 0.25, "triangle", 0.06), i * 60),
+            );
+          }, 600);
+        }
         lose() {
           [500, 400, 300, 200, 150].forEach((f, i) =>
             setTimeout(() => this.tone(f, 0.15, "sawtooth"), i * 100),
@@ -100,6 +131,37 @@
         }
         stealth() {
           this.tone(150, 0.1, "triangle", 0.03);
+        }
+        glassBreak() {
+          this.noise(0.3, 0.08);
+          this.tone(800, 0.05, "square", 0.06);
+          setTimeout(() => this.noise(0.15, 0.04), 50);
+          setTimeout(() => this.tone(400, 0.08, "sawtooth", 0.05), 80);
+        }
+        streakMilestone(level) {
+          const base = 500 + level * 150;
+          [base, base + 200, base + 400, base + 600].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.08, "sine", 0.07), i * 40),
+          );
+        }
+        powerUp() {
+          [400, 600, 800, 1000, 1200].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.06, "sine", 0.06), i * 30),
+          );
+        }
+        phaseTransition() {
+          [150, 200, 300, 400, 500, 700, 900].forEach((f, i) =>
+            setTimeout(() => this.tone(f, 0.15, "triangle", 0.06), i * 70),
+          );
+        }
+        speedBonus() {
+          this.tone(1200, 0.06, "sine", 0.06);
+          setTimeout(() => this.tone(1500, 0.08, "sine", 0.05), 40);
+        }
+        crowdCheer(intensity) {
+          const v = Math.min(0.03 + intensity * 0.005, 0.08);
+          this.noise(0.4, v);
+          this.tone(300 + intensity * 40, 0.3, "triangle", v * 0.5);
         }
       }
       const sfx = new SFX();
@@ -252,24 +314,23 @@
         return shuf(qs).slice(0, 15);
       }
 
-      // --- LASER GRID ---
-      function drawLasers(scene, count, depth) {
-        const lasers = [];
-        for (let i = 0; i < count; i++) {
-          const y = Phaser.Math.Between(200, H - 200);
-          const laser = scene.add
-            .rectangle(W / 2, y, W - 100, 2, 0xef4444, 0.4)
-            .setDepth(depth);
-          scene.tweens.add({
-            targets: laser,
-            alpha: 0.15,
-            duration: Phaser.Math.Between(500, 1500),
-            yoyo: true,
-            repeat: -1,
-          });
-          lasers.push(laser);
-        }
-        return lasers;
+      // --- AMBIENT PARTICLES ---
+      function createAmbientDust(scene, color1, color2) {
+        scene.add
+          .particles(W / 2, H / 2, "__WHITE", {
+            x: { min: 0, max: W },
+            y: { min: 0, max: H },
+            speed: { min: 2, max: 8 },
+            angle: { min: 260, max: 280 },
+            scale: { start: 0.12, end: 0 },
+            alpha: { start: 0.25, end: 0 },
+            lifespan: { min: 5000, max: 10000 },
+            tint: [color1, color2, 0xffffff],
+            quantity: 1,
+            frequency: 400,
+            blendMode: "ADD",
+          })
+          .setDepth(0);
       }
 
       // --- BOOT ---
@@ -291,8 +352,8 @@
           sfx.init();
           const cx = W / 2;
           this.cameras.main.setBackgroundColor("#0a0a0a");
+
           // Museum architecture
-          // Columns
           for (let i = 0; i < 6; i++) {
             const x = 100 + i * 170;
             this.add.rectangle(x, H / 2, 20, H, 0x1e293b).setDepth(0);
@@ -308,7 +369,11 @@
                 .setDepth(0);
             }
           }
-          // Laser beams (decorative)
+
+          // Ambient dust particles
+          createAmbientDust(this, 0xfbbf24, 0xef4444);
+
+          // Laser beams (decorative) with more animation
           for (let i = 0; i < 4; i++) {
             const y = 250 + i * 80;
             const laser = this.add
@@ -321,8 +386,21 @@
               yoyo: true,
               repeat: -1,
             });
+            // Laser scan effect
+            const laserDot = this.add
+              .circle(100, y, 3, 0xef4444, 0.6)
+              .setDepth(2);
+            this.tweens.add({
+              targets: laserDot,
+              x: W - 100,
+              duration: 3000 + i * 500,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
           }
-          // Vault door
+
+          // Vault door with enhanced animation
           const vault = this.add.graphics().setPosition(cx, 380).setDepth(2);
           vault.fillStyle(0x475569);
           vault.fillRoundedRect(-70, -80, 140, 160, 12);
@@ -332,7 +410,6 @@
           vault.fillCircle(0, 0, 40);
           vault.lineStyle(2, 0x94a3b8);
           vault.strokeCircle(0, 0, 40);
-          // Dial
           for (let i = 0; i < 12; i++) {
             const a = (i * Math.PI) / 6;
             vault.fillStyle(0x94a3b8);
@@ -347,8 +424,24 @@
             repeat: -1,
             ease: "Linear",
           });
-          // Title
-          this.add
+
+          // Vault glow pulse
+          const vaultGlow = this.add
+            .circle(cx, 380, 85, 0xfbbf24, 0.05)
+            .setDepth(1);
+          this.tweens.add({
+            targets: vaultGlow,
+            alpha: 0.12,
+            scaleX: 1.2,
+            scaleY: 1.2,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
+          // Title with animated glow
+          const titleVol = this.add
             .text(cx, 60, "VOLUME", {
               fontSize: "58px",
               fontFamily: "monospace",
@@ -356,7 +449,16 @@
               fontStyle: "bold",
             })
             .setOrigin(0.5);
-          this.add
+          this.tweens.add({
+            targets: titleVol,
+            alpha: 0.7,
+            duration: 1500,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
+          const titleVault = this.add
             .text(cx, 125, "VAULT", {
               fontSize: "72px",
               fontFamily: "monospace",
@@ -364,6 +466,16 @@
               fontStyle: "bold",
             })
             .setOrigin(0.5);
+          this.tweens.add({
+            targets: titleVault,
+            scaleX: 1.03,
+            scaleY: 1.03,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
           this.add
             .text(cx, 180, "Museum Heist", {
               fontSize: "24px",
@@ -376,7 +488,20 @@
               color: "#64748b",
             })
             .setOrigin(0.5);
-          // Spy character
+
+          // High score display
+          const hi = parseInt(localStorage.getItem(LS_KEY)) || 0;
+          if (hi > 0) {
+            this.add
+              .text(cx, 235, `HIGH SCORE: ${hi}`, {
+                fontSize: "14px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+          }
+
+          // Spy character with idle animation
           const spy = this.add
             .graphics()
             .setPosition(cx - 180, 420)
@@ -388,7 +513,6 @@
           spy.fillStyle(0xe2e8f0);
           spy.fillCircle(-4, -47, 3);
           spy.fillCircle(4, -47, 3);
-          // Hat
           spy.fillStyle(0x111827);
           spy.fillRect(-18, -58, 36, 8);
           spy.fillRect(-12, -65, 24, 10);
@@ -403,7 +527,25 @@
             repeat: -1,
             ease: "Sine.easeInOut",
           });
-          // Floors preview
+
+          // Spy eye blink
+          const spyEyes = this.add
+            .graphics()
+            .setPosition(cx - 180, 420)
+            .setDepth(4);
+          spyEyes.fillStyle(0xe2e8f0);
+          spyEyes.fillCircle(-4, -47, 3);
+          spyEyes.fillCircle(4, -47, 3);
+          this.tweens.add({
+            targets: spy,
+            y: spy.y - 6,
+            duration: 900,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+
+          // Floors preview with animated entrance
           const floors = [
             { name: "LOBBY", sub: "Volume basics", color: 0x22c55e },
             { name: "GALLERY", sub: "SA + decimals", color: 0xf59e0b },
@@ -412,37 +554,75 @@
           floors.forEach((f, i) => {
             const fx = cx - 280 + i * 280,
               fy = 540;
-            this.add
+            const card = this.add
               .rectangle(fx, fy, 220, 65, 0x1e293b)
-              .setStrokeStyle(2, f.color);
-            this.add
+              .setStrokeStyle(2, f.color)
+              .setAlpha(0);
+            const name = this.add
               .text(fx, fy - 10, "Floor " + (i + 1) + ": " + f.name, {
                 fontSize: "14px",
                 color: "#" + f.color.toString(16).padStart(6, "0"),
                 fontStyle: "bold",
               })
-              .setOrigin(0.5);
-            this.add
+              .setOrigin(0.5)
+              .setAlpha(0);
+            const sub = this.add
               .text(fx, fy + 12, f.sub, { fontSize: "11px", color: "#94a3b8" })
-              .setOrigin(0.5);
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: [card, name, sub],
+              alpha: 1,
+              y: "-=8",
+              duration: 400,
+              delay: 400 + i * 200,
+              ease: "Back.easeOut",
+            });
           });
-          // Start
+
+          // Start button with pulse
           const btn = this.add
             .rectangle(cx, 630, 260, 60, 0xfbbf24)
             .setStrokeStyle(2, 0xf59e0b)
             .setInteractive({ useHandCursor: true });
-          this.add
+          const btnText = this.add
             .text(cx, 630, "BEGIN HEIST", {
               fontSize: "26px",
               color: "#0a0a0a",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
-          btn.on("pointerover", () => btn.setFillStyle(0xf59e0b));
-          btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+          this.tweens.add({
+            targets: btn,
+            scaleX: 1.04,
+            scaleY: 1.04,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut",
+          });
+          btn.on("pointerover", () => {
+            btn.setFillStyle(0xf59e0b);
+            this.tweens.add({
+              targets: [btn, btnText],
+              scaleX: 1.08,
+              scaleY: 1.08,
+              duration: 150,
+            });
+          });
+          btn.on("pointerout", () => {
+            btn.setFillStyle(0xfbbf24);
+            this.tweens.add({
+              targets: [btn, btnText],
+              scaleX: 1,
+              scaleY: 1,
+              duration: 150,
+            });
+          });
           btn.on("pointerdown", () => {
             sfx.vault();
-            this.scene.start("Game");
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Game"));
           });
           this.add
             .text(cx, 685, "Keys 1-4 or click answers | Arrows + Enter", {
@@ -453,7 +633,8 @@
           this.input.keyboard.on("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
               sfx.vault();
-              this.scene.start("Game");
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
             }
           });
         }
@@ -472,13 +653,20 @@
           this.lives = 3;
           this.streak = 0;
           this.bestStreak = 0;
+          this.multiplier = 1;
           this.totalQ = Math.min(15, this.questions.length);
           this.answered = false;
           this.startTime = Date.now();
+          this.questionStartTime = Date.now();
           this.selectedIdx = -1;
           this.loot = 0;
+          this.currentFloor = "";
+          this.powerUps = { fiftyFifty: 1, doublePoints: 1 };
+          this.doublePointsActive = false;
           this.cameras.main.setBackgroundColor("#0a0a0a");
+          this.cameras.main.fadeIn(500);
           this.buildHUD();
+          this.buildPowerUpButtons();
           this.loadQuestion();
           this.input.keyboard.on("keydown", this.handleKey, this);
         }
@@ -492,8 +680,8 @@
             Vault: { bg: 0x0a0a1a, wall: 0x1a1a2e, accent: 0xef4444 },
           };
           const c = colors[floorName] || colors.Lobby;
-          // Floor
           this.cameras.main.setBackgroundColor(c.bg);
+
           // Checker tiles
           for (let r = 0; r < 4; r++) {
             for (let col = 0; col < 20; col++) {
@@ -523,6 +711,31 @@
             .setOrigin(0.5)
             .setDepth(5);
           this.floorGroup.add(floorLabel);
+
+          // Ambient dust themed to floor
+          const dustColors = {
+            Lobby: [0x22c55e, 0x334155],
+            Gallery: [0xfbbf24, 0xf59e0b],
+            Vault: [0xef4444, 0xa78bfa],
+          };
+          const dc = dustColors[floorName] || dustColors.Lobby;
+          const dustEmitter = this.add
+            .particles(W / 2, H / 2, "__WHITE", {
+              x: { min: 0, max: W },
+              y: { min: 100, max: H - 100 },
+              speed: { min: 2, max: 8 },
+              angle: { min: 260, max: 280 },
+              scale: { start: 0.1, end: 0 },
+              alpha: { start: 0.2, end: 0 },
+              lifespan: { min: 4000, max: 8000 },
+              tint: [dc[0], dc[1], 0xffffff],
+              quantity: 1,
+              frequency: 500,
+              blendMode: "ADD",
+            })
+            .setDepth(0);
+          this.floorGroup.add(dustEmitter);
+
           // Lasers for Gallery and Vault
           if (floorName === "Gallery" || floorName === "Vault") {
             const laserCount = floorName === "Vault" ? 5 : 3;
@@ -560,7 +773,6 @@
           });
           // Display cases / vault elements
           if (floorName === "Lobby") {
-            // Info desk
             const desk = this.add
               .rectangle(W - 150, H - 120, 120, 40, c.wall)
               .setStrokeStyle(1, c.accent, 0.3)
@@ -568,7 +780,6 @@
             this.floorGroup.add(desk);
           }
           if (floorName === "Gallery") {
-            // Painting frames
             for (let i = 0; i < 3; i++) {
               const fx = 250 + i * 220,
                 fy = 160;
@@ -591,7 +802,6 @@
             }
           }
           if (floorName === "Vault") {
-            // Vault door background
             const vd = this.add
               .graphics()
               .setPosition(W - 120, 300)
@@ -601,6 +811,20 @@
             vd.lineStyle(2, 0x64748b, 0.3);
             vd.strokeCircle(0, 0, 30);
             this.floorGroup.add(vd);
+            // Vault glow
+            const vGlow = this.add
+              .circle(W - 120, 300, 55, 0xef4444, 0.04)
+              .setDepth(0);
+            this.tweens.add({
+              targets: vGlow,
+              alpha: 0.1,
+              scaleX: 1.2,
+              scaleY: 1.2,
+              duration: 1500,
+              yoyo: true,
+              repeat: -1,
+            });
+            this.floorGroup.add(vGlow);
           }
         }
 
@@ -638,6 +862,95 @@
           g.fillRect(1, 12, 7, 18);
         }
 
+        showFloatingText(x, y, text, color, size = 22) {
+          const ft = this.add
+            .text(x, y, text, {
+              fontSize: `${size}px`,
+              color: color,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(20);
+          this.tweens.add({
+            targets: ft,
+            y: y - 60,
+            alpha: 0,
+            scaleX: 1.3,
+            scaleY: 1.3,
+            duration: 1000,
+            ease: "Power2",
+            onComplete: () => ft.destroy(),
+          });
+        }
+
+        showPhaseTransition(floorName, floorColor) {
+          const overlay = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.8)
+            .setDepth(50);
+          const label = this.add
+            .text(W / 2, H / 2 - 25, floorName.toUpperCase(), {
+              fontSize: "48px",
+              color: floorColor,
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0)
+            .setScale(0.3);
+          const sub = this.add
+            .text(W / 2, H / 2 + 25, "INFILTRATING...", {
+              fontSize: "16px",
+              color: "#94a3b8",
+            })
+            .setOrigin(0.5)
+            .setDepth(51)
+            .setAlpha(0);
+
+          sfx.phaseTransition();
+
+          // Dramatic laser sweep
+          const sweep = this.add
+            .rectangle(0, H / 2, W * 2, 3, 0xef4444, 0.5)
+            .setDepth(52);
+          this.tweens.add({
+            targets: sweep,
+            x: W,
+            duration: 600,
+            onComplete: () => sweep.destroy(),
+          });
+
+          this.tweens.add({
+            targets: label,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 400,
+            ease: "Back.easeOut",
+          });
+          this.tweens.add({
+            targets: sub,
+            alpha: 1,
+            duration: 400,
+            delay: 200,
+          });
+          this.time.delayedCall(1200, () => {
+            this.tweens.add({
+              targets: [overlay, label, sub],
+              alpha: 0,
+              duration: 400,
+              onComplete: () => {
+                overlay.destroy();
+                label.destroy();
+                sub.destroy();
+              },
+            });
+          });
+        }
+
         buildHUD() {
           this.hudBg = this.add
             .rectangle(W / 2, 22, W, 44, 0x000000, 0.85)
@@ -671,13 +984,134 @@
           this.hudLoot = this.add
             .text(820, 10, "", { fontSize: "14px", color: "#fbbf24" })
             .setDepth(11);
+          this.hudMultiplier = this.add
+            .text(W - 200, 10, "", {
+              fontSize: "14px",
+              color: "#f59e0b",
+              fontStyle: "bold",
+            })
+            .setDepth(11);
+
+          // Progress bar
           this.progBg = this.add
-            .rectangle(W / 2, 44, W - 20, 4, 0x1e293b)
+            .rectangle(W / 2, 44, W - 20, 6, 0x1e293b)
             .setDepth(10);
           this.progFill = this.add
-            .rectangle(10, 44, 0, 4, 0xfbbf24)
+            .rectangle(10, 44, 0, 6, 0xfbbf24)
             .setOrigin(0, 0.5)
             .setDepth(10);
+
+          // Question counter dots
+          this.qDots = [];
+          for (let i = 0; i < this.totalQ; i++) {
+            const dot = this.add
+              .circle(15 + i * 18, 56, 4, 0x1e293b)
+              .setStrokeStyle(1, 0x334155)
+              .setDepth(10);
+            this.qDots.push(dot);
+          }
+
+          // Streak counter display
+          this.streakContainer = this.add.container(W / 2, H - 30).setDepth(15);
+          this.streakBg = this.add
+            .rectangle(0, 0, 220, 28, 0x000000, 0)
+            .setDepth(15);
+          this.streakText = this.add
+            .text(0, 0, "", {
+              fontSize: "16px",
+              color: "#f59e0b",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(15);
+          this.streakContainer.add([this.streakBg, this.streakText]);
+
+          // Speed indicator
+          this.speedIndicator = this.add
+            .text(400, 56, "", {
+              fontSize: "11px",
+              color: "#22c55e",
+            })
+            .setDepth(11);
+        }
+
+        buildPowerUpButtons() {
+          // 50/50 button
+          const pu1bg = this.add
+            .rectangle(430, H - 30, 80, 24, 0x1e293b)
+            .setStrokeStyle(1, 0xf59e0b)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(12);
+          this.pu1text = this.add
+            .text(430, H - 30, "50/50 (1)", {
+              fontSize: "11px",
+              color: "#f59e0b",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(13);
+          pu1bg.on("pointerdown", () => this.usePowerUp("fiftyFifty"));
+          pu1bg.on("pointerover", () => pu1bg.setFillStyle(0x334155));
+          pu1bg.on("pointerout", () => pu1bg.setFillStyle(0x1e293b));
+          this.pu1bg = pu1bg;
+
+          // Double Points button
+          const pu2bg = this.add
+            .rectangle(540, H - 30, 90, 24, 0x1e293b)
+            .setStrokeStyle(1, 0xfbbf24)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(12);
+          this.pu2text = this.add
+            .text(540, H - 30, "2x PTS (1)", {
+              fontSize: "11px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(13);
+          pu2bg.on("pointerdown", () => this.usePowerUp("doublePoints"));
+          pu2bg.on("pointerover", () => pu2bg.setFillStyle(0x334155));
+          pu2bg.on("pointerout", () => pu2bg.setFillStyle(0x1e293b));
+          this.pu2bg = pu2bg;
+        }
+
+        usePowerUp(type) {
+          if (this.answered) return;
+          if (type === "fiftyFifty" && this.powerUps.fiftyFifty > 0) {
+            this.powerUps.fiftyFifty--;
+            sfx.powerUp();
+            const q = this.questions[this.qIndex];
+            let removed = 0;
+            this.answerBtns.forEach((b) => {
+              if (b.optText !== q.correct && removed < 2) {
+                b.bg.setAlpha(0.3);
+                b.txt.setAlpha(0.3);
+                b.bg.disableInteractive();
+                b.eliminated = true;
+                removed++;
+              }
+            });
+            this.pu1text.setText(
+              this.powerUps.fiftyFifty > 0
+                ? `50/50 (${this.powerUps.fiftyFifty})`
+                : "50/50 --",
+            );
+            if (this.powerUps.fiftyFifty <= 0) this.pu1bg.setAlpha(0.4);
+            this.showFloatingText(430, H - 50, "50/50!", "#f59e0b", 18);
+          }
+          if (type === "doublePoints" && this.powerUps.doublePoints > 0) {
+            this.powerUps.doublePoints--;
+            this.doublePointsActive = true;
+            sfx.powerUp();
+            this.pu2text.setText(
+              this.powerUps.doublePoints > 0
+                ? `2x PTS (${this.powerUps.doublePoints})`
+                : "2x PTS --",
+            );
+            if (this.powerUps.doublePoints <= 0) this.pu2bg.setAlpha(0.4);
+            this.showFloatingText(540, H - 50, "DOUBLE LOOT!", "#fbbf24", 18);
+            this.cameras.main.flash(200, 251, 191, 36);
+          }
         }
 
         loadQuestion() {
@@ -687,21 +1121,46 @@
           }
           this.answered = false;
           this.selectedIdx = -1;
+          this.questionStartTime = Date.now();
           const q = this.questions[this.qIndex];
-          // Build floor if changed
+
+          // Build floor if changed (with transition)
           const prevFloor =
             this.qIndex > 0 ? this.questions[this.qIndex - 1].floor : "";
-          if (q.floor !== prevFloor || this.qIndex === 0)
+          if (q.floor !== prevFloor || this.qIndex === 0) {
+            if (this.qIndex > 0 && q.floor !== prevFloor) {
+              const floorColors = {
+                Lobby: "#22c55e",
+                Gallery: "#f59e0b",
+                Vault: "#ef4444",
+              };
+              this.showPhaseTransition(
+                q.floor,
+                floorColors[q.floor] || "#94a3b8",
+              );
+            }
             this.buildFloor(q.floor);
+            this.currentFloor = q.floor;
+          }
+
           this.updateHUD();
-          this.progFill.width = (this.qIndex / this.totalQ) * (W - 20);
+          // Animate progress bar
+          this.tweens.add({
+            targets: this.progFill,
+            width: (this.qIndex / this.totalQ) * (W - 20),
+            duration: 300,
+            ease: "Power2",
+          });
+
           // Clean old question elements
           if (this.qGroup) this.qGroup.destroy(true);
           this.qGroup = this.add.group();
           const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
           const tierNames = ["Floor 1", "Floor 2", "Floor 3"];
+
           // 3D prism visualization
           this.draw3DPrism(q);
+
           // Question panel
           const panelW = 500,
             panelH = 80;
@@ -731,6 +1190,26 @@
             .setOrigin(0.5)
             .setDepth(6);
           this.qGroup.add(qt);
+
+          // Animate question entrance
+          panel.setAlpha(0).setScale(0.9);
+          qt.setAlpha(0);
+          badge.setAlpha(0);
+          this.tweens.add({
+            targets: panel,
+            alpha: 0.85,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 300,
+            ease: "Back.easeOut",
+          });
+          this.tweens.add({
+            targets: [qt, badge],
+            alpha: 1,
+            duration: 300,
+            delay: 100,
+          });
+
           // Answer options (2x2 grid)
           this.answerBtns = [];
           q.options.forEach((opt, i) => {
@@ -757,15 +1236,48 @@
               })
               .setOrigin(0.5)
               .setDepth(7);
+
+            // Animate entrance
+            bg.setAlpha(0).setX(bx - 20);
+            txt.setAlpha(0);
+            num.setAlpha(0);
+            this.tweens.add({
+              targets: bg,
+              alpha: 1,
+              x: bx,
+              duration: 250,
+              delay: 150 + i * 60,
+              ease: "Power2",
+            });
+            this.tweens.add({
+              targets: [txt, num],
+              alpha: 1,
+              duration: 250,
+              delay: 200 + i * 60,
+            });
+
             bg.on("pointerover", () => {
               if (!this.answered) {
                 bg.setStrokeStyle(3, 0xfbbf24);
+                this.tweens.add({
+                  targets: bg,
+                  scaleX: 1.03,
+                  scaleY: 1.03,
+                  duration: 100,
+                });
                 sfx.click();
               }
             });
             bg.on("pointerout", () => {
-              if (!this.answered && this.selectedIdx !== i)
+              if (!this.answered && this.selectedIdx !== i) {
                 bg.setStrokeStyle(2, 0x334155);
+                this.tweens.add({
+                  targets: bg,
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 100,
+                });
+              }
             });
             bg.on("pointerdown", () => {
               if (!this.answered) this.submitAnswer(i);
@@ -773,8 +1285,15 @@
             this.qGroup.add(bg);
             this.qGroup.add(txt);
             this.qGroup.add(num);
-            this.answerBtns.push({ bg, txt, num, optText: opt });
+            this.answerBtns.push({
+              bg,
+              txt,
+              num,
+              optText: opt,
+              eliminated: false,
+            });
           });
+
           // Feedback
           this.fbObj = this.add
             .text(W / 2, 380, "", {
@@ -799,7 +1318,6 @@
         }
 
         draw3DPrism(q) {
-          // Parse dimensions from question text if possible
           const dimMatch = q.text.match(
             /(\d+\.?\d*)\s*(?:ft|in|cm|m)\s*[×x]\s*(\d+\.?\d*)\s*(?:ft|in|cm|m)\s*[×x]\s*(\d+\.?\d*)/i,
           );
@@ -807,7 +1325,6 @@
           const l = parseFloat(dimMatch[1]),
             w = parseFloat(dimMatch[2]),
             h = parseFloat(dimMatch[3]);
-          // Isometric 3D box
           const bx = W / 2 + 50,
             by = 500;
           const scale = 8;
@@ -842,7 +1359,7 @@
           g.fillPath();
           g.strokePath();
           // Dimension labels
-          this.add
+          const lbl1 = this.add
             .text(bx, by + 15, `${l}`, {
               fontSize: "12px",
               color: "#60a5fa",
@@ -850,70 +1367,187 @@
             })
             .setOrigin(0.5)
             .setDepth(4);
-          this.add
+          const lbl2 = this.add
             .text(
               bx + sl / 2 + sw * iso.x + 12,
               by - sh / 2 - (sw * iso.y) / 2,
               `${h}`,
-              { fontSize: "12px", color: "#60a5fa", fontStyle: "bold" },
+              {
+                fontSize: "12px",
+                color: "#60a5fa",
+                fontStyle: "bold",
+              },
             )
             .setOrigin(0.5)
             .setDepth(4);
-          this.add
+          const lbl3 = this.add
             .text(
               bx + sl / 4 + (sw * iso.x) / 2,
               by - sh - (sw * iso.y) / 2 - 10,
               `${w}`,
-              { fontSize: "12px", color: "#60a5fa", fontStyle: "bold" },
+              {
+                fontSize: "12px",
+                color: "#60a5fa",
+                fontStyle: "bold",
+              },
             )
             .setOrigin(0.5)
             .setDepth(4);
           this.qGroup.add(g);
+          this.qGroup.add(lbl1);
+          this.qGroup.add(lbl2);
+          this.qGroup.add(lbl3);
         }
 
         submitAnswer(idx) {
           if (this.answered) return;
+          if (this.answerBtns[idx].eliminated) return;
           this.answered = true;
           const q = this.questions[this.qIndex];
           const chosen = this.answerBtns[idx].optText;
           const correct = chosen === q.correct;
+          const answerTime = (Date.now() - this.questionStartTime) / 1000;
+
           if (correct) {
-            const pts = q.tier * 15 + Math.min(this.streak, 5) * 5;
+            // Score calculation
+            let pts = q.tier * 15 + Math.min(this.streak, 5) * 5;
+            let timeBonus = 0;
+            if (answerTime < 5) {
+              timeBonus = 15;
+              this.showFloatingText(
+                W / 2,
+                340,
+                "SPEED BONUS! +15",
+                "#22c55e",
+                14,
+              );
+              sfx.speedBonus();
+            } else if (answerTime < 10) {
+              timeBonus = 8;
+              this.showFloatingText(W / 2, 340, "QUICK! +8", "#22c55e", 12);
+            }
+            pts += timeBonus;
+
+            // Multiplier from streak
+            this.multiplier = 1 + Math.floor(this.streak / 2) * 0.5;
+            pts = Math.round(pts * this.multiplier);
+
+            if (this.doublePointsActive) {
+              pts *= 2;
+              this.doublePointsActive = false;
+              this.showFloatingText(W / 2, 180, "DOUBLE LOOT!", "#fbbf24", 20);
+            }
+
             this.score += pts;
             this.loot++;
             this.streak++;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+
             this.answerBtns[idx].bg.setFillStyle(0x22c55e);
             this.answerBtns[idx].bg.setStrokeStyle(3, 0x22c55e);
-            this.fbObj.setText(
-              "VAULT CRACKED! +" +
-                pts +
-                " pts" +
-                (this.streak >= 3 ? " HEIST COMBO x" + this.streak + "!" : ""),
+
+            // Floating score text
+            this.showFloatingText(
+              this.answerBtns[idx].bg.x,
+              this.answerBtns[idx].bg.y - 30,
+              `+${pts}`,
+              "#22c55e",
+              28,
             );
+
+            // Streak milestone effects
+            if (this.streak === 3) {
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 50,
+                "HEIST COMBO x3!",
+                "#f59e0b",
+                36,
+              );
+              sfx.streakMilestone(1);
+              sfx.crowdCheer(3);
+            } else if (this.streak === 5) {
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 50,
+                "MASTER THIEF x5!!",
+                "#fbbf24",
+                42,
+              );
+              sfx.streakMilestone(2);
+              sfx.crowdCheer(5);
+              // Gold confetti burst
+              for (let i = 0; i < 3; i++) {
+                this.time.delayedCall(i * 100, () => {
+                  this.add
+                    .particles(
+                      Phaser.Math.Between(100, W - 100),
+                      Phaser.Math.Between(100, 300),
+                      "__WHITE",
+                      {
+                        speed: { min: 80, max: 200 },
+                        angle: { min: 0, max: 360 },
+                        scale: { start: 0.4, end: 0 },
+                        lifespan: 800,
+                        tint: [0xfbbf24, 0xf59e0b, 0x22c55e, 0xef4444],
+                        quantity: 10,
+                        emitting: false,
+                        blendMode: "ADD",
+                      },
+                    )
+                    .explode(12);
+                });
+              }
+            } else if (this.streak === 7) {
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 50,
+                "LEGENDARY x7!!!",
+                "#ef4444",
+                48,
+              );
+              sfx.streakMilestone(3);
+              sfx.crowdCheer(7);
+              this.cameras.main.flash(300, 200, 100, 0);
+            }
+
+            let fbText = "VAULT CRACKED! +" + pts + " pts";
+            if (this.streak >= 3)
+              fbText += " HEIST COMBO x" + this.streak + "!";
+            if (this.multiplier > 1) fbText += ` (${this.multiplier}x)`;
+            this.fbObj.setText(fbText);
             this.fbObj.setColor("#22c55e");
             sfx.crack();
             sfx.grab();
-            // Loot sparkle
+
+            // Loot sparkle with scaling intensity
+            const particleCount = 15 + this.streak * 3;
             const spark = this.add
               .particles(
                 this.answerBtns[idx].bg.x,
                 this.answerBtns[idx].bg.y,
                 "__WHITE",
                 {
-                  speed: { min: 40, max: 150 },
+                  speed: { min: 40, max: 150 + this.streak * 15 },
                   angle: { min: 0, max: 360 },
                   scale: { start: 0.3, end: 0 },
-                  lifespan: 500,
-                  tint: [0xfbbf24, 0x22c55e],
-                  quantity: 15,
+                  lifespan: 500 + this.streak * 50,
+                  tint: [0xfbbf24, 0x22c55e, 0xf59e0b],
+                  quantity: particleCount,
                   emitting: false,
                   blendMode: "ADD",
                 },
               )
               .setDepth(9);
-            spark.explode(18);
-            this.cameras.main.shake(100, 0.003);
+            spark.explode(particleCount);
+
+            // Screen shake scales with streak
+            const shakeIntensity = 0.003 + this.streak * 0.001;
+            this.cameras.main.shake(
+              100 + this.streak * 20,
+              Math.min(shakeIntensity, 0.015),
+            );
+
             // Spy sneaks forward
             this.tweens.add({
               targets: this.spy,
@@ -921,9 +1555,26 @@
               duration: 400,
               ease: "Power2",
             });
+
+            // Update streak display
+            this.updateStreakDisplay();
+
+            // Update question dot
+            if (this.qDots[this.qIndex]) {
+              this.qDots[this.qIndex].setFillStyle(0x22c55e);
+              this.tweens.add({
+                targets: this.qDots[this.qIndex],
+                scaleX: 1.5,
+                scaleY: 1.5,
+                duration: 200,
+                yoyo: true,
+              });
+            }
           } else {
             this.lives--;
             this.streak = 0;
+            this.multiplier = 1;
+            this.doublePointsActive = false;
             this.answerBtns[idx].bg.setFillStyle(0xef4444);
             this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
             const ci = this.answerBtns.findIndex(
@@ -936,12 +1587,36 @@
             this.fbObj.setText("ALARM! Security alerted! Answer: " + q.correct);
             this.fbObj.setColor("#ef4444");
             this.hintObj.setText(q.explain);
+
+            sfx.glassBreak();
             sfx.alarm();
-            this.cameras.main.shake(250, 0.015);
+
+            // More dramatic wrong answer
+            this.cameras.main.shake(350, 0.02);
             this.cameras.main.flash(200, 255, 0, 0);
+
+            // Red vignette
+            const vignette = this.add
+              .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
+              .setDepth(25);
+            this.tweens.add({
+              targets: vignette,
+              alpha: 0,
+              duration: 600,
+              onComplete: () => vignette.destroy(),
+            });
+
             // Spy alert pose
             this.drawSpyAlert(this.spy);
             this.time.delayedCall(500, () => this.drawSpy(this.spy));
+
+            // Update streak display
+            this.updateStreakDisplay();
+
+            // Update question dot
+            if (this.qDots[this.qIndex]) {
+              this.qDots[this.qIndex].setFillStyle(0xef4444);
+            }
           }
           this.updateHUD();
           this.time.delayedCall(correct ? 1500 : 2500, () => {
@@ -950,34 +1625,86 @@
           });
         }
 
+        updateStreakDisplay() {
+          if (this.streak >= 2) {
+            this.streakBg.setFillStyle(0xf59e0b, 0.2);
+            this.streakText.setText(`HEIST COMBO: ${this.streak}x`);
+            this.tweens.add({
+              targets: this.streakText,
+              scaleX: 1.2,
+              scaleY: 1.2,
+              duration: 150,
+              yoyo: true,
+            });
+          } else {
+            this.streakBg.setFillStyle(0x000000, 0);
+            this.streakText.setText("");
+          }
+        }
+
         handleKey(e) {
           if (this.answered) return;
           if (e.key >= "1" && e.key <= "4") {
             const i = parseInt(e.key) - 1;
-            if (i < this.answerBtns.length) this.submitAnswer(i);
+            if (i < this.answerBtns.length && !this.answerBtns[i].eliminated)
+              this.submitAnswer(i);
           }
           if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-            this.selectedIdx = Math.min(
-              this.selectedIdx + 1,
-              this.answerBtns.length - 1,
+            do {
+              this.selectedIdx = Math.min(
+                this.selectedIdx + 1,
+                this.answerBtns.length - 1,
+              );
+            } while (
+              this.answerBtns[this.selectedIdx].eliminated &&
+              this.selectedIdx < this.answerBtns.length - 1
             );
             if (this.selectedIdx < 0) this.selectedIdx = 0;
             this.highlightSel();
           }
           if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-            this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            do {
+              this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
+            } while (
+              this.answerBtns[this.selectedIdx].eliminated &&
+              this.selectedIdx > 0
+            );
             this.highlightSel();
           }
-          if (e.key === "Enter" && this.selectedIdx >= 0)
+          if (
+            e.key === "Enter" &&
+            this.selectedIdx >= 0 &&
+            !this.answerBtns[this.selectedIdx].eliminated
+          )
             this.submitAnswer(this.selectedIdx);
+          // Power-up hotkeys
+          if (e.key === "q" || e.key === "Q") this.usePowerUp("fiftyFifty");
+          if (e.key === "w" || e.key === "W") this.usePowerUp("doublePoints");
         }
 
         highlightSel() {
           this.answerBtns.forEach((b, i) => {
-            b.bg.setStrokeStyle(
-              i === this.selectedIdx ? 3 : 2,
-              i === this.selectedIdx ? 0xfbbf24 : 0x334155,
-            );
+            if (!b.eliminated) {
+              b.bg.setStrokeStyle(
+                i === this.selectedIdx ? 3 : 2,
+                i === this.selectedIdx ? 0xfbbf24 : 0x334155,
+              );
+              if (i === this.selectedIdx) {
+                this.tweens.add({
+                  targets: b.bg,
+                  scaleX: 1.03,
+                  scaleY: 1.03,
+                  duration: 100,
+                });
+              } else {
+                this.tweens.add({
+                  targets: b.bg,
+                  scaleX: 1,
+                  scaleY: 1,
+                  duration: 100,
+                });
+              }
+            }
           });
           sfx.click();
         }
@@ -994,10 +1721,27 @@
           );
           this.hudFloor.setText(q ? q.floor.toUpperCase() : "");
           this.hudLoot.setText(`LOOT: ${this.loot}`);
+          this.hudMultiplier.setText(
+            this.multiplier > 1 ? `${this.multiplier}x` : "",
+          );
           const el = Math.floor((Date.now() - this.startTime) / 1000);
           const m = Math.floor(el / 60),
             s = el % 60;
           this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
+
+          // Speed indicator
+          if (!this.answered) {
+            const elapsed = (Date.now() - this.questionStartTime) / 1000;
+            if (elapsed < 5) {
+              this.speedIndicator.setText("FAST").setColor("#22c55e");
+            } else if (elapsed < 10) {
+              this.speedIndicator.setText("GOOD").setColor("#fbbf24");
+            } else {
+              this.speedIndicator.setText("").setColor("#94a3b8");
+            }
+          } else {
+            this.speedIndicator.setText("");
+          }
         }
 
         update() {
@@ -1007,13 +1751,16 @@
         endGame() {
           const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
           const correct = this.loot;
-          this.scene.start("Results", {
-            score: this.score,
-            total: this.totalQ,
-            correct,
-            bestStreak: this.bestStreak,
-            time: elapsed,
-            loot: this.loot,
+          this.cameras.main.fade(500, 0, 0, 0);
+          this.time.delayedCall(500, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              total: this.totalQ,
+              correct,
+              bestStreak: this.bestStreak,
+              time: elapsed,
+              loot: this.loot,
+            });
           });
         }
       }
@@ -1031,11 +1778,26 @@
           const d = this.d,
             cx = W / 2;
           this.cameras.main.setBackgroundColor("#0a0a0a");
+          this.cameras.main.fadeIn(500);
+
+          // Ambient dust
+          createAmbientDust(this, 0xfbbf24, 0xef4444);
+
           const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
           const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+
+          // High score check
+          const prevHigh = parseInt(localStorage.getItem(LS_KEY)) || 0;
+          const isNewHigh = d.score > prevHigh;
+          if (isNewHigh) {
+            localStorage.setItem(LS_KEY, d.score);
+          }
+
           if (stars >= 2) {
-            sfx.win();
-            for (let i = 0; i < 5; i++) {
+            if (stars === 3) sfx.winBig();
+            else sfx.win();
+            const bursts = stars === 3 ? 8 : 5;
+            for (let i = 0; i < bursts; i++) {
               this.time.delayedCall(i * 150, () => {
                 this.add
                   .particles(
@@ -1043,67 +1805,181 @@
                     Phaser.Math.Between(30, 150),
                     "__WHITE",
                     {
-                      speed: { min: 60, max: 200 },
+                      speed: { min: 60, max: 220 },
                       angle: { min: 0, max: 360 },
                       scale: { start: 0.35, end: 0 },
-                      lifespan: 1000,
-                      tint: [0xfbbf24, 0xef4444, 0x22c55e, 0xa78bfa],
-                      quantity: 12,
+                      lifespan: 1200,
+                      tint: [0xfbbf24, 0xef4444, 0x22c55e, 0xa78bfa, 0x22d3ee],
+                      quantity: 15,
                       emitting: false,
                       blendMode: "ADD",
                     },
                   )
-                  .explode(16);
+                  .explode(18);
               });
             }
           } else sfx.lose();
+
           const titles = [
             "Caught by Security!",
             "Amateur Thief",
             "Expert Burglar!",
             "MASTER THIEF!",
           ];
-          this.add
+
+          const titleText = this.add
             .text(cx, 55, titles[stars], {
               fontSize: "40px",
               color: stars >= 2 ? "#fbbf24" : "#94a3b8",
               fontStyle: "bold",
             })
-            .setOrigin(0.5);
-          let starStr = "";
-          for (let i = 0; i < 3; i++) starStr += i < stars ? "★ " : "☆ ";
-          this.add
-            .text(cx, 110, starStr, { fontSize: "48px", color: "#fbbf24" })
-            .setOrigin(0.5);
+            .setOrigin(0.5)
+            .setAlpha(0)
+            .setScale(0.5);
+          this.tweens.add({
+            targets: titleText,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 600,
+            ease: "Back.easeOut",
+          });
+
+          // Animated star fill
+          for (let i = 0; i < 3; i++) {
+            const starChar = i < stars ? "★" : "☆";
+            const s = this.add
+              .text(cx - 60 + i * 60, 110, starChar, {
+                fontSize: "48px",
+                color: "#fbbf24",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0)
+              .setScale(0);
+            this.tweens.add({
+              targets: s,
+              alpha: 1,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 400,
+              delay: 600 + i * 300,
+              ease: "Back.easeOut",
+              onStart: () => {
+                if (i < stars) sfx.grab();
+              },
+            });
+          }
+
+          // New High Score banner
+          if (isNewHigh && d.score > 0) {
+            const hsBanner = this.add
+              .text(cx, 155, "NEW HIGH SCORE!", {
+                fontSize: "28px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: hsBanner,
+              alpha: 1,
+              duration: 400,
+              delay: 1500,
+            });
+            this.tweens.add({
+              targets: hsBanner,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 500,
+              yoyo: true,
+              repeat: -1,
+              delay: 1500,
+            });
+            // Celebration particles
+            this.time.delayedCall(1500, () => {
+              for (let i = 0; i < 3; i++) {
+                this.time.delayedCall(i * 150, () => {
+                  this.add
+                    .particles(
+                      cx + Phaser.Math.Between(-100, 100),
+                      155,
+                      "__WHITE",
+                      {
+                        speed: { min: 40, max: 120 },
+                        angle: { min: 0, max: 360 },
+                        scale: { start: 0.3, end: 0 },
+                        lifespan: 600,
+                        tint: [0xfbbf24, 0xf59e0b],
+                        quantity: 8,
+                        emitting: false,
+                        blendMode: "ADD",
+                      },
+                    )
+                    .explode(10);
+                });
+              }
+            });
+          }
+
           // Loot display
+          const lootY = isNewHigh ? 200 : 185;
           this.add
-            .rectangle(cx, 195, 250, 55, 0x1e293b)
+            .rectangle(cx, lootY, 250, 55, 0x1e293b)
             .setStrokeStyle(2, 0xfbbf24);
-          this.add
-            .text(cx, 185, `LOOT: ${d.loot} items`, {
+          const lootText = this.add
+            .text(cx, lootY - 10, "LOOT: 0 items", {
               fontSize: "22px",
               color: "#fbbf24",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
+          // Animate loot count
+          this.tweens.addCounter({
+            from: 0,
+            to: d.loot,
+            duration: 800,
+            delay: 300,
+            onUpdate: (t) => {
+              lootText.setText(`LOOT: ${Math.round(t.getValue())} items`);
+            },
+          });
           this.add
-            .text(cx, 210, "secured from the museum", {
+            .text(cx, lootY + 15, "secured from the museum", {
               fontSize: "11px",
               color: "#64748b",
             })
             .setOrigin(0.5);
-          // Score
-          this.add.circle(cx, 290, 55, 0x1e293b).setStrokeStyle(3, 0xfbbf24);
-          this.add
-            .text(cx, 280, pct + "%", {
+
+          // Score circle
+          const scoreY = isNewHigh ? 280 : 265;
+          this.add.circle(cx, scoreY, 55, 0x1e293b).setStrokeStyle(3, 0xfbbf24);
+          const pctText = this.add
+            .text(cx, scoreY - 10, "0%", {
               fontSize: "30px",
               color: "#e2e8f0",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
+          // Animate percentage
+          this.tweens.addCounter({
+            from: 0,
+            to: pct,
+            duration: 1000,
+            delay: 500,
+            onUpdate: (t) => {
+              pctText.setText(Math.round(t.getValue()) + "%");
+            },
+          });
           this.add
-            .text(cx, 305, "Accuracy", { fontSize: "12px", color: "#64748b" })
+            .text(cx, scoreY + 15, "Accuracy", {
+              fontSize: "12px",
+              color: "#64748b",
+            })
             .setOrigin(0.5);
+
+          const statsY = isNewHigh ? 370 : 360;
           const stats = [
             { l: "Score", v: d.score, c: "#fbbf24" },
             { l: "Vaults", v: `${d.correct}/${d.total}`, c: "#22c55e" },
@@ -1116,21 +1992,41 @@
           ];
           stats.forEach((s, i) => {
             const x = cx - 240 + i * 165,
-              y = 400;
-            this.add
+              y = statsY;
+            const card = this.add
               .rectangle(x, y, 135, 60, 0x1e293b)
-              .setStrokeStyle(1, 0x334155);
-            this.add
+              .setStrokeStyle(1, 0x334155)
+              .setAlpha(0);
+            const val = this.add
               .text(x, y - 8, String(s.v), {
                 fontSize: "22px",
                 color: s.c,
                 fontStyle: "bold",
               })
-              .setOrigin(0.5);
-            this.add
+              .setOrigin(0.5)
+              .setAlpha(0);
+            const lbl = this.add
               .text(x, y + 14, s.l, { fontSize: "11px", color: "#64748b" })
-              .setOrigin(0.5);
+              .setOrigin(0.5)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: [card, val, lbl],
+              alpha: 1,
+              duration: 300,
+              delay: 800 + i * 100,
+            });
           });
+
+          // Previous high score
+          if (prevHigh > 0 && !isNewHigh) {
+            this.add
+              .text(cx, statsY + 45, `Personal Best: ${prevHigh}`, {
+                fontSize: "12px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+          }
+
           // Floor progress
           const floorsReached =
             d.correct <= 5
@@ -1139,18 +2035,20 @@
                 ? "Gallery"
                 : "The Vault";
           this.add
-            .text(cx, 455, `Deepest floor reached: ${floorsReached}`, {
+            .text(cx, statsY + 60, `Deepest floor reached: ${floorsReached}`, {
               fontSize: "14px",
               color: "#94a3b8",
             })
             .setOrigin(0.5);
+
           // Buttons
+          const btnY = statsY + 110;
           const btn1 = this.add
-            .rectangle(cx - 110, 530, 190, 50, 0xfbbf24)
+            .rectangle(cx - 110, btnY, 190, 50, 0xfbbf24)
             .setStrokeStyle(2, 0xf59e0b)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx - 110, 530, "HEIST AGAIN", {
+            .text(cx - 110, btnY, "HEIST AGAIN", {
               fontSize: "17px",
               color: "#0a0a0a",
               fontStyle: "bold",
@@ -1158,16 +2056,34 @@
             .setOrigin(0.5);
           btn1.on("pointerdown", () => {
             sfx.click();
-            this.scene.start("Game");
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Game"));
           });
-          btn1.on("pointerover", () => btn1.setFillStyle(0xf59e0b));
-          btn1.on("pointerout", () => btn1.setFillStyle(0xfbbf24));
+          btn1.on("pointerover", () => {
+            btn1.setFillStyle(0xf59e0b);
+            this.tweens.add({
+              targets: btn1,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          btn1.on("pointerout", () => {
+            btn1.setFillStyle(0xfbbf24);
+            this.tweens.add({
+              targets: btn1,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
           const btn2 = this.add
-            .rectangle(cx + 110, 530, 190, 50, 0x1e293b)
+            .rectangle(cx + 110, btnY, 190, 50, 0x1e293b)
             .setStrokeStyle(2, 0x334155)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx + 110, 530, "MAIN MENU", {
+            .text(cx + 110, btnY, "MAIN MENU", {
               fontSize: "17px",
               color: "#94a3b8",
               fontStyle: "bold",
@@ -1175,19 +2091,44 @@
             .setOrigin(0.5);
           btn2.on("pointerdown", () => {
             sfx.click();
-            this.scene.start("Title");
+            this.cameras.main.fade(400, 0, 0, 0);
+            this.time.delayedCall(400, () => this.scene.start("Title"));
           });
-          btn2.on("pointerover", () => btn2.setFillStyle(0x334155));
-          btn2.on("pointerout", () => btn2.setFillStyle(0x1e293b));
+          btn2.on("pointerover", () => {
+            btn2.setFillStyle(0x334155);
+            this.tweens.add({
+              targets: btn2,
+              scaleX: 1.05,
+              scaleY: 1.05,
+              duration: 100,
+            });
+          });
+          btn2.on("pointerout", () => {
+            btn2.setFillStyle(0x1e293b);
+            this.tweens.add({
+              targets: btn2,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 100,
+            });
+          });
+
           this.add
             .text(cx, H - 25, "Volume Vault — Neft Teacher — 6.G.2 / 6.G.4", {
               fontSize: "11px",
               color: "#475569",
             })
             .setOrigin(0.5);
+
           this.input.keyboard.on("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") this.scene.start("Game");
-            if (e.key === "Escape") this.scene.start("Title");
+            if (e.key === "Enter" || e.key === " ") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Game"));
+            }
+            if (e.key === "Escape") {
+              this.cameras.main.fade(400, 0, 0, 0);
+              this.time.delayedCall(400, () => this.scene.start("Title"));
+            }
           });
         }
       }

@@ -10,27 +10,27 @@
     {
       "term": "Prime number",
       "definition": "A whole number greater than 1 that has exactly two factors: 1 and itself",
-      "visual": "2, 3, 5, 7, 11, 13 are prime numbers"
+      "visual": "7 has only two factors: 1 × 7. So 7 is prime."
     },
     {
       "term": "Composite number",
       "definition": "A whole number greater than 1 that has more than two factors",
-      "visual": "12 is composite: 1, 2, 3, 4, 6, 12"
+      "visual": "12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite"
     },
     {
       "term": "Prime factorization",
       "definition": "Writing a number as a product of its prime factors",
-      "visual": "36 = 2 × 2 × 3 × 3"
+      "visual": "36 = 2 × 2 × 3 × 3 = 2² × 3²"
     },
     {
       "term": "Factor tree",
       "definition": "A diagram that breaks a number into its prime factors step by step",
-      "visual": "24 → 4 × 6 → 2 × 2 × 2 × 3"
+      "visual": "24 → 4 × 6 → (2 × 2) × (2 × 3) → 2 × 2 × 2 × 3"
     },
     {
-      "term": "Multiple",
-      "definition": "The product of a number and any whole number",
-      "visual": "Multiples of 5: 5, 10, 15, 20, 25..."
+      "term": "Exponent",
+      "definition": "A small number that shows how many times a base is multiplied by itself",
+      "visual": "2³ means 2 × 2 × 2 = 8"
     }
   ],
   "launch": {
@@ -50,56 +50,20 @@
     "type": "drag-sort",
     "instructions": "Sort these numbers — which are prime and which are composite?",
     "items": [
-      {
-        "text": "2",
-        "category": "prime"
-      },
-      {
-        "text": "3",
-        "category": "prime"
-      },
-      {
-        "text": "5",
-        "category": "prime"
-      },
-      {
-        "text": "11",
-        "category": "prime"
-      },
-      {
-        "text": "13",
-        "category": "prime"
-      },
-      {
-        "text": "4",
-        "category": "composite"
-      },
-      {
-        "text": "9",
-        "category": "composite"
-      },
-      {
-        "text": "12",
-        "category": "composite"
-      },
-      {
-        "text": "15",
-        "category": "composite"
-      },
-      {
-        "text": "21",
-        "category": "composite"
-      }
+      { "text": "2", "category": "prime" },
+      { "text": "3", "category": "prime" },
+      { "text": "5", "category": "prime" },
+      { "text": "11", "category": "prime" },
+      { "text": "13", "category": "prime" },
+      { "text": "4", "category": "composite" },
+      { "text": "9", "category": "composite" },
+      { "text": "12", "category": "composite" },
+      { "text": "15", "category": "composite" },
+      { "text": "21", "category": "composite" }
     ],
     "categories": [
-      {
-        "id": "prime",
-        "label": "Prime Numbers"
-      },
-      {
-        "id": "composite",
-        "label": "Composite Numbers"
-      }
+      { "id": "prime", "label": "Prime Numbers" },
+      { "id": "composite", "label": "Composite Numbers" }
     ],
     "discourse": {
       "prompt": "How did you decide whether a number is prime or composite? What strategy did you use?",
@@ -119,102 +83,105 @@
       {
         "type": "multiple-choice",
         "stem": "Which of the following is a prime number?",
-        "choices": [
-          "17",
-          "15",
-          "21",
-          "9"
-        ],
+        "choices": ["17", "15", "21", "9"],
         "correctIndex": 0,
         "explanation": "17 has exactly two factors: 1 and 17. 15 = 3 × 5, 21 = 3 × 7, and 9 = 3 × 3, so they are all composite."
       },
       {
         "type": "multiple-choice",
         "stem": "What is the prime factorization of 30?",
-        "choices": [
-          "2 × 3 × 5",
-          "5 × 6",
-          "2 × 15",
-          "3 × 10"
-        ],
+        "choices": ["2 × 3 × 5", "5 × 6", "2 × 15", "3 × 10"],
         "correctIndex": 0,
         "explanation": "30 = 2 × 15 = 2 × 3 × 5. All three factors (2, 3, 5) are prime, so 2 × 3 × 5 is the prime factorization."
       },
       {
         "type": "multiple-choice",
-        "stem": "Which number is a factor of 30?",
-        "choices": [
-          "6",
-          "8",
-          "9",
-          "11"
-        ],
+        "stem": "What is the prime factorization of 18?",
+        "choices": ["2 × 3 × 3", "2 × 9", "3 × 6", "6 × 3"],
         "correctIndex": 0,
-        "explanation": "30 ÷ 6 = 5 with no remainder, so 6 is a factor of 30."
+        "explanation": "18 = 2 × 9 = 2 × 3 × 3. Both 2 and 3 are prime, so 2 × 3 × 3 is the prime factorization."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?",
+        "items": [
+          { "text": "2 × 2 × 3 (for 12)", "category": "complete" },
+          { "text": "2 × 3 × 5 (for 30)", "category": "complete" },
+          { "text": "2 × 2 × 2 × 3 (for 24)", "category": "complete" },
+          { "text": "4 × 3 (for 12)", "category": "not-complete" },
+          { "text": "6 × 5 (for 30)", "category": "not-complete" },
+          { "text": "8 × 3 (for 24)", "category": "not-complete" }
+        ],
+        "categories": [
+          { "id": "complete", "label": "Complete Prime Factorization" },
+          {
+            "id": "not-complete",
+            "label": "NOT Complete (Has Composite Factors)"
+          }
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which of these numbers is composite?",
+        "choices": ["27", "23", "29", "31"],
+        "correctIndex": 0,
+        "explanation": "27 = 3 × 9 = 3 × 3 × 3, so it has more than two factors. 23, 29, and 31 are all prime."
       }
     ],
     "onLevel": [
       {
         "type": "matching-game",
         "pairs": [
-          {
-            "term": "12",
-            "match": "2 × 2 × 3"
-          },
-          {
-            "term": "18",
-            "match": "2 × 3 × 3"
-          },
-          {
-            "term": "20",
-            "match": "2 × 2 × 5"
-          },
-          {
-            "term": "28",
-            "match": "2 × 2 × 7"
-          },
-          {
-            "term": "45",
-            "match": "3 × 3 × 5"
-          },
-          {
-            "term": "50",
-            "match": "2 × 5 × 5"
-          }
+          { "term": "12", "match": "2 × 2 × 3" },
+          { "term": "18", "match": "2 × 3 × 3" },
+          { "term": "20", "match": "2 × 2 × 5" },
+          { "term": "28", "match": "2 × 2 × 7" },
+          { "term": "45", "match": "3 × 3 × 5" },
+          { "term": "50", "match": "2 × 5 × 5" }
         ],
         "columns": 4,
         "label": "Match each number to its prime factorization."
       },
       {
-        "type": "matching-game",
-        "pairs": [
-          {
-            "term": "LCM(3, 4)",
-            "match": "12"
-          },
-          {
-            "term": "GCF(12, 18)",
-            "match": "6"
-          },
-          {
-            "term": "LCM(5, 6)",
-            "match": "30"
-          },
-          {
-            "term": "GCF(20, 30)",
-            "match": "10"
-          },
-          {
-            "term": "LCM(8, 12)",
-            "match": "24"
-          },
-          {
-            "term": "GCF(16, 24)",
-            "match": "8"
-          }
+        "type": "fill-table",
+        "label": "Build the factor tree. Write each number as a product of primes.",
+        "columns": ["Number", "First Split", "Prime Factorization"],
+        "rows": [
+          { "given": "24", "split": "4 × 6", "answer": "2 × 2 × 2 × 3" },
+          { "given": "36", "split": "4 × 9", "answer": "2 × 2 × 3 × 3" },
+          { "given": "40", "split": "5 × 8", "answer": "2 × 2 × 2 × 5" },
+          { "given": "56", "split": "7 × 8", "answer": "2 × 2 × 2 × 7" }
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each number: can it be expressed as a product of exactly TWO prime factors, or does it need THREE or more?",
+        "items": [
+          { "text": "6 (= 2 × 3)", "category": "two-primes" },
+          { "text": "10 (= 2 × 5)", "category": "two-primes" },
+          { "text": "15 (= 3 × 5)", "category": "two-primes" },
+          { "text": "35 (= 5 × 7)", "category": "two-primes" },
+          { "text": "12 (= 2 × 2 × 3)", "category": "three-or-more" },
+          { "text": "30 (= 2 × 3 × 5)", "category": "three-or-more" },
+          { "text": "24 (= 2 × 2 × 2 × 3)", "category": "three-or-more" },
+          { "text": "60 (= 2 × 2 × 3 × 5)", "category": "three-or-more" }
         ],
-        "label": "Match each problem to its answer.",
-        "columns": 4
+        "categories": [
+          { "id": "two-primes", "label": "Product of Exactly Two Primes" },
+          { "id": "three-or-more", "label": "Product of Three or More Primes" }
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Two students found different factor trees for 60. Student A started with 2 × 30. Student B started with 6 × 10. Which statement is true?",
+        "choices": [
+          "Both get the same prime factorization: 2 × 2 × 3 × 5",
+          "Only Student A gets the correct prime factorization",
+          "Only Student B gets the correct prime factorization",
+          "They will get different prime factorizations"
+        ],
+        "correctIndex": 0,
+        "explanation": "The Fundamental Theorem of Arithmetic says every composite number has exactly one prime factorization. No matter how you start the factor tree, you always end with 2 × 2 × 3 × 5."
       }
     ],
     "extending": [
@@ -222,29 +189,14 @@
         "type": "error-analysis",
         "title": "Find Marcus's Mistake",
         "workedExample": [
-          {
-            "label": "Find prime factorization of 48",
-            "work": "Start: 48"
-          },
-          {
-            "label": "First split",
-            "work": "48 = 6 × 8"
-          },
-          {
-            "label": "Break down 6",
-            "work": "6 = 2 × 3"
-          },
-          {
-            "label": "Break down 8",
-            "work": "8 = 2 × 4"
-          },
-          {
-            "label": "Final answer",
-            "work": "48 = 2 × 3 × 2 × 4"
-          }
+          { "label": "Find prime factorization of 48", "work": "Start: 48" },
+          { "label": "First split", "work": "48 = 6 × 8" },
+          { "label": "Break down 6", "work": "6 = 2 × 3" },
+          { "label": "Break down 8", "work": "8 = 2 × 4" },
+          { "label": "Final answer", "work": "48 = 2 × 3 × 2 × 4" }
         ],
         "errorStep": 3,
-        "correctWork": "8 = 2 × 4, but 4 is not prime. 4 = 2 × 2, so 8 = 2 × 2 × 2. The correct prime factorization is 48 = 2 × 2 × 2 × 2 × 3.",
+        "correctWork": "8 = 2 × 4, but 4 is not prime. 4 = 2 × 2, so 8 = 2 × 2 × 2. The correct prime factorization is 48 = 2 × 2 × 2 × 2 × 3 = 2⁴ × 3.",
         "hints": [
           "Look at Step 4 — is every factor in the answer a prime number?",
           "4 is not prime because 4 = 2 × 2. Marcus needed to keep breaking it down."
@@ -252,17 +204,35 @@
       },
       {
         "type": "open-response",
-        "prompt": "Create your own GCF or LCM word problem using two numbers of your choice. Show the solution and explain your reasoning.",
-        "sentenceFrame": "I chose the numbers ___ and ___ because ___. The GCF/LCM is ___ because ___.",
+        "prompt": "Choose any two-digit composite number. Show TWO different factor trees that both lead to the same prime factorization. Explain why every composite number has only one prime factorization.",
+        "sentenceFrame": "I chose the number ___. My first factor tree starts with ___ × ___, and my second starts with ___ × ___. Both give the same prime factorization: ___. This happens because ___.",
         "keywords": [
-          "factor",
-          "multiple",
-          "common",
-          "greatest",
-          "least",
-          "divide"
+          "factor tree",
+          "prime factorization",
+          "same",
+          "only one",
+          "composite",
+          "break down"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "fill-table",
+        "label": "Write the prime factorization using exponents.",
+        "columns": [
+          "Number",
+          "Prime Factorization (expanded)",
+          "Using Exponents"
+        ],
+        "rows": [
+          {
+            "given": "72",
+            "expanded": "2 × 2 × 2 × 3 × 3",
+            "answer": "2³ × 3²"
+          },
+          { "given": "100", "expanded": "2 × 2 × 5 × 5", "answer": "2² × 5²" },
+          { "given": "54", "expanded": "2 × 3 × 3 × 3", "answer": "2 × 3³" }
+        ]
       }
     ]
   },
@@ -284,12 +254,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "What is the prime factorization of 40?",
-      "choices": [
-        "2 × 2 × 2 × 5",
-        "4 × 10",
-        "5 × 8",
-        "2 × 20"
-      ],
+      "choices": ["2 × 2 × 2 × 5", "4 × 10", "5 × 8", "2 × 20"],
       "correctIndex": 0,
       "explanation": "40 = 2 × 20 = 2 × 2 × 10 = 2 × 2 × 2 × 5. All factors (2, 2, 2, 5) are prime."
     }

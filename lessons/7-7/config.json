@@ -10,22 +10,22 @@
     {
       "term": "Model",
       "definition": "To represent a real-world situation using an equation or inequality",
-      "visual": "Word problem → equation: 'twice a number is 18' → 2n = 18"
+      "visual": "'Twice a number is 18' → 2n = 18 — the equation models the words"
     },
     {
       "term": "Equation",
       "definition": "A mathematical sentence that uses an equal sign to show two expressions have the same value",
-      "visual": "x + 5 = 12"
+      "visual": "x + 5 = 12 — exactly one answer: x = 7"
     },
     {
       "term": "Inequality",
       "definition": "A mathematical sentence that compares two expressions using <, >, ≤, or ≥",
-      "visual": "x + 5 > 12"
+      "visual": "x + 5 > 12 — many answers: x = 8, 9, 10, ..."
     },
     {
       "term": "Reasonableness",
       "definition": "Checking whether an answer makes sense in the context of the problem",
-      "visual": "If x = negative, but the problem asks for a number of people, the answer is not reasonable"
+      "visual": "If the problem asks for a number of people and you get x = −3, that is NOT reasonable"
     }
   ],
   "launch": {
@@ -100,61 +100,82 @@
       {
         "type": "multiple-choice",
         "stem": "A museum has some paintings. After adding 12, they have 45. Which equation models this?",
-        "choices": [
-          "p + 12 = 45",
-          "p − 12 = 45",
-          "12p = 45",
-          "p / 12 = 45"
-        ],
+        "choices": ["p + 12 = 45", "p − 12 = 45", "12p = 45", "p / 12 = 45"],
         "correctIndex": 0,
         "explanation": "'Adding 12' to the original number gives 45: p + 12 = 45. Solve: p = 33."
       },
       {
         "type": "multiple-choice",
         "stem": "A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?",
-        "choices": [
-          "3 + h > 8",
-          "3 + h = 8",
-          "h > 3",
-          "8 + h > 3"
-        ],
+        "choices": ["3 + h > 8", "3 + h = 8", "h > 3", "8 + h > 3"],
         "correctIndex": 0,
         "explanation": "3 hours plus additional hours h must be more than 8: 3 + h > 8. Solve: h > 5."
       },
       {
         "type": "multiple-choice",
-        "stem": "Write an equation: 'A number divided by 6 equals 7'",
-        "choices": [
-          "n/6 = 7",
-          "6n = 7",
-          "n − 6 = 7",
-          "n + 6 = 7"
-        ],
+        "stem": "Which model is correct for: 'A number divided by 6 equals 7'?",
+        "choices": ["n / 6 = 7", "6n = 7", "n − 6 = 7", "n + 6 = 7"],
         "correctIndex": 0,
-        "explanation": "Divided by 6 is n/6. Equals 7 means = 7. So n/6 = 7."
+        "explanation": "Divided by 6 is n / 6. Equals 7 means = 7. So n / 6 = 7."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A bus can carry at most 48 passengers. There are already 31 on board. Which inequality shows how many more can board?",
+        "choices": ["31 + p ≤ 48", "31 + p > 48", "31 + p = 48", "p − 31 ≤ 48"],
+        "correctIndex": 0,
+        "explanation": "'At most 48' means the total must be ≤ 48. So 31 + p ≤ 48. Solve: p ≤ 17."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each word problem into whether it needs an equation or an inequality.",
+        "categories": [
+          {
+            "label": "Equation (=)",
+            "items": [
+              "Five boxes weigh exactly 60 pounds total. How much does each weigh?",
+              "A number plus 8 equals 20."
+            ]
+          },
+          {
+            "label": "Inequality (<, >, ≤, ≥)",
+            "items": [
+              "A shelf holds at most 30 books. There are already 17. How many more fit?",
+              "The temperature must stay above 32 degrees."
+            ]
+          }
+        ],
+        "hints": [
+          "'Exactly,' 'equals,' and 'is' signal an equation.",
+          "'At most,' 'at least,' 'above,' 'more than,' and 'fewer than' signal an inequality."
+        ],
+        "label": "Sort each problem: equation or inequality?"
       }
     ],
     "onLevel": [
       {
         "type": "fill-table",
-        "columns": [
-          "Word Problem",
-          "Model",
-          "Solution"
-        ],
+        "columns": ["Word Problem", "Model", "Solution", "Reasonable?"],
         "rows": [
           {
             "wordProblem": "Five identical boxes weigh a total of 60 pounds. How much does each box weigh?",
             "model": "5w = 60",
-            "solution": "w = 12 pounds"
+            "solution": "w = 12 pounds",
+            "reasonable": "Yes — 12 pounds per box is reasonable."
           },
           {
             "wordProblem": "A shelf can hold at most 30 books. There are already 17 books. How many more can be added?",
             "model": "17 + b ≤ 30",
-            "solution": "b ≤ 13 books"
+            "solution": "b ≤ 13 books",
+            "reasonable": "Yes — up to 13 more books fits."
+          },
+          {
+            "wordProblem": "A baker split 84 cookies equally into bags of 12. How many bags did she use?",
+            "model": "12b = 84",
+            "solution": "b = 7 bags",
+            "reasonable": "Yes — 7 bags of 12 = 84 cookies."
           }
         ],
-        "label": "Write an equation or inequality for each problem and solve."
+        "label": "Write a model, solve, and check reasonableness for each problem."
       },
       {
         "type": "multiple-choice",
@@ -167,6 +188,39 @@
         ],
         "correctIndex": 0,
         "explanation": "4 × 13 = 52 ✓. 13 notebooks per box is a reasonable whole number answer."
+      },
+      {
+        "type": "matching",
+        "label": "Match each situation to its correct model",
+        "pairs": [
+          {
+            "situation": "A recipe needs exactly 3 cups of flour.",
+            "equation": "f = 3 (equation)"
+          },
+          {
+            "situation": "You must read more than 20 pages tonight.",
+            "equation": "p > 20 (inequality)"
+          },
+          {
+            "situation": "Each team has the same number of players, and there are 36 players on 4 teams.",
+            "equation": "4t = 36 (equation)"
+          },
+          {
+            "situation": "The pool temperature must be at least 72°F.",
+            "equation": "t ≥ 72 (inequality)"
+          }
+        ]
+      },
+      {
+        "type": "balance-scale",
+        "equation": "3x + 5 = 26",
+        "variable": "x",
+        "answer": 7,
+        "label": "Solve this two-step problem: 3x + 5 = 26",
+        "hints": [
+          "First subtract 5 from both sides: 3x = 21.",
+          "Then divide both sides by 3: x = 7. Check: 3(7) + 5 = 21 + 5 = 26 ✓"
+        ]
       }
     ],
     "extending": [
@@ -200,16 +254,48 @@
       },
       {
         "type": "open-response",
-        "prompt": "Write a real-world situation that can be modeled by the equation 3x + 5 = 20. Solve it and explain what x represents.",
-        "sentenceFrame": "Situation: ___. In this problem, x represents ___. Solving: ___ so x = ___.",
+        "prompt": "Create two word problems about the same situation: one that requires an equation and one that requires an inequality. Solve both and explain why the models are different.",
+        "sentenceFrame": "Equation problem: ___. Model: ___. Solution: ___. Inequality problem: ___. Model: ___. Solution: ___. The models are different because ___.",
         "keywords": [
           "equation",
-          "solve",
-          "variable",
-          "represents",
-          "both sides"
+          "inequality",
+          "exactly",
+          "at least",
+          "at most",
+          "more than",
+          "reasonable"
         ],
-        "minLength": 30
+        "minLength": 50
+      },
+      {
+        "type": "fill-table",
+        "columns": [
+          "Problem",
+          "Student's Model",
+          "Correct?",
+          "Fix (if needed)"
+        ],
+        "rows": [
+          {
+            "problem": "A tank holds at most 500 gallons. It has 320. How many more gallons can be added?",
+            "studentModel": "320 + g = 500",
+            "correct": "No",
+            "fix": "'At most' needs ≤: 320 + g ≤ 500 → g ≤ 180"
+          },
+          {
+            "problem": "Six friends split a pizza bill equally. Each paid $8. What was the total?",
+            "studentModel": "t / 6 = 8",
+            "correct": "Yes",
+            "fix": "Correct: t = 48"
+          },
+          {
+            "problem": "A runner must complete more than 5 laps. She has done 2. How many more does she need?",
+            "studentModel": "2 + m = 5",
+            "correct": "No",
+            "fix": "'More than' needs >: 2 + m > 5 → m > 3"
+          }
+        ],
+        "label": "Check each student's model. If wrong, write the correct model and solve."
       }
     ]
   },
@@ -231,12 +317,7 @@
   "reflect": {
     "exitTicket": {
       "stem": "A box of donuts has some donuts. After giving away 7, there are fewer than 5 left. Which inequality represents the starting number of donuts d?",
-      "choices": [
-        "d − 7 < 5",
-        "d + 7 < 5",
-        "d − 7 > 5",
-        "d − 7 = 5"
-      ],
+      "choices": ["d − 7 < 5", "d + 7 < 5", "d − 7 > 5", "d − 7 = 5"],
       "correctIndex": 0,
       "explanation": "Starting with d donuts and giving away 7 leaves fewer than 5: d − 7 < 5. Solve: d < 12. ✓"
     }

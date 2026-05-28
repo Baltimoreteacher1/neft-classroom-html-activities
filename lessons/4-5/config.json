@@ -60,51 +60,11 @@
       "Final Price"
     ],
     "rows": [
-      [
-        "Stuffed Bear",
-        "200 tickets",
-        "25%",
-        "50",
-        "150",
-        "7.5",
-        "157.5"
-      ],
-      [
-        "LED Keychain",
-        "80 tickets",
-        "10%",
-        "",
-        "",
-        "",
-        ""
-      ],
-      [
-        "Foam Dart Gun",
-        "150 tickets",
-        "20%",
-        "",
-        "",
-        "",
-        ""
-      ],
-      [
-        "Mini Drone",
-        "400 tickets",
-        "15%",
-        "",
-        "",
-        "",
-        ""
-      ],
-      [
-        "Puzzle Set",
-        "60 tickets",
-        "30%",
-        "",
-        "",
-        "",
-        ""
-      ]
+      ["Stuffed Bear", "200 tickets", "25%", "50", "150", "7.5", "157.5"],
+      ["LED Keychain", "80 tickets", "10%", "", "", "", ""],
+      ["Foam Dart Gun", "150 tickets", "20%", "", "", "", ""],
+      ["Mini Drone", "400 tickets", "15%", "", "", "", ""],
+      ["Puzzle Set", "60 tickets", "30%", "", "", "", ""]
     ],
     "editableCells": [
       {
@@ -207,49 +167,53 @@
       {
         "type": "multiple-choice",
         "stem": "A prize costs 120 tickets and is 25% off. What is the sale price?",
-        "choices": [
-          "90 tickets",
-          "95 tickets",
-          "100 tickets",
-          "30 tickets"
-        ],
+        "choices": ["90 tickets", "95 tickets", "100 tickets", "30 tickets"],
         "correctIndex": 0,
         "explanation": "25% of 120 = 0.25 × 120 = 30. Sale price: 120 − 30 = 90 tickets."
       },
       {
         "type": "multiple-choice",
-        "stem": "If 30% of a number is 12, what is the number?",
-        "choices": [
-          "40",
-          "36",
-          "30",
-          "48"
-        ],
+        "stem": "A meal costs $20. You leave a 15% tip. How much is the tip?",
+        "choices": ["$3.00", "$1.50", "$5.00", "$0.15"],
         "correctIndex": 0,
-        "explanation": "30% × n = 12. n = 12 ÷ 0.30 = 40."
+        "explanation": "15% of $20 = 0.15 × 20 = $3.00."
       },
       {
         "type": "multiple-choice",
-        "stem": "Convert 0.125 to a percent.",
-        "choices": [
-          "12.5%",
-          "1.25%",
-          "125%",
-          "0.125%"
-        ],
+        "stem": "A shirt costs $40 and the sales tax is 5%. What is the total cost including tax?",
+        "choices": ["$42.00", "$45.00", "$40.05", "$38.00"],
         "correctIndex": 0,
-        "explanation": "0.125 × 100 = 12.5%."
+        "explanation": "Tax: 0.05 × $40 = $2.00. Total: $40 + $2 = $42.00."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A game originally costs 200 tickets. It is marked up 10%. What is the new price?",
+        "choices": ["220 tickets", "210 tickets", "180 tickets", "200 tickets"],
+        "correctIndex": 0,
+        "explanation": "Markup: 0.10 × 200 = 20. New price: 200 + 20 = 220 tickets."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each situation: does the final price go UP or DOWN?",
+        "items": [
+          { "text": "20% discount on a jacket", "category": "down" },
+          { "text": "6% sales tax on electronics", "category": "up" },
+          { "text": "15% tip on a meal", "category": "up" },
+          { "text": "30% off clearance sale", "category": "down" },
+          { "text": "10% markup by the store", "category": "up" },
+          { "text": "Buy-one-get-one 50% off", "category": "down" }
+        ],
+        "categories": [
+          { "id": "up", "label": "Price Goes UP" },
+          { "id": "down", "label": "Price Goes DOWN" }
+        ]
       }
     ],
     "onLevel": [
       {
         "type": "fill-table",
         "instructions": "Solve each percent word problem.",
-        "headers": [
-          "Situation",
-          "Calculation",
-          "Answer"
-        ],
+        "headers": ["Situation", "Calculation", "Answer"],
         "rows": [
           [
             "A $45 game has a 20% discount. What is the sale price?",
@@ -268,34 +232,34 @@
           ]
         ],
         "editableCells": [
-          {
-            "row": 0,
-            "col": 2,
-            "answer": "$36"
-          },
-          {
-            "row": 1,
-            "col": 2,
-            "answer": "$64.80"
-          },
-          {
-            "row": 2,
-            "col": 2,
-            "answer": "$28.75"
-          }
+          { "row": 0, "col": 2, "answer": "$36" },
+          { "row": 1, "col": 2, "answer": "$64.80" },
+          { "row": 2, "col": 2, "answer": "$28.75" }
         ]
       },
       {
         "type": "multiple-choice",
         "stem": "A store marks up a $30 item by 40%, then a customer gets 10% off. What is the final price?",
-        "choices": [
-          "$37.80",
-          "$39.00",
-          "$42.00",
-          "$36.00"
-        ],
+        "choices": ["$37.80", "$39.00", "$42.00", "$36.00"],
         "correctIndex": 0,
         "explanation": "Markup: $30 × 1.40 = $42. Discount: $42 × 0.10 = $4.20. Final: $42 − $4.20 = $37.80."
+      },
+      {
+        "type": "bar-model",
+        "instructions": "A $80 pair of shoes is 25% off. Use the bar model to show the discount and sale price.",
+        "parts": [
+          { "label": "Discount (25%)", "value": 20, "color": "#FF6B6B" },
+          { "label": "You pay (75%)", "value": 60, "color": "#4ECDC4" }
+        ],
+        "whole": 80,
+        "label": "25% of $80 = $20 discount. You pay 75% = $60."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A restaurant bill is $35. You want to leave a 20% tip. What is the total amount you pay?",
+        "choices": ["$42.00", "$40.00", "$38.50", "$55.00"],
+        "correctIndex": 0,
+        "explanation": "Tip: 0.20 × $35 = $7.00. Total: $35 + $7 = $42.00."
       }
     ],
     "extending": [
@@ -307,18 +271,9 @@
             "label": "A prize costs 160 tickets at 25% off. Find the sale price.",
             "work": "160 tickets, 25% off"
           },
-          {
-            "label": "Find 25% of 160",
-            "work": "25 × 160 = 4,000"
-          },
-          {
-            "label": "Subtract discount",
-            "work": "160 − 4,000 = −3,840"
-          },
-          {
-            "label": "Final answer",
-            "work": "Sale price is −3,840 tickets"
-          }
+          { "label": "Find 25% of 160", "work": "25 × 160 = 4,000" },
+          { "label": "Subtract discount", "work": "160 − 4,000 = −3,840" },
+          { "label": "Final answer", "work": "Sale price is −3,840 tickets" }
         ],
         "errorStep": 1,
         "correctWork": "25% = 0.25 (not 25). 0.25 × 160 = 40. Sale price: 160 − 40 = 120 tickets.",
@@ -329,16 +284,42 @@
       },
       {
         "type": "open-response",
-        "prompt": "A store has a 20% off sale, then takes an additional 10% off the sale price. Is this the same as 30% off? Explain.",
-        "sentenceFrame": "This is NOT the same as 30% off because ___. The actual discount is ___.",
+        "prompt": "A store has a 20% off sale, then takes an additional 10% off the sale price. Is this the same as 30% off the original? Use $100 as the original price. Show your work for both scenarios and explain the difference.",
+        "sentenceFrame": "Taking 20% off then 10% off gives a final price of $___, but 30% off the original gives $___. The difference is $___ because ___.",
         "keywords": [
-          "percent",
-          "original",
-          "sale price",
-          "less than",
-          "discount"
+          "72",
+          "70",
+          "not the same",
+          "second discount",
+          "smaller base",
+          "80"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "fill-table",
+        "instructions": "You are shopping at the arcade prize store. Calculate the final price for each item after discount AND 6% tax.",
+        "headers": [
+          "Item",
+          "Original Price",
+          "Discount",
+          "After Discount",
+          "6% Tax",
+          "Final Price"
+        ],
+        "rows": [
+          ["Headphones", "$50", "20% off", "$40", "$2.40", "$42.40"],
+          ["Speaker", "$80", "15% off", "", "", ""],
+          ["Game", "$25", "40% off", "", "", ""]
+        ],
+        "editableCells": [
+          { "row": 1, "col": 3, "answer": "$68" },
+          { "row": 1, "col": 4, "answer": "$4.08" },
+          { "row": 1, "col": 5, "answer": "$72.08" },
+          { "row": 2, "col": 3, "answer": "$15" },
+          { "row": 2, "col": 4, "answer": "$0.90" },
+          { "row": 2, "col": 5, "answer": "$15.90" }
+        ]
       }
     ]
   },
@@ -346,25 +327,12 @@
     "scenario": "You want to buy an arcade membership that costs $50. The arcade is running a 30% off sale, and there is a 6% sales tax applied after the discount. Your friend says the total is $37.10.",
     "promptQuestion": "Is your friend correct? Show your work to prove it.",
     "prompt": "First I find the discount: 30% of $50 = $___. The sale price is $50 − $___ = $___. Then I add 6% tax: $___ × 0.06 = $___. The total is $___ + $___ = $___.",
-    "keywords": [
-      "15",
-      "35",
-      "2.10",
-      "37.10",
-      "discount",
-      "tax",
-      "correct"
-    ]
+    "keywords": ["15", "35", "2.10", "37.10", "discount", "tax", "correct"]
   },
   "reflect": {
     "exitTicket": {
       "stem": "A jacket costs $80 and is 35% off. Sales tax is 5%. What is the final price?",
-      "choices": [
-        "$54.60",
-        "$52.00",
-        "$56.00",
-        "$49.40"
-      ],
+      "choices": ["$54.60", "$52.00", "$56.00", "$49.40"],
       "correctIndex": 0,
       "explanation": "Discount: 0.35 × $80 = $28. Sale price: $80 − $28 = $52. Tax: 0.05 × $52 = $2.60. Final: $52 + $2.60 = $54.60."
     }

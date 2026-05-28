@@ -10,32 +10,32 @@
     {
       "term": "Compare",
       "definition": "To determine if a number is greater than, less than, or equal to another number",
-      "visual": "-3 < 2 because -3 is farther left on the number line"
+      "visual": "-3 < 2 because -3 is farther left on the number line than 2"
     },
     {
       "term": "Order",
       "definition": "To arrange numbers from least to greatest or greatest to least",
-      "visual": "-5, -2, 0, 3, 7 is least to greatest"
+      "visual": "Least to greatest: -5, -2, 0, 3, 7 (left to right on the number line)"
     },
     {
       "term": "Greater than",
       "definition": "Farther to the right on a number line; the > symbol",
-      "visual": "4 > -1 because 4 is to the right of -1"
+      "visual": "4 > -1 because 4 is to the right of -1 on the number line"
     },
     {
       "term": "Less than",
       "definition": "Farther to the left on a number line; the < symbol",
-      "visual": "-6 < -2 because -6 is to the left of -2"
+      "visual": "-6 < -2 because -6 is farther left — it is farther from zero"
     },
     {
-      "term": "Reflection",
-      "definition": "A mirror image across an axis",
-      "visual": "(3, 2) reflected over x-axis = (3, −2)"
+      "term": "Negative integer",
+      "definition": "An integer less than zero",
+      "visual": "-4 is 4 units to the LEFT of zero on the number line"
     },
     {
       "term": "Integer",
       "definition": "Whole numbers and their opposites, including zero",
-      "visual": "..., −3, −2, −1, 0, 1, 2, 3, ..."
+      "visual": "..., -3, -2, -1, 0, 1, 2, 3, ..."
     }
   ],
   "launch": {
@@ -101,46 +101,43 @@
       {
         "type": "multiple-choice",
         "stem": "Which statement is TRUE?",
-        "choices": [
-          "-3 > -1",
-          "-5 < -2",
-          "-4 > 0",
-          "-1 < -6"
-        ],
+        "choices": ["-3 > -1", "-5 < -2", "-4 > 0", "-1 < -6"],
         "correctIndex": 1,
         "explanation": "-5 is farther to the left on the number line than -2, so -5 < -2 is true."
       },
       {
-        "type": "drag-sort",
-        "label": "Drag to order these integers from LEAST to GREATEST.",
-        "items": [
-          3,
-          -1,
-          -6,
-          0,
-          -4,
-          5
-        ],
-        "correctOrder": [
-          -6,
-          -4,
-          -1,
-          0,
-          3,
-          5
-        ]
+        "type": "multiple-choice",
+        "stem": "Which integer is the LEAST: -3, 5, -8, 2, 0?",
+        "choices": ["-8", "-3", "0", "5"],
+        "correctIndex": 0,
+        "explanation": "-8 is farthest to the left on the number line, making it the least (smallest) integer."
       },
       {
         "type": "multiple-choice",
         "stem": "What is |−8|?",
-        "choices": [
-          "8",
-          "−8",
-          "0",
-          "−16"
-        ],
+        "choices": ["8", "−8", "0", "−16"],
         "correctIndex": 0,
         "explanation": "Absolute value is distance from 0, always positive. |−8| = 8."
+      },
+      {
+        "type": "drag-sort",
+        "label": "Drag to order these integers from LEAST to GREATEST.",
+        "items": ["3", "-1", "-6", "0", "-4", "5"],
+        "correctOrder": ["-6", "-4", "-1", "0", "3", "5"]
+      },
+      {
+        "type": "number-line",
+        "label": "Plot -3, 1, -7, 4, and -1 on the number line to help you compare them.",
+        "min": -8,
+        "max": 6,
+        "step": 1,
+        "targets": [
+          { "value": -3, "label": "-3" },
+          { "value": 1, "label": "1" },
+          { "value": -7, "label": "-7" },
+          { "value": 4, "label": "4" },
+          { "value": -1, "label": "-1" }
+        ]
       }
     ],
     "onLevel": [
@@ -151,62 +148,45 @@
         "max": 8,
         "step": 1,
         "targets": [
-          {
-            "value": -8,
-            "label": "A"
-          },
-          {
-            "value": 4,
-            "label": "B"
-          },
-          {
-            "value": -3,
-            "label": "C"
-          },
-          {
-            "value": 1,
-            "label": "D"
-          },
-          {
-            "value": -1,
-            "label": "E"
-          },
-          {
-            "value": 6,
-            "label": "F"
-          }
+          { "value": -8, "label": "A" },
+          { "value": 4, "label": "B" },
+          { "value": -3, "label": "C" },
+          { "value": 1, "label": "D" },
+          { "value": -1, "label": "E" },
+          { "value": 6, "label": "F" }
         ]
       },
       {
-        "type": "matching-game",
-        "pairs": [
-          {
-            "term": "(3, 2)",
-            "match": "Quadrant I"
-          },
-          {
-            "term": "(−4, 5)",
-            "match": "Quadrant II"
-          },
-          {
-            "term": "(−2, −6)",
-            "match": "Quadrant III"
-          },
-          {
-            "term": "(7, −1)",
-            "match": "Quadrant IV"
-          },
-          {
-            "term": "(0, 3)",
-            "match": "y-axis"
-          },
-          {
-            "term": "(5, 0)",
-            "match": "x-axis"
-          }
+        "type": "fill-table",
+        "instructions": "Compare each pair of integers using < , > , or =.",
+        "headers": ["Integer A", "Integer B", "Comparison (< , > , or =)"],
+        "rows": [
+          ["-4", "2", ""],
+          ["-7", "-3", ""],
+          ["0", "-5", ""],
+          ["-1", "-1", ""],
+          ["6", "-9", ""]
         ],
-        "label": "Match each point to its location.",
-        "columns": 4
+        "editableCells": [
+          { "row": 0, "col": 2, "answer": "<" },
+          { "row": 1, "col": 2, "answer": "<" },
+          { "row": 2, "col": 2, "answer": ">" },
+          { "row": 3, "col": 2, "answer": "=" },
+          { "row": 4, "col": 2, "answer": ">" }
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "label": "Sort these integers from GREATEST to LEAST.",
+        "items": ["-10", "5", "-2", "8", "0", "-6"],
+        "correctOrder": ["8", "5", "0", "-2", "-6", "-10"]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Three cities have temperatures of -12°F, -5°F, and 3°F. Which city is warmest?",
+        "choices": ["3°F", "-5°F", "-12°F", "They are equal"],
+        "correctIndex": 0,
+        "explanation": "3°F is the greatest because it is farthest to the right on the number line. The order from coldest to warmest is -12, -5, 3."
       }
     ],
     "extending": [
@@ -236,17 +216,40 @@
       },
       {
         "type": "open-response",
-        "prompt": "Explain how to find the distance between two points that share the same x-coordinate, like (3, −2) and (3, 5). What if they share the same y-coordinate instead?",
-        "sentenceFrame": "When points share the same x-coordinate, the distance is ___. I find it by ___.",
+        "prompt": "A student says: 'Negative numbers are always less than positive numbers, so -100 is less than 1.' Is this correct? Now the student says: '-100 is less than -1 because 100 is greater than 1.' Is THIS correct? Explain the difference.",
+        "sentenceFrame": "The first statement is ___ because ___. The second statement is ___ because with negative numbers, ___. On the number line, -100 is ___ of -1, so ___.",
         "keywords": [
-          "absolute value",
-          "subtract",
-          "distance",
-          "horizontal",
-          "vertical",
-          "coordinate"
+          "negative",
+          "positive",
+          "less than",
+          "greater than",
+          "number line",
+          "left",
+          "right",
+          "closer to zero",
+          "farther"
         ],
-        "minLength": 30
+        "minLength": 40
+      },
+      {
+        "type": "drag-sort",
+        "label": "These integers represent bank account changes. Sort from the WORST change (biggest loss) to the BEST change (biggest gain).",
+        "items": [
+          "+50 deposit",
+          "-25 withdrawal",
+          "+10 deposit",
+          "-100 withdrawal",
+          "0 no change",
+          "-5 fee"
+        ],
+        "correctOrder": [
+          "-100 withdrawal",
+          "-25 withdrawal",
+          "-5 fee",
+          "0 no change",
+          "+10 deposit",
+          "+50 deposit"
+        ]
       }
     ]
   },

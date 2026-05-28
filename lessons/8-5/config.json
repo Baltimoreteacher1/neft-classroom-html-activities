@@ -11,32 +11,32 @@
     {
       "term": "Box Plot",
       "definition": "A graph that shows the distribution of data using a five-number summary",
-      "visual": "A box with whiskers showing min, Q1, median, Q3, and max"
+      "visual": "A box from Q1 to Q3 with a line at the median, and whiskers from min to max"
     },
     {
       "term": "Median",
       "definition": "The middle value of an ordered data set; splits the data into two equal halves",
-      "visual": "In 10, 15, 20, 25, 30 → median is 20"
+      "visual": "Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)"
     },
     {
       "term": "Quartile",
       "definition": "Values that divide an ordered data set into four equal parts (Q1 and Q3)",
-      "visual": "Q1 = median of lower half, Q3 = median of upper half"
+      "visual": "Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)"
     },
     {
       "term": "Interquartile Range",
       "definition": "The difference between the third quartile and first quartile (IQR = Q3 − Q1)",
-      "visual": "If Q1 = 12 and Q3 = 20, IQR = 20 − 12 = 8"
+      "visual": "If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units"
     },
     {
       "term": "Data distribution",
       "definition": "The shape and spread of a data set",
-      "visual": "Symmetric, skewed left, or skewed right"
+      "visual": "A box plot where the median is centered in the box shows symmetric distribution"
     },
     {
       "term": "Variability",
       "definition": "How spread out the values in a data set are",
-      "visual": "Low variability = values close together"
+      "visual": "Small IQR = low variability in the middle 50%. Large IQR = high variability"
     }
   ],
   "launch": {
@@ -85,15 +85,7 @@
     "discourse": {
       "prompt": "The IQR is Q3 − Q1 = 22 − 8 = 14. What does this tell you about the middle 50% of scorers?",
       "sentenceFrame": "The middle 50% of players scored between ___ and ___ points. The IQR of ___ means the middle half of the data is spread across ___ points. This tells me ___.",
-      "keywords": [
-        "8",
-        "22",
-        "14",
-        "spread",
-        "middle",
-        "quartile",
-        "range"
-      ]
+      "keywords": ["8", "22", "14", "spread", "middle", "quartile", "range"]
     }
   },
   "practice": {
@@ -101,76 +93,65 @@
       {
         "type": "multiple-choice",
         "stem": "A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?",
-        "choices": [
-          "13",
-          "25",
-          "10",
-          "20"
-        ],
+        "choices": ["13", "25", "10", "20"],
         "correctIndex": 0,
         "explanation": "IQR = Q3 − Q1 = 28 − 15 = 13."
       },
       {
         "type": "multiple-choice",
         "stem": "On a box plot, what does the line inside the box represent?",
-        "choices": [
-          "The median",
-          "The mean",
-          "The mode",
-          "The range"
-        ],
+        "choices": ["The median", "The mean", "The mode", "The range"],
         "correctIndex": 0,
         "explanation": "The line inside the box of a box plot always represents the median."
       },
       {
         "type": "multiple-choice",
+        "stem": "What percentage of data falls between Q1 and Q3 on a box plot?",
+        "choices": ["50%", "25%", "75%", "100%"],
+        "correctIndex": 0,
+        "explanation": "The box in a box plot contains the middle 50% of the data (from Q1 to Q3)."
+      },
+      {
+        "type": "multiple-choice",
         "stem": "Find the range of: 14, 22, 8, 31, 17",
-        "choices": [
-          "23",
-          "31",
-          "8",
-          "18"
-        ],
+        "choices": ["23", "31", "8", "18"],
         "correctIndex": 0,
         "explanation": "Range = max − min = 31 − 8 = 23."
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Put the steps for creating a box plot in the correct order.",
+        "categories": [
+          {
+            "label": "Steps (in order)",
+            "items": [
+              "Step 1: Order the data from least to greatest",
+              "Step 2: Find the median (middle value)",
+              "Step 3: Find Q1 (median of the lower half)",
+              "Step 4: Find Q3 (median of the upper half)",
+              "Step 5: Draw the box from Q1 to Q3 with a line at the median, and whiskers to min and max"
+            ]
+          }
+        ],
+        "hints": [
+          "Always order the data first before finding any measures.",
+          "Q1 is the median of the lower half. Q3 is the median of the upper half."
+        ],
+        "label": "Order the steps for making a box plot."
       }
     ],
     "onLevel": [
       {
         "type": "fill-table",
-        "headers": [
-          "Measure",
-          "Value"
-        ],
+        "headers": ["Measure", "Value"],
         "rows": [
-          [
-            "Data: 5, 8, 12, 15, 18, 20, 25, 30, 35",
-            ""
-          ],
-          [
-            "Minimum",
-            ""
-          ],
-          [
-            "Q1 (median of lower half: 5, 8, 12, 15)",
-            ""
-          ],
-          [
-            "Median",
-            ""
-          ],
-          [
-            "Q3 (median of upper half: 20, 25, 30, 35)",
-            ""
-          ],
-          [
-            "Maximum",
-            ""
-          ],
-          [
-            "IQR (Q3 − Q1)",
-            ""
-          ]
+          ["Data: 5, 8, 12, 15, 18, 20, 25, 30, 35", ""],
+          ["Minimum", ""],
+          ["Q1 (median of lower half: 5, 8, 12, 15)", ""],
+          ["Median", ""],
+          ["Q3 (median of upper half: 20, 25, 30, 35)", ""],
+          ["Maximum", ""],
+          ["IQR (Q3 − Q1)", ""]
         ],
         "editableCells": [
           {
@@ -209,32 +190,78 @@
         "type": "matching-game",
         "pairs": [
           {
-            "term": "Mean",
-            "match": "Sum ÷ Count"
+            "term": "Minimum",
+            "match": "Smallest value in the data set"
+          },
+          {
+            "term": "Q1",
+            "match": "Median of the lower half"
           },
           {
             "term": "Median",
-            "match": "Middle value"
+            "match": "Middle value of the entire data set"
           },
           {
-            "term": "Mode",
-            "match": "Most frequent"
+            "term": "Q3",
+            "match": "Median of the upper half"
           },
           {
-            "term": "Range",
-            "match": "Max − Min"
+            "term": "IQR",
+            "match": "Q3 − Q1 (spread of middle 50%)"
           },
           {
-            "term": "MAD",
-            "match": "Avg distance from mean"
-          },
-          {
-            "term": "Outlier",
-            "match": "Far from other values"
+            "term": "Maximum",
+            "match": "Largest value in the data set"
           }
         ],
-        "label": "Match each term to its definition.",
+        "label": "Match each box plot term to its meaning.",
         "columns": 4
+      },
+      {
+        "type": "number-line",
+        "label": "Data: 3, 5, 7, 9, 11, 13, 15. Place the five-number summary on the number line.",
+        "min": 0,
+        "max": 18,
+        "step": 1,
+        "snapToTick": true,
+        "targets": [
+          {
+            "value": 3,
+            "label": "Min"
+          },
+          {
+            "value": 5,
+            "label": "Q1"
+          },
+          {
+            "value": 9,
+            "label": "Median"
+          },
+          {
+            "value": 13,
+            "label": "Q3"
+          },
+          {
+            "value": 15,
+            "label": "Max"
+          }
+        ],
+        "hints": [
+          "Median = 9 (4th of 7 values). Lower half: 3, 5, 7 → Q1 = 5. Upper half: 11, 13, 15 → Q3 = 13.",
+          "IQR = 13 − 5 = 8."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Two box plots show: Team A has IQR = 8, Team B has IQR = 22. What does this tell you?",
+        "choices": [
+          "Team A's middle 50% is more consistent; Team B's is more spread out",
+          "Team B is a better team",
+          "Team A has a higher median",
+          "The IQRs don't tell you about consistency"
+        ],
+        "correctIndex": 0,
+        "explanation": "A smaller IQR means the middle 50% of data is more tightly clustered. Team A's scoring is more consistent in the middle range."
       }
     ],
     "extending": [
@@ -260,7 +287,7 @@
           }
         ],
         "errorStep": 3,
-        "correctWork": "Q1 is the median of the lower half (3, 7, 9), which is 7. Q3 is the median of the upper half (15, 18, 21), which is 18. The student used the wrong values for Q1 — they picked 9 (the last value in the lower half) instead of the median of that half.",
+        "correctWork": "Q1 is the median of the lower half (3, 7, 9), which is 7. Q3 is the median of the upper half (15, 18, 21), which is 18. The student used the wrong value for Q1 — they picked 9 (the last value in the lower half) instead of the median of that half.",
         "hints": [
           "Q1 is not just a value in the lower half — it is the MEDIAN of the lower half.",
           "Lower half: 3, 7, 9. The median of these three values is 7, not 9."
@@ -268,17 +295,41 @@
       },
       {
         "type": "open-response",
-        "prompt": "Two students measured their height every month for 5 months. Student A's MAD is 0.5 inches. Student B's MAD is 2.3 inches. What does this tell you?",
-        "sentenceFrame": "Student A's measurements are more ___ because ___. Student B's measurements ___ because ___.",
+        "prompt": "Two basketball teams played 9 games each. Team A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Team B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Find the five-number summary and IQR for each team. Which team is more consistent? Which has a wider spread in the middle 50%?",
+        "sentenceFrame": "Team A: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team B: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team ___ is more consistent because its IQR is ___.",
         "keywords": [
+          "five-number summary",
+          "Q1",
+          "Q3",
+          "IQR",
           "consistent",
           "spread",
-          "variability",
-          "MAD",
-          "mean",
-          "average distance"
+          "middle 50%"
         ],
-        "minLength": 30
+        "minLength": 50
+      },
+      {
+        "type": "fill-table",
+        "headers": ["Box Plot Feature", "What It Tells You"],
+        "rows": [
+          {
+            "feature": "Long right whisker, short left whisker",
+            "meaning": "Data is skewed right — some high values stretch far from the box"
+          },
+          {
+            "feature": "Median line is centered in the box",
+            "meaning": "Data is approximately symmetric in the middle 50%"
+          },
+          {
+            "feature": "Very small box (small IQR)",
+            "meaning": "The middle 50% of data is tightly clustered — consistent"
+          },
+          {
+            "feature": "Very large box (large IQR)",
+            "meaning": "The middle 50% of data is widely spread — high variability"
+          }
+        ],
+        "label": "Match each box plot feature with what it tells you about the data."
       }
     ]
   },
