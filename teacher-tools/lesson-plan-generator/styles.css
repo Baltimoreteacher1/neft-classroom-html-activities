@@ -217,6 +217,18 @@ a:focus-visible {
 .muted {
   color: var(--muted);
 }
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+.tight {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.tight li {
+  margin: 3px 0;
+}
 
 .grid {
   display: grid;
@@ -291,7 +303,7 @@ a:focus-visible {
   font-weight: 500;
 }
 .field textarea {
-  min-height: 150px;
+  min-height: 120px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.86rem;
 }
@@ -354,11 +366,6 @@ a:focus-visible {
   background: var(--paper-2);
   color: var(--muted);
 }
-.metric {
-  font-size: 2.05rem;
-  font-weight: 950;
-  letter-spacing: -0.06em;
-}
 .notice {
   border: 1px solid #fcd34d;
   background: var(--warn-bg);
@@ -367,204 +374,104 @@ a:focus-visible {
   padding: 14px;
   margin-bottom: 16px;
 }
-.bar {
-  height: 10px;
-  background: var(--paper-2);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.bar i {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--teal), #c7792d);
-}
-.step {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  margin: 12px 0;
-}
-.num {
-  min-width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  background: var(--teal);
-  color: white;
+
+.check-list {
   display: grid;
-  place-items: center;
-  font-weight: 950;
+  gap: 8px;
 }
-.report {
-  white-space: pre-wrap;
-  background: #0b1726;
-  color: #e5edf7;
-  border-radius: 16px;
-  padding: 16px;
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-  font-size: 0.84rem;
-  overflow: auto;
+.check-list label {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
 }
-.loading {
-  display: none;
-  margin: 10px 0;
-  color: var(--muted);
-  font-weight: 800;
+.check-list input {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
 }
-.loading.show {
+.check-list .lbl strong {
   display: block;
 }
-
-.diag {
-  position: fixed;
-  inset: auto 18px 18px auto;
-  width: min(620px, calc(100vw - 36px));
-  max-height: 74vh;
-  overflow: auto;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
-  padding: 18px;
-  z-index: 20;
-  display: none;
-}
-.diag.open {
-  display: block;
-}
-
-.empty-state {
-  border: 1px dashed var(--line);
-  background: var(--paper-2);
+.check-list .lbl span {
   color: var(--muted);
-  border-radius: var(--radius);
-  padding: 22px;
-  margin-bottom: 16px;
-}
-.empty-state strong {
-  color: var(--text);
-}
-.empty-state .btn {
-  margin-top: 10px;
-}
-.notice.privacy {
-  border-color: #bfdbfe;
-  background: var(--info-bg);
-  color: var(--blue);
-}
-.privacy-card {
-  border-color: #bfdbfe;
-}
-input[type="range"] {
-  accent-color: var(--teal);
-  text-transform: none;
-}
-.method-note {
+  font-weight: 500;
   font-size: 0.82rem;
-  margin: 8px 0 12px;
 }
-.trend {
-  font-weight: 950;
-  margin-left: 4px;
+
+/* Lesson plan output */
+.lesson-output {
+  line-height: 1.55;
 }
-.trend.up {
-  color: var(--green);
+.lesson-output h1 {
+  font-size: 1.7rem;
+  letter-spacing: -0.03em;
+  margin: 0 0 4px;
 }
-.trend.down {
-  color: var(--red);
-}
-.trend.flat {
+.lesson-output .lp-meta {
   color: var(--muted);
+  font-size: 0.92rem;
+  margin: 0 0 18px;
 }
-
-/* Accessibility: text cue inside color-only badges */
-.badge .cue {
-  font-size: 0.7rem;
-  margin-right: 3px;
-}
-
-.mapping {
+.lesson-output section.lp-sec {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
   margin-top: 14px;
 }
-.mapping table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
+.lesson-output section.lp-sec:first-of-type {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
 }
-.mapping th,
-.mapping td {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-.mapping select {
-  width: 100%;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  color: var(--text);
-  border-radius: 10px;
-  padding: 7px;
-}
-.mapping .preview {
-  max-height: 180px;
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  margin: 10px 0;
-}
-
-.report-html {
-  background: var(--paper-2);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 18px;
-}
-.report-html h2 {
-  margin: 0 0 4px;
-  letter-spacing: -0.03em;
-}
-.report-html h4 {
-  margin: 16px 0 6px;
-}
-.report-html table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.86rem;
-  margin: 8px 0;
-}
-.report-html th,
-.report-html td {
-  padding: 7px 9px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-.raw-report {
-  margin-top: 12px;
-}
-.raw-report summary {
-  cursor: pointer;
-  color: var(--muted);
-  font-weight: 800;
-  font-size: 0.85rem;
-}
-
-.group-card .tier {
-  margin-right: 6px;
-}
-.group-card .move-row {
+.lesson-output h2.lp-h {
+  font-size: 1.12rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
   display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+.lesson-output h2.lp-h .lp-num {
+  color: var(--teal);
+  font-weight: 950;
+}
+.lesson-output h2.lp-h .lp-mins {
+  margin-left: auto;
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: var(--muted);
+}
+.lesson-output ul.lp-list {
+  margin: 6px 0;
+  padding-left: 1.3em;
+}
+.lesson-output ul.lp-list li {
   margin: 4px 0;
 }
-.group-card select {
+.lesson-output p.lp-p {
+  margin: 6px 0;
+}
+.lesson-output .lp-inferred {
+  color: var(--gold);
+  font-weight: 700;
+}
+.lesson-output table.lp-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 0.9rem;
+}
+.lesson-output table.lp-table th,
+.lesson-output table.lp-table td {
   border: 1px solid var(--line);
-  background: var(--paper);
-  color: var(--text);
-  border-radius: 10px;
-  padding: 4px 6px;
-  font-size: 0.8rem;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.lesson-output table.lp-table th {
+  background: var(--paper-2);
 }
 
 @media (max-width: 980px) {
@@ -599,12 +506,9 @@ input[type="range"] {
   .sidebar,
   .topbar,
   .btn,
-  .diag,
-  .loading,
-  .empty-state,
-  .no-print-controls,
-  .raw-report,
-  .notice.privacy {
+  .notice,
+  .no-print-card,
+  .nav {
     display: none !important;
   }
   .app {
@@ -613,17 +517,23 @@ input[type="range"] {
   .screen {
     display: none !important;
   }
-  .screen.active {
+  #plan.screen {
     display: block !important;
+  }
+  .body {
+    padding: 0;
   }
   .card,
   .hero {
     box-shadow: none;
-    break-inside: avoid;
-  }
-  .report-html {
     border: 0;
     padding: 0;
-    background: none;
+    margin: 0;
+  }
+  .lesson-output {
+    padding: 0;
+  }
+  .lesson-output section.lp-sec {
+    break-inside: avoid;
   }
 }

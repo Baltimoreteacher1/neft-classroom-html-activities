@@ -1,254 +1,686 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Neft Learning Forecast Engine</title>
-  <meta name="description" content="Local-first teacher decision-support app for classroom evidence, readiness forecasting, small groups, and reports.">
-  <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-  <div class="app" id="app">
-    <aside class="sidebar" aria-label="Forecast Engine navigation">
-      <div class="brand">
-        <span class="badge info">Local-first</span>
-        <h1>Neft Learning Forecast Engine</h1>
-        <p>Setup → evidence → review → forecast → groups → report.</p>
-      </div>
-      <nav class="nav">
-        <button class="active" data-tab="start" type="button">Start Here</button>
-        <button data-tab="setup" type="button">Setup Class</button>
-        <button data-tab="import" type="button">Import Data</button>
-        <button data-tab="quality" type="button">Review Data</button>
-        <button data-tab="forecast" type="button">Forecast</button>
-        <button data-tab="groups" type="button">Groups</button>
-        <button data-tab="reports" type="button">Reports</button>
-        <button data-tab="settings" type="button">Settings</button>
-      </nav>
-      <div class="sidebar-foot" id="diagnosticHotspot" title="Triple-click for diagnostics">
-        v3.1 · triple-click diagnostics
-      </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neft Learning Forecast Engine</title>
+    <meta
+      name="description"
+      content="Local-first teacher decision-support app for classroom evidence, readiness forecasting, small groups, and reports."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <aside class="sidebar" aria-label="Forecast Engine navigation">
+        <div class="brand">
+          <span class="badge info">Local-first</span>
+          <h1>Neft Learning Forecast Engine</h1>
+          <p>Setup → evidence → review → forecast → groups → report.</p>
+        </div>
+        <nav class="nav" role="tablist" aria-label="Workflow steps">
+          <button
+            class="active"
+            data-tab="start"
+            type="button"
+            role="tab"
+            id="tab-start"
+            aria-controls="start"
+            aria-selected="true"
+          >
+            Start Here
+          </button>
+          <button
+            data-tab="setup"
+            type="button"
+            role="tab"
+            id="tab-setup"
+            aria-controls="setup"
+            aria-selected="false"
+          >
+            Setup Class
+          </button>
+          <button
+            data-tab="import"
+            type="button"
+            role="tab"
+            id="tab-import"
+            aria-controls="import"
+            aria-selected="false"
+          >
+            Import Data
+          </button>
+          <button
+            data-tab="quality"
+            type="button"
+            role="tab"
+            id="tab-quality"
+            aria-controls="quality"
+            aria-selected="false"
+          >
+            Review Data
+          </button>
+          <button
+            data-tab="forecast"
+            type="button"
+            role="tab"
+            id="tab-forecast"
+            aria-controls="forecast"
+            aria-selected="false"
+          >
+            Forecast
+          </button>
+          <button
+            data-tab="groups"
+            type="button"
+            role="tab"
+            id="tab-groups"
+            aria-controls="groups"
+            aria-selected="false"
+          >
+            Groups
+          </button>
+          <button
+            data-tab="reports"
+            type="button"
+            role="tab"
+            id="tab-reports"
+            aria-controls="reports"
+            aria-selected="false"
+          >
+            Reports
+          </button>
+          <button
+            data-tab="settings"
+            type="button"
+            role="tab"
+            id="tab-settings"
+            aria-controls="settings"
+            aria-selected="false"
+          >
+            Settings
+          </button>
+        </nav>
+        <div
+          class="sidebar-foot"
+          id="diagnosticHotspot"
+          title="Triple-click for diagnostics"
+        >
+          v3.2 · triple-click diagnostics
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h2 id="pageTitle">Start Here</h2>
+            <p id="pageSubtitle">
+              A guided teacher workflow for classroom evidence.
+            </p>
+          </div>
+          <div class="top-actions">
+            <span class="badge neutral" id="phaseBadge">IDLE</span>
+            <span class="badge neutral" id="saveBadge">Saved locally</span>
+            <button class="btn" id="themeBtn" type="button">Theme</button>
+          </div>
+        </header>
+
+        <section class="body">
+          <section
+            id="start"
+            class="screen active"
+            role="tabpanel"
+            aria-labelledby="tab-start"
+          >
+            <div class="hero">
+              <span class="badge info">Recommended workflow</span>
+              <h2>Make the next instructional move clear.</h2>
+              <p>
+                This tool is organized around a teacher’s actual decision flow.
+                Download the spreadsheet template, enter class evidence, review
+                data quality, then use forecasts to plan flexible support
+                groups. Forecasts are planning estimates, not labels.
+              </p>
+              <div class="button-row">
+                <a class="btn primary" href="./forecast-template.xls" download
+                  >Download Example .xls</a
+                >
+                <button class="btn" data-go="setup" type="button">
+                  Manual Setup
+                </button>
+                <button class="btn" data-go="import" type="button">
+                  Upload or Paste Data
+                </button>
+                <button class="btn" data-go="quality" type="button">
+                  Review Data
+                </button>
+              </div>
+            </div>
+
+            <div class="grid g2">
+              <article class="card">
+                <h3>Fastest way to use this</h3>
+                <div class="step">
+                  <span class="num">1</span>
+                  <p>
+                    <strong>Download the Excel template</strong> and fill in
+                    class, students, standards, and evidence.
+                  </p>
+                </div>
+                <div class="step">
+                  <span class="num">2</span>
+                  <p>
+                    <strong>Upload it on Import Data</strong> or paste rows from
+                    a spreadsheet.
+                  </p>
+                </div>
+                <div class="step">
+                  <span class="num">3</span>
+                  <p>
+                    <strong>Review Data</strong> before using forecasts or group
+                    suggestions.
+                  </p>
+                </div>
+              </article>
+              <article class="card">
+                <h3>Template included</h3>
+                <p class="muted">
+                  The downloadable .xls file includes the required columns and
+                  example rows. It opens in Excel and Google Sheets.
+                </p>
+                <a class="btn primary" href="./forecast-template.xls" download
+                  >Download Example .xls</a
+                >
+              </article>
+            </div>
+
+            <div class="grid g4" id="metrics"></div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Priority Standards</h3>
+                <div id="priorityStandards"></div>
+              </article>
+              <article class="card">
+                <h3>Teacher Next Moves</h3>
+                <div id="teacherMoves"></div>
+              </article>
+            </div>
+          </section>
+
+          <section
+            id="setup"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-setup"
+          >
+            <div class="notice">
+              <strong>Manual setup:</strong> Use this pathway when you do not
+              want to use a spreadsheet. Everything saves automatically in this
+              browser.
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Class Information</h3>
+                <label class="field"
+                  >Class name<input
+                    id="className"
+                    placeholder="Period 1 Math"
+                    autocomplete="off"
+                /></label>
+                <label class="field"
+                  >Grade / course<input
+                    id="gradeCourse"
+                    placeholder="Grade 6 Math"
+                    autocomplete="off"
+                /></label>
+                <button class="btn primary" id="saveClassBtn" type="button">
+                  Save Class
+                </button>
+              </article>
+              <article class="card">
+                <h3>Add Student</h3>
+                <p class="muted">
+                  Tip: use a student ID or initials instead of a full name to
+                  protect privacy. Data is stored only in this browser.
+                </p>
+                <label class="field"
+                  >Student ID<input
+                    id="studentId"
+                    placeholder="S011"
+                    autocomplete="off"
+                /></label>
+                <label class="field"
+                  >Display name<input
+                    id="studentName"
+                    placeholder="Student 11"
+                    autocomplete="off"
+                /></label>
+                <label class="field"
+                  >Supports / tags<input
+                    id="studentTags"
+                    placeholder="ML, IEP, newcomer"
+                    autocomplete="off"
+                /></label>
+                <button class="btn primary" id="addStudentBtn" type="button">
+                  Add Student
+                </button>
+              </article>
+            </div>
+
+            <div class="grid g2">
+              <article class="card">
+                <h3>Add CCSS / Standard</h3>
+                <label class="field"
+                  >Code<input
+                    id="standardCode"
+                    placeholder="6.G.A.1"
+                    autocomplete="off"
+                /></label>
+                <label class="field"
+                  >Description<input
+                    id="standardDesc"
+                    placeholder="Find area of polygons"
+                    autocomplete="off"
+                /></label>
+                <button class="btn primary" id="addStandardBtn" type="button">
+                  Add Standard
+                </button>
+              </article>
+              <article class="card">
+                <h3>Add Evidence Manually</h3>
+                <label class="field"
+                  >Student<select id="manualStudent"></select
+                ></label>
+                <label class="field"
+                  >Standard<select id="manualStandard"></select
+                ></label>
+                <div class="grid g2 no-margin">
+                  <label class="field"
+                    >Score<input
+                      id="manualScore"
+                      type="number"
+                      min="0"
+                      inputmode="decimal"
+                  /></label>
+                  <label class="field"
+                    >Max score<input
+                      id="manualMax"
+                      type="number"
+                      min="1"
+                      placeholder="10"
+                      inputmode="decimal"
+                  /></label>
+                </div>
+                <label class="field"
+                  >Assessment<input
+                    id="manualAssessment"
+                    placeholder="Exit Ticket"
+                    autocomplete="off"
+                /></label>
+                <button class="btn primary" id="addEvidenceBtn" type="button">
+                  Add Evidence
+                </button>
+              </article>
+            </div>
+
+            <div class="grid g2">
+              <article class="card">
+                <h3>Students</h3>
+                <div class="table-wrap">
+                  <table class="table" id="studentTable"></table>
+                </div>
+              </article>
+              <article class="card">
+                <h3>Standards</h3>
+                <div class="table-wrap">
+                  <table class="table" id="standardTable"></table>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section
+            id="import"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-import"
+          >
+            <div class="notice">
+              <strong>Spreadsheet pathway:</strong> Download the example
+              Excel-readable template, fill it in, and upload it here. It
+              updates class, students, standards, and evidence.
+            </div>
+            <div class="notice privacy">
+              <strong>Privacy:</strong> This data stays in this browser only
+              (unencrypted local storage). Prefer student IDs or initials over
+              full names. Exported CSV/JSON files contain student data — store
+              them safely.
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Download Example Template</h3>
+                <p class="muted">
+                  Use the .xls template for Excel/Google Sheets. You can upload
+                  the completed .xls, or export as CSV and upload/paste it.
+                </p>
+                <a class="btn primary" href="./forecast-template.xls" download
+                  >Download Example .xls</a
+                >
+                <button class="btn" id="downloadCsvBtn" type="button">
+                  Download CSV Template
+                </button>
+              </article>
+              <article class="card">
+                <h3>Upload Completed File</h3>
+                <label class="field"
+                  >Upload .xls, .csv, .tsv, or .txt<input
+                    type="file"
+                    id="fileInput"
+                    accept=".xls,.html,.csv,.tsv,.txt,text/csv,text/html"
+                /></label>
+                <button class="btn primary" id="importFileBtn" type="button">
+                  Import File
+                </button>
+              </article>
+            </div>
+
+            <div class="grid g2">
+              <article class="card">
+                <h3>Paste Rows</h3>
+                <label class="field"
+                  >Rows<textarea
+                    id="pasteBox"
+                    placeholder="Paste rows from the template here. Leave this blank if you upload the .xls file."
+                    spellcheck="false"
+                  ></textarea>
+                </label>
+                <button class="btn primary" id="importPasteBtn" type="button">
+                  Import Pasted Rows
+                </button>
+              </article>
+              <article class="card">
+                <h3>Import Feedback</h3>
+                <div
+                  id="importStatus"
+                  class="muted"
+                  role="status"
+                  aria-live="polite"
+                >
+                  No import yet.
+                </div>
+              </article>
+            </div>
+
+            <article class="card">
+              <h3>Import a Gradebook (Wide Table)</h3>
+              <p class="muted">
+                Paste or upload a gradebook where each row is one student and
+                each column is an assignment or standard. You will map columns
+                in the next step. Supports .xlsx, .csv, .tsv, or pasted rows.
+                Your existing template import still works unchanged.
+              </p>
+              <div class="grid g2 no-margin">
+                <label class="field"
+                  >Upload .xlsx / .csv / .tsv<input
+                    type="file"
+                    id="gradebookFile"
+                    accept=".xlsx,.xls,.csv,.tsv,.txt"
+                /></label>
+                <label class="field"
+                  >Or paste a wide gradebook<textarea
+                    id="gradebookPaste"
+                    placeholder="Name	6.G.A.1	6.G.A.2&#10;Student Alpha	8	5"
+                    spellcheck="false"
+                  ></textarea>
+                </label>
+              </div>
+              <div class="button-row">
+                <button class="btn primary" id="gradebookLoadBtn" type="button">
+                  Load &amp; Map Columns
+                </button>
+                <span class="badge neutral" id="sheetjsStatus"
+                  >SheetJS: not loaded</span
+                >
+              </div>
+              <div id="gradebookMapping" class="mapping" hidden></div>
+            </article>
+          </section>
+
+          <section
+            id="quality"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-quality"
+          >
+            <div class="grid g3" id="qualityCards"></div>
+            <article class="card">
+              <h3>Data Issues to Review</h3>
+              <div id="qualityIssues"></div>
+            </article>
+            <article class="card">
+              <h3>Evidence Records</h3>
+              <div class="table-wrap">
+                <table class="table" id="evidenceTable"></table>
+              </div>
+            </article>
+          </section>
+
+          <section
+            id="forecast"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-forecast"
+          >
+            <div class="empty-state" id="forecastEmpty" hidden>
+              <strong>No data yet.</strong> Import or enter class evidence
+              first, then return here to see forecasts.
+              <button class="btn" data-go="import" type="button">
+                Import data
+              </button>
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Individual Forecast</h3>
+                <label class="field"
+                  >Student<select id="forecastStudent"></select
+                ></label>
+                <label class="field"
+                  >Standard<select id="forecastStandard"></select
+                ></label>
+                <button class="btn primary" id="runForecastBtn" type="button">
+                  Run Forecast
+                </button>
+              </article>
+              <article class="card">
+                <h3>Result</h3>
+                <div id="forecastResult" class="muted">
+                  Choose a student and standard.
+                </div>
+              </article>
+            </div>
+            <article class="card">
+              <h3>Class Forecast Grid</h3>
+              <div
+                id="workerStatus"
+                class="loading"
+                role="status"
+                aria-live="polite"
+              >
+                Computing forecasts in the background…
+              </div>
+              <p class="muted method-note">
+                <strong>Method:</strong> forecasts use a recency-weighted
+                average of dated evidence plus a simple linear trend, with the ±
+                range derived from the spread (standard error) of the actual
+                scores. Estimates are planning aids, not labels.
+              </p>
+              <div class="table-wrap">
+                <table class="table" id="forecastTable"></table>
+              </div>
+            </article>
+          </section>
+
+          <section
+            id="groups"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-groups"
+          >
+            <div class="empty-state" id="groupsEmpty" hidden>
+              <strong>No data yet.</strong> Import or enter class evidence
+              first, then build flexible support groups.
+              <button class="btn" data-go="import" type="button">
+                Import data
+              </button>
+            </div>
+            <article class="card no-print-controls">
+              <h3>Small Group Builder</h3>
+              <p class="muted">
+                Groups are flexible support suggestions based on students below
+                the support threshold by standard. They are not labels.
+              </p>
+              <label class="field"
+                >Support threshold: <span id="groupThresholdValue">70</span>%
+                <input
+                  type="range"
+                  id="groupThreshold"
+                  min="40"
+                  max="90"
+                  step="1"
+                  value="70"
+                  aria-describedby="thresholdHelp"
+              /></label>
+              <p class="muted" id="thresholdHelp">
+                Students forecast below this percent on a standard are grouped
+                for support. This setting also drives the Forecast grid and
+                background worker.
+              </p>
+              <div class="button-row">
+                <button class="btn primary" id="buildGroupsBtn" type="button">
+                  Build Groups
+                </button>
+                <button class="btn" id="printGroupsBtn" type="button">
+                  Print Groups
+                </button>
+              </div>
+            </article>
+            <div class="grid g2" id="groupOutput"></div>
+          </section>
+
+          <section
+            id="reports"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-reports"
+          >
+            <div class="empty-state" id="reportsEmpty" hidden>
+              <strong>No data yet.</strong> Import or enter class evidence
+              first, then generate a report.
+              <button class="btn" data-go="import" type="button">
+                Import data
+              </button>
+            </div>
+            <article class="card">
+              <h3>Teacher Report</h3>
+              <p class="muted">
+                Generated reports contain student data. Print or save them
+                securely.
+              </p>
+              <div class="button-row">
+                <button class="btn primary" id="reportBtn" type="button">
+                  Generate Report
+                </button>
+                <button class="btn" id="csvBtn" type="button">
+                  Download Evidence CSV
+                </button>
+                <button class="btn" id="jsonBtn" type="button">
+                  Export Backup JSON
+                </button>
+                <button class="btn" onclick="window.print()" type="button">
+                  Print
+                </button>
+              </div>
+              <div id="reportHtml" class="report-html">
+                <p class="muted">Report not generated yet.</p>
+              </div>
+              <details class="raw-report">
+                <summary>Plain-text version</summary>
+                <pre class="report" id="report">Report not generated yet.</pre>
+              </details>
+            </article>
+          </section>
+
+          <section
+            id="settings"
+            class="screen"
+            role="tabpanel"
+            aria-labelledby="tab-settings"
+          >
+            <div class="grid g2">
+              <article class="card">
+                <h3>Profiles</h3>
+                <p class="muted">
+                  Save different classes as separate local profiles.
+                </p>
+                <label class="field"
+                  >Profile name<input id="profileName" placeholder="Period 1"
+                /></label>
+                <button class="btn primary" id="saveProfileBtn" type="button">
+                  Save Profile
+                </button>
+                <button class="btn" id="loadProfileBtn" type="button">
+                  Load Profile
+                </button>
+              </article>
+              <article class="card">
+                <h3>Data Controls</h3>
+                <div class="button-row">
+                  <button class="btn" id="runSelfTestBtn" type="button">
+                    Run Self-Test
+                  </button>
+                  <button class="btn" id="sampleBtn" type="button">
+                    Reload Sample Data
+                  </button>
+                  <button class="btn danger" id="clearBtn" type="button">
+                    Clear Local Data
+                  </button>
+                </div>
+                <div id="settingsStatus" class="muted"></div>
+              </article>
+            </div>
+            <article class="card privacy-card">
+              <h3>Privacy &amp; End-of-Session</h3>
+              <p class="muted">
+                All data is stored only in this browser, unencrypted, and is
+                visible to anyone using this device/profile. It is not sent
+                anywhere. Use student IDs or initials instead of full names when
+                possible. On a shared or school device, clear the data when you
+                finish.
+              </p>
+              <button class="btn danger" id="clearEndSessionBtn" type="button">
+                Clear Local Data (End of Session)
+              </button>
+            </article>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <aside class="diag" id="diag" aria-label="Hidden diagnostics">
+      <h3>Hidden Diagnostics</h3>
+      <p class="muted">
+        This panel is intentionally hidden during normal classroom use.
+      </p>
+      <button class="btn" id="closeDiagBtn" type="button">Close</button>
+      <button class="btn" id="diagTestBtn" type="button">Run Self-Test</button>
+      <pre class="report" id="diagText"></pre>
     </aside>
 
-    <main class="main">
-      <header class="topbar">
-        <div>
-          <h2 id="pageTitle">Start Here</h2>
-          <p id="pageSubtitle">A guided teacher workflow for classroom evidence.</p>
-        </div>
-        <div class="top-actions">
-          <span class="badge neutral" id="phaseBadge">IDLE</span>
-          <span class="badge neutral" id="saveBadge">Saved locally</span>
-          <button class="btn" id="themeBtn" type="button">Theme</button>
-        </div>
-      </header>
-
-      <section class="body">
-        <section id="start" class="screen active">
-          <div class="hero">
-            <span class="badge info">Recommended workflow</span>
-            <h2>Make the next instructional move clear.</h2>
-            <p>This tool is organized around a teacher’s actual decision flow. Download the spreadsheet template, enter class evidence, review data quality, then use forecasts to plan flexible support groups. Forecasts are planning estimates, not labels.</p>
-            <div class="button-row">
-              <a class="btn primary" href="./forecast-template.xls" download>Download Example .xls</a>
-              <button class="btn" data-go="setup" type="button">Manual Setup</button>
-              <button class="btn" data-go="import" type="button">Upload or Paste Data</button>
-              <button class="btn" data-go="quality" type="button">Review Data</button>
-            </div>
-          </div>
-
-          <div class="grid g2">
-            <article class="card">
-              <h3>Fastest way to use this</h3>
-              <div class="step"><span class="num">1</span><p><strong>Download the Excel template</strong> and fill in class, students, standards, and evidence.</p></div>
-              <div class="step"><span class="num">2</span><p><strong>Upload it on Import Data</strong> or paste rows from a spreadsheet.</p></div>
-              <div class="step"><span class="num">3</span><p><strong>Review Data</strong> before using forecasts or group suggestions.</p></div>
-            </article>
-            <article class="card">
-              <h3>Template included</h3>
-              <p class="muted">The downloadable .xls file includes the required columns and example rows. It opens in Excel and Google Sheets.</p>
-              <a class="btn primary" href="./forecast-template.xls" download>Download Example .xls</a>
-            </article>
-          </div>
-
-          <div class="grid g4" id="metrics"></div>
-          <div class="grid g2">
-            <article class="card">
-              <h3>Priority Standards</h3>
-              <div id="priorityStandards"></div>
-            </article>
-            <article class="card">
-              <h3>Teacher Next Moves</h3>
-              <div id="teacherMoves"></div>
-            </article>
-          </div>
-        </section>
-
-        <section id="setup" class="screen">
-          <div class="notice"><strong>Manual setup:</strong> Use this pathway when you do not want to use a spreadsheet. Everything saves automatically in this browser.</div>
-          <div class="grid g2">
-            <article class="card">
-              <h3>Class Information</h3>
-              <label class="field">Class name<input id="className" placeholder="Period 1 Math" autocomplete="off"></label>
-              <label class="field">Grade / course<input id="gradeCourse" placeholder="Grade 6 Math" autocomplete="off"></label>
-              <button class="btn primary" id="saveClassBtn" type="button">Save Class</button>
-            </article>
-            <article class="card">
-              <h3>Add Student</h3>
-              <label class="field">Student ID<input id="studentId" placeholder="S011" autocomplete="off"></label>
-              <label class="field">Display name<input id="studentName" placeholder="Student 11" autocomplete="off"></label>
-              <label class="field">Supports / tags<input id="studentTags" placeholder="ML, IEP, newcomer" autocomplete="off"></label>
-              <button class="btn primary" id="addStudentBtn" type="button">Add Student</button>
-            </article>
-          </div>
-
-          <div class="grid g2">
-            <article class="card">
-              <h3>Add CCSS / Standard</h3>
-              <label class="field">Code<input id="standardCode" placeholder="6.G.A.1" autocomplete="off"></label>
-              <label class="field">Description<input id="standardDesc" placeholder="Find area of polygons" autocomplete="off"></label>
-              <button class="btn primary" id="addStandardBtn" type="button">Add Standard</button>
-            </article>
-            <article class="card">
-              <h3>Add Evidence Manually</h3>
-              <label class="field">Student<select id="manualStudent"></select></label>
-              <label class="field">Standard<select id="manualStandard"></select></label>
-              <div class="grid g2 no-margin">
-                <label class="field">Score<input id="manualScore" type="number" min="0" inputmode="decimal"></label>
-                <label class="field">Max score<input id="manualMax" type="number" min="1" placeholder="10" inputmode="decimal"></label>
-              </div>
-              <label class="field">Assessment<input id="manualAssessment" placeholder="Exit Ticket" autocomplete="off"></label>
-              <button class="btn primary" id="addEvidenceBtn" type="button">Add Evidence</button>
-            </article>
-          </div>
-
-          <div class="grid g2">
-            <article class="card">
-              <h3>Students</h3>
-              <div class="table-wrap"><table class="table" id="studentTable"></table></div>
-            </article>
-            <article class="card">
-              <h3>Standards</h3>
-              <div class="table-wrap"><table class="table" id="standardTable"></table></div>
-            </article>
-          </div>
-        </section>
-
-        <section id="import" class="screen">
-          <div class="notice"><strong>Spreadsheet pathway:</strong> Download the example Excel-readable template, fill it in, and upload it here. It updates class, students, standards, and evidence.</div>
-          <div class="grid g2">
-            <article class="card">
-              <h3>Download Example Template</h3>
-              <p class="muted">Use the .xls template for Excel/Google Sheets. You can upload the completed .xls, or export as CSV and upload/paste it.</p>
-              <a class="btn primary" href="./forecast-template.xls" download>Download Example .xls</a>
-              <button class="btn" id="downloadCsvBtn" type="button">Download CSV Template</button>
-            </article>
-            <article class="card">
-              <h3>Upload Completed File</h3>
-              <label class="field">Upload .xls, .csv, .tsv, or .txt<input type="file" id="fileInput" accept=".xls,.html,.csv,.tsv,.txt,text/csv,text/html"></label>
-              <button class="btn primary" id="importFileBtn" type="button">Import File</button>
-            </article>
-          </div>
-
-          <div class="grid g2">
-            <article class="card">
-              <h3>Paste Rows</h3>
-              <label class="field">Rows<textarea id="pasteBox" placeholder="Paste rows from the template here. Leave this blank if you upload the .xls file." spellcheck="false"></textarea></label>
-              <button class="btn primary" id="importPasteBtn" type="button">Import Pasted Rows</button>
-            </article>
-            <article class="card">
-              <h3>Import Feedback</h3>
-              <div id="importStatus" class="muted">No import yet.</div>
-            </article>
-          </div>
-        </section>
-
-        <section id="quality" class="screen">
-          <div class="grid g3" id="qualityCards"></div>
-          <article class="card">
-            <h3>Data Issues to Review</h3>
-            <div id="qualityIssues"></div>
-          </article>
-          <article class="card">
-            <h3>Evidence Records</h3>
-            <div class="table-wrap"><table class="table" id="evidenceTable"></table></div>
-          </article>
-        </section>
-
-        <section id="forecast" class="screen">
-          <div class="grid g2">
-            <article class="card">
-              <h3>Individual Forecast</h3>
-              <label class="field">Student<select id="forecastStudent"></select></label>
-              <label class="field">Standard<select id="forecastStandard"></select></label>
-              <button class="btn primary" id="runForecastBtn" type="button">Run Forecast</button>
-            </article>
-            <article class="card">
-              <h3>Result</h3>
-              <div id="forecastResult" class="muted">Choose a student and standard.</div>
-            </article>
-          </div>
-          <article class="card">
-            <h3>Class Forecast Grid</h3>
-            <div id="workerStatus" class="loading">Computing forecasts in the background…</div>
-            <div class="table-wrap"><table class="table" id="forecastTable"></table></div>
-          </article>
-        </section>
-
-        <section id="groups" class="screen">
-          <article class="card">
-            <h3>Small Group Builder</h3>
-            <p class="muted">Groups are flexible support suggestions based on students below 70% by standard. They are not labels.</p>
-            <button class="btn primary" id="buildGroupsBtn" type="button">Build Groups</button>
-          </article>
-          <div class="grid g2" id="groupOutput"></div>
-        </section>
-
-        <section id="reports" class="screen">
-          <article class="card">
-            <h3>Teacher Report</h3>
-            <div class="button-row">
-              <button class="btn primary" id="reportBtn" type="button">Generate Report</button>
-              <button class="btn" id="csvBtn" type="button">Download Evidence CSV</button>
-              <button class="btn" id="jsonBtn" type="button">Export Backup JSON</button>
-              <button class="btn" onclick="window.print()" type="button">Print</button>
-            </div>
-            <pre class="report" id="report">Report not generated yet.</pre>
-          </article>
-        </section>
-
-        <section id="settings" class="screen">
-          <div class="grid g2">
-            <article class="card">
-              <h3>Profiles</h3>
-              <p class="muted">Save different classes as separate local profiles.</p>
-              <label class="field">Profile name<input id="profileName" placeholder="Period 1"></label>
-              <button class="btn primary" id="saveProfileBtn" type="button">Save Profile</button>
-              <button class="btn" id="loadProfileBtn" type="button">Load Profile</button>
-            </article>
-            <article class="card">
-              <h3>Data Controls</h3>
-              <div class="button-row">
-                <button class="btn" id="runSelfTestBtn" type="button">Run Self-Test</button>
-                <button class="btn" id="sampleBtn" type="button">Reload Sample Data</button>
-                <button class="btn danger" id="clearBtn" type="button">Clear Local Data</button>
-              </div>
-              <div id="settingsStatus" class="muted"></div>
-            </article>
-          </div>
-        </section>
-      </section>
-    </main>
-  </div>
-
-  <aside class="diag" id="diag" aria-label="Hidden diagnostics">
-    <h3>Hidden Diagnostics</h3>
-    <p class="muted">This panel is intentionally hidden during normal classroom use.</p>
-    <button class="btn" id="closeDiagBtn" type="button">Close</button>
-    <button class="btn" id="diagTestBtn" type="button">Run Self-Test</button>
-    <pre class="report" id="diagText"></pre>
-  </aside>
-
-  <script src="./app.js" defer></script>
-</body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+      onload="window.__SHEETJS_READY = true"
+      onerror="window.__SHEETJS_FAILED = true"
+    ></script>
+    <script src="./app.js" defer></script>
+  </body>
 </html>

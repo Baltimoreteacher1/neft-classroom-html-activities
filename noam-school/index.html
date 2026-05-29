@@ -59,6 +59,132 @@
         --shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
         --shadow2: 0 7px 20px rgba(0, 0, 0, 0.25);
       }
+
+      /* ─── Color schemes (independent of light/dark base) ───
+         "Default" applies no [data-scheme] attribute, preserving the
+         original light/dark theming above. Each named scheme below fully
+         reassigns the palette variables so contrast stays consistent. */
+      [data-scheme="ocean"] {
+        --bg: #eaf3fb;
+        --bg2: #dceaf7;
+        --paper: #ffffff;
+        --paper2: #eef5fc;
+        --ink: #0d2438;
+        --muted: #4d6478;
+        --line: #c4dcf0;
+        --navy: #0b3a5c;
+        --navy2: #14507e;
+        --teal: #0d7a8f;
+        --amber: #c47a12;
+        --red: #b03a3a;
+        --green: #137a55;
+        --blue: #1f5fc4;
+        --softT: #d6eef3;
+        --softA: #fdeccb;
+        --softR: #fbe0dd;
+        --softG: #d8f0e6;
+        --softB: #dde9fb;
+        --shadow: 0 18px 45px rgba(11, 58, 92, 0.16);
+        --shadow2: 0 7px 20px rgba(11, 58, 92, 0.1);
+      }
+      [data-scheme="sunset"] {
+        --bg: #fdeee3;
+        --bg2: #fae0d2;
+        --paper: #fffaf5;
+        --paper2: #fdeee2;
+        --ink: #3a1f12;
+        --muted: #7a5946;
+        --line: #f0d4c0;
+        --navy: #8a3b1e;
+        --navy2: #b04e26;
+        --teal: #b3621b;
+        --amber: #d97706;
+        --red: #c23b3b;
+        --green: #6b8e23;
+        --blue: #b85c2e;
+        --softT: #fde6cf;
+        --softA: #ffe3b8;
+        --softR: #fcdcd2;
+        --softG: #ecedcf;
+        --softB: #fae0cf;
+        --shadow: 0 18px 45px rgba(138, 59, 30, 0.16);
+        --shadow2: 0 7px 20px rgba(138, 59, 30, 0.1);
+      }
+      [data-scheme="forest"] {
+        --bg: #eaf3ea;
+        --bg2: #dcebdc;
+        --paper: #fbfdf9;
+        --paper2: #edf5ec;
+        --ink: #12281a;
+        --muted: #4e6552;
+        --line: #c8ddc8;
+        --navy: #1d4d2e;
+        --navy2: #2a6b41;
+        --teal: #15806b;
+        --amber: #b07d12;
+        --red: #a83c33;
+        --green: #2a7a45;
+        --blue: #2f6d8f;
+        --softT: #d6ede4;
+        --softA: #f5ead0;
+        --softR: #f6ddd9;
+        --softG: #d8eddc;
+        --softB: #dce9ed;
+        --shadow: 0 18px 45px rgba(29, 77, 46, 0.16);
+        --shadow2: 0 7px 20px rgba(29, 77, 46, 0.1);
+      }
+      [data-scheme="dark"] {
+        --bg: #0f1419;
+        --bg2: #1a2332;
+        --paper: #1e2a3a;
+        --paper2: #243447;
+        --ink: #e8edf2;
+        --muted: #8899aa;
+        --line: #2d3f52;
+        --navy: #e8edf2;
+        --navy2: #b8c8d8;
+        --teal: #2bb3ad;
+        --amber: #e8a33d;
+        --red: #e06b5c;
+        --green: #3fb574;
+        --blue: #5a8fe8;
+        --softT: #0d2a28;
+        --softA: #2a2010;
+        --softR: #2a1410;
+        --softG: #0d2a18;
+        --softB: #101a2a;
+        --shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
+        --shadow2: 0 7px 20px rgba(0, 0, 0, 0.25);
+      }
+      [data-scheme="contrast"] {
+        --bg: #ffffff;
+        --bg2: #ffffff;
+        --paper: #ffffff;
+        --paper2: #f2f2f2;
+        --ink: #000000;
+        --muted: #2b2b2b;
+        --line: #000000;
+        --navy: #000000;
+        --navy2: #1a1a1a;
+        --teal: #006b66;
+        --amber: #8a5200;
+        --red: #b00000;
+        --green: #006400;
+        --blue: #0000cc;
+        --softT: #d6f0ee;
+        --softA: #ffe9c2;
+        --softR: #ffd9d4;
+        --softG: #d6f0df;
+        --softB: #d9e2ff;
+        --shadow: 0 0 0 1px #000000;
+        --shadow2: 0 0 0 1px #000000;
+        --focus-ring: 0 0 0 3px #0000cc;
+      }
+      /* Named schemes override the light-base body gradient with a flat
+         background to keep their palettes clean and readable. */
+      [data-scheme] body {
+        background: var(--bg) !important;
+      }
       * {
         box-sizing: border-box;
         margin: 0;
@@ -181,6 +307,49 @@
         gap: 8px;
         flex-wrap: wrap;
         align-items: center;
+      }
+
+      /* Color scheme picker */
+      .scheme-picker {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        border-radius: 12px;
+        padding: 4px 8px 4px 10px;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ink);
+        transition: all var(--transition);
+        white-space: nowrap;
+      }
+      .scheme-picker:hover {
+        box-shadow: var(--shadow2);
+      }
+      .scheme-picker:focus-within {
+        box-shadow: var(--focus-ring);
+      }
+      .scheme-picker__label {
+        opacity: 0.85;
+      }
+      .scheme-picker select {
+        border: none;
+        background: transparent;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ink);
+        cursor: pointer;
+        padding: 4px 2px;
+        border-radius: 8px;
+        outline: none;
+      }
+      .scheme-picker select:focus-visible {
+        box-shadow: var(--focus-ring);
+      }
+      .scheme-picker select option {
+        background: var(--paper);
+        color: var(--ink);
       }
 
       /* Buttons */
@@ -1027,6 +1196,17 @@
         }
       }
     </style>
+    <script>
+      /* Apply the saved color scheme before first paint to avoid a flash. */
+      (function () {
+        try {
+          var s = localStorage.getItem("noam-color-scheme");
+          if (s && s !== "default") {
+            document.documentElement.setAttribute("data-scheme", s);
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div class="wrap">
@@ -1059,6 +1239,17 @@
             Search…
             <kbd>⌘K</kbd>
           </div>
+          <label class="scheme-picker" title="Choose a color scheme">
+            <span class="scheme-picker__label">🎨 Color</span>
+            <select id="schemePicker" aria-label="Color scheme">
+              <option value="default">Default</option>
+              <option value="ocean">Ocean</option>
+              <option value="sunset">Sunset</option>
+              <option value="forest">Forest</option>
+              <option value="contrast">High Contrast</option>
+              <option value="dark">Dark</option>
+            </select>
+          </label>
           <button
             class="btn ghost icon-btn"
             id="themeToggle"
@@ -2258,6 +2449,45 @@
 
         function toggleTheme() {
           applyTheme(state.settings.theme === "dark" ? "light" : "dark");
+        }
+
+        // ─── Color scheme picker (independent of light/dark toggle) ───
+        const SCHEME_KEY = "noam-color-scheme";
+        const VALID_SCHEMES = [
+          "default",
+          "ocean",
+          "sunset",
+          "forest",
+          "contrast",
+          "dark",
+        ];
+
+        function applyScheme(scheme) {
+          if (!VALID_SCHEMES.includes(scheme)) scheme = "default";
+          if (scheme === "default") {
+            document.documentElement.removeAttribute("data-scheme");
+          } else {
+            document.documentElement.setAttribute("data-scheme", scheme);
+          }
+          try {
+            localStorage.setItem(SCHEME_KEY, scheme);
+          } catch (e) {}
+          const sel = $("#schemePicker");
+          if (sel) sel.value = scheme;
+        }
+
+        function initScheme() {
+          let saved = "default";
+          try {
+            saved = localStorage.getItem(SCHEME_KEY) || "default";
+          } catch (e) {}
+          applyScheme(saved);
+          const sel = $("#schemePicker");
+          if (sel) {
+            sel.addEventListener("change", function () {
+              applyScheme(sel.value);
+            });
+          }
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -3675,6 +3905,7 @@
         // ═══════════════════════════════════════════════════════════════
 
         $("#themeToggle").addEventListener("click", toggleTheme);
+        initScheme();
         $("#notifToggle").addEventListener("click", async () => {
           const granted = await NotifService.requestPermission();
           if (granted) {
