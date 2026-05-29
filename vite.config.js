@@ -30,6 +30,11 @@ function copyStandaloneHtml() {
     "docs",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt"];
+  // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
+  // folders and loose markdown docs (QA reports, READMEs) should never ship.
+  const SKIP_COPY_RE =
+    /(^|[\\/])\.(claude|git|wrangler)([\\/]|$)|(^|[\\/])node_modules([\\/]|$)|\.md$/i;
+  const copyFilter = (src) => !SKIP_COPY_RE.test(src);
 
   return {
     name: "copy-standalone-html",
@@ -44,7 +49,7 @@ function copyStandaloneHtml() {
         const src = resolve(__dirname, entry.name);
         const dest = resolve(__dirname, "dist", entry.name);
         mkdirSync(dest, { recursive: true });
-        cpSync(src, dest, { recursive: true });
+        cpSync(src, dest, { recursive: true, filter: copyFilter });
       }
       for (const file of ROOT_FILES) {
         const src = resolve(__dirname, file);
