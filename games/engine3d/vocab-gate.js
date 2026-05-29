@@ -1,5 +1,5 @@
 import { onActivate } from "./a11y.js";
-import { resolveVocabImage } from "../../engine/core/vocab-images.js";
+import { resolveVocabImage } from "./vocab-images.js";
 
 /**
  * Level 1 vocab intro. Shows word + plain-language definition + image for each
