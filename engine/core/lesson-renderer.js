@@ -21,6 +21,7 @@ import {
   renderFractionBars,
   renderNetFolder,
   renderCoordinatePlane,
+  renderRemediation,
 } from "../components/index.js";
 
 export function bootLesson(config) {
@@ -446,10 +447,24 @@ function renderPracticePhase(el, state, ctx, config) {
           toast.innerHTML = `<span class="feedback-icon">✓</span><span>${result.message} ${result.streakMessage}</span>`;
           area.append(toast);
         }
+        setTimeout(() => next(), 1500);
       } else {
         ctx.engagement.recordIncorrect(null);
+        // Run the scaffolded remediation sequence (hint -> worked example ->
+        // guided steps -> easier retry) before advancing. The flow also biases
+        // the adaptive tier toward Level 1 on repeated misses via state hooks.
+        const remSlot = document.createElement("div");
+        remSlot.className = "mt-4";
+        area.append(remSlot);
+        renderRemediation(remSlot, {
+          question: prob,
+          state,
+          level: prob.tier,
+          onComplete() {
+            setTimeout(() => next(), 600);
+          },
+        });
       }
-      setTimeout(() => next(), 1500);
     });
   }
   next();

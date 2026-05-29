@@ -4,7 +4,8 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mission 9: Long Division | Math Lab Missions</title>
+    <meta name="standard" content="6.NS.B.2 · Unit 4" data-standard="6.NS.B.2" data-unit="4" />
+    <title>Mission 9: Long Division (6.NS.B.2) | Math Lab Missions</title>
     <style>
       :root {
         --navy: #23395d;
@@ -223,14 +224,14 @@
         margin-top: 4px;
         display: block;
       }
-      .esol-box {
+      .language-box {
         background: var(--soft-green);
         border: 2px solid #a3d9a5;
         border-radius: 8px;
         padding: 20px;
         margin-bottom: 20px;
       }
-      .esol-box h3 {
+      .language-box h3 {
         color: var(--green);
         margin-top: 0;
       }
@@ -502,6 +503,86 @@
         }
       }
     </style>
+
+    <!-- ── Math Lab Missions upgrade (design-tokens) ── -->
+    <style id="mlm-upgrade">
+      body {
+        font-family: var(--font-body, "Segoe UI", system-ui, sans-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink, #21313f);
+      }
+      h1, h2, h3, h4,
+      .hero-text h1, .mission-hero h1 {
+        font-family: var(--font-display, "Outfit", system-ui, sans-serif);
+        letter-spacing: -0.01em;
+      }
+      p, li, span, .scenario, .hero-scenario { font-size: 1rem; }
+      .guiding-q, .rep-card p, .checklist li, .whatif-list li,
+      .sentence-frames li, .sentence-starters li { font-size: 0.98rem; }
+      /* Standard badge — consistent across both hero families */
+      .standards, .hero-standard, .mlm-standard {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: var(--radius-lg, 999px);
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 0.01em;
+      }
+      .standards, .mlm-standard {
+        background: var(--teal-light, #dff2ee);
+        color: var(--navy, #12355b);
+        border: 1px solid var(--teal, #1fa6a2);
+      }
+      .mlm-standard { margin: 8px 0 4px; }
+      /* Objective banner */
+      .mlm-objective {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        background: var(--amber-light, #fef7e0);
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        font-size: 0.98rem;
+        color: var(--ink, #21313f);
+      }
+      .mlm-objective strong { color: var(--hint, #875f00); }
+      /* Hint affordance */
+      .mlm-hint {
+        margin: 14px 0;
+        border: 1px solid var(--amber, #f2c15b);
+        border-radius: var(--radius-md, 14px);
+        background: var(--amber-light, #fef7e0);
+        overflow: hidden;
+      }
+      .mlm-hint > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 12px 16px;
+        font-family: var(--font-display, "Outfit", sans-serif);
+        font-weight: 800;
+        color: var(--hint, #875f00);
+      }
+      .mlm-hint > summary::-webkit-details-marker { display: none; }
+      .mlm-hint > summary::before { content: "💡 "; }
+      .mlm-hint[open] > summary::before { content: "💡 "; }
+      .mlm-hint .mlm-hint-body { padding: 0 16px 14px; font-size: 0.98rem; }
+      /* Accessible focus states */
+      a:focus-visible, button:focus-visible, summary:focus-visible,
+      .phase-toggle:focus-visible, [tabindex]:focus-visible {
+        outline: 3px solid var(--teal, #1fa6a2);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .panel, .mission-card, .phase, .rep-card {
+        border-radius: var(--radius-md, 14px);
+      }
+    </style>
   </head>
   <body>
     <main class="page-shell">
@@ -525,10 +606,19 @@
         <div class="hero-text">
           <p class="eyebrow">Mission 9 &middot; Unit 4</p>
           <h1 id="mission-title">Long Division</h1>
-          <span class="standards"
-            >6.NS.B.2 &mdash; Fluently divide multi-digit numbers; interpret
-            quotients and remainders</span
-          >
+          <span class="standards">6.NS.B.2 &middot; Unit 4</span>
+          <div class="mlm-objective">
+            <span aria-hidden="true">🎯</span>
+            <span><strong>Today's objective:</strong> Fluently divide multi-digit numbers using the standard algorithm.</span>
+          </div>
+          <details class="mlm-hint">
+            <summary>Need a hint?</summary>
+            <div class="mlm-hint-body">
+              Re-read the problem and underline the numbers and the question.
+              Pick one representation (model, table, or equation), show your
+              steps, and check that your answer makes sense for the situation.
+            </div>
+          </details>
           <p class="scenario">
             The 6th-grade class is organizing a school field day. There are
             <strong>438 students</strong> who need to be split into teams of
@@ -1298,9 +1388,9 @@
           </li>
         </ol>
 
-        <!-- ESOL Box -->
-        <div class="esol-box">
-          <h3>ESOL Support: Key Vocabulary</h3>
+        <!-- Language Box -->
+        <div class="language-box">
+          <h3>Language Support: Key Vocabulary</h3>
           <div class="vocab-grid">
             <div class="vocab-card">
               <strong>dividend</strong> &mdash; the number being divided; the

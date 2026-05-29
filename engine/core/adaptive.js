@@ -33,29 +33,59 @@ export function readPerformance(state) {
   return { attempts, correct, streak, accuracy };
 }
 
+// Step a tier name by an integer offset along TIERS (clamped).
+function shiftTier(tier, by) {
+  const i = TIERS.indexOf(tier);
+  const base = i === -1 ? 1 : i;
+  return TIERS[Math.max(0, Math.min(TIERS.length - 1, base + by))];
+}
+
 // Pure decision: given a performance snapshot, return a tier.
 // Honors an explicit manual override ("level1" | "core" | "level2").
+// A negative `remediationBias` (set by the remediation flow after repeated
+// misses) nudges the chosen tier down toward Level 1 (support); a positive
+// bias nudges up toward Level 2 (enrichment) after a recovery.
 export function decideTier(perf, opts = {}) {
   const cfg = { ...DEFAULTS, ...opts };
   if (cfg.override && TIERS.includes(cfg.override)) return cfg.override;
 
   const { attempts, accuracy, streak } = perf;
+  const bias = Number(perf.remediationBias) || 0;
 
+  let tier;
   // Not enough evidence yet — stay on core.
-  if (attempts < cfg.minAttempts) return "core";
-
+  if (attempts < cfg.minAttempts) tier = "core";
   // A cold streak of misses is a strong struggle signal even if early.
-  if (accuracy < cfg.struggleBelow) return "level1";
-
+  else if (accuracy < cfg.struggleBelow) tier = "level1";
   // Sustained success -> enrichment.
-  if (accuracy >= cfg.excelAtOrAbove && streak >= 2) return "level2";
+  else if (accuracy >= cfg.excelAtOrAbove && streak >= 2) tier = "level2";
+  else tier = "core";
 
-  return "core";
+  // Bias < 0 steps down toward level1; bias > 0 steps up toward level2.
+  if (bias < 0) tier = shiftTier(tier, -1);
+  else if (bias > 0) tier = shiftTier(tier, 1);
+
+  return tier;
 }
 
 // Convenience: read live state and decide. Pure-ish (reads, never writes).
 export function selectTier(state, opts = {}) {
-  return decideTier(readPerformance(state), opts);
+  const perf = readPerformance(state);
+  const s = typeof state?.get === "function" ? state.get() : state || {};
+  perf.remediationBias = Number(s.remediationBias) || 0;
+  return decideTier(perf, opts);
+}
+
+// Hook used by the remediation flow to push the adaptive tier toward Level 1
+// (direction "down") after repeated misses, or back up ("up") after a
+// recovery. Persists a clamped `remediationBias` on the shared state.
+export function adjustTier(state, direction) {
+  if (!state || typeof state.set !== "function") return;
+  const s = typeof state.get === "function" ? state.get() : {};
+  const cur = Number(s.remediationBias) || 0;
+  const step = direction === "down" ? -1 : 1;
+  const next = Math.max(-3, Math.min(3, cur + step));
+  state.set({ remediationBias: next });
 }
 
 // Build the adaptive problem queue for the Practice phase.

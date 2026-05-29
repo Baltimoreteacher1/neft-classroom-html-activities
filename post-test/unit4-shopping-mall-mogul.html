@@ -1208,8 +1208,135 @@
         z-index: 9999;
       }
     </style>
-  </head>
+  <style id="nt-upgrade-styles">
+    /* ── Neft Teacher readability upgrade ── */
+    html { font-size: 112.5%; }            /* lift root so rem-based text grows */
+    body { line-height: 1.65; }
+    p, li, td, th, label, span, a, button, input, textarea, select,
+    .question, .task, .prompt, .instructions, figcaption, dd, dt {
+      font-size: max(1em, 17px);
+    }
+    /* Restore intentionally-large display text rather than shrink it */
+    h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); line-height: 1.2; }
+    h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: 1.25; }
+    h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); line-height: 1.3; }
+    h4 { font-size: 1.18rem; }
+    /* Floor any element that set a tiny rem/px font inline or via class */
+    [style*="font-size:0.7"], [style*="font-size: 0.7"],
+    [style*="font-size:0.75"], [style*="font-size: 0.75"],
+    [style*="font-size:0.78"], [style*="font-size: 0.78"],
+    [style*="font-size:0.8"], [style*="font-size: 0.8"],
+    [style*="font-size:0.82"], [style*="font-size: 0.82"],
+    [style*="font-size:0.85"], [style*="font-size: 0.85"],
+    [style*="font-size:0.88"], [style*="font-size: 0.88"],
+    [style*="font-size:0.9"], [style*="font-size: 0.9"],
+    [style*="font-size:11px"], [style*="font-size: 11px"],
+    [style*="font-size:12px"], [style*="font-size: 12px"],
+    [style*="font-size:13px"], [style*="font-size: 13px"],
+    [style*="font-size:14px"], [style*="font-size: 14px"] {
+      font-size: 1rem !important;
+    }
+  
+    /* ── Neft Teacher help widgets ── */
+    .nt-level-banner {
+      position: sticky; top: 0; z-index: 9000;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 16px; font-size: 1rem; font-weight: 700;
+      color: #0b1f33; background: linear-gradient(90deg,#f2c15b,#1fa6a2);
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+    .nt-level-banner .nt-pill {
+      background: rgba(255,255,255,.92); color:#12355b; border-radius:999px;
+      padding: 3px 12px; font-size: .95rem;
+    }
+    .nt-level-banner .nt-sub { font-weight: 600; color:#06283d; font-size:.95rem; }
+
+    .nt-fab-wrap {
+      position: fixed; right: 18px; bottom: 18px; z-index: 9500;
+      display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    }
+    .nt-fab {
+      border: none; cursor: pointer; border-radius: 999px;
+      padding: 12px 18px; font-size: 1rem; font-weight: 700; color:#fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,.35); display:flex; gap:8px; align-items:center;
+    }
+    .nt-fab-help { background:#1fa6a2; }
+    .nt-fab-hint { background:#7c3aed; }
+    .nt-fab:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
+
+    .nt-panel {
+      position: fixed; right: 18px; bottom: 90px; z-index: 9600;
+      width: min(340px, calc(100vw - 36px)); max-height: 70vh; overflow:auto;
+      background:#fff; color:#21313f; border-radius:16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.4); padding: 18px; display:none;
+      border: 2px solid #1fa6a2;
+    }
+    .nt-panel[data-open="true"] { display:block; }
+    .nt-panel h3 { margin:0 0 6px; color:#12355b; font-size:1.25rem; }
+    .nt-panel p.nt-lede { margin:0 0 12px; color:#5f6f80; font-size:1rem; }
+    .nt-panel h4 { margin:14px 0 6px; color:#12355b; font-size:1.05rem; }
+    .nt-panel ul { margin:0; padding-left: 18px; }
+    .nt-panel li { margin: 6px 0; font-size:1rem; }
+    .nt-panel a { color:#0f6f6b; font-weight:600; }
+    .nt-panel .nt-close {
+      float:right; border:none; background:#eef3f7; border-radius:8px;
+      cursor:pointer; font-size:1.1rem; line-height:1; padding:6px 10px; color:#12355b;
+    }
+    .nt-vocab { margin:0; padding:0; list-style:none; }
+    .nt-vocab li { padding:8px 0; border-bottom:1px solid #e6edf3; }
+    .nt-vocab b { color:#7c3aed; }
+
+    /* Hint pop-ups attached to tasks */
+    .nt-hint-btn {
+      display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+      border:1px solid #f2c15b; background:#fef7e0; color:#875f00;
+      border-radius:999px; padding:5px 12px; font-size:.95rem; font-weight:700;
+      margin: 6px 6px 6px 0;
+    }
+    .nt-hint-btn:focus-visible { outline:3px solid #7c3aed; outline-offset:2px; }
+    .nt-hint-body {
+      display:none; margin:6px 0 10px; padding:12px 14px; font-size:1rem;
+      background:#fef7e0; color:#5a4300; border-left:4px solid #f2c15b;
+      border-radius:0 10px 10px 0;
+    }
+    .nt-hint-body[data-open="true"] { display:block; }
+
+    /* Inline tooltips on key terms */
+    .nt-tip {
+      border-bottom:2px dotted #1fa6a2; cursor:help; position:relative;
+      color: inherit;
+    }
+    .nt-tip:focus-visible { outline:2px solid #1fa6a2; outline-offset:2px; }
+    .nt-tip[data-show="true"]::after, .nt-tip:hover::after {
+      content: attr(data-nt-tip);
+      position:absolute; left:0; bottom:calc(100% + 8px); z-index:9700;
+      width: max-content; max-width:260px; padding:8px 12px;
+      background:#12355b; color:#fff; border-radius:10px; font-size:.95rem;
+      font-weight:500; line-height:1.4; box-shadow:0 8px 24px rgba(0,0,0,.35);
+    }
+
+    /* Level 1 scaffolding callouts */
+    .nt-scaffold {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#dff2ee; border:1px solid #1fa6a2; color:#0b4d4a; font-size:1rem;
+    }
+    html[data-nt-level="1"] .nt-scaffold { display:block; }
+    /* Level 2 enrichment callouts */
+    .nt-enrich {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#fef7e0; border:1px solid #f2c15b; color:#5a4300; font-size:1rem;
+    }
+    html[data-nt-level="2"] .nt-enrich { display:block; }
+    .nt-enrich b, .nt-scaffold b { display:block; margin-bottom:4px; }
+
+    @media (max-width: 520px) {
+      .nt-fab { padding:11px 15px; font-size:.95rem; }
+    }
+  </style>
+</head>
   <body>
+<div class="nt-level-banner"><span class="nt-pill">Standard</span><span class="nt-sub">Looking for a different level? Try the Level 1 (support) or Level 2 (enrichment) version.</span></div>
+
     <canvas id="confetti-canvas"></canvas>
 
     <!-- ═══════════════════════════════════════════════
@@ -5104,5 +5231,118 @@
         </button>
       </div>
     </div>
-  </body>
+  
+<!-- ── Neft Teacher help widgets ── -->
+<div class="nt-fab-wrap">
+  <button type="button" class="nt-fab nt-fab-hint" id="ntHintFab"
+    aria-expanded="false" aria-controls="ntHintPanel">💡 <span>Hints</span></button>
+  <button type="button" class="nt-fab nt-fab-help" id="ntHelpFab"
+    aria-expanded="false" aria-controls="ntHelpPanel">🛟 <span>Need help?</span></button>
+</div>
+
+<div class="nt-panel" id="ntHelpPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHelpTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHelpClose" aria-label="Close help panel">✕</button>
+  <h3 id="ntHelpTitle">Need help? Explore these</h3>
+  <p class="nt-lede">Trusted sites for <strong>Percents, Decimals & Rates</strong>. Each opens in a new tab.</p>
+  <h4>Vocabulary</h4>
+  <ul class="nt-vocab"><li><b>Percent:</b> A number out of 100. 25% means 25 out of 100.</li><li><b>Decimal:</b> Another way to show part of a whole using a decimal point, like 0.25.</li><li><b>Discount:</b> An amount taken off the original price.</li><li><b>Markup:</b> An amount added to the cost to set the selling price.</li><li><b>Equivalent:</b> Equal in value: 50% = 0.5 = 1/2.</li></ul>
+  <h4>Learn more</h4>
+  <ul><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-ratios-prop-topic/cc-6th-percents" target="_blank" rel="noopener noreferrer">Khan Academy: Percents</a></li><li><a href="https://www.khanacademy.org/math/arithmetic/arith-decimals" target="_blank" rel="noopener noreferrer">Khan Academy: Decimals</a></li><li><a href="https://www.mathsisfun.com/percentage.html" target="_blank" rel="noopener noreferrer">Math is Fun: Percents</a></li><li><a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer">Desmos Calculator</a></li></ul>
+</div>
+
+<div class="nt-panel" id="ntHintPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHintTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHintClose" aria-label="Close hints panel">✕</button>
+  <h3 id="ntHintTitle">Helpful hints</h3>
+  <p class="nt-lede">Stuck on a step? Try these tips for <strong>Percents, Decimals & Rates</strong>.</p>
+  <ul id="ntHintList"></ul>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var HINTS = ["To turn a percent into a decimal, move the decimal point two places left (25% = 0.25).","To find a percent of a number, multiply by its decimal form.","For a discount, multiply the price by the percent, then subtract from the original.","Estimate first: 10% is easy — just move the decimal one place left."];
+  var VOCAB = [["Percent","A number out of 100. 25% means 25 out of 100."],["Decimal","Another way to show part of a whole using a decimal point, like 0.25."],["Discount","An amount taken off the original price."],["Markup","An amount added to the cost to set the selling price."],["Equivalent","Equal in value: 50% = 0.5 = 1/2."]];
+
+  /* Build hint list */
+  var hl = document.getElementById("ntHintList");
+  if (hl) HINTS.forEach(function(h){ var li=document.createElement("li"); li.textContent=h; hl.appendChild(li); });
+
+  function wirePanel(fabId, panelId, closeId){
+    var fab=document.getElementById(fabId), panel=document.getElementById(panelId),
+        close=document.getElementById(closeId);
+    if(!fab||!panel) return;
+    function setOpen(o){
+      panel.setAttribute("data-open", o?"true":"false");
+      fab.setAttribute("aria-expanded", o?"true":"false");
+      if(o){ var f=panel.querySelector("a,button"); if(f) f.focus(); }
+    }
+    fab.addEventListener("click", function(){ setOpen(panel.getAttribute("data-open")!=="true"); });
+    if(close) close.addEventListener("click", function(){ setOpen(false); fab.focus(); });
+    panel.addEventListener("keydown", function(e){ if(e.key==="Escape"){ setOpen(false); fab.focus(); } });
+  }
+  wirePanel("ntHelpFab","ntHelpPanel","ntHelpClose");
+  wirePanel("ntHintFab","ntHintPanel","ntHintClose");
+
+  /* Auto-attach a Hint button to each task/question section */
+  var SEL = ".task, .question, .challenge-card, .mission-card, .activity, .problem, .qcard, .task-card, [data-task]";
+  var blocks = document.querySelectorAll(SEL);
+  var seen = 0;
+  blocks.forEach(function(b, i){
+    if (b.querySelector(".nt-hint-btn")) return;
+    if (seen >= 40) return; seen++;
+    var tip = HINTS[i % HINTS.length];
+    var btn = document.createElement("button");
+    btn.type="button"; btn.className="nt-hint-btn";
+    btn.setAttribute("aria-expanded","false");
+    btn.innerHTML='💡 Hint';
+    var body = document.createElement("div");
+    body.className="nt-hint-body"; body.setAttribute("data-open","false");
+    body.textContent = tip;
+    btn.addEventListener("click", function(){
+      var open = body.getAttribute("data-open")==="true";
+      body.setAttribute("data-open", open?"false":"true");
+      btn.setAttribute("aria-expanded", open?"false":"true");
+    });
+    b.appendChild(btn); b.appendChild(body);
+  });
+
+  /* Tooltip key terms in body text (first occurrence each) */
+  var done = {};
+  function tipify(node){
+    if(node.nodeType===3){
+      var txt=node.nodeValue; if(!txt||!txt.trim()) return;
+      for(var k=0;k<VOCAB.length;k++){
+        var term=VOCAB[k][0]; if(done[term]) continue;
+        var re=new RegExp("\\b("+term.replace(/[.*+?^${}()|[\]\\]/g,function(c){return "\\"+c;})+")\\b");
+        var m=re.exec(txt);
+        if(m){
+          var span=document.createElement("span");
+          span.className="nt-tip"; span.tabIndex=0;
+          span.setAttribute("data-nt-tip", VOCAB[k][1]);
+          span.setAttribute("role","note");
+          span.textContent=m[0];
+          var after=node.splitText(m.index);
+          after.nodeValue=after.nodeValue.substring(m[0].length);
+          node.parentNode.insertBefore(span, after);
+          done[term]=true;
+          span.addEventListener("focus",function(){this.setAttribute("data-show","true");});
+          span.addEventListener("blur",function(){this.removeAttribute("data-show");});
+          return;
+        }
+      }
+    } else if(node.nodeType===1){
+      var tn=node.tagName;
+      if(/^(SCRIPT|STYLE|BUTTON|A|INPUT|TEXTAREA|SELECT|SVG|H1)$/.test(tn)) return;
+      if(node.classList && (node.classList.contains("nt-tip")||node.classList.contains("nt-panel")||node.classList.contains("nt-level-banner")||node.classList.contains("nt-fab-wrap"))) return;
+      var kids=Array.prototype.slice.call(node.childNodes);
+      for(var i=0;i<kids.length;i++) tipify(kids[i]);
+    }
+  }
+  try { tipify(document.body); } catch(e){}
+})();
+</script>
+
+</body>
 </html>

@@ -1194,6 +1194,114 @@
         }
       }
     </style>
+  
+    <style id="NEFT-UPGRADE-6-10-css">
+      /* === Neft Teacher readability + help upgrade (units 6-10) === */
+      html { font-size: 18px; }
+      body { line-height: 1.65; }
+      /* Scale up text-bearing elements without touching SVG labels */
+      p, li, td, th, label, input, textarea, select, button,
+      .ref-body, .ref-title, .ref-code, .slot-time, .slot-name,
+      .budget-label, .drag-chip, figcaption, .hint, .hint-content {
+        font-size: 1rem;
+      }
+      p, li, td, th, label, .ref-body { line-height: 1.65; }
+      h1 { line-height: 1.2; }
+      h2, h3, h4 { line-height: 1.3; }
+      /* Never enlarge inside SVG (chart labels stay as authored) */
+      svg, svg * { font-size: revert; }
+
+      /* === Glossary tooltips === */
+      .neft-term {
+        border-bottom: 2px dotted currentColor;
+        cursor: help;
+        position: relative;
+        font-weight: 600;
+      }
+      .neft-term:focus { outline: 3px solid #2563eb; outline-offset: 2px; border-radius: 3px; }
+      .neft-tip {
+        position: absolute;
+        left: 0; bottom: 125%;
+        z-index: 10050;
+        width: max-content;
+        max-width: 280px;
+        background: #1e1b4b;
+        color: #fff;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.15s;
+        pointer-events: none;
+      }
+      .neft-term:hover .neft-tip,
+      .neft-term:focus .neft-tip { opacity: 1; visibility: visible; }
+
+      /* === Level banner === */
+      .neft-level-banner {
+        max-width: 1000px;
+        margin: 1rem auto 0;
+        padding: 0.85rem 1.2rem;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      }
+      .neft-level-banner.lvl1 { background: #ecfdf5; color: #065f46; border: 2px solid #34d399; }
+      .neft-level-banner.lvl2 { background: #eef2ff; color: #3730a3; border: 2px solid #818cf8; }
+      .neft-level-banner .nb-icon { font-size: 1.4rem; line-height: 1; }
+
+      /* === Resource panel (Need help?) === */
+      .neft-help-panel {
+        max-width: 1000px;
+        margin: 1.5rem auto;
+        background: #fff;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      }
+      .neft-help-summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 1rem 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .neft-help-summary::-webkit-details-marker { display: none; }
+      .neft-help-summary:focus-visible { outline: 3px solid #2563eb; outline-offset: -3px; }
+      .neft-help-body { padding: 1rem 1.2rem 1.3rem; }
+      .neft-help-body p { margin: 0 0 0.6rem; }
+      .neft-help-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+      .neft-help-links a {
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.7rem 0.9rem;
+        background: #f1f5f9;
+        border-radius: 10px;
+        color: #1e3a8a;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .neft-help-links a:hover,
+      .neft-help-links a:focus-visible { background: #dbeafe; outline: none; }
+      .neft-glossary-list { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+      .neft-glossary-list li { margin-bottom: 0.35rem; }
+
+      @media (max-width: 600px) {
+        html { font-size: 17px; }
+        .neft-tip { max-width: 220px; }
+      }
+    </style>
   </head>
   <body>
     <canvas id="confetti-canvas"></canvas>
@@ -4228,6 +4336,79 @@
           }
         });
       })();
+    </script>
+  
+    <details class="neft-help-panel" id="neftHelpPanel">
+      <summary class="neft-help-summary">
+        <span aria-hidden="true">&#128218;</span> Need help? Explore these resources
+      </summary>
+      <div class="neft-help-body">
+        <p>These trusted, free websites can help you review <strong>finding mean, median, mode, range, and reading data displays</strong>.
+        They open in a new tab so you keep your work.</p>
+        <ul class="neft-help-links"><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Khan Academy: Data and statistics</a></li><li><a href="https://www.mathsisfun.com/data/mean-median-mode.html" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: Mean, Median and Mode</a></li><li><a href="https://www.mathsisfun.com/data/data-graph.php" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: Showing Data</a></li></ul>
+        
+        <p style="margin-top:1rem"><strong>Key vocabulary:</strong></p>
+        <ul class="neft-glossary-list"><li><strong>mean:</strong> The average: add all values, then divide by how many there are.</li><li><strong>median:</strong> The middle value when the numbers are put in order.</li><li><strong>mode:</strong> The value that appears most often in a data set.</li><li><strong>range:</strong> The difference between the largest and smallest values.</li><li><strong>outlier:</strong> A value much higher or lower than the rest of the data.</li><li><strong>distribution:</strong> How the data is spread out across the values.</li></ul>
+      </div>
+    </details>
+  
+    <script id="NEFT-UPGRADE-6-10-js">
+    (function () {
+      var GLOSS = {"mean": "The average: add all values, then divide by how many there are.", "median": "The middle value when the numbers are put in order.", "mode": "The value that appears most often in a data set.", "range": "The difference between the largest and smallest values.", "outlier": "A value much higher or lower than the rest of the data.", "distribution": "How the data is spread out across the values."};
+      var keys = Object.keys(GLOSS).sort(function (a, b) { return b.length - a.length; });
+      var SKIP = { SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1, OPTION:1, BUTTON:1,
+                   svg:1, SVG:1, CODE:1, A:1, SUMMARY:1, H1:1 };
+      function inSkip(node) {
+        var p = node.parentNode;
+        while (p && p.nodeType === 1) {
+          if (SKIP[p.tagName] || (p.className && String(p.className).indexOf('neft-') === 0)) return true;
+          if (p.classList && p.classList.contains('neft-term')) return true;
+          p = p.parentNode;
+        }
+        return false;
+      }
+      function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+      function wrapTerm(term) {
+        var def = GLOSS[term];
+        var re = new RegExp('\\b(' + esc(term) + ')\\b', 'i');
+        var counted = 0, MAXPER = 1;
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+        var nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(function (node) {
+          if (counted >= MAXPER) return;
+          if (!node.nodeValue || !re.test(node.nodeValue)) return;
+          if (inSkip(node)) return;
+          var m = node.nodeValue.match(re);
+          if (!m) return;
+          var idx = m.index;
+          var before = node.nodeValue.slice(0, idx);
+          var word = node.nodeValue.slice(idx, idx + m[1].length);
+          var after = node.nodeValue.slice(idx + m[1].length);
+          var span = document.createElement('span');
+          span.className = 'neft-term';
+          span.setAttribute('tabindex', '0');
+          span.setAttribute('role', 'button');
+          span.setAttribute('aria-label', word + ': ' + def);
+          span.textContent = word;
+          var tip = document.createElement('span');
+          tip.className = 'neft-tip';
+          tip.setAttribute('role', 'tooltip');
+          tip.textContent = def;
+          span.appendChild(tip);
+          var frag = document.createDocumentFragment();
+          if (before) frag.appendChild(document.createTextNode(before));
+          frag.appendChild(span);
+          if (after) frag.appendChild(document.createTextNode(after));
+          node.parentNode.replaceChild(frag, node);
+          counted++;
+        });
+      }
+      function run() { keys.forEach(wrapTerm); }
+      if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', run);
+      else run();
+    })();
     </script>
   </body>
 </html>

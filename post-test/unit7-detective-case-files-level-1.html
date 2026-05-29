@@ -1,0 +1,5070 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      Detective Case Files &mdash; Equations &amp; Inequalities | Level 1 | Neft Teacher
+    </title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ═══════════════════════════════════════════════════════
+   DETECTIVE CASE FILES — Unit 7 Post-Test Project
+   Theme: Navy / Amber / Crimson / Slate (Dark Noir)
+   ═══════════════════════════════════════════════════════ */
+      :root {
+        --det-navy: #1e293b;
+        --det-navy-dark: #0f172a;
+        --det-navy-light: #334155;
+        --det-amber: #f59e0b;
+        --det-amber-dark: #d97706;
+        --det-amber-light: #fef3c7;
+        --det-crimson: #dc2626;
+        --det-crimson-light: #fee2e2;
+        --det-slate: #475569;
+        --det-slate-light: #f1f5f9;
+        --det-bg: #0f172a;
+        --det-surface: #1e293b;
+        --det-surface-alt: #334155;
+        --det-ink: #f1f5f9;
+        --det-ink-dark: #0f172a;
+        --det-muted: #94a3b8;
+        --det-line: #334155;
+        --det-success: #16a34a;
+        --det-success-bg: rgba(22, 163, 74, 0.15);
+        --det-error: #dc2626;
+        --det-error-bg: rgba(220, 38, 38, 0.15);
+        --det-radius: 16px;
+        --det-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        --det-shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.4);
+        --det-font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --det-font-display: "Segoe UI", system-ui, sans-serif;
+        --det-gold: #d97706;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--det-font);
+        color: var(--det-ink);
+        background: var(--det-bg);
+        line-height: 1.6;
+        -webkit-text-size-adjust: 100%;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      }
+      a {
+        color: var(--det-amber);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* Print Styles */
+      @media print {
+        .no-print,
+        .progress-bar-container,
+        .hint-btn,
+        .phase-nav,
+        .fab-help,
+        #confetti-canvas {
+          display: none !important;
+        }
+        .phase-section {
+          break-inside: avoid;
+          page-break-inside: avoid;
+          border: 1px solid #ccc !important;
+          box-shadow: none !important;
+        }
+        body {
+          background: #fff;
+          color: #000;
+          font-size: 11pt;
+        }
+        .app-header {
+          background: #1e293b !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .phase-section {
+          background: #fff !important;
+          color: #000 !important;
+        }
+        .task-card {
+          background: #fff !important;
+          color: #000 !important;
+          border: 1px solid #ccc !important;
+        }
+        .form-input,
+        .form-textarea,
+        .form-select {
+          color: #000 !important;
+          background: #fff !important;
+          border: 1px solid #999 !important;
+        }
+      }
+
+      /* ── HEADER ─────────────────────────────────────── */
+      .app-header {
+        background: linear-gradient(
+          135deg,
+          var(--det-navy-dark) 0%,
+          var(--det-navy) 40%,
+          var(--det-navy-light) 100%
+        );
+        color: #fff;
+        padding: 2.5rem 1.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .app-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 20% 80%,
+            rgba(245, 158, 11, 0.2) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(220, 38, 38, 0.15) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+      .header-content {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+        padding: 0.35rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .header-title {
+        font-family: var(--det-font-display);
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 12px rgba(245, 158, 11, 0.3);
+      }
+      .header-subtitle {
+        font-size: 1.05rem;
+        opacity: 0.85;
+        max-width: 600px;
+        margin: 0 auto;
+        color: #cbd5e1;
+      }
+
+      /* Floating detective decorations */
+      .det-floats {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .det-float {
+        position: absolute;
+        font-size: 1.5rem;
+        opacity: 0.12;
+        animation: floatDet 6s ease-in-out infinite;
+      }
+      .det-float:nth-child(1) {
+        left: 5%;
+        top: 20%;
+        animation-delay: 0s;
+      }
+      .det-float:nth-child(2) {
+        left: 15%;
+        top: 60%;
+        animation-delay: 1s;
+        font-size: 2rem;
+      }
+      .det-float:nth-child(3) {
+        left: 75%;
+        top: 15%;
+        animation-delay: 2s;
+      }
+      .det-float:nth-child(4) {
+        left: 85%;
+        top: 55%;
+        animation-delay: 3s;
+        font-size: 1.8rem;
+      }
+      .det-float:nth-child(5) {
+        left: 45%;
+        top: 10%;
+        animation-delay: 4s;
+      }
+      .det-float:nth-child(6) {
+        left: 60%;
+        top: 70%;
+        animation-delay: 1.5s;
+        font-size: 2.2rem;
+      }
+
+      @keyframes floatDet {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(15deg);
+        }
+      }
+
+      /* ── PROGRESS BAR ───────────────────────────────── */
+      .progress-bar-container {
+        background: var(--det-surface);
+        border-bottom: 1px solid var(--det-line);
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+      }
+      .progress-inner {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--det-muted);
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      .progress-track {
+        height: 10px;
+        background: var(--det-navy-dark);
+        border-radius: 99px;
+        overflow: hidden;
+        position: relative;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--det-amber),
+          var(--det-crimson)
+        );
+        border-radius: 99px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+      .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+      }
+      .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .progress-step:hover {
+        transform: translateY(-2px);
+      }
+      .step-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--det-navy-dark);
+        border: 2px solid var(--det-line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--det-muted);
+        transition: all 0.3s;
+      }
+      .step-dot.active {
+        background: var(--det-amber);
+        border-color: var(--det-amber);
+        color: var(--det-navy-dark);
+      }
+      .step-dot.complete {
+        background: var(--det-success);
+        border-color: var(--det-success);
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--det-muted);
+        text-align: center;
+        max-width: 80px;
+      }
+
+      /* ── MAIN LAYOUT ────────────────────────────────── */
+      .main-container {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 4rem;
+      }
+
+      /* ── PHASE SECTIONS ─────────────────────────────── */
+      .phase-section {
+        background: var(--det-surface);
+        border: 1px solid var(--det-line);
+        border-radius: var(--det-radius);
+        box-shadow: var(--det-shadow);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out both;
+      }
+      .phase-section[hidden] {
+        display: none;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .phase-header {
+        padding: 1.75rem 2rem 1.5rem;
+        border-bottom: 1px solid var(--det-line);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .phase-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .phase-icon.amber {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--det-amber);
+      }
+      .phase-icon.crimson {
+        background: rgba(220, 38, 38, 0.15);
+        color: var(--det-crimson);
+      }
+      .phase-icon.slate {
+        background: rgba(71, 85, 105, 0.25);
+        color: var(--det-slate-light);
+      }
+      .phase-icon.green {
+        background: var(--det-success-bg);
+        color: var(--det-success);
+      }
+
+      .phase-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--det-ink);
+      }
+      .phase-desc {
+        font-size: 0.88rem;
+        color: var(--det-muted);
+        margin-top: 0.15rem;
+      }
+      .phase-body {
+        padding: 2rem;
+      }
+
+      /* ── TASK CARDS ─────────────────────────────────── */
+      .task-card {
+        background: var(--det-surface-alt);
+        border: 1px solid var(--det-line);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+      .task-card:hover {
+        box-shadow: 0 4px 16px rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+      .task-card.completed {
+        border-left: 4px solid var(--det-success);
+        background: rgba(22, 163, 74, 0.08);
+      }
+
+      .task-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--det-amber);
+        color: var(--det-navy-dark);
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+      .task-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--det-ink);
+      }
+      .task-instruction {
+        font-size: 0.92rem;
+        color: var(--det-muted);
+        margin-bottom: 1rem;
+        line-height: 1.65;
+      }
+
+      /* Scenario box */
+      .scenario-box {
+        background: linear-gradient(
+          135deg,
+          rgba(245, 158, 11, 0.1),
+          rgba(220, 38, 38, 0.08)
+        );
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+      }
+      .scenario-box h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--det-amber);
+      }
+      .scenario-box p {
+        font-size: 0.92rem;
+        color: var(--det-ink);
+        line-height: 1.65;
+      }
+
+      /* ── FORM ELEMENTS ──────────────────────────────── */
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        color: var(--det-ink);
+      }
+      .form-sublabel {
+        font-size: 0.78rem;
+        color: var(--det-muted);
+        font-weight: 400;
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 2px solid var(--det-line);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        background: var(--det-navy-dark);
+        color: var(--det-ink);
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--det-amber);
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+      }
+      .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .form-input-sm {
+        max-width: 200px;
+      }
+      .form-input-inline {
+        display: inline-block;
+        width: 120px;
+        margin: 0 0.3rem;
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      /* ── BUTTONS ────────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--det-amber);
+        color: var(--det-navy-dark);
+      }
+      .btn-primary:hover {
+        background: var(--det-amber-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--det-shadow);
+      }
+      .btn-secondary {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--det-amber);
+      }
+      .btn-secondary:hover {
+        background: rgba(245, 158, 11, 0.25);
+      }
+      .btn-crimson {
+        background: var(--det-crimson);
+        color: #fff;
+      }
+      .btn-crimson:hover {
+        background: #b91c1c;
+      }
+      .btn-success {
+        background: var(--det-success);
+        color: #fff;
+      }
+      .btn-success:hover {
+        background: #15803d;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--det-amber);
+        color: var(--det-amber);
+      }
+      .btn-outline:hover {
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.82rem;
+      }
+      .btn-lg {
+        padding: 0.85rem 2rem;
+        font-size: 1rem;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      /* ── BALANCE WRAP (Equation Visualizer) ─────────── */
+      .balance-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        margin: 1.25rem 0;
+        padding: 1.25rem;
+        background: rgba(245, 158, 11, 0.06);
+        border: 1px solid rgba(245, 158, 11, 0.15);
+        border-radius: 12px;
+      }
+      .balance-side {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--det-navy-dark);
+        border: 2px solid var(--det-amber);
+        border-radius: 10px;
+        min-width: 100px;
+        text-align: center;
+      }
+      .balance-side .balance-expr {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--det-amber);
+        font-family: "Courier New", monospace;
+      }
+      .balance-side .balance-label {
+        font-size: 0.72rem;
+        color: var(--det-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .balance-equals {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--det-amber);
+      }
+
+      /* ── NUMBER LINE ────────────────────────────────── */
+      .number-line-wrap {
+        margin: 1.25rem 0;
+        padding: 1.25rem;
+        background: rgba(245, 158, 11, 0.06);
+        border: 1px solid rgba(245, 158, 11, 0.15);
+        border-radius: 12px;
+      }
+      .number-line-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* ── HINT SYSTEM ────────────────────────────────── */
+      .hint-container {
+        margin-top: 0.75rem;
+      }
+      .hint-btn {
+        background: none;
+        border: none;
+        color: var(--det-amber);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0;
+      }
+      .hint-btn:hover {
+        text-decoration: underline;
+      }
+      .hint-content {
+        display: none;
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 3px solid var(--det-amber);
+        border-radius: 0 8px 8px 0;
+        padding: 0.75rem 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.88rem;
+        color: var(--det-ink);
+      }
+      .hint-content.visible {
+        display: block;
+        animation: fadeInUp 0.3s ease-out;
+      }
+
+      /* ── SUPPORT / CHALLENGE MODES ──────────────────── */
+      .mode-toggle-bar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        background: var(--det-surface);
+        border: 1px solid var(--det-line);
+        border-radius: 10px;
+        padding: 0.35rem;
+      }
+      .mode-btn {
+        flex: 1;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: transparent;
+        color: var(--det-muted);
+        transition: all 0.2s;
+      }
+      .mode-btn.active {
+        background: var(--det-amber);
+        color: var(--det-navy-dark);
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+      }
+
+      .support-box {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        font-size: 0.88rem;
+        display: none;
+        color: #93c5fd;
+      }
+      .support-box.visible {
+        display: block;
+      }
+      .support-box strong {
+        color: #60a5fa;
+      }
+      .challenge-box {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        font-size: 0.88rem;
+        display: none;
+        color: var(--det-amber-light);
+      }
+      .challenge-box.visible {
+        display: block;
+      }
+      .challenge-box strong {
+        color: var(--det-amber);
+      }
+
+      /* ── ACHIEVEMENT BADGES ─────────────────────────── */
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      .badge-card {
+        flex: 1;
+        min-width: 130px;
+        text-align: center;
+        padding: 1.25rem 0.75rem;
+        border-radius: 14px;
+        border: 2px solid var(--det-line);
+        background: var(--det-surface-alt);
+        transition: all 0.3s;
+      }
+      .badge-card.earned {
+        border-color: var(--det-amber);
+        background: rgba(245, 158, 11, 0.1);
+        box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15);
+      }
+      .badge-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .badge-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--det-muted);
+      }
+      .badge-card.earned .badge-label {
+        color: var(--det-amber);
+      }
+
+      /* ── PHASE NAVIGATION ───────────────────────────── */
+      .phase-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-top: 1px solid var(--det-line);
+        background: rgba(15, 23, 42, 0.5);
+      }
+
+      /* ── RUBRIC ─────────────────────────────────────── */
+      .rubric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .rubric-cell {
+        border: 2px solid var(--det-line);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: var(--det-surface-alt);
+      }
+      .rubric-cell:hover {
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+      .rubric-cell.selected {
+        border-color: var(--det-amber);
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .rubric-score {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--det-amber);
+      }
+      .rubric-desc {
+        font-size: 0.82rem;
+        color: var(--det-muted);
+        margin-top: 0.35rem;
+      }
+
+      /* ── SVG SCENES ─────────────────────────────────── */
+      .svg-scene {
+        display: flex;
+        justify-content: center;
+        margin: 1.5rem 0;
+      }
+      .svg-scene svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* ── DATA TABLE ─────────────────────────────────── */
+      .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--det-line);
+        margin: 1rem 0;
+      }
+      .data-table th {
+        background: var(--det-amber);
+        color: var(--det-navy-dark);
+        padding: 0.65rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        text-align: left;
+      }
+      .data-table td {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--det-line);
+        color: var(--det-ink);
+      }
+      .data-table tr:nth-child(even) td {
+        background: rgba(245, 158, 11, 0.03);
+      }
+      .data-table tr:hover td {
+        background: rgba(245, 158, 11, 0.08);
+      }
+
+      /* ── RESPONSIVE ─────────────────────────────────── */
+      @media (max-width: 768px) {
+        .phase-body {
+          padding: 1.25rem;
+        }
+        .phase-header {
+          padding: 1.25rem;
+        }
+        .task-card {
+          padding: 1.15rem;
+        }
+        .phase-nav {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .badge-row {
+          gap: 0.65rem;
+        }
+        .balance-wrap {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+      }
+
+      /* ── GOOGLE CLASSROOM BTN ───────────────────────── */
+      .gc-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #1a73e8;
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .gc-btn:hover {
+        background: #1557b0;
+      }
+
+      /* Student info row */
+      .student-info-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      @media (max-width: 600px) {
+        .student-info-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Score display */
+      .score-display {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(
+          135deg,
+          var(--det-navy-light),
+          var(--det-navy-dark)
+        );
+        border: 2px solid var(--det-amber);
+        color: #fff;
+        border-radius: 14px;
+        margin: 1.5rem 0;
+      }
+      .score-big {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--det-amber);
+      }
+      .score-label {
+        font-size: 1rem;
+        opacity: 0.9;
+        color: var(--det-muted);
+      }
+
+      /* Reference cards */
+      .ref-card {
+        background: var(--det-surface-alt);
+        border: 1px solid var(--det-line);
+        border-radius: 10px;
+        padding: 1rem;
+        display: flex;
+        align-items: start;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .ref-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .ref-title {
+        font-weight: 700;
+        font-size: 0.92rem;
+        margin-bottom: 0.25rem;
+        color: var(--det-ink);
+      }
+      .ref-body {
+        font-size: 0.85rem;
+        color: var(--det-muted);
+        line-height: 1.6;
+      }
+      .ref-code {
+        font-family: "Courier New", monospace;
+        background: rgba(245, 158, 11, 0.12);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        color: var(--det-amber);
+      }
+
+      /* Feedback messages */
+      .feedback {
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: var(--det-success-bg);
+        color: #4ade80;
+        border: 1px solid rgba(22, 163, 74, 0.3);
+      }
+      .feedback.incorrect {
+        display: block;
+        background: var(--det-error-bg);
+        color: #fca5a5;
+        border: 1px solid rgba(220, 38, 38, 0.3);
+      }
+
+      /* Match grid for vocab */
+      .match-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin: 1rem 0;
+      }
+      @media (max-width: 600px) {
+        .match-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Confetti canvas */
+      #confetti-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* Equation tag */
+      .eq-tag {
+        display: inline-block;
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--det-amber);
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+        font-family: "Courier New", monospace;
+        font-weight: 700;
+        font-size: 0.92rem;
+      }
+
+      /* Check answer button */
+      .check-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 1rem;
+        background: var(--det-amber);
+        color: var(--det-navy-dark);
+        border: none;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 0.5rem;
+      }
+      .check-btn:hover {
+        background: var(--det-amber-dark);
+        transform: translateY(-1px);
+      }
+
+      /* Rubric category title */
+      .rubric-category {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--det-amber);
+        margin-bottom: 0.5rem;
+        margin-top: 1.25rem;
+      }
+      .rubric-category:first-child {
+        margin-top: 0;
+      }
+
+      /* Final actions */
+      .final-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        justify-content: center;
+      }
+
+      /* ═══ ENHANCEMENT: Visual Polish ═══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes popIn {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        70% {
+          transform: scale(1.15);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes countUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes badgeBounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.12);
+        }
+      }
+      .task-card {
+        animation: cardEntrance 0.4s ease-out both;
+      }
+      .task-card:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .task-card:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .task-card:nth-child(4) {
+        animation-delay: 0.24s;
+      }
+      .btn:not(:disabled):hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+      .btn:not(:disabled):active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      /* ═══ ENHANCEMENT: XP Bar ═══ */
+      .xp-bar-wrap {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        background: rgba(15, 15, 25, 0.92);
+        backdrop-filter: blur(10px);
+        padding: 6px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-top: 2px solid rgba(245, 158, 11, 0.3);
+        font-family: inherit;
+        transition: transform 0.3s;
+      }
+      .xp-bar-wrap.hidden {
+        transform: translateY(100%);
+      }
+      .xp-level {
+        color: #f59e0b;
+        font-weight: 800;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+      .xp-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #f59e0b, #dc2626);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+      .xp-pts {
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.78rem;
+        white-space: nowrap;
+      }
+      .xp-toggle {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0 4px;
+      }
+      @media print {
+        .xp-bar-wrap {
+          display: none !important;
+        }
+      }
+
+      /* ═══ ENHANCEMENT: Validation ═══ */
+      .validation-icon {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-top: 4px;
+        animation: popIn 0.3s ease-out;
+      }
+      .validation-icon.correct {
+        color: #16a34a;
+      }
+      .validation-icon.incorrect {
+        color: #dc2626;
+      }
+      .form-input.validated-correct,
+      .form-textarea.validated-correct {
+        border-color: #16a34a !important;
+        background: rgba(22, 163, 74, 0.04) !important;
+      }
+      .form-input.validated-incorrect,
+      .form-textarea.validated-incorrect {
+        border-color: #dc2626 !important;
+        background: rgba(220, 38, 38, 0.04) !important;
+      }
+
+      /* ═══ ENHANCEMENT: Show Example ═══ */
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1.5px solid rgba(245, 158, 11, 0.3);
+        background: rgba(245, 158, 11, 0.04);
+        color: #f59e0b;
+        transition: all 0.2s;
+        margin-top: 6px;
+        font-family: inherit;
+      }
+      .example-toggle:hover {
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .example-content {
+        display: none;
+        margin-top: 8px;
+        padding: 10px 14px;
+        background: rgba(245, 158, 11, 0.05);
+        border-left: 3px solid #f59e0b;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.85rem;
+        animation: slideInLeft 0.3s ease-out;
+      }
+      .example-content.visible {
+        display: block;
+      }
+
+      /* ═══ ENHANCEMENT: Word Bank ═══ */
+      .word-bank {
+        margin: 8px 0;
+        padding: 8px 12px;
+        background: rgba(220, 38, 38, 0.04);
+        border: 1px dashed rgba(220, 38, 38, 0.25);
+        border-radius: 8px;
+        font-size: 0.82rem;
+      }
+      .word-bank-label {
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #dc2626;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        display: inline-block;
+        padding: 2px 8px;
+        margin: 2px;
+        background: rgba(220, 38, 38, 0.08);
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .word-chip:hover {
+        background: rgba(220, 38, 38, 0.18);
+        transform: scale(1.05);
+      }
+
+      /* ═══ ENHANCEMENT: Certificate ═══ */
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px 32px;
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+        animation: popIn 0.5s ease-out;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 4px solid rgba(245, 158, 11, 0.15);
+        border-radius: 20px;
+        margin: 8px;
+        pointer-events: none;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 8px;
+        animation: badgeBounce 2s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+      }
+      .cert-subtitle {
+        font-size: 0.92rem;
+        color: #6b7280;
+        margin-bottom: 16px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #f59e0b;
+        margin-bottom: 4px;
+      }
+      .cert-score {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #f59e0b;
+        margin: 8px 0;
+        animation: countUp 0.6s ease-out;
+      }
+      .cert-xp {
+        font-size: 0.88rem;
+        color: #dc2626;
+        font-weight: 600;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .cert-stat {
+        padding: 8px;
+        background: #f8fafc;
+        border-radius: 8px;
+      }
+      .cert-stat-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #f59e0b;
+      }
+      .cert-stat-lbl {
+        font-size: 0.7rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 10px;
+        background: #f59e0b;
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .cert-close:hover {
+        filter: brightness(1.1);
+      }
+      @media print {
+        .certificate-overlay {
+          display: none !important;
+        }
+      }
+    </style>
+  
+    <style id="NEFT-UPGRADE-6-10-css">
+      /* === Neft Teacher readability + help upgrade (units 6-10) === */
+      html { font-size: 18px; }
+      body { line-height: 1.65; }
+      /* Scale up text-bearing elements without touching SVG labels */
+      p, li, td, th, label, input, textarea, select, button,
+      .ref-body, .ref-title, .ref-code, .slot-time, .slot-name,
+      .budget-label, .drag-chip, figcaption, .hint, .hint-content {
+        font-size: 1rem;
+      }
+      p, li, td, th, label, .ref-body { line-height: 1.65; }
+      h1 { line-height: 1.2; }
+      h2, h3, h4 { line-height: 1.3; }
+      /* Never enlarge inside SVG (chart labels stay as authored) */
+      svg, svg * { font-size: revert; }
+
+      /* === Glossary tooltips === */
+      .neft-term {
+        border-bottom: 2px dotted currentColor;
+        cursor: help;
+        position: relative;
+        font-weight: 600;
+      }
+      .neft-term:focus { outline: 3px solid #2563eb; outline-offset: 2px; border-radius: 3px; }
+      .neft-tip {
+        position: absolute;
+        left: 0; bottom: 125%;
+        z-index: 10050;
+        width: max-content;
+        max-width: 280px;
+        background: #1e1b4b;
+        color: #fff;
+        padding: 0.6rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.15s;
+        pointer-events: none;
+      }
+      .neft-term:hover .neft-tip,
+      .neft-term:focus .neft-tip { opacity: 1; visibility: visible; }
+
+      /* === Level banner === */
+      .neft-level-banner {
+        max-width: 1000px;
+        margin: 1rem auto 0;
+        padding: 0.85rem 1.2rem;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      }
+      .neft-level-banner.lvl1 { background: #ecfdf5; color: #065f46; border: 2px solid #34d399; }
+      .neft-level-banner.lvl2 { background: #eef2ff; color: #3730a3; border: 2px solid #818cf8; }
+      .neft-level-banner .nb-icon { font-size: 1.4rem; line-height: 1; }
+
+      /* === Resource panel (Need help?) === */
+      .neft-help-panel {
+        max-width: 1000px;
+        margin: 1.5rem auto;
+        background: #fff;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      }
+      .neft-help-summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 1rem 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .neft-help-summary::-webkit-details-marker { display: none; }
+      .neft-help-summary:focus-visible { outline: 3px solid #2563eb; outline-offset: -3px; }
+      .neft-help-body { padding: 1rem 1.2rem 1.3rem; }
+      .neft-help-body p { margin: 0 0 0.6rem; }
+      .neft-help-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+      .neft-help-links a {
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.7rem 0.9rem;
+        background: #f1f5f9;
+        border-radius: 10px;
+        color: #1e3a8a;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .neft-help-links a:hover,
+      .neft-help-links a:focus-visible { background: #dbeafe; outline: none; }
+      .neft-glossary-list { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+      .neft-glossary-list li { margin-bottom: 0.35rem; }
+
+      @media (max-width: 600px) {
+        html { font-size: 17px; }
+        .neft-tip { max-width: 220px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="neft-level-banner lvl1" role="note">
+      <span class="nb-icon" aria-hidden="true">&#129504;</span>
+      <span><strong>Level 1 — Support version.</strong> This version uses simpler
+      language, smaller numbers, extra step-by-step hints, and vocabulary help with pictures.
+      Tap any <em>underlined word</em> for its meaning, and use the <strong>Show Hint</strong>
+      buttons whenever you get stuck.</span>
+    </div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ═══════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════ -->
+    <header class="app-header">
+      <div class="det-floats">
+        <span class="det-float">&#128269;</span>
+        <span class="det-float">&#128373;&#65039;</span>
+        <span class="det-float">&#128203;</span>
+        <span class="det-float">&#128294;</span>
+        <span class="det-float">&#128451;&#65039;</span>
+        <span class="det-float">&#128188;</span>
+      </div>
+      <div class="header-content">
+        <div class="header-badge">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle
+              cx="8"
+              cy="8"
+              r="7"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M5 8l2 2 4-4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Unit 7 Post-Test Project
+        </div>
+        <h1 class="header-title">Detective Case Files</h1>
+        <p class="header-subtitle">
+          Solve equations and inequalities to crack the case and bring justice
+          to the city!
+        </p>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════
+     PROGRESS BAR
+     ═══════════════════════════════════════════════ -->
+    <div class="progress-bar-container no-print">
+      <div class="progress-inner">
+        <div class="progress-label">
+          <span>Case File Progress</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step" onclick="goToPhase(1)">
+            <div class="step-dot active" id="dot1">1</div>
+            <span class="step-label">Briefing</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(2)">
+            <div class="step-dot" id="dot2">2</div>
+            <span class="step-label">Evidence Research</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(3)">
+            <div class="step-dot" id="dot3">3</div>
+            <span class="step-label">Case Planning</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(4)">
+            <div class="step-dot" id="dot4">4</div>
+            <span class="step-label">Investigation Build</span>
+          </div>
+          <div class="progress-step" onclick="goToPhase(5)">
+            <div class="step-dot" id="dot5">5</div>
+            <span class="step-label">Portfolio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════════ -->
+    <main class="main-container">
+      <!-- Mode Toggle -->
+      <div class="mode-toggle-bar no-print">
+        <button class="mode-btn" id="modeSupport" onclick="setMode('support')">
+          &#128218; Support Mode
+        </button>
+        <button
+          class="mode-btn active"
+          id="modeStandard"
+          onclick="setMode('standard')"
+        >
+          &#128269; Standard
+        </button>
+        <button
+          class="mode-btn"
+          id="modeChallenge"
+          onclick="setMode('challenge')"
+        >
+          &#127775; Challenge Mode
+        </button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 1: BRIEFING
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase1">
+        <div class="phase-header">
+          <div class="phase-icon amber">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle
+                cx="14"
+                cy="14"
+                r="10"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+              />
+              <circle cx="14" cy="14" r="4" fill="currentColor" />
+              <path
+                d="M14 2v4M14 22v4M2 14h4M22 14h4"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 1: Briefing</div>
+            <div class="phase-desc">
+              Register as a detective and review your case vocabulary.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- Detective Badge SVG Scene -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 600 260"
+              width="600"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="noirGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#1e293b" />
+                  <stop offset="100%" stop-color="#0f172a" />
+                </linearGradient>
+                <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#f59e0b" />
+                  <stop offset="100%" stop-color="#d97706" />
+                </linearGradient>
+              </defs>
+              <rect width="600" height="260" fill="url(#noirGrad)" rx="14" />
+              <!-- Scales of Justice -->
+              <line
+                x1="300"
+                y1="50"
+                x2="300"
+                y2="130"
+                stroke="#f59e0b"
+                stroke-width="3"
+              />
+              <line
+                x1="230"
+                y1="80"
+                x2="370"
+                y2="80"
+                stroke="#f59e0b"
+                stroke-width="3"
+              />
+              <polygon points="300,45 310,55 290,55" fill="#f59e0b" />
+              <!-- Left pan -->
+              <line
+                x1="230"
+                y1="80"
+                x2="210"
+                y2="130"
+                stroke="#f59e0b"
+                stroke-width="2"
+              />
+              <line
+                x1="230"
+                y1="80"
+                x2="250"
+                y2="130"
+                stroke="#f59e0b"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="230"
+                cy="135"
+                rx="25"
+                ry="8"
+                fill="none"
+                stroke="#f59e0b"
+                stroke-width="2"
+              />
+              <text
+                x="230"
+                y="128"
+                text-anchor="middle"
+                fill="#fef3c7"
+                font-size="14"
+                font-weight="700"
+              >
+                x + 28
+              </text>
+              <!-- Right pan -->
+              <line
+                x1="370"
+                y1="80"
+                x2="350"
+                y2="130"
+                stroke="#f59e0b"
+                stroke-width="2"
+              />
+              <line
+                x1="370"
+                y1="80"
+                x2="390"
+                y2="130"
+                stroke="#f59e0b"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="370"
+                cy="135"
+                rx="25"
+                ry="8"
+                fill="none"
+                stroke="#f59e0b"
+                stroke-width="2"
+              />
+              <text
+                x="370"
+                y="128"
+                text-anchor="middle"
+                fill="#fef3c7"
+                font-size="14"
+                font-weight="700"
+              >
+                75
+              </text>
+              <!-- Base -->
+              <rect
+                x="280"
+                y="130"
+                width="40"
+                height="8"
+                rx="2"
+                fill="#d97706"
+              />
+              <!-- Detective badge -->
+              <polygon
+                points="110,170 130,155 150,170 145,195 115,195"
+                fill="url(#goldGrad)"
+                stroke="#0f172a"
+                stroke-width="2"
+              />
+              <circle cx="130" cy="178" r="10" fill="#0f172a" />
+              <text
+                x="130"
+                y="183"
+                text-anchor="middle"
+                fill="#f59e0b"
+                font-size="11"
+                font-weight="900"
+              >
+                &#9733;
+              </text>
+              <!-- Magnifying glass -->
+              <circle
+                cx="470"
+                cy="170"
+                r="25"
+                fill="none"
+                stroke="#f59e0b"
+                stroke-width="3"
+              />
+              <line
+                x1="488"
+                y1="188"
+                x2="510"
+                y2="210"
+                stroke="#f59e0b"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+              <text
+                x="470"
+                y="175"
+                text-anchor="middle"
+                fill="#fef3c7"
+                font-size="12"
+                font-weight="700"
+              >
+                EQ?
+              </text>
+              <!-- Title text -->
+              <text
+                x="300"
+                y="220"
+                text-anchor="middle"
+                fill="#f59e0b"
+                font-size="20"
+                font-weight="800"
+                letter-spacing="2"
+              >
+                DETECTIVE CASE FILES
+              </text>
+              <text
+                x="300"
+                y="245"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="12"
+              >
+                Equations &amp; Inequalities Division
+              </text>
+            </svg>
+          </div>
+
+          <!-- Scenario Box -->
+          <div class="scenario-box">
+            <h3>&#128373;&#65039; Your Mission, Detective</h3>
+            <p>
+              Welcome to the Equations &amp; Inequalities Division. As a newly
+              recruited detective, you will use your math skills to solve
+              one-step equations, write and graph inequalities, and crack
+              multi-step cases. Each task is a piece of evidence that brings you
+              closer to solving the mystery. Complete all case files to earn
+              your detective badge and prove you have what it takes to bring
+              justice to the city!
+            </p>
+          </div>
+
+          <!-- ── TASK 1: Detective Registration ── -->
+          <div class="task-card" id="taskCard1">
+            <div class="task-number">1</div>
+            <div class="task-title">Task 1: Detective Registration</div>
+            <div class="task-instruction">
+              Register with the department by providing your information and
+              naming your detective agency.
+            </div>
+            <div class="student-info-row">
+              <div class="form-group">
+                <label class="form-label" for="studentName"
+                  >Detective Name</label
+                >
+                <input
+                  type="text"
+                  class="form-input"
+                  id="studentName"
+                  placeholder="Your full name"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="studentPeriod">Period</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="studentPeriod"
+                  placeholder="e.g. 3rd"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="studentDate">Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  id="studentDate"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="agencyName"
+                >Name Your Detective Agency</label
+              >
+              <span class="form-sublabel"
+                >Choose a creative name for your investigation agency.</span
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="agencyName"
+                placeholder="e.g. The Equation Eagles, Inequality Investigators"
+                oninput="autoSave()"
+              />
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> Think of a name that relates
+              to math concepts like equations, variables, or solving. For
+              example: &ldquo;The Variable Detectives&rdquo; or &ldquo;Balance
+              Squad.&rdquo;
+            </div>
+          </div>
+
+          <!-- ── TASK 2: Vocabulary Match ── -->
+          <div class="task-card" id="taskCard2">
+            <div class="task-number">2</div>
+            <div class="task-title">Task 2: Vocabulary Match</div>
+            <div class="task-instruction">
+              Every detective needs to know the language. Match each term with
+              its correct definition by entering the number (1&ndash;4) next to
+              each letter.
+            </div>
+            <div class="ref-card" style="margin-bottom: 1rem">
+              <div class="ref-icon">&#128214;</div>
+              <div>
+                <div class="ref-title">Definitions</div>
+                <div class="ref-body">
+                  <strong>(1)</strong> A letter that represents an unknown
+                  value<br />
+                  <strong>(2)</strong> A math sentence with an = sign<br />
+                  <strong>(3)</strong> A math sentence with &lt;, &gt;, &le;, or
+                  &ge;<br />
+                  <strong>(4)</strong> A value that makes a statement true
+                </div>
+              </div>
+            </div>
+            <div class="match-grid">
+              <div class="form-group">
+                <label class="form-label">(a) Equation = Definition #</label>
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_a"
+                  data-answer="2"
+                  placeholder="1, 2, 3, or 4"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">(b) Inequality = Definition #</label>
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_b"
+                  data-answer="3"
+                  placeholder="1, 2, 3, or 4"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">(c) Variable = Definition #</label>
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_c"
+                  data-answer="1"
+                  placeholder="1, 2, 3, or 4"
+                  oninput="autoSave()"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">(d) Solution = Definition #</label>
+                <input
+                  type="text"
+                  class="form-input form-input-sm"
+                  id="vocab_d"
+                  data-answer="4"
+                  placeholder="1, 2, 3, or 4"
+                  oninput="autoSave()"
+                />
+              </div>
+            </div>
+            <button class="check-btn" onclick="checkVocabMatch()">
+              &#9989; Check Matches
+            </button>
+            <div class="feedback" id="feedback2"></div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> An <em>equation</em> uses an
+              equals sign (=). An <em>inequality</em> uses symbols like &lt;,
+              &gt;, &le;, &ge;. A <em>variable</em> is a letter (like x or n). A
+              <em>solution</em> is the answer that makes the statement true.
+            </div>
+            <div class="challenge-box">
+              <strong>&#127775; Challenge:</strong> Can you write a sentence
+              using all four vocabulary words? Write it below.
+              <textarea
+                class="form-textarea"
+                id="challenge_vocab_sentence"
+                placeholder="Write a sentence using equation, inequality, variable, and solution..."
+                style="margin-top: 0.5rem"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- ── TASK 3: Case Classification ── -->
+          <div class="task-card" id="taskCard3">
+            <div class="task-number">3</div>
+            <div class="task-title">Task 3: Case Classification</div>
+            <div class="task-instruction">
+              Classify each mathematical statement as an
+              <strong>Equation (EQ)</strong> or an
+              <strong>Inequality (IN)</strong>. Type &ldquo;EQ&rdquo; or
+              &ldquo;IN&rdquo; for each.
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Case</th>
+                  <th>Statement</th>
+                  <th>Type (EQ or IN)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>(a)</strong></td>
+                  <td><span class="eq-tag">3x = 21</span></td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="classify_a"
+                      data-answer="eq"
+                      placeholder="EQ or IN"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>(b)</strong></td>
+                  <td><span class="eq-tag">n + 5 &gt; 12</span></td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="classify_b"
+                      data-answer="in"
+                      placeholder="EQ or IN"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>(c)</strong></td>
+                  <td><span class="eq-tag">y / 4 = 8</span></td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="classify_c"
+                      data-answer="eq"
+                      placeholder="EQ or IN"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>(d)</strong></td>
+                  <td>
+                    <span class="eq-tag">2m &le; 16</span>
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="classify_d"
+                      data-answer="in"
+                      placeholder="EQ or IN"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>(e)</strong></td>
+                  <td><span class="eq-tag">p &minus; 7 = 3</span></td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-input form-input-sm"
+                      id="classify_e"
+                      data-answer="eq"
+                      placeholder="EQ or IN"
+                      oninput="autoSave()"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="check-btn" onclick="checkClassify()">
+              &#9989; Check Classification
+            </button>
+            <div class="feedback" id="feedback3"></div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> Look for the symbol in the
+              middle. If it is an <strong>=</strong> sign, it is an
+              <strong>Equation (EQ)</strong>. If it is &lt;, &gt;, &le;, or
+              &ge;, it is an <strong>Inequality (IN)</strong>.
+            </div>
+            <div class="challenge-box">
+              <strong>&#127775; Challenge:</strong> Write your own equation AND
+              inequality and classify each.
+              <textarea
+                class="form-textarea"
+                id="challenge_classify"
+                placeholder="Example: 7x = 42 (EQ), 3n > 15 (IN)"
+                style="margin-top: 0.5rem"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Phase 1 Navigation -->
+          <div class="phase-nav no-print">
+            <div></div>
+            <button class="btn btn-primary" onclick="goToPhase(2)">
+              Continue to Evidence Research &#10132;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 2: EVIDENCE RESEARCH
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase2" hidden>
+        <div class="phase-header">
+          <div class="phase-icon crimson">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+              />
+              <path
+                d="M9 10h10M9 14h10M9 18h6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 2: Evidence Research</div>
+            <div class="phase-desc">
+              Solve one-step equations to uncover evidence for your cases.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <div class="scenario-box">
+            <h3>&#128269; Gathering Evidence</h3>
+            <p>
+              Each equation below represents a clue in an active investigation.
+              Solve each one-step equation to unlock the evidence. Remember:
+              what you do to one side, you must do to the other side to keep the
+              balance!
+            </p>
+          </div>
+
+          <!-- ── TASK 4: The Missing Deposit (Addition) ── -->
+          <div class="task-card" id="taskCard4">
+            <div class="task-number">4</div>
+            <div class="task-title">
+              Task 4: The Missing Deposit &mdash; Addition Equation
+            </div>
+            <div class="task-instruction">
+              A bank reported that an account had a deposit of $28 added,
+              bringing the total to $75. How much was originally in the account?
+            </div>
+            <div class="balance-wrap">
+              <div class="balance-side">
+                <span class="balance-expr">x + 28</span>
+                <span class="balance-label">Left Side</span>
+              </div>
+              <span class="balance-equals">=</span>
+              <div class="balance-side">
+                <span class="balance-expr">75</span>
+                <span class="balance-label">Right Side</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solve for x:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task4_answer"
+                data-answer="47"
+                placeholder="x = ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task4_answer', 47, 'feedback4')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback4"></div>
+            <div class="form-group">
+              <label class="form-label"
+                >Show your work:
+                <span class="form-sublabel"
+                  >Explain the steps you used to solve.</span
+                ></label
+              >
+              <textarea
+                class="form-textarea"
+                id="task4_work"
+                placeholder="Explain how you solved x + 28 = 75..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> To solve
+              <span class="ref-code">x + 28 = 75</span>, subtract 28 from both
+              sides: <span class="ref-code">x = 75 &minus; 28 = 47</span>.
+              Addition equations are solved with subtraction (inverse
+              operation).
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint4')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint4">
+                Since 28 is being added to x, use the inverse operation
+                (subtraction). Subtract 28 from both sides.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 5: The Stolen Evidence (Subtraction) ── -->
+          <div class="task-card" id="taskCard5">
+            <div class="task-number">5</div>
+            <div class="task-title">
+              Task 5: The Stolen Evidence &mdash; Subtraction Equation
+            </div>
+            <div class="task-instruction">
+              A detective had a collection of evidence items but 14 went
+              missing. After the theft, 23 items remained. How many items were
+              there originally?
+            </div>
+            <div class="balance-wrap">
+              <div class="balance-side">
+                <span class="balance-expr">n &minus; 14</span>
+                <span class="balance-label">Left Side</span>
+              </div>
+              <span class="balance-equals">=</span>
+              <div class="balance-side">
+                <span class="balance-expr">23</span>
+                <span class="balance-label">Right Side</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solve for n:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task5_answer"
+                data-answer="37"
+                placeholder="n = ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task5_answer', 37, 'feedback5')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback5"></div>
+            <div class="form-group">
+              <label class="form-label">Show your work:</label>
+              <textarea
+                class="form-textarea"
+                id="task5_work"
+                placeholder="Explain how you solved n - 14 = 23..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> To solve
+              <span class="ref-code">n &minus; 14 = 23</span>, add 14 to both
+              sides: <span class="ref-code">n = 23 + 14 = 37</span>. Subtraction
+              equations are solved with addition (inverse operation).
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint5')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint5">
+                Since 14 is being subtracted from n, use the inverse operation
+                (addition). Add 14 to both sides.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 6: The Counterfeit Ring (Multiplication) ── -->
+          <div class="task-card" id="taskCard6">
+            <div class="task-number">6</div>
+            <div class="task-title">
+              Task 6: The Counterfeit Ring &mdash; Multiplication Equation
+            </div>
+            <div class="task-instruction">
+              Investigators discovered 5 identical counterfeit money bags worth
+              a total of $145. How much was in each bag?
+            </div>
+            <div class="balance-wrap">
+              <div class="balance-side">
+                <span class="balance-expr">5m</span>
+                <span class="balance-label">Left Side</span>
+              </div>
+              <span class="balance-equals">=</span>
+              <div class="balance-side">
+                <span class="balance-expr">145</span>
+                <span class="balance-label">Right Side</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solve for m:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task6_answer"
+                data-answer="29"
+                placeholder="m = ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task6_answer', 29, 'feedback6')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback6"></div>
+            <div class="form-group">
+              <label class="form-label">Show your work:</label>
+              <textarea
+                class="form-textarea"
+                id="task6_work"
+                placeholder="Explain how you solved 5m = 145..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> To solve
+              <span class="ref-code">5m = 145</span>, divide both sides by 5:
+              <span class="ref-code">m = 145 &div; 5 = 29</span>. Multiplication
+              equations are solved with division.
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint6')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint6">
+                5m means &ldquo;5 times m.&rdquo; To undo multiplication, divide
+                both sides by 5.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 7: The Split Reward (Division) ── -->
+          <div class="task-card" id="taskCard7">
+            <div class="task-number">7</div>
+            <div class="task-title">
+              Task 7: The Split Reward &mdash; Division Equation
+            </div>
+            <div class="task-instruction">
+              A reward was split equally among 6 detectives. Each detective
+              received $48. What was the total reward?
+            </div>
+            <div class="balance-wrap">
+              <div class="balance-side">
+                <span class="balance-expr">r / 6</span>
+                <span class="balance-label">Left Side</span>
+              </div>
+              <span class="balance-equals">=</span>
+              <div class="balance-side">
+                <span class="balance-expr">48</span>
+                <span class="balance-label">Right Side</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solve for r:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task7_answer"
+                data-answer="288"
+                placeholder="r = ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task7_answer', 288, 'feedback7')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback7"></div>
+            <div class="form-group">
+              <label class="form-label">Show your work:</label>
+              <textarea
+                class="form-textarea"
+                id="task7_work"
+                placeholder="Explain how you solved r / 6 = 48..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> To solve
+              <span class="ref-code">r / 6 = 48</span>, multiply both sides by
+              6: <span class="ref-code">r = 48 &times; 6 = 288</span>. Division
+              equations are solved with multiplication.
+            </div>
+            <div class="challenge-box">
+              <strong>&#127775; Challenge:</strong> Write a real-world scenario
+              for the equation <span class="ref-code">p / 3 = 17</span>.
+              <textarea
+                class="form-textarea"
+                id="challenge_task7"
+                placeholder="Write a real-world problem that matches p / 3 = 17..."
+                style="margin-top: 0.5rem"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint7')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint7">
+                r / 6 means &ldquo;r divided by 6.&rdquo; To undo division,
+                multiply both sides by 6.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 8: The Partial Clue (Fractional) ── -->
+          <div class="task-card" id="taskCard8">
+            <div class="task-number">8</div>
+            <div class="task-title">
+              Task 8: The Partial Clue &mdash; Fractional Equation
+            </div>
+            <div class="task-instruction">
+              A coded message revealed that one-third of the stolen items equals
+              24. How many items were stolen in total?
+            </div>
+            <div class="balance-wrap">
+              <div class="balance-side">
+                <span class="balance-expr">x / 3</span>
+                <span class="balance-label">Left Side</span>
+              </div>
+              <span class="balance-equals">=</span>
+              <div class="balance-side">
+                <span class="balance-expr">24</span>
+                <span class="balance-label">Right Side</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solve for x:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task8_answer"
+                data-answer="72"
+                placeholder="x = ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task8_answer', 72, 'feedback8')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback8"></div>
+            <div class="form-group">
+              <label class="form-label">Show your work:</label>
+              <textarea
+                class="form-textarea"
+                id="task8_work"
+                placeholder="Explain how you solved x / 3 = 24..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> &ldquo;One-third of x&rdquo;
+              means <span class="ref-code">x / 3</span>. Multiply both sides by
+              3: <span class="ref-code">x = 24 &times; 3 = 72</span>.
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint8')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint8">
+                x / 3 = 24 is the same as &frac13; of x = 24. Multiply both
+                sides by 3 to find the whole amount.
+              </div>
+            </div>
+          </div>
+
+          <!-- Phase 2 Navigation -->
+          <div class="phase-nav no-print">
+            <button class="btn btn-secondary" onclick="goToPhase(1)">
+              &#10094; Back to Briefing
+            </button>
+            <button class="btn btn-primary" onclick="goToPhase(3)">
+              Continue to Case Planning &#10132;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 3: CASE PLANNING
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase3" hidden>
+        <div class="phase-header">
+          <div class="phase-icon slate">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M4 20l8-8 4 4 8-8"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+              <circle cx="4" cy="20" r="2" fill="currentColor" />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+              <circle cx="16" cy="16" r="2" fill="currentColor" />
+              <circle cx="24" cy="8" r="2" fill="currentColor" />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 3: Case Planning</div>
+            <div class="phase-desc">
+              Write, solve, and graph inequalities to plan your investigation.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <div class="scenario-box">
+            <h3>&#128200; Planning the Investigation</h3>
+            <p>
+              Inequalities help detectives set boundaries and constraints. In
+              this phase, you will write inequalities from real-world scenarios,
+              learn to graph them on number lines, and understand open vs.
+              closed circles.
+            </p>
+          </div>
+
+          <!-- Reference: Number Line for x > 5 -->
+          <div class="number-line-wrap">
+            <div style="text-align: center; margin-bottom: 0.5rem">
+              <strong style="color: var(--det-amber)"
+                >Reference: Graphing x &gt; 5 on a Number Line</strong
+              >
+            </div>
+            <svg
+              viewBox="0 0 500 60"
+              width="500"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <!-- Number line base -->
+              <line
+                x1="30"
+                y1="30"
+                x2="470"
+                y2="30"
+                stroke="#94a3b8"
+                stroke-width="2"
+              />
+              <!-- Arrow right -->
+              <polygon points="470,30 460,25 460,35" fill="#94a3b8" />
+              <!-- Tick marks 0-10 -->
+              <line
+                x1="50"
+                y1="22"
+                x2="50"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="50"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                0
+              </text>
+              <line
+                x1="92"
+                y1="22"
+                x2="92"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="92"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                1
+              </text>
+              <line
+                x1="134"
+                y1="22"
+                x2="134"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="134"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                2
+              </text>
+              <line
+                x1="176"
+                y1="22"
+                x2="176"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="176"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                3
+              </text>
+              <line
+                x1="218"
+                y1="22"
+                x2="218"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="218"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                4
+              </text>
+              <line
+                x1="260"
+                y1="22"
+                x2="260"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="260"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                5
+              </text>
+              <line
+                x1="302"
+                y1="22"
+                x2="302"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="302"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                6
+              </text>
+              <line
+                x1="344"
+                y1="22"
+                x2="344"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="344"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                7
+              </text>
+              <line
+                x1="386"
+                y1="22"
+                x2="386"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="386"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                8
+              </text>
+              <line
+                x1="428"
+                y1="22"
+                x2="428"
+                y2="38"
+                stroke="#94a3b8"
+                stroke-width="1.5"
+              />
+              <text
+                x="428"
+                y="52"
+                text-anchor="middle"
+                fill="#94a3b8"
+                font-size="11"
+              >
+                9
+              </text>
+              <!-- Open circle at 5 -->
+              <circle
+                cx="260"
+                cy="30"
+                r="6"
+                fill="#0f172a"
+                stroke="#f59e0b"
+                stroke-width="2.5"
+              />
+              <!-- Ray to the right -->
+              <line
+                x1="266"
+                y1="30"
+                x2="455"
+                y2="30"
+                stroke="#f59e0b"
+                stroke-width="3"
+              />
+              <polygon points="455,30 448,26 448,34" fill="#f59e0b" />
+              <!-- Label -->
+              <text
+                x="260"
+                y="14"
+                text-anchor="middle"
+                fill="#f59e0b"
+                font-size="11"
+                font-weight="700"
+              >
+                x &gt; 5 (open circle)
+              </text>
+            </svg>
+          </div>
+
+          <!-- ── TASK 9: Write the Inequality ── -->
+          <div class="task-card" id="taskCard9">
+            <div class="task-number">9</div>
+            <div class="task-title">
+              Task 9: Write the Inequality &mdash; Height Requirement
+            </div>
+            <div class="task-instruction">
+              To join the detective academy, a candidate must be
+              <strong>at least 54 inches</strong> tall. Write an inequality
+              using <strong>h</strong> for height.
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Write the inequality (use &gt;=, &lt;=, &gt;, or &lt;):</label
+              >
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task9_answer"
+                data-answer="h>=54"
+                placeholder="h ___ 54"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkInequality('task9_answer', 'h>=54', 'feedback9')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback9"></div>
+            <div class="form-group">
+              <label class="form-label"
+                >Explain why you chose that symbol:</label
+              >
+              <textarea
+                class="form-textarea"
+                id="task9_explain"
+                placeholder="Explain why you used >= instead of >..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> &ldquo;At least&rdquo; means
+              <strong>greater than or equal to</strong>, which uses the &ge;
+              symbol. Written as: <span class="ref-code">h &gt;= 54</span>.
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint9')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint9">
+                &ldquo;At least 54&rdquo; means 54 or more. The candidate can be
+                54 inches tall (exactly) or taller. Which symbol includes the
+                value itself?
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 10: Graph the Inequality ── -->
+          <div class="task-card" id="taskCard10">
+            <div class="task-number">10</div>
+            <div class="task-title">
+              Task 10: Graph the Inequality &mdash; Suspect Age Range
+            </div>
+            <div class="task-instruction">
+              The suspect is older than 25. This means
+              <span class="eq-tag">x &gt; 25</span>. Describe how you would
+              graph this on a number line. Is the circle open or closed? Which
+              direction does the arrow point?
+            </div>
+
+            <!-- Number line visual for x > 25 -->
+            <div class="number-line-wrap">
+              <svg
+                viewBox="0 0 500 60"
+                width="500"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="30"
+                  y1="30"
+                  x2="470"
+                  y2="30"
+                  stroke="#94a3b8"
+                  stroke-width="2"
+                />
+                <polygon points="470,30 460,25 460,35" fill="#94a3b8" />
+                <line
+                  x1="50"
+                  y1="22"
+                  x2="50"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="50"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  20
+                </text>
+                <line
+                  x1="134"
+                  y1="22"
+                  x2="134"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="134"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  22
+                </text>
+                <line
+                  x1="218"
+                  y1="22"
+                  x2="218"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="218"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  24
+                </text>
+                <line
+                  x1="260"
+                  y1="22"
+                  x2="260"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="260"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  25
+                </text>
+                <line
+                  x1="302"
+                  y1="22"
+                  x2="302"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="302"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  26
+                </text>
+                <line
+                  x1="386"
+                  y1="22"
+                  x2="386"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="386"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  28
+                </text>
+                <line
+                  x1="428"
+                  y1="22"
+                  x2="428"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="428"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  29
+                </text>
+                <!-- Open circle at 25 -->
+                <circle
+                  cx="260"
+                  cy="30"
+                  r="6"
+                  fill="#0f172a"
+                  stroke="#f59e0b"
+                  stroke-width="2.5"
+                />
+                <!-- Ray to the right -->
+                <line
+                  x1="266"
+                  y1="30"
+                  x2="455"
+                  y2="30"
+                  stroke="#f59e0b"
+                  stroke-width="3"
+                />
+                <polygon points="455,30 448,26 448,34" fill="#f59e0b" />
+                <text
+                  x="260"
+                  y="14"
+                  text-anchor="middle"
+                  fill="#f59e0b"
+                  font-size="11"
+                  font-weight="700"
+                >
+                  x &gt; 25
+                </text>
+              </svg>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Describe how to graph x &gt; 25 on a number line:
+                <span class="form-sublabel"
+                  >(minimum 20 characters)</span
+                ></label
+              >
+              <textarea
+                class="form-textarea"
+                id="task10_answer"
+                placeholder="The circle at 25 is ___ because... The arrow points ___ because..."
+                minlength="20"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong>
+              <strong>Open circle</strong> = the value is NOT included (&gt; or
+              &lt;). <strong>Closed circle</strong> = the value IS included
+              (&ge; or &le;). Since x &gt; 25 does NOT include 25 itself, we use
+              an <strong>open circle</strong>. The arrow points
+              <strong>right</strong> (toward bigger numbers).
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint10')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint10">
+                &gt; means &ldquo;greater than&rdquo; but NOT equal to. So 25
+                itself is not a solution. What kind of circle represents
+                &ldquo;not included&rdquo;?
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 11: Solve and Graph ── -->
+          <div class="task-card" id="taskCard11">
+            <div class="task-number">11</div>
+            <div class="task-title">
+              Task 11: Solve and Graph &mdash; The Budget Constraint
+            </div>
+            <div class="task-instruction">
+              The department has a $200 budget for an investigation. Equipment
+              costs $40 upfront, and each hour of surveillance costs $20. How
+              many hours of surveillance can the team afford?
+              <br /><br />
+              <span class="eq-tag">40 + 20h &le; 200</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Solve for h (maximum number of hours):</label
+              >
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task11_answer"
+                data-answer="8"
+                placeholder="h &le; ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task11_answer', 8, 'feedback11')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback11"></div>
+            <div class="form-group">
+              <label class="form-label">Show your work:</label>
+              <textarea
+                class="form-textarea"
+                id="task11_work"
+                placeholder="Step 1: Subtract 40 from both sides... Step 2: Divide both sides by 20..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong>
+              Step 1: Subtract 40 from both sides:
+              <span class="ref-code">20h &le; 160</span>. Step 2: Divide both
+              sides by 20: <span class="ref-code">h &le; 8</span>. The team can
+              afford <strong>up to 8 hours</strong> of surveillance.
+            </div>
+            <div class="challenge-box">
+              <strong>&#127775; Challenge:</strong> What if the budget was $300
+              instead? How many hours could the team afford then? Show your
+              work.
+              <textarea
+                class="form-textarea"
+                id="challenge_task11"
+                placeholder="If budget = $300, then 40 + 20h &le; 300..."
+                style="margin-top: 0.5rem"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint11')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint11">
+                This is a two-step inequality. First undo the addition (+40),
+                then undo the multiplication (&times;20). Keep the &le; sign
+                pointing the same way.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 12: Open vs. Closed Circle ── -->
+          <div class="task-card" id="taskCard12">
+            <div class="task-number">12</div>
+            <div class="task-title">Task 12: Open vs. Closed Circle</div>
+            <div class="task-instruction">
+              For each inequality, decide whether the boundary point uses an
+              <strong>open</strong> circle or a <strong>closed</strong> circle.
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Case</th>
+                  <th>Inequality</th>
+                  <th>Circle Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>(a)</strong></td>
+                  <td><span class="eq-tag">x &gt; 7</span></td>
+                  <td>
+                    <select
+                      class="form-select form-input-sm"
+                      id="circle_a"
+                      data-answer="open"
+                      onchange="autoSave()"
+                    >
+                      <option value="">Choose...</option>
+                      <option value="open">Open</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>(b)</strong></td>
+                  <td>
+                    <span class="eq-tag">y &le; 3</span>
+                  </td>
+                  <td>
+                    <select
+                      class="form-select form-input-sm"
+                      id="circle_b"
+                      data-answer="closed"
+                      onchange="autoSave()"
+                    >
+                      <option value="">Choose...</option>
+                      <option value="open">Open</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>(c)</strong></td>
+                  <td>
+                    <span class="eq-tag">n &ge; 10</span>
+                  </td>
+                  <td>
+                    <select
+                      class="form-select form-input-sm"
+                      id="circle_c"
+                      data-answer="closed"
+                      onchange="autoSave()"
+                    >
+                      <option value="">Choose...</option>
+                      <option value="open">Open</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>(d)</strong></td>
+                  <td><span class="eq-tag">p &lt; 5</span></td>
+                  <td>
+                    <select
+                      class="form-select form-input-sm"
+                      id="circle_d"
+                      data-answer="open"
+                      onchange="autoSave()"
+                    >
+                      <option value="">Choose...</option>
+                      <option value="open">Open</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="check-btn" onclick="checkCircles()">
+              &#9989; Check Answers
+            </button>
+            <div class="feedback" id="feedback12"></div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong>
+              <strong>Open circle</strong> is used for &lt; and &gt; (the value
+              is NOT part of the solution). <strong>Closed circle</strong> is
+              used for &le; and &ge; (the value IS part of the solution).
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint12')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint12">
+                Remember: if the symbol has a line underneath (&le; or &ge;), it
+                means &ldquo;or equal to,&rdquo; so the endpoint is
+                <strong>included</strong> = closed circle.
+              </div>
+            </div>
+          </div>
+
+          <!-- Phase 3 Navigation -->
+          <div class="phase-nav no-print">
+            <button class="btn btn-secondary" onclick="goToPhase(2)">
+              &#10094; Back to Evidence Research
+            </button>
+            <button class="btn btn-primary" onclick="goToPhase(4)">
+              Continue to Investigation Build &#10132;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 4: INVESTIGATION BUILD
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase4" hidden>
+        <div class="phase-header">
+          <div class="phase-icon amber">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M14 4l3 6h7l-5.5 4.5 2 7L14 17l-6.5 4.5 2-7L4 10h7z"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 4: Investigation Build</div>
+            <div class="phase-desc">
+              Apply your skills to complex, real-world detective cases.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <div class="scenario-box">
+            <h3>&#128296; Building the Case</h3>
+            <p>
+              Now it is time to apply everything you have learned. These cases
+              involve real-world scenarios that require equations and
+              inequalities to solve. Think carefully, show your work, and build
+              an airtight case!
+            </p>
+          </div>
+
+          <!-- ── TASK 13: The Jewelry Heist ── -->
+          <div class="task-card" id="taskCard13">
+            <div class="task-number">13</div>
+            <div class="task-title">Task 13: The Jewelry Heist</div>
+            <div class="task-instruction">
+              Investigators found that 4 identical jewelry cases were stolen.
+              The total value of the stolen goods is $2,340. How much is each
+              case worth?
+              <br /><br />
+              <span class="eq-tag">4c = 2340</span>
+            </div>
+            <div class="balance-wrap">
+              <div class="balance-side">
+                <span class="balance-expr">4c</span>
+                <span class="balance-label">Left Side</span>
+              </div>
+              <span class="balance-equals">=</span>
+              <div class="balance-side">
+                <span class="balance-expr">2340</span>
+                <span class="balance-label">Right Side</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solve for c:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task13_answer"
+                data-answer="585"
+                placeholder="c = ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task13_answer', 585, 'feedback13')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback13"></div>
+            <div class="form-group">
+              <label class="form-label">Show your work:</label>
+              <textarea
+                class="form-textarea"
+                id="task13_work"
+                placeholder="Explain how you solved 4c = 2340..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> To solve
+              <span class="ref-code">4c = 2340</span>, divide both sides by 4:
+              <span class="ref-code">c = 2340 &div; 4 = 585</span>. Each case is
+              worth $585.
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint13')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint13">
+                4c means 4 times c. To find one case, divide the total by 4.
+                Try: 2340 &div; 4.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 14: The Speeding Suspect ── -->
+          <div class="task-card" id="taskCard14">
+            <div class="task-number">14</div>
+            <div class="task-title">Task 14: The Speeding Suspect</div>
+            <div class="task-instruction">
+              A suspect drove 324 miles in 6 hours. What was the suspect&rsquo;s
+              average speed?
+              <br /><br />
+              <span class="eq-tag">6s = 324</span>
+              <br /><br />
+              Then: The speed limit is 60 mph. Was the suspect speeding?
+            </div>
+            <div class="balance-wrap">
+              <div class="balance-side">
+                <span class="balance-expr">6s</span>
+                <span class="balance-label">Left Side</span>
+              </div>
+              <span class="balance-equals">=</span>
+              <div class="balance-side">
+                <span class="balance-expr">324</span>
+                <span class="balance-label">Right Side</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solve for s (speed in mph):</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task14_answer"
+                data-answer="54"
+                placeholder="s = ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task14_answer', 54, 'feedback14')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback14"></div>
+            <div class="form-group">
+              <label class="form-label"
+                >Was the suspect speeding? Compare to 60 mph speed limit:</label
+              >
+              <select
+                class="form-select form-input-sm"
+                id="task14_speeding"
+                onchange="autoSave()"
+              >
+                <option value="">Choose...</option>
+                <option value="no">
+                  No &mdash; NOT speeding (below 60 mph)
+                </option>
+                <option value="yes">Yes &mdash; speeding (above 60 mph)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Show your work and explain:</label>
+              <textarea
+                class="form-textarea"
+                id="task14_work"
+                placeholder="6s = 324, so s = 324 / 6 = ... Compare to 60 mph..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> The formula is
+              <span class="ref-code">distance = speed &times; time</span>, or
+              <span class="ref-code">d = s &times; t</span>. So
+              <span class="ref-code">6s = 324</span> &rArr;
+              <span class="ref-code">s = 324 &div; 6 = 54</span> mph. Since 54
+              &lt; 60, the suspect was <strong>NOT</strong> speeding.
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint14')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint14">
+                First find the speed by dividing 324 by 6. Then compare your
+                answer to 60. Is it more or less than 60?
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 15: The Ransom Note (Two-Step) ── -->
+          <div class="task-card" id="taskCard15">
+            <div class="task-number">15</div>
+            <div class="task-title">
+              Task 15: The Ransom Note &mdash; Two-Step Equation
+            </div>
+            <div class="task-instruction">
+              A ransom note demands that half of the stolen amount plus $120
+              equals $400. What was the total stolen amount?
+              <br /><br />
+              <span class="eq-tag">x/2 + 120 = 400</span>
+            </div>
+            <div class="balance-wrap">
+              <div class="balance-side">
+                <span class="balance-expr">x/2 + 120</span>
+                <span class="balance-label">Left Side</span>
+              </div>
+              <span class="balance-equals">=</span>
+              <div class="balance-side">
+                <span class="balance-expr">400</span>
+                <span class="balance-label">Right Side</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solve for x:</label>
+              <input
+                type="text"
+                class="form-input form-input-sm"
+                id="task15_answer"
+                data-answer="560"
+                placeholder="x = ?"
+                oninput="autoSave()"
+              />
+            </div>
+            <button
+              class="check-btn"
+              onclick="checkAnswer('task15_answer', 560, 'feedback15')"
+            >
+              &#9989; Check Answer
+            </button>
+            <div class="feedback" id="feedback15"></div>
+            <div class="form-group">
+              <label class="form-label">Show your work (both steps):</label>
+              <textarea
+                class="form-textarea"
+                id="task15_work"
+                placeholder="Step 1: Subtract 120 from both sides... Step 2: Multiply both sides by 2..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> This is a
+              <strong>two-step equation</strong>. <br />Step 1: Subtract 120
+              from both sides: <span class="ref-code">x/2 = 280</span>.
+              <br />Step 2: Multiply both sides by 2:
+              <span class="ref-code">x = 560</span>.
+            </div>
+            <div class="challenge-box">
+              <strong>&#127775; Challenge:</strong> Write your own two-step
+              equation with a real-world scenario. Include the equation and the
+              solution.
+              <textarea
+                class="form-textarea"
+                id="challenge_task15"
+                placeholder="Example: A store charges $5 per item plus a $10 membership fee. I spent $35 total..."
+                style="margin-top: 0.5rem"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint15')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint15">
+                Two-step equations: undo addition/subtraction first, then undo
+                multiplication/division. Think of &ldquo;reverse PEMDAS.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TASK 16: The Witness Timeline ── -->
+          <div class="task-card" id="taskCard16">
+            <div class="task-number">16</div>
+            <div class="task-title">Task 16: The Witness Timeline</div>
+            <div class="task-instruction">
+              A witness saw the suspect at the scene for
+              <strong>more than 3 hours but no more than 7 hours</strong>. Write
+              this as a compound inequality using <strong>t</strong> for time,
+              then name three integers that satisfy it. <br /><br />
+              <span class="eq-tag">3 &lt; t &le; 7</span>
+            </div>
+
+            <!-- Number line for compound inequality -->
+            <div class="number-line-wrap">
+              <svg
+                viewBox="0 0 500 60"
+                width="500"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="30"
+                  y1="30"
+                  x2="470"
+                  y2="30"
+                  stroke="#94a3b8"
+                  stroke-width="2"
+                />
+                <polygon points="30,30 40,25 40,35" fill="#94a3b8" />
+                <polygon points="470,30 460,25 460,35" fill="#94a3b8" />
+                <!-- Ticks 0-10 -->
+                <line
+                  x1="70"
+                  y1="22"
+                  x2="70"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="70"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  0
+                </text>
+                <line
+                  x1="110"
+                  y1="22"
+                  x2="110"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="110"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  1
+                </text>
+                <line
+                  x1="150"
+                  y1="22"
+                  x2="150"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="150"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  2
+                </text>
+                <line
+                  x1="190"
+                  y1="22"
+                  x2="190"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="190"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  3
+                </text>
+                <line
+                  x1="230"
+                  y1="22"
+                  x2="230"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="230"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  4
+                </text>
+                <line
+                  x1="270"
+                  y1="22"
+                  x2="270"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="270"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  5
+                </text>
+                <line
+                  x1="310"
+                  y1="22"
+                  x2="310"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="310"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  6
+                </text>
+                <line
+                  x1="350"
+                  y1="22"
+                  x2="350"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="350"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  7
+                </text>
+                <line
+                  x1="390"
+                  y1="22"
+                  x2="390"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="390"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  8
+                </text>
+                <line
+                  x1="430"
+                  y1="22"
+                  x2="430"
+                  y2="38"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="430"
+                  y="52"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                >
+                  9
+                </text>
+                <!-- Open circle at 3 -->
+                <circle
+                  cx="190"
+                  cy="30"
+                  r="6"
+                  fill="#0f172a"
+                  stroke="#f59e0b"
+                  stroke-width="2.5"
+                />
+                <!-- Closed circle at 7 -->
+                <circle
+                  cx="350"
+                  cy="30"
+                  r="6"
+                  fill="#f59e0b"
+                  stroke="#f59e0b"
+                  stroke-width="2.5"
+                />
+                <!-- Line segment between -->
+                <line
+                  x1="196"
+                  y1="30"
+                  x2="344"
+                  y2="30"
+                  stroke="#f59e0b"
+                  stroke-width="3"
+                />
+                <!-- Labels -->
+                <text
+                  x="190"
+                  y="14"
+                  text-anchor="middle"
+                  fill="#f59e0b"
+                  font-size="10"
+                  font-weight="700"
+                >
+                  open
+                </text>
+                <text
+                  x="350"
+                  y="14"
+                  text-anchor="middle"
+                  fill="#f59e0b"
+                  font-size="10"
+                  font-weight="700"
+                >
+                  closed
+                </text>
+              </svg>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >Name three integers that satisfy 3 &lt; t &le; 7:
+                <span class="form-sublabel"
+                  >(minimum 20 characters)</span
+                ></label
+              >
+              <textarea
+                class="form-textarea"
+                id="task16_answer"
+                placeholder="Three integers that work: 4, 5, 6 because..."
+                minlength="20"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Why is 3 not included but 7 is?</label>
+              <textarea
+                class="form-textarea"
+                id="task16_explain"
+                placeholder="3 is not included because the symbol is > (strictly greater than)..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> &ldquo;More than 3&rdquo;
+              means t &gt; 3 (open circle at 3, not included). &ldquo;No more
+              than 7&rdquo; means t &le; 7 (closed circle at 7, included).
+              Together: <span class="ref-code">3 &lt; t &le; 7</span>. Valid
+              integers: 4, 5, 6, 7.
+            </div>
+            <div class="hint-container">
+              <button class="hint-btn" onclick="toggleHint('hint16')">
+                &#128161; Need a hint?
+              </button>
+              <div class="hint-content" id="hint16">
+                &ldquo;More than&rdquo; = strictly greater than (&gt;).
+                &ldquo;No more than&rdquo; = less than or equal to (&le;). Which
+                whole numbers are between 3 and 7 following these rules?
+              </div>
+            </div>
+          </div>
+
+          <!-- Phase 4 Navigation -->
+          <div class="phase-nav no-print">
+            <button class="btn btn-secondary" onclick="goToPhase(3)">
+              &#10094; Back to Case Planning
+            </button>
+            <button class="btn btn-primary" onclick="goToPhase(5)">
+              Continue to Portfolio &#10132;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════
+       PHASE 5: PORTFOLIO
+       ═══════════════════════════════════════════ -->
+      <section class="phase-section" id="phase5" hidden>
+        <div class="phase-header">
+          <div class="phase-icon green">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="20"
+                height="20"
+                rx="3"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+              />
+              <path
+                d="M9 14l3 3 7-7"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="phase-title">Phase 5: Portfolio</div>
+            <div class="phase-desc">
+              Summarize your findings, reflect, and submit your case report.
+            </div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <!-- ── TASK 17: Case Summary Report ── -->
+          <div class="task-card" id="taskCard17">
+            <div class="task-number">17</div>
+            <div class="task-title">Task 17: Case Summary Report</div>
+            <div class="task-instruction">
+              Write a summary of your detective work. Use at least
+              <strong>3 vocabulary words</strong> from the unit (equation,
+              inequality, variable, solution, inverse operation, open circle,
+              closed circle). Explain what you learned and how you solved the
+              cases.
+              <span class="form-sublabel">(minimum 20 characters)</span>
+            </div>
+            <div class="form-group">
+              <textarea
+                class="form-textarea"
+                id="task17_answer"
+                rows="6"
+                placeholder="In this project, I used equations and inequalities to solve detective cases. An equation uses an = sign and I solved it by..."
+                minlength="20"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> Try to include these terms:
+              <strong>equation</strong>, <strong>inequality</strong>,
+              <strong>variable</strong>, <strong>solution</strong>,
+              <strong>inverse operation</strong>. Example start: &ldquo;In this
+              project, I solved equations by using inverse operations to find
+              the value of the variable...&rdquo;
+            </div>
+          </div>
+
+          <!-- ── TASK 18: Create Your Own Case ── -->
+          <div class="task-card" id="taskCard18">
+            <div class="task-number">18</div>
+            <div class="task-title">Task 18: Create Your Own Case</div>
+            <div class="task-instruction">
+              Design your own detective case! Your case must include:
+              <br />&#8226; An <strong>equation</strong> that needs to be solved
+              <br />&#8226; An <strong>inequality</strong> that needs to be
+              written and graphed <br />&#8226; A description of what the
+              <strong>number line graph</strong> looks like
+              <span class="form-sublabel">(minimum 20 characters)</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your Original Case:</label>
+              <textarea
+                class="form-textarea"
+                id="task18_answer"
+                rows="8"
+                placeholder="Case Title: The Missing ____&#10;&#10;Equation: ...&#10;Solution: ...&#10;&#10;Inequality: ...&#10;Number Line: The graph shows..."
+                minlength="20"
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+            <div class="support-box">
+              <strong>&#128218; Support:</strong> Think of a real-world
+              situation (money, distance, time, age). Write the equation, solve
+              it, then create a related inequality. Describe if the number line
+              has an open or closed circle and which direction the arrow points.
+            </div>
+            <div class="challenge-box">
+              <strong>&#127775; Challenge:</strong> Include a two-step equation
+              in your case and a compound inequality (like Task 16). Show the
+              full solution for both.
+            </div>
+          </div>
+
+          <!-- ── Self-Assessment Rubric ── -->
+          <div class="task-card" id="rubricCard">
+            <div class="task-number">&#9733;</div>
+            <div class="task-title">Self-Assessment Rubric</div>
+            <div class="task-instruction">
+              Rate yourself in each category. Click a score for each row.
+            </div>
+
+            <!-- Category 1: Solving One-Step Equations -->
+            <div class="rubric-category">1. Solving One-Step Equations</div>
+            <div class="rubric-grid">
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('equations', 1, this)"
+              >
+                <div class="rubric-score">1</div>
+                <div class="rubric-desc">
+                  I need a lot of help solving one-step equations.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('equations', 2, this)"
+              >
+                <div class="rubric-score">2</div>
+                <div class="rubric-desc">
+                  I can solve some one-step equations with support.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('equations', 3, this)"
+              >
+                <div class="rubric-score">3</div>
+                <div class="rubric-desc">
+                  I can solve one-step equations independently.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('equations', 4, this)"
+              >
+                <div class="rubric-score">4</div>
+                <div class="rubric-desc">
+                  I can solve equations and explain my reasoning clearly.
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 2: Writing & Graphing Inequalities -->
+            <div class="rubric-category">
+              2. Writing &amp; Graphing Inequalities
+            </div>
+            <div class="rubric-grid">
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('inequalities', 1, this)"
+              >
+                <div class="rubric-score">1</div>
+                <div class="rubric-desc">
+                  I need help writing and graphing inequalities.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('inequalities', 2, this)"
+              >
+                <div class="rubric-score">2</div>
+                <div class="rubric-desc">
+                  I can write or graph inequalities with support.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('inequalities', 3, this)"
+              >
+                <div class="rubric-score">3</div>
+                <div class="rubric-desc">
+                  I can write and graph inequalities on my own.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('inequalities', 4, this)"
+              >
+                <div class="rubric-score">4</div>
+                <div class="rubric-desc">
+                  I can write, graph, and explain inequalities with confidence.
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 3: Real-World Application -->
+            <div class="rubric-category">3. Real-World Application</div>
+            <div class="rubric-grid">
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('application', 1, this)"
+              >
+                <div class="rubric-score">1</div>
+                <div class="rubric-desc">
+                  I struggle to connect math to real-world problems.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('application', 2, this)"
+              >
+                <div class="rubric-score">2</div>
+                <div class="rubric-desc">
+                  I can sometimes see math in real situations.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('application', 3, this)"
+              >
+                <div class="rubric-score">3</div>
+                <div class="rubric-desc">
+                  I can apply equations and inequalities to real-world cases.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('application', 4, this)"
+              >
+                <div class="rubric-score">4</div>
+                <div class="rubric-desc">
+                  I can create my own real-world problems and solve them.
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 4: Mathematical Communication -->
+            <div class="rubric-category">4. Mathematical Communication</div>
+            <div class="rubric-grid">
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('communication', 1, this)"
+              >
+                <div class="rubric-score">1</div>
+                <div class="rubric-desc">
+                  I have trouble explaining my math thinking.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('communication', 2, this)"
+              >
+                <div class="rubric-score">2</div>
+                <div class="rubric-desc">I can partially explain my steps.</div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('communication', 3, this)"
+              >
+                <div class="rubric-score">3</div>
+                <div class="rubric-desc">
+                  I clearly show my work and explain my steps.
+                </div>
+              </div>
+              <div
+                class="rubric-cell"
+                onclick="selectRubric('communication', 4, this)"
+              >
+                <div class="rubric-score">4</div>
+                <div class="rubric-desc">
+                  I communicate with math vocabulary and clear reasoning.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Reflection Journal ── -->
+          <div class="task-card" id="reflectionCard">
+            <div class="task-number">&#128221;</div>
+            <div class="task-title">Reflection Journal</div>
+            <div class="task-instruction">
+              Answer each reflection question thoughtfully.
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >1. What was the most challenging part of this project and how
+                did you overcome it?</label
+              >
+              <textarea
+                class="form-textarea"
+                id="reflect1"
+                placeholder="The hardest part was..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >2. Give a real-world example of equations or inequalities that
+                is NOT from this project.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="reflect2"
+                placeholder="In real life, you might use an equation when..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >3. Explain the difference between an equation and an
+                inequality. Give an example of each.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="reflect3"
+                placeholder="An equation is... An inequality is... For example..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"
+                >4. If you could add one more case to your detective files, what
+                would it be?</label
+              >
+              <textarea
+                class="form-textarea"
+                id="reflect4"
+                placeholder="I would add a case about..."
+                oninput="autoSave()"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- ── Score Display ── -->
+          <div class="score-display" id="scoreArea">
+            <div class="score-label">Your Detective Score</div>
+            <div class="score-big" id="scoreValue">0</div>
+            <div class="score-label">out of 100</div>
+          </div>
+
+          <!-- ── Badges ── -->
+          <div class="badge-row">
+            <div class="badge-card" id="badge1">
+              <div class="badge-icon">&#9878;&#65039;</div>
+              <div class="badge-label">Equation Solver</div>
+            </div>
+            <div class="badge-card" id="badge2">
+              <div class="badge-icon">&#128200;</div>
+              <div class="badge-label">Inequality Expert</div>
+            </div>
+            <div class="badge-card" id="badge3">
+              <div class="badge-icon">&#128207;</div>
+              <div class="badge-label">Number Line Pro</div>
+            </div>
+            <div class="badge-card" id="badge4">
+              <div class="badge-icon">&#128214;</div>
+              <div class="badge-label">Vocab Master</div>
+            </div>
+            <div class="badge-card" id="badge5">
+              <div class="badge-icon">&#128221;</div>
+              <div class="badge-label">Case Writer</div>
+            </div>
+          </div>
+
+          <!-- ── Final Actions ── -->
+          <div class="final-actions no-print">
+            <button class="btn btn-primary btn-lg" onclick="calculateScore()">
+              &#128202; Calculate Score
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="printProject()">
+              &#128424; Print
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="downloadProject()">
+              &#128190; Download
+            </button>
+            <button class="gc-btn" onclick="submitToClassroom()">
+              <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
+                <path
+                  d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4z"
+                  fill="#fff"
+                />
+                <path
+                  d="M34 24c0-5.52-4.48-10-10-10S14 18.48 14 24s4.48 10 10 10 10-4.48 10-10z"
+                  fill="#1a73e8"
+                />
+              </svg>
+              Google Classroom
+            </button>
+          </div>
+
+          <!-- Phase 5 Navigation -->
+          <div class="phase-nav no-print">
+            <button class="btn btn-secondary" onclick="goToPhase(4)">
+              &#10094; Back to Investigation Build
+            </button>
+            <div></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════ -->
+    <script>
+      (function () {
+        "use strict";
+
+        var STORAGE_KEY = "neft_unit7_detective_v2";
+        var currentPhase = 1;
+        var currentMode = "standard";
+        var rubricScores = {};
+
+        /* ── Phase Navigation ─────────────────────────── */
+        window.goToPhase = function (n) {
+          document.querySelectorAll(".phase-section").forEach(function (s) {
+            s.hidden = true;
+          });
+          var target = document.getElementById("phase" + n);
+          if (target) {
+            target.hidden = false;
+            target.style.animation = "none";
+            target.offsetHeight;
+            target.style.animation = "fadeInUp .5s ease-out both";
+            currentPhase = n;
+            updateProgress();
+            window.scrollTo({
+              top: target.offsetTop - 80,
+              behavior: "smooth",
+            });
+            autoSave();
+          }
+        };
+
+        /* ── Progress Bar ─────────────────────────────── */
+        function updateProgress() {
+          var pct = Math.round(((currentPhase - 1) / 4) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("progressPct").textContent = pct + "%";
+          for (var i = 1; i <= 5; i++) {
+            var dot = document.getElementById("dot" + i);
+            dot.classList.remove("active", "complete");
+            if (i < currentPhase) dot.classList.add("complete");
+            else if (i === currentPhase) dot.classList.add("active");
+          }
+        }
+
+        /* ── Mode Toggle ──────────────────────────────── */
+        window.setMode = function (mode) {
+          currentMode = mode;
+          document.querySelectorAll(".mode-btn").forEach(function (b) {
+            b.classList.remove("active");
+          });
+          document
+            .getElementById(
+              "mode" + mode.charAt(0).toUpperCase() + mode.slice(1),
+            )
+            .classList.add("active");
+          document.querySelectorAll(".support-box").forEach(function (el) {
+            el.classList.toggle("visible", mode === "support");
+          });
+          document.querySelectorAll(".challenge-box").forEach(function (el) {
+            el.classList.toggle("visible", mode === "challenge");
+          });
+          autoSave();
+        };
+
+        /* ── Hint Toggle ──────────────────────────────── */
+        window.toggleHint = function (id) {
+          document.getElementById(id).classList.toggle("visible");
+        };
+
+        /* ── Answer Checking: Numeric ─────────────────── */
+        window.checkAnswer = function (inputId, expected, feedbackId) {
+          var el = document.getElementById(inputId);
+          var fb = document.getElementById(feedbackId);
+          var val = parseFloat(el.value);
+          if (isNaN(val)) {
+            fb.className = "feedback incorrect";
+            fb.textContent = "Please enter a number.";
+            return;
+          }
+          if (Math.abs(val - expected) < 0.01) {
+            fb.className = "feedback correct";
+            fb.textContent = "✅ Correct! The answer is " + expected + ".";
+            el.closest(".task-card").classList.add("completed");
+          } else {
+            fb.className = "feedback incorrect";
+            fb.textContent = "❌ Not quite. Check your work and try again.";
+          }
+          autoSave();
+        };
+
+        /* ── Answer Checking: Inequality ──────────────── */
+        window.checkInequality = function (inputId, expected, feedbackId) {
+          var el = document.getElementById(inputId);
+          var fb = document.getElementById(feedbackId);
+          var val = el.value.replace(/\s/g, "").toLowerCase();
+          var exp = expected.replace(/\s/g, "").toLowerCase();
+          if (val === exp) {
+            fb.className = "feedback correct";
+            fb.textContent = "✅ Correct! The inequality is " + expected + ".";
+            el.closest(".task-card").classList.add("completed");
+          } else {
+            fb.className = "feedback incorrect";
+            fb.textContent =
+              "❌ Not quite. Remember: 'at least' means ≥. Try again.";
+          }
+          autoSave();
+        };
+
+        /* ── Vocab Match Check ────────────────────────── */
+        window.checkVocabMatch = function () {
+          var correct = 0;
+          var total = 4;
+          var answers = {
+            vocab_a: "2",
+            vocab_b: "3",
+            vocab_c: "1",
+            vocab_d: "4",
+          };
+          for (var key in answers) {
+            var el = document.getElementById(key);
+            if (el.value.trim() === answers[key]) {
+              correct++;
+            }
+          }
+          var fb = document.getElementById("feedback2");
+          if (correct === total) {
+            fb.className = "feedback correct";
+            fb.textContent =
+              "✅ All correct! Great vocabulary knowledge, Detective!";
+            document.getElementById("taskCard2").classList.add("completed");
+          } else {
+            fb.className = "feedback incorrect";
+            fb.textContent =
+              "❌ " +
+              correct +
+              " out of " +
+              total +
+              " correct. Review the definitions and try again.";
+          }
+          autoSave();
+        };
+
+        /* ── Classification Check ─────────────────────── */
+        window.checkClassify = function () {
+          var correct = 0;
+          var total = 5;
+          var answers = {
+            classify_a: "eq",
+            classify_b: "in",
+            classify_c: "eq",
+            classify_d: "in",
+            classify_e: "eq",
+          };
+          for (var key in answers) {
+            var el = document.getElementById(key);
+            if (el.value.trim().toLowerCase() === answers[key]) {
+              correct++;
+            }
+          }
+          var fb = document.getElementById("feedback3");
+          if (correct === total) {
+            fb.className = "feedback correct";
+            fb.textContent =
+              "✅ All correct! You classified every case accurately!";
+            document.getElementById("taskCard3").classList.add("completed");
+          } else {
+            fb.className = "feedback incorrect";
+            fb.textContent =
+              "❌ " +
+              correct +
+              " out of " +
+              total +
+              " correct. Look for the = sign (EQ) or <, >, ≤, ≥ (IN).";
+          }
+          autoSave();
+        };
+
+        /* ── Circle Check ─────────────────────────────── */
+        window.checkCircles = function () {
+          var correct = 0;
+          var total = 4;
+          var answers = {
+            circle_a: "open",
+            circle_b: "closed",
+            circle_c: "closed",
+            circle_d: "open",
+          };
+          for (var key in answers) {
+            var el = document.getElementById(key);
+            if (el.value === answers[key]) {
+              correct++;
+            }
+          }
+          var fb = document.getElementById("feedback12");
+          if (correct === total) {
+            fb.className = "feedback correct";
+            fb.textContent =
+              "✅ All correct! You understand open and closed circles!";
+            document.getElementById("taskCard12").classList.add("completed");
+          } else {
+            fb.className = "feedback incorrect";
+            fb.textContent =
+              "❌ " +
+              correct +
+              " out of " +
+              total +
+              " correct. Remember: ≤ and ≥ use closed circles.";
+          }
+          autoSave();
+        };
+
+        /* ── Rubric Selection ─────────────────────────── */
+        window.selectRubric = function (key, score, el) {
+          rubricScores[key] = score;
+          el.parentElement
+            .querySelectorAll(".rubric-cell")
+            .forEach(function (c) {
+              c.classList.remove("selected");
+            });
+          el.classList.add("selected");
+          autoSave();
+        };
+
+        /* ── Calculate Score ──────────────────────────── */
+        window.calculateScore = function () {
+          var fields = document.querySelectorAll(
+            'input[type="text"], input[type="date"], textarea, select',
+          );
+          var filled = 0;
+          fields.forEach(function (f) {
+            if (f.value && f.value.trim()) filled++;
+          });
+          var score = Math.round((filled / fields.length) * 80);
+
+          var rubricTotal = 0;
+          var rubricKeys = Object.keys(rubricScores);
+          for (var i = 0; i < rubricKeys.length; i++) {
+            rubricTotal += rubricScores[rubricKeys[i]];
+          }
+          score += Math.round((rubricTotal / 16) * 20);
+          score = Math.min(score, 100);
+
+          document.getElementById("scoreValue").textContent = score;
+
+          if (score >= 20)
+            document.getElementById("badge1").classList.add("earned");
+          if (score >= 40)
+            document.getElementById("badge2").classList.add("earned");
+          if (score >= 60)
+            document.getElementById("badge3").classList.add("earned");
+          if (score >= 80)
+            document.getElementById("badge4").classList.add("earned");
+          if (score >= 95)
+            document.getElementById("badge5").classList.add("earned");
+
+          if (score >= 70) launchConfetti();
+          autoSave();
+        };
+
+        /* ── Print ────────────────────────────────────── */
+        window.printProject = function () {
+          window.print();
+        };
+
+        /* ── Download ─────────────────────────────────── */
+        window.downloadProject = function () {
+          var name = document.getElementById("studentName").value || "Student";
+          var agency = document.getElementById("agencyName").value || "Agency";
+          var text =
+            "DETECTIVE CASE FILES - PROJECT SUMMARY\n" +
+            "======================================\n\n";
+          text +=
+            "Detective: " +
+            name +
+            "\nAgency: " +
+            agency +
+            "\nPeriod: " +
+            (document.getElementById("studentPeriod").value || "N/A") +
+            "\nDate: " +
+            (document.getElementById("studentDate").value || "N/A") +
+            "\n\n";
+          text +=
+            "Score: " +
+            (document.getElementById("scoreValue").textContent ||
+              "Not calculated") +
+            "/100\n\n";
+
+          document.querySelectorAll(".task-card").forEach(function (card) {
+            var title = card.querySelector(".task-title");
+            if (title) text += "\n--- " + title.textContent + " ---\n";
+            card
+              .querySelectorAll("input, textarea, select")
+              .forEach(function (f) {
+                if (f.value && f.value.trim()) {
+                  var label = "";
+                  var prev = f.previousElementSibling;
+                  if (prev) label = prev.textContent;
+                  if (!label) label = f.placeholder || "";
+                  text += label.substring(0, 60) + ": " + f.value + "\n";
+                }
+              });
+          });
+
+          text += "\n\n--- REFLECTIONS ---\n";
+          for (var r = 1; r <= 4; r++) {
+            var ref = document.getElementById("reflect" + r);
+            if (ref && ref.value) {
+              text += "Reflection " + r + ": " + ref.value + "\n";
+            }
+          }
+
+          var blob = new Blob([text], { type: "text/plain" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download =
+            "Detective_Case_Files_" + name.replace(/\s+/g, "_") + ".txt";
+          a.click();
+        };
+
+        /* ── Google Classroom ─────────────────────────── */
+        window.submitToClassroom = function () {
+          window.open(
+            "https://classroom.google.com/share?url=" +
+              encodeURIComponent(window.location.href),
+            "_blank",
+          );
+        };
+
+        /* ── Confetti ─────────────────────────────────── */
+        function launchConfetti() {
+          var canvas = document.getElementById("confetti-canvas");
+          var ctx = canvas.getContext("2d");
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          var pieces = [];
+          var colors = [
+            "#f59e0b",
+            "#dc2626",
+            "#1e293b",
+            "#fef3c7",
+            "#16a34a",
+            "#475569",
+          ];
+          for (var i = 0; i < 120; i++) {
+            pieces.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * -canvas.height,
+              w: Math.random() * 10 + 5,
+              h: Math.random() * 6 + 3,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              vy: Math.random() * 3 + 2,
+              vx: Math.random() * 2 - 1,
+              rot: Math.random() * 360,
+              vr: Math.random() * 6 - 3,
+            });
+          }
+          var frame = 0;
+          function animate() {
+            if (frame++ > 200) {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              return;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pieces.forEach(function (p) {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.rot += p.vr;
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate((p.rot * Math.PI) / 180);
+              ctx.fillStyle = p.color;
+              ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              ctx.restore();
+            });
+            requestAnimationFrame(animate);
+          }
+          animate();
+        }
+
+        /* ── Auto-Save ────────────────────────────────── */
+        window.autoSave = function () {
+          var data = {
+            phase: currentPhase,
+            mode: currentMode,
+            rubric: rubricScores,
+            fields: {},
+          };
+          document
+            .querySelectorAll("input, textarea, select")
+            .forEach(function (el) {
+              if (el.id) data.fields[el.id] = el.value;
+            });
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          } catch (e) {}
+        };
+
+        /* ── Load Save ────────────────────────────────── */
+        function loadSave() {
+          try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            var data = JSON.parse(raw);
+            if (data.fields) {
+              var keys = Object.keys(data.fields);
+              for (var i = 0; i < keys.length; i++) {
+                var el = document.getElementById(keys[i]);
+                if (el) el.value = data.fields[keys[i]];
+              }
+            }
+            if (data.mode) setMode(data.mode);
+            if (data.rubric) {
+              rubricScores = data.rubric;
+              var rkeys = Object.keys(rubricScores);
+              for (var j = 0; j < rkeys.length; j++) {
+                var score = rubricScores[rkeys[j]];
+                var cells = document.querySelectorAll(".rubric-cell");
+                cells.forEach(function (cell) {
+                  var onclick = cell.getAttribute("onclick");
+                  if (
+                    onclick &&
+                    onclick.indexOf("'" + rkeys[j] + "'") !== -1 &&
+                    onclick.indexOf(", " + score + ",") !== -1
+                  ) {
+                    cell.classList.add("selected");
+                  }
+                });
+              }
+            }
+            if (data.phase) goToPhase(data.phase);
+          } catch (e) {}
+        }
+
+        /* ── Initialize ───────────────────────────────── */
+        loadSave();
+        updateProgress();
+        if (!document.getElementById("studentDate").value) {
+          document.getElementById("studentDate").value = new Date()
+            .toISOString()
+            .split("T")[0];
+        }
+
+        /* ═══════════════════════════════════════════════════
+           ENHANCEMENT MODULE — XP, Sound, Validation, Help
+           ═══════════════════════════════════════════════════ */
+
+        var _xp = parseInt(localStorage.getItem("neft_xp_u7_det") || "0");
+        var _xpPerLevel = 100;
+        var _xpBarCreated = false;
+
+        function _createXPBar() {
+          if (_xpBarCreated) return;
+          _xpBarCreated = true;
+          var bar = document.createElement("div");
+          bar.className = "xp-bar-wrap";
+          bar.innerHTML =
+            '<button class="xp-toggle" onclick="this.parentElement.classList.toggle(\'hidden\')" title="Toggle XP bar">&#9660;</button><span class="xp-level" id="xpLevelDisp">LVL 1</span><div class="xp-track"><div class="xp-fill" id="xpFill"></div></div><span class="xp-pts" id="xpPtsDisp">0 XP</span>';
+          document.body.appendChild(bar);
+          _updateXPDisplay();
+        }
+
+        function _addXP(pts, reason) {
+          _xp += pts;
+          try {
+            localStorage.setItem("neft_xp_u7_det", String(_xp));
+          } catch (e) {}
+          _updateXPDisplay();
+          _playSound("xp");
+          var toast = document.createElement("div");
+          toast.style.cssText =
+            "position:fixed;top:20px;right:20px;z-index:10001;padding:10px 18px;border-radius:10px;background:#f59e0b;color:#0f172a;font-weight:700;font-size:0.88rem;animation:popIn 0.3s ease-out;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2)";
+          toast.textContent = "+" + pts + " XP — " + (reason || "Nice work!");
+          document.body.appendChild(toast);
+          setTimeout(function () {
+            toast.style.opacity = "0";
+            toast.style.transition = "opacity 0.4s";
+          }, 1800);
+          setTimeout(function () {
+            toast.remove();
+          }, 2400);
+        }
+
+        function _updateXPDisplay() {
+          var lvl = document.getElementById("xpLevelDisp");
+          var fill = document.getElementById("xpFill");
+          var pts = document.getElementById("xpPtsDisp");
+          if (!lvl) return;
+          var level = Math.floor(_xp / _xpPerLevel) + 1;
+          var pctInLevel = ((_xp % _xpPerLevel) / _xpPerLevel) * 100;
+          lvl.textContent = "LVL " + level;
+          fill.style.width = pctInLevel + "%";
+          pts.textContent = _xp + " XP";
+        }
+
+        var _audioCtx = null;
+        function _getAudio() {
+          if (!_audioCtx) {
+            try {
+              _audioCtx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+          }
+          return _audioCtx;
+        }
+
+        function _playSound(type) {
+          var ctx = _getAudio();
+          if (!ctx) return;
+          try {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            gain.gain.value = 0.08;
+            if (type === "correct") {
+              osc.frequency.value = 523.25;
+              osc.type = "sine";
+              gain.gain.setValueAtTime(0.08, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.3,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.3);
+              var osc2 = ctx.createOscillator();
+              var g2 = ctx.createGain();
+              osc2.connect(g2);
+              g2.connect(ctx.destination);
+              osc2.frequency.value = 659.25;
+              osc2.type = "sine";
+              g2.gain.setValueAtTime(0.08, ctx.currentTime + 0.12);
+              g2.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.45,
+              );
+              osc2.start(ctx.currentTime + 0.12);
+              osc2.stop(ctx.currentTime + 0.45);
+            } else if (type === "incorrect") {
+              osc.frequency.value = 200;
+              osc.type = "sawtooth";
+              gain.gain.setValueAtTime(0.05, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.25,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.25);
+            } else if (type === "xp") {
+              osc.frequency.value = 880;
+              osc.type = "sine";
+              gain.gain.setValueAtTime(0.04, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.15,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.15);
+            } else if (type === "complete") {
+              [523.25, 659.25, 783.99, 1046.5].forEach(function (freq, i) {
+                var o = ctx.createOscillator();
+                var g = ctx.createGain();
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.frequency.value = freq;
+                o.type = "sine";
+                g.gain.setValueAtTime(0.06, ctx.currentTime + i * 0.15);
+                g.gain.exponentialRampToValueAtTime(
+                  0.001,
+                  ctx.currentTime + i * 0.15 + 0.4,
+                );
+                o.start(ctx.currentTime + i * 0.15);
+                o.stop(ctx.currentTime + i * 0.15 + 0.4);
+              });
+            } else if (type === "phase") {
+              osc.frequency.value = 440;
+              osc.type = "triangle";
+              gain.gain.setValueAtTime(0.06, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + 0.2,
+              );
+              osc.start(ctx.currentTime);
+              osc.stop(ctx.currentTime + 0.2);
+            }
+          } catch (e) {}
+        }
+
+        function _showCertificate(name, score, xpTotal) {
+          var existing = document.getElementById("certOverlay");
+          if (existing) existing.remove();
+          var overlay = document.createElement("div");
+          overlay.id = "certOverlay";
+          overlay.className = "certificate-overlay visible";
+          var level = Math.floor(xpTotal / _xpPerLevel) + 1;
+          var badge =
+            score >= 90
+              ? "\u{1F3C6}"
+              : score >= 70
+                ? "⭐"
+                : score >= 50
+                  ? "\u{1F4AA}"
+                  : "\u{1F331}";
+          var rank =
+            score >= 90
+              ? "Outstanding"
+              : score >= 70
+                ? "Excellent"
+                : score >= 50
+                  ? "Good Work"
+                  : "Keep Growing";
+          overlay.innerHTML =
+            '<div class="certificate-card"><div class="cert-badge">' +
+            badge +
+            '</div><div class="cert-title">Certificate of Completion</div><div class="cert-subtitle">Detective Case Files</div><div class="cert-name">' +
+            (name || "Student") +
+            '</div><div class="cert-score">' +
+            score +
+            '/100</div><div class="cert-xp">&#128373; ' +
+            rank +
+            " — Level " +
+            level +
+            " (" +
+            xpTotal +
+            ' XP)</div><div class="cert-stats"><div class="cert-stat"><div class="cert-stat-val">' +
+            level +
+            '</div><div class="cert-stat-lbl">Level</div></div><div class="cert-stat"><div class="cert-stat-val">' +
+            xpTotal +
+            '</div><div class="cert-stat-lbl">Total XP</div></div><div class="cert-stat"><div class="cert-stat-val">' +
+            score +
+            '%</div><div class="cert-stat-lbl">Score</div></div></div><button class="cert-close" onclick="document.getElementById(\'certOverlay\').classList.remove(\'visible\')">Close</button></div>';
+          document.body.appendChild(overlay);
+          _playSound("complete");
+        }
+
+        // Enhanced goToPhase
+        var _phasesVisited = {};
+        var _origGTP = window.goToPhase;
+        window.goToPhase = function (n) {
+          _origGTP(n);
+          if (!_phasesVisited[n] && n > 1) {
+            _phasesVisited[n] = true;
+            _addXP(15, "Phase " + n + " started!");
+          }
+          _playSound("phase");
+        };
+
+        // Enhanced calculateScore
+        var _origCS = window.calculateScore;
+        window.calculateScore = function () {
+          _origCS();
+          var scoreEl = document.getElementById("scoreValue");
+          var score = parseInt(scoreEl ? scoreEl.textContent : "0") || 0;
+          var name =
+            (document.getElementById("studentName") || {}).value || "Student";
+          _addXP(
+            score >= 90 ? 50 : score >= 70 ? 30 : score >= 50 ? 20 : 10,
+            "Project completed!",
+          );
+          setTimeout(function () {
+            _showCertificate(name, score, _xp);
+          }, 800);
+        };
+
+        // Enhanced checkAnswer with sound
+        var _origCheckAnswer = window.checkAnswer;
+        window.checkAnswer = function (inputId, expected, feedbackId) {
+          _origCheckAnswer(inputId, expected, feedbackId);
+          var el = document.getElementById(inputId);
+          var val = parseFloat(el.value);
+          if (!isNaN(val) && Math.abs(val - expected) < 0.01) {
+            _playSound("correct");
+            _addXP(10, "Correct answer!");
+          } else if (!isNaN(val)) {
+            _playSound("incorrect");
+          }
+        };
+
+        // Auto-XP for field completion
+        var _xpFieldsAwarded = {};
+        document.addEventListener("input", function (e) {
+          var el = e.target;
+          if (el.matches && el.matches('input[type="text"], textarea')) {
+            clearTimeout(window._fieldXPTimer);
+            window._fieldXPTimer = setTimeout(function () {
+              if (!el.id || _xpFieldsAwarded[el.id]) return;
+              if (el.value && el.value.trim().length >= 3) {
+                _xpFieldsAwarded[el.id] = true;
+                _addXP(2, "Answer entered");
+              }
+            }, 1500);
+          }
+        });
+
+        _createXPBar();
+      })();
+    </script>
+  
+    <details class="neft-help-panel" id="neftHelpPanel">
+      <summary class="neft-help-summary">
+        <span aria-hidden="true">&#128218;</span> Need help? Explore these resources
+      </summary>
+      <div class="neft-help-body">
+        <p>These trusted, free websites can help you review <strong>writing and solving one-step equations and inequalities</strong>.
+        They open in a new tab so you keep your work.</p>
+        <ul class="neft-help-links"><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Khan Academy: One-step equations</a></li><li><a href="https://www.mathsisfun.com/algebra/equations-solving.html" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: Solving Equations</a></li><li><a href="https://www.mathsisfun.com/algebra/inequality.html" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">&#128279;</span> Math is Fun: Inequalities</a></li></ul>
+        
+        <p style="margin-top:1rem"><strong>Key vocabulary:</strong></p>
+        <ul class="neft-glossary-list"><li><strong>equation:</strong> A math sentence that says two things are equal, using an equals sign.</li><li><strong>inequality:</strong> A math sentence that compares using <, >, ≤, or ≥.</li><li><strong>solution:</strong> The value of the variable that makes an equation true.</li><li><strong>variable:</strong> A letter that stands for a number we do not know yet.</li><li><strong>inverse operation:</strong> The opposite operation used to undo another (e.g. subtract undoes add).</li><li><strong>isolate:</strong> To get the variable alone on one side of the equation.</li></ul>
+      </div>
+    </details>
+  
+    <script id="NEFT-UPGRADE-6-10-js">
+    (function () {
+      var GLOSS = {"equation": "A math sentence that says two things are equal, using an equals sign.", "inequality": "A math sentence that compares using <, >, \u2264, or \u2265.", "solution": "The value of the variable that makes an equation true.", "variable": "A letter that stands for a number we do not know yet.", "inverse operation": "The opposite operation used to undo another (e.g. subtract undoes add).", "isolate": "To get the variable alone on one side of the equation."};
+      var keys = Object.keys(GLOSS).sort(function (a, b) { return b.length - a.length; });
+      var SKIP = { SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1, OPTION:1, BUTTON:1,
+                   svg:1, SVG:1, CODE:1, A:1, SUMMARY:1, H1:1 };
+      function inSkip(node) {
+        var p = node.parentNode;
+        while (p && p.nodeType === 1) {
+          if (SKIP[p.tagName] || (p.className && String(p.className).indexOf('neft-') === 0)) return true;
+          if (p.classList && p.classList.contains('neft-term')) return true;
+          p = p.parentNode;
+        }
+        return false;
+      }
+      function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+      function wrapTerm(term) {
+        var def = GLOSS[term];
+        var re = new RegExp('\\b(' + esc(term) + ')\\b', 'i');
+        var counted = 0, MAXPER = 1;
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+        var nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(function (node) {
+          if (counted >= MAXPER) return;
+          if (!node.nodeValue || !re.test(node.nodeValue)) return;
+          if (inSkip(node)) return;
+          var m = node.nodeValue.match(re);
+          if (!m) return;
+          var idx = m.index;
+          var before = node.nodeValue.slice(0, idx);
+          var word = node.nodeValue.slice(idx, idx + m[1].length);
+          var after = node.nodeValue.slice(idx + m[1].length);
+          var span = document.createElement('span');
+          span.className = 'neft-term';
+          span.setAttribute('tabindex', '0');
+          span.setAttribute('role', 'button');
+          span.setAttribute('aria-label', word + ': ' + def);
+          span.textContent = word;
+          var tip = document.createElement('span');
+          tip.className = 'neft-tip';
+          tip.setAttribute('role', 'tooltip');
+          tip.textContent = def;
+          span.appendChild(tip);
+          var frag = document.createDocumentFragment();
+          if (before) frag.appendChild(document.createTextNode(before));
+          frag.appendChild(span);
+          if (after) frag.appendChild(document.createTextNode(after));
+          node.parentNode.replaceChild(frag, node);
+          counted++;
+        });
+      }
+      function run() { keys.forEach(wrapTerm); }
+      if (document.readyState === 'loading')
+        document.addEventListener('DOMContentLoaded', run);
+      else run();
+    })();
+    </script>
+  
+    <section class="neft-help-panel" aria-label="Level 1 study helper" style="border-color:#34d399">
+      <div class="neft-help-summary" style="background:#ecfdf5;cursor:default">
+        <span aria-hidden="true">&#129504;</span> How to work through this (Level 1)
+      </div>
+      <div class="neft-help-body">
+        <p>Take it one small step at a time:</p>
+        <ol style="padding-left:1.2rem;line-height:1.7">
+          <li><strong>Read slowly.</strong> Underlined words have a meaning bubble &mdash; tap them.</li>
+          <li><strong>Find the numbers</strong> in the problem and write them down.</li>
+          <li><strong>Pick the operation</strong> (+, &minus;, &times;, &divide;). Ask: am I joining, taking away, grouping, or sharing?</li>
+          <li><strong>Use the <span style="white-space:nowrap">&#128161; Show Hint</span> buttons</strong> any time you feel stuck.</li>
+          <li><strong>Check your answer.</strong> Does it make sense for the story?</li>
+        </ol>
+        <p style="margin-top:0.8rem;background:#f0fdf4;padding:0.7rem 0.9rem;border-radius:10px">
+          <strong>Tip:</strong> It is okay to use smaller, friendlier numbers to practice first.
+          The hints walk you through each step.</p>
+      </div>
+    </section>
+  </body>
+</html>

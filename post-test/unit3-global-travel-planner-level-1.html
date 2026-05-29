@@ -1,0 +1,5687 @@
+<!doctype html>
+<html data-nt-level="1" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      Global Travel Planner — Ratios &amp; Proportional Relationships | Neft
+      Teacher
+     — Level 1 (Support)</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Theme: Ocean Blue / Emerald / Sand / Sky ── */
+      :root {
+        --ocean: #1e40af;
+        --ocean-deep: #1e3a8a;
+        --ocean-mid: #2563eb;
+        --ocean-light: #3b82f6;
+        --emerald: #059669;
+        --emerald-dark: #047857;
+        --emerald-light: #10b981;
+        --sand: #fbbf24;
+        --sand-light: #fde68a;
+        --sand-dark: #d97706;
+        --sky: #e0f2fe;
+        --sky-deep: #bae6fd;
+        --surface: rgba(255, 255, 255, 0.92);
+        --surface-card: rgba(255, 255, 255, 0.96);
+        --glass: rgba(30, 64, 175, 0.06);
+        --ink: #1e293b;
+        --muted: #64748b;
+        --line: rgba(30, 64, 175, 0.15);
+        --success: #059669;
+        --success-bg: #ecfdf5;
+        --warn: #d97706;
+        --warn-bg: #fffbeb;
+        --error: #dc2626;
+        --error-bg: #fef2f2;
+        --radius: 14px;
+        --shadow: 0 8px 32px rgba(30, 64, 175, 0.12);
+        --font:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        line-height: 1.6;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100vh;
+        background: linear-gradient(
+          135deg,
+          #e0f2fe 0%,
+          #bae6fd 30%,
+          #e0f2fe 60%,
+          #ecfdf5 100%
+        );
+        overflow-x: hidden;
+      }
+
+      /* ── Animated Background ── */
+      .bg-pattern {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .bg-pattern .wave {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 200%;
+        height: 200px;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 40px,
+          rgba(30, 64, 175, 0.03) 40px,
+          rgba(30, 64, 175, 0.03) 80px
+        );
+        animation: waveScroll 25s linear infinite;
+      }
+      .bg-pattern .wave:nth-child(2) {
+        height: 160px;
+        opacity: 0.5;
+        animation-duration: 35s;
+        animation-direction: reverse;
+      }
+      .bg-pattern .cloud {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        filter: blur(40px);
+      }
+      .bg-pattern .cloud-1 {
+        width: 300px;
+        height: 120px;
+        top: 10%;
+        left: 5%;
+        animation: cloudDrift 60s ease-in-out infinite;
+      }
+      .bg-pattern .cloud-2 {
+        width: 400px;
+        height: 150px;
+        top: 25%;
+        right: 10%;
+        animation: cloudDrift 80s ease-in-out infinite reverse;
+      }
+      .bg-pattern .cloud-3 {
+        width: 250px;
+        height: 100px;
+        top: 60%;
+        left: 30%;
+        animation: cloudDrift 70s ease-in-out infinite;
+      }
+      @keyframes waveScroll {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+      @keyframes cloudDrift {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(60px);
+        }
+      }
+
+      /* ── App Shell ── */
+      .app-shell {
+        position: relative;
+        z-index: 1;
+        width: min(100% - 28px, 960px);
+        margin: 0 auto;
+        padding: 20px 0 40px;
+        min-height: 100vh;
+      }
+
+      /* ── Top Controls Bar ── */
+      .top-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        margin-bottom: 18px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .top-controls .brand {
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: var(--ocean);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-right: auto;
+      }
+      .mode-toggle {
+        display: flex;
+        gap: 4px;
+        padding: 3px;
+        background: var(--sky);
+        border-radius: 10px;
+      }
+      .mode-btn {
+        padding: 6px 14px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .mode-btn.active {
+        background: var(--ocean);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+      }
+      .mode-btn:hover:not(.active) {
+        background: rgba(30, 64, 175, 0.08);
+      }
+
+      /* ── Progress Bar ── */
+      .progress-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
+        margin-bottom: 18px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .progress-bar .phase-dots {
+        display: flex;
+        gap: 8px;
+      }
+      .phase-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--sky-deep);
+        border: 2px solid var(--line);
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+      .phase-dot.completed {
+        background: var(--emerald);
+        border-color: var(--emerald-dark);
+      }
+      .phase-dot.active {
+        background: var(--ocean);
+        border-color: var(--ocean-deep);
+        box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.2);
+      }
+      .progress-track {
+        flex: 1;
+        height: 6px;
+        background: var(--sky-deep);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--ocean), var(--emerald));
+        border-radius: 3px;
+        transition: width 0.5s ease;
+        width: 0%;
+      }
+      .progress-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      /* ── Phase Sections ── */
+      .phase {
+        display: none;
+        animation: fadeIn 0.4s ease;
+      }
+      .phase.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Phase Header ── */
+      .phase-header {
+        padding: 32px 28px;
+        margin-bottom: 22px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        border-top: 6px solid var(--ocean);
+        box-shadow: var(--shadow);
+      }
+      .phase-header .phase-number {
+        display: inline-block;
+        padding: 4px 14px;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+        color: #fff;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .phase-header h1 {
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+        line-height: 1.1;
+        color: var(--ocean-deep);
+        margin-bottom: 8px;
+      }
+      .phase-header p {
+        color: var(--muted);
+        font-size: 1.02rem;
+        max-width: 720px;
+      }
+
+      /* ── Cards & Tasks ── */
+      .card {
+        padding: 24px;
+        margin-bottom: 18px;
+        background: var(--surface-card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 4px 16px rgba(30, 64, 175, 0.06);
+      }
+      .card-accent-ocean {
+        border-left: 5px solid var(--ocean);
+      }
+      .card-accent-emerald {
+        border-left: 5px solid var(--emerald);
+      }
+      .card-accent-sand {
+        border-left: 5px solid var(--sand);
+      }
+      .task {
+        padding: 22px;
+        margin-bottom: 16px;
+        background: var(--surface-card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 3px 12px rgba(30, 64, 175, 0.05);
+      }
+      .task-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .task-number {
+        flex-shrink: 0;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--ocean), var(--emerald));
+        color: #fff;
+        border-radius: 50%;
+        font-size: 0.85rem;
+        font-weight: 800;
+      }
+      .task-title {
+        font-size: 1.08rem;
+        font-weight: 800;
+        color: var(--ocean-deep);
+      }
+      .task-subtitle {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      /* ── Forms ── */
+      .form-group {
+        margin-bottom: 14px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 10px 14px;
+        background: #fff;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        color: var(--ink);
+        transition: border-color 0.2s;
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--ocean);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
+      }
+      .form-textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .form-row-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* ── Ratio Table Builder ── */
+      .ratio-table-builder {
+        overflow-x: auto;
+        margin: 14px 0;
+      }
+      .ratio-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 2px solid var(--ocean);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .ratio-table th {
+        padding: 10px 14px;
+        background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-align: center;
+        letter-spacing: 0.03em;
+      }
+      .ratio-table td {
+        padding: 8px 10px;
+        text-align: center;
+        border-top: 1px solid var(--line);
+        background: #fff;
+      }
+      .ratio-table td input {
+        width: 80px;
+        padding: 6px 8px;
+        text-align: center;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        transition: border-color 0.2s;
+      }
+      .ratio-table td input:focus {
+        outline: none;
+        border-color: var(--ocean);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+      }
+      .ratio-table td input.correct {
+        border-color: var(--emerald);
+        background: var(--success-bg);
+      }
+      .ratio-table td input.incorrect {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .ratio-table td.given {
+        font-weight: 700;
+        color: var(--ocean);
+        background: var(--sky);
+      }
+
+      /* ── Unit Rate Calculator ── */
+      .calc-box {
+        padding: 18px;
+        margin: 14px 0;
+        background: linear-gradient(135deg, var(--sky), #ecfdf5);
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+      }
+      .calc-box .calc-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .calc-box .calc-label {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--ocean-deep);
+        min-width: 100px;
+      }
+      .calc-box input {
+        width: 100px;
+        padding: 8px 10px;
+        text-align: center;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+      .calc-box input:focus {
+        outline: none;
+        border-color: var(--ocean);
+      }
+      .calc-box .calc-symbol {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--ocean);
+      }
+      .calc-result {
+        padding: 10px 16px;
+        margin-top: 8px;
+        background: #fff;
+        border: 2px solid var(--emerald);
+        border-radius: 10px;
+        font-weight: 700;
+        color: var(--emerald-dark);
+        display: none;
+      }
+      .calc-result.show {
+        display: block;
+      }
+
+      /* ── Currency Converter Widget ── */
+      .currency-widget {
+        padding: 20px;
+        margin: 14px 0;
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        border: 2px solid var(--sand);
+        border-radius: var(--radius);
+      }
+      .currency-widget h4 {
+        font-size: 0.95rem;
+        color: var(--sand-dark);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .currency-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .currency-row select {
+        padding: 8px 12px;
+        border: 2px solid var(--sand);
+        border-radius: 8px;
+        font-weight: 600;
+        background: #fff;
+      }
+      .currency-row input {
+        width: 120px;
+        padding: 8px 12px;
+        text-align: right;
+        border: 2px solid var(--sand);
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+      .currency-row .arrow {
+        font-size: 1.4rem;
+        color: var(--sand-dark);
+      }
+
+      /* ── Hint System ── */
+      .hint-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        margin: 8px 0;
+        background: var(--sky);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--ocean);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .hint-toggle:hover {
+        background: var(--sky-deep);
+      }
+      .hint-content {
+        display: none;
+        padding: 14px 16px;
+        margin: 8px 0;
+        background: var(--sky);
+        border: 1px solid rgba(30, 64, 175, 0.12);
+        border-left: 4px solid var(--ocean-light);
+        border-radius: 0 10px 10px 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .hint-content.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      /* Support Mode hint */
+      .support-note {
+        display: none;
+        padding: 12px 16px;
+        margin: 8px 0;
+        background: #fffbeb;
+        border: 1px solid var(--sand);
+        border-left: 4px solid var(--sand);
+        border-radius: 0 10px 10px 0;
+        font-size: 0.88rem;
+        color: var(--sand-dark);
+      }
+      .support-mode .support-note {
+        display: block;
+      }
+
+      /* Challenge mode extras */
+      .challenge-extra {
+        display: none;
+        padding: 16px;
+        margin: 10px 0;
+        background: linear-gradient(135deg, #fef2f2, #fff);
+        border: 2px dashed var(--error);
+        border-radius: var(--radius);
+      }
+      .challenge-extra .challenge-label {
+        display: inline-block;
+        padding: 3px 10px;
+        margin-bottom: 8px;
+        background: var(--error);
+        color: #fff;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .challenge-mode .challenge-extra {
+        display: block;
+      }
+
+      /* ── Check Answer Button ── */
+      .check-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 3px 12px rgba(30, 64, 175, 0.2);
+      }
+      .check-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 16px rgba(30, 64, 175, 0.3);
+      }
+      .check-btn:active {
+        transform: translateY(0);
+      }
+
+      /* ── Feedback Banners ── */
+      .feedback {
+        padding: 10px 16px;
+        margin: 10px 0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+      .feedback.correct {
+        background: var(--success-bg);
+        color: var(--emerald-dark);
+        border: 1px solid rgba(5, 150, 105, 0.2);
+      }
+      .feedback.incorrect {
+        background: var(--error-bg);
+        color: var(--error);
+        border: 1px solid rgba(220, 38, 38, 0.2);
+      }
+      .feedback.partial {
+        background: var(--warn-bg);
+        color: var(--warn);
+        border: 1px solid rgba(217, 119, 6, 0.2);
+      }
+
+      /* ── Navigation Buttons ── */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 18px;
+        border-top: 2px solid var(--line);
+      }
+      .nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .nav-btn-back {
+        background: var(--sky);
+        color: var(--ocean);
+        border: 2px solid var(--line);
+      }
+      .nav-btn-back:hover {
+        background: var(--sky-deep);
+        border-color: var(--ocean);
+      }
+      .nav-btn-next {
+        background: linear-gradient(135deg, var(--ocean), var(--emerald));
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(30, 64, 175, 0.2);
+      }
+      .nav-btn-next:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(30, 64, 175, 0.3);
+      }
+
+      /* ── SVG Scene Container ── */
+      .svg-scene {
+        margin: 18px 0;
+      }
+      .svg-scene svg {
+        width: 100%;
+        height: auto;
+        border-radius: var(--radius);
+      }
+
+      /* ── Badges ── */
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin: 18px 0;
+      }
+      .badge {
+        width: 90px;
+        text-align: center;
+        opacity: 0.3;
+        transition: all 0.4s;
+      }
+      .badge.earned {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      .badge svg {
+        width: 80px;
+        height: 80px;
+      }
+      .badge-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .badge.earned .badge-label {
+        color: var(--ocean);
+      }
+
+      /* ── Score Display ── */
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin: 18px 0;
+      }
+      .score-card {
+        padding: 16px;
+        text-align: center;
+        background: var(--sky);
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+      }
+      .score-card .score-value {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--ocean);
+        line-height: 1;
+      }
+      .score-card .score-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--muted);
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* ── Rubric ── */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 0.88rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        text-align: left;
+      }
+      .rubric-table th {
+        background: var(--ocean);
+        color: #fff;
+        font-weight: 700;
+      }
+      .rubric-table tr:nth-child(even) td {
+        background: var(--sky);
+      }
+      .rubric-table .rubric-radio {
+        text-align: center;
+      }
+
+      /* ── Print / Download Bar ── */
+      .action-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 18px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--ocean);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .action-btn:hover {
+        border-color: var(--ocean);
+        background: var(--sky);
+      }
+      .action-btn-primary {
+        background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+        color: #fff;
+        border-color: var(--ocean);
+      }
+      .action-btn-primary:hover {
+        box-shadow: 0 4px 16px rgba(30, 64, 175, 0.25);
+      }
+
+      /* ── Info Box ── */
+      .info-box {
+        padding: 16px 18px;
+        margin: 12px 0;
+        background: var(--sky);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--ocean);
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .info-box p {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      /* ── Tape Diagram ── */
+      .tape-diagram {
+        margin: 14px 0;
+        padding: 16px;
+        background: #fff;
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+      }
+      .tape-row {
+        display: flex;
+        align-items: stretch;
+        margin-bottom: 8px;
+        min-height: 44px;
+      }
+      .tape-label {
+        width: 100px;
+        display: flex;
+        align-items: center;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--ocean);
+      }
+      .tape-segments {
+        display: flex;
+        flex: 1;
+        gap: 2px;
+      }
+      .tape-seg {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #fff;
+        min-width: 40px;
+        padding: 4px;
+      }
+      .tape-seg.ocean {
+        background: var(--ocean);
+      }
+      .tape-seg.emerald {
+        background: var(--emerald);
+      }
+      .tape-seg.sand {
+        background: var(--sand);
+        color: var(--ink);
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 680px) {
+        .app-shell {
+          width: min(100% - 16px, 960px);
+        }
+        .phase-header {
+          padding: 22px 18px;
+        }
+        .card,
+        .task {
+          padding: 16px;
+        }
+        .form-row,
+        .form-row-3 {
+          grid-template-columns: 1fr;
+        }
+        .nav-btn {
+          padding: 10px 16px;
+          font-size: 0.88rem;
+        }
+        .score-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .top-controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .mode-toggle {
+          justify-content: center;
+        }
+      }
+
+      /* ══ ENHANCEMENT: Animations ══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes statCountUp {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes badgePop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .phase.active .card,
+      .phase.active .task {
+        animation: cardEntrance 0.5s ease-out both;
+      }
+      .phase.active .card:nth-child(2),
+      .phase.active .task:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .phase.active .card:nth-child(3),
+      .phase.active .task:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .nav-btn:active,
+      .check-btn:active {
+        transform: translateY(0) scale(0.98);
+      }
+      .xp-bar-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        margin-bottom: 14px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .xp-bar-container .xp-label {
+        color: var(--ocean);
+        white-space: nowrap;
+        min-width: 70px;
+      }
+      .xp-bar-track {
+        flex: 1;
+        height: 8px;
+        background: var(--sky-deep);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--ocean), var(--emerald));
+        border-radius: 99px;
+        transition: width 0.6s ease;
+        width: 0%;
+      }
+      .xp-bar-container .xp-value {
+        color: var(--muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+      .validation-feedback {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-top: 6px;
+        padding: 4px 10px;
+        border-radius: 8px;
+        animation: cardEntrance 0.3s ease;
+      }
+      .validation-feedback.correct {
+        background: #ecfdf5;
+        color: var(--success);
+      }
+      .validation-feedback.incorrect {
+        background: #fef2f2;
+        color: var(--error);
+      }
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        margin: 8px 0;
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 10px;
+        border: 1px dashed var(--line);
+      }
+      .word-bank-title {
+        width: 100%;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        padding: 4px 12px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--ink);
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+      }
+      .word-chip:hover {
+        border-color: var(--ocean);
+        transform: translateY(-1px);
+      }
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--emerald);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        margin-top: 6px;
+      }
+      .example-toggle:hover {
+        color: var(--ocean);
+      }
+      .example-box {
+        display: none;
+        margin-top: 8px;
+        padding: 14px;
+        background: rgba(0, 0, 0, 0.02);
+        border-left: 3px solid var(--emerald);
+        border-radius: 0 10px 10px 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .example-box.visible {
+        display: block;
+        animation: cardEntrance 0.3s ease;
+      }
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: #fff;
+        border: 3px solid var(--ocean);
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+        animation: badgePop 0.5s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(30, 64, 175, 0.08),
+          transparent 50%,
+          rgba(5, 150, 105, 0.06)
+        );
+        pointer-events: none;
+      }
+      .certificate-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 12px;
+        animation: float 3s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--ocean);
+        margin-bottom: 4px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 16px;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .cert-stat {
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        animation: statCountUp 0.5s ease both;
+      }
+      .cert-stat:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .cert-stat:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .cert-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--ocean);
+      }
+      .cert-stat-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--ocean), var(--emerald));
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      @media (max-width: 500px) {
+        .cert-stats {
+          grid-template-columns: 1fr;
+        }
+        .certificate-card {
+          padding: 24px;
+        }
+      }
+      @media print {
+        .xp-bar-container,
+        .certificate-overlay,
+        .example-toggle,
+        .word-bank {
+          display: none !important;
+        }
+      }
+
+      /* ── Print Styles ── */
+      @media print {
+        body {
+          background: #fff !important;
+        }
+        .bg-pattern,
+        .top-controls,
+        .progress-bar,
+        .nav-row,
+        .check-btn,
+        .hint-toggle,
+        .action-bar,
+        .mode-toggle,
+        .challenge-extra {
+          display: none !important;
+        }
+        .phase {
+          display: block !important;
+          page-break-inside: avoid;
+        }
+        .phase-header {
+          border-top: 3px solid #1e40af;
+          box-shadow: none;
+        }
+        .card,
+        .task {
+          box-shadow: none;
+          border: 1px solid #ccc;
+          page-break-inside: avoid;
+        }
+        .hint-content {
+          display: none !important;
+        }
+        .support-note {
+          display: none !important;
+        }
+        .form-input,
+        .form-textarea {
+          border: 1px solid #999;
+        }
+        .ratio-table {
+          border: 2px solid #333;
+        }
+        .ratio-table th {
+          background: #1e40af;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .svg-scene svg {
+          max-height: 200px;
+        }
+        .badge svg {
+          width: 50px;
+          height: 50px;
+        }
+      }
+    </style>
+  <style id="nt-upgrade-styles">
+    /* ── Neft Teacher readability upgrade ── */
+    html { font-size: 112.5%; }            /* lift root so rem-based text grows */
+    body { line-height: 1.65; }
+    p, li, td, th, label, span, a, button, input, textarea, select,
+    .question, .task, .prompt, .instructions, figcaption, dd, dt {
+      font-size: max(1em, 17px);
+    }
+    /* Restore intentionally-large display text rather than shrink it */
+    h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); line-height: 1.2; }
+    h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: 1.25; }
+    h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); line-height: 1.3; }
+    h4 { font-size: 1.18rem; }
+    /* Floor any element that set a tiny rem/px font inline or via class */
+    [style*="font-size:0.7"], [style*="font-size: 0.7"],
+    [style*="font-size:0.75"], [style*="font-size: 0.75"],
+    [style*="font-size:0.78"], [style*="font-size: 0.78"],
+    [style*="font-size:0.8"], [style*="font-size: 0.8"],
+    [style*="font-size:0.82"], [style*="font-size: 0.82"],
+    [style*="font-size:0.85"], [style*="font-size: 0.85"],
+    [style*="font-size:0.88"], [style*="font-size: 0.88"],
+    [style*="font-size:0.9"], [style*="font-size: 0.9"],
+    [style*="font-size:11px"], [style*="font-size: 11px"],
+    [style*="font-size:12px"], [style*="font-size: 12px"],
+    [style*="font-size:13px"], [style*="font-size: 13px"],
+    [style*="font-size:14px"], [style*="font-size: 14px"] {
+      font-size: 1rem !important;
+    }
+  
+    /* ── Neft Teacher help widgets ── */
+    .nt-level-banner {
+      position: sticky; top: 0; z-index: 9000;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 16px; font-size: 1rem; font-weight: 700;
+      color: #0b1f33; background: linear-gradient(90deg,#f2c15b,#1fa6a2);
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+    .nt-level-banner .nt-pill {
+      background: rgba(255,255,255,.92); color:#12355b; border-radius:999px;
+      padding: 3px 12px; font-size: .95rem;
+    }
+    .nt-level-banner .nt-sub { font-weight: 600; color:#06283d; font-size:.95rem; }
+
+    .nt-fab-wrap {
+      position: fixed; right: 18px; bottom: 18px; z-index: 9500;
+      display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    }
+    .nt-fab {
+      border: none; cursor: pointer; border-radius: 999px;
+      padding: 12px 18px; font-size: 1rem; font-weight: 700; color:#fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,.35); display:flex; gap:8px; align-items:center;
+    }
+    .nt-fab-help { background:#1fa6a2; }
+    .nt-fab-hint { background:#7c3aed; }
+    .nt-fab:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
+
+    .nt-panel {
+      position: fixed; right: 18px; bottom: 90px; z-index: 9600;
+      width: min(340px, calc(100vw - 36px)); max-height: 70vh; overflow:auto;
+      background:#fff; color:#21313f; border-radius:16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.4); padding: 18px; display:none;
+      border: 2px solid #1fa6a2;
+    }
+    .nt-panel[data-open="true"] { display:block; }
+    .nt-panel h3 { margin:0 0 6px; color:#12355b; font-size:1.25rem; }
+    .nt-panel p.nt-lede { margin:0 0 12px; color:#5f6f80; font-size:1rem; }
+    .nt-panel h4 { margin:14px 0 6px; color:#12355b; font-size:1.05rem; }
+    .nt-panel ul { margin:0; padding-left: 18px; }
+    .nt-panel li { margin: 6px 0; font-size:1rem; }
+    .nt-panel a { color:#0f6f6b; font-weight:600; }
+    .nt-panel .nt-close {
+      float:right; border:none; background:#eef3f7; border-radius:8px;
+      cursor:pointer; font-size:1.1rem; line-height:1; padding:6px 10px; color:#12355b;
+    }
+    .nt-vocab { margin:0; padding:0; list-style:none; }
+    .nt-vocab li { padding:8px 0; border-bottom:1px solid #e6edf3; }
+    .nt-vocab b { color:#7c3aed; }
+
+    /* Hint pop-ups attached to tasks */
+    .nt-hint-btn {
+      display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+      border:1px solid #f2c15b; background:#fef7e0; color:#875f00;
+      border-radius:999px; padding:5px 12px; font-size:.95rem; font-weight:700;
+      margin: 6px 6px 6px 0;
+    }
+    .nt-hint-btn:focus-visible { outline:3px solid #7c3aed; outline-offset:2px; }
+    .nt-hint-body {
+      display:none; margin:6px 0 10px; padding:12px 14px; font-size:1rem;
+      background:#fef7e0; color:#5a4300; border-left:4px solid #f2c15b;
+      border-radius:0 10px 10px 0;
+    }
+    .nt-hint-body[data-open="true"] { display:block; }
+
+    /* Inline tooltips on key terms */
+    .nt-tip {
+      border-bottom:2px dotted #1fa6a2; cursor:help; position:relative;
+      color: inherit;
+    }
+    .nt-tip:focus-visible { outline:2px solid #1fa6a2; outline-offset:2px; }
+    .nt-tip[data-show="true"]::after, .nt-tip:hover::after {
+      content: attr(data-nt-tip);
+      position:absolute; left:0; bottom:calc(100% + 8px); z-index:9700;
+      width: max-content; max-width:260px; padding:8px 12px;
+      background:#12355b; color:#fff; border-radius:10px; font-size:.95rem;
+      font-weight:500; line-height:1.4; box-shadow:0 8px 24px rgba(0,0,0,.35);
+    }
+
+    /* Level 1 scaffolding callouts */
+    .nt-scaffold {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#dff2ee; border:1px solid #1fa6a2; color:#0b4d4a; font-size:1rem;
+    }
+    html[data-nt-level="1"] .nt-scaffold { display:block; }
+    /* Level 2 enrichment callouts */
+    .nt-enrich {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#fef7e0; border:1px solid #f2c15b; color:#5a4300; font-size:1rem;
+    }
+    html[data-nt-level="2"] .nt-enrich { display:block; }
+    .nt-enrich b, .nt-scaffold b { display:block; margin-bottom:4px; }
+
+    @media (max-width: 520px) {
+      .nt-fab { padding:11px 15px; font-size:.95rem; }
+    }
+  </style>
+</head>
+  <body>
+<div class="nt-level-banner"><span class="nt-pill">Level 1</span><span class="nt-sub">Support version — simpler language, smaller numbers, and step-by-step help.</span></div>
+
+<div class="nt-scaffold" role="note">
+  <b>🪜 Step-by-step support</b>
+  Take it one small step at a time. Use these word helpers and the 💡 Hint buttons whenever you need them. It is okay to go slowly.
+  <ul class="nt-vocab" style="margin-top:8px"><li><b>Ratio:</b> A comparison of two amounts, like 2 cups to 3 cups (2:3).</li><li><b>Rate:</b> A ratio that compares two different units, like miles per hour.</li><li><b>Unit Rate:</b> A rate for exactly one unit, like cost for 1 item.</li><li><b>Proportion:</b> Two ratios that are equal, like 1/2 = 2/4.</li><li><b>Equivalent:</b> Equal in value, even if they look different.</li></ul>
+</div>
+
+    <!-- ── Animated Background ── -->
+    <div class="bg-pattern">
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="cloud cloud-1"></div>
+      <div class="cloud cloud-2"></div>
+      <div class="cloud cloud-3"></div>
+    </div>
+
+    <div class="app-shell">
+      <!-- ══════════════════════════════════════ -->
+      <!-- TOP CONTROLS                          -->
+      <!-- ══════════════════════════════════════ -->
+      <div class="top-controls">
+        <span class="brand">Neft Teacher &mdash; Global Travel Planner</span>
+        <div class="mode-toggle">
+          <button class="mode-btn" onclick="setMode('support')" id="btnSupport">
+            Support
+          </button>
+          <button
+            class="mode-btn active"
+            onclick="setMode('standard')"
+            id="btnStandard"
+          >
+            Standard
+          </button>
+          <button
+            class="mode-btn"
+            onclick="setMode('challenge')"
+            id="btnChallenge"
+          >
+            Challenge
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ -->
+      <!-- PROGRESS BAR                          -->
+      <!-- ══════════════════════════════════════ -->
+      <div class="progress-bar" id="progressBar">
+        <div class="phase-dots">
+          <div
+            class="phase-dot active"
+            data-phase="1"
+            onclick="goToPhase(1)"
+          ></div>
+          <div class="phase-dot" data-phase="2" onclick="goToPhase(2)"></div>
+          <div class="phase-dot" data-phase="3" onclick="goToPhase(3)"></div>
+          <div class="phase-dot" data-phase="4" onclick="goToPhase(4)"></div>
+          <div class="phase-dot" data-phase="5" onclick="goToPhase(5)"></div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-label" id="progressLabel">Phase 1 of 5</div>
+      </div>
+
+      <!-- Enhancement: XP Bar -->
+      <div class="xp-bar-container" id="xpBarContainer">
+        <span class="xp-label">Travel XP</span>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBarFill"></div>
+        </div>
+        <span class="xp-value" id="xpValue">0 / 500 XP</span>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PHASE 1: TRAVEL BRIEFING                              -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="phase active" id="phase1">
+        <div class="phase-header">
+          <div class="phase-number">Phase 1 &mdash; Travel Briefing</div>
+          <h1>Global Travel Planner</h1>
+          <p>
+            Welcome, Travel Agent! You have been hired by Horizon World Travel,
+            a top international agency. Your mission: plan dream vacations for
+            clients using ratios, proportions, and unit rates to compare
+            destinations, calculate budgets, and build the perfect itinerary.
+          </p>
+        </div>
+
+        <!-- Hero SVG Scene: Globe, Airplane, Clouds -->
+        <div class="svg-scene">
+          <svg
+            viewBox="0 0 800 320"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Travel scene with globe, airplane, and landmarks"
+          >
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e0f2fe" />
+                <stop offset="100%" stop-color="#bae6fd" />
+              </linearGradient>
+              <radialGradient id="globeGrad" cx="45%" cy="40%">
+                <stop offset="0%" stop-color="#3b82f6" />
+                <stop offset="60%" stop-color="#1e40af" />
+                <stop offset="100%" stop-color="#1e3a8a" />
+              </radialGradient>
+              <linearGradient id="landGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#10b981" />
+                <stop offset="100%" stop-color="#059669" />
+              </linearGradient>
+              <linearGradient id="planeBody" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#f8fafc" />
+                <stop offset="100%" stop-color="#e2e8f0" />
+              </linearGradient>
+            </defs>
+            <!-- Sky -->
+            <rect width="800" height="320" fill="url(#skyGrad)" rx="14" />
+            <!-- Clouds -->
+            <g opacity="0.6">
+              <ellipse cx="120" cy="60" rx="60" ry="22" fill="#fff" />
+              <ellipse cx="155" cy="55" rx="40" ry="18" fill="#fff" />
+              <ellipse cx="90" cy="58" rx="35" ry="16" fill="#fff" />
+            </g>
+            <g opacity="0.4">
+              <ellipse cx="620" cy="45" rx="55" ry="20" fill="#fff" />
+              <ellipse cx="660" cy="40" rx="35" ry="15" fill="#fff" />
+            </g>
+            <g opacity="0.5">
+              <ellipse cx="400" cy="30" rx="50" ry="16" fill="#fff" />
+              <ellipse cx="430" cy="26" rx="30" ry="12" fill="#fff" />
+            </g>
+            <!-- Globe -->
+            <circle cx="400" cy="190" r="110" fill="url(#globeGrad)" />
+            <circle
+              cx="400"
+              cy="190"
+              r="110"
+              fill="none"
+              stroke="#1e3a8a"
+              stroke-width="2"
+              opacity="0.3"
+            />
+            <!-- Continents (simplified) -->
+            <path
+              d="M355 120 Q370 115 385 125 Q395 130 390 145 Q380 155 365 148 Q350 140 355 120Z"
+              fill="url(#landGrad)"
+              opacity="0.8"
+            />
+            <path
+              d="M410 130 Q430 125 445 140 Q455 155 450 175 Q440 185 425 180 Q410 170 405 155 Q400 140 410 130Z"
+              fill="url(#landGrad)"
+              opacity="0.8"
+            />
+            <path
+              d="M350 170 Q365 165 375 175 Q380 190 370 200 Q355 205 348 195 Q342 180 350 170Z"
+              fill="url(#landGrad)"
+              opacity="0.7"
+            />
+            <path
+              d="M415 195 Q435 190 450 205 Q460 220 455 240 Q440 255 425 248 Q410 235 408 215 Q407 200 415 195Z"
+              fill="url(#landGrad)"
+              opacity="0.75"
+            />
+            <path
+              d="M360 220 Q375 215 385 228 Q388 240 378 250 Q365 255 358 245 Q352 232 360 220Z"
+              fill="url(#landGrad)"
+              opacity="0.7"
+            />
+            <!-- Globe latitude/longitude lines -->
+            <ellipse
+              cx="400"
+              cy="190"
+              rx="110"
+              ry="40"
+              fill="none"
+              stroke="#bae6fd"
+              stroke-width="0.8"
+              opacity="0.4"
+            />
+            <ellipse
+              cx="400"
+              cy="190"
+              rx="80"
+              ry="110"
+              fill="none"
+              stroke="#bae6fd"
+              stroke-width="0.8"
+              opacity="0.4"
+            />
+            <ellipse
+              cx="400"
+              cy="190"
+              rx="40"
+              ry="110"
+              fill="none"
+              stroke="#bae6fd"
+              stroke-width="0.8"
+              opacity="0.3"
+            />
+            <line
+              x1="290"
+              y1="190"
+              x2="510"
+              y2="190"
+              stroke="#bae6fd"
+              stroke-width="0.8"
+              opacity="0.4"
+            />
+            <!-- Globe shine -->
+            <ellipse
+              cx="365"
+              cy="150"
+              rx="30"
+              ry="40"
+              fill="#fff"
+              opacity="0.12"
+            />
+            <!-- Airplane -->
+            <g transform="translate(200, 95) rotate(-8)">
+              <ellipse cx="0" cy="0" rx="45" ry="10" fill="url(#planeBody)" />
+              <polygon points="-48,0 -55,-4 -55,4" fill="#e2e8f0" />
+              <polygon points="30,-3 50,-18 50,-8 35,-3" fill="#94a3b8" />
+              <polygon points="30,3 50,18 50,8 35,3" fill="#94a3b8" />
+              <polygon points="-30,-2 -20,-14 -15,-2" fill="#94a3b8" />
+              <polygon points="-30,2 -20,14 -15,2" fill="#94a3b8" />
+              <circle cx="-20" cy="-2" r="4" fill="#3b82f6" opacity="0.7" />
+              <circle cx="-10" cy="-2" r="4" fill="#3b82f6" opacity="0.7" />
+              <circle cx="0" cy="-2" r="4" fill="#3b82f6" opacity="0.7" />
+              <!-- Contrail -->
+              <line
+                x1="-55"
+                y1="0"
+                x2="-120"
+                y2="10"
+                stroke="#fff"
+                stroke-width="3"
+                opacity="0.5"
+                stroke-linecap="round"
+              />
+              <line
+                x1="-55"
+                y1="3"
+                x2="-130"
+                y2="16"
+                stroke="#fff"
+                stroke-width="2"
+                opacity="0.3"
+                stroke-linecap="round"
+              />
+            </g>
+            <!-- Eiffel Tower silhouette -->
+            <g transform="translate(680, 240)" opacity="0.5">
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="-60"
+                stroke="#1e3a8a"
+                stroke-width="2"
+              />
+              <line
+                x1="-12"
+                y1="0"
+                x2="0"
+                y2="-45"
+                stroke="#1e3a8a"
+                stroke-width="1.5"
+              />
+              <line
+                x1="12"
+                y1="0"
+                x2="0"
+                y2="-45"
+                stroke="#1e3a8a"
+                stroke-width="1.5"
+              />
+              <line
+                x1="-8"
+                y1="-15"
+                x2="8"
+                y2="-15"
+                stroke="#1e3a8a"
+                stroke-width="1"
+              />
+              <line
+                x1="-5"
+                y1="-30"
+                x2="5"
+                y2="-30"
+                stroke="#1e3a8a"
+                stroke-width="1"
+              />
+            </g>
+            <!-- Pyramid silhouette -->
+            <g transform="translate(100, 260)" opacity="0.4">
+              <polygon points="0,-40 30,0 -30,0" fill="#d97706" />
+              <polygon points="20,-30 45,0 0,0" fill="#b45309" opacity="0.6" />
+            </g>
+            <!-- Passport icon -->
+            <g transform="translate(620, 260)">
+              <rect
+                x="-18"
+                y="-24"
+                width="36"
+                height="48"
+                rx="4"
+                fill="#1e40af"
+              />
+              <circle
+                cx="0"
+                cy="-6"
+                r="8"
+                fill="none"
+                stroke="#fbbf24"
+                stroke-width="1.5"
+              />
+              <line
+                x1="-10"
+                y1="12"
+                x2="10"
+                y2="12"
+                stroke="#fbbf24"
+                stroke-width="1"
+              />
+              <line
+                x1="-8"
+                y1="17"
+                x2="8"
+                y2="17"
+                stroke="#fbbf24"
+                stroke-width="0.8"
+              />
+              <text
+                x="0"
+                y="-16"
+                text-anchor="middle"
+                fill="#fbbf24"
+                font-size="5"
+                font-weight="800"
+              >
+                PASSPORT
+              </text>
+            </g>
+            <!-- Sun -->
+            <circle cx="720" cy="50" r="22" fill="#fbbf24" opacity="0.8" />
+            <circle cx="720" cy="50" r="30" fill="#fbbf24" opacity="0.15" />
+          </svg>
+        </div>
+
+        <!-- Student Info -->
+        <div class="card card-accent-ocean">
+          <div class="form-row" style="grid-template-columns: 2fr 1fr 1fr">
+            <div class="form-group">
+              <label for="studentName">Travel Agent Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="studentName"
+                placeholder="Your full name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="classPeriod">Period</label>
+              <select class="form-select" id="classPeriod">
+                <option value="">Select</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="activityDate">Date</label>
+              <input type="date" class="form-input" id="activityDate" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Scenario Context -->
+        <div class="card card-accent-emerald">
+          <h3 style="color: var(--emerald-dark); margin-bottom: 10px">
+            Your Agency Briefing
+          </h3>
+          <p
+            style="color: var(--muted); font-size: 0.94rem; margin-bottom: 14px"
+          >
+            The Rodriguez family has hired Horizon World Travel to plan their
+            dream vacation. They have a budget of $6,000 and want to visit two
+            international destinations over 14 days. You will use ratios and
+            proportional reasoning to compare destinations, convert currencies,
+            calculate unit rates for travel costs, and build a complete travel
+            itinerary.
+          </p>
+
+          <div class="support-note">
+            <strong>Vocabulary Help:</strong> A <em>ratio</em> compares two
+            amounts (like 3 miles per 1 dollar). A <em>unit rate</em> tells you
+            how much for just ONE of something. A <em>proportion</em> is when
+            two ratios are equal.
+          </div>
+
+          <div class="info-box">
+            <p>
+              <strong>Math Standards:</strong> 6.RP.A.1 (Understand ratios),
+              6.RP.A.2 (Unit rates), 6.RP.A.3 (Ratio tables, tape diagrams,
+              proportional reasoning)
+            </p>
+          </div>
+        </div>
+
+        <!-- Task 1: Warm-Up Ratio Identification -->
+        <div class="task" id="task1">
+          <div class="task-header">
+            <div class="task-number">1</div>
+            <div>
+              <div class="task-title">Welcome Ratio Check</div>
+              <div class="task-subtitle">
+                Identify ratios in a real travel scenario
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            The Rodriguez family has 4 adults and 2 children. Their trip covers
+            14 days visiting 2 countries.
+          </p>
+          <div class="support-note">
+            <strong>Tip:</strong> A ratio uses a colon (:) or the word "to."
+            Example: 4 to 2, or 4:2.
+          </div>
+          <div class="form-group">
+            <label>Write the ratio of adults to children:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t1_ratio1"
+              placeholder="e.g., 4:2 or 2:1"
+            />
+          </div>
+          <div class="form-group">
+            <label>Write the ratio of days to countries:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t1_ratio2"
+              placeholder="e.g., 14:2 or 7:1"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >If each adult pays $1,000 and each child pays $500, what is the
+              unit rate (cost per person)?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t1_unitrate"
+              placeholder="Show your work and answer"
+            />
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint1')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint1">
+            <strong>Hint:</strong> Total cost = (4 x $1,000) + (2 x $500) =
+            $5,000. There are 6 people total. Divide total cost by number of
+            people to find the unit rate.
+          </div>
+          <div class="challenge-extra">
+            <div class="challenge-label">Challenge</div>
+            <div class="form-group">
+              <label
+                >If a 7th person joins and the total cost stays $5,000, how does
+                the unit rate change? Explain using a proportion.</label
+              >
+              <textarea class="form-textarea" id="t1_challenge"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 2: Ratio Language -->
+        <div class="task" id="task2">
+          <div class="task-header">
+            <div class="task-number">2</div>
+            <div>
+              <div class="task-title">Travel Ratio Language</div>
+              <div class="task-subtitle">
+                Use ratio vocabulary to describe travel comparisons
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            Use "for every," "per," and "to" to write three ratio statements
+            about these travel facts:
+          </p>
+          <div class="info-box">
+            <p>
+              Flight distance Tokyo to Paris: 6,200 miles in 12 hours. Luggage
+              allowance: 2 bags for every 1 passenger. Hotel cost: $180 per
+              night.
+            </p>
+          </div>
+          <div class="support-note">
+            <strong>Sentence frames:</strong> "For every ___, there are ___."
+            &bull; "The rate is ___ per ___." &bull; "The ratio of ___ to ___ is
+            ___."
+          </div>
+          <div class="form-group">
+            <label>Statement 1 (use "for every"):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t2_s1"
+              placeholder="For every..."
+            />
+          </div>
+          <div class="form-group">
+            <label>Statement 2 (use "per"):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t2_s2"
+              placeholder="...per..."
+            />
+          </div>
+          <div class="form-group">
+            <label>Statement 3 (use "to"):</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t2_s3"
+              placeholder="...to..."
+            />
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <div></div>
+          <button class="nav-btn nav-btn-next" onclick="goToPhase(2)">
+            Destination Research &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PHASE 2: DESTINATION RESEARCH                         -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="phase" id="phase2">
+        <div class="phase-header">
+          <div class="phase-number">Phase 2 &mdash; Destination Research</div>
+          <h1>Destination Research</h1>
+          <p>
+            Compare three potential destinations using ratio tables and data
+            analysis. Use proportional reasoning to find the best value for the
+            Rodriguez family.
+          </p>
+        </div>
+
+        <!-- Destination Comparison SVG -->
+        <div class="svg-scene">
+          <svg
+            viewBox="0 0 800 200"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Three destination icons"
+          >
+            <defs>
+              <linearGradient id="tokyoGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f87171" />
+                <stop offset="100%" stop-color="#dc2626" />
+              </linearGradient>
+              <linearGradient id="parisGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a78bfa" />
+                <stop offset="100%" stop-color="#7c3aed" />
+              </linearGradient>
+              <linearGradient id="cancunGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#34d399" />
+                <stop offset="100%" stop-color="#059669" />
+              </linearGradient>
+            </defs>
+            <rect width="800" height="200" fill="#e0f2fe" rx="14" />
+            <!-- Tokyo -->
+            <g transform="translate(135, 100)">
+              <rect
+                x="-45"
+                y="-80"
+                width="90"
+                height="160"
+                rx="10"
+                fill="url(#tokyoGrad)"
+                opacity="0.15"
+              />
+              <!-- Torii gate -->
+              <line
+                x1="-25"
+                y1="20"
+                x2="-25"
+                y2="-30"
+                stroke="#dc2626"
+                stroke-width="4"
+              />
+              <line
+                x1="25"
+                y1="20"
+                x2="25"
+                y2="-30"
+                stroke="#dc2626"
+                stroke-width="4"
+              />
+              <line
+                x1="-32"
+                y1="-25"
+                x2="32"
+                y2="-25"
+                stroke="#dc2626"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+              <line
+                x1="-28"
+                y1="-15"
+                x2="28"
+                y2="-15"
+                stroke="#dc2626"
+                stroke-width="3"
+              />
+              <text
+                x="0"
+                y="50"
+                text-anchor="middle"
+                fill="#dc2626"
+                font-size="14"
+                font-weight="800"
+              >
+                TOKYO
+              </text>
+              <text
+                x="0"
+                y="66"
+                text-anchor="middle"
+                fill="#64748b"
+                font-size="10"
+              >
+                $200/night
+              </text>
+            </g>
+            <!-- Paris -->
+            <g transform="translate(400, 100)">
+              <rect
+                x="-45"
+                y="-80"
+                width="90"
+                height="160"
+                rx="10"
+                fill="url(#parisGrad)"
+                opacity="0.15"
+              />
+              <!-- Eiffel Tower -->
+              <line
+                x1="0"
+                y1="-40"
+                x2="0"
+                y2="20"
+                stroke="#7c3aed"
+                stroke-width="3"
+              />
+              <line
+                x1="-18"
+                y1="20"
+                x2="0"
+                y2="-20"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+              />
+              <line
+                x1="18"
+                y1="20"
+                x2="0"
+                y2="-20"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+              />
+              <line
+                x1="-12"
+                y1="5"
+                x2="12"
+                y2="5"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <line
+                x1="-6"
+                y1="-15"
+                x2="6"
+                y2="-15"
+                stroke="#7c3aed"
+                stroke-width="1.5"
+              />
+              <circle cx="0" cy="-42" r="3" fill="#fbbf24" />
+              <text
+                x="0"
+                y="50"
+                text-anchor="middle"
+                fill="#7c3aed"
+                font-size="14"
+                font-weight="800"
+              >
+                PARIS
+              </text>
+              <text
+                x="0"
+                y="66"
+                text-anchor="middle"
+                fill="#64748b"
+                font-size="10"
+              >
+                $250/night
+              </text>
+            </g>
+            <!-- Cancun -->
+            <g transform="translate(665, 100)">
+              <rect
+                x="-45"
+                y="-80"
+                width="90"
+                height="160"
+                rx="10"
+                fill="url(#cancunGrad)"
+                opacity="0.15"
+              />
+              <!-- Palm tree -->
+              <line
+                x1="0"
+                y1="20"
+                x2="0"
+                y2="-15"
+                stroke="#92400e"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+              <path
+                d="M0,-15 Q-25,-30 -30,-20"
+                fill="none"
+                stroke="#059669"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M0,-15 Q25,-30 30,-20"
+                fill="none"
+                stroke="#059669"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M0,-15 Q-15,-40 -25,-35"
+                fill="none"
+                stroke="#10b981"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M0,-15 Q15,-40 25,-35"
+                fill="none"
+                stroke="#10b981"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M0,-15 Q0,-45 5,-40"
+                fill="none"
+                stroke="#059669"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <!-- Waves -->
+              <path
+                d="M-30,25 Q-20,20 -10,25 Q0,30 10,25 Q20,20 30,25"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2"
+                opacity="0.5"
+              />
+              <text
+                x="0"
+                y="50"
+                text-anchor="middle"
+                fill="#059669"
+                font-size="14"
+                font-weight="800"
+              >
+                CANCUN
+              </text>
+              <text
+                x="0"
+                y="66"
+                text-anchor="middle"
+                fill="#64748b"
+                font-size="10"
+              >
+                $150/night
+              </text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Task 3: Ratio Table — Hotel Costs -->
+        <div class="task" id="task3">
+          <div class="task-header">
+            <div class="task-number">3</div>
+            <div>
+              <div class="task-title">Hotel Cost Ratio Table</div>
+              <div class="task-subtitle">
+                Complete the ratio table comparing nightly hotel costs
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            Fill in the missing values. Each row multiplies the base rate by the
+            number of nights.
+          </p>
+          <div class="support-note">
+            <strong>Tip:</strong> To find the cost, multiply the nightly rate by
+            the number of nights. To find nights, divide total cost by nightly
+            rate.
+          </div>
+          <div class="ratio-table-builder">
+            <table class="ratio-table">
+              <thead>
+                <tr>
+                  <th>Nights</th>
+                  <th>Tokyo ($200/night)</th>
+                  <th>Paris ($250/night)</th>
+                  <th>Cancun ($150/night)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="given">1</td>
+                  <td class="given">$200</td>
+                  <td class="given">$250</td>
+                  <td class="given">$150</td>
+                </tr>
+                <tr>
+                  <td class="given">3</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_t3"
+                      data-answer="600"
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_p3"
+                      data-answer="750"
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_c3"
+                      data-answer="450"
+                      placeholder="?"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="given">5</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_t5"
+                      data-answer="1000"
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_p5"
+                      data-answer="1250"
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_c5"
+                      data-answer="750"
+                      placeholder="?"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="given">7</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_t7"
+                      data-answer="1400"
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_p7"
+                      data-answer="1750"
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="rt1_c7"
+                      data-answer="1050"
+                      placeholder="?"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button
+            class="check-btn"
+            onclick="
+              checkRatioTable('rt1', [
+                'rt1_t3',
+                'rt1_p3',
+                'rt1_c3',
+                'rt1_t5',
+                'rt1_p5',
+                'rt1_c5',
+                'rt1_t7',
+                'rt1_p7',
+                'rt1_c7',
+              ])
+            "
+          >
+            Check Answers
+          </button>
+          <div class="feedback" id="rt1_feedback"></div>
+          <button class="hint-toggle" onclick="toggleHint('hint3')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint3">
+            <strong>Hint:</strong> Multiply: 3 nights &times; $200/night = $600.
+            Use the same pattern for each column. The ratio of nights to cost
+            stays constant!
+          </div>
+          <div class="challenge-extra">
+            <div class="challenge-label">Challenge</div>
+            <div class="form-group">
+              <label
+                >The family wants to spend exactly $2,100 on hotels. If they
+                split time equally between Tokyo and Cancun, how many nights at
+                each? Show your proportion.</label
+              >
+              <textarea class="form-textarea" id="t3_challenge"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 4: Tape Diagram — Travel Time Comparison -->
+        <div class="task" id="task4">
+          <div class="task-header">
+            <div class="task-number">4</div>
+            <div>
+              <div class="task-title">Flight Time Tape Diagram</div>
+              <div class="task-subtitle">
+                Use a tape diagram to compare flight times
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            Flight times from Baltimore: Tokyo = 15 hours, Paris = 9 hours,
+            Cancun = 4 hours. The tape diagram below shows the comparison.
+          </p>
+          <div class="support-note">
+            <strong>Tip:</strong> A tape diagram uses bars to compare amounts.
+            Longer bars mean bigger numbers.
+          </div>
+          <div class="tape-diagram">
+            <div class="tape-row">
+              <div class="tape-label">Tokyo (15h)</div>
+              <div class="tape-segments">
+                <div class="tape-seg ocean">3</div>
+                <div class="tape-seg ocean">3</div>
+                <div class="tape-seg ocean">3</div>
+                <div class="tape-seg ocean">3</div>
+                <div class="tape-seg ocean">3</div>
+              </div>
+            </div>
+            <div class="tape-row">
+              <div class="tape-label">Paris (9h)</div>
+              <div class="tape-segments">
+                <div class="tape-seg emerald">3</div>
+                <div class="tape-seg emerald">3</div>
+                <div class="tape-seg emerald">3</div>
+              </div>
+            </div>
+            <div class="tape-row">
+              <div class="tape-label">Cancun (4h)</div>
+              <div class="tape-segments">
+                <div class="tape-seg sand" style="flex: 1.33">4</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label
+              >What is the ratio of Tokyo flight time to Paris flight time?
+              Simplify.</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t4_ratio1"
+              placeholder="e.g., 5:3"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >How many times longer is the Tokyo flight than the Cancun flight?
+              Write as a comparison using division.</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t4_ratio2"
+              placeholder="e.g., 15 ÷ 4 = ..."
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >If a flight costs $40 per hour, use the tape diagram to find the
+              cost of each flight. Show the multiplication.</label
+            >
+            <textarea class="form-textarea" id="t4_costs"></textarea>
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint4')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint4">
+            <strong>Hint:</strong> Tokyo to Paris = 15:9. Divide both by 3 to
+            simplify. For flight cost, multiply hours &times; $40. Tokyo: 15
+            &times; $40 = $600.
+          </div>
+        </div>
+
+        <!-- Task 5: Destination Unit Rate Comparison -->
+        <div class="task" id="task5">
+          <div class="task-header">
+            <div class="task-number">5</div>
+            <div>
+              <div class="task-title">Best Value Destination</div>
+              <div class="task-subtitle">
+                Calculate unit rates to compare total daily costs
+              </div>
+            </div>
+          </div>
+          <div class="info-box">
+            <p>
+              <strong>Daily costs (per person):</strong> Tokyo: hotel $200 +
+              food $60 + activities $40 = $300/day. Paris: hotel $250 + food $75
+              + activities $35 = $360/day. Cancun: hotel $150 + food $45 +
+              activities $30 = $225/day.
+            </p>
+          </div>
+          <div class="support-note">
+            <strong>Tip:</strong> A unit rate has a denominator of 1. "$300 per
+            day" means $300 for 1 day.
+          </div>
+          <div class="form-group">
+            <label
+              >What is the unit rate (cost per person per day) for each
+              destination? List all three.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t5_rates"
+              placeholder="Tokyo: $___/person/day&#10;Paris: $___/person/day&#10;Cancun: $___/person/day"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >If the family has 6 people and stays 7 days at each destination,
+              what is the total cost at each? Which is the best value?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t5_total"
+              placeholder="Show multiplication for each destination"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Write a proportion that compares 3 days in Tokyo to the
+              equivalent cost in Cancun. Solve for the unknown.</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t5_proportion"
+              placeholder="e.g., 300/1 = x/3 → x = ..."
+            />
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint5')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint5">
+            <strong>Hint:</strong> For 6 people for 7 days: Total = unit rate
+            &times; 6 &times; 7. Tokyo: $300 &times; 6 &times; 7 = $12,600. For
+            the proportion: $300 per day in Tokyo, so 3 days = $900. In Cancun,
+            $225 per day &times; ? days = $900, so ? = 4 days.
+          </div>
+
+          <div class="challenge-extra">
+            <div class="challenge-label">Challenge</div>
+            <div class="form-group">
+              <label
+                >Create a "value score" by finding the ratio of activities
+                included per dollar spent. Which destination gives the most
+                activities per dollar?</label
+              >
+              <textarea class="form-textarea" id="t5_challenge"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 6: Data Comparison Table -->
+        <div class="task" id="task6">
+          <div class="task-header">
+            <div class="task-number">6</div>
+            <div>
+              <div class="task-title">Destination Data Analysis</div>
+              <div class="task-subtitle">
+                Use ratios to analyze and compare destination data
+              </div>
+            </div>
+          </div>
+          <div class="ratio-table-builder">
+            <table class="ratio-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Tokyo</th>
+                  <th>Paris</th>
+                  <th>Cancun</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="given">Tourist attractions</td>
+                  <td class="given">24</td>
+                  <td class="given">18</td>
+                  <td class="given">12</td>
+                </tr>
+                <tr>
+                  <td class="given">Restaurants (per block)</td>
+                  <td class="given">8</td>
+                  <td class="given">6</td>
+                  <td class="given">4</td>
+                </tr>
+                <tr>
+                  <td class="given">Avg. temp (°F)</td>
+                  <td class="given">72</td>
+                  <td class="given">68</td>
+                  <td class="given">85</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="form-group">
+            <label
+              >What is the ratio of attractions in Tokyo to Cancun?
+              Simplify.</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t6_r1"
+              placeholder="e.g., 2:1"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Find the unit rate of restaurants per block for each city. Which
+              city has the highest density?</label
+            >
+            <textarea class="form-textarea" id="t6_r2"></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Based on ALL the data, which destination would you recommend for
+              the Rodriguez family? Use at least two ratios in your
+              explanation.</label
+            >
+            <textarea class="form-textarea" id="t6_recommend"></textarea>
+          </div>
+
+          <div class="nav-row">
+            <button class="nav-btn nav-btn-back" onclick="goToPhase(1)">
+              &larr; Travel Briefing
+            </button>
+            <button class="nav-btn nav-btn-next" onclick="goToPhase(3)">
+              Itinerary Planning &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PHASE 3: ITINERARY PLANNING                           -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="phase" id="phase3">
+        <div class="phase-header">
+          <div class="phase-number">Phase 3 &mdash; Itinerary Planning</div>
+          <h1>Itinerary Planning</h1>
+          <p>
+            Build the Rodriguez family's day-by-day itinerary. Use interactive
+            tools to create ratio tables, calculate unit rates, and convert
+            currencies.
+          </p>
+        </div>
+
+        <!-- Map Scale SVG -->
+        <div class="svg-scene">
+          <svg
+            viewBox="0 0 800 180"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Map with route and scale bar"
+          >
+            <rect width="800" height="180" fill="#e0f2fe" rx="14" />
+            <!-- Simplified world map outline -->
+            <g opacity="0.2">
+              <path
+                d="M80 70 Q100 50 140 55 Q160 60 170 80 Q175 100 155 110 Q130 115 110 105 Q85 90 80 70Z"
+                fill="#059669"
+              />
+              <path
+                d="M200 40 Q240 30 280 45 Q310 55 320 80 Q325 100 300 120 Q270 130 250 120 Q220 110 210 85 Q200 60 200 40Z"
+                fill="#059669"
+              />
+              <path
+                d="M370 60 Q420 40 470 55 Q510 65 530 90 Q540 110 520 130 Q480 145 440 135 Q400 120 380 95 Q365 80 370 60Z"
+                fill="#059669"
+              />
+              <path
+                d="M580 50 Q630 35 680 50 Q720 65 730 100 Q725 130 690 140 Q650 145 620 130 Q590 110 585 80 Q580 60 580 50Z"
+                fill="#059669"
+              />
+            </g>
+            <!-- Route line -->
+            <path
+              d="M200 75 Q300 40 400 65 Q500 45 620 80"
+              fill="none"
+              stroke="#1e40af"
+              stroke-width="3"
+              stroke-dasharray="8 4"
+            />
+            <!-- City dots -->
+            <circle cx="200" cy="75" r="8" fill="#dc2626" />
+            <text
+              x="200"
+              y="100"
+              text-anchor="middle"
+              fill="#1e293b"
+              font-size="11"
+              font-weight="700"
+            >
+              Baltimore
+            </text>
+            <circle cx="400" cy="65" r="8" fill="#7c3aed" />
+            <text
+              x="400"
+              y="50"
+              text-anchor="middle"
+              fill="#1e293b"
+              font-size="11"
+              font-weight="700"
+            >
+              Paris
+            </text>
+            <circle cx="620" cy="80" r="8" fill="#dc2626" />
+            <text
+              x="620"
+              y="105"
+              text-anchor="middle"
+              fill="#1e293b"
+              font-size="11"
+              font-weight="700"
+            >
+              Tokyo
+            </text>
+            <!-- Airplane on route -->
+            <g transform="translate(310, 48) rotate(-10)">
+              <polygon points="-8,0 8,-3 8,3" fill="#1e40af" />
+              <polygon points="4,-2 12,-8 12,-3" fill="#64748b" />
+              <polygon points="4,2 12,8 12,3" fill="#64748b" />
+            </g>
+            <!-- Scale bar -->
+            <g transform="translate(550, 155)">
+              <line
+                x1="0"
+                y1="0"
+                x2="150"
+                y2="0"
+                stroke="#1e293b"
+                stroke-width="2"
+              />
+              <line
+                x1="0"
+                y1="-5"
+                x2="0"
+                y2="5"
+                stroke="#1e293b"
+                stroke-width="2"
+              />
+              <line
+                x1="75"
+                y1="-3"
+                x2="75"
+                y2="3"
+                stroke="#1e293b"
+                stroke-width="1"
+              />
+              <line
+                x1="150"
+                y1="-5"
+                x2="150"
+                y2="5"
+                stroke="#1e293b"
+                stroke-width="2"
+              />
+              <text
+                x="0"
+                y="-10"
+                text-anchor="middle"
+                fill="#64748b"
+                font-size="9"
+              >
+                0
+              </text>
+              <text
+                x="75"
+                y="-10"
+                text-anchor="middle"
+                fill="#64748b"
+                font-size="9"
+              >
+                2,500
+              </text>
+              <text
+                x="150"
+                y="-10"
+                text-anchor="middle"
+                fill="#64748b"
+                font-size="9"
+              >
+                5,000 mi
+              </text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Task 7: Interactive Ratio Table Builder -->
+        <div class="task" id="task7">
+          <div class="task-header">
+            <div class="task-number">7</div>
+            <div>
+              <div class="task-title">Custom Ratio Table Builder</div>
+              <div class="task-subtitle">
+                Build your own ratio table for the trip itinerary
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            The family decided on 7 days in Cancun and 7 days in Paris. Use the
+            ratio table builder to calculate daily expenses.
+          </p>
+          <div class="support-note">
+            <strong>Tip:</strong> Type numbers in the blank cells. Use the
+            multiplier column to see the pattern. Each row should follow the
+            same ratio.
+          </div>
+
+          <div class="form-group">
+            <label>Choose your expense category:</label>
+            <select
+              class="form-select"
+              id="builderCategory"
+              onchange="updateBuilderLabels()"
+            >
+              <option value="hotel">Hotel Costs</option>
+              <option value="food">Food Costs</option>
+              <option value="activities">Activity Costs</option>
+              <option value="transport">Transportation Costs</option>
+            </select>
+          </div>
+
+          <div class="ratio-table-builder">
+            <table class="ratio-table" id="builderTable">
+              <thead>
+                <tr>
+                  <th>Days</th>
+                  <th>Cancun Cost</th>
+                  <th>Paris Cost</th>
+                  <th>Multiplier</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="given">1</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="b_c1"
+                      class="form-input"
+                      style="
+                        width: 90px;
+                        display: inline;
+                        padding: 6px;
+                        text-align: center;
+                      "
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="b_p1"
+                      class="form-input"
+                      style="
+                        width: 90px;
+                        display: inline;
+                        padding: 6px;
+                        text-align: center;
+                      "
+                      placeholder="?"
+                    />
+                  </td>
+                  <td class="given">&times;1</td>
+                </tr>
+                <tr>
+                  <td class="given">2</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="b_c2"
+                      class="form-input"
+                      style="
+                        width: 90px;
+                        display: inline;
+                        padding: 6px;
+                        text-align: center;
+                      "
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="b_p2"
+                      class="form-input"
+                      style="
+                        width: 90px;
+                        display: inline;
+                        padding: 6px;
+                        text-align: center;
+                      "
+                      placeholder="?"
+                    />
+                  </td>
+                  <td class="given">&times;2</td>
+                </tr>
+                <tr>
+                  <td class="given">4</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="b_c4"
+                      class="form-input"
+                      style="
+                        width: 90px;
+                        display: inline;
+                        padding: 6px;
+                        text-align: center;
+                      "
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="b_p4"
+                      class="form-input"
+                      style="
+                        width: 90px;
+                        display: inline;
+                        padding: 6px;
+                        text-align: center;
+                      "
+                      placeholder="?"
+                    />
+                  </td>
+                  <td class="given">&times;4</td>
+                </tr>
+                <tr>
+                  <td class="given">7</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="b_c7"
+                      class="form-input"
+                      style="
+                        width: 90px;
+                        display: inline;
+                        padding: 6px;
+                        text-align: center;
+                      "
+                      placeholder="?"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="b_p7"
+                      class="form-input"
+                      style="
+                        width: 90px;
+                        display: inline;
+                        padding: 6px;
+                        text-align: center;
+                      "
+                      placeholder="?"
+                    />
+                  </td>
+                  <td class="given">&times;7</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="form-group">
+            <label
+              >Describe the pattern you see in the ratio table. Why does this
+              pattern work?</label
+            >
+            <textarea class="form-textarea" id="t7_pattern"></textarea>
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint7')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint7">
+            <strong>Hint:</strong> For hotels: Cancun is $150/night, Paris is
+            $250/night. For 2 days, multiply the 1-day cost by 2. The ratio of
+            Cancun to Paris cost stays the same no matter how many days: 150:250
+            = 3:5.
+          </div>
+        </div>
+
+        <!-- Task 8: Unit Rate Calculator -->
+        <div class="task" id="task8">
+          <div class="task-header">
+            <div class="task-number">8</div>
+            <div>
+              <div class="task-title">Unit Rate Calculator</div>
+              <div class="task-subtitle">
+                Find and compare unit rates for travel expenses
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            Use the calculator to find unit rates for different travel costs.
+          </p>
+          <div class="support-note">
+            <strong>Tip:</strong> Unit rate = total amount divided by number of
+            units. Example: $600 for 3 nights = $200 per night.
+          </div>
+
+          <div class="calc-box">
+            <h4 style="color: var(--ocean-deep); margin-bottom: 12px">
+              Unit Rate Finder
+            </h4>
+            <div class="calc-row">
+              <span class="calc-label">Total Amount:</span>
+              <span style="font-weight: 700; color: var(--ocean)">$</span>
+              <input type="number" id="calcTotal" placeholder="0" />
+            </div>
+            <div class="calc-row">
+              <span class="calc-label">Number of Units:</span>
+              <input type="number" id="calcUnits" placeholder="0" />
+              <select
+                id="calcUnitType"
+                style="
+                  padding: 8px;
+                  border: 2px solid var(--line);
+                  border-radius: 8px;
+                  font-weight: 600;
+                "
+              >
+                <option>nights</option>
+                <option>people</option>
+                <option>meals</option>
+                <option>miles</option>
+                <option>hours</option>
+                <option>tickets</option>
+              </select>
+            </div>
+            <button
+              class="check-btn"
+              onclick="calculateUnitRate()"
+              style="margin-top: 8px"
+            >
+              Calculate
+            </button>
+            <div class="calc-result" id="calcResult"></div>
+          </div>
+
+          <div class="form-group" style="margin-top: 14px">
+            <label
+              >Problem 1: A taxi in Paris costs $72 for a 9-mile trip. What is
+              the unit rate per mile?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t8_p1"
+              data-answer="8"
+              placeholder="$___ per mile"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Problem 2: A Tokyo food tour costs $180 for 6 people. What is the
+              unit rate per person?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t8_p2"
+              data-answer="30"
+              placeholder="$___ per person"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Problem 3: A Cancun snorkeling trip costs $125 for 5 hours. What
+              is the unit rate per hour?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t8_p3"
+              data-answer="25"
+              placeholder="$___ per hour"
+            />
+          </div>
+          <button class="check-btn" onclick="checkUnitRateProblems()">
+            Check Answers
+          </button>
+          <div class="feedback" id="t8_feedback"></div>
+
+          <div class="challenge-extra">
+            <div class="challenge-label">Challenge</div>
+            <div class="form-group">
+              <label
+                >Company A charges $48 for 4 hours. Company B charges $70 for 5
+                hours. Company C charges $99 for 9 hours. Which is the best
+                deal? Show all unit rates.</label
+              >
+              <textarea class="form-textarea" id="t8_challenge"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 9: Currency Converter -->
+        <div class="task" id="task9">
+          <div class="task-header">
+            <div class="task-number">9</div>
+            <div>
+              <div class="task-title">Currency Conversion Station</div>
+              <div class="task-subtitle">
+                Use proportions to convert between currencies
+              </div>
+            </div>
+          </div>
+
+          <!-- Currency SVG -->
+          <div class="svg-scene">
+            <svg
+              viewBox="0 0 800 100"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="Currency symbols"
+            >
+              <rect width="800" height="100" fill="#fffbeb" rx="14" />
+              <!-- Dollar -->
+              <g transform="translate(130, 50)">
+                <circle cx="0" cy="0" r="30" fill="#059669" opacity="0.15" />
+                <text
+                  x="0"
+                  y="10"
+                  text-anchor="middle"
+                  fill="#059669"
+                  font-size="32"
+                  font-weight="900"
+                >
+                  $
+                </text>
+                <text
+                  x="0"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#64748b"
+                  font-size="9"
+                >
+                  USD
+                </text>
+              </g>
+              <!-- Arrow -->
+              <g transform="translate(240, 50)">
+                <polygon points="0,-8 15,0 0,8" fill="#d97706" />
+              </g>
+              <!-- Euro -->
+              <g transform="translate(330, 50)">
+                <circle cx="0" cy="0" r="30" fill="#7c3aed" opacity="0.15" />
+                <text
+                  x="0"
+                  y="10"
+                  text-anchor="middle"
+                  fill="#7c3aed"
+                  font-size="32"
+                  font-weight="900"
+                >
+                  &euro;
+                </text>
+                <text
+                  x="0"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#64748b"
+                  font-size="9"
+                >
+                  EUR
+                </text>
+              </g>
+              <!-- Arrow -->
+              <g transform="translate(440, 50)">
+                <polygon points="0,-8 15,0 0,8" fill="#d97706" />
+              </g>
+              <!-- Yen -->
+              <g transform="translate(530, 50)">
+                <circle cx="0" cy="0" r="30" fill="#dc2626" opacity="0.15" />
+                <text
+                  x="0"
+                  y="10"
+                  text-anchor="middle"
+                  fill="#dc2626"
+                  font-size="32"
+                  font-weight="900"
+                >
+                  &yen;
+                </text>
+                <text
+                  x="0"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#64748b"
+                  font-size="9"
+                >
+                  JPY
+                </text>
+              </g>
+              <!-- Arrow -->
+              <g transform="translate(640, 50)">
+                <polygon points="0,-8 15,0 0,8" fill="#d97706" />
+              </g>
+              <!-- Peso -->
+              <g transform="translate(720, 50)">
+                <circle cx="0" cy="0" r="30" fill="#059669" opacity="0.15" />
+                <text
+                  x="0"
+                  y="10"
+                  text-anchor="middle"
+                  fill="#059669"
+                  font-size="28"
+                  font-weight="900"
+                >
+                  MX$
+                </text>
+                <text
+                  x="0"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#64748b"
+                  font-size="9"
+                >
+                  MXN
+                </text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="info-box">
+            <p>
+              <strong>Exchange Rates:</strong> $1 USD = 0.92 EUR (Euro) &bull;
+              $1 USD = 155 JPY (Japanese Yen) &bull; $1 USD = 17.50 MXN (Mexican
+              Peso)
+            </p>
+          </div>
+          <div class="support-note">
+            <strong>Tip:</strong> To convert, set up a proportion: $1/0.92 EUR =
+            $x/? EUR. Cross-multiply to solve.
+          </div>
+
+          <div class="currency-widget">
+            <h4>Interactive Currency Converter</h4>
+            <div class="currency-row">
+              <input
+                type="number"
+                id="currFrom"
+                placeholder="100"
+                value="100"
+                oninput="convertCurrency()"
+              />
+              <select id="currFromType" onchange="convertCurrency()">
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (&euro;)</option>
+                <option value="JPY">JPY (&yen;)</option>
+                <option value="MXN">MXN (MX$)</option>
+              </select>
+              <span class="arrow">&rarr;</span>
+              <select id="currToType" onchange="convertCurrency()">
+                <option value="EUR">EUR (&euro;)</option>
+                <option value="USD">USD ($)</option>
+                <option value="JPY">JPY (&yen;)</option>
+                <option value="MXN">MXN (MX$)</option>
+              </select>
+              <strong
+                id="currResult"
+                style="font-size: 1.1rem; color: var(--sand-dark)"
+                >= 92.00</strong
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label
+              >Convert $500 USD to Japanese Yen. Show the proportion you
+              used.</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t9_yen"
+              placeholder="$500 = ___ JPY"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >A souvenir costs 2,325 JPY. How many US dollars is that? Show
+              your work.</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t9_usd"
+              placeholder="2,325 JPY = $___ USD"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >The family wants to exchange $1,500 USD to Mexican Pesos. How
+              many pesos will they receive?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t9_mxn"
+              placeholder="$1,500 = ___ MXN"
+            />
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint9')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint9">
+            <strong>Hint:</strong> $500 &times; 155 = 77,500 JPY. For yen to
+            dollars: 2,325 &divide; 155 = $15. For pesos: $1,500 &times; 17.50 =
+            26,250 MXN.
+          </div>
+        </div>
+
+        <!-- Task 10: Proportional Itinerary -->
+        <div class="task" id="task10">
+          <div class="task-header">
+            <div class="task-number">10</div>
+            <div>
+              <div class="task-title">Day-by-Day Itinerary Planner</div>
+              <div class="task-subtitle">
+                Use proportional reasoning to allocate time and money
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            The family wants to spend their 14 days in a ratio of 2:1:1 for
+            sightseeing, adventure, and relaxation. Plan the daily breakdown.
+          </p>
+          <div class="support-note">
+            <strong>Tip:</strong> 2:1:1 means 2 parts sightseeing, 1 part
+            adventure, 1 part relaxation. Total parts = 4. Each part = 14
+            &divide; 4 = 3.5 days.
+          </div>
+          <div class="form-group">
+            <label>How many days for sightseeing? (2 parts out of 4)</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t10_sight"
+              data-answer="7"
+              placeholder="___  days"
+            />
+          </div>
+          <div class="form-group">
+            <label>How many days for adventure? (1 part out of 4)</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t10_adv"
+              data-answer="3.5"
+              placeholder="___ days"
+            />
+          </div>
+          <div class="form-group">
+            <label>How many days for relaxation? (1 part out of 4)</label>
+            <input
+              type="text"
+              class="form-input"
+              id="t10_relax"
+              data-answer="3.5"
+              placeholder="___ days"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >The daily budget should follow the same 2:1:1 ratio. If the total
+              daily budget is $800, how much goes to sightseeing, adventure, and
+              relaxation?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t10_budget"
+              placeholder="Sightseeing: $___&#10;Adventure: $___&#10;Relaxation: $___"
+            ></textarea>
+          </div>
+          <button class="check-btn" onclick="checkItinerary()">
+            Check Answers
+          </button>
+          <div class="feedback" id="t10_feedback"></div>
+
+          <div class="challenge-extra">
+            <div class="challenge-label">Challenge</div>
+            <div class="form-group">
+              <label
+                >If the family changes to a 3:2:1 ratio for 14 days, recalculate
+                the days and budget ($800/day) for each category. How does this
+                change affect costs?</label
+              >
+              <textarea class="form-textarea" id="t10_challenge"></textarea>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="nav-btn nav-btn-back" onclick="goToPhase(2)">
+              &larr; Destination Research
+            </button>
+            <button class="nav-btn nav-btn-next" onclick="goToPhase(4)">
+              Budget Build &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PHASE 4: BUDGET BUILD                                 -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="phase" id="phase4">
+        <div class="phase-header">
+          <div class="phase-number">Phase 4 &mdash; Budget Build</div>
+          <h1>Budget Build</h1>
+          <p>
+            Put your ratio and proportion skills to the ultimate test. Calculate
+            exchange rates, travel time ratios, budget proportions, and use map
+            scales to plan the final trip details.
+          </p>
+        </div>
+
+        <!-- Budget SVG -->
+        <div class="svg-scene">
+          <svg
+            viewBox="0 0 800 160"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Budget planning icons with wallet, calculator, and chart"
+          >
+            <rect width="800" height="160" fill="#ecfdf5" rx="14" />
+            <!-- Wallet -->
+            <g transform="translate(140, 80)">
+              <rect
+                x="-35"
+                y="-25"
+                width="70"
+                height="50"
+                rx="8"
+                fill="#1e40af"
+              />
+              <rect
+                x="-30"
+                y="-20"
+                width="60"
+                height="15"
+                rx="4"
+                fill="#3b82f6"
+              />
+              <rect
+                x="10"
+                y="-5"
+                width="25"
+                height="16"
+                rx="6"
+                fill="#fbbf24"
+              />
+              <circle cx="22" cy="3" r="4" fill="#d97706" />
+              <text
+                x="0"
+                y="45"
+                text-anchor="middle"
+                fill="#1e293b"
+                font-size="11"
+                font-weight="700"
+              >
+                Budget
+              </text>
+            </g>
+            <!-- Calculator -->
+            <g transform="translate(340, 80)">
+              <rect
+                x="-28"
+                y="-35"
+                width="56"
+                height="70"
+                rx="6"
+                fill="#334155"
+              />
+              <rect
+                x="-22"
+                y="-29"
+                width="44"
+                height="18"
+                rx="3"
+                fill="#10b981"
+              />
+              <text
+                x="0"
+                y="-16"
+                text-anchor="middle"
+                fill="#fff"
+                font-size="10"
+                font-weight="700"
+              >
+                1,250
+              </text>
+              <rect
+                x="-20"
+                y="-5"
+                width="10"
+                height="10"
+                rx="2"
+                fill="#64748b"
+              />
+              <rect
+                x="-5"
+                y="-5"
+                width="10"
+                height="10"
+                rx="2"
+                fill="#64748b"
+              />
+              <rect
+                x="10"
+                y="-5"
+                width="10"
+                height="10"
+                rx="2"
+                fill="#64748b"
+              />
+              <rect
+                x="-20"
+                y="10"
+                width="10"
+                height="10"
+                rx="2"
+                fill="#64748b"
+              />
+              <rect
+                x="-5"
+                y="10"
+                width="10"
+                height="10"
+                rx="2"
+                fill="#64748b"
+              />
+              <rect
+                x="10"
+                y="10"
+                width="10"
+                height="10"
+                rx="2"
+                fill="#fbbf24"
+              />
+              <text
+                x="0"
+                y="50"
+                text-anchor="middle"
+                fill="#1e293b"
+                font-size="11"
+                font-weight="700"
+              >
+                Calculate
+              </text>
+            </g>
+            <!-- Pie Chart -->
+            <g transform="translate(540, 75)">
+              <circle cx="0" cy="0" r="35" fill="#e0f2fe" />
+              <path d="M0,0 L0,-35 A35,35 0 0,1 30.3,17.5 Z" fill="#1e40af" />
+              <path
+                d="M0,0 L30.3,17.5 A35,35 0 0,1 -30.3,17.5 Z"
+                fill="#059669"
+              />
+              <path d="M0,0 L-30.3,17.5 A35,35 0 0,1 0,-35 Z" fill="#fbbf24" />
+              <text
+                x="0"
+                y="52"
+                text-anchor="middle"
+                fill="#1e293b"
+                font-size="11"
+                font-weight="700"
+              >
+                Proportions
+              </text>
+            </g>
+            <!-- Compass -->
+            <g transform="translate(720, 75)">
+              <circle
+                cx="0"
+                cy="0"
+                r="30"
+                fill="none"
+                stroke="#1e40af"
+                stroke-width="2"
+              />
+              <circle cx="0" cy="0" r="28" fill="#fff" opacity="0.8" />
+              <polygon points="0,-22 4,0 0,8 -4,0" fill="#dc2626" />
+              <polygon points="0,22 4,0 0,-8 -4,0" fill="#334155" />
+              <circle cx="0" cy="0" r="3" fill="#1e40af" />
+              <text
+                x="0"
+                y="-32"
+                text-anchor="middle"
+                fill="#dc2626"
+                font-size="9"
+                font-weight="800"
+              >
+                N
+              </text>
+              <text
+                x="0"
+                y="52"
+                text-anchor="middle"
+                fill="#1e293b"
+                font-size="11"
+                font-weight="700"
+              >
+                Navigate
+              </text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Task 11: Exchange Rate Proportions -->
+        <div class="task" id="task11">
+          <div class="task-header">
+            <div class="task-number">11</div>
+            <div>
+              <div class="task-title">Exchange Rate Proportions</div>
+              <div class="task-subtitle">
+                Set up and solve proportions for currency exchange
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            Use the exchange rates to solve these real-world problems with
+            proportions.
+          </p>
+          <div class="info-box">
+            <p>
+              <strong>Rates:</strong> $1 = 0.92 EUR &bull; $1 = 155 JPY &bull;
+              $1 = 17.50 MXN
+            </p>
+          </div>
+          <div class="support-note">
+            <strong>Tip:</strong> Set up a proportion like 1/0.92 = x/460.
+            Cross-multiply: 1 &times; 460 = 0.92 &times; x. Then divide.
+          </div>
+
+          <div class="form-group">
+            <label
+              >Problem: The family's Paris hotel costs 460 EUR. Set up a
+              proportion and solve: how many USD is that?</label
+            >
+            <div class="form-row">
+              <div>
+                <label style="font-size: 0.82rem">Proportion setup:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t11_setup"
+                  placeholder="1/0.92 = x/460"
+                />
+              </div>
+              <div>
+                <label style="font-size: 0.82rem">Answer in USD:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t11_answer"
+                  placeholder="$___"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label
+              >A dinner in Tokyo costs 7,750 JPY for the whole family. Convert
+              to USD using a proportion.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t11_dinner"
+              placeholder="Proportion: ___&#10;Answer: $___"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >In Cancun, the family pays 5,250 MXN for a boat tour. How much is
+              that in USD and EUR?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t11_boat"
+              placeholder="USD: $___&#10;EUR: ___"
+            ></textarea>
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint11')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint11">
+            <strong>Hint:</strong> 460 EUR: 1/0.92 = x/460 &rarr; x = 460/0.92 =
+            $500. For 7,750 JPY: 7,750/155 = $50. For 5,250 MXN: 5,250/17.50 =
+            $300, then $300 &times; 0.92 = 276 EUR.
+          </div>
+        </div>
+
+        <!-- Task 12: Travel Time Ratios -->
+        <div class="task" id="task12">
+          <div class="task-header">
+            <div class="task-number">12</div>
+            <div>
+              <div class="task-title">Travel Time Ratios</div>
+              <div class="task-subtitle">
+                Compare speeds, distances, and times using ratios
+              </div>
+            </div>
+          </div>
+          <div class="info-box">
+            <p>
+              <strong>Flight data:</strong> Baltimore &rarr; Paris: 3,985 miles,
+              9 hours &bull; Paris &rarr; Tokyo: 6,032 miles, 12 hours &bull;
+              Tokyo &rarr; Cancun: 7,480 miles, 15 hours
+            </p>
+          </div>
+          <div class="support-note">
+            <strong>Tip:</strong> Speed = distance &divide; time. This gives you
+            miles per hour (mph), which is a unit rate.
+          </div>
+          <div class="form-group">
+            <label
+              >Calculate the unit rate (speed in mph) for each flight:</label
+            >
+            <div class="form-row-3">
+              <div>
+                <label style="font-size: 0.82rem">Baltimore&rarr;Paris:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t12_s1"
+                  placeholder="___ mph"
+                />
+              </div>
+              <div>
+                <label style="font-size: 0.82rem">Paris&rarr;Tokyo:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t12_s2"
+                  placeholder="___ mph"
+                />
+              </div>
+              <div>
+                <label style="font-size: 0.82rem">Tokyo&rarr;Cancun:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t12_s3"
+                  placeholder="___ mph"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label
+              >Write the ratio of the fastest speed to the slowest speed.
+              Simplify.</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t12_ratio"
+              placeholder="___:___"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >If the Baltimore&rarr;Paris flight is delayed and the plane flies
+              at 400 mph instead, how long will the flight take? Set up a
+              proportion.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t12_delay"
+              placeholder="Proportion: distance/speed = time&#10;3,985 / 400 = ___"
+            ></textarea>
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint12')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint12">
+            <strong>Hint:</strong> B&rarr;P: 3,985 &divide; 9 &approx; 443 mph.
+            P&rarr;T: 6,032 &divide; 12 &approx; 503 mph. T&rarr;C: 7,480
+            &divide; 15 &approx; 499 mph. Fastest to slowest: 503:443. At 400
+            mph: 3,985/400 &approx; 9.96 hours.
+          </div>
+        </div>
+
+        <!-- Task 13: Budget Proportions -->
+        <div class="task" id="task13">
+          <div class="task-header">
+            <div class="task-number">13</div>
+            <div>
+              <div class="task-title">Budget Proportion Breakdown</div>
+              <div class="task-subtitle">
+                Divide the total budget using ratio proportions
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            The Rodriguez family's $6,000 budget is divided into categories with
+            the ratio 5:3:2:2 (Hotels : Food : Activities : Transportation).
+          </p>
+          <div class="support-note">
+            <strong>Tip:</strong> Add all parts: 5+3+2+2=12. Each part = $6,000
+            &divide; 12 = $500. Multiply each category's ratio number by $500.
+          </div>
+
+          <div class="tape-diagram">
+            <div
+              style="font-weight: 700; color: var(--ocean); margin-bottom: 10px"
+            >
+              Budget Tape Diagram — $6,000 Total
+            </div>
+            <div class="tape-row">
+              <div class="tape-label">Hotels (5)</div>
+              <div class="tape-segments">
+                <div class="tape-seg ocean">$500</div>
+                <div class="tape-seg ocean">$500</div>
+                <div class="tape-seg ocean">$500</div>
+                <div class="tape-seg ocean">$500</div>
+                <div class="tape-seg ocean">$500</div>
+              </div>
+            </div>
+            <div class="tape-row">
+              <div class="tape-label">Food (3)</div>
+              <div class="tape-segments">
+                <div class="tape-seg emerald">$500</div>
+                <div class="tape-seg emerald">$500</div>
+                <div class="tape-seg emerald">$500</div>
+              </div>
+            </div>
+            <div class="tape-row">
+              <div class="tape-label">Activities (2)</div>
+              <div class="tape-segments">
+                <div class="tape-seg sand">$500</div>
+                <div class="tape-seg sand">$500</div>
+              </div>
+            </div>
+            <div class="tape-row">
+              <div class="tape-label">Transport (2)</div>
+              <div class="tape-segments">
+                <div
+                  class="tape-seg ocean"
+                  style="background: var(--ocean-light)"
+                >
+                  $500
+                </div>
+                <div
+                  class="tape-seg ocean"
+                  style="background: var(--ocean-light)"
+                >
+                  $500
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>How much money goes to each category?</label>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr">
+              <div>
+                <label style="font-size: 0.82rem">Hotels:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t13_hotels"
+                  data-answer="2500"
+                  placeholder="$___"
+                />
+              </div>
+              <div>
+                <label style="font-size: 0.82rem">Food:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t13_food"
+                  data-answer="1500"
+                  placeholder="$___"
+                />
+              </div>
+            </div>
+            <div
+              class="form-row"
+              style="grid-template-columns: 1fr 1fr; margin-top: 8px"
+            >
+              <div>
+                <label style="font-size: 0.82rem">Activities:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t13_act"
+                  data-answer="1000"
+                  placeholder="$___"
+                />
+              </div>
+              <div>
+                <label style="font-size: 0.82rem">Transportation:</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="t13_trans"
+                  data-answer="1000"
+                  placeholder="$___"
+                />
+              </div>
+            </div>
+          </div>
+          <button class="check-btn" onclick="checkBudget()">
+            Check Answers
+          </button>
+          <div class="feedback" id="t13_feedback"></div>
+
+          <div class="form-group" style="margin-top: 12px">
+            <label
+              >What fraction and percentage of the total budget goes to
+              hotels?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t13_frac"
+              placeholder="Fraction: ___ Percentage: ___%"
+            />
+          </div>
+
+          <div class="challenge-extra">
+            <div class="challenge-label">Challenge</div>
+            <div class="form-group">
+              <label
+                >If the budget increases to $7,200 but the ratio stays 5:3:2:2,
+                how much does each category increase? Show the proportional
+                reasoning.</label
+              >
+              <textarea class="form-textarea" id="t13_challenge"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 14: Map Scale -->
+        <div class="task" id="task14">
+          <div class="task-header">
+            <div class="task-number">14</div>
+            <div>
+              <div class="task-title">Map Scale Navigator</div>
+              <div class="task-subtitle">
+                Use map scale ratios to find real-world distances
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            The family is using a tourist map of Paris. The map scale is 1 inch
+            = 0.5 miles (or 1:31,680).
+          </p>
+          <div class="support-note">
+            <strong>Tip:</strong> Map scale is a ratio. If 1 inch = 0.5 miles on
+            the map, then 2 inches = 1 mile, and 4 inches = 2 miles.
+          </div>
+
+          <div class="ratio-table-builder">
+            <table class="ratio-table">
+              <thead>
+                <tr>
+                  <th>Map Distance (inches)</th>
+                  <th>Real Distance (miles)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="given">1</td>
+                  <td class="given">0.5</td>
+                </tr>
+                <tr>
+                  <td class="given">2</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="ms_2"
+                      data-answer="1"
+                      placeholder="?"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="given">3</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="ms_3"
+                      data-answer="1.5"
+                      placeholder="?"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="given">6</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="ms_6"
+                      data-answer="3"
+                      placeholder="?"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      id="ms_in10"
+                      data-answer="10"
+                      placeholder="?"
+                    />
+                  </td>
+                  <td class="given">5</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button
+            class="check-btn"
+            onclick="checkRatioTable('ms', ['ms_2', 'ms_3', 'ms_6', 'ms_in10'])"
+          >
+            Check Answers
+          </button>
+          <div class="feedback" id="ms_feedback"></div>
+
+          <div class="form-group" style="margin-top: 14px">
+            <label
+              >The Eiffel Tower to the Louvre measures 4.6 inches on the map.
+              How far is it in real life? Show your proportion.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t14_distance"
+              placeholder="1 inch / 0.5 miles = 4.6 inches / x miles&#10;x = ___"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >If the family walks 3 mph, how long will it take them to walk
+              from the Eiffel Tower to the Louvre?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t14_time"
+              placeholder="Time = distance ÷ speed = ___"
+            />
+          </div>
+
+          <div class="challenge-extra">
+            <div class="challenge-label">Challenge</div>
+            <div class="form-group">
+              <label
+                >A Tokyo map uses a scale of 1 cm = 200 meters. The hotel is 8.5
+                cm from a temple on the map. How far is that in kilometers? Set
+                up two proportions (cm to meters, then meters to km).</label
+              >
+              <textarea class="form-textarea" id="t14_challenge"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 15: Souvenir Budget -->
+        <div class="task" id="task15">
+          <div class="task-header">
+            <div class="task-number">15</div>
+            <div>
+              <div class="task-title">Souvenir Shopping Ratios</div>
+              <div class="task-subtitle">
+                Apply proportional reasoning to shopping decisions
+              </div>
+            </div>
+          </div>
+          <p
+            style="color: var(--muted); font-size: 0.92rem; margin-bottom: 12px"
+          >
+            Each family member gets $50 for souvenirs. Compare prices across
+            countries to find the best deals.
+          </p>
+
+          <div class="ratio-table-builder">
+            <table class="ratio-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Paris (EUR)</th>
+                  <th>Tokyo (JPY)</th>
+                  <th>Cancun (MXN)</th>
+                  <th>Best Deal (USD)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="given">Keychain</td>
+                  <td class="given">4.60 EUR</td>
+                  <td class="given">620 JPY</td>
+                  <td class="given">52.50 MXN</td>
+                  <td>
+                    <input type="text" id="sv_key" placeholder="City: $___" />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="given">T-Shirt</td>
+                  <td class="given">18.40 EUR</td>
+                  <td class="given">2,325 JPY</td>
+                  <td class="given">262.50 MXN</td>
+                  <td>
+                    <input type="text" id="sv_shirt" placeholder="City: $___" />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="given">Magnet</td>
+                  <td class="given">2.76 EUR</td>
+                  <td class="given">465 JPY</td>
+                  <td class="given">35 MXN</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="sv_magnet"
+                      placeholder="City: $___"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="form-group">
+            <label
+              >Show your work converting each price to USD. Which city has the
+              cheapest souvenirs overall?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t15_work"
+              placeholder="Keychain: Paris = 4.60/0.92 = $5, Tokyo = 620/155 = $4, Cancun = 52.50/17.50 = $3..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >If you buy 1 of each item from the cheapest city, how much would
+              you spend in USD? What fraction of your $50 budget is that?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="t15_total"
+              placeholder="Total: $___ , Fraction: ___/50"
+            />
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint15')">
+            Show Hint
+          </button>
+          <div class="hint-content" id="hint15">
+            <strong>Hint:</strong> To convert: divide EUR by 0.92, divide JPY by
+            155, divide MXN by 17.50. Keychain: Paris=$5, Tokyo=$4, Cancun=$3.
+            Cancun wins for keychains!
+          </div>
+
+          <!-- Task 16: Final Budget Summary -->
+          <div class="task" id="task16" style="margin-top: 18px">
+            <div class="task-header">
+              <div class="task-number">16</div>
+              <div>
+                <div class="task-title">Final Budget Summary</div>
+                <div class="task-subtitle">
+                  Create the complete trip budget using all your calculations
+                </div>
+              </div>
+            </div>
+            <p
+              style="
+                color: var(--muted);
+                font-size: 0.92rem;
+                margin-bottom: 12px;
+              "
+            >
+              Compile all your work into a final budget. Make sure every line
+              uses a ratio or proportion to justify the cost.
+            </p>
+            <div class="form-group">
+              <label>Flights (total for 6 people, round trip):</label>
+              <input
+                type="text"
+                class="form-input"
+                id="t16_flights"
+                placeholder="$___ — show calculation"
+              />
+            </div>
+            <div class="form-group">
+              <label
+                >Hotels (7 nights Cancun + 7 nights Paris for 3 rooms):</label
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="t16_hotels"
+                placeholder="$___ — show calculation"
+              />
+            </div>
+            <div class="form-group">
+              <label>Food (14 days, 6 people):</label>
+              <input
+                type="text"
+                class="form-input"
+                id="t16_food"
+                placeholder="$___ — show calculation"
+              />
+            </div>
+            <div class="form-group">
+              <label>Activities &amp; transportation:</label>
+              <input
+                type="text"
+                class="form-input"
+                id="t16_activities"
+                placeholder="$___ — show calculation"
+              />
+            </div>
+            <div class="form-group">
+              <label
+                >Grand Total: Is the family over or under their $6,000 budget?
+                By how much? What adjustments would you recommend?</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t16_total"
+                placeholder="Grand Total: $___&#10;Over/under by: $___&#10;Recommendation: ___"
+                style="min-height: 100px"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="nav-btn nav-btn-back" onclick="goToPhase(3)">
+              &larr; Itinerary Planning
+            </button>
+            <button class="nav-btn nav-btn-next" onclick="goToPhase(5)">
+              Travel Portfolio &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PHASE 5: TRAVEL PORTFOLIO                             -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="phase" id="phase5">
+        <div class="phase-header">
+          <div class="phase-number">Phase 5 &mdash; Travel Portfolio</div>
+          <h1>Travel Portfolio</h1>
+          <p>
+            Review your work, earn achievement badges, complete a
+            self-assessment, and share your travel plan. This is your chance to
+            reflect on everything you learned about ratios and proportional
+            relationships.
+          </p>
+        </div>
+
+        <!-- Achievement Badges -->
+        <div class="card card-accent-ocean">
+          <h3 style="color: var(--ocean-deep); margin-bottom: 14px">
+            Achievement Badges
+          </h3>
+          <p
+            style="color: var(--muted); font-size: 0.9rem; margin-bottom: 14px"
+          >
+            Earn badges by completing each section of the travel planner.
+          </p>
+          <div class="badge-row">
+            <!-- Badge 1: Briefing -->
+            <div class="badge" id="badge1">
+              <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="38"
+                  fill="#e0f2fe"
+                  stroke="#1e40af"
+                  stroke-width="2"
+                />
+                <circle cx="40" cy="40" r="30" fill="#1e40af" />
+                <path
+                  d="M40 20 L40 35 M40 60 L40 45 M25 40 L35 40 M55 40 L45 40"
+                  stroke="#fff"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="8"
+                  fill="none"
+                  stroke="#fbbf24"
+                  stroke-width="2"
+                />
+              </svg>
+              <div class="badge-label">Briefing Complete</div>
+            </div>
+            <!-- Badge 2: Researcher -->
+            <div class="badge" id="badge2">
+              <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="38"
+                  fill="#ecfdf5"
+                  stroke="#059669"
+                  stroke-width="2"
+                />
+                <circle cx="40" cy="40" r="30" fill="#059669" />
+                <circle
+                  cx="36"
+                  cy="36"
+                  r="12"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="3"
+                />
+                <line
+                  x1="45"
+                  y1="45"
+                  x2="55"
+                  y2="55"
+                  stroke="#fff"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <div class="badge-label">Researcher</div>
+            </div>
+            <!-- Badge 3: Planner -->
+            <div class="badge" id="badge3">
+              <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="38"
+                  fill="#fffbeb"
+                  stroke="#d97706"
+                  stroke-width="2"
+                />
+                <circle cx="40" cy="40" r="30" fill="#d97706" />
+                <rect
+                  x="28"
+                  y="25"
+                  width="24"
+                  height="30"
+                  rx="3"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="2.5"
+                />
+                <line
+                  x1="33"
+                  y1="33"
+                  x2="47"
+                  y2="33"
+                  stroke="#fff"
+                  stroke-width="2"
+                />
+                <line
+                  x1="33"
+                  y1="39"
+                  x2="47"
+                  y2="39"
+                  stroke="#fff"
+                  stroke-width="2"
+                />
+                <line
+                  x1="33"
+                  y1="45"
+                  x2="42"
+                  y2="45"
+                  stroke="#fff"
+                  stroke-width="2"
+                />
+              </svg>
+              <div class="badge-label">Planner</div>
+            </div>
+            <!-- Badge 4: Budget Master -->
+            <div class="badge" id="badge4">
+              <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="38"
+                  fill="#e0f2fe"
+                  stroke="#1e40af"
+                  stroke-width="2"
+                />
+                <circle cx="40" cy="40" r="30" fill="#1e40af" />
+                <text
+                  x="40"
+                  y="48"
+                  text-anchor="middle"
+                  fill="#fbbf24"
+                  font-size="28"
+                  font-weight="900"
+                >
+                  $
+                </text>
+              </svg>
+              <div class="badge-label">Budget Master</div>
+            </div>
+            <!-- Badge 5: World Traveler -->
+            <div class="badge" id="badge5">
+              <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="badgeGlobe" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#3b82f6" />
+                    <stop offset="100%" stop-color="#059669" />
+                  </linearGradient>
+                </defs>
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="38"
+                  fill="#e0f2fe"
+                  stroke="url(#badgeGlobe)"
+                  stroke-width="3"
+                />
+                <circle cx="40" cy="40" r="28" fill="url(#badgeGlobe)" />
+                <ellipse
+                  cx="40"
+                  cy="40"
+                  rx="28"
+                  ry="12"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  opacity="0.5"
+                />
+                <ellipse
+                  cx="40"
+                  cy="40"
+                  rx="12"
+                  ry="28"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="12"
+                  y1="40"
+                  x2="68"
+                  y2="40"
+                  stroke="#fff"
+                  stroke-width="1"
+                  opacity="0.5"
+                />
+                <text
+                  x="40"
+                  y="70"
+                  text-anchor="middle"
+                  fill="#fbbf24"
+                  font-size="8"
+                  font-weight="800"
+                >
+                  &#9733; &#9733; &#9733;
+                </text>
+              </svg>
+              <div class="badge-label">World Traveler</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Score Breakdown -->
+        <div class="card card-accent-emerald">
+          <h3 style="color: var(--emerald-dark); margin-bottom: 14px">
+            Score Breakdown
+          </h3>
+          <div class="score-grid">
+            <div class="score-card">
+              <div class="score-value" id="scorePhase1">--</div>
+              <div class="score-label">Briefing</div>
+            </div>
+            <div class="score-card">
+              <div class="score-value" id="scorePhase2">--</div>
+              <div class="score-label">Research</div>
+            </div>
+            <div class="score-card">
+              <div class="score-value" id="scorePhase3">--</div>
+              <div class="score-label">Planning</div>
+            </div>
+            <div class="score-card">
+              <div class="score-value" id="scorePhase4">--</div>
+              <div class="score-label">Budget</div>
+            </div>
+            <div class="score-card">
+              <div class="score-value" id="scoreTotal">--</div>
+              <div class="score-label">Total</div>
+            </div>
+          </div>
+          <button
+            class="check-btn"
+            onclick="calculateScores()"
+            style="margin-top: 8px"
+          >
+            Calculate My Score
+          </button>
+        </div>
+
+        <!-- Self-Assessment Rubric -->
+        <div class="card card-accent-sand">
+          <h3 style="color: var(--sand-dark); margin-bottom: 14px">
+            Self-Assessment Rubric
+          </h3>
+          <p
+            style="color: var(--muted); font-size: 0.9rem; margin-bottom: 14px"
+          >
+            Rate yourself honestly on each skill. This helps your teacher
+            understand your confidence level.
+          </p>
+          <table class="rubric-table">
+            <thead>
+              <tr>
+                <th style="width: 40%">Skill</th>
+                <th class="rubric-radio">Developing (1)</th>
+                <th class="rubric-radio">Proficient (2)</th>
+                <th class="rubric-radio">Advanced (3)</th>
+                <th class="rubric-radio">Expert (4)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>I can write and simplify ratios</td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric1" value="1" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric1" value="2" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric1" value="3" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric1" value="4" />
+                </td>
+              </tr>
+              <tr>
+                <td>I can complete and create ratio tables</td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric2" value="1" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric2" value="2" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric2" value="3" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric2" value="4" />
+                </td>
+              </tr>
+              <tr>
+                <td>I can read and use tape diagrams</td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric3" value="1" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric3" value="2" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric3" value="3" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric3" value="4" />
+                </td>
+              </tr>
+              <tr>
+                <td>I can find and compare unit rates</td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric4" value="1" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric4" value="2" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric4" value="3" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric4" value="4" />
+                </td>
+              </tr>
+              <tr>
+                <td>I can set up and solve proportions</td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric5" value="1" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric5" value="2" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric5" value="3" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric5" value="4" />
+                </td>
+              </tr>
+              <tr>
+                <td>I can apply ratios to real-world problems</td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric6" value="1" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric6" value="2" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric6" value="3" />
+                </td>
+                <td class="rubric-radio">
+                  <input type="radio" name="rubric6" value="4" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 17: Reflection -->
+        <div class="task" id="task17">
+          <div class="task-header">
+            <div class="task-number">17</div>
+            <div>
+              <div class="task-title">Travel Agent Reflection</div>
+              <div class="task-subtitle">
+                Reflect on your mathematical journey
+              </div>
+            </div>
+          </div>
+          <div class="support-note">
+            <strong>Sentence starters:</strong> "I learned that ratios help
+            me..." &bull; "The hardest part was... because..." &bull; "I feel
+            confident about..." &bull; "I still need practice with..."
+          </div>
+          <div class="form-group">
+            <label
+              >What was the most useful ratio or proportion skill you used in
+              this project? Give a specific example from your work.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t17_useful"
+              style="min-height: 80px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Describe one mistake you made and how you fixed it. What did you
+              learn from that mistake?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t17_mistake"
+              style="min-height: 80px"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >How could you use ratios and proportions in your own life outside
+              of school? Give two real examples.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t17_reallife"
+              style="min-height: 80px"
+            ></textarea>
+          </div>
+
+          <div class="challenge-extra">
+            <div class="challenge-label">Challenge</div>
+            <div class="form-group">
+              <label
+                >Design your own travel ratio problem. Include the scenario, the
+                data, and the solution. Your problem should require at least two
+                different ratio/proportion skills.</label
+              >
+              <textarea
+                class="form-textarea"
+                id="t17_challenge"
+                style="min-height: 120px"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 18: Client Presentation -->
+        <div class="task" id="task18">
+          <div class="task-header">
+            <div class="task-number">18</div>
+            <div>
+              <div class="task-title">Client Presentation Summary</div>
+              <div class="task-subtitle">
+                Write a professional summary for the Rodriguez family
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label
+              >Write a 3-5 sentence presentation summary for the Rodriguez
+              family. Include: destinations chosen, total budget with breakdown,
+              key ratios used in planning, and your top recommendation.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="t18_summary"
+              style="min-height: 120px"
+              placeholder="Dear Rodriguez Family,&#10;&#10;Based on our analysis..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Print / Download / Classroom Actions -->
+        <div class="card">
+          <h3 style="color: var(--ocean-deep); margin-bottom: 14px">
+            Submit Your Work
+          </h3>
+          <div class="action-bar">
+            <button
+              class="action-btn action-btn-primary"
+              onclick="printPortfolio()"
+            >
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"
+                />
+              </svg>
+              Print
+            </button>
+            <button class="action-btn" onclick="downloadPortfolio()">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"
+                />
+              </svg>
+              Download Text
+            </button>
+            <button class="action-btn" onclick="copyToClipboard()">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+              </svg>
+              Copy to Clipboard
+            </button>
+            <button class="action-btn" onclick="submitToClassroom()">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              Google Classroom
+            </button>
+            <button
+              class="action-btn action-btn-primary"
+              onclick="showCertificate()"
+            >
+              &#9992; View Certificate
+            </button>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn nav-btn-back" onclick="goToPhase(4)">
+            &larr; Budget Build
+          </button>
+          <div style="text-align: center">
+            <span
+              style="
+                font-size: 0.88rem;
+                color: var(--emerald);
+                font-weight: 700;
+              "
+              >You completed the Global Travel Planner!</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end .app-shell -->
+
+    <script>
+      // ══════════════════════════════════════════════════════
+      // GLOBAL STATE
+      // ══════════════════════════════════════════════════════
+      const STORAGE_KEY = "neft_unit3_travel_planner_v2";
+      let currentPhase = 1;
+      let currentMode = "standard"; // standard | support | challenge
+
+      // ══════════════════════════════════════════════════════
+      // PHASE NAVIGATION
+      // ══════════════════════════════════════════════════════
+      function goToPhase(n) {
+        if (n < 1 || n > 5) return;
+        currentPhase = n;
+        document
+          .querySelectorAll(".phase")
+          .forEach((el) => el.classList.remove("active"));
+        const target = document.getElementById("phase" + n);
+        if (target) target.classList.add("active");
+
+        // Update dots
+        document.querySelectorAll(".phase-dot").forEach((dot, i) => {
+          dot.classList.remove("active", "completed");
+          if (i + 1 < n) dot.classList.add("completed");
+          if (i + 1 === n) dot.classList.add("active");
+        });
+
+        // Update progress
+        const pct = ((n - 1) / 4) * 100;
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressLabel").textContent =
+          "Phase " + n + " of 5";
+
+        // Update badges
+        for (let i = 1; i < n; i++) {
+          const badge = document.getElementById("badge" + i);
+          if (badge) badge.classList.add("earned");
+        }
+        if (n === 5) {
+          document.getElementById("badge5").classList.add("earned");
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        saveState();
+      }
+
+      // ══════════════════════════════════════════════════════
+      // MODE TOGGLES
+      // ══════════════════════════════════════════════════════
+      function setMode(mode) {
+        currentMode = mode;
+        document.body.classList.remove("support-mode", "challenge-mode");
+        if (mode === "support") document.body.classList.add("support-mode");
+        if (mode === "challenge") document.body.classList.add("challenge-mode");
+
+        document
+          .querySelectorAll(".mode-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        if (mode === "support")
+          document.getElementById("btnSupport").classList.add("active");
+        else if (mode === "challenge")
+          document.getElementById("btnChallenge").classList.add("active");
+        else document.getElementById("btnStandard").classList.add("active");
+
+        saveState();
+      }
+
+      // ══════════════════════════════════════════════════════
+      // HINT SYSTEM
+      // ══════════════════════════════════════════════════════
+      function toggleHint(id) {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle("show");
+      }
+
+      // ══════════════════════════════════════════════════════
+      // RATIO TABLE CHECKER
+      // ══════════════════════════════════════════════════════
+      function checkRatioTable(prefix, ids) {
+        let correct = 0;
+        let total = ids.length;
+        ids.forEach((id) => {
+          const input = document.getElementById(id);
+          if (!input) return;
+          const answer = parseFloat(input.getAttribute("data-answer"));
+          const val = parseFloat(input.value.replace(/[$,]/g, ""));
+          input.classList.remove("correct", "incorrect");
+          if (!isNaN(val) && Math.abs(val - answer) < 0.1) {
+            input.classList.add("correct");
+            correct++;
+          } else if (input.value.trim()) {
+            input.classList.add("incorrect");
+          }
+        });
+
+        const fb = document.getElementById(prefix + "_feedback");
+        if (!fb) return;
+        fb.classList.remove("correct", "incorrect", "partial", "show");
+        if (correct === total) {
+          fb.textContent = "All correct! Great ratio work!";
+          fb.classList.add("correct", "show");
+        } else if (correct > 0) {
+          fb.textContent =
+            correct +
+            " of " +
+            total +
+            " correct. Check the red cells and try again.";
+          fb.classList.add("partial", "show");
+        } else {
+          fb.textContent =
+            "Not quite. Remember to multiply the unit rate by the number of units.";
+          fb.classList.add("incorrect", "show");
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // UNIT RATE CALCULATOR
+      // ══════════════════════════════════════════════════════
+      function calculateUnitRate() {
+        const total = parseFloat(document.getElementById("calcTotal").value);
+        const units = parseFloat(document.getElementById("calcUnits").value);
+        const unitType = document.getElementById("calcUnitType").value;
+        const result = document.getElementById("calcResult");
+
+        if (isNaN(total) || isNaN(units) || units === 0) {
+          result.textContent =
+            "Please enter valid numbers (units cannot be zero).";
+          result.classList.add("show");
+          result.style.borderColor = "var(--error)";
+          result.style.color = "var(--error)";
+          return;
+        }
+
+        const rate = (total / units).toFixed(2);
+        result.textContent =
+          "Unit Rate: $" +
+          rate +
+          " per " +
+          unitType.slice(0, -1) +
+          " (" +
+          total +
+          " ÷ " +
+          units +
+          " = " +
+          rate +
+          ")";
+        result.classList.add("show");
+        result.style.borderColor = "var(--emerald)";
+        result.style.color = "var(--emerald-dark)";
+      }
+
+      // ══════════════════════════════════════════════════════
+      // UNIT RATE PROBLEMS CHECKER
+      // ══════════════════════════════════════════════════════
+      function checkUnitRateProblems() {
+        const problems = [
+          { id: "t8_p1", answer: 8 },
+          { id: "t8_p2", answer: 30 },
+          { id: "t8_p3", answer: 25 },
+        ];
+        let correct = 0;
+        problems.forEach((p) => {
+          const input = document.getElementById(p.id);
+          if (!input) return;
+          const val = parseFloat(input.value.replace(/[$,]/g, ""));
+          input.classList.remove("correct", "incorrect");
+          if (!isNaN(val) && Math.abs(val - p.answer) < 0.5) {
+            input.classList.add("correct");
+            correct++;
+          } else if (input.value.trim()) {
+            input.classList.add("incorrect");
+          }
+        });
+        const fb = document.getElementById("t8_feedback");
+        fb.classList.remove("correct", "incorrect", "partial", "show");
+        if (correct === 3) {
+          fb.textContent = "All unit rates correct! You are a unit rate pro!";
+          fb.classList.add("correct", "show");
+        } else if (correct > 0) {
+          fb.textContent =
+            correct + " of 3 correct. Remember: unit rate = total ÷ units.";
+          fb.classList.add("partial", "show");
+        } else {
+          fb.textContent =
+            "Try again. Divide the total cost by the number of units.";
+          fb.classList.add("incorrect", "show");
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // CURRENCY CONVERTER
+      // ══════════════════════════════════════════════════════
+      const RATES = { USD: 1, EUR: 0.92, JPY: 155, MXN: 17.5 };
+
+      function convertCurrency() {
+        const amount =
+          parseFloat(document.getElementById("currFrom").value) || 0;
+        const from = document.getElementById("currFromType").value;
+        const to = document.getElementById("currToType").value;
+        // Convert to USD first, then to target
+        const usd = amount / RATES[from];
+        const result = usd * RATES[to];
+        document.getElementById("currResult").textContent =
+          "= " + result.toFixed(2);
+      }
+
+      // ══════════════════════════════════════════════════════
+      // ITINERARY CHECKER
+      // ══════════════════════════════════════════════════════
+      function checkItinerary() {
+        const checks = [
+          { id: "t10_sight", answer: 7 },
+          { id: "t10_adv", answer: 3.5 },
+          { id: "t10_relax", answer: 3.5 },
+        ];
+        let correct = 0;
+        checks.forEach((c) => {
+          const input = document.getElementById(c.id);
+          if (!input) return;
+          const val = parseFloat(input.value);
+          input.classList.remove("correct", "incorrect");
+          if (!isNaN(val) && Math.abs(val - c.answer) < 0.1) {
+            input.classList.add("correct");
+            correct++;
+          } else if (input.value.trim()) {
+            input.classList.add("incorrect");
+          }
+        });
+        const fb = document.getElementById("t10_feedback");
+        fb.classList.remove("correct", "incorrect", "partial", "show");
+        if (correct === 3) {
+          fb.textContent = "Perfect! The 2:1:1 ratio splits 14 days correctly!";
+          fb.classList.add("correct", "show");
+        } else if (correct > 0) {
+          fb.textContent =
+            correct +
+            " of 3 correct. Remember: total parts = 4, each part = 14 ÷ 4 = 3.5 days.";
+          fb.classList.add("partial", "show");
+        } else {
+          fb.textContent =
+            "The ratio 2:1:1 has 4 total parts. Divide 14 days by 4 to find one part.";
+          fb.classList.add("incorrect", "show");
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // BUDGET CHECKER
+      // ══════════════════════════════════════════════════════
+      function checkBudget() {
+        const checks = [
+          { id: "t13_hotels", answer: 2500 },
+          { id: "t13_food", answer: 1500 },
+          { id: "t13_act", answer: 1000 },
+          { id: "t13_trans", answer: 1000 },
+        ];
+        let correct = 0;
+        checks.forEach((c) => {
+          const input = document.getElementById(c.id);
+          if (!input) return;
+          const val = parseFloat(input.value.replace(/[$,]/g, ""));
+          input.classList.remove("correct", "incorrect");
+          if (!isNaN(val) && Math.abs(val - c.answer) < 1) {
+            input.classList.add("correct");
+            correct++;
+          } else if (input.value.trim()) {
+            input.classList.add("incorrect");
+          }
+        });
+        const fb = document.getElementById("t13_feedback");
+        fb.classList.remove("correct", "incorrect", "partial", "show");
+        if (correct === 4) {
+          fb.textContent =
+            "Budget breakdown is perfect! Hotels: $2,500, Food: $1,500, Activities: $1,000, Transport: $1,000.";
+          fb.classList.add("correct", "show");
+        } else if (correct > 0) {
+          fb.textContent =
+            correct +
+            " of 4 correct. Each part = $6,000 ÷ 12 = $500. Multiply by the ratio number.";
+          fb.classList.add("partial", "show");
+        } else {
+          fb.textContent =
+            "5+3+2+2 = 12 parts. Each part = $6,000 ÷ 12 = $500.";
+          fb.classList.add("incorrect", "show");
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // RATIO TABLE BUILDER LABELS
+      // ══════════════════════════════════════════════════════
+      function updateBuilderLabels() {
+        const cat = document.getElementById("builderCategory").value;
+        const labels = {
+          hotel: ["Hotel", 150, 250],
+          food: ["Food", 45, 75],
+          activities: ["Activities", 30, 35],
+          transport: ["Transport", 25, 40],
+        };
+        const data = labels[cat] || labels.hotel;
+        const th = document.querySelectorAll("#builderTable thead th");
+        if (th.length >= 3) {
+          th[1].textContent = "Cancun $" + data[1] + "/day";
+          th[2].textContent = "Paris $" + data[2] + "/day";
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // SCORE CALCULATOR
+      // ══════════════════════════════════════════════════════
+      function calculateScores() {
+        // Count filled fields per phase
+        const phases = {
+          1: { container: "phase1", max: 8 },
+          2: { container: "phase2", max: 18 },
+          3: { container: "phase3", max: 16 },
+          4: { container: "phase4", max: 18 },
+        };
+
+        let grandTotal = 0;
+        let grandMax = 0;
+
+        for (const [num, cfg] of Object.entries(phases)) {
+          const el = document.getElementById(cfg.container);
+          if (!el) continue;
+          const inputs = el.querySelectorAll(".form-input, .form-textarea");
+          let filled = 0;
+          inputs.forEach((inp) => {
+            if (inp.value && inp.value.trim().length > 0) filled++;
+          });
+          const pct = Math.min(100, Math.round((filled / cfg.max) * 100));
+          const scoreEl = document.getElementById("scorePhase" + num);
+          if (scoreEl) scoreEl.textContent = pct + "%";
+          grandTotal += filled;
+          grandMax += cfg.max;
+        }
+
+        const totalPct = Math.min(
+          100,
+          Math.round((grandTotal / grandMax) * 100),
+        );
+        document.getElementById("scoreTotal").textContent = totalPct + "%";
+
+        // Earn badges based on completion
+        for (let i = 1; i <= 4; i++) {
+          const scoreEl = document.getElementById("scorePhase" + i);
+          const badge = document.getElementById("badge" + i);
+          if (scoreEl && badge && parseInt(scoreEl.textContent) >= 50) {
+            badge.classList.add("earned");
+          }
+        }
+        if (totalPct >= 60) {
+          document.getElementById("badge5").classList.add("earned");
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // PRINT / DOWNLOAD / COPY / CLASSROOM
+      // ══════════════════════════════════════════════════════
+      function printPortfolio() {
+        window.print();
+      }
+
+      function downloadPortfolio() {
+        const name = document.getElementById("studentName").value || "Student";
+        const period = document.getElementById("classPeriod").value || "?";
+        const date = document.getElementById("activityDate").value || "N/A";
+        let text =
+          "GLOBAL TRAVEL PLANNER — Ratios & Proportional Relationships\n";
+        text +=
+          "Student: " +
+          name +
+          " | Period: " +
+          period +
+          " | Date: " +
+          date +
+          "\n";
+        text += "=".repeat(60) + "\n\n";
+
+        document.querySelectorAll(".task, .card").forEach((section) => {
+          const h = section.querySelector("h3, .task-title");
+          if (h) text += "--- " + h.textContent + " ---\n";
+          section
+            .querySelectorAll(".form-input, .form-textarea, .form-select")
+            .forEach((el) => {
+              if (
+                el.value &&
+                el.value.trim() &&
+                el.id !== "calcTotal" &&
+                el.id !== "calcUnits" &&
+                el.id !== "calcUnitType" &&
+                el.id !== "currFrom" &&
+                el.id !== "currFromType" &&
+                el.id !== "currToType" &&
+                el.id !== "builderCategory"
+              ) {
+                const label =
+                  el.closest(".form-group")?.querySelector("label")
+                    ?.textContent || el.id;
+                text += label + "\n" + el.value + "\n\n";
+              }
+            });
+        });
+
+        // Rubric
+        text += "\n--- Self-Assessment ---\n";
+        for (let i = 1; i <= 6; i++) {
+          const checked = document.querySelector(
+            'input[name="rubric' + i + '"]:checked',
+          );
+          if (checked) {
+            const row = checked.closest("tr");
+            const skill = row?.querySelector("td")?.textContent || "Skill " + i;
+            text += skill + ": " + checked.value + "/4\n";
+          }
+        }
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download =
+          "Global_Travel_Planner_" + name.replace(/\s+/g, "_") + ".txt";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+
+      function copyToClipboard() {
+        const name = document.getElementById("studentName").value || "Student";
+        let text = "GLOBAL TRAVEL PLANNER — " + name + "\n\n";
+        document.querySelectorAll(".task").forEach((task) => {
+          const title = task.querySelector(".task-title");
+          if (title) text += "▶ " + title.textContent + "\n";
+          task.querySelectorAll(".form-input, .form-textarea").forEach((el) => {
+            if (el.value && el.value.trim()) {
+              const label =
+                el.closest(".form-group")?.querySelector("label")
+                  ?.textContent || "";
+              text += "  " + label + "\n  " + el.value + "\n\n";
+            }
+          });
+        });
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            alert(
+              "Portfolio copied to clipboard! You can now paste it into Google Classroom.",
+            );
+          })
+          .catch(() => {
+            // Fallback
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+            alert("Portfolio copied!");
+          });
+      }
+
+      function submitToClassroom() {
+        const name = document.getElementById("studentName").value || "";
+        if (!name.trim()) {
+          alert("Please enter your name in Phase 1 before submitting.");
+          return;
+        }
+        // Build share URL
+        const title = encodeURIComponent("Global Travel Planner - " + name);
+        const body = encodeURIComponent(
+          "I completed the Global Travel Planner post-test activity for Unit 3: Ratios & Proportional Relationships.",
+        );
+        const url =
+          "https://classroom.google.com/share?url=" +
+          encodeURIComponent(window.location.href) +
+          "&title=" +
+          title +
+          "&body=" +
+          body;
+        window.open(url, "_blank");
+      }
+
+      // ══════════════════════════════════════════════════════
+      // AUTO-SAVE / LOAD
+      // ══════════════════════════════════════════════════════
+      function saveState() {
+        const data = {
+          phase: currentPhase,
+          mode: currentMode,
+          fields: {},
+          version: 2,
+        };
+        document
+          .querySelectorAll(".form-input, .form-textarea, .form-select")
+          .forEach((el) => {
+            if (el.id) data.fields[el.id] = el.value;
+          });
+        document
+          .querySelectorAll('input[type="radio"]:checked')
+          .forEach((el) => {
+            data.fields["radio_" + el.name] = el.value;
+          });
+        // Save ratio table inputs
+        document.querySelectorAll(".ratio-table input").forEach((el) => {
+          if (el.id) data.fields[el.id] = el.value;
+        });
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+          /* storage full or unavailable */
+        }
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (data.phase) goToPhase(data.phase);
+          if (data.mode) setMode(data.mode);
+          if (data.fields) {
+            Object.entries(data.fields).forEach(([key, val]) => {
+              if (key.startsWith("radio_")) {
+                const name = key.replace("radio_", "");
+                const radio = document.querySelector(
+                  'input[name="' + name + '"][value="' + val + '"]',
+                );
+                if (radio) radio.checked = true;
+              } else {
+                const el = document.getElementById(key);
+                if (el) el.value = val;
+              }
+            });
+          }
+        } catch (e) {
+          /* parse error */
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      // AUTO-SAVE LISTENER
+      // ══════════════════════════════════════════════════════
+      document.addEventListener("input", () => {
+        clearTimeout(window._saveTimer);
+        window._saveTimer = setTimeout(saveState, 600);
+      });
+
+      // ══════════════════════════════════════════════════════
+      // INIT
+      // ══════════════════════════════════════════════════════
+      document.addEventListener("DOMContentLoaded", () => {
+        loadState();
+        updateBuilderLabels();
+        convertCurrency();
+        // Set default date
+        const dateEl = document.getElementById("activityDate");
+        if (dateEl && !dateEl.value) {
+          dateEl.value = new Date().toISOString().split("T")[0];
+        }
+      });
+
+      // ══ ENHANCEMENT: XP System ══
+      var _xp = 0,
+        _xpMax = 500,
+        _fieldsAwarded = {};
+      function addXP(a, id) {
+        if (id && _fieldsAwarded[id]) return;
+        if (id) _fieldsAwarded[id] = true;
+        _xp = Math.min(_xp + a, _xpMax);
+        updateXPBar();
+        if (a > 0) playSound("xp");
+        saveEnhState();
+      }
+      function updateXPBar() {
+        var b = document.getElementById("xpBarFill"),
+          v = document.getElementById("xpValue");
+        if (b) b.style.width = Math.round((_xp / _xpMax) * 100) + "%";
+        if (v) v.textContent = _xp + " / " + _xpMax + " XP";
+      }
+      document.addEventListener("input", function (e) {
+        var el = e.target;
+        if (!el.id) return;
+        if (el.value && el.value.trim().length > 2) addXP(5, "field_" + el.id);
+      });
+      var _origGTP = goToPhase;
+      goToPhase = function (n) {
+        var p = currentPhase;
+        _origGTP(n);
+        if (n > p) addXP(25, "phase_" + p);
+      };
+
+      // ══ ENHANCEMENT: Sound Effects ══
+      var _audioCtx = null;
+      function getAudioCtx() {
+        if (!_audioCtx)
+          try {
+            _audioCtx = new (
+              window.AudioContext || window.webkitAudioContext
+            )();
+          } catch (e) {}
+        return _audioCtx;
+      }
+      function playSound(t) {
+        var c = getAudioCtx();
+        if (!c) return;
+        try {
+          var o = c.createOscillator(),
+            g = c.createGain();
+          o.connect(g);
+          g.connect(c.destination);
+          g.gain.value = 0.08;
+          if (t === "xp") {
+            o.frequency.value = 392;
+            o.type = "sine";
+            g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.15);
+            o.start(c.currentTime);
+            o.stop(c.currentTime + 0.15);
+          } else if (t === "complete") {
+            [1, 1.25, 1.5, 2].forEach(function (n, i) {
+              var o2 = c.createOscillator(),
+                g2 = c.createGain();
+              o2.connect(g2);
+              g2.connect(c.destination);
+              o2.frequency.value = 392 * n;
+              o2.type = "sine";
+              g2.gain.value = 0.06;
+              g2.gain.exponentialRampToValueAtTime(
+                0.01,
+                c.currentTime + 0.15 * (i + 1) + 0.2,
+              );
+              o2.start(c.currentTime + 0.15 * i);
+              o2.stop(c.currentTime + 0.15 * (i + 1) + 0.2);
+            });
+            return;
+          }
+        } catch (e) {}
+      }
+
+      // ══ ENHANCEMENT: Certificate + Example Toggle ══
+      window.toggleExample = function (id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle("visible");
+      };
+      window.showCertificate = function () {
+        var n = document.getElementById("studentName");
+        n = n ? n.value || "Travel Agent" : "Travel Agent";
+        document.getElementById("certStudentName").textContent = n;
+        document.getElementById("certXP").textContent = _xp;
+        var fs = document.querySelectorAll('input[type="text"],textarea'),
+          f = 0;
+        fs.forEach(function (x) {
+          if (x.value && x.value.trim().length > 0) f++;
+        });
+        document.getElementById("certTasks").textContent = f;
+        document.getElementById("certAccuracy").textContent =
+          (fs.length > 0 ? Math.round((f / fs.length) * 100) : 0) + "%";
+        document.getElementById("certificateOverlay").classList.add("visible");
+        playSound("complete");
+        addXP(50, "certificate_earned");
+      };
+
+      // ══ ENHANCEMENT: Save/Load ══
+      function saveEnhState() {
+        try {
+          localStorage.setItem(
+            "neft_travel_planner_v2_enhance",
+            JSON.stringify({ xp: _xp, fields: _fieldsAwarded }),
+          );
+        } catch (e) {}
+      }
+      function loadEnhState() {
+        try {
+          var r = localStorage.getItem("neft_travel_planner_v2_enhance");
+          if (r) {
+            var d = JSON.parse(r);
+            if (d.xp) _xp = d.xp;
+            if (d.fields) _fieldsAwarded = d.fields;
+            updateXPBar();
+          }
+        } catch (e) {}
+      }
+      if (document.readyState === "loading")
+        document.addEventListener("DOMContentLoaded", function () {
+          loadEnhState();
+          updateXPBar();
+        });
+      else {
+        loadEnhState();
+        updateXPBar();
+      }
+    </script>
+
+    <!-- Enhancement: Certificate Overlay -->
+    <div class="certificate-overlay" id="certificateOverlay">
+      <div class="certificate-card">
+        <div class="cert-badge">&#9992;</div>
+        <div class="cert-title">Global Travel Expert Certificate</div>
+        <div class="cert-name" id="certStudentName">Travel Agent</div>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 8px">
+          Has demonstrated outstanding mathematical skills and earned the rank
+          of <strong>Travel Expert</strong>.
+        </p>
+        <div class="cert-stats">
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certXP">0</div>
+            <div class="cert-stat-label">Total XP</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certTasks">0</div>
+            <div class="cert-stat-label">Tasks Done</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certAccuracy">0%</div>
+            <div class="cert-stat-label">Completion</div>
+          </div>
+        </div>
+        <button
+          class="cert-close"
+          onclick="
+            document
+              .getElementById('certificateOverlay')
+              .classList.remove('visible')
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  
+<!-- ── Neft Teacher help widgets ── -->
+<div class="nt-fab-wrap">
+  <button type="button" class="nt-fab nt-fab-hint" id="ntHintFab"
+    aria-expanded="false" aria-controls="ntHintPanel">💡 <span>Hints</span></button>
+  <button type="button" class="nt-fab nt-fab-help" id="ntHelpFab"
+    aria-expanded="false" aria-controls="ntHelpPanel">🛟 <span>Need help?</span></button>
+</div>
+
+<div class="nt-panel" id="ntHelpPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHelpTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHelpClose" aria-label="Close help panel">✕</button>
+  <h3 id="ntHelpTitle">Need help? Explore these</h3>
+  <p class="nt-lede">Trusted sites for <strong>Ratios & Proportional Relationships</strong>. Each opens in a new tab.</p>
+  <h4>Vocabulary</h4>
+  <ul class="nt-vocab"><li><b>Ratio:</b> A comparison of two amounts, like 2 cups to 3 cups (2:3).</li><li><b>Rate:</b> A ratio that compares two different units, like miles per hour.</li><li><b>Unit Rate:</b> A rate for exactly one unit, like cost for 1 item.</li><li><b>Proportion:</b> Two ratios that are equal, like 1/2 = 2/4.</li><li><b>Equivalent:</b> Equal in value, even if they look different.</li></ul>
+  <h4>Learn more</h4>
+  <ul><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-ratios-prop-topic" target="_blank" rel="noopener noreferrer">Khan Academy: Ratios</a></li><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-ratios-prop-topic/cc-6th-rates" target="_blank" rel="noopener noreferrer">Khan Academy: Unit Rates</a></li><li><a href="https://www.mathsisfun.com/numbers/ratio.html" target="_blank" rel="noopener noreferrer">Math is Fun: Ratios</a></li><li><a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer">Desmos Calculator</a></li></ul>
+</div>
+
+<div class="nt-panel" id="ntHintPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHintTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHintClose" aria-label="Close hints panel">✕</button>
+  <h3 id="ntHintTitle">Helpful hints</h3>
+  <p class="nt-lede">Stuck on a step? Try these tips for <strong>Ratios & Proportional Relationships</strong>.</p>
+  <ul id="ntHintList"></ul>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var HINTS = ["A ratio compares two values. Keep the order the same on both sides.","To find a unit rate, divide so the second amount equals 1.","Use a ratio table: multiply or divide both numbers by the same value.","Cross-multiply to check if two ratios form a true proportion."];
+  var VOCAB = [["Ratio","A comparison of two amounts, like 2 cups to 3 cups (2:3)."],["Rate","A ratio that compares two different units, like miles per hour."],["Unit Rate","A rate for exactly one unit, like cost for 1 item."],["Proportion","Two ratios that are equal, like 1/2 = 2/4."],["Equivalent","Equal in value, even if they look different."]];
+
+  /* Build hint list */
+  var hl = document.getElementById("ntHintList");
+  if (hl) HINTS.forEach(function(h){ var li=document.createElement("li"); li.textContent=h; hl.appendChild(li); });
+
+  function wirePanel(fabId, panelId, closeId){
+    var fab=document.getElementById(fabId), panel=document.getElementById(panelId),
+        close=document.getElementById(closeId);
+    if(!fab||!panel) return;
+    function setOpen(o){
+      panel.setAttribute("data-open", o?"true":"false");
+      fab.setAttribute("aria-expanded", o?"true":"false");
+      if(o){ var f=panel.querySelector("a,button"); if(f) f.focus(); }
+    }
+    fab.addEventListener("click", function(){ setOpen(panel.getAttribute("data-open")!=="true"); });
+    if(close) close.addEventListener("click", function(){ setOpen(false); fab.focus(); });
+    panel.addEventListener("keydown", function(e){ if(e.key==="Escape"){ setOpen(false); fab.focus(); } });
+  }
+  wirePanel("ntHelpFab","ntHelpPanel","ntHelpClose");
+  wirePanel("ntHintFab","ntHintPanel","ntHintClose");
+
+  /* Auto-attach a Hint button to each task/question section */
+  var SEL = ".task, .question, .challenge-card, .mission-card, .activity, .problem, .qcard, .task-card, [data-task]";
+  var blocks = document.querySelectorAll(SEL);
+  var seen = 0;
+  blocks.forEach(function(b, i){
+    if (b.querySelector(".nt-hint-btn")) return;
+    if (seen >= 40) return; seen++;
+    var tip = HINTS[i % HINTS.length];
+    var btn = document.createElement("button");
+    btn.type="button"; btn.className="nt-hint-btn";
+    btn.setAttribute("aria-expanded","false");
+    btn.innerHTML='💡 Hint';
+    var body = document.createElement("div");
+    body.className="nt-hint-body"; body.setAttribute("data-open","false");
+    body.textContent = tip;
+    btn.addEventListener("click", function(){
+      var open = body.getAttribute("data-open")==="true";
+      body.setAttribute("data-open", open?"false":"true");
+      btn.setAttribute("aria-expanded", open?"false":"true");
+    });
+    b.appendChild(btn); b.appendChild(body);
+  });
+
+  /* Tooltip key terms in body text (first occurrence each) */
+  var done = {};
+  function tipify(node){
+    if(node.nodeType===3){
+      var txt=node.nodeValue; if(!txt||!txt.trim()) return;
+      for(var k=0;k<VOCAB.length;k++){
+        var term=VOCAB[k][0]; if(done[term]) continue;
+        var re=new RegExp("\\b("+term.replace(/[.*+?^${}()|[\]\\]/g,function(c){return "\\"+c;})+")\\b");
+        var m=re.exec(txt);
+        if(m){
+          var span=document.createElement("span");
+          span.className="nt-tip"; span.tabIndex=0;
+          span.setAttribute("data-nt-tip", VOCAB[k][1]);
+          span.setAttribute("role","note");
+          span.textContent=m[0];
+          var after=node.splitText(m.index);
+          after.nodeValue=after.nodeValue.substring(m[0].length);
+          node.parentNode.insertBefore(span, after);
+          done[term]=true;
+          span.addEventListener("focus",function(){this.setAttribute("data-show","true");});
+          span.addEventListener("blur",function(){this.removeAttribute("data-show");});
+          return;
+        }
+      }
+    } else if(node.nodeType===1){
+      var tn=node.tagName;
+      if(/^(SCRIPT|STYLE|BUTTON|A|INPUT|TEXTAREA|SELECT|SVG|H1)$/.test(tn)) return;
+      if(node.classList && (node.classList.contains("nt-tip")||node.classList.contains("nt-panel")||node.classList.contains("nt-level-banner")||node.classList.contains("nt-fab-wrap"))) return;
+      var kids=Array.prototype.slice.call(node.childNodes);
+      for(var i=0;i<kids.length;i++) tipify(kids[i]);
+    }
+  }
+  try { tipify(document.body); } catch(e){}
+})();
+</script>
+
+</body>
+</html>
