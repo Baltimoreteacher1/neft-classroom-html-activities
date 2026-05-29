@@ -159,8 +159,65 @@ function renderComponent(container, problemDef, onAnswer) {
       });
       break;
     default:
-      container.innerHTML += `<p class="feedback feedback-hint visible"><span>Unknown component: ${problemDef.type}</span></p>`;
+      renderUnknownComponentFallback(container, problemDef);
+      // Keep phase completion/scoring intact: an unhandled type must still let
+      // the phase advance rather than stall waiting on a callback.
+      onAnswer?.(true);
   }
+}
+
+// Readable, non-blank fallback for component types the renderer does not know.
+// Shows instructions and any items/rows as text instead of rendering nothing.
+function renderUnknownComponentFallback(container, def = {}) {
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const text = def.instructions || def.label || def.prompt || def.stem;
+  if (text) {
+    const p = document.createElement("p");
+    p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
+    p.textContent = text;
+    card.append(p);
+  }
+
+  const source = Array.isArray(def.items)
+    ? def.items
+    : Array.isArray(def.rows)
+      ? def.rows
+      : [];
+  const cols = Array.isArray(def.columns)
+    ? def.columns
+    : Array.isArray(def.headers)
+      ? def.headers
+      : [];
+
+  if (source.length) {
+    const list = document.createElement("ul");
+    list.style.cssText = "margin:0; padding-left:1.2rem; line-height:1.6;";
+    source.forEach((row) => {
+      const li = document.createElement("li");
+      if (row && typeof row === "object" && !Array.isArray(row)) {
+        const keys = Object.keys(row);
+        li.textContent = keys
+          .map((k, i) => `${cols[i] || k}: ${row[k]}`)
+          .join("  ·  ");
+      } else if (Array.isArray(row)) {
+        li.textContent = row
+          .map((v, i) => `${cols[i] ? cols[i] + ": " : ""}${v}`)
+          .join("  ·  ");
+      } else {
+        li.textContent = String(row);
+      }
+      list.append(li);
+    });
+    card.append(list);
+  } else if (!text) {
+    card.innerHTML = `<p class="feedback feedback-hint visible"><span>Content type "${esc(
+      def.type,
+    )}" is not yet interactive here.</span></p>`;
+  }
+
+  container.append(card);
 }
 
 // ── Phase 1: Launch ──
@@ -610,15 +667,122 @@ function renderConnectPhase(el, state, ctx, config) {
   card.innerHTML = `<div class="badge badge-amber mb-4">Math in the Wild</div><p style="font-size:1.05rem; line-height:1.6; margin:0;">${esc(cfg.scenario)}</p>`;
   el.append(card);
 
-  renderOpenResponse(el, {
-    prompt: cfg.promptQuestion || "How does this connect to what we learned?",
-    sentenceFrame: cfg.prompt,
-    keywords: cfg.keywords,
-    minLength: 25,
-    onSubmit(text, valid) {
-      completePhase(el, ctx, state, 4, "Connect", valid ? 1 : 0, 1);
-    },
+  // Editable response box (core-owned), mirroring Launch/Reflect persistence.
+  const minLength = 25;
+  const promptText =
+    cfg.promptQuestion || "How does this connect to what we learned?";
+
+  const respCard = document.createElement("div");
+  respCard.className = "card card-teal";
+
+  const fieldId = "connect-response";
+
+  const label = document.createElement("label");
+  label.setAttribute("for", fieldId);
+  label.style.cssText =
+    "display:block; font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+  label.textContent = promptText;
+  respCard.append(label);
+
+  if (cfg.prompt) {
+    const frame = document.createElement("div");
+    frame.className = "sentence-frame";
+    frame.innerHTML = String(cfg.prompt).replace(
+      /___/g,
+      '<span class="blank">&nbsp;</span>',
+    );
+    respCard.append(frame);
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.id = fieldId;
+  textarea.className = "text-input";
+  textarea.rows = 4;
+  textarea.placeholder = "Type your response here...";
+  textarea.setAttribute("aria-label", promptText);
+  textarea.value = state.getResponse(4, "connect") || "";
+  respCard.append(textarea);
+
+  const charCount = document.createElement("div");
+  charCount.style.cssText =
+    "font-size:0.78rem; color:var(--muted); margin-top:var(--sp-1); text-align:right;";
+  const updateCount = () => {
+    const len = textarea.value.trim().length;
+    charCount.textContent = `${len} / ${minLength} characters minimum`;
+    charCount.style.color =
+      len >= minLength ? "var(--success)" : "var(--muted)";
+  };
+  updateCount();
+  respCard.append(charCount);
+
+  // Persist on every keystroke and restore on reload.
+  textarea.addEventListener("input", () => {
+    state.saveResponse(4, "connect", textarea.value);
+    updateCount();
   });
+
+  const feedbackSlot = document.createElement("div");
+  feedbackSlot.className = "mt-4";
+  respCard.append(feedbackSlot);
+
+  const submitBtn = document.createElement("button");
+  submitBtn.className = "btn btn-primary mt-4";
+  submitBtn.textContent = "Submit Response";
+
+  let submitted = false;
+
+  const showFeedback = (type, message) => {
+    feedbackSlot.innerHTML = "";
+    const fb = document.createElement("div");
+    fb.className = `feedback feedback-${type} visible`;
+    fb.setAttribute("role", "alert");
+    fb.innerHTML = `<span class="feedback-icon">${
+      type === "success" ? "✓" : "💡"
+    }</span><span>${esc(message)}</span>`;
+    feedbackSlot.append(fb);
+  };
+
+  submitBtn.addEventListener("click", () => {
+    if (submitted) return;
+    const text = textarea.value.trim();
+
+    if (text.length < minLength) {
+      showFeedback(
+        "hint",
+        `Write at least ${minLength} characters. You have ${text.length}.`,
+      );
+      return;
+    }
+
+    let valid = true;
+    if (cfg.keywords && cfg.keywords.length > 0) {
+      const lower = text.toLowerCase();
+      const found = cfg.keywords.filter((kw) =>
+        lower.includes(String(kw).toLowerCase()),
+      );
+      if (found.length === 0) {
+        showFeedback(
+          "hint",
+          `Try using math vocabulary in your response. Think about: ${cfg.keywords
+            .slice(0, 3)
+            .join(", ")}.`,
+        );
+        return;
+      }
+      const missing = cfg.keywords.length - found.length;
+      valid = missing <= Math.ceil(cfg.keywords.length / 2);
+    }
+
+    submitted = true;
+    state.saveResponse(4, "connect", textarea.value);
+    textarea.readOnly = true;
+    submitBtn.style.display = "none";
+    showFeedback("success", "Great response! Your thinking is recorded.");
+    completePhase(el, ctx, state, 4, "Connect", valid ? 1 : 0, 1);
+  });
+
+  respCard.append(submitBtn);
+  el.append(respCard);
 }
 
 // ── Phase 6: Reflect ──

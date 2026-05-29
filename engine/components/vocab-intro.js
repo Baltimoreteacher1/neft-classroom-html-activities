@@ -7,7 +7,7 @@ function vocabImageEl(term, definition) {
   fig.alt = vocabImageAlt(term, definition);
   fig.loading = "lazy";
   fig.style.cssText = `
-    display:block; width:100%; max-width:200px; aspect-ratio:4 / 3;
+    display:block; width:100%; max-width:220px; aspect-ratio:4 / 3;
     margin:0 auto; border-radius:var(--radius-md); background:var(--card);
     border:1px solid var(--line); object-fit:contain;
   `;
@@ -30,7 +30,7 @@ export function renderVocabIntro(container, { terms, onComplete }) {
 
   const grid = document.createElement("div");
   grid.style.cssText =
-    "display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:var(--sp-4); margin-bottom:var(--sp-6);";
+    "display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:var(--sp-5); margin-bottom:var(--sp-6);";
 
   terms.forEach((t, i) => {
     const card = document.createElement("div");
@@ -42,9 +42,10 @@ export function renderVocabIntro(container, { terms, onComplete }) {
 
     const termEl = document.createElement("div");
     termEl.style.cssText = `
-      text-align:center; padding:var(--sp-4); background:var(--navy);
+      text-align:center; padding:var(--sp-4) var(--sp-3); background:var(--navy);
       color:white; border-radius:var(--radius-md);
-      font-family:var(--font-display); font-size:1.25rem; font-weight:800;
+      font-family:var(--font-display); font-size:1.85rem; font-weight:900;
+      line-height:1.2; letter-spacing:-0.01em;
     `;
     termEl.textContent = t.term;
 
@@ -60,7 +61,7 @@ export function renderVocabIntro(container, { terms, onComplete }) {
 
     const defEl = document.createElement("div");
     defEl.style.cssText =
-      "font-size:0.95rem; line-height:1.6; color:var(--ink); padding:0 var(--sp-2);";
+      "font-size:1.2rem; line-height:1.7; color:var(--ink); padding:0 var(--sp-2); text-align:center; font-weight:500;";
     defEl.textContent = t.definition;
     studyView.append(defEl);
 
@@ -69,8 +70,8 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       vizEl.style.cssText = `
         padding:var(--sp-3); background:var(--cream);
         border-radius:var(--radius-md); text-align:center;
-        font-family:var(--font-mono, monospace); font-size:0.9rem;
-        color:var(--teal); font-weight:600; border:1px dashed var(--teal-light, #b2dfdb);
+        font-family:var(--font-mono, monospace); font-size:1.05rem;
+        color:var(--teal); font-weight:700; border:1px dashed var(--teal-light, #b2dfdb);
       `;
       vizEl.textContent = t.visual;
       studyView.append(vizEl);

@@ -53,10 +53,18 @@
     saveTimer: null,
   };
 
-  function makeEvidence(student, standard, score, max, date, assessment) {
+  function makeEvidence(
+    student,
+    standard,
+    score,
+    max,
+    date,
+    assessment,
+    syncKey,
+  ) {
     const safeScore = Number(score);
     const safeMax = Number(max);
-    return {
+    const row = {
       id: `e_${Math.random().toString(36).slice(2)}`,
       student,
       standard,
@@ -70,6 +78,10 @@
       date: date || today(),
       assessment: assessment || "Evidence",
     };
+    // Optional stable key linking a row back to a synced lesson result
+    // (studentName||lessonId). Lets re-syncing update rather than duplicate.
+    if (syncKey) row.syncKey = String(syncKey);
+    return row;
   }
 
   function seedState() {
@@ -162,6 +174,7 @@
               Number(r.max),
               r.date,
               r.assessment,
+              r.syncKey,
             ),
           )
         : base.evidence,
@@ -182,6 +195,138 @@
   function getThreshold() {
     const t = Number(State.current && State.current.threshold);
     return Number.isFinite(t) && t >= 40 && t <= 90 ? t : 70;
+  }
+
+  /* ── Lesson-grade sync (rma_gradebook) ──────────────────────────────────
+   * Completed lessons (same-origin) write auto-graded results to localStorage
+   * under "rma_gradebook" as records:
+   *   { studentName, studentPeriod, lessonId, lessonTitle, standard,
+   *     correct, attempts, pct, band, date }
+   * This is READ-ONLY here: we read that key and merge each record into this
+   * tool's evidence model. De-duped by studentName||lessonId so re-syncing the
+   * same lesson result updates the matching evidence row instead of adding a
+   * new one. Safe when the key is empty/absent. */
+  const LESSON_GRADEBOOK_KEY = "rma_gradebook";
+
+  function readLessonGradebook() {
+    try {
+      const raw = localStorage.getItem(LESSON_GRADEBOOK_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  // Build a stable id for a synced student from name (+ period when present).
+  function lessonStudentId(record) {
+    const base = String(record.studentName || "").trim();
+    const period = String(record.studentPeriod || "").trim();
+    const seed = (period ? `${base}|${period}` : base).toLowerCase();
+    let hash = 0;
+    for (let i = 0; i < seed.length; i += 1)
+      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+    return `L_${hash.toString(36)}`;
+  }
+
+  // Merge rma_gradebook into State.current. Returns the number of lesson
+  // results imported (created or updated). Does not persist/render itself.
+  function mergeLessonGrades() {
+    const book = readLessonGradebook();
+    let imported = 0;
+    book.forEach((record) => {
+      if (!record || typeof record !== "object") return;
+      const name = String(record.studentName || "").trim();
+      const standard = String(record.standard || "").trim();
+      const lessonId = String(record.lessonId || "").trim();
+      if (!name || !standard || !lessonId) return;
+
+      // Mapping: score = correct, max = attempts; when attempts is 0 fall back
+      // to the completion percentage out of 100 so the row stays valid.
+      const attempts = Number(record.attempts);
+      const correct = Number(record.correct);
+      const pct = Number(record.pct);
+      const hasAttempts = Number.isFinite(attempts) && attempts > 0;
+      const score = hasAttempts
+        ? Number.isFinite(correct)
+          ? correct
+          : 0
+        : Number.isFinite(pct)
+          ? pct
+          : 0;
+      const max = hasAttempts ? attempts : 100;
+      const date = String(record.date || "").trim() || today();
+      const assessment = String(record.lessonTitle || lessonId).trim();
+      const syncKey = `${name.toLowerCase()}||${lessonId}`;
+
+      // Find/create the student by name (+ period).
+      const studentId = lessonStudentId(record);
+      let student = State.current.students.find((s) => s.id === studentId);
+      if (!student) {
+        // Avoid clobbering an existing student that happens to share the name.
+        const byName = State.current.students.find(
+          (s) => String(s.name).trim().toLowerCase() === name.toLowerCase(),
+        );
+        if (byName) {
+          student = byName;
+        } else {
+          student = { id: studentId, name, tags: "" };
+          State.current.students.push(student);
+        }
+      }
+
+      // Ensure the standard exists.
+      if (!State.current.standards.some((s) => s.code === standard))
+        State.current.standards.push({
+          code: standard,
+          desc: "Synced from lesson",
+        });
+
+      const row = makeEvidence(
+        student.id,
+        standard,
+        score,
+        max,
+        date,
+        assessment,
+        syncKey,
+      );
+
+      // De-dupe on studentName||lessonId: update in place, else append.
+      const idx = State.current.evidence.findIndex(
+        (e) => e.syncKey === syncKey,
+      );
+      if (idx >= 0) {
+        row.id = State.current.evidence[idx].id;
+        State.current.evidence[idx] = row;
+      } else {
+        State.current.evidence.push(row);
+      }
+      imported += 1;
+    });
+    return imported;
+  }
+
+  // Public sync entry point: merge, report status, refresh views. Used on
+  // load (silent) and by the visible "Sync lesson grades" buttons.
+  function syncLessonGrades(showStatus = true) {
+    const imported = mergeLessonGrades();
+    if (imported > 0) {
+      transition("SUCCESS", `Synced ${imported} lesson result(s)`);
+      persist();
+    }
+    if (showStatus) {
+      const msg =
+        imported > 0
+          ? `<p><strong>Imported ${imported} lesson result(s)</strong> from completed lessons on this device.</p>`
+          : '<p class="muted">No new lesson results found on this device.</p>';
+      const importEl = $("#lessonSyncStatus");
+      if (importEl) importEl.innerHTML = msg;
+      const qualityEl = $("#lessonSyncStatusQuality");
+      if (qualityEl) qualityEl.innerHTML = msg;
+    }
+    if (imported > 0) render();
+    return imported;
   }
 
   function loadState() {
@@ -1498,6 +1643,12 @@
     const gradebookLoadBtn = $("#gradebookLoadBtn");
     if (gradebookLoadBtn) gradebookLoadBtn.onclick = loadGradebook;
 
+    const lessonSyncBtn = $("#lessonSyncBtn");
+    if (lessonSyncBtn) lessonSyncBtn.onclick = () => syncLessonGrades(true);
+    const lessonSyncBtnQuality = $("#lessonSyncBtnQuality");
+    if (lessonSyncBtnQuality)
+      lessonSyncBtnQuality.onclick = () => syncLessonGrades(true);
+
     let clicks = 0,
       timer = null;
     $("#diagnosticHotspot").onclick = () => {
@@ -1546,6 +1697,9 @@
   State.current = loadState();
   bootWorker();
   wireEvents();
+  // Auto-sync any auto-graded lesson results saved on this device. Silent so
+  // it never disrupts the active tab; safe when rma_gradebook is empty/absent.
+  syncLessonGrades(false);
   setTab(State.current.active || "start");
   render();
   updateSheetjsStatus();

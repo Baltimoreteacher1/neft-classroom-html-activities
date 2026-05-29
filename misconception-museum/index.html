@@ -1,1014 +1,2171 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Misconception Museum | Reveal Math Student Tool</title>
-  <link rel="stylesheet" href="/assets/reveal-math-tools.css">
-  <style>
-    :root {
-      color-scheme: light;
-      --museum-bg: #f6f8fb;
-      --museum-surface: #ffffff;
-      --museum-ink: #1f2933;
-      --museum-muted: #52606d;
-      --museum-line: #d8e0e8;
-      --museum-teal: #126c78;
-      --museum-teal-dark: #0b4f59;
-      --museum-gold: #d99a20;
-      --museum-red: #b84235;
-      --museum-green: #2f7654;
-      --museum-shadow: 0 14px 34px rgba(25, 42, 70, 0.1);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        linear-gradient(180deg, rgba(18, 108, 120, 0.1), rgba(246, 248, 251, 0) 320px),
-        var(--museum-bg);
-      color: var(--museum-ink);
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    button,
-    select,
-    textarea {
-      border-radius: 8px;
-    }
-
-    .skip-link {
-      position: absolute;
-      left: 1rem;
-      top: -4rem;
-      z-index: 10;
-      padding: 0.75rem 1rem;
-      background: var(--museum-ink);
-      color: #fff;
-      border-radius: 8px;
-      transition: top 0.2s ease;
-    }
-
-    .skip-link:focus {
-      top: 1rem;
-    }
-
-    .museum-shell {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 28px 0 44px;
-    }
-
-    .museum-hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 24px;
-      align-items: end;
-      padding: 28px;
-      border: 1px solid var(--museum-line);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.88);
-      box-shadow: var(--museum-shadow);
-    }
-
-    .eyebrow {
-      margin: 0 0 8px;
-      color: var(--museum-teal-dark);
-      font-size: 0.82rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin-top: 0;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-      font-size: clamp(2rem, 4vw, 3.4rem);
-      line-height: 1;
-      letter-spacing: 0;
-    }
-
-    h2 {
-      margin-bottom: 14px;
-      font-size: 1.25rem;
-      letter-spacing: 0;
-    }
-
-    h3 {
-      margin-bottom: 8px;
-      font-size: 1rem;
-    }
-
-    .museum-hero p:last-child {
-      margin-bottom: 0;
-      max-width: 62ch;
-      color: var(--museum-muted);
-      line-height: 1.6;
-    }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 10px;
-      min-width: 250px;
-    }
-
-    .button {
-      min-height: 44px;
-      padding: 0.7rem 0.9rem;
-      border: 1px solid var(--museum-line);
-      background: #fff;
-      color: var(--museum-ink);
-      cursor: pointer;
-      font-weight: 800;
-    }
-
-    .button:hover,
-    .button:focus-visible {
-      border-color: var(--museum-teal);
-      outline: 3px solid rgba(18, 108, 120, 0.16);
-      outline-offset: 1px;
-    }
-
-    .button.primary {
-      border-color: var(--museum-teal);
-      background: var(--museum-teal);
-      color: #fff;
-    }
-
-    .button.danger {
-      color: var(--museum-red);
-    }
-
-    .museum-grid {
-      display: grid;
-      grid-template-columns: 320px minmax(0, 1fr);
-      gap: 18px;
-      margin-top: 18px;
-      align-items: start;
-    }
-
-    .panel {
-      border: 1px solid var(--museum-line);
-      border-radius: 12px;
-      background: var(--museum-surface);
-      box-shadow: 0 8px 22px rgba(25, 42, 70, 0.06);
-    }
-
-    .panel-inner {
-      padding: 22px;
-    }
-
-    .selector-panel {
-      position: sticky;
-      top: 14px;
-    }
-
-    label,
-    legend {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 800;
-      color: var(--museum-ink);
-    }
-
-    select,
-    textarea {
-      width: 100%;
-      border: 1px solid var(--museum-line);
-      background: #fff;
-      color: var(--museum-ink);
-    }
-
-    select {
-      min-height: 46px;
-      padding: 0 0.8rem;
-    }
-
-    textarea {
-      min-height: 126px;
-      resize: vertical;
-      padding: 0.85rem;
-      line-height: 1.5;
-    }
-
-    select:focus,
-    textarea:focus {
-      border-color: var(--museum-teal);
-      outline: 3px solid rgba(18, 108, 120, 0.16);
-    }
-
-    .cluster-facts {
-      display: grid;
-      gap: 10px;
-      margin: 18px 0 0;
-    }
-
-    .fact {
-      padding: 12px;
-      border: 1px solid var(--museum-line);
-      border-radius: 8px;
-      background: #f9fbfd;
-    }
-
-    .fact dt {
-      margin-bottom: 4px;
-      color: var(--museum-muted);
-      font-size: 0.76rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .fact dd {
-      margin: 0;
-      line-height: 1.45;
-    }
-
-    .curator-note {
-      margin-top: 18px;
-      padding: 16px;
-      border-left: 5px solid var(--museum-gold);
-      border-radius: 8px;
-      background: #fff8e8;
-    }
-
-    .curator-note p {
-      margin-bottom: 14px;
-      color: #59421a;
-      line-height: 1.55;
-    }
-
-    .curator-note [hidden] {
-      display: none;
-    }
-
-    .work-area {
-      display: grid;
-      gap: 18px;
-    }
-
-    .exhibit-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
-      gap: 16px;
-      align-items: start;
-    }
-
-    .wrong-work {
-      min-height: 260px;
-      padding: 18px;
-      border: 1px solid #f1c8c2;
-      border-radius: 10px;
-      background: #fff7f5;
-      color: #42211d;
-      line-height: 1.55;
-    }
-
-    .wrong-work p {
-      margin-bottom: 10px;
-    }
-
-    .wrong-work ol {
-      margin: 0;
-      padding-left: 1.25rem;
-    }
-
-    .wrong-work li + li {
-      margin-top: 8px;
-    }
-
-    .model-box {
-      min-height: 260px;
-      padding: 18px;
-      border: 1px solid #c6dde1;
-      border-radius: 10px;
-      background: #f0f8fa;
-    }
-
-    .model-chip {
-      display: inline-flex;
-      align-items: center;
-      min-height: 34px;
-      margin: 0 8px 8px 0;
-      padding: 0.35rem 0.6rem;
-      border: 1px solid rgba(18, 108, 120, 0.28);
-      border-radius: 999px;
-      background: #fff;
-      color: var(--museum-teal-dark);
-      font-weight: 800;
-      font-size: 0.88rem;
-    }
-
-    .model-line {
-      height: 10px;
-      margin: 20px 0 12px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--museum-teal) 0 38%, #cbd5df 38% 100%);
-    }
-
-    .model-caption {
-      color: var(--museum-muted);
-      line-height: 1.45;
-    }
-
-    fieldset {
-      margin: 0;
-      padding: 0;
-      border: 0;
-    }
-
-    .error-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .error-option {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      min-height: 56px;
-      padding: 12px;
-      border: 1px solid var(--museum-line);
-      border-radius: 8px;
-      background: #fbfcfe;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .error-option input {
-      margin-top: 3px;
-      accent-color: var(--museum-teal);
-    }
-
-    .writing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    .writing-card {
-      min-width: 0;
-    }
-
-    .hint {
-      margin: -2px 0 8px;
-      color: var(--museum-muted);
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-
-    .status-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 18px;
-      color: var(--museum-muted);
-      font-size: 0.94rem;
-    }
-
-    .status-row strong {
-      color: var(--museum-green);
-    }
-
-    .print-title {
-      display: none;
-    }
-
-    @media (max-width: 920px) {
-      .museum-hero,
-      .museum-grid,
-      .exhibit-layout,
-      .writing-grid {
-        grid-template-columns: 1fr;
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Misconception Museum | Reveal Math Student Tool</title>
+    <link rel="stylesheet" href="/assets/reveal-math-tools.css" />
+    <style>
+      :root {
+        color-scheme: light;
+        --museum-bg: #f6f8fb;
+        --museum-surface: #ffffff;
+        --museum-ink: #14202e;
+        --museum-muted: #44515f;
+        --museum-line: #d8e0e8;
+        --museum-teal: #126c78;
+        --museum-teal-dark: #0b4f59;
+        --museum-gold: #b9821a;
+        --museum-gold-soft: #fff5e0;
+        --museum-red: #a63729;
+        --museum-red-soft: #fff3f1;
+        --museum-green: #1f6b48;
+        --museum-green-soft: #eef8f2;
+        --museum-shadow: 0 14px 34px rgba(25, 42, 70, 0.1);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
       }
 
-      .selector-panel {
-        position: static;
+      * {
+        box-sizing: border-box;
       }
 
-      .toolbar {
-        justify-content: flex-start;
-      }
-    }
-
-    @media (max-width: 620px) {
-      .museum-shell {
-        width: min(100% - 20px, 1180px);
-        padding-top: 10px;
-      }
-
-      .museum-hero,
-      .panel-inner {
-        padding: 18px;
-      }
-
-      .error-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .button {
-        width: 100%;
-      }
-    }
-
-    @media print {
       body {
-        background: #fff;
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(18, 108, 120, 0.1),
+            rgba(246, 248, 251, 0) 320px
+          ),
+          var(--museum-bg);
+        color: var(--museum-ink);
+        font-size: 18px;
+        line-height: 1.55;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button,
+      select,
+      textarea {
+        border-radius: 10px;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 1rem;
+        top: -4rem;
+        z-index: 10;
+        padding: 0.75rem 1rem;
+        background: var(--museum-ink);
+        color: #fff;
+        border-radius: 8px;
+        transition: top 0.2s ease;
+      }
+      .skip-link:focus {
+        top: 1rem;
       }
 
       .museum-shell {
+        width: min(900px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 56px;
+      }
+
+      .eyebrow {
+        margin: 0 0 6px;
+        color: var(--museum-teal-dark);
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 6px;
+        font-size: clamp(1.9rem, 4vw, 2.7rem);
+        line-height: 1.05;
+      }
+      h2 {
+        margin-bottom: 12px;
+        font-size: 1.45rem;
+      }
+      h3 {
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+      }
+
+      .museum-hero {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 24px;
+        border: 1px solid var(--museum-line);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: var(--museum-shadow);
+      }
+      .museum-hero .crest {
+        flex: none;
+        width: 64px;
+        height: 64px;
+      }
+      .museum-hero p:last-child {
+        margin-bottom: 0;
+        max-width: 60ch;
+        color: var(--museum-muted);
+      }
+
+      /* Progress / stepper */
+      .stepper {
+        display: flex;
+        gap: 6px;
+        margin: 18px 0 6px;
+        padding: 0;
+        list-style: none;
+      }
+      .stepper li {
+        flex: 1 1 0;
+        min-width: 0;
+      }
+      .step-dot {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
         width: 100%;
+        padding: 8px 4px;
+        border: 0;
+        background: none;
+        color: var(--museum-muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 10px;
+        text-align: center;
+      }
+      .step-dot .bubble {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        border: 2px solid var(--museum-line);
+        background: #fff;
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+      .step-dot[aria-current="step"] .bubble {
+        border-color: var(--museum-teal);
+        background: var(--museum-teal);
+        color: #fff;
+      }
+      .step-dot.done .bubble {
+        border-color: var(--museum-green);
+        background: var(--museum-green-soft);
+        color: var(--museum-green);
+      }
+      .step-dot:hover:not([disabled]) .bubble,
+      .step-dot:focus-visible .bubble {
+        border-color: var(--museum-teal);
+        outline: 3px solid rgba(18, 108, 120, 0.18);
+        outline-offset: 2px;
+      }
+      .step-dot .label {
+        display: block;
+      }
+      .progress-text {
+        margin: 0 4px 0;
+        color: var(--museum-muted);
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .panel {
+        margin-top: 12px;
+        border: 1px solid var(--museum-line);
+        border-radius: 14px;
+        background: var(--museum-surface);
+        box-shadow: 0 8px 22px rgba(25, 42, 70, 0.06);
+      }
+      .panel-inner {
+        padding: 24px;
+      }
+
+      .step {
+        display: none;
+      }
+      .step.active {
+        display: block;
+      }
+      .step:focus {
+        outline: none;
+      }
+
+      .step-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        background: var(--museum-teal);
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .plain {
+        max-width: 60ch;
+        color: var(--museum-muted);
+      }
+
+      /* Exhibit picker cards */
+      .picker-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: flex-end;
+        margin-bottom: 16px;
+      }
+      .picker-controls label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 800;
+      }
+      .picker-field {
+        flex: 1 1 220px;
+      }
+      select {
+        width: 100%;
+        min-height: 50px;
+        padding: 0 0.8rem;
+        border: 2px solid var(--museum-line);
+        background: #fff;
+        color: var(--museum-ink);
+      }
+      select:focus {
+        border-color: var(--museum-teal);
+        outline: 3px solid rgba(18, 108, 120, 0.18);
+      }
+
+      .exhibit-card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 14px;
+        align-items: center;
+        padding: 18px;
+        border: 2px solid var(--museum-teal);
+        border-radius: 12px;
+        background: #f0f8fa;
+      }
+      .exhibit-card .icon {
+        flex: none;
+        width: 60px;
+        height: 60px;
+      }
+      .exhibit-card .unit-pill {
+        display: inline-block;
+        margin-bottom: 4px;
+        padding: 2px 10px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid var(--museum-line);
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--museum-teal-dark);
+      }
+      .exhibit-card h3 {
+        margin: 4px 0;
+        font-size: 1.25rem;
+      }
+      .exhibit-card p {
+        margin: 0;
+        color: var(--museum-muted);
+      }
+
+      .info-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .info-chip {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 12px;
+        border: 1px solid var(--museum-line);
+        border-radius: 10px;
+        background: #f9fbfd;
+      }
+      .info-chip .ico {
+        font-size: 1.3rem;
+        line-height: 1.2;
+      }
+      .info-chip dt {
+        margin: 0 0 2px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--museum-muted);
+      }
+      .info-chip dd {
+        margin: 0;
+        font-weight: 700;
+      }
+
+      /* The mistake exhibit */
+      .frame {
+        position: relative;
+        padding: 22px;
+        border: 6px solid var(--museum-gold);
+        border-radius: 12px;
+        background: var(--museum-red-soft);
+        color: #3a1d18;
+      }
+      .frame .placard {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        background: var(--museum-red);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+      .frame .claim {
+        font-weight: 700;
+      }
+      .frame ol {
+        margin: 10px 0 0;
+        padding-left: 1.3rem;
+      }
+      .frame li + li {
+        margin-top: 10px;
+      }
+      .frame .solution-quote {
+        margin: 8px 0 0;
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px dashed #e0a59c;
+        font-size: 1.15rem;
+        font-weight: 700;
+      }
+
+      .clue-box {
+        margin-top: 16px;
+        padding: 16px;
+        border: 1px solid #c6dde1;
+        border-radius: 10px;
+        background: #f0f8fa;
+      }
+      .clue-box h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .model-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 36px;
+        margin: 0 8px 8px 0;
+        padding: 0.35rem 0.7rem;
+        border: 1px solid rgba(18, 108, 120, 0.28);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--museum-teal-dark);
+        font-weight: 800;
+        font-size: 0.92rem;
+      }
+
+      /* Why it tricks you */
+      .curator-note {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 18px;
+        padding: 16px;
+        border-left: 6px solid var(--museum-gold);
+        border-radius: 10px;
+        background: var(--museum-gold-soft);
+      }
+      .curator-note .ico {
+        font-size: 1.6rem;
+        line-height: 1.2;
+      }
+      .curator-note p {
+        margin: 0;
+        color: #5a3f10;
+      }
+
+      fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+      }
+      legend {
+        font-weight: 800;
+        font-size: 1.05rem;
+        margin-bottom: 4px;
         padding: 0;
       }
 
-      .museum-hero,
-      .panel {
-        box-shadow: none;
+      .error-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .error-option {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        min-height: 60px;
+        padding: 14px;
+        border: 2px solid var(--museum-line);
+        border-radius: 12px;
+        background: #fbfcfe;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .error-option:hover {
+        border-color: var(--museum-teal);
+      }
+      .error-option:has(input:checked) {
+        border-color: var(--museum-teal);
+        background: #eef7f8;
+      }
+      .error-option:has(input:focus-visible) {
+        outline: 3px solid rgba(18, 108, 120, 0.18);
+        outline-offset: 2px;
+      }
+      .error-option input {
+        width: 22px;
+        height: 22px;
+        flex: none;
+        accent-color: var(--museum-teal);
+      }
+      .error-option .emoji {
+        font-size: 1.3rem;
       }
 
-      .toolbar,
-      .skip-link,
-      .curator-note .button,
-      .status-row {
+      /* Writing steps */
+      label.write-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
+      .hint {
+        margin: 0 0 12px;
+        color: var(--museum-muted);
+        font-size: 0.98rem;
+      }
+      textarea {
+        width: 100%;
+        min-height: 150px;
+        resize: vertical;
+        padding: 0.9rem;
+        line-height: 1.55;
+        border: 2px solid var(--museum-line);
+        background: #fff;
+        color: var(--museum-ink);
+      }
+      textarea:focus {
+        border-color: var(--museum-teal);
+        outline: 3px solid rgba(18, 108, 120, 0.18);
+      }
+
+      .starters {
+        margin: 0 0 14px;
+        padding: 14px 16px;
+        border: 1px solid var(--museum-line);
+        border-radius: 10px;
+        background: #f9fbfd;
+      }
+      .starters p {
+        margin: 0 0 8px;
+        font-weight: 800;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .starter-chip {
+        min-height: 38px;
+        padding: 0.4rem 0.8rem;
+        border: 1px solid var(--museum-teal);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--museum-teal-dark);
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+      }
+      .starter-chip:hover,
+      .starter-chip:focus-visible {
+        background: var(--museum-teal);
+        color: #fff;
+        outline: 3px solid rgba(18, 108, 120, 0.18);
+        outline-offset: 1px;
+      }
+
+      /* Review step */
+      .review-card {
+        margin-bottom: 12px;
+        padding: 16px;
+        border: 1px solid var(--museum-line);
+        border-radius: 10px;
+        background: #f9fbfd;
+      }
+      .review-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+      .review-card p {
+        margin: 0;
+        white-space: pre-wrap;
+      }
+      .review-card .empty {
+        color: var(--museum-red);
+        font-style: italic;
+      }
+
+      /* Nav buttons */
+      .step-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: space-between;
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--museum-line);
+      }
+      .button {
+        min-height: 52px;
+        padding: 0.7rem 1.3rem;
+        border: 2px solid var(--museum-line);
+        background: #fff;
+        color: var(--museum-ink);
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1.05rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .button:hover,
+      .button:focus-visible {
+        border-color: var(--museum-teal);
+        outline: 3px solid rgba(18, 108, 120, 0.16);
+        outline-offset: 1px;
+      }
+      .button.primary {
+        border-color: var(--museum-teal);
+        background: var(--museum-teal);
+        color: #fff;
+      }
+      .button.primary:hover,
+      .button.primary:focus-visible {
+        background: var(--museum-teal-dark);
+      }
+      .button.ghost {
+        background: transparent;
+      }
+      .button.danger {
+        color: var(--museum-red);
+        border-color: #e7c3bd;
+      }
+      .button[hidden] {
         display: none;
       }
 
-      .museum-grid,
-      .exhibit-layout,
-      .writing-grid {
-        grid-template-columns: 1fr;
+      .tool-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
       }
 
-      .selector-panel {
-        position: static;
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 16px;
+        color: var(--museum-muted);
+        font-size: 0.94rem;
+      }
+      .status-row strong {
+        color: var(--museum-green);
       }
 
-      .panel {
-        break-inside: avoid;
-        margin-bottom: 12px;
+      .print-only {
+        display: none;
       }
 
-      .print-title {
-        display: block;
-        margin: 0 0 12px;
-        font-size: 1.1rem;
+      @media (max-width: 620px) {
+        body {
+          font-size: 17px;
+        }
+        .museum-shell {
+          width: min(100% - 20px, 900px);
+        }
+        .panel-inner {
+          padding: 18px;
+        }
+        .error-grid {
+          grid-template-columns: 1fr;
+        }
+        .exhibit-card {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+        .exhibit-card .icon {
+          margin: 0 auto;
+        }
+        .step-dot .label {
+          display: none;
+        }
+        .button {
+          width: 100%;
+          justify-content: center;
+        }
+        .step-nav .button {
+          flex: 1 1 100%;
+        }
       }
-    }
-  </style>
-</head>
-<body>
-  <a class="skip-link" href="#museumWorkspace">Skip to exhibit builder</a>
-  <main class="museum-shell">
-    <header class="museum-hero">
-      <div>
-        <p class="eyebrow">Reveal Math Student Tool</p>
-        <h1>Misconception Museum</h1>
-        <p>Study a tempting wrong solution like a curator. Identify the error, explain why it fooled someone, repair the math, and write a warning label for the next learner.</p>
-      </div>
-      <div class="toolbar" aria-label="Museum controls">
-        <button class="button primary" type="button" id="saveButton">Save Draft</button>
-        <button class="button" type="button" id="copyButton">Copy Exhibit</button>
-        <button class="button danger" type="button" id="clearButton">Clear</button>
-        <button class="button" type="button" id="printButton">Print</button>
-      </div>
-    </header>
 
-    <section class="museum-grid" id="museumWorkspace" aria-label="Misconception Museum workspace">
-      <aside class="panel selector-panel" aria-labelledby="clusterHeading">
-        <div class="panel-inner">
-          <h2 id="clusterHeading">Choose a Cluster</h2>
-          <label for="clusterSelect">Lesson cluster</label>
-          <select id="clusterSelect"></select>
+      @media (prefers-reduced-motion: reduce) {
+        .skip-link {
+          transition: none;
+        }
+        * {
+          scroll-behavior: auto !important;
+        }
+      }
 
-          <dl class="cluster-facts" aria-label="Cluster details">
-            <div class="fact">
-              <dt>Unit</dt>
-              <dd id="unitText">Loading...</dd>
-            </div>
-            <div class="fact">
-              <dt>Lessons</dt>
-              <dd id="lessonText">Loading...</dd>
-            </div>
-            <div class="fact">
-              <dt>Model</dt>
-              <dd id="modelText">Loading...</dd>
-            </div>
-            <div class="fact">
-              <dt>Misconception</dt>
-              <dd id="misconceptionText">Loading...</dd>
-            </div>
-          </dl>
-
-          <section class="curator-note" aria-labelledby="curatorHeading">
-            <h2 id="curatorHeading">Curator Note</h2>
-            <p id="curatorNote" hidden></p>
-            <button class="button" type="button" id="revealNoteButton" aria-expanded="false">Reveal Curator Note</button>
-          </section>
+      @media print {
+        body {
+          background: #fff;
+          font-size: 12pt;
+        }
+        .museum-shell {
+          width: 100%;
+          padding: 0;
+        }
+        .museum-hero,
+        .stepper,
+        .progress-text,
+        .step-nav,
+        .tool-row,
+        .skip-link,
+        .status-row,
+        .picker-controls {
+          display: none !important;
+        }
+        .panel {
+          box-shadow: none;
+          border: 0;
+          margin: 0;
+        }
+        .step {
+          display: block !important;
+        }
+        .step.active ~ .step,
+        .step:not(.active) {
+          display: block !important;
+        }
+        .print-only {
+          display: block;
+          margin-bottom: 10px;
+        }
+        .frame {
+          border-color: #999;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#stepRegion">Skip to the museum activity</a>
+    <main class="museum-shell">
+      <header class="museum-hero">
+        <svg
+          class="crest"
+          viewBox="0 0 64 64"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <rect x="8" y="26" width="48" height="30" rx="3" fill="#126c78" />
+          <path d="M32 6 6 24h52z" fill="#b9821a" />
+          <rect x="14" y="30" width="6" height="20" fill="#fff" />
+          <rect x="29" y="30" width="6" height="20" fill="#fff" />
+          <rect x="44" y="30" width="6" height="20" fill="#fff" />
+          <rect x="6" y="54" width="52" height="5" rx="2" fill="#0b4f59" />
+        </svg>
+        <div>
+          <p class="eyebrow">Reveal Math Student Tool</p>
+          <h1>Misconception Museum</h1>
+          <p>
+            You are the museum curator. Look at a math mistake, figure out why
+            it tricks people, fix it, and write a warning label for the next
+            student. One step at a time!
+          </p>
         </div>
-      </aside>
+      </header>
 
-      <div class="work-area">
-        <section class="panel" aria-labelledby="wrongWorkHeading">
-          <div class="panel-inner">
-            <h2 id="wrongWorkHeading">Exhibit: Tempting Wrong Solution</h2>
-            <p class="print-title" id="printClusterTitle"></p>
-            <div class="exhibit-layout">
-              <article class="wrong-work" id="wrongWork" aria-live="polite"></article>
-              <aside class="model-box" aria-labelledby="modelHeading">
-                <h3 id="modelHeading">Model Clues</h3>
-                <div id="modelChips"></div>
-                <div class="model-line" aria-hidden="true"></div>
-                <p class="model-caption" id="modelCaption"></p>
-              </aside>
+      <p class="progress-text" id="progressText" aria-hidden="true">
+        Step 1 of 5
+      </p>
+      <ol class="stepper" id="stepper" aria-label="Activity steps"></ol>
+
+      <div class="panel">
+        <div class="panel-inner" id="stepRegion">
+          <!-- STEP 1: Pick an exhibit -->
+          <section
+            class="step active"
+            id="step-0"
+            tabindex="-1"
+            aria-labelledby="h-0"
+            role="group"
+          >
+            <span class="step-tag">Step 1</span>
+            <h2 id="h-0">🖼️ Pick a Mistake to Study</h2>
+            <p class="plain">
+              Choose a math topic. The museum will show you a tempting wrong
+              answer about it.
+            </p>
+
+            <div class="picker-controls">
+              <div class="picker-field">
+                <label for="clusterSelect">Choose a topic</label>
+                <select id="clusterSelect"></select>
+              </div>
             </div>
-          </div>
-        </section>
 
-        <section class="panel" aria-labelledby="diagnosisHeading">
-          <div class="panel-inner">
-            <h2 id="diagnosisHeading">Build the Museum Label</h2>
+            <div class="exhibit-card">
+              <svg
+                class="icon"
+                id="exhibitIcon"
+                viewBox="0 0 60 60"
+                aria-hidden="true"
+                focusable="false"
+              ></svg>
+              <div>
+                <span class="unit-pill" id="cardUnit">Unit</span>
+                <h3 id="cardTitle">Title</h3>
+                <p id="cardLessons">Lessons</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 2: Look at the mistake -->
+          <section
+            class="step"
+            id="step-1"
+            tabindex="-1"
+            aria-labelledby="h-1"
+            role="group"
+            hidden
+          >
+            <span class="step-tag">Step 2</span>
+            <h2 id="h-1">🔍 Look at the Mistake</h2>
+            <p class="plain">
+              Read this answer carefully. It looks right, but something is
+              wrong.
+            </p>
+
+            <div class="frame">
+              <span class="placard">⚠️ Wrong Answer on Display</span>
+              <p class="claim" id="claimLine"></p>
+              <div id="wrongWork" aria-live="polite"></div>
+            </div>
+
+            <div class="clue-box">
+              <h3>🧩 Clues to Help You</h3>
+              <div id="modelChips"></div>
+              <p
+                class="model-caption"
+                id="modelCaption"
+                style="margin: 6px 0 0; color: var(--museum-muted)"
+              ></p>
+            </div>
+          </section>
+
+          <!-- STEP 3: Why it tricks you -->
+          <section
+            class="step"
+            id="step-2"
+            tabindex="-1"
+            aria-labelledby="h-2"
+            role="group"
+            hidden
+          >
+            <span class="step-tag">Step 3</span>
+            <h2 id="h-2">🎭 Why Does It Trick People?</h2>
+
+            <div class="curator-note">
+              <span class="ico" aria-hidden="true">💡</span>
+              <p id="curatorNote"></p>
+            </div>
+
             <fieldset>
-              <legend>What kind of error is on display?</legend>
+              <legend>What kind of mistake is this?</legend>
+              <p class="hint">Pick the one that fits best.</p>
               <div class="error-grid" id="errorTypeList"></div>
             </fieldset>
+          </section>
 
-            <div class="writing-grid">
-              <div class="writing-card">
-                <label for="diagnosisText">Diagnosis</label>
-                <p class="hint">Name the first wrong move and explain why it is tempting.</p>
-                <textarea id="diagnosisText" placeholder="The first wrong move is..."></textarea>
-              </div>
-              <div class="writing-card">
-                <label for="repairText">Repair the Work</label>
-                <p class="hint">Show the corrected setup, model, equation, or reasoning.</p>
-                <textarea id="repairText" placeholder="A correct way to solve is..."></textarea>
-              </div>
-              <div class="writing-card">
-                <label for="warningText">Warning Label</label>
-                <p class="hint">Write one sentence a classmate should remember.</p>
-                <textarea id="warningText" placeholder="Warning: before you..."></textarea>
+          <!-- STEP 4: Fix the math -->
+          <section
+            class="step"
+            id="step-3"
+            tabindex="-1"
+            aria-labelledby="h-3"
+            role="group"
+            hidden
+          >
+            <span class="step-tag">Step 4</span>
+            <h2 id="h-3">🛠️ Fix the Math</h2>
+            <p class="plain">
+              Show the right way to solve it. You can write or draw your steps.
+            </p>
+
+            <div class="starters">
+              <p>✏️ Sentence starters (tap to add)</p>
+              <div class="chip-row" data-target="repairText">
+                <button type="button" class="starter-chip">
+                  A correct way to solve is…
+                </button>
+                <button type="button" class="starter-chip">
+                  First, I would…
+                </button>
+                <button type="button" class="starter-chip">
+                  The right answer is…
+                </button>
+                <button type="button" class="starter-chip">
+                  I checked my work by…
+                </button>
               </div>
             </div>
+
+            <label class="write-label" for="repairText">📝 Your fix</label>
+            <p class="hint" id="repairHint">
+              Show the correct steps, model, or equation.
+            </p>
+            <textarea
+              id="repairText"
+              placeholder="A correct way to solve is..."
+            ></textarea>
+          </section>
+
+          <!-- STEP 5: Warning label + review -->
+          <section
+            class="step"
+            id="step-4"
+            tabindex="-1"
+            aria-labelledby="h-4"
+            role="group"
+            hidden
+          >
+            <span class="step-tag">Step 5</span>
+            <h2 id="h-4">🏷️ Write a Warning Label</h2>
+            <p class="plain">
+              Write one sentence to help the next student not make this mistake.
+            </p>
+
+            <div class="starters">
+              <p>✏️ Sentence starters (tap to add)</p>
+              <div class="chip-row" data-target="warningText">
+                <button type="button" class="starter-chip">
+                  Warning: before you…
+                </button>
+                <button type="button" class="starter-chip">Remember to…</button>
+                <button type="button" class="starter-chip">
+                  Don't forget that…
+                </button>
+                <button type="button" class="starter-chip">
+                  Always check if…
+                </button>
+              </div>
+            </div>
+
+            <label class="write-label" for="warningText"
+              >🏷️ Your warning label</label
+            >
+            <p class="hint">
+              Keep it short. One sentence a classmate will remember.
+            </p>
+            <textarea
+              id="warningText"
+              placeholder="Warning: before you..."
+              style="min-height: 90px"
+            ></textarea>
+
+            <label
+              class="write-label"
+              for="diagnosisText"
+              style="margin-top: 18px"
+              >🧠 Bonus: Name the trap (optional)</label
+            >
+            <p class="hint">
+              In your own words, what was the first wrong move and why was it
+              tempting?
+            </p>
+            <textarea
+              id="diagnosisText"
+              placeholder="The first wrong move is..."
+              style="min-height: 90px"
+            ></textarea>
+
+            <h3 style="margin-top: 24px">📋 Your Finished Exhibit</h3>
+            <p class="print-only" id="printClusterTitle"></p>
+
+            <div class="review-card">
+              <h3>🔍 The mistake</h3>
+              <p id="reviewMistake"></p>
+            </div>
+            <div class="review-card">
+              <h3>🎭 Mistake type</h3>
+              <p id="reviewType"></p>
+            </div>
+            <div class="review-card">
+              <h3>🛠️ The fix</h3>
+              <p id="reviewRepair"></p>
+            </div>
+            <div class="review-card">
+              <h3>🏷️ Warning label</h3>
+              <p id="reviewWarning"></p>
+            </div>
+
+            <div class="tool-row">
+              <button class="button primary" type="button" id="saveButton">
+                💾 Save
+              </button>
+              <button class="button" type="button" id="copyButton">
+                📄 Copy
+              </button>
+              <button class="button" type="button" id="printButton">
+                🖨️ Print
+              </button>
+              <button class="button danger" type="button" id="clearButton">
+                🗑️ Start over
+              </button>
+            </div>
+          </section>
+
+          <!-- Shared navigation -->
+          <div class="step-nav">
+            <button class="button ghost" type="button" id="backButton" hidden>
+              ← Back
+            </button>
+            <button
+              class="button primary"
+              type="button"
+              id="nextButton"
+              style="margin-left: auto"
+            >
+              Next →
+            </button>
           </div>
-        </section>
+        </div>
       </div>
-    </section>
 
-    <div class="status-row">
-      <span id="statusMessage" role="status" aria-live="polite">Draft not saved yet.</span>
-      <span>Saved in this browser only.</span>
-    </div>
-  </main>
+      <div class="status-row">
+        <span id="statusMessage" role="status" aria-live="polite"
+          >Draft not saved yet.</span
+        >
+        <span>Saved in this browser only.</span>
+      </div>
+    </main>
 
-  <script src="/assets/reveal-math-data.js"></script>
-  <script>
-    (function () {
-      "use strict";
+    <script src="/assets/reveal-math-data.js"></script>
+    <script>
+      (function () {
+        "use strict";
 
-      var STORAGE_KEY = "reveal-math-misconception-museum-v1";
-      var ERROR_TYPES = [
-        "Operation mismatch",
-        "Model mismatch",
-        "Unit or rate confusion",
-        "Variable or relationship mix-up",
-        "Arithmetic slip",
-        "Missing constraint",
-        "Other"
-      ];
+        var STORAGE_KEY = "reveal-math-misconception-museum-v1";
+        var TOTAL_STEPS = 5;
 
-      var fallbackClusters = [
-        { id: "factors-multiples", unit: "Number Systems", title: "Factors and Multiples", lessons: "Prime factors, GCF, LCM", modelKind: "factor web", misconception: "Treats factors and multiples as the same kind of number." },
-        { id: "fraction-division", unit: "Number Systems", title: "Dividing Fractions", lessons: "Fraction division models", modelKind: "tape diagram", misconception: "Inverts the wrong number because keep-change-flip is used without checking the situation." },
-        { id: "ratio-tables", unit: "Ratios and Rates", title: "Ratio Tables", lessons: "Equivalent ratios", modelKind: "ratio table", misconception: "Uses addition instead of multiplication to make equivalent ratios." },
-        { id: "unit-rates", unit: "Ratios and Rates", title: "Unit Rates", lessons: "Rates, unit prices, speed", modelKind: "double number line", misconception: "Compares totals instead of finding the amount for one unit." },
-        { id: "percent-of-number", unit: "Percents", title: "Percent of a Number", lessons: "Percent models", modelKind: "percent bar", misconception: "Uses the percent as a whole number instead of converting it to a rate out of 100." },
-        { id: "decimal-division", unit: "Decimals", title: "Decimal Division", lessons: "Dividing decimals", modelKind: "place-value chart", misconception: "Moves the decimal point without preserving place value." },
-        { id: "negative-numbers", unit: "Rational Numbers", title: "Integers on a Number Line", lessons: "Positive and negative numbers", modelKind: "number line", misconception: "Treats distance from zero as the value and ignores direction." },
-        { id: "coordinate-plane", unit: "Rational Numbers", title: "Coordinate Plane", lessons: "Ordered pairs", modelKind: "coordinate grid", misconception: "Switches the x-coordinate and y-coordinate." },
-        { id: "expressions", unit: "Expressions", title: "Equivalent Expressions", lessons: "Terms, coefficients, combining like terms", modelKind: "expression mat", misconception: "Combines unlike terms because the symbols are near each other." },
-        { id: "one-step-equations", unit: "Equations", title: "One-Step Equations", lessons: "Solving equations", modelKind: "balance model", misconception: "Uses the same operation again instead of the inverse operation." },
-        { id: "inequalities", unit: "Equations", title: "Inequalities", lessons: "Graphing inequalities", modelKind: "number line", misconception: "Includes the boundary point even when the inequality is strict." },
-        { id: "parallelogram-area", unit: "Geometry", title: "Area of Parallelograms", lessons: "Base and height", modelKind: "area model", misconception: "Uses the slanted side as the height." },
-        { id: "triangle-area", unit: "Geometry", title: "Area of Triangles", lessons: "Triangle formulas", modelKind: "grid model", misconception: "Forgets that a triangle is half of a related parallelogram." },
-        { id: "surface-area", unit: "Geometry", title: "Surface Area", lessons: "Nets and area", modelKind: "net", misconception: "Finds volume when the question asks for surface area." },
-        { id: "volume", unit: "Geometry", title: "Volume of Prisms", lessons: "Base area and height", modelKind: "prism model", misconception: "Stops at the area of the base and forgets the height layers." },
-        { id: "center-data", unit: "Statistics", title: "Measures of Center", lessons: "Mean and median", modelKind: "dot plot", misconception: "Uses the mean when the median better describes a skewed data set." },
-        { id: "variability", unit: "Statistics", title: "Variability", lessons: "Range and spread", modelKind: "box plot", misconception: "Treats the range as a typical data value." },
-        { id: "probability", unit: "Probability", title: "Simple Probability", lessons: "Likelihood and outcomes", modelKind: "spinner model", misconception: "Calls a likely event certain because it has the largest section." },
-        { id: "proportional-graphs", unit: "Proportional Relationships", title: "Proportional Graphs", lessons: "Graphs and constants of proportionality", modelKind: "coordinate graph", misconception: "Calls any straight line proportional even when it does not pass through the origin." },
-        { id: "discounts", unit: "Percents", title: "Discounts", lessons: "Percent decrease", modelKind: "double number line", misconception: "Reports the discount amount instead of the final sale price." },
-        { id: "unit-conversion", unit: "Ratios and Rates", title: "Unit Conversion", lessons: "Customary and metric conversions", modelKind: "conversion table", misconception: "Multiplies or divides in the wrong direction for the size of the unit." },
-        { id: "rational-arithmetic", unit: "Rational Numbers", title: "Adding and Subtracting Rational Numbers", lessons: "Signed numbers", modelKind: "chip model", misconception: "Applies a sign rule without thinking about zero pairs or direction." },
-        { id: "exponents", unit: "Expressions", title: "Exponents", lessons: "Powers and repeated multiplication", modelKind: "factor tree", misconception: "Multiplies the base by the exponent instead of using repeated multiplication." },
-        { id: "distributive-property", unit: "Expressions", title: "Distributive Property", lessons: "Expanding expressions", modelKind: "algebra tiles", misconception: "Distributes to the first term only." },
-        { id: "data-displays", unit: "Statistics", title: "Data Displays", lessons: "Histograms and line plots", modelKind: "histogram", misconception: "Reads the scale by ones even when the axis interval is larger." },
-        { id: "geometry-nets", unit: "Geometry", title: "Nets of Solids", lessons: "Representing three-dimensional figures", modelKind: "net", misconception: "Misses a face or counts the same face twice." }
-      ];
+        var STEP_LABELS = ["Pick", "Look", "Why", "Fix", "Label"];
 
-      var elements = {
-        clusterSelect: document.getElementById("clusterSelect"),
-        unitText: document.getElementById("unitText"),
-        lessonText: document.getElementById("lessonText"),
-        modelText: document.getElementById("modelText"),
-        misconceptionText: document.getElementById("misconceptionText"),
-        curatorNote: document.getElementById("curatorNote"),
-        revealNoteButton: document.getElementById("revealNoteButton"),
-        wrongWork: document.getElementById("wrongWork"),
-        modelChips: document.getElementById("modelChips"),
-        modelCaption: document.getElementById("modelCaption"),
-        errorTypeList: document.getElementById("errorTypeList"),
-        diagnosisText: document.getElementById("diagnosisText"),
-        repairText: document.getElementById("repairText"),
-        warningText: document.getElementById("warningText"),
-        saveButton: document.getElementById("saveButton"),
-        copyButton: document.getElementById("copyButton"),
-        clearButton: document.getElementById("clearButton"),
-        printButton: document.getElementById("printButton"),
-        statusMessage: document.getElementById("statusMessage"),
-        printClusterTitle: document.getElementById("printClusterTitle")
-      };
+        var ERROR_TYPES = [
+          { label: "Wrong operation", emoji: "➕" },
+          { label: "Wrong model", emoji: "🧩" },
+          { label: "Unit or rate mix-up", emoji: "📏" },
+          { label: "Mixed up the variables", emoji: "🔤" },
+          { label: "Small math slip", emoji: "✖️" },
+          { label: "Forgot a rule or step", emoji: "❗" },
+          { label: "Something else", emoji: "❓" },
+        ];
 
-      var clusters = getClusters();
-      var currentCluster = clusters[0];
-
-      function getClusters() {
-        var rawClusters = Array.isArray(window.REVEAL_MATH_CLUSTERS) && window.REVEAL_MATH_CLUSTERS.length
-          ? window.REVEAL_MATH_CLUSTERS
-          : fallbackClusters;
-
-        return rawClusters.slice(0, 26).map(function (cluster, index) {
-          return normalizeCluster(cluster, index);
-        });
-      }
-
-      function normalizeCluster(cluster, index) {
-        var unit = resolveUnit(cluster);
-        var lessons = resolveLessons(cluster);
-        var title = textValue(cluster.title || cluster.name || cluster.clusterTitle || cluster.label, "Lesson Cluster " + (index + 1));
-        var misconception = textValue(cluster.misconception || cluster.commonMisconception || cluster.errorPattern, "A tempting shortcut changes the meaning of the math.");
-        var modelKind = textValue(cluster.modelKind || cluster.model || cluster.representation, "math model");
-
-        return {
-          id: textValue(cluster.id || cluster.clusterId || cluster.slug, "cluster-" + (index + 1)),
-          unit: unit,
-          title: title,
-          lessons: lessons,
-          modelKind: modelKind,
-          misconception: misconception,
-          wrongSolution: cluster.wrongSolution || cluster.temptingWrongSolution || cluster.misconceptionExample || null,
-          source: cluster
-        };
-      }
-
-      function resolveUnit(cluster) {
-        if (cluster.unit || cluster.unitTitle || cluster.unitName) {
-          return textValue(cluster.unit || cluster.unitTitle || cluster.unitName, "Reveal Math");
+        // Simple inline icon set keyed by topic words. Returns an SVG string.
+        function iconFor(text) {
+          var t = (text || "").toLowerCase();
+          var teal = "#126c78",
+            gold = "#b9821a",
+            red = "#a63729";
+          function wrap(inner) {
+            return (
+              '<rect x="2" y="2" width="56" height="56" rx="10" fill="#e6f2f4"/>' +
+              inner
+            );
+          }
+          if (
+            t.indexOf("factor") !== -1 ||
+            t.indexOf("multiple") !== -1 ||
+            t.indexOf("prime") !== -1
+          ) {
+            return wrap(
+              '<circle cx="22" cy="22" r="8" fill="' +
+                teal +
+                '"/><circle cx="40" cy="22" r="8" fill="' +
+                gold +
+                '"/><circle cx="31" cy="40" r="8" fill="' +
+                red +
+                '"/><path d="M22 30v4M40 30v4M31 30v2" stroke="#0b4f59" stroke-width="2"/>',
+            );
+          }
+          if (t.indexOf("fraction") !== -1) {
+            return wrap(
+              '<rect x="16" y="14" width="28" height="12" rx="2" fill="' +
+                teal +
+                '"/><rect x="16" y="34" width="14" height="12" rx="2" fill="' +
+                gold +
+                '"/><rect x="30" y="34" width="14" height="12" rx="2" fill="#cfe3e6"/><rect x="16" y="29" width="28" height="2" fill="#0b4f59"/>',
+            );
+          }
+          if (
+            t.indexOf("ratio") !== -1 ||
+            t.indexOf("rate") !== -1 ||
+            t.indexOf("propor") !== -1 ||
+            t.indexOf("convers") !== -1
+          ) {
+            return wrap(
+              '<rect x="14" y="16" width="14" height="28" rx="2" fill="' +
+                teal +
+                '"/><rect x="32" y="24" width="14" height="20" rx="2" fill="' +
+                gold +
+                '"/><path d="M12 44h36" stroke="#0b4f59" stroke-width="2"/>',
+            );
+          }
+          if (
+            t.indexOf("percent") !== -1 ||
+            t.indexOf("discount") !== -1 ||
+            t.indexOf("interest") !== -1
+          ) {
+            return wrap(
+              '<circle cx="24" cy="24" r="5" fill="' +
+                gold +
+                '"/><circle cx="38" cy="38" r="5" fill="' +
+                teal +
+                '"/><path d="M20 40 42 20" stroke="' +
+                red +
+                '" stroke-width="3" stroke-linecap="round"/>',
+            );
+          }
+          if (
+            t.indexOf("decimal") !== -1 ||
+            t.indexOf("division") !== -1 ||
+            t.indexOf("divide") !== -1
+          ) {
+            return wrap(
+              '<circle cx="30" cy="18" r="3" fill="' +
+                teal +
+                '"/><circle cx="30" cy="42" r="3" fill="' +
+                teal +
+                '"/><rect x="16" y="29" width="28" height="3" rx="1.5" fill="' +
+                gold +
+                '"/>',
+            );
+          }
+          if (
+            t.indexOf("coordinate") !== -1 ||
+            t.indexOf("graph") !== -1 ||
+            t.indexOf("plane") !== -1
+          ) {
+            return wrap(
+              '<path d="M16 44V16M16 44h28" stroke="#0b4f59" stroke-width="2"/><circle cx="28" cy="30" r="4" fill="' +
+                red +
+                '"/><circle cx="38" cy="22" r="4" fill="' +
+                teal +
+                '"/>',
+            );
+          }
+          if (
+            t.indexOf("integer") !== -1 ||
+            t.indexOf("negative") !== -1 ||
+            t.indexOf("rational") !== -1 ||
+            t.indexOf("number line") !== -1 ||
+            t.indexOf("absolute") !== -1
+          ) {
+            return wrap(
+              '<path d="M12 30h36" stroke="#0b4f59" stroke-width="2"/><path d="M30 24v12" stroke="#0b4f59" stroke-width="2"/><circle cx="20" cy="30" r="4" fill="' +
+                red +
+                '"/><circle cx="42" cy="30" r="4" fill="' +
+                teal +
+                '"/>',
+            );
+          }
+          if (
+            t.indexOf("express") !== -1 ||
+            t.indexOf("distribut") !== -1 ||
+            t.indexOf("exponent") !== -1
+          ) {
+            return wrap(
+              '<rect x="14" y="22" width="14" height="16" rx="2" fill="' +
+                teal +
+                '"/><rect x="32" y="22" width="14" height="16" rx="2" fill="' +
+                gold +
+                '"/><text x="21" y="34" font-size="11" fill="#fff" text-anchor="middle" font-family="sans-serif">x</text><text x="39" y="34" font-size="11" fill="#fff" text-anchor="middle" font-family="sans-serif">+</text>',
+            );
+          }
+          if (
+            t.indexOf("equation") !== -1 ||
+            t.indexOf("inequal") !== -1 ||
+            t.indexOf("variable") !== -1
+          ) {
+            return wrap(
+              '<path d="M30 14v34" stroke="#0b4f59" stroke-width="2"/><rect x="14" y="28" width="14" height="10" rx="2" fill="' +
+                teal +
+                '"/><rect x="32" y="28" width="14" height="10" rx="2" fill="' +
+                gold +
+                '"/><path d="M12 44h36" stroke="#0b4f59" stroke-width="2"/>',
+            );
+          }
+          if (
+            t.indexOf("area") !== -1 ||
+            t.indexOf("parallelo") !== -1 ||
+            t.indexOf("triangle") !== -1 ||
+            t.indexOf("trapez") !== -1 ||
+            t.indexOf("polygon") !== -1
+          ) {
+            return wrap(
+              '<path d="M16 44 26 18h22L38 44z" fill="' +
+                teal +
+                '"/><path d="M16 44h22" stroke="' +
+                gold +
+                '" stroke-width="3"/>',
+            );
+          }
+          if (
+            t.indexOf("volume") !== -1 ||
+            t.indexOf("surface") !== -1 ||
+            t.indexOf("net") !== -1 ||
+            t.indexOf("prism") !== -1 ||
+            t.indexOf("solid") !== -1
+          ) {
+            return wrap(
+              '<path d="M20 24h16v16H20z" fill="' +
+                teal +
+                '"/><path d="M20 24l8-6h16l-8 6z" fill="' +
+                gold +
+                '"/><path d="M36 24l8-6v16l-8 6z" fill="#0b4f59"/>',
+            );
+          }
+          if (
+            t.indexOf("data") !== -1 ||
+            t.indexOf("statist") !== -1 ||
+            t.indexOf("mean") !== -1 ||
+            t.indexOf("median") !== -1 ||
+            t.indexOf("center") !== -1 ||
+            t.indexOf("variab") !== -1 ||
+            t.indexOf("display") !== -1 ||
+            t.indexOf("dot") !== -1
+          ) {
+            return wrap(
+              '<rect x="14" y="30" width="8" height="14" fill="' +
+                teal +
+                '"/><rect x="26" y="22" width="8" height="22" fill="' +
+                gold +
+                '"/><rect x="38" y="26" width="8" height="18" fill="' +
+                red +
+                '"/><path d="M12 44h36" stroke="#0b4f59" stroke-width="2"/>',
+            );
+          }
+          if (
+            t.indexOf("probab") !== -1 ||
+            t.indexOf("spinner") !== -1 ||
+            t.indexOf("likel") !== -1
+          ) {
+            return wrap(
+              '<circle cx="30" cy="30" r="14" fill="#cfe3e6"/><path d="M30 30 30 16A14 14 0 0 1 42 36z" fill="' +
+                teal +
+                '"/><circle cx="30" cy="30" r="3" fill="' +
+                red +
+                '"/>',
+            );
+          }
+          return wrap(
+            '<rect x="18" y="18" width="24" height="24" rx="4" fill="' +
+              teal +
+              '"/><path d="M24 30h12M30 24v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>',
+          );
         }
 
-        if (cluster.unitId && Array.isArray(window.REVEAL_MATH_UNITS)) {
-          var unit = window.REVEAL_MATH_UNITS.find(function (item) {
-            return item.id === cluster.unitId || item.unitId === cluster.unitId;
+        var fallbackClusters = [
+          {
+            id: "factors-multiples",
+            unit: "Number Systems",
+            title: "Factors and Multiples",
+            lessons: "Prime factors, GCF, LCM",
+            modelKind: "factor web",
+            misconception:
+              "Treats factors and multiples as the same kind of number.",
+          },
+          {
+            id: "fraction-division",
+            unit: "Number Systems",
+            title: "Dividing Fractions",
+            lessons: "Fraction division models",
+            modelKind: "tape diagram",
+            misconception:
+              "Inverts the wrong number because keep-change-flip is used without checking the situation.",
+          },
+          {
+            id: "ratio-tables",
+            unit: "Ratios and Rates",
+            title: "Ratio Tables",
+            lessons: "Equivalent ratios",
+            modelKind: "ratio table",
+            misconception:
+              "Uses addition instead of multiplication to make equivalent ratios.",
+          },
+          {
+            id: "unit-rates",
+            unit: "Ratios and Rates",
+            title: "Unit Rates",
+            lessons: "Rates, unit prices, speed",
+            modelKind: "double number line",
+            misconception:
+              "Compares totals instead of finding the amount for one unit.",
+          },
+          {
+            id: "percent-of-number",
+            unit: "Percents",
+            title: "Percent of a Number",
+            lessons: "Percent models",
+            modelKind: "percent bar",
+            misconception:
+              "Uses the percent as a whole number instead of converting it to a rate out of 100.",
+          },
+          {
+            id: "decimal-division",
+            unit: "Decimals",
+            title: "Decimal Division",
+            lessons: "Dividing decimals",
+            modelKind: "place-value chart",
+            misconception:
+              "Moves the decimal point without preserving place value.",
+          },
+          {
+            id: "negative-numbers",
+            unit: "Rational Numbers",
+            title: "Integers on a Number Line",
+            lessons: "Positive and negative numbers",
+            modelKind: "number line",
+            misconception:
+              "Treats distance from zero as the value and ignores direction.",
+          },
+          {
+            id: "coordinate-plane",
+            unit: "Rational Numbers",
+            title: "Coordinate Plane",
+            lessons: "Ordered pairs",
+            modelKind: "coordinate grid",
+            misconception: "Switches the x-coordinate and y-coordinate.",
+          },
+          {
+            id: "expressions",
+            unit: "Expressions",
+            title: "Equivalent Expressions",
+            lessons: "Terms, coefficients, combining like terms",
+            modelKind: "expression mat",
+            misconception:
+              "Combines unlike terms because the symbols are near each other.",
+          },
+          {
+            id: "one-step-equations",
+            unit: "Equations",
+            title: "One-Step Equations",
+            lessons: "Solving equations",
+            modelKind: "balance model",
+            misconception:
+              "Uses the same operation again instead of the inverse operation.",
+          },
+          {
+            id: "inequalities",
+            unit: "Equations",
+            title: "Inequalities",
+            lessons: "Graphing inequalities",
+            modelKind: "number line",
+            misconception:
+              "Includes the boundary point even when the inequality is strict.",
+          },
+          {
+            id: "parallelogram-area",
+            unit: "Geometry",
+            title: "Area of Parallelograms",
+            lessons: "Base and height",
+            modelKind: "area model",
+            misconception: "Uses the slanted side as the height.",
+          },
+          {
+            id: "triangle-area",
+            unit: "Geometry",
+            title: "Area of Triangles",
+            lessons: "Triangle formulas",
+            modelKind: "grid model",
+            misconception:
+              "Forgets that a triangle is half of a related parallelogram.",
+          },
+          {
+            id: "surface-area",
+            unit: "Geometry",
+            title: "Surface Area",
+            lessons: "Nets and area",
+            modelKind: "net",
+            misconception:
+              "Finds volume when the question asks for surface area.",
+          },
+          {
+            id: "volume",
+            unit: "Geometry",
+            title: "Volume of Prisms",
+            lessons: "Base area and height",
+            modelKind: "prism model",
+            misconception:
+              "Stops at the area of the base and forgets the height layers.",
+          },
+          {
+            id: "center-data",
+            unit: "Statistics",
+            title: "Measures of Center",
+            lessons: "Mean and median",
+            modelKind: "dot plot",
+            misconception:
+              "Uses the mean when the median better describes a skewed data set.",
+          },
+          {
+            id: "variability",
+            unit: "Statistics",
+            title: "Variability",
+            lessons: "Range and spread",
+            modelKind: "box plot",
+            misconception: "Treats the range as a typical data value.",
+          },
+          {
+            id: "probability",
+            unit: "Probability",
+            title: "Simple Probability",
+            lessons: "Likelihood and outcomes",
+            modelKind: "spinner model",
+            misconception:
+              "Calls a likely event certain because it has the largest section.",
+          },
+          {
+            id: "proportional-graphs",
+            unit: "Proportional Relationships",
+            title: "Proportional Graphs",
+            lessons: "Graphs and constants of proportionality",
+            modelKind: "coordinate graph",
+            misconception:
+              "Calls any straight line proportional even when it does not pass through the origin.",
+          },
+          {
+            id: "discounts",
+            unit: "Percents",
+            title: "Discounts",
+            lessons: "Percent decrease",
+            modelKind: "double number line",
+            misconception:
+              "Reports the discount amount instead of the final sale price.",
+          },
+          {
+            id: "unit-conversion",
+            unit: "Ratios and Rates",
+            title: "Unit Conversion",
+            lessons: "Customary and metric conversions",
+            modelKind: "conversion table",
+            misconception:
+              "Multiplies or divides in the wrong direction for the size of the unit.",
+          },
+          {
+            id: "rational-arithmetic",
+            unit: "Rational Numbers",
+            title: "Adding and Subtracting Rational Numbers",
+            lessons: "Signed numbers",
+            modelKind: "chip model",
+            misconception:
+              "Applies a sign rule without thinking about zero pairs or direction.",
+          },
+          {
+            id: "exponents",
+            unit: "Expressions",
+            title: "Exponents",
+            lessons: "Powers and repeated multiplication",
+            modelKind: "factor tree",
+            misconception:
+              "Multiplies the base by the exponent instead of using repeated multiplication.",
+          },
+          {
+            id: "distributive-property",
+            unit: "Expressions",
+            title: "Distributive Property",
+            lessons: "Expanding expressions",
+            modelKind: "algebra tiles",
+            misconception: "Distributes to the first term only.",
+          },
+          {
+            id: "data-displays",
+            unit: "Statistics",
+            title: "Data Displays",
+            lessons: "Histograms and line plots",
+            modelKind: "histogram",
+            misconception:
+              "Reads the scale by ones even when the axis interval is larger.",
+          },
+          {
+            id: "geometry-nets",
+            unit: "Geometry",
+            title: "Nets of Solids",
+            lessons: "Representing three-dimensional figures",
+            modelKind: "net",
+            misconception: "Misses a face or counts the same face twice.",
+          },
+        ];
+
+        var el = {
+          stepper: document.getElementById("stepper"),
+          progressText: document.getElementById("progressText"),
+          clusterSelect: document.getElementById("clusterSelect"),
+          exhibitIcon: document.getElementById("exhibitIcon"),
+          cardUnit: document.getElementById("cardUnit"),
+          cardTitle: document.getElementById("cardTitle"),
+          cardLessons: document.getElementById("cardLessons"),
+          claimLine: document.getElementById("claimLine"),
+          wrongWork: document.getElementById("wrongWork"),
+          modelChips: document.getElementById("modelChips"),
+          modelCaption: document.getElementById("modelCaption"),
+          curatorNote: document.getElementById("curatorNote"),
+          errorTypeList: document.getElementById("errorTypeList"),
+          repairText: document.getElementById("repairText"),
+          repairHint: document.getElementById("repairHint"),
+          warningText: document.getElementById("warningText"),
+          diagnosisText: document.getElementById("diagnosisText"),
+          reviewMistake: document.getElementById("reviewMistake"),
+          reviewType: document.getElementById("reviewType"),
+          reviewRepair: document.getElementById("reviewRepair"),
+          reviewWarning: document.getElementById("reviewWarning"),
+          backButton: document.getElementById("backButton"),
+          nextButton: document.getElementById("nextButton"),
+          saveButton: document.getElementById("saveButton"),
+          copyButton: document.getElementById("copyButton"),
+          clearButton: document.getElementById("clearButton"),
+          printButton: document.getElementById("printButton"),
+          statusMessage: document.getElementById("statusMessage"),
+          printClusterTitle: document.getElementById("printClusterTitle"),
+        };
+
+        var stepSections = [];
+        for (var i = 0; i < TOTAL_STEPS; i++) {
+          stepSections.push(document.getElementById("step-" + i));
+        }
+
+        var clusters = getClusters();
+        var currentCluster = clusters[0];
+        var currentStep = 0;
+
+        function getClusters() {
+          var rawClusters =
+            Array.isArray(window.REVEAL_MATH_CLUSTERS) &&
+            window.REVEAL_MATH_CLUSTERS.length
+              ? window.REVEAL_MATH_CLUSTERS
+              : fallbackClusters;
+          return rawClusters.slice(0, 26).map(function (cluster, index) {
+            return normalizeCluster(cluster, index);
           });
-          if (unit) {
-            return textValue(unit.title || unit.name || unit.label, "Reveal Math");
+        }
+
+        function normalizeCluster(cluster, index) {
+          var unit = resolveUnit(cluster);
+          var lessons = resolveLessons(cluster);
+          var title = textValue(
+            cluster.title ||
+              cluster.name ||
+              cluster.clusterTitle ||
+              cluster.label,
+            "Lesson Cluster " + (index + 1),
+          );
+          var misconception = textValue(
+            cluster.misconception ||
+              cluster.commonMisconception ||
+              cluster.errorPattern,
+            "A tempting shortcut changes the meaning of the math.",
+          );
+          var modelKind = textValue(
+            cluster.modelKind || cluster.model || cluster.representation,
+            "math model",
+          );
+          return {
+            id: textValue(
+              cluster.id || cluster.clusterId || cluster.slug,
+              "cluster-" + (index + 1),
+            ),
+            unit: unit,
+            title: title,
+            lessons: lessons,
+            modelKind: modelKind,
+            misconception: misconception,
+            repairMove: textValue(cluster.repairMove || cluster.repair, ""),
+            hint: textValue(cluster.hint, ""),
+            wrongSolution:
+              cluster.wrongSolution ||
+              cluster.temptingWrongSolution ||
+              cluster.misconceptionExample ||
+              null,
+            source: cluster,
+          };
+        }
+
+        function resolveUnit(cluster) {
+          if (cluster.unit || cluster.unitTitle || cluster.unitName) {
+            return textValue(
+              cluster.unit || cluster.unitTitle || cluster.unitName,
+              "Reveal Math",
+            );
+          }
+          if (cluster.unitId && Array.isArray(window.REVEAL_MATH_UNITS)) {
+            var unit = window.REVEAL_MATH_UNITS.find(function (item) {
+              return (
+                item.id === cluster.unitId || item.unitId === cluster.unitId
+              );
+            });
+            if (unit) {
+              return textValue(
+                unit.title || unit.name || unit.label,
+                "Reveal Math",
+              );
+            }
+          }
+          return "Reveal Math";
+        }
+
+        function resolveLessons(cluster) {
+          if (cluster.lessons || cluster.lessonTitles || cluster.lessonRange) {
+            return textValue(
+              cluster.lessons || cluster.lessonTitles || cluster.lessonRange,
+              "Cluster lessons",
+            );
+          }
+          if (
+            Array.isArray(cluster.lessonIds) &&
+            Array.isArray(window.REVEAL_MATH_LESSONS)
+          ) {
+            var lessonTitles = cluster.lessonIds.map(function (lessonId) {
+              var lesson = window.REVEAL_MATH_LESSONS.find(function (item) {
+                return item.id === lessonId || item.lessonId === lessonId;
+              });
+              return lesson
+                ? textValue(
+                    lesson.title || lesson.name || lesson.label,
+                    lessonId,
+                  )
+                : lessonId;
+            });
+            return lessonTitles.join(", ");
+          }
+          return "Cluster lessons";
+        }
+
+        function textValue(value, fallback) {
+          if (Array.isArray(value)) {
+            return (
+              value
+                .map(function (item) {
+                  return textValue(item, "");
+                })
+                .filter(Boolean)
+                .join(", ") || fallback
+            );
+          }
+          if (value && typeof value === "object") {
+            return textValue(
+              value.text ||
+                value.title ||
+                value.name ||
+                value.label ||
+                value.description,
+              fallback,
+            );
+          }
+          if (value === 0) {
+            return "0";
+          }
+          return String(value || "").trim() || fallback;
+        }
+
+        function escapeHtml(value) {
+          return String(value).replace(/[&<>"']/g, function (character) {
+            return {
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[character];
+          });
+        }
+
+        function populateClusterSelect() {
+          el.clusterSelect.innerHTML = clusters
+            .map(function (cluster, index) {
+              return (
+                '<option value="' +
+                escapeHtml(cluster.id) +
+                '">' +
+                escapeHtml(index + 1 + ". " + cluster.title) +
+                "</option>"
+              );
+            })
+            .join("");
+        }
+
+        function populateErrorTypes() {
+          el.errorTypeList.innerHTML = ERROR_TYPES.map(function (type, index) {
+            var id = "errorType" + index;
+            return [
+              '<label class="error-option" for="' + id + '">',
+              '<input type="radio" id="' +
+                id +
+                '" name="errorType" value="' +
+                escapeHtml(type.label) +
+                '">',
+              '<span class="emoji" aria-hidden="true">' +
+                type.emoji +
+                "</span>",
+              "<span>" + escapeHtml(type.label) + "</span>",
+              "</label>",
+            ].join("");
+          }).join("");
+        }
+
+        function buildStepper() {
+          el.stepper.innerHTML = STEP_LABELS.map(function (label, index) {
+            return [
+              "<li>",
+              '<button type="button" class="step-dot" data-step="' +
+                index +
+                '">',
+              '<span class="bubble" aria-hidden="true">' +
+                (index + 1) +
+                "</span>",
+              '<span class="label">' + escapeHtml(label) + "</span>",
+              "</button>",
+              "</li>",
+            ].join("");
+          }).join("");
+          Array.prototype.forEach.call(
+            el.stepper.querySelectorAll(".step-dot"),
+            function (dot) {
+              dot.addEventListener("click", function () {
+                goToStep(Number(dot.getAttribute("data-step")));
+              });
+            },
+          );
+        }
+
+        function renderCluster(cluster) {
+          currentCluster = cluster;
+          // Step 1 card
+          el.exhibitIcon.innerHTML = iconFor(
+            cluster.title + " " + cluster.modelKind + " " + cluster.unit,
+          );
+          el.cardUnit.textContent = cluster.unit;
+          el.cardTitle.textContent = cluster.title;
+          el.cardLessons.textContent = cluster.lessons;
+          // Step 2 mistake
+          el.claimLine.textContent =
+            "A student says this works for " + cluster.title + ":";
+          el.wrongWork.innerHTML = buildWrongWork(cluster);
+          renderModelClues(cluster);
+          // Step 3 curator note
+          el.curatorNote.textContent = buildCuratorNote(cluster);
+          // Step 4 hint
+          el.repairHint.textContent = cluster.hint
+            ? "Tip: " + cluster.hint
+            : "Show the correct steps, model, or equation.";
+          el.printClusterTitle.textContent =
+            "Exhibit: " + cluster.title + " (" + cluster.unit + ")";
+          refreshReview();
+        }
+
+        function buildWrongWork(cluster) {
+          if (cluster.wrongSolution) {
+            return formatWrongSolution(cluster.wrongSolution);
+          }
+          var lowerMisconception = cluster.misconception.toLowerCase();
+          var lowerModel = cluster.modelKind.toLowerCase();
+          var steps;
+          if (
+            lowerMisconception.indexOf("addition") !== -1 ||
+            lowerMisconception.indexOf("multiplication") !== -1
+          ) {
+            steps = [
+              "I made a " +
+                cluster.modelKind +
+                " and looked for a pattern that changed by the same amount each row.",
+              "Since one value increased by 3, I added 3 to the other value too.",
+              "My answer keeps the numbers moving, so the ratios must be equivalent.",
+            ];
+          } else if (
+            lowerMisconception.indexOf("percent") !== -1 ||
+            lowerMisconception.indexOf("discount") !== -1
+          ) {
+            steps = [
+              "I used the percent number directly in the " +
+                cluster.modelKind +
+                ".",
+              "Because the problem says percent, I subtracted or multiplied by that whole number.",
+              "The result looks smaller, so it must answer the question.",
+            ];
+          } else if (
+            lowerMisconception.indexOf("height") !== -1 ||
+            lowerMisconception.indexOf("area") !== -1 ||
+            lowerModel.indexOf("area") !== -1
+          ) {
+            steps = [
+              "I chose the longest-looking side in the " +
+                cluster.modelKind +
+                ".",
+              "I multiplied the base by that side because both numbers are on the shape.",
+              "The formula has two measurements, so this should be enough.",
+            ];
+          } else if (
+            lowerMisconception.indexOf("origin") !== -1 ||
+            lowerMisconception.indexOf("coordinate") !== -1 ||
+            lowerModel.indexOf("graph") !== -1
+          ) {
+            steps = [
+              "I plotted the points and noticed they almost line up.",
+              "Any straight line on a graph shows the same relationship.",
+              "So I called the relationship proportional without checking the starting point.",
+            ];
+          } else if (
+            lowerMisconception.indexOf("inverse") !== -1 ||
+            lowerMisconception.indexOf("equation") !== -1 ||
+            lowerModel.indexOf("balance") !== -1
+          ) {
+            steps = [
+              "I copied the operation from the equation onto both sides of the balance model.",
+              "The equation still has the same operation, so I kept going in that direction.",
+              "The variable is alone after I simplify, so the solution must work.",
+            ];
+          } else if (
+            lowerMisconception.indexOf("unit") !== -1 ||
+            lowerMisconception.indexOf("rate") !== -1 ||
+            lowerModel.indexOf("number line") !== -1
+          ) {
+            steps = [
+              "I compared the largest totals in the model.",
+              "The bigger total looked like the better deal or faster rate.",
+              "I did not scale either quantity down to one unit.",
+            ];
+          } else {
+            steps = [
+              "I built a " +
+                cluster.modelKind +
+                " and chose the move that looked quickest.",
+              "The shortcut matches part of the lesson, so I used it for every number in the problem.",
+              "The answer looks reasonable, but it depends on this idea: " +
+                cluster.misconception,
+            ];
+          }
+          return [
+            "<ol>",
+            steps
+              .map(function (step) {
+                return "<li>" + escapeHtml(step) + "</li>";
+              })
+              .join(""),
+            "</ol>",
+          ].join("");
+        }
+
+        function formatWrongSolution(solution) {
+          if (Array.isArray(solution)) {
+            return (
+              "<ol>" +
+              solution
+                .map(function (step) {
+                  return "<li>" + escapeHtml(textValue(step, "")) + "</li>";
+                })
+                .join("") +
+              "</ol>"
+            );
+          }
+          if (solution && typeof solution === "object") {
+            var heading = textValue(
+              solution.title || solution.prompt || solution.problem,
+              "",
+            );
+            var steps =
+              solution.steps ||
+              solution.work ||
+              solution.reasoning ||
+              solution.explanation ||
+              "";
+            var out = heading
+              ? '<p class="claim">' + escapeHtml(heading) + "</p>"
+              : "";
+            return out + formatWrongSolution(steps);
+          }
+          return (
+            '<p class="solution-quote">' +
+            escapeHtml(
+              textValue(
+                solution,
+                "A tempting wrong solution is available for this exhibit.",
+              ),
+            ).replace(/\n/g, "<br>") +
+            "</p>"
+          );
+        }
+
+        function buildCuratorNote(cluster) {
+          return (
+            "This mistake is tempting because the " +
+            cluster.modelKind +
+            " shows a pattern that looks helpful. Ask yourself: does this model really match the question and the units? Watch out for this trap: " +
+            cluster.misconception
+          );
+        }
+
+        function renderModelClues(cluster) {
+          var chips = [
+            { ico: "📐", text: cluster.modelKind },
+            { ico: "📚", text: cluster.unit },
+            { ico: "⚠️", text: "Common trap" },
+          ];
+          el.modelChips.innerHTML = chips
+            .map(function (chip) {
+              return (
+                '<span class="model-chip"><span aria-hidden="true">' +
+                chip.ico +
+                "</span>" +
+                escapeHtml(chip.text) +
+                "</span>"
+              );
+            })
+            .join("");
+          el.modelCaption.textContent =
+            "Use these clues to find where the thinking stopped matching the math.";
+        }
+
+        function selectedErrorType() {
+          var checked = document.querySelector(
+            'input[name="errorType"]:checked',
+          );
+          return checked ? checked.value : "";
+        }
+
+        function setSelectedErrorType(value) {
+          Array.prototype.forEach.call(
+            document.querySelectorAll('input[name="errorType"]'),
+            function (input) {
+              input.checked = input.value === value;
+            },
+          );
+        }
+
+        function refreshReview() {
+          el.reviewMistake.textContent =
+            currentCluster.title + " — " + currentCluster.misconception;
+          var type = selectedErrorType();
+          setReviewField(el.reviewType, type, "Not chosen yet.");
+          setReviewField(
+            el.reviewRepair,
+            el.repairText.value,
+            "Not written yet.",
+          );
+          setReviewField(
+            el.reviewWarning,
+            el.warningText.value,
+            "Not written yet.",
+          );
+        }
+
+        function setReviewField(node, value, emptyText) {
+          if (value && value.trim()) {
+            node.textContent = value;
+            node.classList.remove("empty");
+          } else {
+            node.textContent = emptyText;
+            node.classList.add("empty");
           }
         }
 
-        return "Reveal Math";
-      }
-
-      function resolveLessons(cluster) {
-        if (cluster.lessons || cluster.lessonTitles || cluster.lessonRange) {
-          return textValue(cluster.lessons || cluster.lessonTitles || cluster.lessonRange, "Cluster lessons");
-        }
-
-        if (Array.isArray(cluster.lessonIds) && Array.isArray(window.REVEAL_MATH_LESSONS)) {
-          var lessonTitles = cluster.lessonIds.map(function (lessonId) {
-            var lesson = window.REVEAL_MATH_LESSONS.find(function (item) {
-              return item.id === lessonId || item.lessonId === lessonId;
-            });
-            return lesson ? textValue(lesson.title || lesson.name || lesson.label, lessonId) : lessonId;
+        // ---- Step navigation ----
+        function goToStep(index) {
+          if (index < 0) {
+            index = 0;
+          }
+          if (index > TOTAL_STEPS - 1) {
+            index = TOTAL_STEPS - 1;
+          }
+          currentStep = index;
+          stepSections.forEach(function (section, i) {
+            var active = i === index;
+            section.classList.toggle("active", active);
+            section.hidden = !active;
           });
-          return lessonTitles.join(", ");
+          if (index === TOTAL_STEPS - 1) {
+            refreshReview();
+          }
+          updateStepper();
+          el.backButton.hidden = index === 0;
+          el.nextButton.hidden = index === TOTAL_STEPS - 1;
+          el.progressText.textContent =
+            "Step " + (index + 1) + " of " + TOTAL_STEPS;
+          // Focus the active step heading region for screen readers
+          stepSections[index].focus();
+          stepSections[index].scrollIntoView({
+            block: "start",
+            behavior: "auto",
+          });
         }
 
-        return "Cluster lessons";
-      }
-
-      function textValue(value, fallback) {
-        if (Array.isArray(value)) {
-          return value.map(function (item) { return textValue(item, ""); }).filter(Boolean).join(", ") || fallback;
+        function updateStepper() {
+          Array.prototype.forEach.call(
+            el.stepper.querySelectorAll(".step-dot"),
+            function (dot) {
+              var step = Number(dot.getAttribute("data-step"));
+              dot.classList.toggle("done", step < currentStep);
+              if (step === currentStep) {
+                dot.setAttribute("aria-current", "step");
+              } else {
+                dot.removeAttribute("aria-current");
+              }
+            },
+          );
         }
 
-        if (value && typeof value === "object") {
-          return textValue(value.text || value.title || value.name || value.label || value.description, fallback);
+        // ---- Save / load / copy ----
+        function saveDraft() {
+          var draft = {
+            clusterId: currentCluster.id,
+            errorType: selectedErrorType(),
+            diagnosis: el.diagnosisText.value,
+            repair: el.repairText.value,
+            warning: el.warningText.value,
+            savedAt: new Date().toISOString(),
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+          setStatus("Saved! Your work is safe in this browser.", true);
         }
 
-        if (value === 0) {
-          return "0";
+        function loadDraft() {
+          try {
+            var rawDraft = localStorage.getItem(STORAGE_KEY);
+            if (!rawDraft) {
+              return;
+            }
+            var draft = JSON.parse(rawDraft);
+            var draftCluster = clusters.find(function (cluster) {
+              return cluster.id === draft.clusterId;
+            });
+            if (draftCluster) {
+              el.clusterSelect.value = draftCluster.id;
+              renderCluster(draftCluster);
+            }
+            setSelectedErrorType(draft.errorType || "");
+            el.diagnosisText.value = draft.diagnosis || "";
+            el.repairText.value = draft.repair || "";
+            el.warningText.value = draft.warning || "";
+            refreshReview();
+            setStatus("We brought back your saved work.", true);
+          } catch (error) {
+            setStatus(
+              "Saved work could not be opened. You can start fresh.",
+              false,
+            );
+          }
         }
 
-        return String(value || "").trim() || fallback;
-      }
-
-      function escapeHtml(value) {
-        return String(value).replace(/[&<>"']/g, function (character) {
-          return {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            "\"": "&quot;",
-            "'": "&#39;"
-          }[character];
-        });
-      }
-
-      function populateClusterSelect() {
-        elements.clusterSelect.innerHTML = clusters.map(function (cluster, index) {
-          return '<option value="' + escapeHtml(cluster.id) + '">' + escapeHtml(index + 1 + ". " + cluster.title) + "</option>";
-        }).join("");
-      }
-
-      function populateErrorTypes() {
-        elements.errorTypeList.innerHTML = ERROR_TYPES.map(function (type, index) {
-          var id = "errorType" + index;
-          return [
-            '<label class="error-option" for="' + id + '">',
-            '<input type="radio" id="' + id + '" name="errorType" value="' + escapeHtml(type) + '">',
-            '<span>' + escapeHtml(type) + '</span>',
-            '</label>'
-          ].join("");
-        }).join("");
-      }
-
-      function renderCluster(cluster) {
-        currentCluster = cluster;
-        elements.unitText.textContent = cluster.unit;
-        elements.lessonText.textContent = cluster.lessons;
-        elements.modelText.textContent = cluster.modelKind;
-        elements.misconceptionText.textContent = cluster.misconception;
-        elements.curatorNote.textContent = buildCuratorNote(cluster);
-        elements.curatorNote.hidden = true;
-        elements.revealNoteButton.textContent = "Reveal Curator Note";
-        elements.revealNoteButton.setAttribute("aria-expanded", "false");
-        elements.wrongWork.innerHTML = buildWrongWork(cluster);
-        renderModelClues(cluster);
-        elements.printClusterTitle.textContent = "Cluster: " + cluster.title;
-      }
-
-      function buildWrongWork(cluster) {
-        if (cluster.wrongSolution) {
-          return formatWrongSolution(cluster.wrongSolution);
+        function clearDraft() {
+          localStorage.removeItem(STORAGE_KEY);
+          setSelectedErrorType("");
+          el.diagnosisText.value = "";
+          el.repairText.value = "";
+          el.warningText.value = "";
+          refreshReview();
+          setStatus("Cleared. Ready for a new exhibit.", false);
         }
 
-        var lowerMisconception = cluster.misconception.toLowerCase();
-        var lowerModel = cluster.modelKind.toLowerCase();
-        var steps;
+        function copyExhibit() {
+          var text = [
+            "Misconception Museum Exhibit",
+            "Topic: " + currentCluster.title,
+            "Unit: " + currentCluster.unit,
+            "The mistake: " + currentCluster.misconception,
+            "Mistake type: " + (selectedErrorType() || "Not chosen yet"),
+            "",
+            "The fix:",
+            el.repairText.value || "Not written yet.",
+            "",
+            "Warning label:",
+            el.warningText.value || "Not written yet.",
+            "",
+            "Name the trap (bonus):",
+            el.diagnosisText.value || "Not written yet.",
+          ].join("\n");
 
-        if (lowerMisconception.indexOf("addition") !== -1 || lowerMisconception.indexOf("multiplication") !== -1) {
-          steps = [
-            "I made a " + cluster.modelKind + " and looked for a pattern that changed by the same amount each row.",
-            "Since one value increased by 3, I added 3 to the other value too.",
-            "My answer keeps the numbers moving, so the ratios must be equivalent."
-          ];
-        } else if (lowerMisconception.indexOf("percent") !== -1 || lowerMisconception.indexOf("discount") !== -1) {
-          steps = [
-            "I used the percent number directly in the " + cluster.modelKind + ".",
-            "Because the problem says percent, I subtracted or multiplied by that whole number.",
-            "The result looks smaller, so it must answer the question."
-          ];
-        } else if (lowerMisconception.indexOf("height") !== -1 || lowerMisconception.indexOf("area") !== -1 || lowerModel.indexOf("area") !== -1) {
-          steps = [
-            "I chose the longest-looking side in the " + cluster.modelKind + ".",
-            "I multiplied the base by that side because both numbers are on the shape.",
-            "The formula has two measurements, so this should be enough."
-          ];
-        } else if (lowerMisconception.indexOf("origin") !== -1 || lowerMisconception.indexOf("coordinate") !== -1 || lowerModel.indexOf("graph") !== -1) {
-          steps = [
-            "I plotted the points and noticed they almost line up.",
-            "Any straight line on a graph shows the same relationship.",
-            "So I called the relationship proportional without checking the starting point."
-          ];
-        } else if (lowerMisconception.indexOf("inverse") !== -1 || lowerMisconception.indexOf("equation") !== -1 || lowerModel.indexOf("balance") !== -1) {
-          steps = [
-            "I copied the operation from the equation onto both sides of the balance model.",
-            "The equation still has the same operation, so I kept going in that direction.",
-            "The variable is alone after I simplify, so the solution must work."
-          ];
-        } else if (lowerMisconception.indexOf("unit") !== -1 || lowerMisconception.indexOf("rate") !== -1 || lowerModel.indexOf("number line") !== -1) {
-          steps = [
-            "I compared the largest totals in the model.",
-            "The bigger total looked like the better deal or faster rate.",
-            "I did not scale either quantity down to one unit."
-          ];
-        } else {
-          steps = [
-            "I built a " + cluster.modelKind + " and chose the move that looked quickest.",
-            "The shortcut matches part of the lesson, so I used it for every number in the problem.",
-            "The answer looks reasonable, but it depends on this idea: " + cluster.misconception
-          ];
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(text)
+              .then(function () {
+                setStatus("Copied! You can paste it anywhere.", true);
+              })
+              .catch(function () {
+                fallbackCopy(text);
+              });
+          } else {
+            fallbackCopy(text);
+          }
         }
 
-        return [
-          "<p><strong>Student claim:</strong> This solution works for <em>" + escapeHtml(cluster.title) + "</em>.</p>",
-          "<ol>",
-          steps.map(function (step) { return "<li>" + escapeHtml(step) + "</li>"; }).join(""),
-          "</ol>"
-        ].join("");
-      }
-
-      function formatWrongSolution(solution) {
-        if (Array.isArray(solution)) {
-          return "<ol>" + solution.map(function (step) {
-            return "<li>" + escapeHtml(textValue(step, "")) + "</li>";
-          }).join("") + "</ol>";
+        function fallbackCopy(text) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "readonly");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand("copy");
+            setStatus("Copied! You can paste it anywhere.", true);
+          } catch (error) {
+            setStatus(
+              "Copy did not work here. Select your writing and copy it by hand.",
+              false,
+            );
+          }
+          document.body.removeChild(textarea);
         }
 
-        if (solution && typeof solution === "object") {
-          var heading = textValue(solution.title || solution.prompt || solution.problem, "Tempting wrong solution");
-          var steps = solution.steps || solution.work || solution.reasoning || solution.explanation || "";
-          return "<p><strong>" + escapeHtml(heading) + "</strong></p>" + formatWrongSolution(steps);
+        function setStatus(message, positive) {
+          el.statusMessage.innerHTML = positive
+            ? "<strong>" + escapeHtml(message) + "</strong>"
+            : escapeHtml(message);
         }
 
-        return "<p>" + escapeHtml(textValue(solution, "A tempting wrong solution is available for this cluster.")).replace(/\n/g, "<br>") + "</p>";
-      }
-
-      function buildCuratorNote(cluster) {
-        return "This mistake is tempting because the " + cluster.modelKind + " shows a pattern that looks useful. The curator move is to ask: does this model actually match the relationship, units, and question? Watch for this misconception: " + cluster.misconception;
-      }
-
-      function renderModelClues(cluster) {
-        var chips = [cluster.modelKind, cluster.unit, "Misconception pattern"];
-        elements.modelChips.innerHTML = chips.map(function (chip) {
-          return '<span class="model-chip">' + escapeHtml(chip) + '</span>';
-        }).join("");
-        elements.modelCaption.textContent = "Use the model clues to decide where the reasoning stopped matching the math. A good repair should make the model, operation, and answer agree.";
-      }
-
-      function selectedErrorType() {
-        var checked = document.querySelector('input[name="errorType"]:checked');
-        return checked ? checked.value : "";
-      }
-
-      function setSelectedErrorType(value) {
-        Array.prototype.forEach.call(document.querySelectorAll('input[name="errorType"]'), function (input) {
-          input.checked = input.value === value;
-        });
-      }
-
-      function saveDraft() {
-        var draft = {
-          clusterId: currentCluster.id,
-          errorType: selectedErrorType(),
-          diagnosis: elements.diagnosisText.value,
-          repair: elements.repairText.value,
-          warning: elements.warningText.value,
-          savedAt: new Date().toISOString()
-        };
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
-        setStatus("Draft saved for this browser.", true);
-      }
-
-      function loadDraft() {
-        try {
-          var rawDraft = localStorage.getItem(STORAGE_KEY);
-          if (!rawDraft) {
+        function insertStarter(targetId, phrase) {
+          var node = el[targetId];
+          if (!node) {
             return;
           }
+          var existing = node.value.replace(/\s+$/, "");
+          node.value = existing ? existing + " " + phrase + " " : phrase + " ";
+          node.focus();
+          node.setSelectionRange(node.value.length, node.value.length);
+          refreshReview();
+        }
 
-          var draft = JSON.parse(rawDraft);
-          var draftCluster = clusters.find(function (cluster) {
-            return cluster.id === draft.clusterId;
+        function bindEvents() {
+          el.clusterSelect.addEventListener("change", function () {
+            var selected =
+              clusters.find(function (cluster) {
+                return cluster.id === el.clusterSelect.value;
+              }) || clusters[0];
+            renderCluster(selected);
+            setStatus("Topic changed. Draft not saved yet.", false);
           });
 
-          if (draftCluster) {
-            elements.clusterSelect.value = draftCluster.id;
-            renderCluster(draftCluster);
-          }
-
-          setSelectedErrorType(draft.errorType || "");
-          elements.diagnosisText.value = draft.diagnosis || "";
-          elements.repairText.value = draft.repair || "";
-          elements.warningText.value = draft.warning || "";
-          setStatus("Restored saved draft from this browser.", true);
-        } catch (error) {
-          setStatus("Saved draft could not be restored. You can start a new exhibit.", false);
-        }
-      }
-
-      function clearDraft() {
-        localStorage.removeItem(STORAGE_KEY);
-        setSelectedErrorType("");
-        elements.diagnosisText.value = "";
-        elements.repairText.value = "";
-        elements.warningText.value = "";
-        setStatus("Exhibit cleared.", false);
-      }
-
-      function copyExhibit() {
-        var text = [
-          "Misconception Museum Exhibit",
-          "Cluster: " + currentCluster.title,
-          "Unit: " + currentCluster.unit,
-          "Model: " + currentCluster.modelKind,
-          "Misconception: " + currentCluster.misconception,
-          "Error type: " + (selectedErrorType() || "Not chosen yet"),
-          "",
-          "Diagnosis:",
-          elements.diagnosisText.value || "Not written yet.",
-          "",
-          "Repair:",
-          elements.repairText.value || "Not written yet.",
-          "",
-          "Warning label:",
-          elements.warningText.value || "Not written yet."
-        ].join("\n");
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(function () {
-            setStatus("Exhibit copied to clipboard.", true);
-          }).catch(function () {
-            fallbackCopy(text);
+          el.nextButton.addEventListener("click", function () {
+            goToStep(currentStep + 1);
           });
-        } else {
-          fallbackCopy(text);
+          el.backButton.addEventListener("click", function () {
+            goToStep(currentStep - 1);
+          });
+
+          Array.prototype.forEach.call(
+            document.querySelectorAll("input[name=errorType]"),
+            function (input) {
+              input.addEventListener("change", refreshReview);
+            },
+          );
+          el.repairText.addEventListener("input", refreshReview);
+          el.warningText.addEventListener("input", refreshReview);
+
+          Array.prototype.forEach.call(
+            document.querySelectorAll(".chip-row"),
+            function (row) {
+              var targetId = row.getAttribute("data-target");
+              Array.prototype.forEach.call(
+                row.querySelectorAll(".starter-chip"),
+                function (chip) {
+                  chip.addEventListener("click", function () {
+                    insertStarter(
+                      targetId,
+                      chip.textContent.replace(/[…]+$/, "").trim(),
+                    );
+                  });
+                },
+              );
+            },
+          );
+
+          el.saveButton.addEventListener("click", saveDraft);
+          el.copyButton.addEventListener("click", copyExhibit);
+          el.clearButton.addEventListener("click", clearDraft);
+          el.printButton.addEventListener("click", function () {
+            window.print();
+          });
         }
-      }
 
-      function fallbackCopy(text) {
-        var textarea = document.createElement("textarea");
-        textarea.value = text;
-        textarea.setAttribute("readonly", "readonly");
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-          document.execCommand("copy");
-          setStatus("Exhibit copied to clipboard.", true);
-        } catch (error) {
-          setStatus("Copy was not available in this browser. Select your writing and copy it manually.", false);
-        }
-        document.body.removeChild(textarea);
-      }
-
-      function setStatus(message, positive) {
-        elements.statusMessage.innerHTML = positive ? "<strong>" + escapeHtml(message) + "</strong>" : escapeHtml(message);
-      }
-
-      function bindEvents() {
-        elements.clusterSelect.addEventListener("change", function () {
-          var selected = clusters.find(function (cluster) {
-            return cluster.id === elements.clusterSelect.value;
-          }) || clusters[0];
-          renderCluster(selected);
-          setStatus("Cluster changed. Draft not saved yet.", false);
-        });
-
-        elements.revealNoteButton.addEventListener("click", function () {
-          var isHidden = elements.curatorNote.hidden;
-          elements.curatorNote.hidden = !isHidden;
-          elements.revealNoteButton.textContent = isHidden ? "Hide Curator Note" : "Reveal Curator Note";
-          elements.revealNoteButton.setAttribute("aria-expanded", String(isHidden));
-        });
-
-        elements.saveButton.addEventListener("click", saveDraft);
-        elements.copyButton.addEventListener("click", copyExhibit);
-        elements.clearButton.addEventListener("click", clearDraft);
-        elements.printButton.addEventListener("click", function () {
-          window.print();
-        });
-      }
-
-      populateClusterSelect();
-      populateErrorTypes();
-      renderCluster(currentCluster);
-      bindEvents();
-      loadDraft();
-    }());
-  </script>
-</body>
+        populateClusterSelect();
+        populateErrorTypes();
+        buildStepper();
+        renderCluster(currentCluster);
+        bindEvents();
+        loadDraft();
+        goToStep(0);
+      })();
+    </script>
+  </body>
 </html>
