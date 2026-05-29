@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crime Scene Lab — 6.SP.B.5</title>
+    <title>Data Detective Lab — 6.SP.B.5</title>
     <style>
       * {
         margin: 0;
@@ -15,31 +15,40 @@
   </head>
   <body>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-<script>
-  // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-  // (document.write blocks parsing so the mirror is ready before the game script runs).
-  if (typeof Phaser === "undefined") {
-    document.write('<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>');
-  }
-  // If both CDNs are unreachable, show a clear message instead of a blank page.
-  window.addEventListener("load", function () {
-    if (typeof Phaser === "undefined") {
-      document.body.innerHTML =
-        '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-    }
-  });
-</script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <script>
       (() => {
         "use strict";
 
         /* =========================================================
-   CRIME SCENE LAB — 6.SP.B.5
-   Summarize numerical data sets — analyze forensic data,
-   calculate measures of center/spread to solve mysteries.
-   Phaser 3 single-file game.
+   DATA DETECTIVE LAB — 6.SP.B.5
+   Forensics workstation. The player COMPUTES BY DOING:
+   - MEDIAN  : drag/sort the evidence numbers ascending, middle highlights.
+   - RANGE   : drag min & max markers on a number line, submit max-min.
+   - OUTLIER : click the outlier point on a dot plot.
+   - MODE    : click the most-frequent value chip.
+   Phaser 3 single-file game. Touch + keyboard.
    ========================================================= */
 
+        const W = 960;
+        const H = 600;
+
+        /* ---------- Sound ---------- */
         const SFX = {
           ctx: null,
           init() {
@@ -62,8 +71,7 @@
               combo: { w: "sine", f: [600, 900], d: 0.25, v: 0.06 },
               whoosh: { w: "sine", f: [200, 600], d: 0.15, v: 0.03 },
               levelup: { w: "sine", f: [440, 660, 880], d: 0.35, v: 0.06 },
-              scan: { w: "triangle", f: [300, 800], d: 0.2, v: 0.03 },
-              lock: { w: "square", f: [200, 100], d: 0.15, v: 0.04 },
+              snap: { w: "triangle", f: [600, 400], d: 0.07, v: 0.04 },
             };
             const p = P[type] || P.click;
             o.type = p.w;
@@ -81,1080 +89,1138 @@
           },
         };
 
-        const W = 960,
-          H = 640;
+        /* ---------- Helpers ---------- */
         function shuffle(a) {
-          const b = [...a];
-          for (let i = b.length - 1; i > 0; i--) {
-            const j = (Math.random() * i + 1) | 0;
-            [b[i], b[j]] = [b[j], b[i]];
+          a = a.slice();
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
           }
-          return b;
+          return a;
         }
-        function mean(arr) {
-          return arr.reduce((a, b) => a + b, 0) / arr.length;
-        }
-        function median(arr) {
-          const s = [...arr].sort((a, b) => a - b);
-          const m = Math.floor(s.length / 2);
-          return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
-        }
-        function mode(arr) {
-          const f = {};
-          arr.forEach((v) => (f[v] = (f[v] || 0) + 1));
-          const mx = Math.max(...Object.values(f));
-          const modes = Object.keys(f)
-            .filter((k) => f[k] === mx)
-            .map(Number);
-          return modes.length === arr.length ? "No mode" : modes.join(", ");
-        }
-        function range(arr) {
-          return Math.max(...arr) - Math.min(...arr);
-        }
-        function iqr(arr) {
-          const s = [...arr].sort((a, b) => a - b);
-          const q1Med = s.slice(0, Math.floor(s.length / 2));
-          const q3Med = s.slice(Math.ceil(s.length / 2));
-          const q1 = median(q1Med),
-            q3 = median(q3Med);
-          return q3 - q1;
+        const rint = (lo, hi) => Math.floor(Math.random() * (hi - lo + 1)) + lo;
+        function medianOf(arr) {
+          const s = arr.slice().sort((x, y) => x - y);
+          const n = s.length;
+          const m = Math.floor(n / 2);
+          return n % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
         }
 
-        // Question generator
-        function genQ(level) {
-          const types = [
-            "mean",
-            "median",
-            "mode",
-            "range",
-            "describe",
-            "iqr",
-            "outlier",
-            "best_measure",
-          ];
-          // Filter by level
-          let pool;
-          if (level === 1) pool = ["mean", "median", "mode", "range"];
-          else if (level === 2)
-            pool = [
-              "mean",
-              "median",
-              "mode",
-              "range",
-              "describe",
-              "best_measure",
-            ];
-          else
-            pool = [
-              "mean",
-              "median",
-              "mode",
-              "range",
-              "describe",
-              "iqr",
-              "outlier",
-              "best_measure",
-            ];
+        /* =========================================================
+           TASK GENERATORS
+           Each returns: {type, prompt, ...data, answer}
+           difficulty: 0 easy, 1 medium, 2 hard  -> dataset size
+           ========================================================= */
+        const CTX = [
+          "Fingerprint depths (mm)",
+          "Tire-track widths (cm)",
+          "Footprint lengths (cm)",
+          "Glass shard masses (g)",
+          "Witness response times (s)",
+          "Hair-fiber lengths (mm)",
+          "Paint-chip sizes (mm)",
+          "Soil sample weights (g)",
+        ];
+        const pickCtx = () => CTX[rint(0, CTX.length - 1)];
 
-          const type = pool[Math.floor(Math.random() * pool.length)];
-          let data, question, answer, choices, explain, context;
-
-          // Generate data sets based on level
-          const size =
-            level === 1
-              ? 5
-              : level === 2
-                ? 6
-                : 7 + Math.floor(Math.random() * 3);
-          const makeData = (lo, hi) => {
-            const d = [];
-            for (let i = 0; i < size; i++)
-              d.push(lo + Math.floor(Math.random() * (hi - lo + 1)));
-            return d;
-          };
-
-          const contexts = [
-            {
-              theme: "Fingerprint Lab",
-              icon: "🔬",
-              label: "Fingerprint ridge counts",
-            },
-            {
-              theme: "Footprint Analysis",
-              icon: "👟",
-              label: "Shoe sizes at scene",
-            },
-            {
-              theme: "DNA Sample Room",
-              icon: "🧬",
-              label: "Sample concentrations (mg)",
-            },
-            {
-              theme: "Witness Interviews",
-              icon: "🗣️",
-              label: "Estimated suspect height (in)",
-            },
-            {
-              theme: "Surveillance Footage",
-              icon: "📹",
-              label: "Time stamps (minutes)",
-            },
-            {
-              theme: "Ballistics Lab",
-              icon: "🎯",
-              label: "Bullet fragment weights (g)",
-            },
-            {
-              theme: "Toxicology Report",
-              icon: "⚗️",
-              label: "Chemical levels (ppm)",
-            },
-            {
-              theme: "Evidence Vault",
-              icon: "🔒",
-              label: "Evidence tag numbers",
-            },
-          ];
-          context = contexts[Math.floor(Math.random() * contexts.length)];
-
-          if (type === "mean") {
-            data = makeData(10, 50);
-            const m = mean(data);
-            const ans = Math.round(m * 10) / 10;
-            question = `What is the mean of the ${context.label.toLowerCase()}?`;
-            answer = ans.toString();
-            const w1 = (ans + 2).toString(),
-              w2 = (ans - 3).toString(),
-              w3 = median(data).toString();
-            choices = shuffle([answer, w1, w2, w3]);
-            explain = `Add all values: ${data.join(" + ")} = ${data.reduce((a, b) => a + b, 0)}. Divide by ${data.length}: ${ans}.`;
-          } else if (type === "median") {
-            data = makeData(5, 40);
-            const m = median(data);
-            question = `What is the median of the ${context.label.toLowerCase()}?`;
-            answer = m.toString();
-            const sorted = [...data].sort((a, b) => a - b);
-            const w1 = mean(data).toFixed(1),
-              w2 = (m + 2).toString(),
-              w3 = sorted[0].toString();
-            choices = shuffle([answer, w1, w2, w3]);
-            explain = `Sort: ${sorted.join(", ")}. The middle value is ${m}.`;
-          } else if (type === "mode") {
-            // Ensure at least one repeat
-            data = makeData(1, 15);
-            const rep = data[0];
-            data[Math.floor(Math.random() * (data.length - 1)) + 1] = rep;
-            const m = mode(data);
-            question = `What is the mode of the ${context.label.toLowerCase()}?`;
-            answer = m;
-            const vals = [...new Set(data)].sort((a, b) => a - b);
-            const wrongs = vals.filter((v) => v.toString() !== m).map(String);
-            while (wrongs.length < 3)
-              wrongs.push((Math.max(...data) + 1).toString());
-            choices = shuffle([answer, ...wrongs.slice(0, 3)]);
-            explain = `Count each value. ${m} appears most often.`;
-          } else if (type === "range") {
-            data = makeData(8, 60);
-            const r = range(data);
-            question = `What is the range of the ${context.label.toLowerCase()}?`;
-            answer = r.toString();
-            const w1 = (r + 3).toString(),
-              w2 = (r - 2).toString(),
-              w3 = Math.max(...data).toString();
-            choices = shuffle([answer, w1, w2, w3]);
-            explain = `Range = max - min = ${Math.max(...data)} - ${Math.min(...data)} = ${r}.`;
-          } else if (type === "iqr") {
-            data = makeData(10, 50);
-            const sorted = [...data].sort((a, b) => a - b);
-            const q1a = sorted.slice(0, Math.floor(sorted.length / 2));
-            const q3a = sorted.slice(Math.ceil(sorted.length / 2));
-            const q1 = median(q1a),
-              q3 = median(q3a),
-              i = q3 - q1;
-            question = `What is the interquartile range (IQR)?`;
-            answer = i.toString();
-            const w1 = (i + 2).toString(),
-              w2 = range(data).toString(),
-              w3 = (i - 1).toString();
-            choices = shuffle([answer, w1, w2, w3]);
-            explain = `Q1=${q1}, Q3=${q3}. IQR = Q3 - Q1 = ${q3} - ${q1} = ${i}.`;
-          } else if (type === "outlier") {
-            data = makeData(20, 35);
-            data.push(90); // add outlier
-            question = `Which value is most likely an outlier?`;
-            answer = "90";
-            const others = data.filter((v) => v !== 90);
-            const wrongs = shuffle(others).slice(0, 3).map(String);
-            choices = shuffle([answer, ...wrongs]);
-            explain = `90 is far away from the rest of the data (${Math.min(...others)}-${Math.max(...others)}). It is an outlier.`;
-          } else if (type === "describe") {
-            data = makeData(10, 50);
-            const m = Math.round(mean(data) * 10) / 10,
-              med = median(data),
-              r = range(data);
-            const descs = [
-              `The center is about ${med} and the spread is ${r}.`,
-              `The mean is ${m} and data ranges from ${Math.min(...data)} to ${Math.max(...data)}.`,
-              `Most values cluster near ${med} with a range of ${r}.`,
-            ];
-            question = `Which best describes the center and spread of this data?`;
-            answer = descs[0];
-            const wrongDescs = [
-              `The center is ${Math.max(...data)} and spread is ${Math.min(...data)}.`,
-              `The range is ${med} and the center is ${r}.`,
-              `All values are the same with no spread.`,
-            ];
-            choices = shuffle([answer, ...wrongDescs.slice(0, 3)]);
-            explain = `Median = ${med} (center). Range = ${r} (spread). The data goes from ${Math.min(...data)} to ${Math.max(...data)}.`;
-          } else {
-            // best_measure
-            data = makeData(15, 35);
-            if (Math.random() > 0.5) data.push(150); // sometimes add outlier
-            const hasOutlier = Math.max(...data) > 100;
-            question = hasOutlier
-              ? `This data has an extreme value. Which measure best represents the center?`
-              : `All values are close together. Which measure best represents the center?`;
-            answer = hasOutlier ? "Median" : "Mean";
-            choices = shuffle(["Mean", "Median", "Mode", "Range"]);
-            explain = hasOutlier
-              ? `The outlier (${Math.max(...data)}) pulls the mean up. Median is a better center.`
-              : `With no outliers, the mean uses all values and is a good center measure.`;
-          }
-
+        function genMedian(diff) {
+          const n = diff === 0 ? 5 : diff === 1 ? 7 : 9; // always odd -> single middle, clean
+          const vals = [];
+          while (vals.length < n) vals.push(rint(2, 40));
           return {
-            type,
-            data,
-            question,
-            answer,
-            choices,
-            explain,
-            context,
-            level,
+            type: "median",
+            ctx: pickCtx(),
+            values: vals,
+            answer: medianOf(vals),
+          };
+        }
+        function genRange(diff) {
+          const n = diff === 0 ? 5 : diff === 1 ? 6 : 8;
+          const vals = [];
+          while (vals.length < n) {
+            const v = rint(1, 25);
+            if (vals.indexOf(v) === -1 || vals.length > 12) vals.push(v);
+          }
+          const mn = Math.min(...vals),
+            mx = Math.max(...vals);
+          return {
+            type: "range",
+            ctx: pickCtx(),
+            values: vals,
+            min: mn,
+            max: mx,
+            answer: mx - mn,
+          };
+        }
+        function genOutlier(diff) {
+          const n = diff === 0 ? 6 : diff === 1 ? 8 : 10;
+          // base high enough that a low outlier (cluster-min minus 6-9) stays >= 1
+          const base = rint(14, 22);
+          const spread = diff === 0 ? 2 : 3;
+          const vals = [];
+          for (let i = 0; i < n - 1; i++)
+            vals.push(base + rint(-spread, spread));
+          // outlier far from cluster, clamped non-negative for realistic contexts
+          const lo = Math.min(...vals),
+            hi = Math.max(...vals);
+          const outlier =
+            Math.random() < 0.5
+              ? Math.max(1, lo - rint(6, 9))
+              : hi + rint(6, 9);
+          vals.push(outlier);
+          return {
+            type: "outlier",
+            ctx: pickCtx(),
+            values: shuffle(vals),
+            answer: outlier,
+          };
+        }
+        function genMode(diff) {
+          const n = diff === 0 ? 6 : diff === 1 ? 8 : 10;
+          const pool = [];
+          for (let i = 0; i < 4 + diff; i++) pool.push(rint(2, 20));
+          const uniq = Array.from(new Set(pool));
+          const modeVal = uniq[rint(0, uniq.length - 1)];
+          const vals = [];
+          // ensure mode appears clearly most often
+          const modeCount = diff === 0 ? 3 : diff === 1 ? 3 : 4;
+          for (let i = 0; i < modeCount; i++) vals.push(modeVal);
+          while (vals.length < n) {
+            const v = uniq[rint(0, uniq.length - 1)];
+            const c = vals.filter((x) => x === v).length;
+            // keep others strictly below modeCount
+            if (v === modeVal || c < modeCount - 1) vals.push(v);
+          }
+          return {
+            type: "mode",
+            ctx: pickCtx(),
+            values: shuffle(vals),
+            answer: modeVal,
           };
         }
 
-        // ═══════════════════════════════════════════════════
+        function buildTasks(diff, count) {
+          const gens = [genMedian, genRange, genOutlier, genMode];
+          const tasks = [];
+          // round-robin so variety is guaranteed, then shuffle order
+          let i = 0;
+          while (tasks.length < count) {
+            tasks.push(gens[i % gens.length](diff));
+            i++;
+          }
+          return shuffle(tasks);
+        }
+
+        /* =========================================================
+           COLORS / STYLE
+           ========================================================= */
+        const C = {
+          bg: 0x0a0f1e,
+          panel: 0x132038,
+          panel2: 0x1b2c4a,
+          line: 0x2e4a78,
+          accent: 0x35c2ff,
+          accentDk: 0x1d7fb0,
+          good: 0x4ade80,
+          bad: 0xf87171,
+          warn: 0xfbbf24,
+          chip: 0x21406e,
+          chipHi: 0x2f73c4,
+          text: "#dbe7ff",
+          dim: "#7e93b8",
+        };
+        const FONT = "system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+
+        /* =========================================================
+           BOOT SCENE
+           ========================================================= */
         class BootScene extends Phaser.Scene {
           constructor() {
             super("Boot");
           }
           create() {
-            const g = this.make.graphics({ add: false });
-            g.fillStyle(0xffffff, 1);
-            g.fillCircle(4, 4, 4);
-            g.generateTexture("dot", 8, 8);
-            g.clear();
-            g.fillStyle(0xf77f00, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_orange", 260, 54);
-            g.clear();
-            g.fillStyle(0x1b998b, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_teal", 260, 54);
-            g.clear();
-            g.fillStyle(0x14213d, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_dark", 260, 54);
-            g.clear();
-            g.fillStyle(0x2a9d5c, 1);
-            g.fillRoundedRect(0, 0, 260, 54, 16);
-            g.generateTexture("btn_green", 260, 54);
-            g.clear();
-            g.destroy();
             this.scene.start("Title");
           }
         }
 
-        // ═══════════════════════════════════════════════════
+        /* =========================================================
+           TITLE SCENE
+           ========================================================= */
         class TitleScene extends Phaser.Scene {
           constructor() {
             super("Title");
           }
           create() {
-            const cx = W / 2;
-            this.cameras.main.setBackgroundColor(0x0a0f1e);
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x0f1a2e, 0x0f1a2e, 0x0a0f1e, 0x0a0f1e, 1);
-            bg.fillRect(0, 0, W, H);
-            this.add.particles(0, 0, "dot", {
-              x: { min: 0, max: W },
-              y: { min: 0, max: H },
-              scale: { start: 0.25, end: 0 },
-              alpha: { start: 0.3, end: 0 },
-              speed: { min: 8, max: 20 },
-              lifespan: 4000,
-              frequency: 250,
-              blendMode: "ADD",
-              tint: [0x00ff88, 0x00ddff, 0x8855ff],
-            });
-            const icon = this.add
-              .text(cx, 110, "🔬", { fontSize: "72px" })
-              .setOrigin(0.5);
-            this.tweens.add({
-              targets: icon,
-              angle: 5,
-              duration: 2000,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
+            this.cameras.main.setBackgroundColor(C.bg);
+            const g = this.add.graphics();
+            // backdrop grid
+            g.lineStyle(1, 0x1a2c4a, 0.6);
+            for (let x = 0; x <= W; x += 40) g.lineBetween(x, 0, x, H);
+            for (let y = 0; y <= H; y += 40) g.lineBetween(0, y, W, y);
+
             this.add
-              .text(cx, 195, "CRIME SCENE\nLAB", {
-                fontSize: "48px",
-                fontFamily: "Trebuchet MS",
+              .text(W / 2, 92, "🔬 DATA DETECTIVE LAB", {
+                fontFamily: FONT,
+                fontSize: "44px",
                 fontStyle: "bold",
-                color: "#00ff88",
+                color: "#35c2ff",
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 142, "Forensic Statistics Workstation · 6.SP.B.5", {
+                fontFamily: FONT,
+                fontSize: "18px",
+                color: C.text,
+              })
+              .setOrigin(0.5);
+
+            const how = [
+              "Solve evidence tasks by DOING the math:",
+              "• MEDIAN — tap/drag numbers to sort them, find the middle",
+              "• RANGE — drag the min & max markers, submit max − min",
+              "• OUTLIER — click the point that doesn't fit the cluster",
+              "• MODE — click the value that appears most often",
+              "",
+              "Keys: ◄ ► adjust · Enter/Space submit · touch & drag too",
+              "12 cases · 3 lives · combo bonus · win at 60%+",
+            ];
+            this.add
+              .text(W / 2, 300, how.join("\n"), {
+                fontFamily: FONT,
+                fontSize: "18px",
+                color: C.text,
                 align: "center",
-                lineSpacing: 2,
-                stroke: "#0a0f1e",
-                strokeThickness: 4,
+                lineSpacing: 8,
               })
               .setOrigin(0.5);
+
+            const diffs = [
+              { label: "ROOKIE", d: 0, x: W / 2 - 200 },
+              { label: "DETECTIVE", d: 1, x: W / 2 },
+              { label: "PROFILER", d: 2, x: W / 2 + 200 },
+            ];
+            diffs.forEach((df) => this.makeBtn(df.x, 470, df.label, df.d));
+
             this.add
-              .text(cx, 280, "Analyze forensic data to solve mysteries", {
-                fontSize: "16px",
-                fontFamily: "Trebuchet MS",
-                color: "#8bc4b8",
-                align: "center",
+              .text(W / 2, 540, "Choose a difficulty to begin", {
+                fontFamily: FONT,
+                fontSize: "15px",
+                color: C.dim,
               })
               .setOrigin(0.5);
-            this.add
-              .text(cx, 315, "6.SP.B.5 — Summarize Numerical Data Sets", {
-                fontSize: "13px",
-                fontFamily: "sans-serif",
+
+            // keyboard: 1/2/3
+            this.input.keyboard.on("keydown-ONE", () => this.go(0));
+            this.input.keyboard.on("keydown-TWO", () => this.go(1));
+            this.input.keyboard.on("keydown-THREE", () => this.go(2));
+          }
+          makeBtn(x, y, label, d) {
+            const w = 170,
+              h = 56;
+            const c = this.add.container(x, y);
+            const bg = this.add
+              .rectangle(0, 0, w, h, C.panel2)
+              .setStrokeStyle(2, C.accent);
+            const t = this.add
+              .text(0, -8, label, {
+                fontFamily: FONT,
+                fontSize: "20px",
                 fontStyle: "bold",
-                color: "#0a0f1e",
-                backgroundColor: "#00ff88",
-                padding: { x: 12, y: 6 },
+                color: "#ffffff",
               })
               .setOrigin(0.5);
-            this.add
-              .text(
-                cx,
-                365,
-                "Skills: Mean, Median, Mode, Range, IQR, Outliers, Best Measure",
-                {
-                  fontSize: "12px",
-                  fontFamily: "sans-serif",
-                  color: "#5a8a7e",
-                },
-              )
-              .setOrigin(0.5);
-            this.add
-              .text(cx, 400, "Choose Your Clearance Level", {
-                fontSize: "16px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#fff",
+            const sub = this.add
+              .text(0, 15, "Lv " + (d + 1), {
+                fontFamily: FONT,
+                fontSize: "12px",
+                color: C.dim,
               })
               .setOrigin(0.5);
-            [
-              {
-                l: "🧪 Junior Analyst (Level 1)",
-                lv: 1,
-                y: 445,
-                k: "btn_teal",
-              },
-              {
-                l: "🔬 Senior Analyst (Level 2)",
-                lv: 2,
-                y: 505,
-                k: "btn_orange",
-              },
-              {
-                l: "🏆 Chief Forensic (Level 3)",
-                lv: 3,
-                y: 565,
-                k: "btn_dark",
-              },
-            ].forEach((m) => {
-              const btn = this.add
-                .image(cx, m.y, m.k)
-                .setInteractive({ useHandCursor: true })
-                .setScale(1, 0.9);
-              this.add
-                .text(cx, m.y, m.l, {
-                  fontSize: "17px",
-                  fontFamily: "Trebuchet MS",
-                  fontStyle: "bold",
-                  color: "#fff",
-                })
-                .setOrigin(0.5);
-              btn.on("pointerover", () => {
-                btn.setScale(1.05, 0.95);
-                SFX.play("click");
-              });
-              btn.on("pointerout", () => btn.setScale(1, 0.9));
-              btn.on("pointerdown", () => {
-                SFX.play("whoosh");
-                this.cameras.main.fade(400);
-                this.time.delayedCall(400, () =>
-                  this.scene.start("Game", { level: m.lv }),
-                );
-              });
+            c.add([bg, t, sub]);
+            bg.setInteractive({ useHandCursor: true });
+            bg.on("pointerover", () => bg.setFillStyle(C.chipHi));
+            bg.on("pointerout", () => bg.setFillStyle(C.panel2));
+            bg.on("pointerdown", () => {
+              SFX.play("click");
+              this.go(d);
             });
-            this.cameras.main.fadeIn(500);
+          }
+          go(d) {
+            SFX.play("whoosh");
+            this.scene.start("Game", { diff: d });
           }
         }
 
-        // ═══════════════════════════════════════════════════
+        /* =========================================================
+           GAME SCENE
+           ========================================================= */
         class GameScene extends Phaser.Scene {
           constructor() {
             super("Game");
           }
           init(data) {
-            this.level = data.level || 1;
-            this.totalQs = this.level === 1 ? 12 : this.level === 2 ? 16 : 20;
-            this.qIdx = 0;
-            this.score = 0;
-            this.combo = 0;
-            this.maxCombo = 0;
-            this.lives = 3;
-            this.correct = 0;
-            this.wrong = 0;
-            this.answering = false;
-            this.casesCleared = 0;
-            this.currentQ = null;
+            this.diff = data && typeof data.diff === "number" ? data.diff : 0;
           }
           create() {
-            this.cameras.main.setBackgroundColor(0x0a0f1e);
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x0f1a2e, 0x0f1a2e, 0x0a0f1e, 0x0a0f1e, 1);
-            bg.fillRect(0, 0, W, H);
-            // Scan lines effect
-            for (let y = 0; y < H; y += 4) {
-              this.add.rectangle(W / 2, y, W, 1, 0x00ff88, 0.015);
-            }
-            this.createHUD();
-            // Context header
-            this.ctxBg = this.add.graphics();
-            this.ctxIcon = this.add
-              .text(100, 82, "", { fontSize: "28px" })
-              .setOrigin(0.5);
-            this.ctxTitle = this.add.text(130, 75, "", {
-              fontSize: "18px",
-              fontFamily: "Trebuchet MS",
-              fontStyle: "bold",
-              color: "#00ff88",
-            });
-            this.ctxLabel = this.add.text(130, 98, "", {
-              fontSize: "11px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#5a8a7e",
-              letterSpacing: 2,
-            });
-            // Data display
-            this.dataBg = this.add.graphics();
-            this.dataText = this.add
-              .text(W / 2, 148, "", {
-                fontSize: "22px",
-                fontFamily: "Courier New, monospace",
-                fontStyle: "bold",
-                color: "#00ddff",
-                align: "center",
-                letterSpacing: 2,
-              })
-              .setOrigin(0.5);
-            this.dataLabel = this.add
-              .text(W / 2, 125, "EVIDENCE DATA", {
-                fontSize: "10px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#00ff88",
-                letterSpacing: 3,
-              })
-              .setOrigin(0.5);
-            // Question
-            this.qBg = this.add.graphics();
-            this.qType = this.add
-              .text(W / 2, 185, "", {
-                fontSize: "10px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#00ff88",
-                letterSpacing: 3,
-              })
-              .setOrigin(0.5);
-            this.qText = this.add
-              .text(W / 2, 220, "", {
-                fontSize: "18px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-                wordWrap: { width: W - 180 },
-                lineSpacing: 5,
-              })
-              .setOrigin(0.5);
-            // Choice buttons (4)
-            this.choiceBtns = [];
-            for (let i = 0; i < 4; i++) {
-              const x = i < 2 ? W / 2 - 195 : W / 2 + 195;
-              const y = i % 2 === 0 ? 305 : 375;
-              const c = this.makeChoice(x, y, i);
-              this.choiceBtns.push(c);
-            }
-            // Feedback
-            this.fbBg = this.add.graphics().setAlpha(0);
-            this.fbTitle = this.add
-              .text(W / 2, 435, "", {
-                fontSize: "20px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.fbBody = this.add
-              .text(W / 2, 468, "", {
-                fontSize: "13px",
-                fontFamily: "sans-serif",
-                color: "#8bc4b8",
-                align: "center",
-                wordWrap: { width: 600 },
-                lineSpacing: 4,
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            // Progress
-            this.add
-              .graphics()
-              .fillStyle(0xffffff, 0.06)
-              .fillRoundedRect(80, 520, W - 160, 12, 6);
-            this.progFill = this.add.graphics();
-            this.progLabel = this.add
-              .text(W / 2, 548, "", {
-                fontSize: "12px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#5a8a7e",
-              })
-              .setOrigin(0.5);
-            // Next button
-            this.nextBtn = this.add
-              .image(W / 2, 590, "btn_green")
-              .setScale(0.7, 0.8)
-              .setInteractive({ useHandCursor: true })
-              .setAlpha(0);
-            this.nextTxt = this.add
-              .text(W / 2, 590, "Analyze Next Evidence →", {
-                fontSize: "14px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.nextBtn.on("pointerdown", () => this.advance());
-            // Particles
-            this.goodP = this.add.particles(W / 2, 340, "dot", {
-              speed: { min: 80, max: 250 },
-              scale: { start: 0.7, end: 0 },
-              alpha: { start: 1, end: 0 },
-              lifespan: 600,
-              tint: [0x00ff88, 0x00ddff],
-              blendMode: "ADD",
-              emitting: false,
-              quantity: 18,
-            });
-            this.badP = this.add.particles(W / 2, 340, "dot", {
-              speed: { min: 60, max: 180 },
-              scale: { start: 0.5, end: 0 },
-              alpha: { start: 0.7, end: 0 },
-              lifespan: 500,
-              tint: [0xff4444, 0xff8888],
-              blendMode: "ADD",
-              emitting: false,
-              quantity: 10,
-            });
-            this.cameras.main.fadeIn(500);
-            this.loadQuestion();
+            this.cameras.main.setBackgroundColor(C.bg);
+            this.score = 0;
+            this.combo = 0;
+            this.lives = 3;
+            this.idx = 0;
+            this.locked = false;
+            this.tasks = buildTasks(this.diff, 12);
+            this.activeRefs = []; // destroyable objects per task
+
+            this.drawFrame();
+            this.drawHUD();
+            this.loadTask();
           }
-          createHUD() {
-            this.add.text(30, 15, "🏆 SCORE", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#00ff88",
-              letterSpacing: 2,
-            });
-            this.scoreTxt = this.add.text(30, 32, "0", {
-              fontSize: "24px",
-              fontFamily: "Trebuchet MS",
-              fontStyle: "bold",
-              color: "#fff",
-            });
-            this.add.text(170, 15, "🔥 COMBO", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#f77f00",
-              letterSpacing: 2,
-            });
-            this.comboTxt = this.add.text(170, 32, "0x", {
-              fontSize: "24px",
-              fontFamily: "Trebuchet MS",
-              fontStyle: "bold",
-              color: "#f77f00",
-            });
-            this.add.text(W - 200, 15, "❤️ LIVES", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#ff6b6b",
-              letterSpacing: 2,
-            });
-            this.livesTxt = this.add.text(W - 200, 32, "", {
+
+          drawFrame() {
+            const g = this.add.graphics();
+            g.lineStyle(1, 0x16263f, 0.7);
+            for (let x = 0; x <= W; x += 48) g.lineBetween(x, 0, x, H);
+            for (let y = 0; y <= H; y += 48) g.lineBetween(0, y, W, y);
+            // top bar
+            this.add.rectangle(W / 2, 34, W, 68, C.panel).setOrigin(0.5);
+            this.add.rectangle(W / 2, 68, W, 2, C.line).setOrigin(0.5);
+          }
+
+          drawHUD() {
+            this.scoreT = this.add.text(20, 16, "SCORE 0", {
+              fontFamily: FONT,
               fontSize: "20px",
-            });
-            this.add.text(W - 80, 15, "LEVEL", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
               fontStyle: "bold",
-              color: "#00ddff",
-              letterSpacing: 2,
+              color: "#ffffff",
             });
-            this.add
-              .text(W - 60, 32, this.level.toString(), {
-                fontSize: "24px",
-                fontFamily: "Trebuchet MS",
+            this.comboT = this.add.text(20, 42, "", {
+              fontFamily: FONT,
+              fontSize: "14px",
+              color: "#fbbf24",
+            });
+            this.caseT = this.add
+              .text(W / 2, 28, "", {
+                fontFamily: FONT,
+                fontSize: "18px",
                 fontStyle: "bold",
-                color: "#00ddff",
+                color: C.text,
               })
-              .setOrigin(0.5, 0);
+              .setOrigin(0.5);
+            this.livesT = this.add
+              .text(W - 20, 28, "", {
+                fontFamily: FONT,
+                fontSize: "22px",
+                color: "#f87171",
+              })
+              .setOrigin(1, 0.5);
+            this.updateHUD();
           }
           updateHUD() {
-            this.scoreTxt.setText(this.score.toString());
-            this.comboTxt
-              .setText(this.combo + "x")
-              .setColor(this.combo >= 3 ? "#00ff88" : "#f77f00");
-            let h = "";
-            for (let i = 0; i < 3; i++) h += i < this.lives ? "❤️" : "🖤";
-            this.livesTxt.setText(h);
-            const pct = this.qIdx / this.totalQs;
-            this.progFill.clear();
-            this.progFill.fillStyle(0x00ff88, 1);
-            if (pct > 0)
-              this.progFill.fillRoundedRect(80, 520, (W - 160) * pct, 12, 6);
-            this.progLabel.setText(
-              "Evidence " + this.qIdx + " / " + this.totalQs,
+            this.scoreT.setText("SCORE " + this.score);
+            this.comboT.setText(this.combo > 1 ? "COMBO x" + this.combo : "");
+            this.caseT.setText(
+              "CASE " + (this.idx + 1) + " / " + this.tasks.length,
+            );
+            this.livesT.setText(
+              "❤".repeat(this.lives) + "·".repeat(3 - this.lives),
             );
           }
-          makeChoice(x, y, idx) {
-            const c = this.add.container(x, y);
-            const bg = this.add.graphics();
-            bg.fillStyle(0xffffff, 0.04);
-            bg.fillRoundedRect(-185, -30, 370, 60, 14);
-            bg.lineStyle(2, 0x00ff88, 0.3);
-            bg.strokeRoundedRect(-185, -30, 370, 60, 14);
-            const letter = this.add
-              .text(-170, 0, ["A", "B", "C", "D"][idx], {
-                fontSize: "16px",
-                fontFamily: "Courier New",
-                fontStyle: "bold",
-                color: "#00ff88",
-              })
-              .setOrigin(0, 0.5);
-            const txt = this.add
-              .text(-145, 0, "", {
-                fontSize: "14px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-                wordWrap: { width: 320 },
-                lineSpacing: 2,
-              })
-              .setOrigin(0, 0.5);
-            c.add([bg, letter, txt]);
-            c.setSize(370, 60).setInteractive({ useHandCursor: true });
-            c.on("pointerover", () =>
-              this.tweens.add({
-                targets: c,
-                scaleX: 1.03,
-                scaleY: 1.03,
-                duration: 80,
-              }),
-            );
-            c.on("pointerout", () =>
-              this.tweens.add({
-                targets: c,
-                scaleX: 1,
-                scaleY: 1,
-                duration: 80,
-              }),
-            );
-            c.on("pointerdown", () => {
-              if (!this.answering) this.checkAnswer(idx);
+
+          clearTask() {
+            this.activeRefs.forEach((o) => {
+              if (o && o.destroy) o.destroy();
             });
-            c._bg = bg;
-            c._txt = txt;
-            c._letter = letter;
-            return c;
+            this.activeRefs = [];
+            if (this.input.keyboard) this.input.keyboard.removeAllListeners();
           }
-          loadQuestion() {
-            if (this.qIdx >= this.totalQs) {
-              this.endGame();
+          reg(o) {
+            this.activeRefs.push(o);
+            return o;
+          }
+
+          loadTask() {
+            this.clearTask();
+            this.locked = false;
+            this.updateHUD();
+            if (this.idx >= this.tasks.length) {
+              this.finish();
               return;
             }
-            this.answering = false;
-            const q = genQ(this.level);
-            this.currentQ = q;
-            // Context
-            this.ctxBg.clear();
-            this.ctxBg.fillStyle(0x00ff88, 0.06);
-            this.ctxBg.fillRoundedRect(70, 64, W - 140, 48, 12);
-            this.ctxIcon.setText(q.context.icon);
-            this.ctxTitle.setText(q.context.theme);
-            this.ctxLabel.setText(q.context.label.toUpperCase());
-            // Data
-            this.dataBg.clear();
-            if (q.data) {
-              this.dataBg.fillStyle(0x00ddff, 0.06);
-              this.dataBg.fillRoundedRect(80, 115, W - 160, 50, 12);
-              this.dataBg.lineStyle(1, 0x00ddff, 0.2);
-              this.dataBg.strokeRoundedRect(80, 115, W - 160, 50, 12);
-              this.dataText.setText(q.data.join("   ")).setAlpha(1);
-              this.dataLabel.setAlpha(1);
-            } else {
-              this.dataText.setAlpha(0);
-              this.dataLabel.setAlpha(0);
-            }
-            // Question
-            this.qBg.clear();
-            this.qBg.fillStyle(0xffffff, 0.03);
-            this.qBg.fillRoundedRect(80, 175, W - 160, 70, 14);
-            this.qType.setText(q.type.toUpperCase().replace("_", " "));
-            this.qText.setText(q.question).setAlpha(0);
-            this.tweens.add({ targets: this.qText, alpha: 1, duration: 300 });
-            // Choices
-            q.choices.forEach((ch, i) => {
-              if (i < 4) {
-                const btn = this.choiceBtns[i];
-                btn._txt.setText(ch);
-                btn._bg.clear();
-                btn._bg.fillStyle(0xffffff, 0.04);
-                btn._bg.fillRoundedRect(-185, -30, 370, 60, 14);
-                btn._bg.lineStyle(2, 0x00ff88, 0.3);
-                btn._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
-                btn.setAlpha(1).setInteractive().setScale(1);
-              }
-            });
-            // Hide feedback/next
-            this.fbBg.setAlpha(0);
-            this.fbTitle.setAlpha(0);
-            this.fbBody.setAlpha(0);
-            this.nextBtn.setAlpha(0).disableInteractive();
-            this.nextTxt.setAlpha(0);
-            this.updateHUD();
-          }
-          checkAnswer(idx) {
-            if (this.answering) return;
-            this.answering = true;
-            const q = this.currentQ;
-            const selected = q.choices[idx];
-            const isCorrect = selected === q.answer;
-            this.qIdx++;
-            // Disable all
-            this.choiceBtns.forEach((b, i) => {
-              b.disableInteractive();
-              if (q.choices[i] === q.answer) {
-                b._bg.clear();
-                b._bg.fillStyle(0x00ff88, 0.2);
-                b._bg.fillRoundedRect(-185, -30, 370, 60, 14);
-                b._bg.lineStyle(2, 0x00ff88, 0.8);
-                b._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
-              } else if (i === idx && !isCorrect) {
-                b._bg.clear();
-                b._bg.fillStyle(0xff4444, 0.15);
-                b._bg.fillRoundedRect(-185, -30, 370, 60, 14);
-                b._bg.lineStyle(2, 0xff4444, 0.6);
-                b._bg.strokeRoundedRect(-185, -30, 370, 60, 14);
-              } else {
-                b.setAlpha(0.35);
-              }
-            });
-            if (isCorrect) {
-              SFX.play("correct");
-              this.combo++;
-              this.maxCombo = Math.max(this.maxCombo, this.combo);
-              this.correct++;
-              const bonus = this.combo >= 5 ? 60 : this.combo >= 3 ? 30 : 0;
-              const pts = 120 + bonus;
-              this.score += pts;
-              this.goodP.explode(18, W / 2, 340);
-              if (this.combo >= 3) {
-                SFX.play("combo");
-                this.cameras.main.shake(100, 0.005);
-              }
-              this.showFB(
-                true,
-                this.combo >= 5
-                  ? "🔥 EXCELLENT! +" + pts
-                  : this.combo >= 3
-                    ? "💥 COMBO! +" + pts
-                    : "✅ Correct! +" + pts,
-                q.explain,
-              );
-              const pop = this.add
-                .text(W / 2, 280, "+" + pts, {
-                  fontSize: "26px",
-                  fontFamily: "Trebuchet MS",
+            const task = this.tasks[this.idx];
+            // context strip
+            this.reg(
+              this.add
+                .text(W / 2, 96, "🧪 EVIDENCE: " + task.ctx, {
+                  fontFamily: FONT,
+                  fontSize: "17px",
+                  color: "#35c2ff",
                   fontStyle: "bold",
-                  color: "#00ff88",
                 })
-                .setOrigin(0.5);
-              this.tweens.add({
-                targets: pop,
-                y: 240,
-                alpha: 0,
-                duration: 800,
-                onComplete: () => pop.destroy(),
-              });
+                .setOrigin(0.5),
+            );
+            // re-bind global keys for submit
+            this.input.keyboard.on("keydown-ENTER", () => this.tryKeySubmit());
+            this.input.keyboard.on("keydown-SPACE", () => this.tryKeySubmit());
+
+            if (task.type === "median") this.buildMedian(task);
+            else if (task.type === "range") this.buildRange(task);
+            else if (task.type === "outlier") this.buildOutlier(task);
+            else if (task.type === "mode") this.buildMode(task);
+          }
+
+          tryKeySubmit() {
+            if (this._keySubmit) this._keySubmit();
+          }
+
+          /* ---------- shared submit button ---------- */
+          makeSubmit(label, cb) {
+            const c = this.reg(this.add.container(W / 2, H - 48));
+            const bg = this.add
+              .rectangle(0, 0, 230, 56, C.accentDk)
+              .setStrokeStyle(2, C.accent);
+            const t = this.add
+              .text(0, 0, label || "CONFIRM ✓", {
+                fontFamily: FONT,
+                fontSize: "22px",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+            c.add([bg, t]);
+            bg.setInteractive({ useHandCursor: true });
+            bg.on("pointerover", () => bg.setFillStyle(C.chipHi));
+            bg.on("pointerout", () => bg.setFillStyle(C.accentDk));
+            bg.on("pointerdown", () => {
+              SFX.play("click");
+              cb();
+            });
+            this._keySubmit = cb;
+            return c;
+          }
+
+          /* ---------- feedback / scoring ---------- */
+          resolve(correct, msg) {
+            if (this.locked) return;
+            this.locked = true;
+            this._keySubmit = null;
+            if (correct) {
+              this.combo++;
+              const pts = 100 + (this.combo > 1 ? this.combo * 20 : 0);
+              this.score += pts;
+              SFX.play(this.combo > 2 ? "combo" : "correct");
+              this.flash("✓ " + (msg || "Correct!") + "  +" + pts, C.good);
             } else {
-              SFX.play("wrong");
               this.combo = 0;
               this.lives--;
-              this.wrong++;
-              this.badP.explode(10, W / 2, 340);
-              this.cameras.main.shake(200, 0.012);
-              this.showFB(false, "❌ Not quite!", q.explain);
-              if (this.lives <= 0) {
-                this.time.delayedCall(1800, () => this.endGame());
-                return;
-              }
+              SFX.play("wrong");
+              this.flash("✗ " + (msg || "Not quite"), C.bad);
             }
             this.updateHUD();
-            // Every 4 questions = case cleared
-            if (
-              this.qIdx > 0 &&
-              this.qIdx % 4 === 0 &&
-              this.qIdx < this.totalQs
-            ) {
-              this.casesCleared++;
-              SFX.play("levelup");
-              const b = this.add
-                .text(W / 2, H / 2, "🔓 CASE CRACKED!", {
-                  fontSize: "32px",
-                  fontFamily: "Trebuchet MS",
-                  fontStyle: "bold",
-                  color: "#00ff88",
-                  stroke: "#0a0f1e",
-                  strokeThickness: 5,
-                })
-                .setOrigin(0.5)
-                .setAlpha(0);
-              this.tweens.add({
-                targets: b,
-                alpha: 1,
-                scaleX: 1.2,
-                scaleY: 1.2,
-                duration: 400,
-                yoyo: true,
-                hold: 500,
-                onComplete: () => b.destroy(),
-              });
-            }
-            this.time.delayedCall(600, () => {
-              this.nextBtn.setAlpha(1).setInteractive();
-              this.nextTxt.setAlpha(1);
+            this.time.delayedCall(1350, () => {
+              if (this.lives <= 0) {
+                this.finish();
+              } else {
+                this.idx++;
+                this.loadTask();
+              }
             });
           }
-          showFB(good, title, body) {
-            this.fbBg.clear();
-            this.fbBg.fillStyle(good ? 0x00ff88 : 0xff4444, 0.1);
-            this.fbBg.fillRoundedRect(80, 415, W - 160, 90, 14);
-            this.fbBg.lineStyle(2, good ? 0x00ff88 : 0xff4444, 0.4);
-            this.fbBg.strokeRoundedRect(80, 415, W - 160, 90, 14);
-            this.fbBg.setAlpha(1);
-            this.fbTitle
-              .setText(title)
-              .setAlpha(1)
-              .setColor(good ? "#00ff88" : "#ff6b6b");
-            this.fbBody.setText(body).setAlpha(1);
-          }
-          advance() {
-            SFX.play("click");
-            if (this.lives <= 0 || this.qIdx >= this.totalQs) this.endGame();
-            else this.loadQuestion();
-          }
-          endGame() {
-            this.cameras.main.fade(500);
-            this.time.delayedCall(500, () =>
-              this.scene.start("Results", {
-                score: this.score,
-                correct: this.correct,
-                wrong: this.wrong,
-                total: this.totalQs,
-                combo: this.maxCombo,
-                lives: this.lives,
-                casesCleared: this.casesCleared,
-                level: this.level,
-              }),
+          flash(text, color) {
+            const band = this.reg(
+              this.add.rectangle(W / 2, H / 2, W, 80, color, 0.16),
             );
+            const t = this.reg(
+              this.add
+                .text(W / 2, H / 2, text, {
+                  fontFamily: FONT,
+                  fontSize: "30px",
+                  fontStyle: "bold",
+                  color: color === C.good ? "#4ade80" : "#f87171",
+                })
+                .setOrigin(0.5),
+            );
+            t.setScale(0.6);
+            this.tweens.add({
+              targets: t,
+              scale: 1,
+              duration: 220,
+              ease: "Back.Out",
+            });
+          }
+
+          /* =====================================================
+             MEDIAN TASK — drag chips into ascending order
+             ===================================================== */
+          buildMedian(task) {
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  140,
+                  "Drag the numbers into ASCENDING order, then CONFIRM.\nThe middle value is the MEDIAN.",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                    align: "center",
+                    lineSpacing: 4,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            const n = task.values.length;
+            const chipW = Math.min(96, Math.floor((W - 80) / n) - 8);
+            const gap = 12;
+            const totalW = n * chipW + (n - 1) * gap;
+            const startX = (W - totalW) / 2 + chipW / 2;
+            const slotY = 300;
+
+            // slot positions
+            const slotX = [];
+            for (let i = 0; i < n; i++) slotX.push(startX + i * (chipW + gap));
+
+            // slot backgrounds
+            slotX.forEach((sx, i) => {
+              this.reg(
+                this.add
+                  .rectangle(sx, slotY, chipW, 70, 0x0e1830)
+                  .setStrokeStyle(1, C.line),
+              );
+              this.reg(
+                this.add
+                  .text(sx, slotY + 52, i + 1 + "", {
+                    fontFamily: FONT,
+                    fontSize: "12px",
+                    color: C.dim,
+                  })
+                  .setOrigin(0.5),
+              );
+            });
+
+            // chips placed in shuffled order, mapping slot->chip
+            const order = shuffle(task.values.map((_, i) => i)); // initial slot order of values
+            const chips = [];
+            const self = this;
+
+            // slotOf[i] = chip currently in slot i
+            this.medSlots = new Array(n).fill(null);
+
+            const shown = shuffle(task.values);
+            shown.forEach((val, i) => {
+              const sx = slotX[i];
+              const cont = this.reg(this.add.container(sx, slotY));
+              const bg = this.add
+                .rectangle(0, 0, chipW, 70, C.chip)
+                .setStrokeStyle(2, C.accent);
+              const t = this.add
+                .text(0, 0, val + "", {
+                  fontFamily: FONT,
+                  fontSize: "28px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
+              cont.add([bg, t]);
+              cont.setSize(chipW, 70);
+              cont.value = val;
+              cont.slot = i;
+              cont._bg = bg;
+              this.medSlots[i] = cont;
+              cont.setInteractive(
+                new Phaser.Geom.Rectangle(-chipW / 2, -35, chipW, 70),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              this.input.setDraggable(cont);
+              chips.push(cont);
+            });
+
+            // drag handlers
+            this.input.off("dragstart");
+            this.input.off("drag");
+            this.input.off("dragend");
+            this.input.on("dragstart", (p, obj) => {
+              if (self.locked) return;
+              obj.setDepth(10);
+              obj._bg.setStrokeStyle(3, C.warn);
+              SFX.play("click");
+            });
+            this.input.on("drag", (p, obj, dx, dy) => {
+              if (self.locked) return;
+              obj.x = dx;
+              obj.y = dy;
+            });
+            this.input.on("dragend", (p, obj) => {
+              if (self.locked) return;
+              obj.setDepth(1);
+              obj._bg.setStrokeStyle(2, C.accent);
+              // find nearest slot
+              let best = 0,
+                bd = 1e9;
+              for (let i = 0; i < n; i++) {
+                const d = Math.abs(obj.x - slotX[i]);
+                if (d < bd) {
+                  bd = d;
+                  best = i;
+                }
+              }
+              const from = obj.slot;
+              if (best !== from) {
+                // swap chips between slots
+                const other = self.medSlots[best];
+                self.medSlots[best] = obj;
+                self.medSlots[from] = other;
+                obj.slot = best;
+                if (other) {
+                  other.slot = from;
+                  self.tweens.add({
+                    targets: other,
+                    x: slotX[from],
+                    y: slotY,
+                    duration: 160,
+                    ease: "Quad.Out",
+                  });
+                }
+                SFX.play("snap");
+              }
+              self.tweens.add({
+                targets: obj,
+                x: slotX[best],
+                y: slotY,
+                duration: 160,
+                ease: "Quad.Out",
+              });
+            });
+
+            this.makeSubmit("CONFIRM ORDER ✓", () => {
+              if (self.locked) return;
+              const seq = self.medSlots.map((c) => c.value);
+              const sortedOK = seq.every((v, i) => i === 0 || seq[i - 1] <= v);
+              if (!sortedOK) {
+                self.resolve(false, "Not sorted yet — smallest to largest.");
+                return;
+              }
+              // highlight middle
+              const mid = Math.floor(n / 2);
+              const hi = self.medSlots[mid];
+              hi._bg.setStrokeStyle(4, C.good);
+              hi._bg.setFillStyle(0x14532d);
+              self.tweens.add({
+                targets: hi,
+                scale: 1.18,
+                duration: 200,
+                yoyo: true,
+              });
+              self.resolve(true, "Median = " + task.answer);
+            });
+          }
+
+          /* =====================================================
+             RANGE TASK — drag min & max markers on number line
+             ===================================================== */
+          buildRange(task) {
+            const self = this;
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  140,
+                  "Drag the BLUE marker to the smallest value and the\nORANGE marker to the largest. Range = max − min.",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                    align: "center",
+                    lineSpacing: 4,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            const lo = 0;
+            const hi = Math.max(...task.values) + 2;
+            const axisY = 360;
+            const x0 = 120,
+              x1 = W - 120;
+            const toX = (v) => x0 + ((v - lo) / (hi - lo)) * (x1 - x0);
+
+            // axis
+            this.reg(
+              this.add.rectangle((x0 + x1) / 2, axisY, x1 - x0, 4, C.line),
+            );
+            for (let v = lo; v <= hi; v++) {
+              const x = toX(v);
+              const tall = v % 5 === 0;
+              this.reg(this.add.rectangle(x, axisY, 2, tall ? 16 : 8, C.line));
+              if (tall)
+                this.reg(
+                  this.add
+                    .text(x, axisY + 22, v + "", {
+                      fontFamily: FONT,
+                      fontSize: "13px",
+                      color: C.dim,
+                    })
+                    .setOrigin(0.5),
+                );
+            }
+
+            // data dots above axis
+            const counts = {};
+            task.values.forEach((v) => {
+              counts[v] = (counts[v] || 0) + 1;
+              const x = toX(v);
+              const y = axisY - 28 - (counts[v] - 1) * 16;
+              this.reg(this.add.circle(x, y, 7, C.accent));
+            });
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  210,
+                  "Data points: " +
+                    task.values
+                      .slice()
+                      .sort((a, b) => a - b)
+                      .join("  "),
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            // markers
+            const mkMarker = (val, color, label, yOff) => {
+              const cont = this.reg(this.add.container(toX(val), axisY + yOff));
+              const tri = this.add.triangle(
+                0,
+                0,
+                -14,
+                16,
+                14,
+                16,
+                0,
+                -4,
+                color,
+              );
+              const lab = this.add
+                .text(0, 30, label, {
+                  fontFamily: FONT,
+                  fontSize: "13px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
+              const valT = this.add
+                .text(0, -18, val + "", {
+                  fontFamily: FONT,
+                  fontSize: "16px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
+              cont.add([tri, lab, valT]);
+              cont.value = val;
+              cont._valT = valT;
+              cont.setSize(40, 50);
+              cont.setInteractive(
+                new Phaser.Geom.Rectangle(-20, -10, 40, 50),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              this.input.setDraggable(cont);
+              return cont;
+            };
+
+            const minM = mkMarker(lo, C.accent, "MIN", 14);
+            const maxM = mkMarker(hi, C.warn, "MAX", 46);
+            this.rangeMin = minM;
+            this.rangeMax = maxM;
+            this.rangeActive = minM; // for keyboard
+
+            const snap = (cont, yBase) => {
+              let v = Math.round(lo + ((cont.x - x0) / (x1 - x0)) * (hi - lo));
+              v = Phaser.Math.Clamp(v, lo, hi);
+              cont.value = v;
+              cont.x = toX(v);
+              cont.y = axisY + yBase;
+              cont._valT.setText(v + "");
+            };
+
+            this.input.off("dragstart");
+            this.input.off("drag");
+            this.input.off("dragend");
+            this.input.on("dragstart", (p, obj) => {
+              if (self.locked) return;
+              self.rangeActive = obj;
+              obj.setDepth(10);
+              SFX.play("click");
+            });
+            this.input.on("drag", (p, obj, dx) => {
+              if (self.locked) return;
+              obj.x = Phaser.Math.Clamp(dx, x0, x1);
+            });
+            this.input.on("dragend", (p, obj) => {
+              if (self.locked) return;
+              obj.setDepth(1);
+              snap(obj, obj === minM ? 14 : 46);
+              SFX.play("snap");
+            });
+
+            // keyboard nudge
+            this.input.keyboard.on("keydown-ONE", () => {
+              self.rangeActive = minM;
+            });
+            this.input.keyboard.on("keydown-TWO", () => {
+              self.rangeActive = maxM;
+            });
+            const nudge = (d) => {
+              if (self.locked) return;
+              const m = self.rangeActive;
+              m.value = Phaser.Math.Clamp(m.value + d, lo, hi);
+              m.x = toX(m.value);
+              m._valT.setText(m.value + "");
+              SFX.play("snap");
+            };
+            this.input.keyboard.on("keydown-LEFT", () => nudge(-1));
+            this.input.keyboard.on("keydown-RIGHT", () => nudge(1));
+
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  axisY + 86,
+                  "Tip: keys 1=MIN 2=MAX, ◄ ► to nudge",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "13px",
+                    color: C.dim,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            this.makeSubmit("SUBMIT RANGE ✓", () => {
+              if (self.locked) return;
+              const placedMin = minM.value;
+              const placedMax = maxM.value;
+              const userRange = placedMax - placedMin;
+              if (placedMin === task.min && placedMax === task.max) {
+                self.resolve(
+                  true,
+                  "Range = " +
+                    task.max +
+                    " − " +
+                    task.min +
+                    " = " +
+                    task.answer,
+                );
+              } else {
+                self.resolve(
+                  false,
+                  "Markers off. Answer: " +
+                    task.max +
+                    " − " +
+                    task.min +
+                    " = " +
+                    task.answer,
+                );
+              }
+            });
+          }
+
+          /* =====================================================
+             OUTLIER TASK — click the point off the cluster
+             ===================================================== */
+          buildOutlier(task) {
+            const self = this;
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  140,
+                  "Click the data point that does NOT fit the cluster.\nThat's the OUTLIER.",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                    align: "center",
+                    lineSpacing: 4,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            const lo = Math.min(...task.values) - 1;
+            const hi = Math.max(...task.values) + 1;
+            const axisY = 380;
+            const x0 = 90,
+              x1 = W - 90;
+            const toX = (v) => x0 + ((v - lo) / (hi - lo)) * (x1 - x0);
+
+            this.reg(
+              this.add.rectangle((x0 + x1) / 2, axisY, x1 - x0, 4, C.line),
+            );
+            for (let v = lo; v <= hi; v++) {
+              const x = toX(v);
+              this.reg(this.add.rectangle(x, axisY, 2, 10, C.line));
+              if (v % 2 === 0)
+                this.reg(
+                  this.add
+                    .text(x, axisY + 20, v + "", {
+                      fontFamily: FONT,
+                      fontSize: "12px",
+                      color: C.dim,
+                    })
+                    .setOrigin(0.5),
+                );
+            }
+
+            const counts = {};
+            task.values.forEach((v) => {
+              counts[v] = (counts[v] || 0) + 1;
+              const x = toX(v);
+              const y = axisY - 26 - (counts[v] - 1) * 26;
+              const dot = this.reg(this.add.circle(x, y, 14, C.accent));
+              dot.value = v;
+              dot.setInteractive({ useHandCursor: true });
+              dot.on("pointerover", () => {
+                if (!self.locked) dot.setScale(1.25);
+              });
+              dot.on("pointerout", () => dot.setScale(1));
+              dot.on("pointerdown", () => {
+                if (self.locked) return;
+                SFX.play("click");
+                if (dot.value === task.answer) {
+                  dot.setFillStyle(C.good);
+                  self.resolve(true, "Outlier = " + task.answer);
+                } else {
+                  dot.setFillStyle(C.bad);
+                  self.resolve(
+                    false,
+                    "That's in the cluster. Outlier was " + task.answer,
+                  );
+                }
+              });
+            });
+
+            this._keySubmit = null; // no submit button; pure click
+          }
+
+          /* =====================================================
+             MODE TASK — click the most-frequent value chip
+             ===================================================== */
+          buildMode(task) {
+            const self = this;
+            this.reg(
+              this.add
+                .text(
+                  W / 2,
+                  140,
+                  "Click the value that appears MOST OFTEN.\nThat's the MODE.",
+                  {
+                    fontFamily: FONT,
+                    fontSize: "16px",
+                    color: C.text,
+                    align: "center",
+                    lineSpacing: 4,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+
+            // show all values as scattered chips
+            const vals = task.values;
+            const n = vals.length;
+            const cols = Math.min(5, n);
+            const rows = Math.ceil(n / cols);
+            const cw = 110,
+              ch = 70,
+              gx = 18,
+              gy = 18;
+            const gridW = cols * cw + (cols - 1) * gx;
+            const startX = (W - gridW) / 2 + cw / 2;
+            const startY = 250;
+
+            vals.forEach((val, i) => {
+              const r = Math.floor(i / cols);
+              const cInRow = r === rows - 1 ? n - cols * (rows - 1) : cols; // last row count
+              const rowW = cInRow * cw + (cInRow - 1) * gx;
+              const rowStartX = (W - rowW) / 2 + cw / 2;
+              const cx = rowStartX + (i - r * cols) * (cw + gx);
+              const cy = startY + r * (ch + gy);
+
+              const cont = this.reg(this.add.container(cx, cy));
+              const bg = this.add
+                .rectangle(0, 0, cw, ch, C.chip)
+                .setStrokeStyle(2, C.accent);
+              const t = this.add
+                .text(0, 0, val + "", {
+                  fontFamily: FONT,
+                  fontSize: "30px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5);
+              cont.add([bg, t]);
+              cont.value = val;
+              cont.setSize(cw, ch);
+              cont.setInteractive(
+                new Phaser.Geom.Rectangle(-cw / 2, -ch / 2, cw, ch),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              cont.input.cursor = "pointer";
+              cont.on("pointerover", () => {
+                if (!self.locked) bg.setFillStyle(C.chipHi);
+              });
+              cont.on("pointerout", () => bg.setFillStyle(C.chip));
+              cont.on("pointerdown", () => {
+                if (self.locked) return;
+                SFX.play("click");
+                if (cont.value === task.answer) {
+                  // highlight all matching
+                  self.activeRefs.forEach((o) => {
+                    if (o && o.value === task.answer && o._isModeChip)
+                      o.list[0]
+                        .setFillStyle(0x14532d)
+                        .setStrokeStyle(3, C.good);
+                  });
+                  bg.setFillStyle(0x14532d).setStrokeStyle(3, C.good);
+                  self.resolve(true, "Mode = " + task.answer);
+                } else {
+                  bg.setFillStyle(C.bad);
+                  self.resolve(
+                    false,
+                    "Count them again. Mode was " + task.answer,
+                  );
+                }
+              });
+              cont._isModeChip = true;
+            });
+
+            this._keySubmit = null;
+          }
+
+          /* ---------- end ---------- */
+          finish() {
+            this.scene.start("Results", {
+              score: this.score,
+              total: this.tasks.length,
+              solved: this.idx,
+              lives: this.lives,
+              diff: this.diff,
+            });
           }
         }
 
-        // ═══════════════════════════════════════════════════
+        /* =========================================================
+           RESULTS SCENE
+           ========================================================= */
         class ResultsScene extends Phaser.Scene {
           constructor() {
             super("Results");
           }
           init(data) {
-            this.d = data;
+            this.data = data || {};
           }
           create() {
-            const d = this.d,
-              cx = W / 2;
-            this.cameras.main.setBackgroundColor(0x0a0f1e);
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x0f1a2e, 0x0f1a2e, 0x0a0f1e, 0x0a0f1e, 1);
-            bg.fillRect(0, 0, W, H);
-            const pct = Math.round((d.correct / d.total) * 100);
-            if (pct >= 70)
-              this.add.particles(W / 2, -10, "dot", {
-                x: { min: -W / 2, max: W / 2 },
-                speed: { min: 50, max: 200 },
-                angle: { min: 80, max: 100 },
-                scale: { start: 0.5, end: 0 },
-                lifespan: 3000,
-                tint: [0x00ff88, 0x00ddff, 0x8855ff, 0xfbbf24],
-                frequency: 100,
-                quantity: 3,
-                blendMode: "ADD",
-              });
-            let rank = "Lab Intern",
-              emoji = "🧪";
-            if (pct >= 90) {
-              rank = "Chief Forensic Scientist";
-              emoji = "🏆";
-            } else if (pct >= 75) {
-              rank = "Senior Analyst";
-              emoji = "🔬";
-            } else if (pct >= 60) {
-              rank = "Junior Analyst";
-              emoji = "🧬";
-            }
-            this.add.text(cx, 50, emoji, { fontSize: "60px" }).setOrigin(0.5);
+            this.cameras.main.setBackgroundColor(C.bg);
+            const d = this.data;
+            const total = d.total || 12;
+            const maxScore = total * 100;
+            const pct = maxScore ? Math.round((d.score / maxScore) * 100) : 0;
+            const win = pct >= 60;
+
+            const g = this.add.graphics();
+            g.lineStyle(1, 0x16263f, 0.7);
+            for (let x = 0; x <= W; x += 48) g.lineBetween(x, 0, x, H);
+            for (let y = 0; y <= H; y += 48) g.lineBetween(0, y, W, y);
+
             this.add
-              .text(cx, 110, "LAB REPORT COMPLETE", {
-                fontSize: "34px",
-                fontFamily: "Trebuchet MS",
+              .text(W / 2, 120, win ? "🏆 CASE CLOSED" : "🔍 CASE REOPENED", {
+                fontFamily: FONT,
+                fontSize: "46px",
                 fontStyle: "bold",
-                color: "#00ff88",
-                stroke: "#0a0f1e",
-                strokeThickness: 4,
+                color: win ? "#4ade80" : "#fbbf24",
               })
               .setOrigin(0.5);
-            this.add
-              .text(cx, 150, rank, {
-                fontSize: "18px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#8bc4b8",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(cx, 195, d.score.toString(), {
-                fontSize: "52px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(cx, 232, "POINTS", {
-                fontSize: "11px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#5a8a7e",
-                letterSpacing: 3,
-              })
-              .setOrigin(0.5);
-            [
-              { l: "Correct", v: d.correct + "/" + d.total, x: cx - 200 },
-              { l: "Accuracy", v: pct + "%", x: cx },
-              { l: "Best Combo", v: d.combo + "x", x: cx + 200 },
-            ].forEach((s) => {
-              const g = this.add.graphics();
-              g.fillStyle(0xffffff, 0.05);
-              g.fillRoundedRect(s.x - 75, 255, 150, 70, 14);
-              this.add
-                .text(s.x, 278, s.v, {
-                  fontSize: "24px",
-                  fontFamily: "Trebuchet MS",
-                  fontStyle: "bold",
-                  color: "#fff",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(s.x, 308, s.l, {
-                  fontSize: "10px",
-                  fontFamily: "sans-serif",
-                  fontStyle: "bold",
-                  color: "#5a8a7e",
-                  letterSpacing: 2,
-                })
-                .setOrigin(0.5);
-            });
-            const sc =
-              pct >= 90 ? 5 : pct >= 75 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1;
-            let ss = "";
-            for (let i = 0; i < 5; i++) ss += i < sc ? "⭐" : "☆";
-            this.add.text(cx, 355, ss, { fontSize: "30px" }).setOrigin(0.5);
-            // Tips
-            const g2 = this.add.graphics();
-            g2.fillStyle(0x00ff88, 0.08);
-            g2.fillRoundedRect(80, 385, W - 160, 120, 18);
-            g2.lineStyle(2, 0x00ff88, 0.3);
-            g2.strokeRoundedRect(80, 385, W - 160, 120, 18);
-            this.add
-              .text(cx, 405, "💡 KEY CONCEPTS", {
-                fontSize: "12px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#00ff88",
-                letterSpacing: 2,
-              })
-              .setOrigin(0.5);
+
             this.add
               .text(
-                cx,
-                455,
-                "Mean = add all, divide by count.  Median = middle after sorting.\nMode = most frequent.  Range = max minus min.\nIQR = Q3 minus Q1.  Outliers pull the mean away from center.",
+                W / 2,
+                185,
+                win
+                  ? "You cracked the forensic data! Detective rank earned."
+                  : "Evidence inconclusive — review the measures and retry.",
                 {
-                  fontSize: "13px",
-                  fontFamily: "Trebuchet MS",
-                  color: "#8bc4b8",
-                  align: "center",
-                  lineSpacing: 5,
+                  fontFamily: FONT,
+                  fontSize: "18px",
+                  color: C.text,
                 },
               )
               .setOrigin(0.5);
-            const btn = this.add
-              .image(cx, 555, "btn_teal")
-              .setScale(0.85)
-              .setInteractive({ useHandCursor: true });
+
+            const lines = [
+              "Final Score:   " + d.score,
+              "Accuracy:      " + pct + "%   (need 60% to win)",
+              "Lives left:    " + (d.lives || 0) + " / 3",
+            ];
             this.add
-              .text(cx, 555, "🔄 Investigate Again", {
-                fontSize: "17px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
+              .text(W / 2, 290, lines.join("\n"), {
+                fontFamily: FONT,
+                fontSize: "22px",
+                color: C.text,
+                align: "center",
+                lineSpacing: 12,
               })
               .setOrigin(0.5);
-            btn.on("pointerdown", () => {
-              SFX.play("whoosh");
-              this.cameras.main.fade(400);
-              this.time.delayedCall(400, () => this.scene.start("Title"));
+
+            this.makeBtn(W / 2 - 130, 430, "PLAY AGAIN", () => {
+              SFX.play("click");
+              this.scene.start("Game", { diff: d.diff || 0 });
             });
-            this.cameras.main.fadeIn(600);
-            if (pct >= 70) SFX.play("levelup");
+            this.makeBtn(W / 2 + 130, 430, "MAIN MENU", () => {
+              SFX.play("click");
+              this.scene.start("Title");
+            });
+
+            this.add
+              .text(W / 2, 510, "Press Enter to play again", {
+                fontFamily: FONT,
+                fontSize: "14px",
+                color: C.dim,
+              })
+              .setOrigin(0.5);
+            this.input.keyboard.on("keydown-ENTER", () => {
+              this.scene.start("Game", { diff: d.diff || 0 });
+            });
+            if (win) SFX.play("levelup");
+          }
+          makeBtn(x, y, label, cb) {
+            const c = this.add.container(x, y);
+            const bg = this.add
+              .rectangle(0, 0, 210, 56, C.accentDk)
+              .setStrokeStyle(2, C.accent);
+            const t = this.add
+              .text(0, 0, label, {
+                fontFamily: FONT,
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+            c.add([bg, t]);
+            bg.setInteractive({ useHandCursor: true });
+            bg.on("pointerover", () => bg.setFillStyle(C.chipHi));
+            bg.on("pointerout", () => bg.setFillStyle(C.accentDk));
+            bg.on("pointerdown", cb);
           }
         }
 
-        // ═══════════════════════════════════════════════════
+        /* =========================================================
+           LAUNCH
+           ========================================================= */
         new Phaser.Game({
           type: Phaser.AUTO,
           width: W,

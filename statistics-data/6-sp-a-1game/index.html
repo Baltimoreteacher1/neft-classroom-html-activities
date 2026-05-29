@@ -15,20 +15,22 @@
   </head>
   <body>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-<script>
-  // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-  // (document.write blocks parsing so the mirror is ready before the game script runs).
-  if (typeof Phaser === "undefined") {
-    document.write('<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>');
-  }
-  // If both CDNs are unreachable, show a clear message instead of a blank page.
-  window.addEventListener("load", function () {
-    if (typeof Phaser === "undefined") {
-      document.body.innerHTML =
-        '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-    }
-  });
-</script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <script>
       (() => {
         "use strict";
@@ -287,6 +289,20 @@
             g.fillRoundedRect(0, 0, 260, 56, 16);
             g.generateTexture("btn_dark", 260, 56);
             g.clear();
+            // Detective body (top-down disc with hat brim + magnifier vibe)
+            g.fillStyle(0x14213d, 1);
+            g.fillCircle(26, 26, 24);
+            g.fillStyle(0x2d6cdf, 1);
+            g.fillCircle(26, 26, 19);
+            g.fillStyle(0xfbbf24, 1);
+            g.fillCircle(26, 26, 8);
+            g.generateTexture("detective", 52, 52);
+            g.clear();
+            // Soft glow ring for clues
+            g.fillStyle(0xffffff, 1);
+            g.fillCircle(30, 30, 30);
+            g.generateTexture("glow", 60, 60);
+            g.clear();
             g.destroy();
             this.scene.start("Title");
           }
@@ -372,18 +388,24 @@
               {
                 label: "🧭 Rookie (15 clues)",
                 clues: 15,
+                speed: 200,
+                drift: 0,
                 y: 455,
                 key: "btn_teal",
               },
               {
                 label: "🔍 Detective (20 clues)",
                 clues: 20,
+                speed: 230,
+                drift: 18,
                 y: 515,
                 key: "btn_orange",
               },
               {
                 label: "🏆 Master (25 clues)",
                 clues: 25,
+                speed: 260,
+                drift: 34,
                 y: 575,
                 key: "btn_dark",
               },
@@ -410,7 +432,11 @@
                 SFX.play("whoosh");
                 this.cameras.main.fade(400, 0, 0, 0);
                 this.time.delayedCall(400, () =>
-                  this.scene.start("Game", { totalClues: m.clues }),
+                  this.scene.start("Game", {
+                    totalClues: m.clues,
+                    speed: m.speed,
+                    drift: m.drift,
+                  }),
                 );
               });
             });
@@ -419,50 +445,69 @@
         }
 
         // ═══════════════════════════════════════════════════
+        // Play-field bounds (area where the detective roams). HUD sits up top.
+        const FIELD = { x: 40, y: 120, w: W - 80, h: H - 160 };
+
         class GameScene extends Phaser.Scene {
           constructor() {
             super("Game");
           }
           init(data) {
             this.totalClues = data.totalClues || 20;
+            this.moveSpeed = data.speed || 220;
+            this.drift = data.drift || 0;
             this.score = 0;
             this.combo = 0;
             this.maxCombo = 0;
             this.lives = 3;
-            this.clueIndex = 0;
+            this.filed = 0; // clues classified correctly = filed evidence
+            this.collected = 0; // total clues resolved
             this.caseIndex = 0;
             this.answering = false;
             this.correct = 0;
             this.wrong = 0;
-            this.casesCleared = 0;
             this.clues = shuffle(CLUE_BANK).slice(0, this.totalClues);
-            this.cluesPerCase = Math.ceil(this.totalClues / CASE_THEMES.length);
           }
           create() {
             this.cameras.main.setBackgroundColor(0x0c1529);
             const bg = this.add.graphics();
             bg.fillGradientStyle(0x14213d, 0x14213d, 0x1a2744, 0x1a2744, 1);
             bg.fillRect(0, 0, W, H);
-            for (let i = 0; i < 50; i++) {
+            // Crime-scene floor with grid + dashed boundary tape
+            const floor = this.add.graphics();
+            floor.fillStyle(0x0f1b33, 0.6);
+            floor.fillRoundedRect(FIELD.x, FIELD.y, FIELD.w, FIELD.h, 18);
+            floor.lineStyle(1, 0x2d6cdf, 0.12);
+            for (let gx = FIELD.x; gx <= FIELD.x + FIELD.w; gx += 48) {
+              floor.lineBetween(gx, FIELD.y, gx, FIELD.y + FIELD.h);
+            }
+            for (let gy = FIELD.y; gy <= FIELD.y + FIELD.h; gy += 48) {
+              floor.lineBetween(FIELD.x, gy, FIELD.x + FIELD.w, gy);
+            }
+            floor.lineStyle(3, 0xfbbf24, 0.55);
+            floor.strokeRoundedRect(FIELD.x, FIELD.y, FIELD.w, FIELD.h, 18);
+            for (let i = 0; i < 40; i++) {
               const s = this.add.circle(
-                Math.random() * W,
-                Math.random() * H,
-                Math.random() * 1.5 + 0.5,
+                FIELD.x + Math.random() * FIELD.w,
+                FIELD.y + Math.random() * FIELD.h,
+                Math.random() * 1.3 + 0.4,
                 0xffffff,
-                Math.random() * 0.5 + 0.1,
+                Math.random() * 0.4 + 0.05,
               );
               this.tweens.add({
                 targets: s,
-                alpha: 0.1,
+                alpha: 0.05,
                 duration: 1000 + Math.random() * 2000,
                 yoyo: true,
                 repeat: -1,
               });
             }
+
             this.createHUD();
+
             this.caseText = this.add
               .text(W / 2, 90, "", {
-                fontSize: "22px",
+                fontSize: "20px",
                 fontFamily: "Trebuchet MS",
                 fontStyle: "bold",
                 color: "#fbbf24",
@@ -471,98 +516,24 @@
               })
               .setOrigin(0.5);
             this.caseIcon = this.add
-              .text(W / 2 - 170, 85, "", { fontSize: "28px" })
+              .text(W / 2 - 150, 90, "", { fontSize: "26px" })
               .setOrigin(0.5);
-            this.questionBg = this.add.graphics();
-            this.questionBg.fillStyle(0xffffff, 0.06);
-            this.questionBg.fillRoundedRect(80, 120, W - 160, 130, 20);
-            this.questionBg.lineStyle(2, 0xfbbf24, 0.5);
-            this.questionBg.strokeRoundedRect(80, 120, W - 160, 130, 20);
-            this.clueLabel = this.add
-              .text(W / 2, 148, "CLUE", {
-                fontSize: "12px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#fbbf24",
-                letterSpacing: 3,
-              })
+
+            this.hint = this.add
+              .text(
+                W / 2,
+                H - 22,
+                "Move with WASD / Arrows / drag. Walk into a glowing CLUE to investigate.",
+                {
+                  fontSize: "13px",
+                  fontFamily: "sans-serif",
+                  color: "#8aa0c6",
+                },
+              )
               .setOrigin(0.5);
-            this.questionText = this.add
-              .text(W / 2, 200, "", {
-                fontSize: "20px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#ffffff",
-                align: "center",
-                wordWrap: { width: W - 200 },
-                lineSpacing: 6,
-              })
-              .setOrigin(0.5);
-            this.statBtn = this.createChoiceButton(
-              W / 2 - 175,
-              320,
-              "✅ STATISTICAL\nAnswers can vary",
-              true,
-              0x2a9d5c,
-            );
-            this.nonstatBtn = this.createChoiceButton(
-              W / 2 + 175,
-              320,
-              "❌ NOT STATISTICAL\nOne exact answer",
-              false,
-              0xe63946,
-            );
-            this.feedbackBg = this.add.graphics().setAlpha(0);
-            this.feedbackTitle = this.add
-              .text(W / 2, 415, "", {
-                fontSize: "22px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#ffffff",
-                align: "center",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.feedbackBody = this.add
-              .text(W / 2, 452, "", {
-                fontSize: "15px",
-                fontFamily: "sans-serif",
-                color: "#f9d98a",
-                align: "center",
-                wordWrap: { width: 600 },
-                lineSpacing: 4,
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.add
-              .graphics()
-              .fillStyle(0xffffff, 0.08)
-              .fillRoundedRect(80, 510, W - 160, 16, 8);
-            this.progressFill = this.add.graphics();
-            this.progressLabel = this.add
-              .text(W / 2, 545, "", {
-                fontSize: "13px",
-                fontFamily: "sans-serif",
-                fontStyle: "bold",
-                color: "#f9d98a",
-              })
-              .setOrigin(0.5);
-            this.nextBtn = this.add
-              .image(W / 2, 585, "btn_teal")
-              .setScale(0.75, 0.8)
-              .setInteractive({ useHandCursor: true })
-              .setAlpha(0);
-            this.nextBtnTxt = this.add
-              .text(W / 2, 585, "Next Clue →", {
-                fontSize: "16px",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.nextBtn.on("pointerdown", () => this.advanceClue());
-            this.correctEmitter = this.add.particles(W / 2, 320, "dot", {
+
+            // ── Particle emitters (reused for collect / wrong feedback) ──
+            this.correctEmitter = this.add.particles(0, 0, "dot", {
               speed: { min: 80, max: 250 },
               scale: { start: 0.8, end: 0 },
               alpha: { start: 1, end: 0 },
@@ -572,7 +543,7 @@
               emitting: false,
               quantity: 20,
             });
-            this.wrongEmitter = this.add.particles(W / 2, 320, "dot", {
+            this.wrongEmitter = this.add.particles(0, 0, "dot", {
               speed: { min: 60, max: 180 },
               scale: { start: 0.6, end: 0 },
               alpha: { start: 0.8, end: 0 },
@@ -582,9 +553,140 @@
               emitting: false,
               quantity: 12,
             });
+
+            // ── Detective sprite ──
+            this.player = this.physics.add
+              .sprite(W / 2, FIELD.y + FIELD.h - 60, "detective")
+              .setCircle(24)
+              .setCollideWorldBounds(true);
+            this.physics.world.setBounds(
+              FIELD.x + 4,
+              FIELD.y + 4,
+              FIELD.w - 8,
+              FIELD.h - 8,
+            );
+            this.playerHat = this.add
+              .text(0, 0, "🕵️", { fontSize: "30px" })
+              .setOrigin(0.5)
+              .setDepth(5);
+
+            // ── Clue group ──
+            this.clueGroup = this.add.group();
+            this.spawnAllClues();
+
+            // ── Input: keyboard ──
+            this.keys = this.input.keyboard.addKeys({
+              up: "W",
+              down: "S",
+              left: "A",
+              right: "D",
+              up2: "UP",
+              down2: "DOWN",
+              left2: "LEFT",
+              right2: "RIGHT",
+              y: "ONE",
+              n: "TWO",
+            });
+
+            // ── Input: touch / pointer drag steering ──
+            this.dragTarget = null;
+            this.input.on("pointerdown", (p) => {
+              if (this.answering) return;
+              if (this.isInField(p.worldX, p.worldY))
+                this.dragTarget = { x: p.worldX, y: p.worldY };
+            });
+            this.input.on("pointermove", (p) => {
+              if (this.dragTarget && p.isDown && !this.answering)
+                this.dragTarget = { x: p.worldX, y: p.worldY };
+            });
+            this.input.on("pointerup", () => {
+              this.dragTarget = null;
+            });
+
+            // ── Inline classification prompt (hidden until a clue is grabbed) ──
+            this.buildPrompt();
+
             this.cameras.main.fadeIn(500);
-            this.showClue();
+            this.updateHUD();
           }
+
+          isInField(x, y) {
+            return (
+              x >= FIELD.x &&
+              x <= FIELD.x + FIELD.w &&
+              y >= FIELD.y &&
+              y <= FIELD.y + FIELD.h
+            );
+          }
+
+          spawnAllClues() {
+            // Scatter all clues across the field; each is a collectible token.
+            this.clueObjs = [];
+            const pts = [];
+            this.clues.forEach((clue, i) => {
+              let x,
+                y,
+                tries = 0;
+              do {
+                x = FIELD.x + 60 + Math.random() * (FIELD.w - 120);
+                y = FIELD.y + 60 + Math.random() * (FIELD.h - 120);
+                tries++;
+              } while (
+                tries < 30 &&
+                pts.some(
+                  (p) => Phaser.Math.Distance.Between(p.x, p.y, x, y) < 80,
+                )
+              );
+              pts.push({ x, y });
+
+              const cont = this.add.container(x, y);
+              const glow = this.add
+                .image(0, 0, "glow")
+                .setScale(0.9)
+                .setTint(0xfbbf24)
+                .setAlpha(0.25)
+                .setBlendMode(Phaser.BlendModes.ADD);
+              const disc = this.add.graphics();
+              disc.fillStyle(0x14213d, 1);
+              disc.fillCircle(0, 0, 22);
+              disc.lineStyle(3, 0xfbbf24, 0.9);
+              disc.strokeCircle(0, 0, 22);
+              const icon = this.add
+                .text(0, 0, "❓", { fontSize: "22px" })
+                .setOrigin(0.5);
+              cont.add([glow, disc, icon]);
+              cont.setSize(44, 44);
+              this.tweens.add({
+                targets: glow,
+                scale: 1.15,
+                alpha: 0.45,
+                duration: 900,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+              this.tweens.add({
+                targets: cont,
+                y: y - 6,
+                duration: 1200 + Math.random() * 600,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut",
+              });
+              const obj = {
+                cont,
+                clue,
+                x,
+                y,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+                done: false,
+              };
+              this.clueObjs.push(obj);
+            });
+            this.activeClue = null;
+          }
+
           createHUD() {
             this.add.text(30, 18, "🏆 SCORE", {
               fontSize: "10px",
@@ -599,79 +701,163 @@
               fontStyle: "bold",
               color: "#ffffff",
             });
-            this.add.text(170, 18, "🔥 COMBO", {
+            this.add.text(150, 18, "🔥 COMBO", {
               fontSize: "10px",
               fontFamily: "sans-serif",
               fontStyle: "bold",
               color: "#f77f00",
               letterSpacing: 2,
             });
-            this.comboText = this.add.text(170, 35, "0x", {
+            this.comboText = this.add.text(150, 35, "0x", {
               fontSize: "26px",
               fontFamily: "Trebuchet MS",
               fontStyle: "bold",
               color: "#f77f00",
             });
-            this.add.text(W - 200, 18, "❤️ LIVES", {
-              fontSize: "10px",
-              fontFamily: "sans-serif",
-              fontStyle: "bold",
-              color: "#fb7185",
-              letterSpacing: 2,
-            });
-            this.livesText = this.add.text(W - 200, 35, "❤️❤️❤️", {
-              fontSize: "22px",
-            });
-            this.add.text(W - 80, 18, "CASE", {
+            this.add.text(285, 18, "📁 CASE FILE", {
               fontSize: "10px",
               fontFamily: "sans-serif",
               fontStyle: "bold",
               color: "#1b998b",
               letterSpacing: 2,
             });
-            this.caseNumText = this.add
-              .text(W - 60, 35, "1", {
-                fontSize: "26px",
+            this.fileText = this.add.text(285, 35, "0", {
+              fontSize: "26px",
+              fontFamily: "Trebuchet MS",
+              fontStyle: "bold",
+              color: "#1b998b",
+            });
+            this.add.text(W - 210, 18, "❤️ STRIKES", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#fb7185",
+              letterSpacing: 2,
+            });
+            this.livesText = this.add.text(W - 210, 35, "❤️❤️❤️", {
+              fontSize: "22px",
+            });
+            this.add.text(W - 70, 18, "CLUES", {
+              fontSize: "10px",
+              fontFamily: "sans-serif",
+              fontStyle: "bold",
+              color: "#f9d98a",
+              letterSpacing: 2,
+            });
+            this.clueCountText = this.add
+              .text(W - 50, 35, "0", {
+                fontSize: "20px",
                 fontFamily: "Trebuchet MS",
                 fontStyle: "bold",
-                color: "#1b998b",
+                color: "#f9d98a",
               })
               .setOrigin(0.5, 0);
           }
+
           updateHUD() {
             this.scoreText.setText(this.score.toString());
             this.comboText
               .setText(this.combo + "x")
               .setColor(this.combo >= 3 ? "#fbbf24" : "#f77f00");
+            this.fileText.setText(this.filed.toString());
             let h = "";
             for (let i = 0; i < 3; i++) h += i < this.lives ? "❤️" : "🖤";
             this.livesText.setText(h);
-            this.caseNumText.setText((this.caseIndex + 1).toString());
-            const pct = this.clueIndex / this.totalClues;
-            this.progressFill.clear();
-            this.progressFill.fillStyle(0xfbbf24, 1);
-            if (pct > 0)
-              this.progressFill.fillRoundedRect(
-                80,
-                510,
-                (W - 160) * pct,
-                16,
-                8,
-              );
-            this.progressLabel.setText(
-              "Clue " + this.clueIndex + " / " + this.totalClues,
+            this.clueCountText.setText(this.collected + "/" + this.totalClues);
+            const idx = Math.min(
+              Math.floor(
+                this.collected /
+                  Math.ceil(this.totalClues / CASE_THEMES.length),
+              ),
+              CASE_THEMES.length - 1,
             );
+            this.caseIndex = idx;
+            const theme = CASE_THEMES[idx];
+            this.caseText.setText(theme.name);
+            this.caseIcon.setText(theme.icon);
           }
-          createChoiceButton(x, y, label, isStat, tint) {
+
+          buildPrompt() {
+            // Inline prompt overlay shown when player picks up a clue.
+            this.prompt = this.add
+              .container(W / 2, H / 2)
+              .setDepth(20)
+              .setVisible(false);
+            const panel = this.add.graphics();
+            panel.fillStyle(0x0c1529, 0.92);
+            panel.fillRoundedRect(-330, -150, 660, 300, 22);
+            panel.lineStyle(3, 0xfbbf24, 0.8);
+            panel.strokeRoundedRect(-330, -150, 660, 300, 22);
+            const label = this.add
+              .text(0, -118, "🔍 CLUE FOUND", {
+                fontSize: "13px",
+                fontFamily: "sans-serif",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                letterSpacing: 3,
+              })
+              .setOrigin(0.5);
+            this.promptQ = this.add
+              .text(0, -55, "", {
+                fontSize: "22px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#ffffff",
+                align: "center",
+                wordWrap: { width: 580 },
+                lineSpacing: 6,
+              })
+              .setOrigin(0.5);
+            this.promptAsk = this.add
+              .text(0, 10, "Is this a STATISTICAL question?", {
+                fontSize: "15px",
+                fontFamily: "sans-serif",
+                color: "#f9d98a",
+              })
+              .setOrigin(0.5);
+            const yes = this.makeAnsBtn(
+              -160,
+              90,
+              "✅ YES (1)\nanswers vary",
+              true,
+              0x2a9d5c,
+            );
+            const no = this.makeAnsBtn(
+              160,
+              90,
+              "❌ NO (2)\none exact answer",
+              false,
+              0xe63946,
+            );
+            this.prompt.add([
+              panel,
+              label,
+              this.promptQ,
+              this.promptAsk,
+              yes,
+              no,
+            ]);
+
+            // Keyboard 1 / 2 answers while the prompt is open.
+            this.keys.y.on("down", () => {
+              if (this.prompt.visible && this.activeClue) this.answerClue(true);
+            });
+            this.keys.n.on("down", () => {
+              if (this.prompt.visible && this.activeClue)
+                this.answerClue(false);
+            });
+          }
+
+          makeAnsBtn(x, y, label, said, tint) {
             const c = this.add.container(x, y);
             const bg = this.add.graphics();
-            bg.fillStyle(tint, 0.15);
-            bg.fillRoundedRect(-155, -42, 310, 84, 18);
-            bg.lineStyle(3, tint, 0.8);
-            bg.strokeRoundedRect(-155, -42, 310, 84, 18);
+            bg.fillStyle(tint, 0.2);
+            bg.fillRoundedRect(-150, -45, 300, 90, 16);
+            bg.lineStyle(3, tint, 0.9);
+            bg.strokeRoundedRect(-150, -45, 300, 90, 16);
             const txt = this.add
               .text(0, 0, label, {
-                fontSize: "16px",
+                fontSize: "18px",
                 fontFamily: "Trebuchet MS",
                 fontStyle: "bold",
                 color: "#ffffff",
@@ -680,12 +866,12 @@
               })
               .setOrigin(0.5);
             c.add([bg, txt]);
-            c.setSize(310, 84).setInteractive({ useHandCursor: true });
+            c.setSize(300, 90).setInteractive({ useHandCursor: true });
             c.on("pointerover", () =>
               this.tweens.add({
                 targets: c,
-                scaleX: 1.04,
-                scaleY: 1.04,
+                scaleX: 1.05,
+                scaleY: 1.05,
                 duration: 100,
               }),
             );
@@ -697,53 +883,119 @@
                 duration: 100,
               }),
             );
-            c.on("pointerdown", () => {
-              if (!this.answering) this.checkAnswer(isStat);
+            c.on("pointerdown", (p, lx, ly, ev) => {
+              if (ev) ev.stopPropagation();
+              this.answerClue(said);
             });
             return c;
           }
-          showClue() {
-            if (this.clueIndex >= this.totalClues) {
-              this.endGame();
-              return;
+
+          update(time, delta) {
+            if (this.answering || !this.player) return;
+            const d = delta / 1000;
+            const k = this.keys;
+            let vx = 0,
+              vy = 0;
+            if (k.left.isDown || k.left2.isDown) vx -= 1;
+            if (k.right.isDown || k.right2.isDown) vx += 1;
+            if (k.up.isDown || k.up2.isDown) vy -= 1;
+            if (k.down.isDown || k.down2.isDown) vy += 1;
+
+            if (vx === 0 && vy === 0 && this.dragTarget) {
+              const dx = this.dragTarget.x - this.player.x;
+              const dy = this.dragTarget.y - this.player.y;
+              if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+                vx = dx;
+                vy = dy;
+              }
             }
-            this.answering = false;
-            const clue = this.clues[this.clueIndex];
-            this.caseIndex = Math.min(
-              Math.floor(this.clueIndex / this.cluesPerCase),
-              CASE_THEMES.length - 1,
-            );
-            const theme = CASE_THEMES[this.caseIndex];
-            this.caseText.setText(theme.name);
-            this.caseIcon.setText(theme.icon);
-            this.questionText.setText('"' + clue.q + '"');
-            this.clueLabel.setText("CLUE " + (this.clueIndex + 1));
-            this.feedbackBg.setAlpha(0);
-            this.feedbackTitle.setAlpha(0);
-            this.feedbackBody.setAlpha(0);
-            this.nextBtn.setAlpha(0).disableInteractive();
-            this.nextBtnTxt.setAlpha(0);
-            this.statBtn.setAlpha(1).setInteractive();
-            this.nonstatBtn.setAlpha(1).setInteractive();
-            this.questionText.setAlpha(0);
-            this.tweens.add({
-              targets: this.questionText,
-              alpha: 1,
-              y: 200,
-              duration: 300,
-              ease: "Back.easeOut",
-            });
-            this.updateHUD();
+            const len = Math.hypot(vx, vy);
+            if (len > 0) {
+              this.player.setVelocity(
+                (vx / len) * this.moveSpeed,
+                (vy / len) * this.moveSpeed,
+              );
+            } else {
+              this.player.setVelocity(0, 0);
+            }
+            this.playerHat.setPosition(this.player.x, this.player.y - 2);
+
+            // Drifting clues (movement challenge on harder levels)
+            if (this.drift > 0) {
+              this.clueObjs.forEach((o) => {
+                if (o.done) return;
+                o.x += o.vx * this.drift * d;
+                o.y += o.vy * this.drift * d;
+                if (o.x < FIELD.x + 40 || o.x > FIELD.x + FIELD.w - 40)
+                  o.vx *= -1;
+                if (o.y < FIELD.y + 40 || o.y > FIELD.y + FIELD.h - 40)
+                  o.vy *= -1;
+                o.x = Phaser.Math.Clamp(
+                  o.x,
+                  FIELD.x + 40,
+                  FIELD.x + FIELD.w - 40,
+                );
+                o.y = Phaser.Math.Clamp(
+                  o.y,
+                  FIELD.y + 40,
+                  FIELD.y + FIELD.h - 40,
+                );
+                o.cont.x = o.x;
+              });
+            }
+
+            // Pickup detection (a wrong-answered clue must be re-approached)
+            for (const o of this.clueObjs) {
+              if (o.done) continue;
+              const dist = Phaser.Math.Distance.Between(
+                this.player.x,
+                this.player.y,
+                o.cont.x,
+                o.cont.y,
+              );
+              if (o.cooldown) {
+                if (dist > 70) o.cooldown = false;
+                continue;
+              }
+              if (dist < 42) {
+                this.pickUp(o);
+                break;
+              }
+            }
           }
-          checkAnswer(playerSaidStat) {
+
+          pickUp(o) {
             if (this.answering) return;
             this.answering = true;
-            const clue = this.clues[this.clueIndex];
-            const isCorrect = playerSaidStat === clue.stat;
-            this.statBtn.disableInteractive().setAlpha(0.4);
-            this.nonstatBtn.disableInteractive().setAlpha(0.4);
-            (playerSaidStat ? this.statBtn : this.nonstatBtn).setAlpha(1);
-            if (isCorrect) {
+            this.activeClue = o;
+            this.player.setVelocity(0, 0);
+            this.dragTarget = null;
+            SFX.play("whoosh");
+            this.promptQ.setText('"' + o.clue.q + '"');
+            this.prompt.setVisible(true).setScale(0.8).setAlpha(0);
+            this.tweens.add({
+              targets: this.prompt,
+              alpha: 1,
+              scale: 1,
+              duration: 220,
+              ease: "Back.easeOut",
+            });
+          }
+
+          answerClue(said) {
+            const o = this.activeClue;
+            if (!o) return;
+            const correct = said === o.clue.stat;
+            this.activeClue = null;
+            this.tweens.add({
+              targets: this.prompt,
+              alpha: 0,
+              scale: 0.85,
+              duration: 160,
+              onComplete: () => this.prompt.setVisible(false),
+            });
+
+            if (correct) {
               SFX.play("correct");
               this.combo++;
               this.maxCombo = Math.max(this.maxCombo, this.combo);
@@ -751,104 +1003,131 @@
               const pts = 100 + bonus;
               this.score += pts;
               this.correct++;
-              this.correctEmitter.explode(20, W / 2, 320);
+              this.filed++;
+              this.collected++;
+              this.correctEmitter.explode(20, o.cont.x, o.cont.y);
               if (this.combo >= 3) {
                 SFX.play("combo");
-                this.cameras.main.shake(100, 0.005);
+                this.cameras.main.shake(90, 0.004);
               }
-              const msg =
-                this.combo >= 5
-                  ? "🔥 ON FIRE! +" + pts
-                  : this.combo >= 3
-                    ? "💥 COMBO! +" + pts
-                    : "✅ Correct! +" + pts;
-              this.showFeedback(true, msg, clue.explain);
-              const pop = this.add
-                .text(W / 2, 350, "+" + pts, {
-                  fontSize: "28px",
-                  fontFamily: "Trebuchet MS",
-                  fontStyle: "bold",
-                  color: "#fbbf24",
-                })
-                .setOrigin(0.5);
-              this.tweens.add({
-                targets: pop,
-                y: 290,
-                alpha: 0,
-                duration: 800,
-                onComplete: () => pop.destroy(),
-              });
+              this.floatText(
+                o.cont.x,
+                o.cont.y,
+                (this.combo >= 5 ? "🔥 +" : this.combo >= 3 ? "💥 +" : "📁 +") +
+                  pts,
+                "#fbbf24",
+              );
+              this.fileClue(o);
             } else {
               SFX.play("wrong");
               this.combo = 0;
               this.lives--;
               this.wrong++;
-              this.wrongEmitter.explode(12, W / 2, 320);
-              this.cameras.main.shake(200, 0.012);
-              const extra = clue.stat
-                ? "\n\n👉 This IS statistical — answers vary."
-                : "\n\n👉 This is NOT statistical — one exact answer.";
-              this.showFeedback(false, "❌ Not quite!", clue.explain + extra);
-              if (this.lives <= 0) {
-                this.time.delayedCall(1800, () => this.endGame());
-                return;
-              }
+              this.wrongEmitter.explode(12, o.cont.x, o.cont.y);
+              this.cameras.main.shake(180, 0.01);
+              const why = o.clue.stat
+                ? "It's STATISTICAL — answers vary."
+                : "It's NOT statistical — one exact answer.";
+              this.floatText(
+                o.cont.x,
+                o.cont.y - 20,
+                "✖ " + why,
+                "#fb7185",
+                1600,
+                240,
+              );
+              // Wrong: clue stays, reset to ❓; must walk away before retrying
+              o.cont.list[2].setText("❓");
+              o.cooldown = true;
             }
-            this.clueIndex++;
             this.updateHUD();
-            if (
-              this.clueIndex > 0 &&
-              this.clueIndex % this.cluesPerCase === 0 &&
-              this.clueIndex < this.totalClues
-            ) {
-              this.casesCleared++;
-              SFX.play("levelup");
-              const banner = this.add
-                .text(W / 2, H / 2, "📁 CASE SOLVED!", {
-                  fontSize: "36px",
-                  fontFamily: "Trebuchet MS",
-                  fontStyle: "bold",
-                  color: "#fbbf24",
-                  stroke: "#14213d",
-                  strokeThickness: 5,
-                })
-                .setOrigin(0.5)
-                .setAlpha(0);
-              this.tweens.add({
-                targets: banner,
-                alpha: 1,
-                scaleX: 1.2,
-                scaleY: 1.2,
-                duration: 400,
-                yoyo: true,
-                hold: 600,
-                onComplete: () => banner.destroy(),
-              });
+            this.answering = false;
+
+            if (this.lives <= 0) {
+              this.time.delayedCall(700, () => this.endGame());
+              return;
             }
-            this.time.delayedCall(600, () => {
-              this.nextBtn.setAlpha(1).setInteractive();
-              this.nextBtnTxt.setAlpha(1);
+            // Case-cleared banner every block
+            const per = Math.ceil(this.totalClues / CASE_THEMES.length);
+            if (
+              correct &&
+              this.collected % per === 0 &&
+              this.collected < this.totalClues
+            ) {
+              SFX.play("levelup");
+              this.banner("📁 CASE SOLVED!");
+            }
+            if (this.remaining() === 0) {
+              this.time.delayedCall(600, () => this.endGame());
+            }
+          }
+
+          remaining() {
+            return this.clueObjs.filter((o) => !o.done).length;
+          }
+
+          fileClue(o) {
+            o.done = true;
+            this.tweens.killTweensOf(o.cont);
+            o.cont.list[2].setText("✅");
+            this.tweens.add({
+              targets: o.cont,
+              scale: 1.4,
+              alpha: 0,
+              duration: 350,
+              ease: "Back.easeIn",
+              onComplete: () => o.cont.destroy(),
             });
           }
-          showFeedback(good, title, body) {
-            this.feedbackBg.clear();
-            this.feedbackBg.fillStyle(good ? 0x2a9d5c : 0xe63946, 0.12);
-            this.feedbackBg.fillRoundedRect(80, 385, W - 160, 110, 16);
-            this.feedbackBg.lineStyle(2, good ? 0x2a9d5c : 0xe63946, 0.5);
-            this.feedbackBg.strokeRoundedRect(80, 385, W - 160, 110, 16);
-            this.feedbackBg.setAlpha(1);
-            this.feedbackTitle
-              .setText(title)
-              .setAlpha(1)
-              .setColor(good ? "#2a9d5c" : "#fb7185");
-            this.feedbackBody.setText(body).setAlpha(1);
+
+          floatText(x, y, msg, color, life, wrap) {
+            const t = this.add
+              .text(x, y, msg, {
+                fontSize: "18px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color,
+                align: "center",
+                wordWrap: wrap ? { width: 280 } : undefined,
+                stroke: "#0c1529",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setDepth(15);
+            this.tweens.add({
+              targets: t,
+              y: y - 50,
+              alpha: 0,
+              duration: life || 900,
+              onComplete: () => t.destroy(),
+            });
           }
-          advanceClue() {
-            SFX.play("click");
-            if (this.lives <= 0 || this.clueIndex >= this.totalClues)
-              this.endGame();
-            else this.showClue();
+
+          banner(text) {
+            const b = this.add
+              .text(W / 2, H / 2 - 40, text, {
+                fontSize: "34px",
+                fontFamily: "Trebuchet MS",
+                fontStyle: "bold",
+                color: "#fbbf24",
+                stroke: "#14213d",
+                strokeThickness: 5,
+              })
+              .setOrigin(0.5)
+              .setDepth(18)
+              .setAlpha(0);
+            this.tweens.add({
+              targets: b,
+              alpha: 1,
+              scaleX: 1.2,
+              scaleY: 1.2,
+              duration: 350,
+              yoyo: true,
+              hold: 500,
+              onComplete: () => b.destroy(),
+            });
           }
+
           endGame() {
             this.cameras.main.fade(500);
             this.time.delayedCall(500, () =>
@@ -859,7 +1138,7 @@
                 total: this.totalClues,
                 combo: this.maxCombo,
                 lives: this.lives,
-                casesCleared: this.casesCleared,
+                casesCleared: this.caseIndex + 1,
               }),
             );
           }
@@ -1032,6 +1311,10 @@
           scale: {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
+          },
+          physics: {
+            default: "arcade",
+            arcade: { debug: false },
           },
           scene: [BootScene, TitleScene, GameScene, ResultsScene],
           input: { touch: true },

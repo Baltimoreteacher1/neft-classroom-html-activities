@@ -6,20 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Variable Blaster - Space Shooter | 6.EE.C.9</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-<script>
-  // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-  // (document.write blocks parsing so the mirror is ready before the game script runs).
-  if (typeof Phaser === "undefined") {
-    document.write('<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>');
-  }
-  // If both CDNs are unreachable, show a clear message instead of a blank page.
-  window.addEventListener("load", function () {
-    if (typeof Phaser === "undefined") {
-      document.body.innerHTML =
-        '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-    }
-  });
-</script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <style>
       * {
         margin: 0;
@@ -51,127 +53,118 @@
       // dependent/independent variables and equations from tables.
       // ============================================================
 
+      // Each question's "choices" are SHORT labels printed directly on the
+      // asteroids. "answer" is the index of the correct label. Shoot the
+      // asteroid carrying the correct answer to score and advance.
       const QUESTIONS = [
         {
           scenario:
-            "A car travels on the highway. The longer you drive, the farther it goes.",
-          q: "What is the INDEPENDENT variable?",
-          choices: ["Hours driven", "Miles traveled", "The car", "The highway"],
+            "A car drives on the highway. The longer you drive, the farther it goes.",
+          q: "Shoot the INDEPENDENT variable",
+          choices: ["Hours", "Miles", "Speed", "Road"],
           answer: 0,
           explain: "Hours driven is independent -- you control it.",
         },
         {
-          scenario: "A babysitter earns $8 per hour worked.",
-          q: "Which is the DEPENDENT variable?",
-          choices: ["Hours worked", "Money earned", "Babysitter", "Family"],
+          scenario: "A babysitter earns $8 for every hour worked.",
+          q: "Shoot the DEPENDENT variable",
+          choices: ["Hours", "Money", "Family", "Time"],
           answer: 1,
           explain: "Money earned depends on hours worked.",
         },
         {
-          scenario: "Table: Hours(x): 1,2,3 | Miles(y): 55,110,165.",
-          q: "What is the rate (k)?",
+          scenario: "Table  Hours(x): 1, 2, 3   Miles(y): 55, 110, 165",
+          q: "Shoot the rate k (miles per hour)",
           choices: ["110", "55", "165", "3"],
           answer: 1,
-          explain: "k = 55/1 = 55.",
+          explain: "k = 55 / 1 = 55.",
         },
         {
-          scenario: "Table: Hours(x): 1,3,5 | Earnings(y): 9,27,45.",
-          q: "What is the equation?",
+          scenario: "Table  Hours(x): 1, 3, 5   Earnings(y): 9, 27, 45",
+          q: "Shoot the correct equation",
           choices: ["y = 3x", "y = 27x", "y = 9x", "y = 45x"],
           answer: 2,
-          explain: "k = 9/1 = 9, so y = 9x.",
+          explain: "k = 9 / 1 = 9, so y = 9x.",
         },
         {
-          scenario: "Table: Pizzas(x): 2,4,6 | Cost(y): 26,52,78.",
-          q: "What is the cost per pizza (k)?",
+          scenario: "Table  Pizzas(x): 2, 4, 6   Cost(y): 26, 52, 78",
+          q: "Shoot the cost per pizza (k)",
           choices: ["26", "52", "13", "6"],
           answer: 2,
-          explain: "k = 26/2 = 13.",
+          explain: "k = 26 / 2 = 13.",
         },
         {
-          scenario: "A plant grows taller with more sunlight each day.",
-          q: "Which is the INDEPENDENT variable?",
-          choices: [
-            "Height of plant",
-            "Days of sunlight",
-            "Type of soil",
-            "Water amount",
-          ],
+          scenario: "A plant grows taller with more days of sunlight.",
+          q: "Shoot the INDEPENDENT variable",
+          choices: ["Height", "Sunlight", "Soil", "Water"],
           answer: 1,
           explain: "Days of sunlight is what you control.",
         },
         {
-          scenario: "A student reads books and earns points.",
-          q: "Which is TRUE?",
-          choices: [
-            "Points = independent",
-            "Books = dependent",
-            "Books = independent",
-            "No relationship",
-          ],
-          answer: 2,
+          scenario:
+            "A student reads books and earns points. Points depend on books.",
+          q: "Shoot the INDEPENDENT variable",
+          choices: ["Points", "Books", "Prizes", "Time"],
+          answer: 1,
           explain: "Books read is independent -- points depend on it.",
         },
         {
           scenario: "A line passes through (0,0) and (1,8).",
-          q: "What is the equation?",
+          q: "Shoot the correct equation",
           choices: ["y = 1x", "y = 8x", "y = 0x", "y = 16x"],
           answer: 1,
-          explain: "k = 8/1 = 8, so y = 8x.",
+          explain: "k = 8 / 1 = 8, so y = 8x.",
         },
         {
-          scenario: "Graph: line through (0,0),(2,10),(4,20).",
-          q: "What is the equation?",
+          scenario: "Graph: a line through (0,0), (2,10), (4,20).",
+          q: "Shoot the correct equation",
           choices: ["y = 2x", "y = 10x", "y = 5x", "y = 20x"],
           answer: 2,
-          explain: "k = 10/2 = 5, so y = 5x.",
+          explain: "k = 10 / 2 = 5, so y = 5x.",
         },
         {
-          scenario: "Table: x:3,6,9 | y:21,42,63. Predict y when x=12.",
-          q: "What is y when x = 12?",
-          choices: ["y = 84", "y = 252", "y = 36", "y = 72"],
+          scenario: "Table  x: 3, 6, 9   y: 21, 42, 63",
+          q: "Shoot the value of y when x = 12",
+          choices: ["84", "252", "36", "72"],
           answer: 0,
-          explain: "k = 7, so y = 7*12 = 84.",
+          explain: "k = 7, so y = 7 x 12 = 84.",
         },
         {
-          scenario: "A graph: 4 units right, line rises 20. Through (0,0).",
-          q: "What is the equation?",
+          scenario: "Graph: 4 units right, the line rises 20. Through (0,0).",
+          q: "Shoot the correct equation",
           choices: ["y = 4x", "y = 20x", "y = 5x", "y = 80x"],
           answer: 2,
-          explain: "k = 20/4 = 5, so y = 5x.",
+          explain: "k = 20 / 4 = 5, so y = 5x.",
         },
         {
-          scenario: "Equation y=15x. x=hours, y=miles. Trip = 180 miles.",
-          q: "How many hours?",
+          scenario:
+            "Equation y = 15x.  x = hours, y = miles. A trip is 180 miles.",
+          q: "Shoot the number of hours",
           choices: ["15", "180", "12", "13"],
           answer: 2,
-          explain: "180 = 15x, x = 12 hours.",
+          explain: "180 = 15x, so x = 12 hours.",
         },
         {
-          scenario: "Streaming service: more songs = more data.",
-          q: "What is the DEPENDENT variable?",
-          choices: [
-            "Songs downloaded",
-            "Total data used",
-            "Streaming service",
-            "Price per song",
-          ],
+          scenario:
+            "Streaming: the more songs you download, the more data used.",
+          q: "Shoot the DEPENDENT variable",
+          choices: ["Songs", "Data", "Service", "Price"],
           answer: 1,
           explain: "Data used depends on songs downloaded.",
         },
         {
-          scenario: "Table: Weeks(x):1,4,7 | Height(y):6,24,42.",
-          q: "Which equation is correct?",
+          scenario: "Table  Weeks(x): 1, 4, 7   Height(y): 6, 24, 42",
+          q: "Shoot the correct equation",
           choices: ["y = 4x", "y = 7x", "y = 6x", "y = 42x"],
           answer: 2,
-          explain: "k = 6/1 = 6, so y = 6x.",
+          explain: "k = 6 / 1 = 6, so y = 6x.",
         },
         {
-          scenario: "Graph A: (1,3),(2,6),(3,9). Graph B: (1,2),(2,5),(3,9).",
-          q: "Which shows a proportional relationship?",
-          choices: ["Graph A only", "Graph B only", "Both", "Neither"],
+          scenario: "Graph A: (1,3),(2,6),(3,9).  Graph B: (1,2),(2,5),(3,9).",
+          q: "Shoot the graph that is PROPORTIONAL",
+          choices: ["Graph A", "Graph B", "Both", "Neither"],
           answer: 0,
-          explain: "Graph A: constant rate 3. Graph B: rate changes.",
+          explain: "Graph A has a constant rate of 3. Graph B's rate changes.",
         },
       ];
 
@@ -402,9 +395,25 @@
             .setStrokeStyle(3, chars[0].color, 1)
             .setFillStyle(chars[0].color, 0.3);
 
+          // How-to-play hint
+          this.add
+            .text(
+              W / 2,
+              458,
+              "Fly with WASD / Arrows / drag.  SHOOT the asteroid with the correct answer (Space / tap).",
+              {
+                fontSize: "12px",
+                fontFamily: "Arial",
+                color: "#9fc4e0",
+                align: "center",
+                wordWrap: { width: W - 80 },
+              },
+            )
+            .setOrigin(0.5);
+
           // Start button
           this.startBtn = this.add
-            .text(W / 2, 490, "[ LAUNCH MISSION ]", {
+            .text(W / 2, 495, "[ LAUNCH MISSION ]", {
               fontSize: "22px",
               fontFamily: "monospace",
               fontStyle: "bold",
@@ -537,15 +546,15 @@
           this.spaceKey = this.input.keyboard.addKey("SPACE");
           this.lastShot = 0;
 
-          // Touch controls
+          // Touch controls -- drag to fly, tap to shoot. Never gated.
           this.input.on("pointermove", (p) => {
-            if (p.isDown && !this.questionActive) {
+            if (p.isDown) {
               this.ship.x = Phaser.Math.Clamp(p.x, 20, W - 20);
-              this.ship.y = Phaser.Math.Clamp(p.y, H / 2, H - 20);
+              this.ship.y = Phaser.Math.Clamp(p.y, H / 4, H - 20);
             }
           });
           this.input.on("pointerdown", (p) => {
-            if (!this.questionActive) this.fireWeapon();
+            this.fireWeapon();
           });
 
           // HUD
@@ -554,133 +563,143 @@
           // Screen shake camera
           this.cameras.main.setBackgroundColor(0x000011);
 
-          // Start first question wave
-          this.time.delayedCall(1000, () => this.spawnQuestionWave());
+          // Brief countdown, then start first wave
+          this.locked = true;
+          this.showReady(() => this.spawnQuestionWave());
+        }
+
+        showReady(cb) {
+          const txt = this.add
+            .text(W / 2, H / 2, "GET READY", {
+              fontSize: "40px",
+              fontFamily: "monospace",
+              fontStyle: "bold",
+              color: "#00ffcc",
+            })
+            .setOrigin(0.5)
+            .setDepth(300);
+          this.tweens.add({
+            targets: txt,
+            scale: { from: 0.6, to: 1.1 },
+            alpha: { from: 1, to: 0 },
+            duration: 1100,
+            onComplete: () => {
+              txt.destroy();
+              cb();
+            },
+          });
         }
 
         createHUD() {
-          const hudBg = this.add
-            .rectangle(W / 2, 18, W, 36, 0x000033, 0.8)
+          // Persistent question BANNER at the top of the play area.
+          this.bannerBg = this.add
+            .rectangle(W / 2, 54, W, 88, 0x06182e, 0.9)
             .setDepth(100);
+          this.add.rectangle(W / 2, 98, W, 2, 0x00ccff, 0.5).setDepth(100);
 
+          this.qScenarioText = this.add
+            .text(W / 2, 30, "", {
+              fontSize: "14px",
+              fontFamily: "Arial",
+              color: "#88ccff",
+              wordWrap: { width: W - 40 },
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(101);
+
+          this.qQuestionText = this.add
+            .text(W / 2, 64, "", {
+              fontSize: "20px",
+              fontFamily: "Arial",
+              fontStyle: "bold",
+              color: "#ffffff",
+              wordWrap: { width: W - 40 },
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(101);
+
+          // Stats row just under the banner.
+          const statY = 90;
           this.scoreText = this.add
-            .text(10, 6, "SCORE: 0", {
+            .text(10, statY, "SCORE: 0", {
               fontSize: "14px",
               fontFamily: "monospace",
               fontStyle: "bold",
               color: "#ffcc00",
             })
+            .setOrigin(0, 0.5)
             .setDepth(101);
 
           this.livesText = this.add
-            .text(W - 10, 6, "", {
+            .text(W - 10, statY, "", {
               fontSize: "16px",
               fontFamily: "monospace",
               color: "#ff4444",
             })
-            .setOrigin(1, 0)
+            .setOrigin(1, 0.5)
             .setDepth(101);
           this.updateLives();
 
           this.levelText = this.add
-            .text(W / 2, 6, "LEVEL 1", {
+            .text(W / 2, statY, "LEVEL 1", {
               fontSize: "13px",
               fontFamily: "monospace",
               color: "#00ccff",
             })
-            .setOrigin(0.5, 0)
+            .setOrigin(0.5)
             .setDepth(101);
 
           this.streakText = this.add
-            .text(W / 2, 20, "", {
-              fontSize: "11px",
+            .text(W / 2 + 120, statY, "", {
+              fontSize: "12px",
               fontFamily: "monospace",
               color: "#ff8800",
             })
-            .setOrigin(0.5, 0)
+            .setOrigin(0.5)
             .setDepth(101);
 
           this.comboText = this.add
-            .text(W - 10, 22, "", {
-              fontSize: "11px",
+            .text(W / 2 - 120, statY, "", {
+              fontSize: "12px",
               fontFamily: "monospace",
               color: "#ffcc00",
             })
-            .setOrigin(1, 0)
+            .setOrigin(0.5)
             .setDepth(101);
 
-          // Question panel (hidden initially)
-          this.qPanel = this.add
-            .container(W / 2, H / 2)
-            .setDepth(200)
-            .setVisible(false);
-          this.qPanelBg = this.add
-            .rectangle(0, 0, 680, 340, 0x0a1a2e, 0.95)
-            .setStrokeStyle(2, 0x00ccff, 0.6);
-          this.qScenarioText = this.add
-            .text(0, -140, "", {
-              fontSize: "13px",
-              fontFamily: "Arial",
-              color: "#88ccff",
-              wordWrap: { width: 620 },
-              align: "center",
-            })
-            .setOrigin(0.5);
-          this.qQuestionText = this.add
-            .text(0, -100, "", {
-              fontSize: "17px",
+          // Transient feedback toast (non-blocking).
+          this.toastText = this.add
+            .text(W / 2, H - 40, "", {
+              fontSize: "15px",
               fontFamily: "Arial",
               fontStyle: "bold",
-              color: "#ffffff",
-              wordWrap: { width: 620 },
-              align: "center",
-            })
-            .setOrigin(0.5);
-          this.qPanel.add([
-            this.qPanelBg,
-            this.qScenarioText,
-            this.qQuestionText,
-          ]);
-          this.qChoiceTexts = [];
-          this.qChoiceBgs = [];
-          for (let i = 0; i < 4; i++) {
-            const y = -40 + i * 48;
-            const bg = this.add
-              .rectangle(0, y, 560, 40, 0x112244, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.6)
-              .setInteractive({ useHandCursor: true });
-            const txt = this.add
-              .text(0, y, "", {
-                fontSize: "15px",
-                fontFamily: "Arial",
-                color: "#ccddff",
-                wordWrap: { width: 520 },
-                align: "center",
-              })
-              .setOrigin(0.5);
-            bg.on("pointerover", () => {
-              if (this.questionActive) bg.setStrokeStyle(2, 0x00ccff, 1);
-            });
-            bg.on("pointerout", () => {
-              if (this.questionActive) bg.setStrokeStyle(1, 0x336699, 0.6);
-            });
-            const idx = i;
-            bg.on("pointerdown", () => this.answerQuestion(idx));
-            this.qPanel.add([bg, txt]);
-            this.qChoiceBgs.push(bg);
-            this.qChoiceTexts.push(txt);
-          }
-          this.qExplainText = this.add
-            .text(0, 160, "", {
-              fontSize: "13px",
-              fontFamily: "Arial",
               color: "#88ff88",
-              wordWrap: { width: 600 },
+              wordWrap: { width: W - 80 },
               align: "center",
+              backgroundColor: "rgba(0,0,0,0.55)",
+              padding: { x: 12, y: 6 },
             })
             .setOrigin(0.5)
+            .setDepth(150)
             .setVisible(false);
-          this.qPanel.add(this.qExplainText);
+        }
+
+        showToast(msg, color) {
+          if (this.toastTween) this.toastTween.stop();
+          this.toastText
+            .setText(msg)
+            .setColor(color || "#88ff88")
+            .setAlpha(1)
+            .setVisible(true);
+          this.toastTween = this.tweens.add({
+            targets: this.toastText,
+            alpha: { from: 1, to: 0 },
+            delay: 1400,
+            duration: 700,
+            onComplete: () => this.toastText.setVisible(false),
+          });
         }
 
         updateLives() {
@@ -690,7 +709,6 @@
         }
 
         fireWeapon() {
-          if (this.questionActive) return;
           const now = this.time.now;
           if (now - this.lastShot < 200) return;
           this.lastShot = now;
@@ -717,114 +735,60 @@
 
           const q = this.shuffledQs[this.qIndex];
           this.currentQuestion = q;
-          this.questionActive = false;
+          this.questionActive = true;
+          this.locked = false;
 
-          // Spawn asteroids with choices
-          const positions = [
-            { x: 100, y: -50 },
-            { x: 300, y: -90 },
-            { x: 500, y: -60 },
-            { x: 700, y: -80 },
-          ];
+          // Update the persistent banner (no modal, gameplay continues).
+          this.qScenarioText.setText(q.scenario);
+          this.qQuestionText.setText(q.q);
+
+          // Spawn one asteroid per choice, each LABELED with the answer text.
+          // Difficulty scales speed & horizontal drift with the level.
+          const slots = Phaser.Utils.Array.Shuffle([0, 1, 2, 3]);
+          const baseY = -60;
+          const speed = 28 + this.level * 12; // Lv1 ~40, Lv2 ~52, Lv3 ~64
+          const drift = 10 + this.level * 6;
 
           this.currentAsteroids = [];
           q.choices.forEach((choice, i) => {
-            const pos = positions[i];
-            const ast = this.asteroids.create(pos.x, pos.y, "asteroid");
-            ast.setVelocityY(Phaser.Math.Between(30, 50 + this.level * 5));
-            ast.setVelocityX(Phaser.Math.Between(-15, 15));
+            const slot = slots[i];
+            const x = 110 + slot * ((W - 220) / 3);
+            const y = baseY - i * 70;
+            const ast = this.asteroids.create(x, y, "asteroid");
+            ast.setScale(1.25); // large tap target
+            ast.body.setCircle(24);
+            ast.setVelocityY(Phaser.Math.Between(speed, speed + 18));
+            ast.setVelocityX(Phaser.Math.Between(-drift, drift));
             ast.choiceIndex = i;
-            ast.choiceText = choice;
-            ast.hp = 1;
+            ast.isCorrect = i === q.answer;
 
-            // Label on asteroid
+            // Answer label rides on the asteroid.
             const label = this.add
-              .text(pos.x, pos.y, String.fromCharCode(65 + i), {
-                fontSize: "18px",
+              .text(x, y, choice, {
+                fontSize: "17px",
                 fontFamily: "monospace",
                 fontStyle: "bold",
                 color: "#ffffff",
+                stroke: "#000000",
+                strokeThickness: 3,
               })
               .setOrigin(0.5)
               .setDepth(50);
             ast.label = label;
-
             this.currentAsteroids.push(ast);
           });
 
-          // Show scenario & question
-          this.showQuestion(q);
-        }
-
-        showQuestion(q) {
-          this.questionActive = true;
-          this.qPanel.setVisible(true);
-          this.qScenarioText.setText(q.scenario);
-          this.qQuestionText.setText(q.q);
-          this.qExplainText.setVisible(false);
-
-          q.choices.forEach((c, i) => {
-            this.qChoiceTexts[i].setText(
-              String.fromCharCode(65 + i) + ". " + c,
-            );
-            this.qChoiceBgs[i]
-              .setFillStyle(0x112244, 0.8)
-              .setStrokeStyle(1, 0x336699, 0.6);
-            this.qChoiceBgs[i].setInteractive();
-          });
-
-          // Also allow keyboard 1-4
-          this.input.keyboard.once("keydown-ONE", () => this.answerQuestion(0));
-          this.input.keyboard.once("keydown-TWO", () => this.answerQuestion(1));
-          this.input.keyboard.once("keydown-THREE", () =>
-            this.answerQuestion(2),
-          );
-          this.input.keyboard.once("keydown-FOUR", () =>
-            this.answerQuestion(3),
-          );
-        }
-
-        answerQuestion(idx) {
-          if (!this.questionActive) return;
-          this.questionActive = false;
           this.totalAnswered++;
+        }
 
+        // Called from hitAsteroid: a bullet hit an answer asteroid.
+        resolveAnswer(asteroid) {
+          if (!this.questionActive) return;
           const q = this.currentQuestion;
-          const correct = idx === q.answer;
-
-          // Remove keyboard listeners
-          this.input.keyboard.removeAllListeners("keydown-ONE");
-          this.input.keyboard.removeAllListeners("keydown-TWO");
-          this.input.keyboard.removeAllListeners("keydown-THREE");
-          this.input.keyboard.removeAllListeners("keydown-FOUR");
-
-          // Visual feedback on panel
-          this.qChoiceBgs.forEach((bg, i) => {
-            bg.disableInteractive();
-            if (i === q.answer) {
-              bg.setFillStyle(0x004400, 0.9).setStrokeStyle(2, 0x00ff88, 1);
-              this.qChoiceTexts[i].setStyle({ color: "#00ff88" });
-            } else if (i === idx && !correct) {
-              bg.setFillStyle(0x440000, 0.9).setStrokeStyle(2, 0xff4444, 1);
-              this.qChoiceTexts[i].setStyle({ color: "#ff4444" });
-            }
-          });
-
-          // Explode wrong asteroids, highlight correct
-          this.currentAsteroids.forEach((ast) => {
-            if (!ast.active) return;
-            if (ast.choiceIndex === q.answer) {
-              // Correct asteroid glows
-              this.tweens.add({ targets: ast, tint: 0x00ff88, duration: 300 });
-            } else {
-              // Wrong asteroids explode
-              this.createExplosion(ast.x, ast.y);
-              if (ast.label) ast.label.destroy();
-              ast.destroy();
-            }
-          });
+          const correct = !!asteroid.isCorrect;
 
           if (correct) {
+            this.questionActive = false; // lock this question, advance
             this.totalCorrect++;
             this.streak++;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
@@ -832,16 +796,21 @@
             const pts = 100 * this.combo;
             this.score += pts;
             AudioSys.correct();
-            this.cameras.main.flash(200, 0, 100, 0);
+            this.cameras.main.flash(160, 0, 90, 0);
 
-            // Points popup
+            this.createExplosion(asteroid.x, asteroid.y);
+            const px = asteroid.x,
+              py = asteroid.y;
+            if (asteroid.label) asteroid.label.destroy();
+            asteroid.destroy();
+
             const pop = this.add
               .text(
-                W / 2,
-                H / 2 - 180,
+                px,
+                py,
                 "+" + pts + (this.combo > 1 ? " x" + this.combo : ""),
                 {
-                  fontSize: "28px",
+                  fontSize: "26px",
                   fontFamily: "monospace",
                   fontStyle: "bold",
                   color: "#00ff88",
@@ -853,57 +822,76 @@
               targets: pop,
               y: pop.y - 60,
               alpha: 0,
-              duration: 1200,
+              duration: 1100,
               onComplete: () => pop.destroy(),
             });
+
+            this.showToast("Correct!  " + q.explain, "#88ff88");
+            this.updateStats();
+            this.endQuestion(true);
           } else {
+            // Wrong answer: lose a life, explode that asteroid, keep playing.
             this.streak = 0;
             this.combo = 1;
             this.lives--;
             AudioSys.wrong();
-            this.cameras.main.shake(300, 0.01);
+            this.cameras.main.shake(250, 0.012);
+            this.createExplosion(asteroid.x, asteroid.y);
+            if (asteroid.label) asteroid.label.destroy();
+            asteroid.destroy();
+            this.currentAsteroids = this.currentAsteroids.filter(
+              (a) => a !== asteroid,
+            );
+            this.showToast("Not that one -- try again!", "#ff6666");
             this.updateLives();
-          }
+            this.updateStats();
 
-          this.qExplainText.setText(q.explain).setVisible(true);
+            if (this.lives <= 0) {
+              this.questionActive = false;
+              this.locked = true;
+              this.time.delayedCall(900, () => this.gotoResults());
+            }
+          }
+        }
+
+        updateStats() {
           this.scoreText.setText("SCORE: " + this.score);
           this.streakText.setText(
             this.streak >= 2 ? "STREAK x" + this.streak : "",
           );
           this.comboText.setText(this.combo > 1 ? "COMBO x" + this.combo : "");
+        }
 
-          // Check game over
-          if (this.lives <= 0) {
-            this.time.delayedCall(1500, () => {
-              this.scene.start("Results", {
-                score: this.score,
-                correct: this.totalCorrect,
-                total: this.totalAnswered,
-                bestStreak: this.bestStreak,
-                level: this.level,
-              });
-            });
-            return;
-          }
+        gotoResults() {
+          this.scene.start("Results", {
+            score: this.score,
+            correct: this.totalCorrect,
+            total: this.totalAnswered,
+            bestStreak: this.bestStreak,
+            level: this.level,
+          });
+        }
 
-          // Next question
-          this.time.delayedCall(2000, () => {
-            this.qPanel.setVisible(false);
-            // Clean remaining asteroids
+        // Clear any leftover answer asteroids and queue the next question.
+        endQuestion(advance) {
+          this.locked = true;
+          this.time.delayedCall(700, () => {
             this.currentAsteroids.forEach((a) => {
-              if (a.active) {
+              if (a && a.active) {
                 if (a.label) a.label.destroy();
                 a.destroy();
               }
             });
+            this.currentAsteroids = [];
+            if (!advance) return;
             this.qIndex++;
-            if (this.qIndex % 5 === 0) {
+            if (this.qIndex < this.shuffledQs.length && this.qIndex % 5 === 0) {
               this.level++;
               this.levelText.setText("LEVEL " + this.level);
               AudioSys.levelUp();
               this.showLevelUp();
             } else {
-              this.time.delayedCall(800, () => this.spawnQuestionWave());
+              this.time.delayedCall(500, () => this.spawnQuestionWave());
             }
           });
         }
@@ -955,12 +943,11 @@
         }
 
         hitAsteroid(bullet, asteroid) {
+          if (!asteroid.active) return;
           bullet.setActive(false).setVisible(false).setVelocity(0);
-          this.createExplosion(asteroid.x, asteroid.y);
           AudioSys.hit();
-
-          // Only destroy if it's a 'wrong' asteroid being shot during free-play
-          // During question mode, shooting doesn't destroy answer asteroids
+          // The math is solved BY shooting: resolve correctness here.
+          this.resolveAnswer(asteroid);
         }
 
         collectPowerup(ship, powerup) {
@@ -970,7 +957,7 @@
             this.updateLives();
           }
           this.score += 50;
-          this.scoreText.setText("SCORE: " + this.score);
+          this.updateStats();
           AudioSys.correct();
 
           const pop = this.add
@@ -992,27 +979,8 @@
         }
 
         shipHit(ship, asteroid) {
-          // Only during non-question time
-          if (this.questionActive) return;
-          this.createExplosion(asteroid.x, asteroid.y);
-          if (asteroid.label) asteroid.label.destroy();
-          asteroid.destroy();
-          this.lives--;
-          this.updateLives();
-          this.cameras.main.shake(400, 0.015);
-          AudioSys.wrong();
-
-          if (this.lives <= 0) {
-            this.time.delayedCall(1000, () => {
-              this.scene.start("Results", {
-                score: this.score,
-                correct: this.totalCorrect,
-                total: this.totalAnswered,
-                bestStreak: this.bestStreak,
-                level: this.level,
-              });
-            });
-          }
+          // Ship crashing into an answer asteroid: same as picking it.
+          this.resolveAnswer(asteroid);
         }
 
         update() {
@@ -1025,32 +993,50 @@
             }
           });
 
-          // Ship movement
-          if (!this.questionActive) {
-            const spd = 300;
-            if (this.cursors.left.isDown || this.wasd.A.isDown)
-              this.ship.setVelocityX(-spd);
-            else if (this.cursors.right.isDown || this.wasd.D.isDown)
-              this.ship.setVelocityX(spd);
+          // Ship movement -- always responsive (never gated by a modal).
+          const spd = 300;
+          if (this.cursors.left.isDown || this.wasd.A.isDown)
+            this.ship.setVelocityX(-spd);
+          else if (this.cursors.right.isDown || this.wasd.D.isDown)
+            this.ship.setVelocityX(spd);
 
-            if (this.cursors.up.isDown || this.wasd.W.isDown)
-              this.ship.setVelocityY(-spd);
-            else if (this.cursors.down.isDown || this.wasd.S.isDown)
-              this.ship.setVelocityY(spd);
+          if (this.cursors.up.isDown || this.wasd.W.isDown)
+            this.ship.setVelocityY(-spd);
+          else if (this.cursors.down.isDown || this.wasd.S.isDown)
+            this.ship.setVelocityY(spd);
 
-            // Auto-fire with space
-            if (this.spaceKey.isDown) this.fireWeapon();
-          }
+          // Fire with space
+          if (this.spaceKey.isDown) this.fireWeapon();
 
-          // Update asteroid labels
+          // Keep labels glued to asteroids; handle off-screen escapes.
           this.asteroids.children.iterate((ast) => {
-            if (ast && ast.active && ast.label) {
-              ast.label.setPosition(ast.x, ast.y);
-            }
-            // Remove if off screen
-            if (ast && ast.y > H + 50) {
+            if (!ast) return;
+            if (ast.active && ast.label) ast.label.setPosition(ast.x, ast.y);
+            if (ast.active && ast.y > H + 50) {
+              // If the CORRECT answer escaped, it's a miss: lose a life.
+              const wasCorrect = ast.isCorrect && this.questionActive;
               if (ast.label) ast.label.destroy();
               ast.destroy();
+              if (wasCorrect) {
+                this.questionActive = false;
+                this.streak = 0;
+                this.combo = 1;
+                this.lives--;
+                AudioSys.wrong();
+                this.cameras.main.shake(250, 0.012);
+                this.showToast(
+                  "Missed it!  " + this.currentQuestion.explain,
+                  "#ffaa44",
+                );
+                this.updateLives();
+                this.updateStats();
+                if (this.lives <= 0) {
+                  this.locked = true;
+                  this.time.delayedCall(900, () => this.gotoResults());
+                } else {
+                  this.endQuestion(true);
+                }
+              }
             }
           });
 
