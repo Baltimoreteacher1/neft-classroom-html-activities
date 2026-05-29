@@ -251,6 +251,9 @@ export default {
     let spec = null;
     let value = 1; // player's current chosen value
     let solved = false;
+    let streak = 0; // consecutive correct
+    let bestStreak = 0;
+    let solvedCount = 0;
     let unbindFrame = null;
     const timers = [];
     const later = (fn, ms) => {
@@ -318,6 +321,9 @@ export default {
       solved = false;
 
       hud.setLevel(level === 2 ? "Level 2" : "Level 1");
+      // Persistent "Step X of Y" for the whole round.
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
       announce(`Round ${roundIndex + 1}. ${round.prompt}`);
       caption(round.prompt);
       hud.setObjective(round.prompt);
@@ -428,7 +434,10 @@ export default {
           round.b % value === 0
             ? "That factor works, but it is not the GREATEST common factor — pull out more."
             : "Not quite — adjust and try again.";
-        hud.message(tip, { tone: "warn", duration: 2200 });
+        streak = 0;
+        if (typeof hud.setStreak === "function") hud.setStreak(0);
+        if (typeof hud.feedback === "function") hud.feedback(false, tip);
+        else hud.message(tip, { tone: "warn", duration: 2200 });
         feel.shake(0.16);
         announce(tip);
         return;
@@ -438,6 +447,10 @@ export default {
 
     function win() {
       solved = true;
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
       const base = 20;
       const levelBonus = level === 2 ? 10 : 0;
       const pts = base + levelBonus;
@@ -453,7 +466,8 @@ export default {
         { color: COLORS.ok, count: 36, spread: 4 },
       );
       const msg = `Correct! ${liveText()}  +${pts}`;
-      hud.message(msg, { tone: "ok", duration: 2400 });
+      if (typeof hud.feedback === "function") hud.feedback(true, msg);
+      else hud.message(msg, { tone: "ok", duration: 2400 });
       announce(`Correct. ${liveText()}. You earned ${pts} points.`);
 
       later(() => {
@@ -463,9 +477,13 @@ export default {
         } else {
           clearCrates();
           updateLabel(liveLabel, "Shift complete!");
-          hud.setObjective("Factory shift complete! Great work, Operator.");
+          hud.setObjective(
+            `Factory shift complete — ${solvedCount} of ${cfg.rounds.length} orders packaged, best streak ${bestStreak}. Great work, Operator!`,
+          );
           hud.message("All orders packaged!", { tone: "ok", duration: 0 });
-          announce("All orders packaged. Great work, Operator.");
+          announce(
+            `All orders packaged. You completed ${solvedCount} with a best streak of ${bestStreak}. Great work, Operator.`,
+          );
         }
       }, 2600);
     }

@@ -155,6 +155,9 @@ export default {
     let builtNum = 0; // numerator of what's on the plate (in current denom)
     let builtDenom = 1;
     let scoopCount = 0; // for divide rounds
+    let streak = 0; // consecutive correct serves
+    let bestStreak = 0;
+    let solvedCount = 0;
     let unbindFrame = null;
     let unbindPress = null;
     let unbindTap = null;
@@ -264,6 +267,10 @@ export default {
       clearRound();
       round = cfg.rounds[roundIndex];
 
+      // Persistent "Step X of Y" for the whole round (both levels have 4 rounds).
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
+
       if (round.type === "build") {
         startBuildRound();
       } else if (round.type === "combine") {
@@ -313,6 +320,7 @@ export default {
       } else if (round.num % round.denom === 0) {
         orderTxt = String(whole);
       }
+      round._orderTxt = orderTxt;
       setOrderLabel(
         "Order: " +
           orderTxt +
@@ -374,6 +382,8 @@ export default {
         round.a.d * round.b.d,
       );
       round._sum = sum;
+      round._orderTxt =
+        round.a.n + "/" + round.a.d + " + " + round.b.n + "/" + round.b.d;
       setOrderLabel(
         "Order: " +
           round.a.n +
@@ -493,15 +503,38 @@ export default {
     function updateLive() {
       if (round.type === "divide") {
         hud.setObjective(
-          "Servings scooped: " +
-            scoopCount +
-            " (of 1/" +
+          "Scoop 1/" +
             round.unitDenom +
-            " cup each)",
+            "-cup servings to fill " +
+            round.whole +
+            " cups, then serve. Scooped so far: " +
+            scoopCount +
+            ".",
+        );
+      } else if (round.type === "combine") {
+        const cf = currentFraction();
+        hud.setObjective(
+          "Add slices to make " +
+            round._orderTxt +
+            " = " +
+            round._sum.n +
+            "/" +
+            round._sum.d +
+            ", then serve. On the plate: " +
+            cf.text +
+            ".",
         );
       } else {
         const cf = currentFraction();
-        hud.setObjective("On the plate: " + cf.text);
+        hud.setObjective(
+          "Add 1/" +
+            round.denom +
+            " slices to make " +
+            round._orderTxt +
+            ", then serve. On the plate: " +
+            cf.text +
+            ".",
+        );
       }
     }
 
@@ -710,7 +743,10 @@ export default {
               round.whole +
               " whole cups."
             : "Not quite — the plate does not match the order yet.";
-        hud.message(msg, { tone: "warn", duration: 2200 });
+        streak = 0;
+        if (typeof hud.setStreak === "function") hud.setStreak(0);
+        if (typeof hud.feedback === "function") hud.feedback(false, msg);
+        else hud.message(msg, { tone: "warn", duration: 2200 });
         feel.shake(0.18);
         announce(msg);
         // pulse serve button red
@@ -720,6 +756,10 @@ export default {
       }
 
       solved = true;
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
       const base = 20;
       const levelBonus = level === 2 ? 10 : 0;
       const pts = base + levelBonus;
@@ -729,10 +769,13 @@ export default {
         { x: plate.position.x, y: 1.6, z: plate.position.z },
         { color: COLORS.target, count: 36, spread: 4 },
       );
-      hud.message("Order served! " + detail + ". +" + pts, {
-        tone: "ok",
-        duration: 2400,
-      });
+      if (typeof hud.feedback === "function")
+        hud.feedback(true, "Order served! " + detail + ". +" + pts);
+      else
+        hud.message("Order served! " + detail + ". +" + pts, {
+          tone: "ok",
+          duration: 2400,
+        });
       announce(
         "Correct! The order was " + detail + ". You earned " + pts + " points.",
       );
@@ -742,9 +785,23 @@ export default {
           roundIndex += 1;
           startRound();
         } else {
-          hud.setObjective("Bakery closed — every order filled! Great work.");
+          hud.setObjective(
+            "Bakery closed — you filled " +
+              solvedCount +
+              " of " +
+              cfg.rounds.length +
+              " orders, best streak " +
+              bestStreak +
+              ". Great work!",
+          );
           hud.message("All orders complete!", { tone: "ok", duration: 0 });
-          announce("All orders complete. Wonderful work at the bakery.");
+          announce(
+            "All orders complete. You filled " +
+              solvedCount +
+              " orders with a best streak of " +
+              bestStreak +
+              ". Wonderful work at the bakery.",
+          );
         }
       }, 2600);
     }

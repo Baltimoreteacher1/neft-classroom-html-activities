@@ -281,6 +281,9 @@ export default {
     let roundIndex = 0;
     let targetInt = null; // integer the sub must reach (when known)
     let solved = false;
+    let streak = 0; // consecutive correct
+    let bestStreak = 0;
+    let solvedCount = 0;
     let unbindFrame = null;
     const timers = [];
     const later = (fn, ms) => {
@@ -329,15 +332,15 @@ export default {
       if (!round) return "Pilot the submarine";
       switch (round.kind) {
         case "move":
-          return `Dive to ${round.target}`;
+          return `Pilot the submarine to ${round.target} on the number line, then confirm`;
         case "opposite":
-          return `Go to the opposite of ${round.value}`;
+          return `Pilot to the opposite of ${round.value}, then confirm`;
         case "absolute":
-          return `Absolute value: travel to the integer for "${round.context}"`;
+          return `Pilot to the integer for "${round.context}", then confirm`;
         case "compare":
-          return `Go to the ${round.pick} of ${round.a} and ${round.b}`;
+          return `Pilot to the ${round.pick} of ${round.a} and ${round.b}, then confirm`;
         case "order":
-          return `Go to the ${round.pick} of ${round.values.join(", ")}`;
+          return `Pilot to the ${round.pick} of ${round.values.join(", ")}, then confirm`;
         default:
           return "Pilot the submarine";
       }
@@ -373,6 +376,10 @@ export default {
       marker.position.set(0, yFor(targetInt), 0);
       marker.material.color.setHex(COLORS.target);
       marker.visible = true;
+
+      // Persistent "Step X of Y" for the whole round (both levels have 5 rounds).
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
 
       let intro;
       switch (round.kind) {
@@ -457,12 +464,19 @@ export default {
                 ? ` Higher on the line means greater.`
                 : "";
         const msg = `Not there yet. You are at ${pos}.${cfg.hints ? hint : ""}`;
-        hud.message(msg, { tone: "warn", duration: 2200 });
+        streak = 0;
+        if (typeof hud.setStreak === "function") hud.setStreak(0);
+        if (typeof hud.feedback === "function") hud.feedback(false, msg);
+        else hud.message(msg, { tone: "warn", duration: 2200 });
         announce(msg);
         return;
       }
 
       solved = true;
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
       const base = 20;
       const levelBonus = level === 2 ? 10 : 0;
       const pts = base + levelBonus;
@@ -496,7 +510,10 @@ export default {
         default:
           why = `You reached ${depthWord(targetInt)}.`;
       }
-      hud.message(`Docked! ${why} +${pts}`, { tone: "ok", duration: 2600 });
+      const okMsg = `Docked! ${why} +${pts}`;
+      if (typeof hud.feedback === "function")
+        hud.feedback(true, okMsg, { duration: 2600 });
+      else hud.message(okMsg, { tone: "ok", duration: 2600 });
       announce(`Correct. ${why} You earned ${pts} points.`);
 
       later(() => {
@@ -505,9 +522,13 @@ export default {
           startRound();
         } else {
           marker.visible = false;
-          hud.setObjective("All depths reached! Great piloting, Captain.");
+          hud.setObjective(
+            `All depths reached — ${solvedCount} of ${cfg.rounds.length}, best streak ${bestStreak}. Great piloting, Captain!`,
+          );
           hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce("All rounds complete. Great piloting, Captain.");
+          announce(
+            `All rounds complete. You reached ${solvedCount} depths with a best streak of ${bestStreak}. Great piloting, Captain.`,
+          );
         }
       }, 2700);
     }

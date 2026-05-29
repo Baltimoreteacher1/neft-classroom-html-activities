@@ -207,6 +207,9 @@ export default {
     let triangleMode = false;
     let solved = false;
     let triPlaced = false; // triangle round: has a correct triangle been placed
+    let streak = 0; // consecutive correct placements
+    let bestStreak = 0;
+    let solvedCount = 0;
     let unbindFrame = null;
     const timers = [];
 
@@ -335,6 +338,10 @@ export default {
       round = cfg.rounds[roundIndex];
       triangleMode = round.kind === "triangle";
 
+      // Persistent "Step X of Y" for the whole round (both levels have 3 rounds).
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
+
       if (round.kind === "triangle") {
         targetArea = (round.w * round.h) / 2;
         const verts = triVertices(round);
@@ -388,8 +395,9 @@ export default {
     function updateLive() {
       const area = liveArea();
       hud.setObjective(
-        `Area ${area} / ${targetArea} sq units` +
-          (anchor ? " — set the far corner" : " — place a corner"),
+        `Cover ${describeRound(round)} (area ${targetArea} sq units) by placing pieces. ` +
+          `Covered ${area} of ${targetArea} — ` +
+          (anchor ? "set the far corner." : "place a corner."),
       );
     }
 
@@ -578,7 +586,8 @@ export default {
     }
 
     function rejectPiece(msg) {
-      hud.message(msg, { tone: "warn", duration: 2000 });
+      if (typeof hud.feedback === "function") hud.feedback(false, msg);
+      else hud.message(msg, { tone: "warn", duration: 2000 });
       feel.shake(0.18);
       announce(msg);
       anchor = null;
@@ -610,6 +619,10 @@ export default {
       if (!win) return;
 
       solved = true;
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
       const base = 20;
       const levelBonus = level === 2 ? 10 : 0;
       const fewBonus =
@@ -629,13 +642,10 @@ export default {
         { color: COLORS.target, count: 40, spread: 5 },
       );
       const bonusMsg = fewBonus ? ` Fewest-pieces bonus +${fewBonus}!` : "";
-      hud.message(
-        `Perfect! Area = ${targetArea} sq units. +${pts}${bonusMsg}`,
-        {
-          tone: "ok",
-          duration: 2400,
-        },
-      );
+      const okMsg = `Perfect! Area = ${targetArea} sq units. +${pts}${bonusMsg}`;
+      if (typeof hud.feedback === "function")
+        hud.feedback(true, okMsg, { duration: 2400 });
+      else hud.message(okMsg, { tone: "ok", duration: 2400 });
       announce(
         `Solved! The area is exactly ${targetArea} square units. You earned ${pts} points.`,
       );
@@ -645,9 +655,13 @@ export default {
           roundIndex += 1;
           startRound();
         } else {
-          hud.setObjective("All structures built! Great work, Architect.");
+          hud.setObjective(
+            `All structures built — ${solvedCount} of ${cfg.rounds.length} shapes, best streak ${bestStreak}. Great work, Architect!`,
+          );
           hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce("All rounds complete. Great work, Architect.");
+          announce(
+            `All rounds complete. You built ${solvedCount} shapes with a best streak of ${bestStreak}. Great work, Architect.`,
+          );
         }
       }, 2600);
     }

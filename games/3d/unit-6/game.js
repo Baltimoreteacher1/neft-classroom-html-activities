@@ -417,6 +417,9 @@ export default {
     let roundIndex = 0;
     let round = null;
     let solved = false;
+    let streak = 0; // consecutive correct
+    let bestStreak = 0;
+    let solvedCount = 0;
     let unbindFrame = null;
     const timers = [];
     const later = (fn, ms) => {
@@ -475,13 +478,13 @@ export default {
       const toks = currentTokens();
       const str = exprString(toks);
       if (round.mode === "equivalent") {
-        hud.setObjective(`Build: ${str}`);
+        hud.setObjective(`${round.prompt}  Your build: ${str}  — then submit.`);
         return;
       }
       const v = liveValue();
       const shown = v == null ? "?" : v;
       hud.setObjective(
-        `Build (x = ${round.x}):  ${str}  =  ${shown}   |  Target ${round.target}`,
+        `${round.prompt}  Your build: ${str} = ${shown}  | Target ${round.target} — then submit.`,
       );
     }
 
@@ -497,6 +500,9 @@ export default {
       }
       announce(intro);
       hud.setLevel(level === 2 ? "Level 2 — Enrichment" : "Level 1 — Support");
+      // Persistent "Step X of Y" for the whole round (both levels have 3 rounds).
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
       updateObjective();
 
       if (cfg.hints && round.hint) {
@@ -597,13 +603,20 @@ export default {
     }
 
     function rejectExpr(msg) {
-      hud.message(msg, { tone: "warn", duration: 2400 });
+      streak = 0;
+      if (typeof hud.setStreak === "function") hud.setStreak(0);
+      if (typeof hud.feedback === "function") hud.feedback(false, msg);
+      else hud.message(msg, { tone: "warn", duration: 2400 });
       feel.shake(0.18);
       announce(msg);
     }
 
     function win(kind) {
       solved = true;
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
       const base = 20;
       const levelBonus = level === 2 ? 10 : 0;
       const lean = placed.length <= (kind === "equivalent" ? 5 : 5) ? 10 : 0;
@@ -619,10 +632,10 @@ export default {
         { color: COLORS.target, count: 40, spread: 5 },
       );
       const leanMsg = lean ? ` Efficient build +${lean}!` : "";
-      hud.message(`Machine accepted it! +${pts}${leanMsg}`, {
-        tone: "ok",
-        duration: 2400,
-      });
+      const okMsg = `Machine accepted it! +${pts}${leanMsg}`;
+      if (typeof hud.feedback === "function")
+        hud.feedback(true, okMsg, { duration: 2400 });
+      else hud.message(okMsg, { tone: "ok", duration: 2400 });
       const detail =
         round.mode === "equivalent"
           ? "The expressions are equivalent for every x."
@@ -634,9 +647,13 @@ export default {
           roundIndex += 1;
           startRound();
         } else {
-          hud.setObjective("All expressions built! Great work, Engineer.");
+          hud.setObjective(
+            `All expressions built — ${solvedCount} of ${cfg.rounds.length}, best streak ${bestStreak}. Great work, Engineer!`,
+          );
           hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce("All rounds complete. Great work, Engineer.");
+          announce(
+            `All rounds complete. You built ${solvedCount} with a best streak of ${bestStreak}. Great work, Engineer.`,
+          );
         }
       }, 2600);
     }

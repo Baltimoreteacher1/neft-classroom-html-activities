@@ -85,6 +85,8 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       studyView.hidden = true;
       exploreHost.hidden = false;
       openExplorer(exploreHost, t, {
+        // Sibling terms supply plausible distractors for the Predict step.
+        siblings: terms.filter((other) => other !== t),
         onClose: () => {
           exploreHost.hidden = true;
           studyView.hidden = false;

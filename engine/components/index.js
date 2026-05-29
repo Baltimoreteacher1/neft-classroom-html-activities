@@ -24,3 +24,9 @@ export {
   exploreLabel,
   resolveExplorer,
 } from "./vocab-explore.js";
+export {
+  buildSayItRow,
+  bilingualTermEl,
+  bilingualDefinitionEl,
+  speak,
+} from "./vocab-explore-tasks.js";

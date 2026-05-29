@@ -27,6 +27,7 @@ import {
   renderActivityChooser,
   renderOptionalPracticeOptIn,
 } from "../components/activity-chooser.js";
+import { buildGradeCard } from "./grade.js";
 
 export function bootLesson(config) {
   createApp({
@@ -163,8 +164,84 @@ function renderComponent(container, problemDef, onAnswer) {
 }
 
 // ── Phase 1: Launch ──
+// Resolve the "I can ..." Content Objective with graceful fallbacks.
+function resolveContentObjective(config) {
+  if (config.contentObjective) return esc(config.contentObjective);
+  // Fallbacks to any pre-existing objective field, prefixed with "I can ".
+  const legacy =
+    config.objective || (config.launch && config.launch.objective) || "";
+  if (legacy) {
+    const trimmed = String(legacy).trim();
+    return /^i can\b/i.test(trimmed) ? esc(trimmed) : `I can ${esc(trimmed)}`;
+  }
+  // Last-resort friendly placeholder using the lesson topic.
+  return `I can solve problems about ${esc(config.title || "this topic")}.`;
+}
+
+// Resolve the "I can ..." Language Objective with a friendly placeholder.
+function resolveLanguageObjective(config) {
+  if (config.languageObjective) return esc(config.languageObjective);
+  return `I can talk and write about ${esc(
+    config.title || "this topic",
+  )} using math words.`;
+}
+
+// Top-of-launch block: Name/Period fields, objectives, and Guided Notes link.
+function renderLaunchHeader(el, state, config) {
+  const s = state.get();
+  const notesHref = `/lessons/${encodeURIComponent(config.lessonId)}/notes.html`;
+  const homeworkHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.docx`;
+
+  const block = document.createElement("div");
+  block.className = "card launch-intro";
+  block.innerHTML = `
+    <div class="launch-identity" style="display:flex; flex-wrap:wrap; gap:var(--sp-3); align-items:flex-end; margin-bottom:var(--sp-4);">
+      <div class="launch-field" style="flex:1 1 220px;">
+        <label for="launch-name" style="display:block; font-weight:600; margin-bottom:var(--sp-1);">Name</label>
+        <input id="launch-name" class="text-input" type="text"
+          placeholder="First name Last initial" autocomplete="off"
+          value="${esc(s.studentName || "")}" />
+      </div>
+      <div class="launch-field launch-field-period" style="flex:0 1 120px;">
+        <label for="launch-period" style="display:block; font-weight:600; margin-bottom:var(--sp-1);">Period</label>
+        <input id="launch-period" class="text-input" type="text"
+          placeholder="e.g. 3" autocomplete="off"
+          value="${esc(s.studentPeriod || "")}" />
+      </div>
+      <a class="btn btn-secondary launch-notes-link" href="${notesHref}"
+        target="_blank" rel="noopener">📝 Guided Notes (printable)</a>
+      <a class="btn btn-secondary launch-homework-link" href="${homeworkHref}"
+        download>📄 Homework (Word doc)</a>
+    </div>
+    <div class="launch-objectives grid-2">
+      <div class="card card-teal launch-objective">
+        <h4 style="color:var(--teal); margin-bottom:var(--sp-2);">Content Objective</h4>
+        <p style="margin:0; font-weight:600;">${resolveContentObjective(config)}</p>
+      </div>
+      <div class="card card-coral launch-objective">
+        <h4 style="color:var(--coral); margin-bottom:var(--sp-2);">Language Objective</h4>
+        <p style="margin:0; font-weight:600;">${resolveLanguageObjective(config)}</p>
+      </div>
+    </div>
+  `;
+  el.append(block);
+
+  const nameInput = block.querySelector("#launch-name");
+  const periodInput = block.querySelector("#launch-period");
+  nameInput.addEventListener("change", () => {
+    const name = nameInput.value.trim();
+    if (name) state.set({ studentName: name });
+  });
+  periodInput.addEventListener("change", () => {
+    state.set({ studentPeriod: periodInput.value.trim() });
+  });
+}
+
 function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
+
+  renderLaunchHeader(el, state, config);
+
   phaseHeader(
     el,
     "🚀",
@@ -680,6 +757,15 @@ function showFinalSummary(el, state, config) {
     </div>
     <p style="margin-top:var(--sp-6); color:var(--muted); font-size:0.85rem;">Neft Teacher · ${esc(config.standard)} · ${new Date().toLocaleDateString()}</p>`;
   el.append(summary);
+
+  // Auto-grade + save/export (additive; does not affect scoring above).
+  // Grades the student, persists to the localStorage gradebook, and offers
+  // CSV/JSON/Print exports for the teacher. Local-first only — no network.
+  try {
+    el.append(buildGradeCard(state, config));
+  } catch (_) {
+    /* grading/export must never break the completion screen */
+  }
 
   // Optional "Choose an Activity" menu — surfaced at completion on every
   // lesson. Auto-populated from existing lesson data (vocab terms +

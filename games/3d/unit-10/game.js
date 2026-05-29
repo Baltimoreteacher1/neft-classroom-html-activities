@@ -114,6 +114,9 @@ export default {
     let round = null;
     let roundIndex = 0;
     let solved = false;
+    let streak = 0; // consecutive correct
+    let bestStreak = 0;
+    let solvedCount = 0;
     let unbindFrame = null;
 
     // Fill-round geometry (in sub-cube cells).
@@ -416,11 +419,10 @@ export default {
         { x: 0, y: 1.5, z: 0 },
         { color: COLORS.frame, count: 36, spread: 4 },
       );
-      hud.message(
+      markCorrect(
         `Vault filled! V = ${fracLabel(round.l)}×${fracLabel(
           round.w,
         )}×${fracLabel(round.h)} = ${fracLabel(targetVol)} cubic units. +${pts}`,
-        { tone: "ok", duration: 2600 },
       );
       announce(
         `Vault filled. The volume is ${fracLabel(
@@ -520,11 +522,10 @@ export default {
       if (solved) return;
       const vol = prismVolume(round.l, round.w, guess);
       if (Math.abs(vol - round.volume) > 1e-9) {
-        hud.message(
+        markWrong(
           `V = ${fracLabel(vol)}, not ${fracLabel(
             round.volume,
           )}. Adjust the height.`,
-          { tone: "warn", duration: 2000 },
         );
         feel.shake(0.14);
         announce(
@@ -545,10 +546,7 @@ export default {
         { x: 0, y: guess + 0.6, z: 0 },
         { color: COLORS.frame, count: 32, spread: 3 },
       );
-      hud.message(`Correct! Missing edge = ${fracLabel(guess)}. +${pts}`, {
-        tone: "ok",
-        duration: 2600,
-      });
+      markCorrect(`Correct! Missing edge = ${fracLabel(guess)}. +${pts}`);
       announce(
         `Correct. The missing height is ${fracLabel(
           guess,
@@ -581,7 +579,9 @@ export default {
         labels.push(lbl);
       });
       compareChoice = 0;
-      hud.setObjective("Which vault holds MORE? Move left/right, then place.");
+      hud.setObjective(
+        "Compute each vault's volume (l × w × h) and select the one that holds MORE, then place to confirm.",
+      );
       announce(
         `Round ${roundIndex + 1}. Two prisms. ` +
           `Vault A is ${fracLabel(round.a.l)} by ${fracLabel(
@@ -636,10 +636,7 @@ export default {
       if (correct === -1) {
         // Equal volumes — accept either, treat as correct.
       } else if (compareChoice !== correct) {
-        hud.message("Not the bigger one — compute each l×w×h again.", {
-          tone: "warn",
-          duration: 2200,
-        });
+        markWrong("Not the bigger one — compute each l×w×h again.", 2200);
         feel.shake(0.14);
         announce(
           `Vault A has ${fracLabel(va)} cubic units and vault B has ${fracLabel(
@@ -658,9 +655,8 @@ export default {
       });
       feel.shake(0.3);
       feel.burst({ x: 0, y: 2, z: 0 }, { color: COLORS.frame, count: 32 });
-      hud.message(
+      markCorrect(
         `Correct! A = ${fracLabel(va)}, B = ${fracLabel(vb)} cubic units. +${pts}`,
-        { tone: "ok", duration: 2600 },
       );
       announce(
         `Correct. Vault A is ${fracLabel(va)} and vault B is ${fracLabel(
@@ -675,9 +671,29 @@ export default {
       clearGroupExtras();
       solved = false;
       round = cfg.rounds[roundIndex];
+      // Persistent "Step X of Y" for the whole round (both levels have 3 rounds).
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
       if (round.kind === "fill") startFillRound();
       else if (round.kind === "missing") startMissingRound();
       else if (round.kind === "compare") startCompareRound();
+    }
+
+    // Streak + feedback helpers shared by all three round kinds.
+    function markCorrect(okMsg) {
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
+      if (typeof hud.feedback === "function")
+        hud.feedback(true, okMsg, { duration: 2600 });
+      else hud.message(okMsg, { tone: "ok", duration: 2600 });
+    }
+    function markWrong(warnMsg, duration = 2000) {
+      streak = 0;
+      if (typeof hud.setStreak === "function") hud.setStreak(0);
+      if (typeof hud.feedback === "function") hud.feedback(false, warnMsg);
+      else hud.message(warnMsg, { tone: "warn", duration });
     }
 
     function nextRoundSoon() {
@@ -686,9 +702,13 @@ export default {
           roundIndex += 1;
           startRound();
         } else {
-          hud.setObjective("Vault secured! Great work, Vault Keeper.");
+          hud.setObjective(
+            `Vault secured — ${solvedCount} of ${cfg.rounds.length} solved, best streak ${bestStreak}. Great work, Vault Keeper!`,
+          );
           hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce("All rounds complete. Great work, Vault Keeper.");
+          announce(
+            `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great work, Vault Keeper.`,
+          );
         }
       }, 2800);
     }

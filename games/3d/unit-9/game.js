@@ -236,6 +236,9 @@ export default {
     let taskIndex = 0;
     let task = null;
     let solved = false;
+    let streak = 0; // consecutive correct
+    let bestStreak = 0;
+    let solvedCount = 0;
     let unbindFrame = null;
     let unbindPress = null;
     let unbindTap = null;
@@ -290,6 +293,9 @@ export default {
       solved = false;
       task = cfg.tasks[taskIndex];
       targetRing.visible = false;
+      // Persistent "Step X of Y" for the whole task.
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(taskIndex, cfg.tasks.length);
       setCursor(0, 0);
 
       if (task.kind === "plot") {
@@ -345,13 +351,20 @@ export default {
 
     function win(points, msg, sayit) {
       solved = true;
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
       onScore(points, { task: taskIndex + 1, kind: task.kind });
       feel.shake(0.28);
       feel.burst(
         { x: cursorMesh.position.x, y: 0.8, z: cursorMesh.position.z },
         { color: COLORS.target, count: 28, spread: 3 },
       );
-      hud.message(`${msg} +${points}`, { tone: "ok", duration: 2400 });
+      const okMsg = `${msg} +${points}`;
+      if (typeof hud.feedback === "function")
+        hud.feedback(true, okMsg, { duration: 2400 });
+      else hud.message(okMsg, { tone: "ok", duration: 2400 });
       announce(sayit);
       later(() => {
         clearMarkers();
@@ -359,15 +372,22 @@ export default {
           taskIndex += 1;
           startTask();
         } else {
-          hud.setObjective("Quest complete! You mapped the whole plane.");
+          hud.setObjective(
+            `Quest complete — ${solvedCount} of ${cfg.tasks.length} points mapped, best streak ${bestStreak}. You mapped the whole plane!`,
+          );
           hud.message("All tasks complete!", { tone: "ok", duration: 0 });
-          announce("All tasks complete. Great work, coordinate explorer.");
+          announce(
+            `All tasks complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great work, coordinate explorer.`,
+          );
         }
       }, 2600);
     }
 
     function reject(msg) {
-      hud.message(msg, { tone: "warn", duration: 2000 });
+      streak = 0;
+      if (typeof hud.setStreak === "function") hud.setStreak(0);
+      if (typeof hud.feedback === "function") hud.feedback(false, msg);
+      else hud.message(msg, { tone: "warn", duration: 2000 });
       feel.shake(0.14);
       announce(msg);
     }

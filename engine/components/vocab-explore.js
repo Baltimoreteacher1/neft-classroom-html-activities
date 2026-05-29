@@ -1,16 +1,37 @@
-// vocab-explore.js — "Explore" affordance for the vocab Word Wall.
-// Routes each term to an interactive explorer:
-//   - geometry terms -> 3D shape explorer (shape-3d.js)
-//   - everything else -> generic flip + "say it" card
-// Dependency-free vanilla JS + the existing design-system CSS tokens.
+// vocab-explore.js — Active, exploratory "Explore" experience for the vocab
+// Word Wall. Instead of a passive flip-card, each term opens a guided
+// sense-making loop where the student DOES something and gets feedback:
 //
-// Public API:
-//   exploreLabel(term)          -> "🔍 Explore" affordance button (focusable, ARIA)
-//   openExplorer(host, term)    -> renders inline panel into host; returns { close }
-//   resolveExplorer(term)       -> { kind: "shape3d"|"flip", shape? }
+//   Step 1  Predict → Reveal      (activate prior knowledge)
+//   Step 2  Example vs Non-example (instant feedback + one-line why)  [if data]
+//   Step 3  Use-in-context cloze   (pick/fill the correct sentence)   [if data]
+//   3D-shape terms                 task-driven shape-3d explorer
+//   End     "You explored: [term]" confirmation
+//
+// All term/config strings are escaped or set via textContent (no XSS).
+// Fully bilingual: shows English + Spanish term/definition when the optional
+// `termEs` / `definitionEs` fields are present (English-only otherwise), plus a
+// guarded 🔊 "Say it" that speaks en-US and a separate es-ES.
+//
+// Bilingual UX choice: English shown prominently with Spanish stacked beneath
+// in a muted/italic style (no toggle) so newcomers see both at once.
+//
+// Public API (unchanged signatures):
+//   exploreLabel(term)                 -> affordance button
+//   openExplorer(host, term, {onClose})-> renders inline panel; returns { close }
+//   resolveExplorer(term)              -> { kind: "shape3d"|"sensemaking", shape? }
 
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
 import { renderShape3D } from "./shape-3d.js";
+import {
+  escapeHtml,
+  buildSayItRow,
+  bilingualTermEl,
+  buildPredictReveal,
+  buildExampleSort,
+  buildUseInContext,
+  buildConfirmation,
+} from "./vocab-explore-tasks.js";
 
 // ── Routing ───────────────────────────────────────────────────────────────
 // Keyword -> 3D solid. Order matters (most specific first).
@@ -19,7 +40,6 @@ const SHAPE_KEYWORDS = [
   [/rectangular\s*prism/, "rectangular-prism"],
   [/square\s*pyramid|pyramid|apex/, "square-pyramid"],
   [/\bcube\b|cubic/, "cube"],
-  // generic geometry vocab -> show a representative solid to explore the concept
   [/\bprism\b/, "rectangular-prism"],
   [/\bnet\b|surface\s*area|lateral/, "rectangular-prism"],
   [/\bface\b|\bedge\b|\bvert(ex|ices)\b/, "rectangular-prism"],
@@ -35,11 +55,12 @@ const VALID_SHAPES = new Set([
 
 export function resolveExplorer(term) {
   // 1) Explicit per-term override: term.explore
-  //    "flip" | "shape3d:rectangular-prism" | "shape3d" (defaults to cube)
+  //    "sensemaking" | "flip" (legacy alias) | "shape3d:rectangular-prism" | "shape3d"
   const override =
     term && typeof term.explore === "string" ? term.explore.trim() : "";
   if (override) {
-    if (override === "flip") return { kind: "flip" };
+    if (override === "flip" || override === "sensemaking")
+      return { kind: "sensemaking" };
     if (override.startsWith("shape3d")) {
       const shape = override.split(":")[1]?.trim();
       return {
@@ -55,8 +76,8 @@ export function resolveExplorer(term) {
     if (re.test(text)) return { kind: "shape3d", shape };
   }
 
-  // 3) Default: generic flip / say-it card.
-  return { kind: "flip" };
+  // 3) Default: active sense-making micro-loop.
+  return { kind: "sensemaking" };
 }
 
 // ── Explore affordance button ───────────────────────────────────────────────
@@ -65,12 +86,15 @@ export function exploreLabel(term) {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "vocab-explore-trigger";
-  const verb = route.kind === "shape3d" ? "Spin the 3D shape" : "Flip & hear";
+  const verb =
+    route.kind === "shape3d"
+      ? "Build & count the 3D shape"
+      : "Predict, sort, and use the word";
   btn.setAttribute("aria-label", `Explore ${term.term}: ${verb}`);
   btn.innerHTML = `
-    <span aria-hidden="true" class="vocab-explore-icon">${route.kind === "shape3d" ? "🧊" : "🔍"}</span>
+    <span aria-hidden="true" class="vocab-explore-icon">${route.kind === "shape3d" ? "🧊" : "🧠"}</span>
     <span class="vocab-explore-text">Explore</span>
-    <span aria-hidden="true" class="vocab-explore-hint">${verb}</span>`;
+    <span aria-hidden="true" class="vocab-explore-hint">${escapeHtml(verb)}</span>`;
   btn.style.cssText = `
     width:100%; display:flex; align-items:center; gap:var(--sp-2);
     padding:10px 14px; min-height:44px; cursor:pointer;
@@ -92,9 +116,8 @@ export function exploreLabel(term) {
 }
 
 // ── Explorer panel (inline) ──────────────────────────────────────────────────
-// Renders into `host` (we clear and replace it). Returns { close } where close
-// invokes the provided onClose callback after tearing down.
-export function openExplorer(host, term, { onClose } = {}) {
+// Renders into `host` (cleared/replaced). Returns { close }.
+export function openExplorer(host, term, { onClose, siblings } = {}) {
   host.innerHTML = "";
   const route = resolveExplorer(term);
 
@@ -106,28 +129,42 @@ export function openExplorer(host, term, { onClose } = {}) {
     animation:phaseIn 0.3s var(--ease-out) both;
     display:flex; flex-direction:column; gap:var(--sp-3);`;
 
-  // Header with title + close.
+  // Header: bilingual title + Say-it + close.
   const head = document.createElement("div");
   head.style.cssText =
-    "display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2);";
-  const title = document.createElement("div");
-  title.style.cssText =
-    "font-family:var(--font-display); font-weight:800; font-size:1.15rem; color:var(--navy);";
-  title.textContent = term.term;
+    "display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-2); flex-wrap:wrap;";
+  head.append(bilingualTermEl(term));
   const closeBtn = document.createElement("button");
   closeBtn.type = "button";
   closeBtn.className = "btn btn-secondary";
   closeBtn.style.cssText = "min-height:40px; padding:6px 14px;";
   closeBtn.setAttribute("aria-label", `Close explorer for ${term.term}`);
   closeBtn.innerHTML = "✕ Close";
-  head.append(title, closeBtn);
+  head.append(closeBtn);
   panel.append(head);
+
+  // Bilingual "Say it" (EN + ES if Spanish present).
+  panel.append(buildSayItRow({ en: term.term, es: term.termEs }));
+
+  // Steps container.
+  const steps = document.createElement("div");
+  steps.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-3);";
+  panel.append(steps);
 
   let widget = null;
   if (route.kind === "shape3d") {
-    widget = renderShape3D(panel, { shape: route.shape, label: term.term });
+    const shapeHost = document.createElement("div");
+    steps.append(shapeHost);
+    widget = renderShape3D(shapeHost, {
+      shape: route.shape,
+      label: term.term,
+      taskDriven: true,
+    });
+    // After the 3D tasks, still reinforce meaning + confirmation.
+    steps.append(makeRevealCard(term));
+    steps.append(buildConfirmation(term));
   } else {
-    renderFlipCard(panel, term);
+    buildSenseMakingLoop(steps, term, siblings);
   }
 
   host.append(panel);
@@ -138,134 +175,61 @@ export function openExplorer(host, term, { onClose } = {}) {
     if (onClose) onClose();
   }
   closeBtn.addEventListener("click", close);
-  // Move focus to the close button so keyboard users land inside the panel.
   closeBtn.focus({ preventScroll: true });
 
   return { close };
 }
 
-// ── Generic flip + say-it card ───────────────────────────────────────────────
-function renderFlipCard(parent, term) {
-  const stage = document.createElement("div");
-  stage.style.cssText = "perspective:1000px;";
-
-  const card = document.createElement("button");
-  card.type = "button";
-  card.className = "vocab-flip";
-  card.setAttribute(
-    "aria-label",
-    `Flip card for ${term.term}. Front shows the word, back shows the meaning.`,
-  );
+// A compact "here's the meaning" card (bilingual) used after the 3D explorer.
+function makeRevealCard(term) {
+  const card = document.createElement("div");
   card.style.cssText = `
-    position:relative; width:100%; min-height:220px; cursor:pointer;
-    background:transparent; border:none; padding:0;
-    transform-style:preserve-3d; transition:transform 0.55s var(--ease-spring);`;
+    padding:var(--sp-3); background:var(--teal-light); border-radius:var(--radius-md);`;
+  const h = document.createElement("div");
+  h.style.cssText =
+    "font-family:var(--font-display); font-weight:800; font-size:0.95rem; color:var(--navy); margin-bottom:4px;";
+  h.textContent = "What it means";
+  card.append(h);
+  const en = document.createElement("p");
+  en.style.cssText =
+    "margin:0; font-size:0.95rem; line-height:1.6; color:var(--ink);";
+  en.textContent = term.definition || "";
+  card.append(en);
+  if (term.definitionEs) {
+    const es = document.createElement("p");
+    es.lang = "es";
+    es.style.cssText =
+      "margin:6px 0 0; font-style:italic; color:var(--muted); border-left:3px solid var(--teal); padding-left:8px;";
+    es.textContent = term.definitionEs;
+    card.append(es);
+  }
+  return card;
+}
 
-  const faceBase = `
-    position:absolute; inset:0; backface-visibility:hidden;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:var(--sp-2); padding:var(--sp-4); border-radius:var(--radius-md);
-    border:1px solid var(--line);`;
+// Build the generic, non-3D sense-making loop. Steps that lack config data are
+// gracefully skipped, but Predict→Reveal always runs (uses definition + image).
+function buildSenseMakingLoop(steps, term, siblings) {
+  // Provide sibling definitions to the predict step for plausible distractors.
+  const enriched = Object.assign({}, term, {
+    __siblings: Array.isArray(siblings) ? siblings : [],
+  });
 
-  const front = document.createElement("div");
-  front.style.cssText = faceBase + "background:var(--navy); color:#fff;";
-  front.innerHTML = `
-    <div style="font-family:var(--font-display); font-size:1.6rem; font-weight:800; text-align:center;">${escapeHtml(term.term)}</div>
-    <div style="opacity:0.8; font-size:0.85rem;">Tap to flip ⤵</div>`;
-
-  const back = document.createElement("div");
-  back.style.cssText =
-    faceBase + "background:#fff; transform:rotateY(180deg); text-align:center;";
   const img = document.createElement("img");
   img.src = resolveVocabImage(term.term);
   img.alt = vocabImageAlt(term.term, term.definition);
   img.loading = "lazy";
-  img.style.cssText =
-    "width:120px; aspect-ratio:4/3; object-fit:contain; border-radius:var(--radius-sm);";
-  const def = document.createElement("div");
-  def.style.cssText = "font-size:0.95rem; line-height:1.5; color:var(--ink);";
-  def.textContent = term.definition;
-  back.append(img, def);
 
-  card.append(front, back);
-  stage.append(card);
-  parent.append(stage);
+  const noop = () => {};
 
-  let flipped = false;
-  function flip() {
-    flipped = !flipped;
-    card.style.transform = flipped ? "rotateY(180deg)" : "";
-    card.setAttribute("aria-pressed", String(flipped));
-  }
-  card.addEventListener("click", flip);
+  steps.append(buildPredictReveal(enriched, { imageEl: img, onAdvance: noop }));
 
-  // "Use it in a sentence" line.
-  const sentence = buildSentence(term);
-  const sentRow = document.createElement("p");
-  sentRow.style.cssText = `
-    margin:0; padding:var(--sp-3); background:var(--cream);
-    border-radius:var(--radius-md); border:1px dashed var(--teal-light);
-    font-size:0.95rem; line-height:1.5; color:var(--ink);`;
-  sentRow.innerHTML = `<strong style="color:var(--teal);">Use it:</strong> ${escapeHtml(sentence)}`;
-  parent.append(sentRow);
+  const s2 = buildExampleSort(enriched, { onAdvance: noop });
+  if (s2) steps.append(s2);
 
-  // "Say it" button (speechSynthesis, guarded).
-  const sayRow = document.createElement("div");
-  sayRow.style.cssText = "display:flex; gap:var(--sp-2); flex-wrap:wrap;";
-  const supported =
-    typeof window !== "undefined" && "speechSynthesis" in window;
-  const sayBtn = document.createElement("button");
-  sayBtn.type = "button";
-  sayBtn.className = "btn btn-amber";
-  sayBtn.style.cssText = "min-height:44px;";
-  if (supported) {
-    sayBtn.innerHTML = "🔊 Say it";
-    sayBtn.setAttribute(
-      "aria-label",
-      `Hear the word ${term.term} spoken aloud`,
-    );
-    sayBtn.addEventListener("click", () => {
-      try {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(term.term);
-        u.rate = 0.9;
-        window.speechSynthesis.speak(u);
-      } catch (_) {
-        /* no-op if speech fails */
-      }
-    });
-  } else {
-    sayBtn.innerHTML = "🔊 Say it";
-    sayBtn.disabled = true;
-    sayBtn.title = "Audio is not available in this browser.";
-    sayBtn.setAttribute(
-      "aria-label",
-      "Say it — audio not available in this browser",
-    );
-  }
-  sayRow.append(sayBtn);
-  parent.append(sayRow);
-}
+  const s3 = buildUseInContext(enriched, { onAdvance: noop });
+  if (s3) steps.append(s3);
 
-// Build a simple, newcomer-friendly example sentence.
-function buildSentence(term) {
-  const word = term.term;
-  const lower = word.charAt(0).toLowerCase() + word.slice(1);
-  if (term.visual) {
-    return `Example: "${stripTrailingPeriod(term.visual)}."`;
-  }
-  return `Example: "I can use ${lower} when I solve a math problem."`;
-}
-
-function stripTrailingPeriod(s) {
-  return String(s || "").replace(/\.\s*$/, "");
-}
-
-function escapeHtml(s) {
-  return String(s || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  steps.append(buildConfirmation(term));
 }
 
 export default openExplorer;

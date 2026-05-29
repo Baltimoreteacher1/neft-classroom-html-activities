@@ -454,6 +454,9 @@ export default {
     function startRound() {
       clearRound();
       round = cfg.rounds[roundIndex];
+      // Keep an exact "Step X of Y" visible for the whole round.
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
       if (round.kind === "rate") {
         buildRate();
         return;

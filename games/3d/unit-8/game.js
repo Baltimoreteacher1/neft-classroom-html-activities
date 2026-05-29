@@ -329,6 +329,9 @@ export default {
     let question = null;
     let pads = [];
     let solvedRound = false;
+    let streak = 0; // consecutive correct answers
+    let bestStreak = 0;
+    let solvedCount = 0;
     let unbindFrame = null;
     const timers = [];
     const later = (fn, ms) => {
@@ -422,10 +425,10 @@ export default {
       if (phase === "build") {
         const need = round.target.length;
         hud.setObjective(
-          `Build the dot plot — ${data.length}/${need} blocks. ${liveLine()}`,
+          `${round.prompt} Drop blocks to match — ${data.length}/${need} placed. ${liveLine()}`,
         );
       } else if (phase === "answer") {
-        hud.setObjective(`${question.q}  (${liveLine()})`);
+        hud.setObjective(`${question.q}  Pick a pad. (${liveLine()})`);
       }
     }
 
@@ -455,6 +458,9 @@ export default {
       for (const v of round.target)
         targetCounts.set(v, (targetCounts.get(v) || 0) + 1);
       if (cfg.hints) showGoalGhosts();
+      // Persistent "Step X of Y" for the whole round (both levels have 3 rounds).
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(roundIndex, cfg.rounds.length);
       moveCursor(0);
       updateObjective();
       const hintTxt = cfg.hints ? " The faint blocks show the goal." : "";
@@ -643,14 +649,19 @@ export default {
           : round1(picked) === round1(question.correct);
       if (!ok) {
         feel.shake(0.2);
-        hud.message("Not quite — check the measure again.", {
-          tone: "warn",
-          duration: 1800,
-        });
+        streak = 0;
+        if (typeof hud.setStreak === "function") hud.setStreak(0);
+        const msg = "Not quite — check the measure again.";
+        if (typeof hud.feedback === "function") hud.feedback(false, msg);
+        else hud.message(msg, { tone: "warn", duration: 1800 });
         announce("Not quite. Try another choice.");
         return;
       }
       solvedRound = true;
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
       const pts = level === 2 ? 25 : 15;
       onScore(pts, { round: roundIndex + 1, phase: "answer", ask: round.ask });
       feel.shake(0.3);
@@ -658,7 +669,9 @@ export default {
         { x: 0, y: 1.4, z: -1.6 },
         { color: COLORS.target, count: 36, spread: 4 },
       );
-      hud.message(`Correct! +${pts}`, { tone: "ok", duration: 2200 });
+      if (typeof hud.feedback === "function")
+        hud.feedback(true, `Correct! +${pts}`, { duration: 2200 });
+      else hud.message(`Correct! +${pts}`, { tone: "ok", duration: 2200 });
       caption(question.explain);
       announce(`Correct. ${question.explain} You earned ${pts} points.`);
       later(() => caption(""), 3000);
@@ -672,9 +685,13 @@ export default {
       } else {
         phase = "done";
         clearPads();
-        hud.setObjective("Lab complete! Great data work, Statistician.");
+        hud.setObjective(
+          `Lab complete — ${solvedCount} of ${cfg.rounds.length} questions correct, best streak ${bestStreak}. Great data work, Statistician!`,
+        );
         hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-        announce("All rounds complete. Great data work, Statistician.");
+        announce(
+          `All rounds complete. You answered ${solvedCount} correctly with a best streak of ${bestStreak}. Great data work, Statistician.`,
+        );
       }
     }
 

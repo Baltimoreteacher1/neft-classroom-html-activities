@@ -77,18 +77,47 @@ export function mountGame(mountEl, gameModule, options = {}) {
     hud.setLevel(levelInfo(level).label);
     hud.setScore(0);
 
+    // Running per-step feedback shared by every game: each scored part bumps a
+    // step counter + streak in the persistent HUD, so progress is always shown
+    // without each game having to wire it up. Games may still call
+    // hud.setProgress(done,total) directly for an exact "Step X of Y".
+    let stepsDone = 0;
+    let streak = 0;
+    // totalSteps lets the HUD render "Step X of Y"; games can advertise it via
+    // gameModule.totalSteps or options.totalSteps, else we show a running count.
+    const totalSteps = options.totalSteps || gameModule.totalSteps || 0;
+
     function onScore(points, meta = {}) {
       totalScore += points;
       hud.setScore(totalScore);
+      // A non-negative score is treated as a successful step → advance + streak.
+      if (points >= 0) {
+        stepsDone += 1;
+        streak += 1;
+        if (typeof hud.setProgress === "function")
+          hud.setProgress(stepsDone, totalSteps);
+        if (typeof hud.setStreak === "function" && streak >= 2)
+          hud.setStreak(streak);
+      } else {
+        streak = 0;
+        if (typeof hud.setStreak === "function") hud.setStreak(0);
+      }
       const payload = {
         gameId,
         level,
         points,
         total: totalScore,
+        steps: stepsDone,
         ...meta,
       };
       reportScore(payload);
-      saveProgress({ gameId, level, total: totalScore, ...meta });
+      saveProgress({
+        gameId,
+        level,
+        total: totalScore,
+        steps: stepsDone,
+        ...meta,
+      });
       if (typeof options.onScore === "function") options.onScore(payload);
     }
 

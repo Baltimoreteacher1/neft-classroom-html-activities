@@ -241,7 +241,10 @@ function squarePyramid(b, ph) {
   };
 }
 
-export function renderShape3D(container, { shape = "cube", label } = {}) {
+export function renderShape3D(
+  container,
+  { shape = "cube", label, taskDriven = false } = {},
+) {
   const def = shapeDef(shape);
   const prefersReduced = reduceMotion();
 
@@ -481,17 +484,24 @@ export function renderShape3D(container, { shape = "cube", label } = {}) {
       "🟨 face — a flat surface where you could place a sticker.";
     live.textContent = msg;
   }
+  // Distinct faces the student has tapped (for the "count the faces" task).
+  const tappedFaces = new Set();
+  let onFaceTap = null; // task hook
   faceEls.forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.stopPropagation();
+    const handle = () => {
       stopAuto();
       selectFace(el);
+      tappedFaces.add(el.dataset.index);
+      if (onFaceTap) onFaceTap(tappedFaces.size);
+    };
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handle();
     });
     el.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        stopAuto();
-        selectFace(el);
+        handle();
       }
     });
   });
@@ -575,6 +585,37 @@ export function renderShape3D(container, { shape = "cube", label } = {}) {
   }
 
   root.append(controls);
+
+  // ── Task-driven challenge layer ──
+  // When taskDriven is true, the explorer becomes a guided sequence of small
+  // tasks with checking + feedback, instead of a free spin. Free rotate,
+  // keyboard, and reduced-motion handling above all still apply.
+  if (taskDriven) {
+    root.append(
+      buildTaskPanel({
+        def,
+        shape,
+        getTappedCount: () => tappedFaces.size,
+        setOnFaceTap: (fn) => {
+          onFaceTap = fn;
+        },
+        focusStage: () => stage.focus({ preventScroll: true }),
+        unfoldNet: () => {
+          if (hasNet && netT < 0.5) {
+            netT = 1;
+            stopAuto();
+            clearSelection();
+            rotX = 0;
+            rotY = 0;
+            applyScene();
+            applyFaceTransforms();
+          }
+        },
+        hasNet,
+      }),
+    );
+  }
+
   container.append(root);
 
   return {
@@ -582,6 +623,240 @@ export function renderShape3D(container, { shape = "cube", label } = {}) {
       stopAuto();
     },
   };
+}
+
+// ── Task panel ──────────────────────────────────────────────────────────────
+// A sequence of bite-size, checkable prompts that turn the 3D model into an
+// active investigation. Each task gives instant feedback. Keyboard-operable;
+// uses aria-live for status. No raw HTML interpolation of dynamic data.
+function buildTaskPanel({
+  def,
+  shape,
+  getTappedCount,
+  setOnFaceTap,
+  unfoldNet,
+  hasNet,
+}) {
+  const wrap = document.createElement("div");
+  wrap.style.cssText = `
+    margin-top:var(--sp-4); display:flex; flex-direction:column; gap:var(--sp-3);`;
+
+  const intro = document.createElement("div");
+  intro.style.cssText = `
+    font-family:var(--font-display); font-weight:800; font-size:1rem; color:var(--navy);`;
+  intro.textContent = "Your turn — explore the shape:";
+  wrap.append(intro);
+
+  const live = document.createElement("div");
+  live.setAttribute("aria-live", "polite");
+  live.style.cssText =
+    "position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);";
+  wrap.append(live);
+
+  // Task 1: tap every face and count them.
+  const t1 = taskBox(
+    "1",
+    "Tap each face of the shape. How many faces are there?",
+  );
+  const t1status = statusLine();
+  const t1progress = document.createElement("p");
+  t1progress.style.cssText = "margin:0; font-size:0.85rem; color:var(--muted);";
+  t1progress.textContent = `Faces tapped: 0 / ${def.counts.faces}`;
+  const t1answer = numberAnswer(def.counts.faces, (ok) => {
+    if (ok) {
+      setStatus(
+        t1status,
+        true,
+        `Yes! A ${def.name.toLowerCase()} has ${def.counts.faces} faces.`,
+      );
+      live.textContent = `Correct: ${def.counts.faces} faces.`;
+    } else {
+      setStatus(
+        t1status,
+        false,
+        "Not yet — tap the faces and count carefully. Spin to find any you missed.",
+      );
+    }
+  });
+  setOnFaceTap((n) => {
+    t1progress.textContent = `Faces tapped: ${n} / ${def.counts.faces}`;
+  });
+  t1.append(t1progress, t1answer.el, t1status);
+  wrap.append(t1);
+
+  // Task 2: how many edges?
+  const t2 = taskBox(
+    "2",
+    "An edge is where two faces meet. How many edges does it have?",
+  );
+  const t2status = statusLine();
+  const t2answer = numberAnswer(def.counts.edges, (ok) => {
+    if (ok) {
+      setStatus(t2status, true, `Right! ${def.counts.edges} edges.`);
+      live.textContent = `Correct: ${def.counts.edges} edges.`;
+    } else {
+      setStatus(
+        t2status,
+        false,
+        "Close — count the lines where two faces meet, all the way around.",
+      );
+    }
+  });
+  t2.append(t2answer.el, t2status);
+  wrap.append(t2);
+
+  // Task 3: how many vertices?
+  const t3 = taskBox("3", "A vertex is a corner point. How many vertices?");
+  const t3status = statusLine();
+  const t3answer = numberAnswer(def.counts.vertices, (ok) => {
+    if (ok) {
+      setStatus(t3status, true, `Exactly! ${def.counts.vertices} vertices.`);
+      live.textContent = `Correct: ${def.counts.vertices} vertices.`;
+    } else {
+      setStatus(t3status, false, "Not quite — count the corner points.");
+    }
+  });
+  t3.append(t3answer.el, t3status);
+  wrap.append(t3);
+
+  // Task 4: unfold the net — which net matches?
+  if (hasNet) {
+    const t4 = taskBox(
+      "4",
+      "Unfold the net, then pick the solid this net folds into.",
+    );
+    const t4status = statusLine();
+    const unfoldTaskBtn = document.createElement("button");
+    unfoldTaskBtn.type = "button";
+    unfoldTaskBtn.className = "btn btn-secondary";
+    unfoldTaskBtn.style.cssText = "min-height:44px; align-self:flex-start;";
+    unfoldTaskBtn.textContent = "Unfold the net ▸";
+    unfoldTaskBtn.addEventListener("click", () => {
+      unfoldNet();
+      unfoldTaskBtn.disabled = true;
+      choiceGroup.hidden = false;
+    });
+    const choiceGroup = document.createElement("div");
+    choiceGroup.hidden = true;
+    choiceGroup.setAttribute("role", "group");
+    choiceGroup.setAttribute(
+      "aria-label",
+      "Which solid does this net fold into?",
+    );
+    choiceGroup.style.cssText =
+      "display:flex; flex-direction:column; gap:var(--sp-2); margin-top:var(--sp-2);";
+    let answered = false;
+    netChoices(def.name).forEach((name) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "btn btn-secondary";
+      b.style.cssText = "text-align:left; min-height:44px; white-space:normal;";
+      b.textContent = name;
+      b.addEventListener("click", () => {
+        if (answered) return;
+        answered = true;
+        choiceGroup
+          .querySelectorAll("button")
+          .forEach((x) => (x.disabled = true));
+        const ok = name === def.name;
+        b.style.borderColor = ok ? "var(--teal)" : "var(--coral, #d9795d)";
+        if (ok) {
+          setStatus(
+            t4status,
+            true,
+            `Yes — this net folds into a ${def.name.toLowerCase()}.`,
+          );
+        } else {
+          setStatus(
+            t4status,
+            false,
+            `Not this one. Count the net's faces — a ${def.name.toLowerCase()} has ${def.counts.faces}.`,
+          );
+        }
+      });
+      choiceGroup.append(b);
+    });
+    t4.append(unfoldTaskBtn, choiceGroup, t4status);
+    wrap.append(t4);
+  }
+
+  return wrap;
+}
+
+function taskBox(badge, prompt) {
+  const box = document.createElement("section");
+  box.style.cssText = `
+    padding:var(--sp-3); border:1px solid var(--line); border-radius:var(--radius-md);
+    background:#fff; display:flex; flex-direction:column; gap:var(--sp-2);`;
+  const p = document.createElement("p");
+  p.style.cssText =
+    "margin:0; font-size:0.92rem; font-weight:600; color:var(--ink);";
+  p.textContent = `${badge}. ${prompt}`;
+  box.append(p);
+  return box;
+}
+
+function statusLine() {
+  const p = document.createElement("p");
+  p.setAttribute("role", "status");
+  p.style.cssText =
+    "margin:0; min-height:1.3em; font-size:0.88rem; font-weight:600; line-height:1.4;";
+  return p;
+}
+
+function setStatus(el, ok, msg) {
+  el.style.color = ok ? "var(--teal)" : "var(--coral, #d9795d)";
+  el.textContent = (ok ? "✅ " : "🤔 ") + msg;
+}
+
+// Small numeric stepper + check button. Returns { el }.
+function numberAnswer(correct, onCheck) {
+  const el = document.createElement("div");
+  el.style.cssText =
+    "display:flex; align-items:center; gap:var(--sp-2); flex-wrap:wrap;";
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "0";
+  input.inputMode = "numeric";
+  input.setAttribute("aria-label", "Type your count");
+  input.style.cssText = `
+    width:72px; min-height:44px; padding:6px 10px; font-size:1rem;
+    border:2px solid var(--line); border-radius:var(--radius-sm); text-align:center;`;
+  const check = document.createElement("button");
+  check.type = "button";
+  check.className = "btn btn-teal";
+  check.style.cssText = "min-height:44px;";
+  check.textContent = "Check";
+  const run = () => {
+    const val = Number(input.value);
+    onCheck(Number.isFinite(val) && val === correct);
+  };
+  check.addEventListener("click", run);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      run();
+    }
+  });
+  el.append(input, check);
+  return { el };
+}
+
+// Distractor solid names for the net-match question (correct included).
+function netChoices(correctName) {
+  const all = [
+    "Cube",
+    "Rectangular prism",
+    "Triangular prism",
+    "Square pyramid",
+  ];
+  const others = all.filter((n) => n !== correctName).slice(0, 2);
+  const list = [correctName, ...others];
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  return list;
 }
 
 function hexToRgba(hex, a) {

@@ -321,6 +321,9 @@ export default {
     let dial = 0; // current dialed value (for numeric problems)
     let laneSel = 0; // current lane (for compare problems)
     let locked = false; // round solved, animating
+    let streak = 0; // consecutive correct
+    let bestStreak = 0;
+    let solvedCount = 0;
     let infoSprites = [];
     const timers = [];
     let unbindPress = null;
@@ -361,7 +364,9 @@ export default {
 
     function updateHud() {
       if (isCompare()) {
-        hud.setObjective(`Best price per liter? — ${readout()}`);
+        hud.setObjective(
+          `Choose the fuel lane with the lowest price per liter, then lock it in. ▶ ${readout()}`,
+        );
       } else {
         hud.setObjective(`${problem.prompt}  ▶ Dial: ${readout()}`);
       }
@@ -419,6 +424,9 @@ export default {
       playerCar.rotation.y = 0;
 
       hud.setLevel(level === 2 ? "Level 2" : "Level 1");
+      // Persistent "Step X of Y" for the whole round.
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(problemIndex, cfg.problems.length);
 
       if (isCompare()) {
         laneSel = 0;
@@ -513,13 +521,20 @@ export default {
     }
 
     function rejectRound(msg) {
-      hud.message(msg, { tone: "warn", duration: 2200 });
+      streak = 0;
+      if (typeof hud.setStreak === "function") hud.setStreak(0);
+      if (typeof hud.feedback === "function") hud.feedback(false, msg);
+      else hud.message(msg, { tone: "warn", duration: 2200 });
       feel.shake(0.16);
       announce(msg);
     }
 
     function win(detail) {
       locked = true;
+      solvedCount += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+      if (typeof hud.setStreak === "function") hud.setStreak(streak);
       const base = 20;
       const levelBonus = level === 2 ? 10 : 0;
       const pts = base + levelBonus;
@@ -531,7 +546,8 @@ export default {
             "  ",
             " ",
           );
-      hud.message(summary, { tone: "ok", duration: 2400 });
+      if (typeof hud.feedback === "function") hud.feedback(true, summary);
+      else hud.message(summary, { tone: "ok", duration: 2400 });
       announce(
         isCompare()
           ? `Correct. Lane ${laneSel + 1} is the best unit price. You earned ${pts} points.`
@@ -562,9 +578,13 @@ export default {
           problemIndex += 1;
           startRound();
         } else {
-          hud.setObjective("All races won! Great tuning, racer.");
+          hud.setObjective(
+            `All races won — ${solvedCount} of ${cfg.problems.length} solved, best streak ${bestStreak}. Great tuning, racer!`,
+          );
           hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce("All rounds complete. Great tuning, racer.");
+          announce(
+            `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great tuning, racer.`,
+          );
         }
       }, 2200);
     }
