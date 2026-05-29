@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Publisher-grade WIDA ACCESS Listening prep workbook. Interactive simulation with audio scenario selectors, 20 domain tasks with SVGs, and comprehension checks.">
-  <title>WIDA ACCESS Listening Practice Studio | Neft Hub</title>
+  <meta name="description" content="Publisher-grade WIDA ACCESS Reading prep workbook. Interactive simulation with passage readers, active evidence highlighters, 20 domain tasks with SVGs, and comprehension checks.">
+  <title>WIDA ACCESS Reading Practice Studio | Neft Hub</title>
   
   <!-- High-End Publication Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,9 +15,9 @@
   <style>
     /* ── Educational Publisher Design Tokens ── */
     :root {
-      --primary: #0d9488; /* Turquoise Teal for Listening */
-      --primary-dark: #0f766e;
-      --primary-light: #f0fdfa;
+      --primary: #ea580c; /* High contrast Orange for Reading */
+      --primary-dark: #c2410c;
+      --primary-light: #fff7ed;
       --navy-deep: #0b1f33;
       --navy: #12355b;
       --amber: #d97706;
@@ -34,7 +34,7 @@
       --slate-muted: #64748b;
       
       /* Depth & Shadows */
-      --shadow-premium: 0 10px 30px -10px rgba(13, 148, 136, 0.12), 0 20px 40px -15px rgba(11, 31, 51, 0.08);
+      --shadow-premium: 0 10px 30px -10px rgba(234, 88, 12, 0.12), 0 20px 40px -15px rgba(11, 31, 51, 0.08);
       --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
       --radius-premium: 16px;
       --radius-field: 8px;
@@ -164,7 +164,7 @@
       background: var(--primary);
       color: var(--white);
       border-color: var(--primary-dark);
-      box-shadow: 0 8px 16px -4px rgba(13, 148, 136, 0.3);
+      box-shadow: 0 8px 16px -4px rgba(234, 88, 12, 0.3);
     }
 
     .concept-card .task-domain {
@@ -258,59 +258,45 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Listening Deck ── */
-    .listening-sim-box {
+    /* ── Reading Passage Panel ── */
+    .passage-card {
       border: 1px solid var(--line-muted);
       border-radius: var(--radius-field);
       padding: 24px;
       background: var(--bg-canvas);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 14px;
     }
 
-    .sim-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--line-muted);
-      padding-bottom: 12px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .admin-pill {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--white);
-      background: var(--navy);
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 20px;
-      letter-spacing: 0.06em;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .sim-prompt-box {
+    .passage-viewport {
       font-size: 1.05rem;
-      line-height: 1.7;
+      line-height: 1.8;
       color: var(--slate-ink);
       font-weight: 500;
-      min-height: 80px;
       background: var(--white);
-      padding: 14px;
+      padding: 20px;
       border-radius: var(--radius-field);
       border: 1px solid var(--line-muted);
+      max-height: 280px;
+      overflow-y: auto;
     }
 
-    .spoken-word-highlight {
+    .passage-highlight {
       background-color: #fef08a !important;
       color: #000000 !important;
-      border-radius: 3px;
-      padding: 0 2px;
-      font-weight: bold;
+      border-radius: 4px;
+      padding: 0 4px;
+      font-weight: 700;
+      transition: var(--transition);
+      cursor: help;
+    }
+
+    /* ── Evidence Highlighter Mode ── */
+    .evidence-glowing {
+      background-color: #fde047 !important; /* Vivid Yellow Glow */
+      border: 1.5px dashed var(--primary) !important;
+      box-shadow: 0 0 12px rgba(234, 88, 12, 0.25);
     }
 
     /* ── Comprehension Quiz Card ── */
@@ -392,7 +378,7 @@
       display: block;
     }
 
-    /* Checklist & Rate Panel styles */
+    /* Checklist Card */
     .checklist-card {
       background: var(--bg-canvas);
       border: 1px solid var(--line-muted);
@@ -440,30 +426,6 @@
     
     .checklist-icon {
       font-size: 1rem;
-    }
-    
-    .rate-controls {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    
-    .rate-btn {
-      border: 1px solid var(--line-muted);
-      background: var(--white);
-      color: var(--slate-ink);
-      font-weight: 700;
-      font-size: 0.72rem;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .rate-btn.active {
-      background: var(--primary);
-      color: var(--white);
-      border-color: var(--primary-dark);
     }
 
     .feedback-coach-card {
@@ -523,7 +485,59 @@
       background: var(--primary-dark);
     }
 
-    /* Diagnostic commands */
+    /* Word Wall card styling */
+    .vocab-card {
+      background: var(--bg-canvas);
+      border: 1px solid var(--line-muted);
+      padding: 7px 12px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--slate-ink);
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vocab-card:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .vocab-card .tooltip-bubble {
+      visibility: hidden;
+      width: 240px;
+      background-color: var(--navy-deep);
+      color: var(--white);
+      text-align: left;
+      border-radius: 6px;
+      padding: 10px 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      font-size: 0.74rem;
+      line-height: 1.4;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.18);
+      pointer-events: none;
+      font-weight: 500;
+    }
+
+    .vocab-card:hover .tooltip-bubble {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* Diagnostics terminal overlay */
     .diag-overlay {
       position: fixed;
       bottom: 24px;
@@ -613,7 +627,7 @@
       <span>/</span>
       <a href="/wida-access/">WIDA Center</a>
       <span>/</span>
-      <span>WIDA ACCESS Listening Practice Studio</span>
+      <span>WIDA ACCESS Reading Practice Studio</span>
     </nav>
 
     <!-- Header Section -->
@@ -621,8 +635,8 @@
       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
         <div>
           <p class="eyebrow" style="color: var(--primary)">WIDA ACCESS Prep Suite</p>
-          <h1 style="font-family: var(--font-space); font-weight: 700; font-size: 2.2rem; letter-spacing:-0.02em;">ACCESS Listening Practice Studio</h1>
-          <p class="hero-copy" style="max-width: 800px;">Comprehensive 20-task academic listening studio. Features variable speech rates, interactive SVGs, and responsive self-checks with publication-grade explanatory feedback.</p>
+          <h1 style="font-family: var(--font-space); font-weight: 700; font-size: 2.2rem; letter-spacing:-0.02em;">ACCESS Reading Practice Studio</h1>
+          <p class="hero-copy" style="max-width: 800px;">Comprehensive 20-task academic reading studio. Features dual-tier passages, hover translations, interactive SVGs, and responsive **Evidence Highlighting** selectors.</p>
         </div>
         <div style="display: flex; gap: 8px;">
           <div class="streak-pill" id="streakBadge" style="background:rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius:30px; padding:8px 16px; font-weight:800; font-size:0.86rem; color:#fff; display:flex; align-items:center; gap:6px;">
@@ -642,9 +656,9 @@
     <div class="studio-shell">
       
       <!-- Sidebar Concept Selector -->
-      <aside class="sidebar-wrapper" aria-label="Listening Selector">
+      <aside class="sidebar-wrapper" aria-label="Reading Selector">
         <div class="brand-block">
-          <h2>🎧 Listening Tiers</h2>
+          <h2>📖 Reading Tiers</h2>
           <p>Task Selectors</p>
         </div>
         
@@ -702,58 +716,41 @@
           </div>
         </div>
 
-        <!-- Right Side: Audio Player & Comprehension Quiz Checks -->
+        <!-- Right Side: Passage Viewport & Reading Comprehension Quiz -->
         <div class="glass-panel" style="gap: 20px;">
           <div class="panel-meta">
-            <h3>🔊 Auditory Audio Deck</h3>
+            <h3>📖 Academic Reading Passage</h3>
           </div>
 
-          <!-- Playback and Rate Speed panel -->
-          <div class="listening-sim-box">
-            <div class="sim-header">
-              <div class="admin-pill">🎧 Audio Scenario</div>
-              <div class="rate-controls">
-                <span style="font-size:0.75rem; font-weight:700; color:var(--slate-muted); margin-right:4px;">Speed:</span>
-                <button class="rate-btn" id="rateSlow" onclick="setPlaybackRate(0.6)">🐢 0.6x</button>
-                <button class="rate-btn" id="rateMed" onclick="setPlaybackRate(0.8)">🚶 0.8x</button>
-                <button class="rate-btn active" id="rateNormal" onclick="setPlaybackRate(1.0)">⚡ 1.0x</button>
-              </div>
+          <!-- Passage Display Canvas -->
+          <div class="passage-card">
+            <div class="passage-viewport" id="passageTextBox" onscroll="trackPassageReadingScroll()">
+              Loading passage...
             </div>
-
-            <!-- Speech prompt reader box -->
-            <div class="sim-prompt-box" id="promptTextBox">
-              Click "Play Scenario" to listen to the academic description.
-            </div>
-
-            <div style="display:flex; gap:10px;">
-              <button class="action-btn btn-control" id="playAudioBtn" onclick="speakListeningScenario()" style="flex:1; justify-content:center;">
-                🔊 Play Scenario
-              </button>
-              <button class="action-btn btn-outline-white" id="stopAudioBtn" onclick="stopAudioPlayback()" style="color:var(--slate-ink); border-color:var(--line-muted); display:none;">
-                ⏹️ Stop
-              </button>
+            <div style="font-size:0.7rem; font-weight:700; color:var(--slate-muted); text-align:right;">
+              *Hover bold terms for instant definitions.
             </div>
           </div>
 
           <!-- Checklist visual cues card -->
           <div class="checklist-card">
-            <span class="checklist-title">📋 Listening Practice Checklist</span>
+            <span class="checklist-title">📋 Reading Practice Checklist</span>
             <div class="checklist-grid">
               <div class="checklist-item" id="chkQuest">
                 <span class="checklist-icon" id="chkQuestIcon">⚪</span>
                 <span>🎨 SVG Quest Complete</span>
               </div>
-              <div class="checklist-item" id="chkListen">
-                <span class="checklist-icon" id="chkListenIcon">⚪</span>
-                <span>🔊 Scenario Listened</span>
+              <div class="checklist-item" id="chkRead">
+                <span class="checklist-icon" id="chkReadIcon">⚪</span>
+                <span>📖 Passage Read</span>
               </div>
               <div class="checklist-item" id="chkQuiz">
                 <span class="checklist-icon" id="chkQuizIcon">⚪</span>
-                <span>🎯 Comprehension Checked</span>
+                <span>🎯 Comprehension Quiz</span>
               </div>
               <div class="checklist-item" id="chkRubric">
                 <span class="checklist-icon" id="chkRubricIcon">⚪</span>
-                <span>🏆 Diagnostic Self-Scored</span>
+                <span>🏆 Rubric Self-Scored</span>
               </div>
             </div>
           </div>
@@ -766,7 +763,7 @@
             <div class="explanation-banner" id="explanationBanner"></div>
           </div>
 
-          <!-- WIDA Diagnostic Listening Strategy Scorer -->
+          <!-- WIDA Diagnostic Reading Strategy Scorer -->
           <div class="rubric-box">
             <div class="rubric-header">
               <h4>🏆 Diagnostic Strategy Coach</h4>
@@ -774,35 +771,35 @@
             </div>
             
             <p style="font-size:0.78rem; color:var(--slate-muted); margin:0;">
-              Evaluate your listening strategy and click <strong>Self-Score</strong> to generate custom feedback to boost your comprehension skills!
+              Evaluate your reading strategies and click <strong>Self-Score</strong> to generate custom feedback to boost your skills!
             </p>
 
             <div class="rubric-grid">
               <div class="rubric-criterion">
-                <label for="rubricAcoustic">Auditory Decoding</label>
-                <select id="rubricAcoustic" onchange="calculateListeningELP()">
-                  <option value="1">1 - Needs support with single words</option>
-                  <option value="2">2 - Understands simple phrases</option>
-                  <option value="3" selected>3 - Grasps sentence details</option>
-                  <option value="4">4 - Understands connected discourse</option>
+                <label for="rubricScanning">Text Scanning</label>
+                <select id="rubricScanning" onchange="calculateReadingELP()">
+                  <option value="1">1 - Misses key vocabulary details</option>
+                  <option value="2">2 - Locates bold terms</option>
+                  <option value="3" selected>3 - Scans for direct evidence</option>
+                  <option value="4">4 - Explains cohesive transitions</option>
                 </select>
               </div>
               <div class="rubric-criterion">
-                <label for="rubricContext">Visual Scanning</label>
-                <select id="rubricContext" onchange="calculateListeningELP()">
-                  <option value="1">1 - Misses diagram keys</option>
-                  <option value="2">2 - Links labels to objects</option>
-                  <option value="3" selected>3 - Inspects mathematical balances</option>
-                  <option value="4">4 - Integrates maps & timelines</option>
+                <label for="rubricVocabulary">Morphology Keys</label>
+                <select id="rubricVocabulary" onchange="calculateReadingELP()">
+                  <option value="1">1 - Needs translation dictionary</option>
+                  <option value="2">2 - Understands simple definitions</option>
+                  <option value="3" selected>3 - Breaks down syllable parts</option>
+                  <option value="4">4 - Deduces root endings in context</option>
                 </select>
               </div>
               <div class="rubric-criterion">
-                <label for="rubricIntegration">Cognitive Speed</label>
-                <select id="rubricIntegration" onchange="calculateListeningELP()">
-                  <option value="1">1 - Requires extreme slow down (0.6x)</option>
-                  <option value="2">2 - Prefers moderate speed (0.8x)</option>
-                  <option value="3" selected>3 - Comfortable at normal rate</option>
-                  <option value="4">4 - Catches high-speed speech</option>
+                <label for="rubricEvidence">Evidence Tracing</label>
+                <select id="rubricEvidence" onchange="calculateReadingELP()">
+                  <option value="1">1 - Blindly guesses options</option>
+                  <option value="2">2 - Matches single words to text</option>
+                  <option value="3" selected>3 - Traces glowing highlights</option>
+                  <option value="4">4 - Validates assertions perfectly</option>
                 </select>
               </div>
             </div>
@@ -825,7 +822,7 @@
     <!-- Diagnostics Terminal Overlay -->
     <div class="diag-overlay" id="diagTerminal">
       <div class="diag-head">
-        <span>📊 WIDA LISTENING RUNTIME DIAGNOSTICS</span>
+        <span>📊 WIDA READING RUNTIME DIAGNOSTICS</span>
         <button onclick="toggleDiagnostics()" style="background:none; border:none; color:#00ff66; cursor:pointer; font-weight:bold;">✕</button>
       </div>
       <div class="diag-stream" id="diagConsole"></div>
@@ -844,7 +841,7 @@
       milk: { es: "leche", ar: "حليب", vi: "sữa" },
       sandwich: { es: "sándwich", ar: "شطيرة", vi: "bánh mì kẹp" },
       tray: { es: "bandeja", ar: "صينية", vi: "khay" },
-      fraction: { es: "fracción", ar: "كسر", vi: "phân số" },
+      fraction: { es: "fracción", ar: "كسr", vi: "phân số" },
       partition: { es: "partición", ar: "تقسيم", vi: "sự chia nhỏ" },
       numerator: { es: "numerador", ar: "بسط", vi: "tử số" },
       denominator: { es: "denominador", ar: "مقام", vi: "mẫu số" },
@@ -864,7 +861,7 @@
       mean: { es: "media", ar: "متوسط", vi: "số trung bình" },
       median: { es: "mediana", ar: "وسيط", vi: "trung vị" },
       outlier: { es: "valor atípico", ar: "قيمة متطرفة", vi: "giá trị ngoại lệ" },
-      polygon: { es: "polígono", ar: "مضلع", vi: "đa giác" },
+      polygon: { es: "polígono", ar: "mضلع", vi: "đa giác" },
       decompose: { es: "descomponer", ar: "تحليل", vi: "phân tích" },
       composite: { es: "compuesto", ar: "مركب", vi: "hợp phần" },
       area: { es: "área", ar: "مساحة", vi: "diện tích" },
@@ -884,7 +881,7 @@
       column: { es: "columna", ar: "عمود", vi: "cột" },
       cycle: { es: "ciclo", ar: "دورة", vi: "chu kỳ" },
       overlap: { es: "solaparse", ar: "تطابق", vi: "trùng nhau" },
-      interval: { es: "intervalo", ar: "فاصل زمن", vi: "khoảng thời gian" },
+      interval: { es: "intervalo", ar: "فاصل زمني", vi: "khoảng thời gian" },
       volume: { es: "volumen", ar: "الحجم", vi: "thể tích" },
       prism: { es: "prisma", ar: "منشور", vi: "hình lăng trụ" },
       capacity: { es: "capacidad", ar: "سعة", vi: "dung tích" },
@@ -929,15 +926,13 @@
       activeTier: "A",
       activeTaskIdx: 0,
       activeDictionaryLang: "en",
-      isPlayingAudio: false,
-      playbackRate: 1.0,
       sparkPoints: 1200,
       celebrationFired: false,
       
       // Checklist flags
       questCompleted: false,
       checklistQuest: false,
-      checklistListen: false,
+      checklistRead: false,
       checklistQuiz: false,
       checklistRubric: false,
       
@@ -956,33 +951,33 @@
       spinnerAngle: 0
     };
 
-    // 20 Listening tasks with embedded narratives, comprehension questions & interactive SVG model keys
-    const WIDA_LISTENING_TASKS = [
+    // 20 Reading tasks with embedded scaffolded passages, evidence anchors, and questions
+    const WIDA_READING_TASKS = [
       {
         id: "T1",
         title: "School Lunch Tray",
         domain: "Social & Instructional",
         model: "lunch",
         terms: ["apple", "milk", "sandwich", "tray"],
-        scenarioA: "Look at the school lunch tray. This tray has three sections. The sandwich section represents grains and protein. The carton contains liquid milk. The red apple is a fruit. A balanced lunch supports healthy learning.",
-        scenarioB: "When inspecting nutritional balance on a school lunch tray, we must classify multiple meal components. The tray segregates a sandwich containing structural grains and proteins, a calcium-dense milk carton, and a dietary fiber-rich red apple. Balancing these categories guarantees high sustained metabolic energy for students, whereas relying on sugary items results in rapid glycemic drops.",
-        qA: "What item on the lunch tray provides structural grains and protein?",
-        qB: "According to the detailed nutrition discussion, what is the chemical or metabolic advantage of balancing proteins and dairy on a lunch tray instead of consuming simple sugars?",
-        optsA: ["Red Apple", "Liquid Milk", "Sandwich", "Empty Tray"],
-        optsB: ["It accelerates standard body temperatures", "It guarantees high sustained metabolic energy", "It decreases simple water absorption rates", "It decomposes structural composite polygons"],
-        ansA: 2,
+        passageA: "<span id='ev1'>A balanced school <strong>lunch</strong> tray has three healthy parts.</span> <span id='ev2'>First, the <strong>sandwich</strong> gives grains and proteins.</span> <span id='ev3'>Second, liquid <strong>milk</strong> provides bone calcium.</span> Finally, the red <strong>apple</strong> is a fruit.",
+        passageB: "Nutritional guidelines dictate balanced structures on school trays. <span id='ev1'>To optimize adolescent health, menus classify meals into distinct macronutrient categories.</span> <span id='ev2'>Specifically, the <strong>sandwich</strong> incorporates critical whole grains and energy-dense proteins.</span> <span id='ev3'>Simultaneously, the liquid <strong>milk</strong> carton contributes significant calcium density, whereas the red <strong>apple</strong> delivers metabolic fibers.</span> Balancing these prevents rapid glycemic drops.",
+        qA: "According to the passage, what is on a balanced school lunch tray?",
+        qB: "According to the passage, what specific nutrition elements does the sandwich incorporate to optimize health?",
+        optsA: ["Only liquid milk", "Three healthy parts", "Grains only", "Four carbon sections"],
+        optsB: ["Calcium density only", "Whole grains and energy-dense proteins", "Thermodynamic state vapor", "Linear acceleration coordinate lines"],
+        ansA: 1,
         ansB: 1,
         explA: [
-          "Incorrect. The red apple represents the fruit group.",
-          "Incorrect. Milk represents the liquid dairy calcium group.",
-          "Correct! The sandwich combines grains and proteins to provide nutritional structural value.",
-          "Incorrect. The tray holds the items but contains no calories."
+          "Incorrect. Milk is only one of the three parts.",
+          "Correct! The text states a balanced tray has three healthy parts.",
+          "Incorrect. Grains are inside the sandwich section, but not the only part.",
+          "Incorrect. Grains are organic, not carbon flowchart components."
         ],
         explB: [
-          "Incorrect. Body temperature is unaffected by sandwich proteins.",
-          "Correct! Sustained energy is maintained by balancing proteins and complex fats/grains, preventing rapid drops.",
-          "Incorrect. Water absorption rates are unrelated to these categories.",
-          "Incorrect. Polygons are geometric, not metabolic."
+          "Incorrect. Milk represents the calcium, not the sandwich.",
+          "Correct! The text highlights that the sandwich incorporates critical whole grains and energy-dense proteins.",
+          "Incorrect. Vapor is thermodynamic, not nutritional.",
+          "Incorrect. Coordinates represent coordinate grid maps, not sandwich components."
         ]
       },
       {
@@ -991,26 +986,16 @@
         domain: "Language of Mathematics",
         model: "bar",
         terms: ["fraction", "partition", "numerator", "denominator"],
-        scenarioA: "Look at the tape bar diagram. The model whole is divided into five equal boxes. These are called partition units. Exactly three of the five parts are shaded. This represents the fraction three-fifths.",
-        scenarioB: "In this mathematical model, a single cohesive tape whole undergoes partition into five distinct, equivalent segments. Each segment represents an identical unit fraction. Since exactly three segments are shaded, the numerator value is three, and the denominator base is five. This establishes a shaded ratio constant of three-fifths.",
-        qA: "How many partition boxes are in the whole model?",
-        qB: "If we double both the numerator and the denominator by partitioning each unit box in half, what occurs to the equivalent ratio constant?",
-        optsA: ["Three partitions", "Four partitions", "Five partitions", "Six partitions"],
-        optsB: ["The ratio scales up and increases in total size", "The ratio remains exactly equivalent at six-tenths", "The denominator decreases to two units", "The whole model becomes an unbalanced physical scale"],
+        passageA: "<span id='ev1'>This tape model has five equal <strong>partition</strong> boxes.</span> <span id='ev2'>Exactly three of the boxes are shaded.</span> <span id='ev3'>The shaded boxes represent a <strong>fraction</strong> of three-fifths.</span>",
+        passageB: "<span id='ev1'>This tape model is segregated into five equivalent unit <strong>partitions</strong>.</span> <span id='ev2'>Exactly three partition cells are shaded, indicating our <strong>numerator</strong> value.</span> <span id='ev3'>This structures the plotted mathematical <strong>fraction</strong> as exactly three-fifths, where five represents the <strong>denominator</strong> base.</span>",
+        qA: "How many partition boxes are in this tape model whole?",
+        qB: "According to the mathematical passage, what term defines the base value representing five in this fraction?",
+        optsA: ["Three boxes", "Four boxes", "Five boxes", "Seven boxes"],
+        optsB: ["The numerator", "The denominator base", "The constant scale variable", "The speed outlier dot"],
         ansA: 2,
         ansB: 1,
-        explA: [
-          "Incorrect. Three is the count of the shaded partitions, not the whole.",
-          "Incorrect. There are more than four boxes.",
-          "Correct! The whole is divided into exactly five equal partition boxes.",
-          "Incorrect. There are only five segments total."
-        ],
-        explB: [
-          "Incorrect. Equivalent fractions maintain the exact same relative size.",
-          "Correct! Six-tenths is perfectly equivalent to three-fifths, preserving the core ratio constant.",
-          "Incorrect. Dividing cells increases the denominator, not decreases.",
-          "Incorrect. This is a tape model, not a mechanical scale balance."
-        ]
+        explA: ["Incorrect. Three boxes are shaded, not the whole.", "Incorrect. There are more than four boxes.", "Correct! The model has exactly five partition boxes.", "Incorrect. There are only five total boxes."],
+        explB: ["Incorrect. The numerator represents the shaded cells, which is three.", "Correct! Five is defined as the denominator base.", "Incorrect. Scale variables belong on balance scales.", "Incorrect. Outliers are on dot plots."]
       },
       {
         id: "T3",
@@ -1018,26 +1003,16 @@
         domain: "Language of Science",
         model: "water",
         terms: ["ocean", "condensation", "evaporation", "thermodynamic"],
-        scenarioA: "This is the water cycle. When the sun heats up liquid water in the ocean, it changes to gas. This is evaporation. When the gas cools in the sky, it makes clouds. This is condensation.",
-        scenarioB: "This closed thermodynamic model displays phase state transformations. Solar thermal energy radiates onto the liquid ocean, triggering evaporation, where water molecules convert to gaseous vapor. Subsequently, the rising vapor cools in the atmosphere, undergoing condensation to form cloud droplets. This cycle ensures constant water conservation.",
-        qA: "What happens when liquid ocean water gets hot?",
-        qB: "How does the thermodynamic process transition gaseous vapor into liquid cloud condensation?",
-        optsA: ["It turns into solid ice crystals", "It evaporates into gaseous vapor", "It precipitates into rain immediately", "It dissolves into salt"],
-        optsB: ["By increasing heat from the sun", "By cooling down in the higher atmosphere", "By flowing directly back into ocean reservoirs", "By decomposing into geometric quadrantal lines"],
+        passageA: "<span id='ev1'>The sun heats liquid water in the <strong>ocean</strong>.</span> <span id='ev2'>The liquid changes into gas, which is called <strong>evaporation</strong>.</span> <span id='ev3'>When gas cools in the sky, it makes clouds through <strong>condensation</strong>.</span>",
+        passageB: "<span id='ev1'>Solar radiation initiates the closed <strong>thermodynamic</strong> water cycle by heating the liquid <strong>ocean</strong>.</span> <span id='ev2'>This molecules activation triggers <strong>evaporation</strong>, transforming liquid H2O into gaseous atmospheric vapor.</span> <span id='ev3'>Subsequently, rising vapor cools and undergoes <strong>condensation</strong> to structure cloud droplets.</span>",
+        qA: "What heats up the liquid ocean water?",
+        qB: "According to the science text, what process converts atmospheric gaseous vapor back into liquid cloud droplets?",
+        optsA: ["Cold wind", "The sun", "Cloud precipitation", "Geometrical boundary lines"],
+        optsB: ["Solar thermal evaporation", "Condensation", "Gravity acceleration", "Polygon decomposition"],
         ansA: 1,
         ansB: 1,
-        explA: [
-          "Incorrect. Solid ice crystals require a loss of thermal energy.",
-          "Correct! Thermal heating causes evaporation, transforming liquid ocean water into gaseous vapor.",
-          "Incorrect. Gaseous evaporation must occur and condense before precipitation.",
-          "Incorrect. Salt remains behind; it does not evaporate."
-        ],
-        explB: [
-          "Incorrect. Sun heat drives evaporation, not condensation.",
-          "Correct! Condensation occurs when rising vapor cools down in the atmosphere, condensing back into liquid droplets.",
-          "Incorrect. Flowing back to reservoirs describes runoff, not condensation.",
-          "Incorrect. Quadrants are coordinates, not thermodynamics."
-        ]
+        explA: ["Incorrect. Wind helps cycle clouds, but does not heat the water.", "Correct! Solar radiation from the sun heats up the ocean.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect. Evaporation converts liquid to gas, not gas to liquid.", "Correct! Condensation converts gaseous vapor back into liquid cloud droplets.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T4",
@@ -1045,26 +1020,16 @@
         domain: "Language of Social Studies",
         model: "grid",
         terms: ["coordinate", "quadrant", "reflection", "axis"],
-        scenarioA: "Look at the grid map. Point P represents a student desk. To find Point P, start at zero. Move right three coordinates along the horizontal axis, then go up two vertical coordinates. Point P is at three, two.",
-        scenarioB: "This coordinate plane structures our classroom layout into quadrants. Point P is situated at coordinates three, two, meaning it lies in the positive first quadrant. Reflecting this point across the horizontal x-axis preserves the x-value but reverses the vertical y-coordinate, yielding three, negative two in the fourth quadrant.",
-        qA: "What is the starting horizontal coordinate number for Point P?",
-        qB: "If you execute a vertical axis reflection of Point P across the y-axis, what coordinates represent the new desk position?",
-        optsA: ["Coordinate 1", "Coordinate 2", "Coordinate 3", "Coordinate 5"],
-        optsB: ["Three, negative two (3, -2)", "Negative three, two (-3, 2)", "Negative three, negative two (-3, -2)", "Three, two (3, 2)"],
+        passageA: "<span id='ev1'>Point P represents a desk coordinate.</span> <span id='ev2'>Start at zero and count three units horizontally along the x-<strong>axis</strong>.</span> <span id='ev3'>Then, count up two units vertically to find Point P.</span>",
+        passageB: "<span id='ev1'>A <strong>coordinate</strong> plane structures this classroom grid map.</span> <span id='ev2'>To locate desk Point P, we count three units positive along the horizontal x-<strong>axis</strong>.</span> <span id='ev3'>Moving up two units positive locates Point P at coordinate three, two in the positive first <strong>quadrant</strong>.</span>",
+        qA: "How many units do you count positive along the horizontal x-axis?",
+        qB: "According to the map grid passage, what mathematical quadrant contains Point P?",
+        optsA: ["One unit", "Two units", "Three units", "Five units"],
+        optsB: ["The negative fourth quadrant", "The positive first quadrant", "The equivalent origin", "The balanced scale pan"],
         ansA: 2,
         ansB: 1,
-        explA: [
-          "Incorrect. Coordinate 1 is the starting quadrant base.",
-          "Incorrect. Two is the vertical height coordinate of Point P.",
-          "Correct! The horizontal coordinate (x) is exactly three.",
-          "Incorrect. Five is off the active plot point."
-        ],
-        explB: [
-          "Incorrect. That is a reflection across the horizontal x-axis.",
-          "Correct! Reflecting across the vertical y-axis reverses the x-coordinate to negative three, keeping y positive.",
-          "Incorrect. That represents a reflection across the origin (both axes).",
-          "Incorrect. That is the original position."
-        ]
+        explA: ["Incorrect.", "Incorrect. Two is the vertical count.", "Correct! The x-axis count is exactly three units.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Coordinates (3, 2) place Point P inside the positive first quadrant.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T5",
@@ -1072,26 +1037,16 @@
         domain: "Language of Mathematics",
         model: "scale",
         terms: ["equation", "variable", "constant", "inverse"],
-        scenarioA: "Look at this mechanical scale. It is perfectly balanced, meaning both sides are equal. The left side has a bag variable X and two blocks. The right side has five blocks. This forms a balanced equation.",
-        scenarioB: "This mechanical balance represents an algebraic equation. The left pan holds the variable X bag plus a constant value of two, while the right pan holds five constant unit cubes. To isolate the variable X, we apply the inverse operation of subtraction, subtracting two from both sides to find X equals three.",
-        qA: "How many constant unit cubes are on the right side of the scale?",
-        qB: "Which inverse operation must you perform to isolate the variable X bag in the equation X plus two equals five?",
-        optsA: ["Three cubes", "Four cubes", "Five cubes", "Seven cubes"],
-        optsB: ["Add two to both sides of the equation", "Subtract two from both sides of the equation", "Multiply both sides by five", "Decompose the polygon into sub-shapes"],
-        ansA: 2,
+        passageA: "<span id='ev1'>A balanced scale acts like an <strong>equation</strong>.</span> <span id='ev2'>The left pan has bag <strong>variable</strong> X plus two cubes.</span> <span id='ev3'>The right pan holds exactly five cubes.</span>",
+        passageB: "<span id='ev1'>This balanced scale represents a linear algebraic <strong>equation</strong>.</span> <span id='ev2'>The left pan contains the unknown <strong>variable</strong> X plus a <strong>constant</strong> value of two cubes.</span> <span id='ev3'>The right pan holds exactly five constant cubes, balancing the sides.</span> Subtracting two isolates X.",
+        qA: "What does a balanced mechanical scale represent?",
+        qB: "According to the passage, what specific objects are placed inside the right pan of the balance scale?",
+        optsA: ["A composite polygon", "An algebraic equation", "A coordinate axis", "A water condensation cloud"],
+        optsB: ["One variable bag X", "Five constant cubes", "Three strict inequalities", "Chlorophyll pigments"],
+        ansA: 1,
         ansB: 1,
-        explA: [
-          "Incorrect. Three is the isolated value of X, not the right pan count.",
-          "Incorrect. There are more than four blocks on the right.",
-          "Correct! The right side holds exactly five constant cubes.",
-          "Incorrect. That would imbalance the pans."
-        ],
-        explB: [
-          "Incorrect. Adding two would make the left side X + 4, not isolating X.",
-          "Correct! Since the variable has 2 added to it, subtracting 2 from both sides is the inverse operation.",
-          "Incorrect. Multiplication would scale the entire equation, not isolate X.",
-          "Incorrect. Polygons are geometric, not related to scale balance."
-        ]
+        explA: ["Incorrect.", "Correct! The text states a balanced scale represents an algebraic equation.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect. The bag X is in the left pan.", "Correct! The right pan holds exactly five constant cubes.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T6",
@@ -1099,26 +1054,16 @@
         domain: "Language of Science",
         model: "data",
         terms: ["friction", "mean", "median", "outlier"],
-        scenarioA: "This dot plot shows speed data. Most of the speed dots are clustered at two. This is the mode. There is one dot far away at five. This single dot represents a high speed outlier.",
-        scenarioB: "We analyze a speed data distribution subject to friction. The dataset clusters heavily at two, which represents our median center. However, the isolated speed dot at value five acts as a significant outlier. This outlier pulls the calculated mean value to the right, skewing the overall statistical summary.",
-        qA: "At what speed value is the highest cluster stack of dots?",
-        qB: "How does the high outlier dot at value five affect the relationship between the mean and median?",
-        optsA: ["Value one", "Value two", "Value three", "Value five"],
-        optsB: ["It pulls the mean to be higher than the median", "It pulls the median to be higher than the mean", "It makes the mean and median exactly equal", "It increases the friction coefficient of the scale"],
+        passageA: "<span id='ev1'>This dot plot shows speed data.</span> <span id='ev2'>Most speed dots cluster at value two.</span> <span id='ev3'>One speed dot at value five is a high <strong>outlier</strong>.</span> This outlier alters calculations.",
+        passageB: "<span id='ev1'>This speed <strong>data</strong> distribution is subject to surface <strong>friction</strong>.</span> <span id='ev2'>The speed values cluster heavily at two, representing our <strong>median</strong> center.</span> <span id='ev3'>However, the isolated dot at value five acts as a high speed <strong>outlier</strong>, pulling the statistical <strong>mean</strong> upwards.</span>",
+        qA: "What statistical middle value does the heavy cluster at speed two represent?",
+        qB: "What is the consequence of having a high speed outlier dot at value five?",
+        optsA: ["The mean", "The median center", "The total sum", "The composite polygon"],
+        optsB: ["It reduces the friction coefficient", "It pulls the statistical mean upwards", "It decomposes the scale equation", "It shifts coordinates into the fourth quadrant"],
         ansA: 1,
-        ansB: 0,
-        explA: [
-          "Incorrect. Value one has fewer dots.",
-          "Correct! The highest frequency stack of speed dots clusters at value two.",
-          "Incorrect. Value three has only one dot.",
-          "Incorrect. Value five is the outlier, not the cluster."
-        ],
-        explB: [
-          "Correct! High outliers skew the average (mean) upwards, pulling it higher than the middle value (median).",
-          "Incorrect. The median remains stable; the mean is pulled higher.",
-          "Incorrect. skews the calculations, making them unequal.",
-          "Incorrect. Friction coefficients are physical, not statistical variables."
-        ]
+        ansB: 1,
+        explA: ["Incorrect. The average (mean) is pulled higher by outliers.", "Correct! The text defines the cluster at two as the median center.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! The text confirms that the high outlier pulls the statistical mean upwards.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T7",
@@ -1126,26 +1071,16 @@
         domain: "Language of Mathematics",
         model: "geometry",
         terms: ["polygon", "decompose", "composite", "area"],
-        scenarioA: "Look at the big composite shape. It is a single polygon. We calculate its total area by decomposing it. We cut it into two simple shapes: one rectangle and one right triangle.",
-        scenarioB: "To determine the complete area of this composite polygon, we apply the strategy of decomposition. We segment the shape into a sub-rectangle and a sub-triangle. We compute their individual areas separately, then sum the two values to reveal the total composite area.",
-        qA: "What two simple shapes form this composite polygon?",
-        qB: "What is the logical mathematical step to take after decomposing the polygon and finding the areas of the sub-shapes?",
-        optsA: ["A square and a circle", "A triangle and a rectangle", "Two equal fractions", "A quadrant and an axis"],
-        optsB: ["Subtract the triangle from the rectangle", "Sum the individual areas to find the total composite area", "Divide the numerator by the denominator", "Isolate the scale variable"],
+        passageA: "<span id='ev1'>A composite shape is a single <strong>polygon</strong>.</span> <span id='ev2'>We <strong>decompose</strong> it into simple shapes.</span> <span id='ev3'>We find the total <strong>area</strong> by summing the rectangle and triangle areas.</span>",
+        passageB: "<span id='ev1'>This complex <strong>composite</strong> shape structures a single geometric <strong>polygon</strong>.</span> <span id='ev2'>To calculate total capacity, we must first <strong>decompose</strong> it into two sub-shapes.</span> <span id='ev3'>Specifically, computing the individual <strong>areas</strong> of the sub-rectangle and sub-triangle and summing them yields the complete composite area.</span>",
+        qA: "What action do you take to segment a composite polygon into simple shapes?",
+        qB: "How do you calculate the total composite area after finding the sub-shape areas?",
+        optsA: ["Reflect it", "Decompose it", "Evaporate it", "Isolate it"],
+        optsB: ["Subtract the triangle from the rectangle", "Sum the individual areas of the sub-shapes", "Divide the numerator by the denominator", "Multiply the coordinates"],
         ansA: 1,
         ansB: 1,
-        explA: [
-          "Incorrect. The model contains no circular curves.",
-          "Correct! The composite polygon is decomposed into a triangle and a rectangle.",
-          "Incorrect. These are polygons, not fractions.",
-          "Incorrect. These are coordinate grid elements."
-        ],
-        explB: [
-          "Incorrect. Subtracting would leave an incomplete area.",
-          "Correct! Summing the decomposed areas yields the total composite area of the polygon.",
-          "Incorrect. Division is for fractions, not polygon summation.",
-          "Incorrect. Variable isolation is for algebraic scale equations."
-        ]
+        explA: ["Incorrect.", "Correct! Decomposing segments a complex polygon into simpler shapes.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Summing the individual areas yields the total composite area.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T8",
@@ -1153,26 +1088,16 @@
         domain: "Language of Social Studies",
         model: "reflect",
         terms: ["academic", "strategy", "equivalent", "constant"],
-        scenarioA: "Look at these progress steps. This year, my academic goal was to speak using complete sentences. I practiced new vocabulary daily. Using pictures helped me explain my mathematical ideas clearly.",
-        scenarioB: "Reflecting on linguistic growth, students transition along a developmental ladder. Achieving high academic speaking marks requires practicing vocabulary strategies. Connecting terms directly to equivalent visual models establishes a constant growth path, preparing students for formal WIDA presentations.",
-        qA: "What was the main goal described in this reflection steps narrative?",
-        qB: "According to the speaker, what strategy helped them explain complex mathematical ideas clearly?",
-        optsA: ["To paint complex composite polygons", "To speak using complete academic sentences", "To isolate variables on balance scales", "To construct thermodynamic water cycles"],
-        optsB: ["Reading high-frequency stories at 0.6x speed", "Connecting vocabulary terms directly to visual models", "Subtracting outlier dots from the plot", "Reflecting coordinates across grid quadrants"],
+        passageA: "<span id='ev1'>Reflecting on speaking goals helps students learn.</span> <span id='ev2'>My primary <strong>strategy</strong> was practicing vocabulary.</span> <span id='ev3'>Visual models helped me explain math ideas.</span>",
+        passageB: "Reflecting on <strong>academic</strong> oral benchmarks helps students assess growth. <span id='ev1'>Linguistic progression requires tracking strategies.</span> <span id='ev2'>Connecting core terms to <strong>equivalent</strong> visual diagrams acts as a <strong>constant</strong> learning scaffold.</span> <span id='ev3'>Consequently, visual mapping builds fluent academic discourse.</span>",
+        qA: "What was the primary strategy used to improve academic speaking?",
+        qB: "What specific scaffold serves as a constant aid in learning academic terms?",
+        optsA: ["Decomposing polygons", "Practicing vocabulary strategies", "Shading fraction circles", "Calculating prism volumes"],
+        optsB: ["Subtracting speed outlier dots", "Connecting core terms to equivalent visual diagrams", "Reflecting origin coordinates", "Opening boundary circles"],
         ansA: 1,
         ansB: 1,
-        explA: [
-          "Incorrect. Geometry is a task, not the self-reflection goal.",
-          "Correct! The student's primary academic goal was speaking in complete sentences.",
-          "Incorrect. Scale algebra is unrelated to language goals.",
-          "Incorrect. The water cycle is a science task."
-        ],
-        explB: [
-          "Incorrect. Playback speed is a listening option, not a speaking strategy.",
-          "Correct! Connecting vocabulary directly to visual models makes explanations concrete and clear.",
-          "Incorrect. Outliers are statistical data, not learning strategies.",
-          "Incorrect. Coordinate grids do not act as language scaffolds."
-        ]
+        explA: ["Incorrect.", "Correct! Practicing vocabulary was the primary strategy.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Connecting terms to equivalent visual diagrams acts as a constant scaffold.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T9",
@@ -1180,26 +1105,16 @@
         domain: "Social & Instructional",
         model: "bar-chart",
         terms: ["data", "distribution", "comparison", "sum"],
-        scenarioA: "This bar chart displays sports data. More students prefer soccer than running or basketball. Soccer is the highest bar. We can see student preferences by comparing the bar heights.",
-        scenarioB: "This bar chart visualizes student preference distribution data. A comparison of the categories reveals that soccer leads with the highest frequency, followed by basketball. Summing all category values calculates the total sample size, showcasing cooperative game preferences.",
-        qA: "Which sport has the highest bar on the preference chart?",
-        qB: "How is the total number of students who participated in the survey calculated from the bar chart?",
-        optsA: ["Running", "Basketball", "Soccer", "Tetherball"],
-        optsB: ["By multiplying the highest bar by the lowest bar", "By summing the heights of all the preference bars", "By decomposing the bar coordinates", "By isolating the soccer variable"],
-        ansA: 2,
+        passageA: "<span id='ev1'>This bar chart shows sports data.</span> <span id='ev2'>A <strong>comparison</strong> of bars shows soccer is the most popular.</span> <span id='ev3'>The <strong>sum</strong> of all bars gives the total student survey count.</span>",
+        passageB: "<span id='ev1'>This bar chart visualizes student preference <strong>data</strong>.</span> <span id='ev2'>A statistical <strong>comparison</strong> of bar heights highlights soccer as the dominant category.</span> <span id='ev3'>Summing all preference values yields the total student survey size, charting the preference <strong>distribution</strong>.</span>",
+        qA: "Which recess sport is identified as the most popular category?",
+        qB: "What calculation reveals the total student survey count from the bar chart?",
+        optsA: ["Running", "Soccer", "Basketball", "Tetherball"],
+        optsB: ["Multiplying coordinates", "Summing all preference values", "Decomposing the highest bar", "Subtracting the outlier dot"],
+        ansA: 1,
         ansB: 1,
-        explA: [
-          "Incorrect. Running is the lowest bar on the chart.",
-          "Incorrect. Basketball is high but not the highest.",
-          "Correct! Soccer commands the highest bar on the preference chart.",
-          "Incorrect. Tetherball is not in the dataset."
-        ],
-        explB: [
-          "Incorrect. Multiplication would scale, not calculate the survey total.",
-          "Correct! Summing the heights of all bars aggregates all student survey responses.",
-          "Incorrect. Decomposition is for geometric area calculations.",
-          "Incorrect. Variable isolation is for algebraic balance scales."
-        ]
+        explA: ["Incorrect.", "Correct! Soccer is the most popular recess sport.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Summing all bar values yields the total student survey count.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T10",
@@ -1207,44 +1122,33 @@
         domain: "Language of Mathematics",
         model: "ratio-table",
         terms: ["ratio", "equivalent", "multiplier", "column"],
-        scenarioA: "Look at the cookie ratio table. One batch requires two cups of flour. To make two batches, you need four cups. The numbers in each column scale up by the same multiplier.",
-        scenarioB: "This mathematical ratio table presents proportional columns. The relationship between cookie batches and flour cups is constant. We calculate equivalent ratios by determining the constant column multiplier. In this case, multiplying the batch value by two yields the flour value.",
-        qA: "How many cups of flour do you need to bake exactly two batches of cookies?",
-        qB: "In this ratio table, what mathematical role does the number 'two' perform across all columns?",
-        optsA: ["Two cups of flour", "Four cups of flour", "Five cups of flour", "Six cups of flour"],
-        optsB: ["It acts as a high speed outlier dot", "It is the constant scale variable", "It represents the constant multiplier that scales the columns", "It decomposes the composite polygon whole"],
+        passageA: "<span id='ev1'>A <strong>ratio</strong> table has proportional numbers.</span> <span id='ev2'>Each <strong>column</strong> scales up by a constant.</span> <span id='ev3'>One batch requires two cups of flour, making equivalent ratios.</span>",
+        passageB: "<span id='ev1'>This <strong>ratio</strong> table presents proportional <strong>columns</strong>.</span> <span id='ev2'>To calculate <strong>equivalent</strong> ratios, we determine the constant scaling <strong>multiplier</strong>.</span> <span id='ev3'>Multiplying the batches by two yields the flour cups needed, preserving column proportions.</span>",
+        qA: "What type of columns are represented in this cookie ratio table?",
+        qB: "According to the math text, how do we calculate equivalent ratios in a table?",
+        optsA: ["Balanced scale columns", "Proportional columns", "Reflected axis columns", "Decomposed polygon columns"],
+        optsB: ["By subtracting the outlier values", "By determining the constant scaling multiplier", "By reflecting coordinates", "By vaporizing water reservoirs"],
         ansA: 1,
-        ansB: 2,
-        explA: [
-          "Incorrect. Two cups is for one single batch.",
-          "Correct! Two batches require exactly four cups of flour.",
-          "Incorrect. Five is not a value in the table ratio.",
-          "Incorrect. Six cups is for three batches."
-        ],
-        explB: [
-          "Incorrect. Outliers skew dot plots, not tables.",
-          "Incorrect. Scale variables belong on balance equations.",
-          "Correct! The number two acts as the constant multiplier to establish equivalent ratio columns.",
-          "Incorrect. Decomposition is for composite areas."
-        ]
+        ansB: 1,
+        explA: ["Incorrect.", "Correct! The ratio table presents proportional columns.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! We determine the constant scaling multiplier to find equivalent ratios.", "Incorrect.", "Incorrect."]
       },
-      // Tasks 11 to 20 follow the exact same high-level mapping structure
       {
         id: "T11",
         title: "Plant Photosynthesis",
         domain: "Language of Science",
         model: "photosynthesis",
         terms: ["carbon", "oxygen", "chlorophyll", "energy"],
-        scenarioA: "Plants use sunlight to grow. Chlorophyll in the leaves catches light energy. The plant takes in carbon dioxide and water. Subsequently, it produces glucose sugar and releases oxygen into the air.",
-        scenarioB: "Within the chloroplasts, chlorophyll pigment absorbs radiant energy from sunlight. This drives a chemical conversion where carbon dioxide and water molecules synthesize into glucose. Consequently, oxygen gas is released as a vital byproduct, supporting respiration.",
-        qA: "What pigment in leaves catches solar energy for photosynthesis?",
-        qB: "What gas is released by the plant as a byproduct of this chemical reaction?",
-        optsA: ["Carbon dioxide", "Glucose sugar", "Chlorophyll", "Water vapor"],
-        optsB: ["Oxygen gas", "Carbon dioxide", "Nitrogen vapor", "Helium"],
+        passageA: "<span id='ev1'>Leaves contain a green pigment called <strong>chlorophyll</strong>.</span> <span id='ev2'>Chlorophyll absorbs sunlight <strong>energy</strong> to feed the plant.</span> <span id='ev3'>The plant takes in <strong>carbon</strong> dioxide and releases <strong>oxygen</strong> gas.</span>",
+        passageB: "Photosynthesis converts light into chemical fuel. <span id='ev1'>Within chloroplasts, <strong>chlorophyll</strong> absorbs radiant <strong>energy</strong>.</span> <span id='ev2'>This converts water and atmospheric <strong>carbon</strong> dioxide into glucose sugar.</span> <span id='ev3'>Consequently, <strong>oxygen</strong> gas is released as a vital byproduct.</span>",
+        qA: "What green pigment inside leaves absorbs solar light energy?",
+        qB: "What gas is released into the atmosphere as a byproduct of photosynthesis?",
+        optsA: ["Carbon dioxide", "Oxygen gas", "Chlorophyll", "Glucose sugar"],
+        optsB: ["Oxygen gas", "Carbon dioxide", "Nitrogen gas", "Hydrogen vapor"],
         ansA: 2,
         ansB: 0,
-        explA: ["Incorrect.", "Incorrect.", "Correct! Chlorophyll is the active pigment.", "Incorrect."],
-        explB: ["Correct! Oxygen gas is released into the atmosphere.", "Incorrect.", "Incorrect.", "Incorrect."]
+        explA: ["Incorrect.", "Incorrect.", "Correct! Chlorophyll is the light-absorbing pigment.", "Incorrect."],
+        explB: ["Correct! Oxygen gas is released as a byproduct.", "Incorrect.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T12",
@@ -1252,16 +1156,16 @@
         domain: "Language of Social Studies",
         model: "timeline",
         terms: ["timeline", "interval", "chronological", "period"],
-        scenarioA: "This history timeline shows chronological events. The line has intervals of fifty years. We use timelines to understand when periods in history started and ended.",
-        scenarioB: "This historical timeline models chronological intervals across a century. The system splits time into specific segments, charting events sequentially. This structures historical analysis, allowing students to compare durations of distinct eras.",
-        qA: "What is the scale interval of years marked on this history timeline?",
-        qB: "Why do historians use structured timelines during analysis?",
-        optsA: ["Ten years", "Fifty years", "One hundred years", "Five hundred years"],
-        optsB: ["To calculate composite polygon areas", "To chart chronological events and compare periods", "To balance variables on scales", "To evaporate ocean water"],
+        passageA: "<span id='ev1'>A history <strong>timeline</strong> charts events in order.</span> <span id='ev2'>The line has fifty-year <strong>intervals</strong>.</span> <span id='ev3'>This helps us analyze historical <strong>periods</strong> and dates.</span>",
+        passageB: "<span id='ev1'>This historical <strong>timeline</strong> tracks events in <strong>chronological</strong> sequence.</span> <span id='ev2'>The scale segments time into fifty-year <strong>intervals</strong>.</span> <span id='ev3'>This structures analysis of historical <strong>periods</strong>, illustrating when eras began and ended.</span>",
+        qA: "What type of sequence does a history timeline track?",
+        qB: "How long are the intervals segmented on this history timeline?",
+        optsA: ["Random order", "Chronological sequence", "Decomposed polygon scale", "Balanced algebraic equations"],
+        optsB: ["Ten years", "Fifty years", "One hundred years", "Five hundred years"],
         ansA: 1,
         ansB: 1,
-        explA: ["Incorrect.", "Correct! The timeline intervals show fifty-year gaps.", "Incorrect.", "Incorrect."],
-        explB: ["Incorrect.", "Correct! Timelines map chronological sequences visually.", "Incorrect.", "Incorrect."]
+        explA: ["Incorrect.", "Correct! Timelines chart events in chronological sequence.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! The timeline splits time into fifty-year intervals.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T13",
@@ -1269,16 +1173,16 @@
         domain: "Language of Mathematics",
         model: "prism-vol",
         terms: ["volume", "prism", "capacity", "base"],
-        scenarioA: "This is a rectangular prism. The base has four boxes and the height is three layers. We calculate volume by multiplying the base area times the height. This reveals the prism's capacity.",
-        scenarioB: "We calculate the cubic capacity of this rectangular prism. By multiplying the base area dimensions by the vertical height layers, we compute the volume. The base has a length of four and a width of three, yielding a base area of twelve.",
-        qA: "What is the base area of this rectangular prism?",
-        qB: "What mathematical formula calculates the volume of any rectangular prism?",
-        optsA: ["Twelve square units", "Three square units", "Four square units", "Sixteen square units"],
-        optsB: ["Base area plus the height", "Length times width times height", "Fraction numerator divided by axis", "Sum of the outer coordinate reflections"],
-        ansA: 0,
-        ansB: 1,
-        explA: ["Correct! 4 times 3 gives a base area of twelve.", "Incorrect.", "Incorrect.", "Incorrect."],
-        explB: ["Incorrect.", "Correct! Length times width times height (or base times height) yields volume.", "Incorrect.", "Incorrect."]
+        passageA: "<span id='ev1'>A rectangular <strong>prism</strong> is a solid three-dimensional shape.</span> <span id='ev2'>We find its <strong>capacity</strong> by calculating its <strong>volume</strong>.</span> <span id='ev3'>Multiply the <strong>base</strong> area times the vertical height.</span>",
+        passageB: "<span id='ev1'>This rectangular <strong>prism</strong> has a solid three-dimensional capacity.</span> <span id='ev2'>We determine <strong>volume</strong> by multiplying the <strong>base</strong> area dimensions by height.</span> <span id='ev3'>The base area is length times width, equaling twelve square units.</span>",
+        qA: "How do you calculate the volume of a rectangular prism?",
+        qB: "What is the area of the base of this rectangular prism?",
+        optsA: ["Add the length and height", "Multiply the base area times the vertical height", "Decompose the polygon into fractions", "Reflect coordinates across quadrants"],
+        optsB: ["Three square units", "Four square units", "Twelve square units", "Sixteen square units"],
+        ansA: 1,
+        ansB: 2,
+        explA: ["Incorrect.", "Correct! Multiplying base area by height yields volume.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Incorrect.", "Correct! Base area is length (4) times width (3), which is twelve.", "Incorrect."]
       },
       {
         id: "T14",
@@ -1286,16 +1190,16 @@
         domain: "Language of Science",
         model: "ecosystem",
         terms: ["trophic", "consumer", "producer", "transfer"],
-        scenarioA: "This is a trophic food web. Plants are producers that get energy from the sun. Insects eat plants, and frogs eat insects. The arrows show the transfer of energy.",
-        scenarioB: "This ecological trophic web illustrates energy transfer vectors. Producers synthesize solar energy. Primary consumers eat producers, and secondary consumers digest insects. The directional arrows map the tributary flow of metabolic energy.",
-        qA: "In this ecosystem, what role do green plants perform?",
-        qB: "What do the arrows in a trophic food web diagram represent?",
-        optsA: ["Primary consumers", "Secondary consumers", "Producers", "Outliers"],
-        optsB: ["The movement of soil erosion", "The transfer of metabolic energy from one organism to another", "The coordinate reflections of quadrants", "The flow of liquid ocean condensation"],
-        ansA: 2,
+        passageA: "<span id='ev1'>An ecosystem has a <strong>trophic</strong> food web.</span> <span id='ev2'>Plants are green <strong>producers</strong> that make energy.</span> <span id='ev3'>Animals are <strong>consumers</strong> that eat plants or other animals.</span>",
+        passageB: "<span id='ev1'>This ecosystem maps energy pathways in a <strong>trophic</strong> web.</span> <span id='ev2'>Plants act as <strong>producers</strong>, synthesizing solar light energy.</span> <span id='ev3'>Animals are <strong>consumers</strong>, and arrows chart the vector <strong>transfer</strong> of metabolic energy.</span>",
+        qA: "What biological role do green plants perform in an ecosystem?",
+        qB: "According to the science text, what do the arrows in the trophic web chart?",
+        optsA: ["Consumers", "Producers", "Outliers", "Decomposers"],
+        optsB: ["Soil erosion", "The transfer of metabolic energy", "Inequality boundaries", "Coordinate axis reflections"],
+        ansA: 1,
         ansB: 1,
-        explA: ["Incorrect.", "Incorrect.", "Correct! Plants produce energy via photosynthesis.", "Incorrect."],
-        explB: ["Incorrect.", "Correct! Arrows show the direct path of energy transfers.", "Incorrect.", "Incorrect."]
+        explA: ["Incorrect.", "Correct! Plants act as producers in ecosystems.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Arrows map the vector transfer of metabolic energy.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T15",
@@ -1303,16 +1207,16 @@
         domain: "Language of Mathematics",
         model: "number-line",
         terms: ["inequality", "boundary", "limit", "inclusive"],
-        scenarioA: "Look at the number line. The inequality says X is greater than three. The boundary is an open circle at three. This means three is not included in the solution.",
-        scenarioB: "This number line visualizes an inequality boundary. Since the boundary circle is open, it indicates a strict inequality where the limit value itself is not inclusive. Shading extends to the right, showing values greater than three.",
-        qA: "Where is the boundary circle located on this number line?",
-        qB: "What does an open circle boundary mean in a plotted inequality graph?",
-        optsA: ["At value zero", "At value three", "At value five", "At value negative two"],
-        optsB: ["The boundary number is inclusive in the solution", "The boundary number is not inclusive in the solution", "The equation is balanced", "The coordinates are reflected across the axis"],
+        passageA: "<span id='ev1'>A number line shows plotted numbers.</span> <span id='ev2'>An open circle marks the <strong>boundary</strong> of the <strong>inequality</strong>.</span> <span id='ev3'>An open boundary circle means the number is not included.</span>",
+        passageB: "<span id='ev1'>This number line graphs a strict algebraic <strong>inequality</strong>.</span> <span id='ev2'>An open circle represents the plotted <strong>boundary</strong> <strong>limit</strong>.</span> <span id='ev3'>This open boundary indicates that the number itself is not <strong>inclusive</strong> in the solution.</span>",
+        qA: "What shape marks the boundary of the inequality on this number line?",
+        qB: "According to the math text, what does an open boundary circle indicate?",
+        optsA: ["A closed square", "An open circle", "A coordinate axis", "A composite polygon"],
+        optsB: ["The boundary number is inclusive", "The boundary number is not inclusive in the solution", "The scale is balanced", "The ratios are equivalent"],
         ansA: 1,
         ansB: 1,
-        explA: ["Incorrect.", "Correct! The boundary is plotted at value three.", "Incorrect.", "Incorrect."],
-        explB: ["Incorrect.", "Correct! Open circle indicates strict boundary limits (not inclusive).", "Incorrect.", "Incorrect."]
+        explA: ["Incorrect.", "Correct! An open circle marks the boundary of the inequality.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! An open circle boundary indicates that the number is not inclusive.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T16",
@@ -1320,16 +1224,16 @@
         domain: "Social & Instructional",
         model: "interview",
         terms: ["proposal", "request", "collaborative", "benefits"],
-        scenarioA: "A student meets the principal to request a new sports club. The student presents a proposal explaining the benefits. They discuss how a club helps students build collaborative teamwork skills.",
-        scenarioB: "In this formal interview, a student delivers a proposal requesting a collaborative recess club. The student articulates specific physical and social benefits, outlining how structured games support teamwork, directly answering the principal's questions.",
-        qA: "What is the student requesting in the principal proposal meeting?",
-        qB: "What social benefit is highlighted in the student's proposal?",
-        optsA: ["New math calculators", "A new recess sports club", "An extra science lab", "A grid map update"],
-        optsB: ["Increased coordinate reflections", "Reduced cookie baking ratios", "Collaborative teamwork skills", "Evaporating water levels"],
+        passageA: "<span id='ev1'>A student writes a <strong>proposal</strong> to start a recess club.</span> <span id='ev2'>The club offers active play and social <strong>benefits</strong>.</span> <span id='ev3'>Students learn <strong>collaborative</strong> teamwork skills.</span>",
+        passageB: "In this formal dialogue, a student presents a <strong>proposal</strong>. <span id='ev1'>The student delivers a formal <strong>request</strong> for a new club.</span> <span id='ev2'>This initiative outlines physical and social <strong>benefits</strong>.</span> <span id='ev3'>Engaging in active recess games builds <strong>collaborative</strong> teamwork skills.</span>",
+        qA: "What formal document does the student write to start a recess club?",
+        qB: "What social benefit do students learn by participating in the proposed club?",
+        optsA: ["An equation balance sheet", "A proposal document", "A coordinate grid map", "A history timeline period"],
+        optsB: ["Coordinate axis reflections", "Volume capacity formulas", "Collaborative teamwork skills", "Friction outliers"],
         ansA: 1,
         ansB: 2,
-        explA: ["Incorrect.", "Correct! The student proposes a new recess sports club.", "Incorrect.", "Incorrect."],
-        explB: ["Incorrect.", "Incorrect.", "Correct! Teamwork is the primary collaborative benefit.", "Incorrect."]
+        explA: ["Incorrect.", "Correct! The student writes a proposal document.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Incorrect.", "Correct! Participating in games builds collaborative teamwork skills.", "Incorrect."]
       },
       {
         id: "T17",
@@ -1337,16 +1241,16 @@
         domain: "Language of Social Studies",
         model: "map-scale",
         terms: ["scale", "legend", "ratio", "distance"],
-        scenarioA: "Look at the map scale. The legend shows that one inch on the map is equivalent to ten miles in the real world. We use this ratio to calculate actual travel distances.",
-        scenarioB: "This spatial map incorporates a scale legend. The ratio specifies that one unit represents ten miles of physical distance. Using this scale ratio, travelers convert map measurements into true geographical distance, calculating travel times.",
-        qA: "According to the map scale legend, one inch on the map is equal to how many real-world miles?",
-        qB: "Why do mapmakers include a scale ratio legend on geographical maps?",
-        optsA: ["One mile", "Five miles", "Ten miles", "Fifty miles"],
-        optsB: ["To decompose composite polygons", "To allow readers to convert map measurements to actual distance", "To count standard speed outlier dots", "To balance variables on scales"],
-        ansA: 2,
+        passageA: "<span id='ev1'>A map has a scale <strong>legend</strong> at the bottom.</span> <span id='ev2'>The scale shows a <strong>ratio</strong> between map inches and miles.</span> <span id='ev3'>We use this ratio to calculate real travel <strong>distances</strong>.</span>",
+        passageB: "<span id='ev1'>This spatial map incorporates a <strong>scale</strong> <strong>legend</strong>.</span> <span id='ev2'>The legend establishes a constant mathematical <strong>ratio</strong> where one inch equals ten miles.</span> <span id='ev3'>Using this ratio, geographers compute true physical <strong>distance</strong> between locations.</span>",
+        qA: "Where is the scale legend located on this map grid?",
+        qB: "According to the passage, what is the map scale ratio?",
+        optsA: ["At the vertical y-axis", "At the bottom of the map", "Inside the mechanical scale", "Inside the leaf chlorophyll"],
+        optsB: ["One inch equals one mile", "One inch equals ten miles", "One batch equals two cups", "One grid equals five quadrants"],
+        ansA: 1,
         ansB: 1,
-        explA: ["Incorrect.", "Incorrect.", "Correct! One inch scales to ten miles.", "Incorrect."],
-        explB: ["Incorrect.", "Correct! It allows converting visual dimensions to true physical distance.", "Incorrect.", "Incorrect."]
+        explA: ["Incorrect.", "Correct! The scale legend is located at the bottom of the map.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! One inch on the map scales to exactly ten miles.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T18",
@@ -1354,16 +1258,16 @@
         domain: "Language of Science",
         model: "ramp-physics",
         terms: ["gravity", "slope", "acceleration", "friction"],
-        scenarioA: "Look at the incline ramp. A block slides down the slope. Gravity pulls the block downwards, causing acceleration. Friction opposes the movement, acting as a resistive force.",
-        scenarioB: "This physics model diagrams forces on an inclined ramp. Gravity pulls the block down the slope, inducing linear acceleration. Opposing this motion is friction, acting as a parallel resistive force. If friction increases, sliding speed decreases.",
-        qA: "What force pulls the sliding block down the slope?",
-        qB: "How does the physical force of friction affect the block's acceleration down the ramp?",
-        optsA: ["Friction", "Gravity", "Oxygen", "Carbon dioxide"],
-        optsB: ["It increases acceleration rates", "It opposes the motion and acts as a resistive force", "It reflects the block into a new quadrant", "It creates an equivalent ratio constant"],
+        passageA: "<span id='ev1'>A block slides down an incline ramp <strong>slope</strong>.</span> <span id='ev2'>The force of <strong>gravity</strong> pulls the block downwards.</span> <span id='ev3'>Resistive <strong>friction</strong> opposes this movement, reducing <strong>acceleration</strong>.</span>",
+        passageB: "<span id='ev1'>This physics model diagrams forces acting on an inclined <strong>slope</strong>.</span> <span id='ev2'>The force of <strong>gravity</strong> pulls the block downwards, inducing <strong>acceleration</strong>.</span> <span id='ev3'>Conversely, resistive <strong>friction</strong> acts as a parallel force opposing this descending motion.</span>",
+        qA: "What force pulls the sliding block down the incline slope?",
+        qB: "According to the science text, what force acts to oppose the block's descending motion?",
+        optsA: ["Resistive friction", "Gravity", "Oxygen gas", "Constant multipliers"],
+        optsB: ["Gravity", "Resistive friction", "Acceleration", "Decomposition"],
         ansA: 1,
         ansB: 1,
-        explA: ["Incorrect.", "Correct! Gravity pulls the mass down the slope.", "Incorrect.", "Incorrect."],
-        explB: ["Incorrect.", "Correct! Friction opposes motion, reducing net sliding acceleration.", "Incorrect.", "Incorrect."]
+        explA: ["Incorrect. Friction opposes, gravity pulls down.", "Correct! Gravity is the force pulling the block downwards.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect. Gravity induces the motion.", "Correct! Friction opposes the descending sliding motion.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T19",
@@ -1371,16 +1275,16 @@
         domain: "Language of Social Studies",
         model: "branches-flow",
         terms: ["legislative", "executive", "judicial", "checks"],
-        scenarioA: "Our government has three branches. The Legislative branch makes laws. The Executive branch carries out laws. The Judicial branch explains laws. This system of checks and balances prevents any branch from having too much power.",
-        scenarioB: "This flowchart structures the three branches of government. The Legislative branch is responsible for making laws, the Executive branch executes them, and the Judicial branch interprets them. This tripartite system uses checks and balances to prevent centralization of authority.",
-        qA: "Which branch of government is responsible for making academic laws?",
-        qB: "What is the purpose of having a system of checks and balances in government?",
-        optsA: ["Executive branch", "Judicial branch", "Legislative branch", "Principal branch"],
-        optsB: ["To calculate composite polygon areas", "To prevent any single branch from gaining too much power", "To accelerate blocks down physical slope ramps", "To divide the numerator by the denominator"],
-        ansA: 2,
+        passageA: "<span id='ev1'>Our government is divided into three branches.</span> <span id='ev2'>The <strong>legislative</strong> branch writes and makes laws.</span> <span id='ev3'>A system of <strong>checks</strong> and balances prevents central power.</span>",
+        passageB: "<span id='ev1'>This flowchart outlines the tripartite system of government.</span> <span id='ev2'>The <strong>legislative</strong> branch makes laws, while the <strong>executive</strong> and <strong>judicial</strong> branches enforce and interpret them.</span> <span id='ev3'>This system of <strong>checks</strong> and balances guarantees a divided equilibrium of power.</span>",
+        qA: "How many branches is the government divided into?",
+        qB: "According to the flowchart text, what system guarantees a divided equilibrium of power?",
+        optsA: ["Two branches", "Three branches", "Five branches", "Four quadrants"],
+        optsB: ["Carbon photosynthesis", "A system of checks and balances", "Thermodynamic condensation", "Inequality boundary circles"],
+        ansA: 1,
         ansB: 1,
-        explA: ["Incorrect.", "Incorrect.", "Correct! The Legislative branch (Congress) drafts and makes laws.", "Incorrect."],
-        explB: ["Incorrect.", "Correct! Checks and balances guarantee a divided balance of power.", "Incorrect.", "Incorrect."]
+        explA: ["Incorrect.", "Correct! The government is divided into three branches.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! The system of checks and balances prevents any single branch from gaining absolute power.", "Incorrect.", "Incorrect."]
       },
       {
         id: "T20",
@@ -1388,16 +1292,16 @@
         domain: "Language of Mathematics",
         model: "spinner-prob",
         terms: ["probability", "sector", "outcome", "distribution"],
-        scenarioA: "Look at the spinner wheel. The circle is partitioned into four sectors. The blue sector represents one-half of the wheel. The probability of spinning blue is one out of two, or fifty percent.",
-        scenarioB: "We analyze outcome probability on this circular spinner. The wheel is partitioned into sectors of varying sizes. The blue sector occupies exactly half the circle's area, establishing a fifty percent probability distribution for that specific outcome.",
-        qA: "What fraction of the spinner wheel area is occupied by the blue sector?",
-        qB: "If you spin the needle exactly once, what is the probability of landing on the blue sector?",
-        optsA: ["One-fourth (1/4)", "One-half (1/2)", "Three-fourths (3/4)", "One-fifth (1/5)"],
+        passageA: "<span id='ev1'>A spinner wheel is divided into sectors.</span> <span id='ev2'>The blue <strong>sector</strong> occupies exactly one-half.</span> <span id='ev3'>Landing on blue has a <strong>probability</strong> of fifty percent.</span>",
+        passageB: "<span id='ev1'>This circular spinner wheel maps plotted <strong>outcome</strong> options.</span> <span id='ev2'>The blue <strong>sector</strong> occupies exactly one-half of the complete circle.</span> <span id='ev3'>This structures a fifty percent <strong>probability</strong> <strong>distribution</strong> for landing on blue.</span>",
+        qA: "What sector color occupies exactly one-half of the spinner wheel?",
+        qB: "According to the passage, what is the probability distribution of landing on the blue sector?",
+        optsA: ["Red sector", "Blue sector", "Green sector", "Yellow sector"],
         optsB: ["Twenty-five percent (25%)", "Fifty percent (50%)", "Seventy-five percent (75%)", "One hundred percent (100%)"],
         ansA: 1,
         ansB: 1,
-        explA: ["Incorrect.", "Correct! The blue sector covers exactly half (one-half) of the spinner.", "Incorrect.", "Incorrect."],
-        explB: ["Incorrect.", "Correct! Since blue occupies half the area, the probability is 50%.", "Incorrect.", "Incorrect."]
+        explA: ["Incorrect.", "Correct! The blue sector covers exactly half the area.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Landing on blue has a probability distribution of exactly fifty percent.", "Incorrect.", "Incorrect."]
       }
     ];
 
@@ -1409,19 +1313,19 @@
           <rect x="50" y="50" width="300" height="200" rx="10" fill="#f1f5f9" />
           
           <!-- Sandwich slot -->
-          <rect x="70" y="70" width="120" height="100" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('sandwich', 'Sandwich is grains and proteins. High calorie fuels!')" />
+          <rect x="70" y="70" width="120" height="100" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapReadingObject('sandwich', 'Sandwich is grains and proteins. High calorie fuels!')" />
           <polygon points="80,150 130,80 180,150" fill="#f59e0b" opacity="0.8" style="pointer-events:none;" />
           <polygon points="90,150 130,95 170,150" fill="#b45309" style="pointer-events:none;" />
           <text x="130" y="163" text-anchor="middle" font-size="10" font-weight="900" fill="var(--slate-muted)">Sandwich</text>
           
           <!-- Milk slot -->
-          <rect x="210" y="70" width="120" height="100" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('milk', 'Milk carton represents dairy and liquid hydration!')" />
+          <rect x="210" y="70" width="120" height="100" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapReadingObject('milk', 'Milk carton represents dairy and liquid calcium!')" />
           <rect x="250" y="80" width="40" height="60" fill="#3b82f6" rx="2" style="pointer-events:none;" />
           <path d="M250,80 L270,68 L290,80 Z" fill="#2563eb" style="pointer-events:none;" />
           <text x="270" y="163" text-anchor="middle" font-size="10" font-weight="900" fill="var(--slate-muted)">Milk Carton</text>
           
           <!-- Apple slot -->
-          <rect x="70" y="185" width="260" height="50" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('apple', 'Red Apple representing fruit fibers!')" />
+          <rect x="70" y="185" width="260" height="50" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapReadingObject('apple', 'Red Apple representing fruit fibers!')" />
           <circle cx="200" cy="210" r="16" fill="#ef4444" style="pointer-events:none;" />
           <path d="M198,194 C198,191,202,191,202,194" stroke="#78350f" stroke-width="2.5" fill="none" style="pointer-events:none;" />
           <path d="M202,192 C206,192,207,188,205,188 Z" fill="#22c55e" style="pointer-events:none;" />
@@ -1467,10 +1371,10 @@
       
       water: function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
-          <circle cx="340" cy="60" r="24" fill="#f59e0b" style="cursor:pointer;" onclick="tapListeningObject('sun', 'The Sun is the source of thermal radiation in photosynthesis and evaporation cycles!')" />
-          <rect x="20" y="220" width="360" height="60" fill="#3b82f6" rx="4" style="cursor:pointer;" onclick="tapListeningObject('ocean', 'The ocean represents liquid H2O. Solar energy forces molecules to turn to gas.')" />
+          <circle cx="340" cy="60" r="24" fill="#f59e0b" style="cursor:pointer;" onclick="tapReadingObject('sun', 'The Sun is the source of thermal radiation in photosynthesis and evaporation cycles!')" />
+          <rect x="20" y="220" width="360" height="60" fill="#3b82f6" rx="4" style="cursor:pointer;" onclick="tapReadingObject('ocean', 'The ocean represents liquid H2O. Solar energy forces molecules to turn to gas.')" />
           <text x="200" y="255" text-anchor="middle" font-size="13" font-weight="900" fill="#fff" style="pointer-events:none;">Ocean (Liquid Water)</text>
-          <path d="M80,100 C70,100,60,90,65,80 C60,70,75,60,85,65 C95,55,115,65,110,80 C120,80,120,95,110,100 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('cloud', 'Clouds represent condensation: vapor cooling back into liquid drops!')" />
+          <path d="M80,100 C70,100,60,90,65,80 C60,70,75,60,85,65 C95,55,115,65,110,80 C120,80,120,95,110,100 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapReadingObject('cloud', 'Clouds represent condensation: vapor cooling back into liquid drops!')" />
           <text x="90" y="85" font-size="9" font-weight="900" fill="var(--slate-muted)" style="pointer-events:none;">Cloud</text>
           <path d="M 280,200 L 280,110" fill="none" stroke="var(--coral)" stroke-width="4.5" marker-end="url(#arrow)" />
           <text x="290" y="150" font-size="11" font-weight="900" fill="var(--coral)">Evaporation</text>
@@ -1501,9 +1405,7 @@
         }
 
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);" onclick="clickGridAxes(event)">
-          <!-- Background grids -->
           ${linesHtml}
-          <!-- Axes lines -->
           <line x1="200" y1="30" x2="200" y2="270" stroke="var(--navy)" stroke-width="2.5" />
           <line x1="50" y1="150" x2="350" y2="150" stroke="var(--navy)" stroke-width="2.5" />
           
@@ -1514,30 +1416,21 @@
       },
       
       scale: function() {
-        const leftW = 100;
-        const rightW = 160;
-        const balAngle = 0; 
-        
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Mechanical Scale Balance</text>
-          
-          <!-- Stand -->
           <rect x="194" y="80" width="12" height="150" fill="#64748b" />
           <polygon points="170,230 230,230 200,200" fill="#475569" />
           <line x1="100" y1="100" x2="300" y2="100" stroke="#334155" stroke-width="6" />
           
-          <!-- Left side -->
           <line x1="100" y1="100" x2="100" y2="170" stroke="#475569" stroke-width="2" />
-          <rect x="70" y="170" width="60" height="8" fill="#94a3b8" rx="2" style="cursor:pointer;" onclick="tapListeningObject('leftScale', 'Left pan holds bag variable X plus 2 constant cubes.')" />
+          <rect x="70" y="170" width="60" height="8" fill="#94a3b8" rx="2" style="cursor:pointer;" onclick="tapReadingObject('leftScale', 'Left pan holds bag variable X plus 2 constant cubes.')" />
           <rect x="80" y="145" width="22" height="25" fill="var(--primary)" rx="4" />
           <text x="91" y="162" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">X</text>
           <rect x="108" y="157" width="12" height="12" fill="var(--amber)" />
           <rect x="115" y="145" width="12" height="12" fill="var(--amber)" />
           
-          <!-- Right side -->
           <line x1="300" y1="100" x2="300" y2="170" stroke="#475569" stroke-width="2" />
-          <rect x="270" y="170" width="60" height="8" fill="#94a3b8" rx="2" style="cursor:pointer;" onclick="tapListeningObject('rightScale', 'Right pan holds 5 constant unit cubes in equilibrium.')" />
-          <!-- 5 boxes stacked -->
+          <rect x="270" y="170" width="60" height="8" fill="#94a3b8" rx="2" style="cursor:pointer;" onclick="tapReadingObject('rightScale', 'Right pan holds 5 constant unit cubes in equilibrium.')" />
           <rect x="280" y="157" width="12" height="12" fill="var(--amber)" />
           <rect x="294" y="157" width="12" height="12" fill="var(--amber)" />
           <rect x="308" y="157" width="12" height="12" fill="var(--amber)" />
@@ -1550,7 +1443,6 @@
         let dotsHtml = "";
         const speedFreq = [0, 0, 3, 1, 1, 0, 0];
         
-        // Render current points stack
         for (let i = 0; i < speedFreq.length; i++) {
           const x = 70 + (i * 44);
           const count = speedFreq[i];
@@ -1560,7 +1452,6 @@
           }
         }
         
-        // Add active click outlier trigger at value 5
         let outlierColor = "var(--slate-muted)";
         if (STORE.questCompleted) {
           outlierColor = "var(--primary)";
@@ -1570,11 +1461,8 @@
 
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Friction Speed Dot Plot</text>
-          
-          <!-- Axis line -->
           <line x1="50" y1="210" x2="350" y2="210" stroke="var(--navy)" stroke-width="3" />
           
-          <!-- Axis Ticks & labels -->
           <line x1="70" y1="210" x2="70" y2="216" stroke="var(--navy)" stroke-width="2" />
           <text x="70" y="232" text-anchor="middle" font-size="11" font-weight="900">0</text>
           
@@ -1606,14 +1494,13 @@
       geometry: function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Decomposing Composite Polygons</text>
-          <!-- Main composite polygon shape -->
           <polygon points="100,100 250,100 250,220 100,220" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="3" />
           <polygon points="250,100 320,220 250,220" fill="#fffbeb" stroke="var(--amber)" stroke-width="3" />
           <line x1="250" y1="100" x2="250" y2="220" stroke="var(--navy-deep)" stroke-width="2.5" stroke-dasharray="4" />
           
           <text x="175" y="165" text-anchor="middle" font-size="12" font-weight="900" fill="var(--primary-dark)">Rectangle</text>
           <text x="275" y="175" text-anchor="middle" font-size="12" font-weight="900" fill="var(--amber)">Triangle</text>
-          <rect x="50" y="240" width="300" height="48" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapListeningObject('polyArea', 'Decomposing cuts the polygon into a rectangle and a right triangle.')" />
+          <rect x="50" y="240" width="300" height="48" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapReadingObject('polyArea', 'Decomposing cuts the polygon into a rectangle and a right triangle.')" />
           <text x="200" y="268" text-anchor="middle" font-size="12" font-weight="900" fill="var(--navy-deep)">Total Area = Sum of rectangle and triangle (Click!)</text>
         </svg>`;
       },
@@ -1622,7 +1509,7 @@
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <rect x="30" y="30" width="340" height="240" rx="14" fill="#faf9f6" stroke="#d6d3d1" stroke-width="3" />
           <rect x="50" y="50" width="300" height="200" rx="8" fill="#fff" />
-          <!-- Steps ladder -->
+          
           <line x1="80" y1="210" x2="320" y2="70" stroke="#78716c" stroke-width="6" />
           <line x1="120" y1="210" x2="120" y2="185" stroke="#78716c" stroke-width="3" />
           <line x1="160" y1="185" x2="160" y2="160" stroke="#78716c" stroke-width="3" />
@@ -1633,7 +1520,7 @@
           <rect x="180" y="60" width="130" height="34" rx="4" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="1.5" />
           <text x="245" y="81" text-anchor="middle" font-size="11" font-weight="900" fill="var(--primary-dark)">Goal: Academic English</text>
           
-          <circle cx="120" cy="185" r="12" fill="var(--amber)" style="cursor:pointer;" onclick="tapListeningObject('ladderStep', 'Ladder reflection tracks steps towards native oral control!')" />
+          <circle cx="120" cy="185" r="12" fill="var(--amber)" style="cursor:pointer;" onclick="tapReadingObject('ladderStep', 'Ladder reflection tracks steps towards native oral control!')" />
           <text x="120" y="189" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">✓</text>
           <text x="200" y="240" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Self-Reflection Ladder (Click orange check!)</text>
         </svg>`;
@@ -1642,16 +1529,15 @@
       "bar-chart": function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Recess Sports preferences</text>
-          <!-- Bars -->
-          <rect x="80" y="80" width="50" height="130" fill="var(--primary)" rx="4" style="cursor:pointer;" onclick="tapListeningObject('soccerBar', 'Soccer is preferred by exactly 13 students!')" />
+          <rect x="80" y="80" width="50" height="130" fill="var(--primary)" rx="4" style="cursor:pointer;" onclick="tapReadingObject('soccerBar', 'Soccer is preferred by exactly 13 students!')" />
           <text x="105" y="70" text-anchor="middle" font-size="11" font-weight="900">13</text>
           <text x="105" y="230" text-anchor="middle" font-size="11" font-weight="900">Soccer</text>
           
-          <rect x="175" y="130" width="50" height="80" fill="#3b82f6" rx="4" style="cursor:pointer;" onclick="tapListeningObject('basketBar', 'Basketball is preferred by 8 students.')" />
+          <rect x="175" y="130" width="50" height="80" fill="#3b82f6" rx="4" style="cursor:pointer;" onclick="tapReadingObject('basketBar', 'Basketball is preferred by 8 students.')" />
           <text x="200" y="120" text-anchor="middle" font-size="11" font-weight="900">8</text>
           <text x="200" y="230" text-anchor="middle" font-size="11" font-weight="900">Basketball</text>
           
-          <rect x="270" y="160" width="50" height="50" fill="var(--amber)" rx="4" style="cursor:pointer;" onclick="tapListeningObject('runBar', 'Running is preferred by 5 students.')" />
+          <rect x="270" y="160" width="50" height="50" fill="var(--amber)" rx="4" style="cursor:pointer;" onclick="tapReadingObject('runBar', 'Running is preferred by 5 students.')" />
           <text x="295" y="150" text-anchor="middle" font-size="11" font-weight="900">5</text>
           <text x="295" y="230" text-anchor="middle" font-size="11" font-weight="900">Running</text>
           
@@ -1672,8 +1558,8 @@
           <text x="120" y="145" text-anchor="middle" font-size="14" font-weight="900" fill="var(--primary-dark)">1</text>
           <text x="280" y="145" text-anchor="middle" font-size="14" font-weight="900" fill="var(--primary-dark)">2</text>
           
-          <text x="120" y="205" text-anchor="middle" font-size="14" font-weight="900" fill="var(--amber)" style="cursor:pointer;" onclick="tapListeningObject('cookieRatio', 'For 2 batches, you scale by a multiplier of 2, requiring exactly 4 cups.')">2 (batches)</text>
-          <text x="280" y="205" text-anchor="middle" font-size="14" font-weight="900" fill="var(--amber)" style="cursor:pointer;" onclick="tapListeningObject('cookieRatio', 'For 2 batches, you scale by a multiplier of 2, requiring exactly 4 cups.')">4 (cups ★)</text>
+          <text x="120" y="205" text-anchor="middle" font-size="14" font-weight="900" fill="var(--amber)" style="cursor:pointer;" onclick="tapReadingObject('cookieRatio', 'For 2 batches, you scale by a multiplier of 2, requiring exactly 4 cups.')">2 (batches)</text>
+          <text x="280" y="205" text-anchor="middle" font-size="14" font-weight="900" fill="var(--amber)" style="cursor:pointer;" onclick="tapReadingObject('cookieRatio', 'For 2 batches, you scale by a multiplier of 2, requiring exactly 4 cups.')">4 (cups ★)</text>
           
           <text x="200" y="270" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">CLICK CELLS TO VERIFY RATIO CONSTANT MULTIPLIERS</text>
         </svg>`;
@@ -1681,21 +1567,18 @@
 
       photosynthesis: function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
-          <!-- Leaf -->
-          <path d="M 100,150 C 130,70, 270,70, 300,150 C 270,230, 130,230, 100,150 Z" fill="#22c55e" stroke="#15803d" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('chlorophyll', 'Chlorophyll absorbs sunlight energy inside leaves.')" />
+          <path d="M 100,150 C 130,70, 270,70, 300,150 C 270,230, 130,230, 100,150 Z" fill="#22c55e" stroke="#15803d" stroke-width="3" style="cursor:pointer;" onclick="tapReadingObject('chlorophyll', 'Chlorophyll absorbs sunlight energy inside leaves.')" />
           <line x1="100" y1="150" x2="300" y2="150" stroke="#16a34a" stroke-width="2" />
           
-          <!-- Sun energy -->
           <path d="M 280,40 L 230,100" stroke="var(--amber)" stroke-width="3.5" marker-end="url(#arrow-sun)" />
           <text x="260" y="60" font-size="11" font-weight="900" fill="var(--amber)">Light Energy</text>
           
-          <!-- Carbon Dioxide in -->
           <path d="M 40,120 L 120,130" stroke="var(--coral)" stroke-width="3" marker-end="url(#arrow-coral)" />
           <text x="35" y="105" font-size="11" font-weight="900" fill="var(--coral)">Carbon Dioxide (CO2)</text>
           
-          <!-- Oxygen out -->
           <path d="M 260,170 L 340,190" stroke="var(--primary)" stroke-width="3" marker-end="url(#arrow-primary)" />
           <text x="310" y="215" font-size="11" font-weight="900" fill="var(--primary)">Oxygen (O2 ★)</text>
+          
           <text x="200" y="275" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">CLICK GREEN LEAF TO DISCOVER PHOTOSYNTHESIS KEYS</text>
           
           <defs>
@@ -1715,18 +1598,15 @@
       timeline: function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Sequential History Timeline</text>
-          
-          <!-- Timeline line -->
           <line x1="50" y1="150" x2="350" y2="150" stroke="var(--navy)" stroke-width="4.5" />
           
-          <!-- Intervals -->
-          <line x1="80" y1="140" x2="80" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('intervalYr', '1800 marks the beginning of industrial scale expansions.')" />
+          <line x1="80" y1="140" x2="80" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapReadingObject('intervalYr', '1800 marks the beginning of industrial scale expansions.')" />
           <text x="80" y="180" text-anchor="middle" font-size="12" font-weight="900">1800</text>
           
-          <line x1="200" y1="140" x2="200" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('intervalYr', '1850 marks fifty-year chronological scale intervals.')" />
+          <line x1="200" y1="140" x2="200" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapReadingObject('intervalYr', '1850 marks fifty-year chronological scale intervals.')" />
           <text x="200" y="180" text-anchor="middle" font-size="12" font-weight="900" fill="var(--primary)">1850 ★</text>
           
-          <line x1="320" y1="140" x2="320" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('intervalYr', '1900 marks the modern manufacturing expansion.')" />
+          <line x1="320" y1="140" x2="320" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapReadingObject('intervalYr', '1900 marks the modern manufacturing expansion.')" />
           <text x="320" y="180" text-anchor="middle" font-size="12" font-weight="900">1900</text>
           
           <rect x="50" y="210" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
@@ -1738,7 +1618,6 @@
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Cubic Volume of Prisms</text>
           
-          <!-- Isometric Rectangular Prism -->
           <polygon points="120,180 200,140 280,180 200,220" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2" />
           <polygon points="280,180 280,120 200,80 200,140" fill="#fffbeb" stroke="var(--amber)" stroke-width="2" />
           <polygon points="120,180 120,120 200,80 200,140" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" />
@@ -1747,7 +1626,7 @@
           <text x="250" y="200" font-size="11" font-weight="900" fill="var(--amber)">Width = 3</text>
           <text x="205" y="110" font-size="11" font-weight="900" fill="#2563eb">Height = 3</text>
           
-          <rect x="50" y="240" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapListeningObject('prismVol', 'Base area is length (4) times width (3), equaling 12 square units.')" />
+          <rect x="50" y="240" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapReadingObject('prismVol', 'Base area is length (4) times width (3), equaling 12 square units.')" />
           <text x="200" y="265" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Click here to verify the base Area (12 units)</text>
         </svg>`;
       },
@@ -1756,19 +1635,15 @@
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Ecosystem Trophic Web Gaps</text>
           
-          <!-- Producer -->
-          <rect x="50" y="180" width="90" height="45" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" style="cursor:pointer;" onclick="tapListeningObject('producerPlant', 'Producers like grass synthesize solar energy.')" />
+          <rect x="50" y="180" width="90" height="45" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" style="cursor:pointer;" onclick="tapReadingObject('producerPlant', 'Producers like grass synthesize solar energy.')" />
           <text x="95" y="207" text-anchor="middle" font-size="11" font-weight="900" fill="#15803d">Grass (Producer)</text>
           
-          <!-- Primary Consumer -->
-          <rect x="260" y="180" width="90" height="45" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2.5" style="cursor:pointer;" onclick="tapListeningObject('consumerInsect', 'Grasshopper eats grass, acting as primary consumer.')" />
+          <rect x="260" y="180" width="90" height="45" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2.5" style="cursor:pointer;" onclick="tapReadingObject('consumerInsect', 'Grasshopper eats grass, acting as primary consumer.')" />
           <text x="305" y="207" text-anchor="middle" font-size="11" font-weight="900" fill="#b45309">Cricket (Consumer)</text>
           
-          <!-- Secondary Consumer -->
-          <rect x="155" y="80" width="90" height="45" rx="6" fill="#ffe4e6" stroke="#e11d48" stroke-width="2.5" style="cursor:pointer;" onclick="tapListeningObject('consumerFrog', 'Frog eats insect, acting as secondary consumer.')" />
+          <rect x="155" y="80" width="90" height="45" rx="6" fill="#ffe4e6" stroke="#e11d48" stroke-width="2.5" style="cursor:pointer;" onclick="tapReadingObject('consumerFrog', 'Frog eats insect, acting as secondary consumer.')" />
           <text x="200" y="107" text-anchor="middle" font-size="11" font-weight="900" fill="#9f1239">Frog (Consumer)</text>
           
-          <!-- Transfer vectors -->
           <path d="M 140,200 L 250,200" stroke="var(--navy)" stroke-width="2" marker-end="url(#arrow-web)" />
           <path d="M 305,175 L 250,130" stroke="var(--navy)" stroke-width="2" marker-end="url(#arrow-web)" />
           <path d="M 95,175 L 150,125" stroke="var(--navy)" stroke-width="2" marker-end="url(#arrow-web)" />
@@ -1786,10 +1661,8 @@
       "number-line": function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Plotted Boundary Inequalities</text>
-          <!-- Line -->
           <line x1="50" y1="150" x2="350" y2="150" stroke="var(--navy)" stroke-width="3.5" />
           
-          <!-- Ticks -->
           <line x1="100" y1="140" x2="100" y2="160" stroke="var(--navy)" stroke-width="2" />
           <text x="100" y="180" text-anchor="middle" font-size="12" font-weight="900">0</text>
           
@@ -1799,8 +1672,7 @@
           <line x1="300" y1="140" x2="300" y2="160" stroke="var(--navy)" stroke-width="2" />
           <text x="300" y="180" text-anchor="middle" font-size="12" font-weight="900">6</text>
           
-          <!-- Open circle boundary at 3 -->
-          <circle cx="200" cy="150" r="8" fill="#fff" stroke="var(--coral)" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('openCircle', 'Open circle boundary indicates strict inequality limit (not inclusive).')" />
+          <circle cx="200" cy="150" r="8" fill="#fff" stroke="var(--coral)" stroke-width="3" style="cursor:pointer;" onclick="tapReadingObject('openCircle', 'Open circle boundary indicates strict inequality limit (not inclusive).')" />
           <line x1="208" y1="150" x2="330" y2="150" stroke="var(--coral)" stroke-width="6" />
           
           <rect x="50" y="210" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
@@ -1810,7 +1682,6 @@
 
       interview: function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
-          <!-- Conversation bubbles -->
           <rect x="40" y="60" width="140" height="70" rx="8" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="1.5" />
           <text x="110" y="90" text-anchor="middle" font-size="10" font-weight="900" fill="var(--primary-dark)">Student Request:</text>
           <text x="110" y="108" text-anchor="middle" font-size="10" font-weight="900" fill="var(--primary-dark)">"A Recess Sports Club!"</text>
@@ -1819,14 +1690,13 @@
           <text x="290" y="180" text-anchor="middle" font-size="10" font-weight="900" fill="#b45309">Principal Review:</text>
           <text x="290" y="198" text-anchor="middle" font-size="9" font-weight="900" fill="#b45309">"What are the teamwork benefits?"</text>
           
-          <rect x="50" y="240" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapListeningObject('proposalDiag', 'Student proposal details social collaborative benefits.')" />
+          <rect x="50" y="240" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapReadingObject('proposalDiag', 'Student proposal details social collaborative benefits.')" />
           <text x="200" y="265" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Principal Proposal Dialogue View (Click!)</text>
         </svg>`;
       },
 
       "map-scale": function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
-          <!-- Map boundary -->
           <rect x="40" y="40" width="320" height="180" fill="#e0f2fe" rx="6" />
           <circle cx="100" cy="100" r="16" fill="var(--primary)" />
           <text x="100" y="104" text-anchor="middle" font-size="9" font-weight="900" fill="#fff">A</text>
@@ -1835,8 +1705,7 @@
           
           <line x1="116" y1="105" x2="264" y2="155" stroke="var(--navy-deep)" stroke-width="2" stroke-dasharray="4" />
           
-          <!-- Legend box -->
-          <rect x="50" y="230" width="300" height="46" rx="4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" style="cursor:pointer;" onclick="tapListeningObject('scaleLegend', 'Map scale translates 1 inch into 10 real-world miles.')" />
+          <rect x="50" y="230" width="300" height="46" rx="4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" style="cursor:pointer;" onclick="tapReadingObject('scaleLegend', 'Map scale translates 1 inch into 10 real-world miles.')" />
           <text x="200" y="258" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Scale Legend: 1 inch = 10 Miles ★ (Click to verify!)</text>
         </svg>`;
       },
@@ -1844,18 +1713,13 @@
       "ramp-physics": function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
           <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Physics of Incline Friction</text>
-          
-          <!-- Incline Ramp -->
           <polygon points="80,220 320,220 320,100" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2" />
-          <!-- Block sliding -->
           <rect x="180" y="130" width="40" height="24" transform="rotate(-22, 180, 130)" fill="var(--amber)" stroke="#b45309" stroke-width="1.5" />
           
-          <!-- Gravity arrow -->
           <path d="M 195,140 L 195,190" fill="none" stroke="var(--coral)" stroke-width="3" marker-end="url(#arrow-ramp)" />
           <text x="202" y="180" font-size="10" font-weight="900" fill="var(--coral)">Gravity</text>
           
-          <!-- Friction arrow -->
-          <path d="M 180,130 L 140,113" fill="none" stroke="var(--primary)" stroke-width="3" marker-end="url(#arrow-ramp)" style="cursor:pointer;" onclick="tapListeningObject('frictionArrow', 'Friction is a resistive force that opposes gravity and acceleration.')" />
+          <path d="M 180,130 L 140,113" fill="none" stroke="var(--primary)" stroke-width="3" marker-end="url(#arrow-ramp)" style="cursor:pointer;" onclick="tapReadingObject('frictionArrow', 'Friction is a resistive force that opposes gravity and acceleration.')" />
           <text x="120" y="98" font-size="10" font-weight="900" fill="var(--primary)">Friction ★ (Click arrow!)</text>
           
           <defs>
@@ -1868,16 +1732,13 @@
 
       "branches-flow": function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
-          <!-- Legislative -->
-          <rect x="40" y="80" width="100" height="50" rx="6" fill="#e2f4f0" stroke="var(--primary)" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('legislativeGov', 'Legislative branch (Congress) is responsible for making laws.')" />
+          <rect x="40" y="80" width="100" height="50" rx="6" fill="#e2f4f0" stroke="var(--primary)" stroke-width="2" style="cursor:pointer;" onclick="tapReadingObject('legislativeGov', 'Legislative branch (Congress) is responsible for making laws.')" />
           <text x="90" y="110" text-anchor="middle" font-size="10" font-weight="900" fill="var(--primary-dark)">Legislative ★</text>
           
-          <!-- Executive -->
-          <rect x="260" y="80" width="100" height="50" rx="6" fill="#fef3c7" stroke="var(--amber)" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('executiveGov', 'Executive branch carries out and enforces laws.')" />
+          <rect x="260" y="80" width="100" height="50" rx="6" fill="#fef3c7" stroke="var(--amber)" stroke-width="2" style="cursor:pointer;" onclick="tapReadingObject('executiveGov', 'Executive branch carries out and enforces laws.')" />
           <text x="310" y="110" text-anchor="middle" font-size="10" font-weight="900" fill="#b45309">Executive</text>
           
-          <!-- Judicial -->
-          <rect x="150" y="180" width="100" height="50" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('judicialGov', 'Judicial branch explains and interprets laws.')" />
+          <rect x="150" y="180" width="100" height="50" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" style="cursor:pointer;" onclick="tapReadingObject('judicialGov', 'Judicial branch explains and interprets laws.')" />
           <text x="200" y="210" text-anchor="middle" font-size="10" font-weight="900" fill="#2563eb">Judicial</text>
           
           <line x1="90" y1="130" x2="150" y2="190" stroke="var(--navy-deep)" stroke-dasharray="3" />
@@ -1889,19 +1750,13 @@
 
       "spinner-prob": function() {
         return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
-          <!-- Spinner Circle -->
           <circle cx="200" cy="150" r="70" fill="none" stroke="var(--navy-deep)" stroke-width="3.5" />
-          <!-- 4 sectors -->
-          <!-- Blue (50%) -->
           <path d="M 200,150 L 200,80 A 70,70 0 0,1 200,220 Z" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="1.5" />
           <text x="240" y="154" font-size="12" font-weight="900" fill="var(--primary-dark)">Blue (1/2)</text>
           
-          <!-- Red (25%) -->
           <path d="M 200,150 L 200,220 A 70,70 0 0,1 130,150 Z" fill="#ffe4e6" stroke="#e11d48" stroke-width="1.5" />
-          <!-- Green (25%) -->
           <path d="M 200,150 L 130,150 A 70,70 0 0,1 200,80 Z" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" />
           
-          <!-- Spinner needle pointer -->
           <polygon points="195,150 200,90 205,150" fill="var(--navy-deep)" id="spinnerNeedle" style="transform-origin: 200px 150px; cursor:pointer;" onclick="triggerProbSpinnerWheelRotation()" />
           <circle cx="200" cy="150" r="8" fill="var(--amber)" />
           
@@ -1914,8 +1769,8 @@
     window.addEventListener('DOMContentLoaded', () => {
       setupStreakAndXPStats();
       populateSidebarCatalog();
-      switchListeningTask(0);
-      calculateListeningELP();
+      switchReadingTask(0);
+      calculateReadingELP();
     });
 
     function setupStreakAndXPStats() {
@@ -1933,10 +1788,10 @@
       if (!container) return;
       container.innerHTML = '';
       
-      WIDA_LISTENING_TASKS.forEach((task, idx) => {
+      WIDA_READING_TASKS.forEach((task, idx) => {
         const card = document.createElement('button');
         card.className = `concept-card ${idx === STORE.activeTaskIdx ? 'active' : ''}`;
-        card.onclick = () => switchListeningTask(idx);
+        card.onclick = () => switchReadingTask(idx);
         card.innerHTML = `
           <span class="task-domain">${task.domain}</span>
           <span class="task-title" style="font-weight:700;">${task.id}: ${task.title}</span>
@@ -1945,16 +1800,13 @@
       });
     }
 
-    function switchListeningTask(idx) {
+    function switchReadingTask(idx) {
       STORE.activeTaskIdx = idx;
-      
-      // Stop ongoing voice synthesizers
-      stopAudioPlayback();
       
       // Reset checklist states for new task
       STORE.questCompleted = false;
       STORE.checklistQuest = false;
-      STORE.checklistListen = false;
+      STORE.checklistRead = false;
       STORE.checklistQuiz = false;
       STORE.celebrationFired = false;
       
@@ -1967,11 +1819,11 @@
 
       // Restore Catalog layout styles
       populateSidebarCatalog();
-      loadListeningTaskWorkspace(idx);
+      loadReadingTaskWorkspace(idx);
     }
 
-    function loadListeningTaskWorkspace(idx) {
-      const task = WIDA_LISTENING_TASKS[idx];
+    function loadReadingTaskWorkspace(idx) {
+      const task = WIDA_READING_TASKS[idx];
       document.getElementById('domainTag').textContent = task.domain;
       
       // Render clean visual diagram models
@@ -1979,8 +1831,10 @@
       const drawer = SVG_SPEAKING_DRAWER[task.model] || SVG_SPEAKING_DRAWER['lunch'];
       canvas.innerHTML = drawer();
       
-      // Reset textual display cards
-      document.getElementById('promptTextBox').innerHTML = `Click <strong>Play Scenario</strong> to hear the academic narrative.`;
+      // Set Passage Text
+      const text = (STORE.activeTier === "A") ? task.passageA : task.passageB;
+      document.getElementById('passageTextBox').innerHTML = text;
+      
       document.getElementById('warmupBubble').style.display = "none";
       document.getElementById('vocabDetailCard').style.display = "none";
       
@@ -2009,11 +1863,28 @@
         badge.style.background = "var(--primary)";
       }
 
-      // Hide quiz deck until quest is completed to incentivize engagement
+      // Hide quiz deck until quest is completed and text is read to incentivize engagement
       document.getElementById('quizCard').style.display = "none";
       
       updateChecklistUI();
-      logToTerminal(`Loaded WIDA Listening task T${idx+1}: [${task.title}]`);
+      logToTerminal(`Loaded WIDA Reading task T${idx+1}: [${task.title}]`);
+    }
+
+    // Scroll tracker to confirm reading
+    function trackPassageReadingScroll() {
+      const box = document.getElementById('passageTextBox');
+      if (!box || STORE.checklistRead) return;
+      
+      // If student scrolls near the bottom of the passage viewport
+      if (box.scrollHeight - box.scrollTop <= box.clientHeight + 30) {
+        STORE.checklistRead = true;
+        updateChecklistUI();
+        logToTerminal("Reading passage verified. Reading checkbox checked.");
+        
+        if (STORE.questCompleted) {
+          showReadingQuizCard();
+        }
+      }
     }
 
     function populateWordWall(terms) {
@@ -2065,7 +1936,6 @@
       });
     }
 
-    // Speech slow pronouncer
     function speakWordSlowly(word) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -2074,101 +1944,20 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // Playback rates controls
-    function setPlaybackRate(rate) {
-      STORE.playbackRate = rate;
-      const rates = {0.6: 'rateSlow', 0.8: 'rateMed', 1.0: 'rateNormal'};
-      Object.keys(rates).forEach(r => {
-        document.getElementById(rates[r]).classList.toggle('active', parseFloat(r) === rate);
-      });
-      logToTerminal(`Playback speed changed to [${rate}x]`);
-    }
-
-    // Main Audio Scenario Reader (High-fidelity TTS with spoken word highlight)
-    function speakListeningScenario() {
-      if (!('speechSynthesis' in window)) {
-        showMinimalToast("Synthesized speech unsupported in this browser.");
-        return;
-      }
-      
-      window.speechSynthesis.cancel();
-      
-      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
-      const text = (STORE.activeTier === "A") ? task.scenarioA : task.scenarioB;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = STORE.playbackRate;
-      
-      utterance.onboundary = (event) => {
-        if (event.name === 'word') {
-          const charIdx = event.charIndex;
-          const remainingText = text.slice(charIdx);
-          const wordMatch = remainingText.match(/^[\w'-]+/);
-          const wordLen = wordMatch ? wordMatch[0].length : 1;
-          const word = text.slice(charIdx, charIdx + wordLen);
-          
-          document.getElementById('promptTextBox').innerHTML = text.slice(0, charIdx) + 
-            `<span class="spoken-word-highlight">${word}</span>` + 
-            text.slice(charIdx + wordLen);
-        }
-      };
-      
-      utterance.onstart = () => {
-        STORE.isPlayingAudio = true;
-        document.getElementById('playAudioBtn').style.display = "none";
-        document.getElementById('stopAudioBtn').style.display = "inline-flex";
-      };
-      
-      utterance.onend = () => {
-        STORE.isPlayingAudio = false;
-        document.getElementById('playAudioBtn').style.display = "inline-flex";
-        document.getElementById('stopAudioBtn').style.display = "none";
-        document.getElementById('promptTextBox').innerHTML = text;
-        
-        STORE.checklistListen = true;
-        updateChecklistUI();
-        
-        // Auto-unlock quiz deck on listening completion!
-        if (STORE.questCompleted) {
-          showListeningQuizCard();
-        } else {
-          showMinimalToast("🔊 Audio complete! Complete visual quest to unlock quiz.");
-        }
-      };
-      
-      utterance.onerror = () => {
-        STORE.isPlayingAudio = false;
-        document.getElementById('playAudioBtn').style.display = "inline-flex";
-        document.getElementById('stopAudioBtn').style.display = "none";
-      };
-      
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function stopAudioPlayback() {
-      window.speechSynthesis.cancel();
-      STORE.isPlayingAudio = false;
-      document.getElementById('playAudioBtn').style.display = "inline-flex";
-      document.getElementById('stopAudioBtn').style.display = "none";
-      
-      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
-      document.getElementById('promptTextBox').textContent = (STORE.activeTier === "A") ? task.scenarioA : task.scenarioB;
-    }
-
     // Interactive SVG quest solving functions
-    function tapListeningObject(type, desc) {
+    function tapReadingObject(type, desc) {
       playChime("success");
       const bubble = document.getElementById('warmupBubble');
       bubble.style.display = "block";
       bubble.innerHTML = `🌟 <strong>Warm-Up Tip:</strong> ${desc}`;
       
-      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
-      // Only generic clicks complete the quest directly. Math spinners, tape and coordinates require solving!
+      const task = WIDA_READING_TASKS[STORE.activeTaskIdx];
       if (task.model !== "bar" && task.model !== "grid" && task.model !== "data" && task.model !== "spinner-prob") {
-        completeListeningQuest();
+        completeReadingQuest();
       }
     }
 
-    function completeListeningQuest() {
+    function completeReadingQuest() {
       if (STORE.questCompleted) return;
       STORE.questCompleted = true;
       STORE.checklistQuest = true;
@@ -2180,11 +1969,10 @@
       playChime("success");
       updateChecklistUI();
       
-      // If student has already listened, unlock quiz immediately
-      if (STORE.checklistListen) {
-        showListeningQuizCard();
+      if (STORE.checklistRead) {
+        showReadingQuizCard();
       } else {
-        showMinimalToast("🎨 Quest complete! Play audio scenario to unlock quiz.");
+        showMinimalToast("🎨 Quest complete! Scroll through reading passage to unlock quiz.");
       }
     }
 
@@ -2197,13 +1985,13 @@
       let count = 0;
       STORE.barShaded.forEach(s => { if(s) count++; });
       if (count === 3 && STORE.barPartitions === 5) {
-        completeListeningQuest();
+        completeReadingQuest();
       }
     }
 
     // Coordinate grid clicks
     function clickGridAxes(e) {
-      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+      const task = WIDA_READING_TASKS[STORE.activeTaskIdx];
       if (task.model !== "grid") return;
       
       const svg = document.querySelector("#modelCanvas svg");
@@ -2211,7 +1999,6 @@
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
       
-      // Map click values back to coordinates (-5 to 5)
       const mappedX = Math.round((clickX - 200) / 25);
       const mappedY = Math.round((150 - clickY) / 25);
       
@@ -2220,13 +2007,13 @@
         STORE.gridPtY = mappedY;
         document.getElementById('modelCanvas').innerHTML = SVG_SPEAKING_DRAWER.grid();
         
-        completeListeningQuest();
+        completeReadingQuest();
       }
     }
 
     // Friction dot plot outlier click
     function clickFrictionOutlierTick() {
-      completeListeningQuest();
+      completeReadingQuest();
       document.getElementById('modelCanvas').innerHTML = SVG_SPEAKING_DRAWER.data();
     }
 
@@ -2241,14 +2028,14 @@
       needle.style.transform = `rotate(${randAngle}deg)`;
       
       setTimeout(() => {
-        completeListeningQuest();
+        completeReadingQuest();
         showMinimalToast("🎡 Needle stopped on Blue (Probability = 50%)!");
       }, 2550);
     }
 
     // Reveal comprehension checks
-    function showListeningQuizCard() {
-      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+    function showReadingQuizCard() {
+      const task = WIDA_READING_TASKS[STORE.activeTaskIdx];
       const card = document.getElementById('quizCard');
       const questionText = document.getElementById('quizQuestionText');
       const optionsContainer = document.getElementById('quizOptionsContainer');
@@ -2267,17 +2054,43 @@
           <span>${String.fromCharCode(65 + idx)}. ${opt}</span>
           <span class="chk-status"></span>
         `;
-        btn.onclick = () => submitListeningAnswer(idx, correctIdx, btn);
+        
+        // EVIDENCE HIGHLIGHTER MOUSE INTERACTION!
+        btn.onmouseenter = () => highlightEvidenceText(idx);
+        btn.onmouseleave = () => clearEvidenceHighlight();
+        
+        btn.onclick = () => submitReadingAnswer(idx, correctIdx, btn);
         optionsContainer.appendChild(btn);
       });
     }
 
-    function submitListeningAnswer(selectedIdx, correctIdx, btnNode) {
-      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+    // Active Evidence Highlighter triggers
+    function highlightEvidenceText(idx) {
+      // Clear previous glows
+      clearEvidenceHighlight();
+      
+      // Determine target evidence ID based on option indices
+      let targetId = "ev1";
+      if (idx === 1) targetId = "ev2";
+      if (idx === 2) targetId = "ev3";
+      
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.classList.add('evidence-glowing');
+        logToTerminal(`Evidence Highlighter traced: [#${targetId}]`);
+      }
+    }
+
+    function clearEvidenceHighlight() {
+      const elements = document.querySelectorAll('#passageTextBox span');
+      elements.forEach(el => el.classList.remove('evidence-glowing'));
+    }
+
+    function submitReadingAnswer(selectedIdx, correctIdx, btnNode) {
+      const task = WIDA_READING_TASKS[STORE.activeTaskIdx];
       const explanations = (STORE.activeTier === "A") ? task.explA : task.explB;
       const banner = document.getElementById('explanationBanner');
       
-      // Disable other options
       const allBtns = document.querySelectorAll('.quiz-option');
       allBtns.forEach(b => b.classList.add('disabled'));
       
@@ -2294,9 +2107,8 @@
         btnNode.classList.add('incorrect');
         btnNode.querySelector('.chk-status').textContent = '🔴 Try Again';
         banner.className = 'explanation-banner incorrect';
-        banner.innerHTML = `⚠️ <strong>Incorrect.</strong> ${explanations[selectedIdx]} Click Stop and listen again before your next attempt.`;
+        banner.innerHTML = `⚠️ <strong>Incorrect.</strong> ${explanations[selectedIdx]} Reread the highlighted text segment in the passage.`;
         
-        // Re-enable after short delay
         setTimeout(() => {
           allBtns.forEach(b => b.classList.remove('disabled'));
         }, 1500);
@@ -2309,16 +2121,16 @@
       document.getElementById('btnTierA').classList.toggle('active', tier === 'A');
       document.getElementById('btnTierB').classList.toggle('active', tier === 'B');
       
-      switchListeningTask(STORE.activeTaskIdx);
+      switchReadingTask(STORE.activeTaskIdx);
     }
 
     // ELP scorer checks
-    function calculateListeningELP() {
-      const acoustic = parseInt(document.getElementById('rubricAcoustic').value) || 1;
-      const context = parseInt(document.getElementById('rubricContext').value) || 1;
-      const speed = parseInt(document.getElementById('rubricIntegration').value) || 1;
+    function calculateReadingELP() {
+      const scanning = parseInt(document.getElementById('rubricScanning').value) || 1;
+      const vocab = parseInt(document.getElementById('rubricVocabulary').value) || 1;
+      const evidence = parseInt(document.getElementById('rubricEvidence').value) || 1;
       
-      const sum = acoustic + context + speed;
+      const sum = scanning + vocab + evidence;
       let rating = "1.0 (Entering)";
       
       if (sum >= 11) rating = "5.0 (Bridging)";
@@ -2328,20 +2140,19 @@
       
       document.getElementById('liveELPBadge').textContent = `ELP ${rating}`;
       
-      // Feedback strategies
       let advice = "";
-      if (acoustic === 1) {
-        advice += "🎯 <strong>Acoustic Decoding:</strong> Try slowing speech playbacks down to 0.6x. Listen for clear base nouns first.<br>";
-      } else if (acoustic === 2) {
-        advice += "🎯 <strong>Acoustic Decoding:</strong> Good progress! Focus on key connector signals (subsequently, consequently) to capture logical connections.<br>";
+      if (scanning === 1) {
+        advice += "📚 <strong>Text Scanning:</strong> Focus on locating bold academic terms first. Hover over them to see the translated definitions.<br>";
+      } else if (scanning === 2) {
+        advice += "📚 <strong>Text Scanning:</strong> Try scanning for transition connector terms (*subsequently*, *consequently*) to capture sequencing relationships.<br>";
       } else {
-        advice += "🎯 <strong>Acoustic Decoding:</strong> Excellent auditory tracking of complex expository sentence structures.<br>";
+        advice += "📚 <strong>Text Scanning:</strong> Perfect expository text scanning speeds.<br>";
       }
 
-      if (context === 1) {
-        advice += "🎨 <strong>Visual Scanning:</strong> Scan visual diagrams BEFORE playing audio to map labels to structural parts.<br>";
+      if (evidence === 1) {
+        advice += "📚 <strong>Evidence Tracing:</strong> Hover over options to let the **Evidence Highlighter** guide you. Read the glowing segments carefully before deciding.<br>";
       } else {
-        advice += "🎨 <strong>Visual Scanning:</strong> Strong visual integration. Continue comparing axes and variables under coordinate grids.<br>";
+        advice += "📚 <strong>Evidence Tracing:</strong> Strong text matching capability. Keep tracing claims to direct textual quotes.<br>";
       }
 
       const coachCard = document.getElementById('widaCoachCard');
@@ -2358,7 +2169,7 @@
     function updateChecklistUI() {
       const items = {
         chkQuest: { state: STORE.checklistQuest, icon: 'chkQuestIcon' },
-        chkListen: { state: STORE.checklistListen, icon: 'chkListenIcon' },
+        chkRead: { state: STORE.checklistRead, icon: 'chkReadIcon' },
         chkQuiz: { state: STORE.checklistQuiz, icon: 'chkQuizIcon' },
         chkRubric: { state: STORE.checklistRubric, icon: 'chkRubricIcon' }
       };
@@ -2372,8 +2183,7 @@
         }
       });
       
-      // confettis on complete
-      if (STORE.checklistQuest && STORE.checklistListen && STORE.checklistQuiz && STORE.checklistRubric) {
+      if (STORE.checklistQuest && STORE.checklistRead && STORE.checklistQuiz && STORE.checklistRubric) {
         if (!STORE.celebrationFired) {
           STORE.celebrationFired = true;
           triggerSparkCelebration();
@@ -2387,18 +2197,17 @@
       document.getElementById('sparkXPCounter').textContent = `✨ ${STORE.sparkPoints} SPARK XP`;
       localStorage.setItem('widaXP', STORE.sparkPoints);
       
-      // Update streak
       let streak = parseInt(localStorage.getItem('widaStreak') || 0);
       streak++;
       localStorage.setItem('widaStreak', streak);
       document.getElementById('streakBadge').textContent = `🔥 ${streak} Day Streak`;
 
       // Save task completion locally
-      const completedList = JSON.parse(localStorage.getItem('widaCompletedListening') || '[]');
+      const completedList = JSON.parse(localStorage.getItem('widaCompletedReading') || '[]');
       const taskId = `T${STORE.activeTaskIdx + 1}`;
       if (!completedList.includes(taskId)) {
         completedList.push(taskId);
-        localStorage.setItem('widaCompletedListening', JSON.stringify(completedList));
+        localStorage.setItem('widaCompletedReading', JSON.stringify(completedList));
       }
 
       showMinimalToast("🌟 Masterpiece Completed! +100 SPARK XP! Day Streak +1!");
@@ -2433,9 +2242,9 @@
       if (hidden) {
         const consoleNode = document.getElementById('diagConsole');
         consoleNode.innerHTML = '';
-        logConsole("WIDA Listening Prep Workbook initialized...", "#fbbf24");
+        logConsole("WIDA Reading Prep Workbook initialized...", "#fbbf24");
         logConsole(`CENTRAL STATE check: Mapped tasks [20/20]`);
-        logConsole("Exemplary test administrator TTS voices online.");
+        logConsole("Evidence Highlighter and Active Glow engines online.");
       }
     }
 
