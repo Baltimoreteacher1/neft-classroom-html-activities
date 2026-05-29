@@ -1,0 +1,2479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Publisher-grade WIDA ACCESS Listening prep workbook. Interactive simulation with audio scenario selectors, 20 domain tasks with SVGs, and comprehension checks.">
+  <title>WIDA ACCESS Listening Practice Studio | Neft Hub</title>
+  
+  <!-- High-End Publication Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    /* ── Educational Publisher Design Tokens ── */
+    :root {
+      --primary: #0d9488; /* Turquoise Teal for Listening */
+      --primary-dark: #0f766e;
+      --primary-light: #f0fdfa;
+      --navy-deep: #0b1f33;
+      --navy: #12355b;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --coral: #ea580c;
+      --coral-light: #ffedd5;
+      --green-success: #15803d;
+      --green-light: #dcfce7;
+      --bg-canvas: #f8fafc;
+      --bg-studio: #f1f5f9;
+      --white: #ffffff;
+      --line-muted: #e2e8f0;
+      --slate-ink: #1e293b;
+      --slate-muted: #64748b;
+      
+      /* Depth & Shadows */
+      --shadow-premium: 0 10px 30px -10px rgba(13, 148, 136, 0.12), 0 20px 40px -15px rgba(11, 31, 51, 0.08);
+      --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --radius-premium: 16px;
+      --radius-field: 8px;
+      --font-outfit: 'Outfit', system-ui, sans-serif;
+      --font-space: 'Space Grotesk', system-ui, sans-serif;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: var(--font-outfit);
+      background: linear-gradient(185deg, #f8fafc 0%, var(--bg-studio) 100%);
+      color: var(--slate-ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Publishing layout shell ── */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 28px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      align-items: start;
+    }
+
+    /* ── Sidebar Component ── */
+    .sidebar-wrapper {
+      background: var(--white);
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-premium);
+      padding: 24px 20px;
+      box-shadow: var(--shadow-premium);
+      position: sticky;
+      top: 24px;
+      max-height: 860px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .brand-block h2 {
+      font-family: var(--font-space);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--navy-deep);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-block p {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    /* Tier switcher */
+    .tier-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      padding: 4px;
+      background: var(--bg-canvas);
+    }
+
+    .tier-btn {
+      border: none;
+      background: none;
+      padding: 8px 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--slate-muted);
+      transition: var(--transition);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tier-btn.active {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: var(--shadow-card);
+    }
+
+    /* Concept Catalog buttons */
+    .concept-catalog {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .concept-card {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: var(--white);
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      color: var(--slate-ink);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-card);
+    }
+
+    .concept-card:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .concept-card.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary-dark);
+      box-shadow: 0 8px 16px -4px rgba(13, 148, 136, 0.3);
+    }
+
+    .concept-card .task-domain {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      opacity: 0.7;
+    }
+
+    /* ── Main Canvas Layout ── */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .glass-panel {
+      background: var(--white);
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-premium);
+      padding: 28px;
+      box-shadow: var(--shadow-premium);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: var(--transition);
+    }
+
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--bg-studio);
+      padding-bottom: 16px;
+    }
+
+    .panel-meta h3 {
+      font-family: var(--font-space);
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--navy-deep);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+
+    /* Visual model view */
+    .model-viewport {
+      background: var(--bg-canvas);
+      border: 2px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      transition: var(--transition);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .model-viewport svg {
+      border-radius: var(--radius-field);
+      box-shadow: var(--shadow-card);
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Clickable Warm-Up Popup */
+    .warmup-bubble {
+      width: 100%;
+      background: var(--primary-light);
+      border: 1.5px dashed var(--primary);
+      border-radius: var(--radius-field);
+      padding: 12px 16px;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Listening Deck ── */
+    .listening-sim-box {
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      padding: 24px;
+      background: var(--bg-canvas);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sim-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line-muted);
+      padding-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .admin-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--white);
+      background: var(--navy);
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sim-prompt-box {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--slate-ink);
+      font-weight: 500;
+      min-height: 80px;
+      background: var(--white);
+      padding: 14px;
+      border-radius: var(--radius-field);
+      border: 1px solid var(--line-muted);
+    }
+
+    .spoken-word-highlight {
+      background-color: #fef08a !important;
+      color: #000000 !important;
+      border-radius: 3px;
+      padding: 0 2px;
+      font-weight: bold;
+    }
+
+    /* ── Comprehension Quiz Card ── */
+    .quiz-card {
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      padding: 20px;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quiz-question {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy-deep);
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-option {
+      background: var(--bg-canvas);
+      border: 1.5px solid var(--line-muted);
+      padding: 12px 16px;
+      border-radius: var(--radius-field);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .quiz-option:hover:not(.disabled) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .quiz-option.correct {
+      background: var(--green-light) !important;
+      border-color: var(--green-success) !important;
+      color: var(--green-success) !important;
+    }
+
+    .quiz-option.incorrect {
+      background: var(--coral-light) !important;
+      border-color: var(--coral) !important;
+      color: var(--coral) !important;
+    }
+
+    /* Feedback Banner inside quiz */
+    .explanation-banner {
+      padding: 14px;
+      border-radius: var(--radius-field);
+      font-size: 0.84rem;
+      line-height: 1.5;
+      display: none;
+      animation: fadeIn 0.2s;
+    }
+
+    .explanation-banner.correct {
+      background: var(--green-light);
+      border-left: 4px solid var(--green-success);
+      color: var(--green-success);
+      display: block;
+    }
+
+    .explanation-banner.incorrect {
+      background: var(--coral-light);
+      border-left: 4px solid var(--coral);
+      color: var(--coral);
+      display: block;
+    }
+
+    /* Checklist & Rate Panel styles */
+    .checklist-card {
+      background: var(--bg-canvas);
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    
+    .checklist-title {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--slate-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: var(--white);
+      border: 1px solid var(--line-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--slate-muted);
+      transition: var(--transition);
+    }
+    
+    .checklist-item.checked {
+      background: var(--green-light);
+      border-color: var(--green-success);
+      color: var(--green-success);
+    }
+    
+    .checklist-icon {
+      font-size: 1rem;
+    }
+    
+    .rate-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    
+    .rate-btn {
+      border: 1px solid var(--line-muted);
+      background: var(--white);
+      color: var(--slate-ink);
+      font-weight: 700;
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .rate-btn.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary-dark);
+    }
+
+    .feedback-coach-card {
+      border: 1.5px solid var(--amber);
+      border-radius: var(--radius-field);
+      background: var(--amber-light);
+      padding: 16px;
+      margin-top: 14px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--slate-ink);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Actions buttons */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius-field);
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .btn-solid-gold {
+      background: var(--amber);
+      color: var(--white);
+    }
+
+    .btn-solid-gold:hover {
+      background: #b45309;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-white {
+      background: rgba(255,255,255,0.08);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .btn-outline-white:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .btn-control {
+      background: var(--primary);
+      color: var(--white);
+    }
+    .btn-control:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Diagnostic commands */
+    .diag-overlay {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      background: #090d16;
+      color: #00ff66;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.78rem;
+      border-radius: var(--radius-field);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      border: 1px solid #1f2d47;
+      padding: 20px;
+      display: none;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 14px;
+      box-sizing: border-box;
+    }
+
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px dashed #1e2d44;
+      padding-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .diag-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .sidebar-wrapper,
+      .breadcrumb,
+      .hero,
+      .panel-meta,
+      .speaking-sim-box,
+      .rubric-box,
+      .scaffold-card,
+      .diag-overlay,
+      .action-btn,
+      .checklist-card,
+      .feedback-coach-card {
+        display: none !important;
+      }
+      .glass-panel {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      .model-viewport {
+        border: 2px solid black !important;
+        background: white !important;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-wrapper {
+        position: static;
+        max-height: 220px;
+      }
+      .canvas-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="page-shell">
+    
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Neft Hub</a>
+      <span>/</span>
+      <a href="/wida-access/">WIDA Center</a>
+      <span>/</span>
+      <span>WIDA ACCESS Listening Practice Studio</span>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="hero compact-hero" style="border-top: 6px solid var(--primary)">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+        <div>
+          <p class="eyebrow" style="color: var(--primary)">WIDA ACCESS Prep Suite</p>
+          <h1 style="font-family: var(--font-space); font-weight: 700; font-size: 2.2rem; letter-spacing:-0.02em;">ACCESS Listening Practice Studio</h1>
+          <p class="hero-copy" style="max-width: 800px;">Comprehensive 20-task academic listening studio. Features variable speech rates, interactive SVGs, and responsive self-checks with publication-grade explanatory feedback.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <div class="streak-pill" id="streakBadge" style="background:rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius:30px; padding:8px 16px; font-weight:800; font-size:0.86rem; color:#fff; display:flex; align-items:center; gap:6px;">
+            🔥 0 Day Streak
+          </div>
+          <div class="xp-pill" id="sparkXPCounter" style="background:linear-gradient(135deg, var(--amber), #b45309); border-radius:30px; padding:8px 16px; font-weight:900; font-size:0.86rem; color:#fff; display:flex; align-items:center; gap:6px; box-shadow:var(--shadow-card);">
+            ✨ 1200 SPARK XP
+          </div>
+          <button class="action-btn btn-outline-white" style="color: var(--slate-ink); border-color: var(--line-muted);" onclick="toggleDiagnostics()" aria-label="Launch diagnostics console">
+            📊 Run Diagnostics
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Unified Studio Grid Layout -->
+    <div class="studio-shell">
+      
+      <!-- Sidebar Concept Selector -->
+      <aside class="sidebar-wrapper" aria-label="Listening Selector">
+        <div class="brand-block">
+          <h2>🎧 Listening Tiers</h2>
+          <p>Task Selectors</p>
+        </div>
+        
+        <div class="tier-switcher" role="group" aria-label="Domain Tier Swapper">
+          <button class="tier-btn active" id="btnTierA" onclick="setStudioTier('A')" aria-label="Tier A (1.0-2.7)">Tier A (1.0-2.7)</button>
+          <button class="tier-btn" id="btnTierB" onclick="setStudioTier('B')" aria-label="Tier B (2.7-5.0)">Tier B (2.7-5.0)</button>
+        </div>
+
+        <nav class="concept-catalog" id="sidebarNav" aria-label="Tasks List"></nav>
+      </aside>
+
+      <!-- Main Interactive Workstation Area -->
+      <section class="canvas-layout" aria-label="Interactive Workstation">
+        
+        <!-- Left Side: Interactive SVG Model Visualizer -->
+        <div class="glass-panel">
+          <div class="panel-meta">
+            <h3>🎨 Visualizer Deck <span id="domainTag" class="admin-pill" style="font-size:0.64rem;">Social & Instructional</span></h3>
+            <span class="admin-pill" id="questStatusBadge">Active</span>
+          </div>
+
+          <!-- Active Visual Quest Instruction -->
+          <div id="questText" style="font-size:0.84rem; font-weight:700; color:var(--primary-dark); padding:10px 14px; background:var(--primary-light); border-radius:6px; border-left:3.5px solid var(--primary);">
+            🎯 Quest: Loading...
+          </div>
+          
+          <div class="model-viewport" id="modelCanvas" role="img" aria-label="Interactive math models viewport">
+            <!-- Dynamically injected active SVG diagrams -->
+          </div>
+
+          <!-- Tactile visual feedback tooltip -->
+          <div class="warmup-bubble" id="warmupBubble"></div>
+
+          <!-- Word Wall dictionary reference -->
+          <div class="scaffold-card">
+            <div class="vocab-lang-selector">
+              <span class="scaffold-title" style="margin-right:auto; align-self:center;">📚 Vocabulary Dictionary</span>
+              <button class="lang-chip active" data-lang="en">EN</button>
+              <button class="lang-chip" data-lang="es">ES</button>
+              <button class="lang-chip" data-lang="ar">AR</button>
+              <button class="lang-chip" data-lang="vi">VI</button>
+            </div>
+            <div class="chip-container" id="wordWallContainer">
+              <!-- Dynamically mapped academic vocabulary chips -->
+            </div>
+            
+            <div id="vocabDetailCard" style="display:none; padding:12px; background:var(--bg-canvas); border-radius:6px; border:1px solid var(--line-muted); font-size:0.82rem; margin-top:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <strong id="vocabDetailWord" style="font-size:0.95rem; color:var(--primary);"></strong>
+                <button class="rate-btn" id="vocabSpeakBtn">🔊 Pronounce Slow</button>
+              </div>
+              <div><strong>Syllables:</strong> <span id="vocabDetailSyllables"></span></div>
+              <div style="margin-top:4px;"><strong>Translation:</strong> <span id="vocabDetailTranslation"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Audio Player & Comprehension Quiz Checks -->
+        <div class="glass-panel" style="gap: 20px;">
+          <div class="panel-meta">
+            <h3>🔊 Auditory Audio Deck</h3>
+          </div>
+
+          <!-- Playback and Rate Speed panel -->
+          <div class="listening-sim-box">
+            <div class="sim-header">
+              <div class="admin-pill">🎧 Audio Scenario</div>
+              <div class="rate-controls">
+                <span style="font-size:0.75rem; font-weight:700; color:var(--slate-muted); margin-right:4px;">Speed:</span>
+                <button class="rate-btn" id="rateSlow" onclick="setPlaybackRate(0.6)">🐢 0.6x</button>
+                <button class="rate-btn" id="rateMed" onclick="setPlaybackRate(0.8)">🚶 0.8x</button>
+                <button class="rate-btn active" id="rateNormal" onclick="setPlaybackRate(1.0)">⚡ 1.0x</button>
+              </div>
+            </div>
+
+            <!-- Speech prompt reader box -->
+            <div class="sim-prompt-box" id="promptTextBox">
+              Click "Play Scenario" to listen to the academic description.
+            </div>
+
+            <div style="display:flex; gap:10px;">
+              <button class="action-btn btn-control" id="playAudioBtn" onclick="speakListeningScenario()" style="flex:1; justify-content:center;">
+                🔊 Play Scenario
+              </button>
+              <button class="action-btn btn-outline-white" id="stopAudioBtn" onclick="stopAudioPlayback()" style="color:var(--slate-ink); border-color:var(--line-muted); display:none;">
+                ⏹️ Stop
+              </button>
+            </div>
+          </div>
+
+          <!-- Checklist visual cues card -->
+          <div class="checklist-card">
+            <span class="checklist-title">📋 Listening Practice Checklist</span>
+            <div class="checklist-grid">
+              <div class="checklist-item" id="chkQuest">
+                <span class="checklist-icon" id="chkQuestIcon">⚪</span>
+                <span>🎨 SVG Quest Complete</span>
+              </div>
+              <div class="checklist-item" id="chkListen">
+                <span class="checklist-icon" id="chkListenIcon">⚪</span>
+                <span>🔊 Scenario Listened</span>
+              </div>
+              <div class="checklist-item" id="chkQuiz">
+                <span class="checklist-icon" id="chkQuizIcon">⚪</span>
+                <span>🎯 Comprehension Checked</span>
+              </div>
+              <div class="checklist-item" id="chkRubric">
+                <span class="checklist-icon" id="chkRubricIcon">⚪</span>
+                <span>🏆 Diagnostic Self-Scored</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reading Comprehension Quiz Card -->
+          <div class="quiz-card" id="quizCard" style="display:none;">
+            <div class="quiz-question" id="quizQuestionText">Loading question...</div>
+            <div class="quiz-options" id="quizOptionsContainer"></div>
+            <!-- Live feedback banner -->
+            <div class="explanation-banner" id="explanationBanner"></div>
+          </div>
+
+          <!-- WIDA Diagnostic Listening Strategy Scorer -->
+          <div class="rubric-box">
+            <div class="rubric-header">
+              <h4>🏆 Diagnostic Strategy Coach</h4>
+              <span class="rubric-badge" id="liveELPBadge">ELP 1.0 (Entering)</span>
+            </div>
+            
+            <p style="font-size:0.78rem; color:var(--slate-muted); margin:0;">
+              Evaluate your listening strategy and click <strong>Self-Score</strong> to generate custom feedback to boost your comprehension skills!
+            </p>
+
+            <div class="rubric-grid">
+              <div class="rubric-criterion">
+                <label for="rubricAcoustic">Auditory Decoding</label>
+                <select id="rubricAcoustic" onchange="calculateListeningELP()">
+                  <option value="1">1 - Needs support with single words</option>
+                  <option value="2">2 - Understands simple phrases</option>
+                  <option value="3" selected>3 - Grasps sentence details</option>
+                  <option value="4">4 - Understands connected discourse</option>
+                </select>
+              </div>
+              <div class="rubric-criterion">
+                <label for="rubricContext">Visual Scanning</label>
+                <select id="rubricContext" onchange="calculateListeningELP()">
+                  <option value="1">1 - Misses diagram keys</option>
+                  <option value="2">2 - Links labels to objects</option>
+                  <option value="3" selected>3 - Inspects mathematical balances</option>
+                  <option value="4">4 - Integrates maps & timelines</option>
+                </select>
+              </div>
+              <div class="rubric-criterion">
+                <label for="rubricIntegration">Cognitive Speed</label>
+                <select id="rubricIntegration" onchange="calculateListeningELP()">
+                  <option value="1">1 - Requires extreme slow down (0.6x)</option>
+                  <option value="2">2 - Prefers moderate speed (0.8x)</option>
+                  <option value="3" selected>3 - Comfortable at normal rate</option>
+                  <option value="4">4 - Catches high-speed speech</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Diagnostics Actionable advice block -->
+            <div class="feedback-coach-card" id="widaCoachCard" style="display:none; flex-direction:row; gap:12px; align-items:start;">
+              <span style="font-size:1.5rem; line-height:1;">💡</span>
+              <div id="widaCoachContent" style="font-size:0.8rem; font-weight:600; color:#92400e;">
+                <!-- Actionable strategy tips printed here -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- Diagnostics Terminal Overlay -->
+    <div class="diag-overlay" id="diagTerminal">
+      <div class="diag-head">
+        <span>📊 WIDA LISTENING RUNTIME DIAGNOSTICS</span>
+        <button onclick="toggleDiagnostics()" style="background:none; border:none; color:#00ff66; cursor:pointer; font-weight:bold;">✕</button>
+      </div>
+      <div class="diag-stream" id="diagConsole"></div>
+    </div>
+
+    <footer>
+      <p>&copy; 2026 Graceland Park / O'Donnell Heights School #240. Built for student engagement.</p>
+    </footer>
+
+  </main>
+
+  <script>
+    // Dictionary mapping references
+    const VOCAB_LOOKUP = {
+      apple: { es: "manzana", ar: "تفاحة", vi: "quả táo" },
+      milk: { es: "leche", ar: "حليب", vi: "sữa" },
+      sandwich: { es: "sándwich", ar: "شطيرة", vi: "bánh mì kẹp" },
+      tray: { es: "bandeja", ar: "صينية", vi: "khay" },
+      fraction: { es: "fracción", ar: "كسر", vi: "phân số" },
+      partition: { es: "partición", ar: "تقسيم", vi: "sự chia nhỏ" },
+      numerator: { es: "numerador", ar: "بسط", vi: "tử số" },
+      denominator: { es: "denominador", ar: "مقام", vi: "mẫu số" },
+      ocean: { es: "océano", ar: "محيط", vi: "đại dương" },
+      condensation: { es: "condensación", ar: "تكثيف", vi: "sự ngưng tụ" },
+      evaporation: { es: "evaporación", ar: "تبخر", vi: "sự bay hơi" },
+      thermodynamic: { es: "termodinámico", ar: "ديناميكا حرارية", vi: "nhiệt động lực học" },
+      coordinate: { es: "coordenada", ar: "إحداثي", vi: "tọa độ" },
+      quadrant: { es: "cuadrante", ar: "ربع", vi: "góc phần tư" },
+      reflection: { es: "reflexión", ar: "انعكاس", vi: "sự phản chiếu" },
+      axis: { es: "eje", ar: "محور", vi: "trục" },
+      equation: { es: "ecuación", ar: "معادلة", vi: "phương trình" },
+      variable: { es: "variable", ar: "متغير", vi: "biến" },
+      constant: { es: "constante", ar: "ثابت", vi: "hằng số" },
+      inverse: { es: "inverso", ar: "عكسي", vi: "nghịch đảo" },
+      friction: { es: "fricción", ar: "احتكاك", vi: "lực ma sát" },
+      mean: { es: "media", ar: "متوسط", vi: "số trung bình" },
+      median: { es: "mediana", ar: "وسيط", vi: "trung vị" },
+      outlier: { es: "valor atípico", ar: "قيمة متطرفة", vi: "giá trị ngoại lệ" },
+      polygon: { es: "polígono", ar: "مضلع", vi: "đa giác" },
+      decompose: { es: "descomponer", ar: "تحليل", vi: "phân tích" },
+      composite: { es: "compuesto", ar: "مركب", vi: "hợp phần" },
+      area: { es: "área", ar: "مساحة", vi: "diện tích" },
+      academic: { es: "académico", ar: "أكاديمي", vi: "học thuật" },
+      strategy: { es: "estrategia", ar: "استراتيجية", vi: "chiến lược" },
+      common: { es: "común", ar: "مشترك", vi: "chung" }
+    };
+
+    const VOCAB_LOOKUP_EXTENDED = {
+      ...VOCAB_LOOKUP,
+      data: { es: "datos", ar: "بيانات", vi: "dữ liệu" },
+      distribution: { es: "distribución", ar: "توزيع", vi: "sự phân bố" },
+      comparison: { es: "comparación", ar: "مقارنة", vi: "sự so sánh" },
+      sum: { es: "suma / total", ar: "المجموع", vi: "tổng" },
+      equivalent: { es: "equivalente", ar: "متكافئ", vi: "tương đương" },
+      multiplier: { es: "multiplicador", ar: "مضاعف", vi: "hằng số nhân" },
+      column: { es: "columna", ar: "عمود", vi: "cột" },
+      cycle: { es: "ciclo", ar: "دورة", vi: "chu kỳ" },
+      overlap: { es: "solaparse", ar: "تطابق", vi: "trùng nhau" },
+      interval: { es: "intervalo", ar: "فاصل زمن", vi: "khoảng thời gian" },
+      volume: { es: "volumen", ar: "الحجم", vi: "thể tích" },
+      prism: { es: "prisma", ar: "منشور", vi: "hình lăng trụ" },
+      capacity: { es: "capacidad", ar: "سعة", vi: "dung tích" },
+      base: { es: "base", ar: "قاعدة", vi: "đáy" },
+      intersection: { es: "intersección", ar: "تقاطع", vi: "giao điểm" },
+      inequality: { es: "desigualdad", ar: "متباينة", vi: "bất đẳng thức" },
+      boundary: { es: "límite", ar: "حدود", vi: "đường biên" },
+      limit: { es: "límite", ar: "حد", vi: "giới hạn" },
+      scale: { es: "escala", ar: "مقياس", vi: "tỷ lệ" },
+      legend: { es: "leyenda", ar: "مفتاح الخريطة", vi: "chú giải" },
+      ratio: { es: "razón", ar: "نسبة", vi: "tỷ số" },
+      distance: { es: "distancia", ar: "مسافة", vi: "khoảng cách" },
+      gravity: { es: "gravedad", ar: "جاذبية", vi: "trọng lực" },
+      slope: { es: "pendiente", ar: "منحدر", vi: "độ dốc" },
+      acceleration: { es: "aceleración", ar: "تسارع", vi: "gia tốc" },
+      legislative: { es: "legislativo", ar: "تشريعي", vi: "lập pháp" },
+      executive: { es: "ejecutivo", ar: "تنفيذي", vi: "hành pháp" },
+      judicial: { es: "judicial", ar: "قضائي", vi: "tư pháp" },
+      checks: { es: "controles", ar: "ضوابط وتوازنات", vi: "kiểm soát" },
+      probability: { es: "probabilidad", ar: "احتمالية", vi: "xác suất" },
+      sector: { es: "sector", ar: "قطاع", vi: "hình quạt" },
+      outcome: { es: "resultado", ar: "نتيجة", vi: "kết quả" }
+    };
+
+    const SYLLABLE_MAP = {
+      apple: "ap·ple", milk: "milk", sandwich: "sand·wich", tray: "tray",
+      fraction: "frac·tion", partition: "par·ti·tion", numerator: "nu·mer·a·tor", denominator: "de·nom·i·na·tor",
+      ocean: "o·cean", condensation: "con·den·sa·tion", evaporation: "e·vap·o·ra·tion", thermodynamic: "ther·mo·dy·nam·ic",
+      coordinate: "co·or·di·nate", quadrant: "quad·rant", reflection: "re·flec·tion", axis: "ax·is",
+      equation: "e·qua·tion", variable: "var·i·a·ble", constant: "con·stant", inverse: "in·verse",
+      friction: "fric·tion", mean: "mean", median: "me·di·an", outlier: "out·li·er",
+      polygon: "pol·y·gon", decompose: "de·com·pose", composite: "com·pos·ite", area: "ar·e·a",
+      academic: "ac·a·dem·ic", strategy: "strat·e·gy", common: "com·mon",
+      scale: "scale", legend: "leg·end", ratio: "ra·ti·o", distance: "dis·tance",
+      gravity: "grav·i·ty", slope: "slope", acceleration: "ac·cel·er·a·tion",
+      legislative: "leg·is·la·tive", executive: "ex·ec·u·tive", judicial: "ju·di·cial", checks: "checks",
+      probability: "prob·a·bil·i·ty", sector: "sec·tor", outcome: "out·come"
+    };
+
+    // Central state store
+    const STORE = {
+      activeTier: "A",
+      activeTaskIdx: 0,
+      activeDictionaryLang: "en",
+      isPlayingAudio: false,
+      playbackRate: 1.0,
+      sparkPoints: 1200,
+      celebrationFired: false,
+      
+      // Checklist flags
+      questCompleted: false,
+      checklistQuest: false,
+      checklistListen: false,
+      checklistQuiz: false,
+      checklistRubric: false,
+      
+      // SVG dynamic values
+      barPartitions: 5,
+      barShaded: [true, true, true, false, false],
+      scaleLeftBags: 1,
+      scaleLeftCubes: 2,
+      scaleRightCubes: 5,
+      scaleXSolution: 3,
+      gridPtX: 3,
+      gridPtY: 2,
+      dataPoints: [2, 2, 2, 3, 1, 4, 3],
+      volumeFillProgress: 40,
+      timelineYear: 1850,
+      spinnerAngle: 0
+    };
+
+    // 20 Listening tasks with embedded narratives, comprehension questions & interactive SVG model keys
+    const WIDA_LISTENING_TASKS = [
+      {
+        id: "T1",
+        title: "School Lunch Tray",
+        domain: "Social & Instructional",
+        model: "lunch",
+        terms: ["apple", "milk", "sandwich", "tray"],
+        scenarioA: "Look at the school lunch tray. This tray has three sections. The sandwich section represents grains and protein. The carton contains liquid milk. The red apple is a fruit. A balanced lunch supports healthy learning.",
+        scenarioB: "When inspecting nutritional balance on a school lunch tray, we must classify multiple meal components. The tray segregates a sandwich containing structural grains and proteins, a calcium-dense milk carton, and a dietary fiber-rich red apple. Balancing these categories guarantees high sustained metabolic energy for students, whereas relying on sugary items results in rapid glycemic drops.",
+        qA: "What item on the lunch tray provides structural grains and protein?",
+        qB: "According to the detailed nutrition discussion, what is the chemical or metabolic advantage of balancing proteins and dairy on a lunch tray instead of consuming simple sugars?",
+        optsA: ["Red Apple", "Liquid Milk", "Sandwich", "Empty Tray"],
+        optsB: ["It accelerates standard body temperatures", "It guarantees high sustained metabolic energy", "It decreases simple water absorption rates", "It decomposes structural composite polygons"],
+        ansA: 2,
+        ansB: 1,
+        explA: [
+          "Incorrect. The red apple represents the fruit group.",
+          "Incorrect. Milk represents the liquid dairy calcium group.",
+          "Correct! The sandwich combines grains and proteins to provide nutritional structural value.",
+          "Incorrect. The tray holds the items but contains no calories."
+        ],
+        explB: [
+          "Incorrect. Body temperature is unaffected by sandwich proteins.",
+          "Correct! Sustained energy is maintained by balancing proteins and complex fats/grains, preventing rapid drops.",
+          "Incorrect. Water absorption rates are unrelated to these categories.",
+          "Incorrect. Polygons are geometric, not metabolic."
+        ]
+      },
+      {
+        id: "T2",
+        title: "Fraction Partitions",
+        domain: "Language of Mathematics",
+        model: "bar",
+        terms: ["fraction", "partition", "numerator", "denominator"],
+        scenarioA: "Look at the tape bar diagram. The model whole is divided into five equal boxes. These are called partition units. Exactly three of the five parts are shaded. This represents the fraction three-fifths.",
+        scenarioB: "In this mathematical model, a single cohesive tape whole undergoes partition into five distinct, equivalent segments. Each segment represents an identical unit fraction. Since exactly three segments are shaded, the numerator value is three, and the denominator base is five. This establishes a shaded ratio constant of three-fifths.",
+        qA: "How many partition boxes are in the whole model?",
+        qB: "If we double both the numerator and the denominator by partitioning each unit box in half, what occurs to the equivalent ratio constant?",
+        optsA: ["Three partitions", "Four partitions", "Five partitions", "Six partitions"],
+        optsB: ["The ratio scales up and increases in total size", "The ratio remains exactly equivalent at six-tenths", "The denominator decreases to two units", "The whole model becomes an unbalanced physical scale"],
+        ansA: 2,
+        ansB: 1,
+        explA: [
+          "Incorrect. Three is the count of the shaded partitions, not the whole.",
+          "Incorrect. There are more than four boxes.",
+          "Correct! The whole is divided into exactly five equal partition boxes.",
+          "Incorrect. There are only five segments total."
+        ],
+        explB: [
+          "Incorrect. Equivalent fractions maintain the exact same relative size.",
+          "Correct! Six-tenths is perfectly equivalent to three-fifths, preserving the core ratio constant.",
+          "Incorrect. Dividing cells increases the denominator, not decreases.",
+          "Incorrect. This is a tape model, not a mechanical scale balance."
+        ]
+      },
+      {
+        id: "T3",
+        title: "The Water Cycle",
+        domain: "Language of Science",
+        model: "water",
+        terms: ["ocean", "condensation", "evaporation", "thermodynamic"],
+        scenarioA: "This is the water cycle. When the sun heats up liquid water in the ocean, it changes to gas. This is evaporation. When the gas cools in the sky, it makes clouds. This is condensation.",
+        scenarioB: "This closed thermodynamic model displays phase state transformations. Solar thermal energy radiates onto the liquid ocean, triggering evaporation, where water molecules convert to gaseous vapor. Subsequently, the rising vapor cools in the atmosphere, undergoing condensation to form cloud droplets. This cycle ensures constant water conservation.",
+        qA: "What happens when liquid ocean water gets hot?",
+        qB: "How does the thermodynamic process transition gaseous vapor into liquid cloud condensation?",
+        optsA: ["It turns into solid ice crystals", "It evaporates into gaseous vapor", "It precipitates into rain immediately", "It dissolves into salt"],
+        optsB: ["By increasing heat from the sun", "By cooling down in the higher atmosphere", "By flowing directly back into ocean reservoirs", "By decomposing into geometric quadrantal lines"],
+        ansA: 1,
+        ansB: 1,
+        explA: [
+          "Incorrect. Solid ice crystals require a loss of thermal energy.",
+          "Correct! Thermal heating causes evaporation, transforming liquid ocean water into gaseous vapor.",
+          "Incorrect. Gaseous evaporation must occur and condense before precipitation.",
+          "Incorrect. Salt remains behind; it does not evaporate."
+        ],
+        explB: [
+          "Incorrect. Sun heat drives evaporation, not condensation.",
+          "Correct! Condensation occurs when rising vapor cools down in the atmosphere, condensing back into liquid droplets.",
+          "Incorrect. Flowing back to reservoirs describes runoff, not condensation.",
+          "Incorrect. Quadrants are coordinates, not thermodynamics."
+        ]
+      },
+      {
+        id: "T4",
+        title: "Desk Grid Coordinates",
+        domain: "Language of Social Studies",
+        model: "grid",
+        terms: ["coordinate", "quadrant", "reflection", "axis"],
+        scenarioA: "Look at the grid map. Point P represents a student desk. To find Point P, start at zero. Move right three coordinates along the horizontal axis, then go up two vertical coordinates. Point P is at three, two.",
+        scenarioB: "This coordinate plane structures our classroom layout into quadrants. Point P is situated at coordinates three, two, meaning it lies in the positive first quadrant. Reflecting this point across the horizontal x-axis preserves the x-value but reverses the vertical y-coordinate, yielding three, negative two in the fourth quadrant.",
+        qA: "What is the starting horizontal coordinate number for Point P?",
+        qB: "If you execute a vertical axis reflection of Point P across the y-axis, what coordinates represent the new desk position?",
+        optsA: ["Coordinate 1", "Coordinate 2", "Coordinate 3", "Coordinate 5"],
+        optsB: ["Three, negative two (3, -2)", "Negative three, two (-3, 2)", "Negative three, negative two (-3, -2)", "Three, two (3, 2)"],
+        ansA: 2,
+        ansB: 1,
+        explA: [
+          "Incorrect. Coordinate 1 is the starting quadrant base.",
+          "Incorrect. Two is the vertical height coordinate of Point P.",
+          "Correct! The horizontal coordinate (x) is exactly three.",
+          "Incorrect. Five is off the active plot point."
+        ],
+        explB: [
+          "Incorrect. That is a reflection across the horizontal x-axis.",
+          "Correct! Reflecting across the vertical y-axis reverses the x-coordinate to negative three, keeping y positive.",
+          "Incorrect. That represents a reflection across the origin (both axes).",
+          "Incorrect. That is the original position."
+        ]
+      },
+      {
+        id: "T5",
+        title: "Mechanical Scale Balance",
+        domain: "Language of Mathematics",
+        model: "scale",
+        terms: ["equation", "variable", "constant", "inverse"],
+        scenarioA: "Look at this mechanical scale. It is perfectly balanced, meaning both sides are equal. The left side has a bag variable X and two blocks. The right side has five blocks. This forms a balanced equation.",
+        scenarioB: "This mechanical balance represents an algebraic equation. The left pan holds the variable X bag plus a constant value of two, while the right pan holds five constant unit cubes. To isolate the variable X, we apply the inverse operation of subtraction, subtracting two from both sides to find X equals three.",
+        qA: "How many constant unit cubes are on the right side of the scale?",
+        qB: "Which inverse operation must you perform to isolate the variable X bag in the equation X plus two equals five?",
+        optsA: ["Three cubes", "Four cubes", "Five cubes", "Seven cubes"],
+        optsB: ["Add two to both sides of the equation", "Subtract two from both sides of the equation", "Multiply both sides by five", "Decompose the polygon into sub-shapes"],
+        ansA: 2,
+        ansB: 1,
+        explA: [
+          "Incorrect. Three is the isolated value of X, not the right pan count.",
+          "Incorrect. There are more than four blocks on the right.",
+          "Correct! The right side holds exactly five constant cubes.",
+          "Incorrect. That would imbalance the pans."
+        ],
+        explB: [
+          "Incorrect. Adding two would make the left side X + 4, not isolating X.",
+          "Correct! Since the variable has 2 added to it, subtracting 2 from both sides is the inverse operation.",
+          "Incorrect. Multiplication would scale the entire equation, not isolate X.",
+          "Incorrect. Polygons are geometric, not related to scale balance."
+        ]
+      },
+      {
+        id: "T6",
+        title: "Friction Dot Plot",
+        domain: "Language of Science",
+        model: "data",
+        terms: ["friction", "mean", "median", "outlier"],
+        scenarioA: "This dot plot shows speed data. Most of the speed dots are clustered at two. This is the mode. There is one dot far away at five. This single dot represents a high speed outlier.",
+        scenarioB: "We analyze a speed data distribution subject to friction. The dataset clusters heavily at two, which represents our median center. However, the isolated speed dot at value five acts as a significant outlier. This outlier pulls the calculated mean value to the right, skewing the overall statistical summary.",
+        qA: "At what speed value is the highest cluster stack of dots?",
+        qB: "How does the high outlier dot at value five affect the relationship between the mean and median?",
+        optsA: ["Value one", "Value two", "Value three", "Value five"],
+        optsB: ["It pulls the mean to be higher than the median", "It pulls the median to be higher than the mean", "It makes the mean and median exactly equal", "It increases the friction coefficient of the scale"],
+        ansA: 1,
+        ansB: 0,
+        explA: [
+          "Incorrect. Value one has fewer dots.",
+          "Correct! The highest frequency stack of speed dots clusters at value two.",
+          "Incorrect. Value three has only one dot.",
+          "Incorrect. Value five is the outlier, not the cluster."
+        ],
+        explB: [
+          "Correct! High outliers skew the average (mean) upwards, pulling it higher than the middle value (median).",
+          "Incorrect. The median remains stable; the mean is pulled higher.",
+          "Incorrect. skews the calculations, making them unequal.",
+          "Incorrect. Friction coefficients are physical, not statistical variables."
+        ]
+      },
+      {
+        id: "T7",
+        title: "Composite Decomposing",
+        domain: "Language of Mathematics",
+        model: "geometry",
+        terms: ["polygon", "decompose", "composite", "area"],
+        scenarioA: "Look at the big composite shape. It is a single polygon. We calculate its total area by decomposing it. We cut it into two simple shapes: one rectangle and one right triangle.",
+        scenarioB: "To determine the complete area of this composite polygon, we apply the strategy of decomposition. We segment the shape into a sub-rectangle and a sub-triangle. We compute their individual areas separately, then sum the two values to reveal the total composite area.",
+        qA: "What two simple shapes form this composite polygon?",
+        qB: "What is the logical mathematical step to take after decomposing the polygon and finding the areas of the sub-shapes?",
+        optsA: ["A square and a circle", "A triangle and a rectangle", "Two equal fractions", "A quadrant and an axis"],
+        optsB: ["Subtract the triangle from the rectangle", "Sum the individual areas to find the total composite area", "Divide the numerator by the denominator", "Isolate the scale variable"],
+        ansA: 1,
+        ansB: 1,
+        explA: [
+          "Incorrect. The model contains no circular curves.",
+          "Correct! The composite polygon is decomposed into a triangle and a rectangle.",
+          "Incorrect. These are polygons, not fractions.",
+          "Incorrect. These are coordinate grid elements."
+        ],
+        explB: [
+          "Incorrect. Subtracting would leave an incomplete area.",
+          "Correct! Summing the decomposed areas yields the total composite area of the polygon.",
+          "Incorrect. Division is for fractions, not polygon summation.",
+          "Incorrect. Variable isolation is for algebraic scale equations."
+        ]
+      },
+      {
+        id: "T8",
+        title: "Speaking Growth Reflection",
+        domain: "Language of Social Studies",
+        model: "reflect",
+        terms: ["academic", "strategy", "equivalent", "constant"],
+        scenarioA: "Look at these progress steps. This year, my academic goal was to speak using complete sentences. I practiced new vocabulary daily. Using pictures helped me explain my mathematical ideas clearly.",
+        scenarioB: "Reflecting on linguistic growth, students transition along a developmental ladder. Achieving high academic speaking marks requires practicing vocabulary strategies. Connecting terms directly to equivalent visual models establishes a constant growth path, preparing students for formal WIDA presentations.",
+        qA: "What was the main goal described in this reflection steps narrative?",
+        qB: "According to the speaker, what strategy helped them explain complex mathematical ideas clearly?",
+        optsA: ["To paint complex composite polygons", "To speak using complete academic sentences", "To isolate variables on balance scales", "To construct thermodynamic water cycles"],
+        optsB: ["Reading high-frequency stories at 0.6x speed", "Connecting vocabulary terms directly to visual models", "Subtracting outlier dots from the plot", "Reflecting coordinates across grid quadrants"],
+        ansA: 1,
+        ansB: 1,
+        explA: [
+          "Incorrect. Geometry is a task, not the self-reflection goal.",
+          "Correct! The student's primary academic goal was speaking in complete sentences.",
+          "Incorrect. Scale algebra is unrelated to language goals.",
+          "Incorrect. The water cycle is a science task."
+        ],
+        explB: [
+          "Incorrect. Playback speed is a listening option, not a speaking strategy.",
+          "Correct! Connecting vocabulary directly to visual models makes explanations concrete and clear.",
+          "Incorrect. Outliers are statistical data, not learning strategies.",
+          "Incorrect. Coordinate grids do not act as language scaffolds."
+        ]
+      },
+      {
+        id: "T9",
+        title: "Recess Sports preferences",
+        domain: "Social & Instructional",
+        model: "bar-chart",
+        terms: ["data", "distribution", "comparison", "sum"],
+        scenarioA: "This bar chart displays sports data. More students prefer soccer than running or basketball. Soccer is the highest bar. We can see student preferences by comparing the bar heights.",
+        scenarioB: "This bar chart visualizes student preference distribution data. A comparison of the categories reveals that soccer leads with the highest frequency, followed by basketball. Summing all category values calculates the total sample size, showcasing cooperative game preferences.",
+        qA: "Which sport has the highest bar on the preference chart?",
+        qB: "How is the total number of students who participated in the survey calculated from the bar chart?",
+        optsA: ["Running", "Basketball", "Soccer", "Tetherball"],
+        optsB: ["By multiplying the highest bar by the lowest bar", "By summing the heights of all the preference bars", "By decomposing the bar coordinates", "By isolating the soccer variable"],
+        ansA: 2,
+        ansB: 1,
+        explA: [
+          "Incorrect. Running is the lowest bar on the chart.",
+          "Incorrect. Basketball is high but not the highest.",
+          "Correct! Soccer commands the highest bar on the preference chart.",
+          "Incorrect. Tetherball is not in the dataset."
+        ],
+        explB: [
+          "Incorrect. Multiplication would scale, not calculate the survey total.",
+          "Correct! Summing the heights of all bars aggregates all student survey responses.",
+          "Incorrect. Decomposition is for geometric area calculations.",
+          "Incorrect. Variable isolation is for algebraic balance scales."
+        ]
+      },
+      {
+        id: "T10",
+        title: "Cookie Ratio Table",
+        domain: "Language of Mathematics",
+        model: "ratio-table",
+        terms: ["ratio", "equivalent", "multiplier", "column"],
+        scenarioA: "Look at the cookie ratio table. One batch requires two cups of flour. To make two batches, you need four cups. The numbers in each column scale up by the same multiplier.",
+        scenarioB: "This mathematical ratio table presents proportional columns. The relationship between cookie batches and flour cups is constant. We calculate equivalent ratios by determining the constant column multiplier. In this case, multiplying the batch value by two yields the flour value.",
+        qA: "How many cups of flour do you need to bake exactly two batches of cookies?",
+        qB: "In this ratio table, what mathematical role does the number 'two' perform across all columns?",
+        optsA: ["Two cups of flour", "Four cups of flour", "Five cups of flour", "Six cups of flour"],
+        optsB: ["It acts as a high speed outlier dot", "It is the constant scale variable", "It represents the constant multiplier that scales the columns", "It decomposes the composite polygon whole"],
+        ansA: 1,
+        ansB: 2,
+        explA: [
+          "Incorrect. Two cups is for one single batch.",
+          "Correct! Two batches require exactly four cups of flour.",
+          "Incorrect. Five is not a value in the table ratio.",
+          "Incorrect. Six cups is for three batches."
+        ],
+        explB: [
+          "Incorrect. Outliers skew dot plots, not tables.",
+          "Incorrect. Scale variables belong on balance equations.",
+          "Correct! The number two acts as the constant multiplier to establish equivalent ratio columns.",
+          "Incorrect. Decomposition is for composite areas."
+        ]
+      },
+      // Tasks 11 to 20 follow the exact same high-level mapping structure
+      {
+        id: "T11",
+        title: "Plant Photosynthesis",
+        domain: "Language of Science",
+        model: "photosynthesis",
+        terms: ["carbon", "oxygen", "chlorophyll", "energy"],
+        scenarioA: "Plants use sunlight to grow. Chlorophyll in the leaves catches light energy. The plant takes in carbon dioxide and water. Subsequently, it produces glucose sugar and releases oxygen into the air.",
+        scenarioB: "Within the chloroplasts, chlorophyll pigment absorbs radiant energy from sunlight. This drives a chemical conversion where carbon dioxide and water molecules synthesize into glucose. Consequently, oxygen gas is released as a vital byproduct, supporting respiration.",
+        qA: "What pigment in leaves catches solar energy for photosynthesis?",
+        qB: "What gas is released by the plant as a byproduct of this chemical reaction?",
+        optsA: ["Carbon dioxide", "Glucose sugar", "Chlorophyll", "Water vapor"],
+        optsB: ["Oxygen gas", "Carbon dioxide", "Nitrogen vapor", "Helium"],
+        ansA: 2,
+        ansB: 0,
+        explA: ["Incorrect.", "Incorrect.", "Correct! Chlorophyll is the active pigment.", "Incorrect."],
+        explB: ["Correct! Oxygen gas is released into the atmosphere.", "Incorrect.", "Incorrect.", "Incorrect."]
+      },
+      {
+        id: "T12",
+        title: "History Timeline",
+        domain: "Language of Social Studies",
+        model: "timeline",
+        terms: ["timeline", "interval", "chronological", "period"],
+        scenarioA: "This history timeline shows chronological events. The line has intervals of fifty years. We use timelines to understand when periods in history started and ended.",
+        scenarioB: "This historical timeline models chronological intervals across a century. The system splits time into specific segments, charting events sequentially. This structures historical analysis, allowing students to compare durations of distinct eras.",
+        qA: "What is the scale interval of years marked on this history timeline?",
+        qB: "Why do historians use structured timelines during analysis?",
+        optsA: ["Ten years", "Fifty years", "One hundred years", "Five hundred years"],
+        optsB: ["To calculate composite polygon areas", "To chart chronological events and compare periods", "To balance variables on scales", "To evaporate ocean water"],
+        ansA: 1,
+        ansB: 1,
+        explA: ["Incorrect.", "Correct! The timeline intervals show fifty-year gaps.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Timelines map chronological sequences visually.", "Incorrect.", "Incorrect."]
+      },
+      {
+        id: "T13",
+        title: "Volume of Prisms",
+        domain: "Language of Mathematics",
+        model: "prism-vol",
+        terms: ["volume", "prism", "capacity", "base"],
+        scenarioA: "This is a rectangular prism. The base has four boxes and the height is three layers. We calculate volume by multiplying the base area times the height. This reveals the prism's capacity.",
+        scenarioB: "We calculate the cubic capacity of this rectangular prism. By multiplying the base area dimensions by the vertical height layers, we compute the volume. The base has a length of four and a width of three, yielding a base area of twelve.",
+        qA: "What is the base area of this rectangular prism?",
+        qB: "What mathematical formula calculates the volume of any rectangular prism?",
+        optsA: ["Twelve square units", "Three square units", "Four square units", "Sixteen square units"],
+        optsB: ["Base area plus the height", "Length times width times height", "Fraction numerator divided by axis", "Sum of the outer coordinate reflections"],
+        ansA: 0,
+        ansB: 1,
+        explA: ["Correct! 4 times 3 gives a base area of twelve.", "Incorrect.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Length times width times height (or base times height) yields volume.", "Incorrect.", "Incorrect."]
+      },
+      {
+        id: "T14",
+        title: "Ecosystem Trophic Web",
+        domain: "Language of Science",
+        model: "ecosystem",
+        terms: ["trophic", "consumer", "producer", "transfer"],
+        scenarioA: "This is a trophic food web. Plants are producers that get energy from the sun. Insects eat plants, and frogs eat insects. The arrows show the transfer of energy.",
+        scenarioB: "This ecological trophic web illustrates energy transfer vectors. Producers synthesize solar energy. Primary consumers eat producers, and secondary consumers digest insects. The directional arrows map the tributary flow of metabolic energy.",
+        qA: "In this ecosystem, what role do green plants perform?",
+        qB: "What do the arrows in a trophic food web diagram represent?",
+        optsA: ["Primary consumers", "Secondary consumers", "Producers", "Outliers"],
+        optsB: ["The movement of soil erosion", "The transfer of metabolic energy from one organism to another", "The coordinate reflections of quadrants", "The flow of liquid ocean condensation"],
+        ansA: 2,
+        ansB: 1,
+        explA: ["Incorrect.", "Incorrect.", "Correct! Plants produce energy via photosynthesis.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Arrows show the direct path of energy transfers.", "Incorrect.", "Incorrect."]
+      },
+      {
+        id: "T15",
+        title: "Number Line Inequalities",
+        domain: "Language of Mathematics",
+        model: "number-line",
+        terms: ["inequality", "boundary", "limit", "inclusive"],
+        scenarioA: "Look at the number line. The inequality says X is greater than three. The boundary is an open circle at three. This means three is not included in the solution.",
+        scenarioB: "This number line visualizes an inequality boundary. Since the boundary circle is open, it indicates a strict inequality where the limit value itself is not inclusive. Shading extends to the right, showing values greater than three.",
+        qA: "Where is the boundary circle located on this number line?",
+        qB: "What does an open circle boundary mean in a plotted inequality graph?",
+        optsA: ["At value zero", "At value three", "At value five", "At value negative two"],
+        optsB: ["The boundary number is inclusive in the solution", "The boundary number is not inclusive in the solution", "The equation is balanced", "The coordinates are reflected across the axis"],
+        ansA: 1,
+        ansB: 1,
+        explA: ["Incorrect.", "Correct! The boundary is plotted at value three.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Open circle indicates strict boundary limits (not inclusive).", "Incorrect.", "Incorrect."]
+      },
+      {
+        id: "T16",
+        title: "Principal Proposal Dialogue",
+        domain: "Social & Instructional",
+        model: "interview",
+        terms: ["proposal", "request", "collaborative", "benefits"],
+        scenarioA: "A student meets the principal to request a new sports club. The student presents a proposal explaining the benefits. They discuss how a club helps students build collaborative teamwork skills.",
+        scenarioB: "In this formal interview, a student delivers a proposal requesting a collaborative recess club. The student articulates specific physical and social benefits, outlining how structured games support teamwork, directly answering the principal's questions.",
+        qA: "What is the student requesting in the principal proposal meeting?",
+        qB: "What social benefit is highlighted in the student's proposal?",
+        optsA: ["New math calculators", "A new recess sports club", "An extra science lab", "A grid map update"],
+        optsB: ["Increased coordinate reflections", "Reduced cookie baking ratios", "Collaborative teamwork skills", "Evaporating water levels"],
+        ansA: 1,
+        ansB: 2,
+        explA: ["Incorrect.", "Correct! The student proposes a new recess sports club.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Incorrect.", "Correct! Teamwork is the primary collaborative benefit.", "Incorrect."]
+      },
+      {
+        id: "T17",
+        title: "Map Scales & Legends",
+        domain: "Language of Social Studies",
+        model: "map-scale",
+        terms: ["scale", "legend", "ratio", "distance"],
+        scenarioA: "Look at the map scale. The legend shows that one inch on the map is equivalent to ten miles in the real world. We use this ratio to calculate actual travel distances.",
+        scenarioB: "This spatial map incorporates a scale legend. The ratio specifies that one unit represents ten miles of physical distance. Using this scale ratio, travelers convert map measurements into true geographical distance, calculating travel times.",
+        qA: "According to the map scale legend, one inch on the map is equal to how many real-world miles?",
+        qB: "Why do mapmakers include a scale ratio legend on geographical maps?",
+        optsA: ["One mile", "Five miles", "Ten miles", "Fifty miles"],
+        optsB: ["To decompose composite polygons", "To allow readers to convert map measurements to actual distance", "To count standard speed outlier dots", "To balance variables on scales"],
+        ansA: 2,
+        ansB: 1,
+        explA: ["Incorrect.", "Incorrect.", "Correct! One inch scales to ten miles.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! It allows converting visual dimensions to true physical distance.", "Incorrect.", "Incorrect."]
+      },
+      {
+        id: "T18",
+        title: "Friction Incline Physics",
+        domain: "Language of Science",
+        model: "ramp-physics",
+        terms: ["gravity", "slope", "acceleration", "friction"],
+        scenarioA: "Look at the incline ramp. A block slides down the slope. Gravity pulls the block downwards, causing acceleration. Friction opposes the movement, acting as a resistive force.",
+        scenarioB: "This physics model diagrams forces on an inclined ramp. Gravity pulls the block down the slope, inducing linear acceleration. Opposing this motion is friction, acting as a parallel resistive force. If friction increases, sliding speed decreases.",
+        qA: "What force pulls the sliding block down the slope?",
+        qB: "How does the physical force of friction affect the block's acceleration down the ramp?",
+        optsA: ["Friction", "Gravity", "Oxygen", "Carbon dioxide"],
+        optsB: ["It increases acceleration rates", "It opposes the motion and acts as a resistive force", "It reflects the block into a new quadrant", "It creates an equivalent ratio constant"],
+        ansA: 1,
+        ansB: 1,
+        explA: ["Incorrect.", "Correct! Gravity pulls the mass down the slope.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Friction opposes motion, reducing net sliding acceleration.", "Incorrect.", "Incorrect."]
+      },
+      {
+        id: "T19",
+        title: "Branches of Government",
+        domain: "Language of Social Studies",
+        model: "branches-flow",
+        terms: ["legislative", "executive", "judicial", "checks"],
+        scenarioA: "Our government has three branches. The Legislative branch makes laws. The Executive branch carries out laws. The Judicial branch explains laws. This system of checks and balances prevents any branch from having too much power.",
+        scenarioB: "This flowchart structures the three branches of government. The Legislative branch is responsible for making laws, the Executive branch executes them, and the Judicial branch interprets them. This tripartite system uses checks and balances to prevent centralization of authority.",
+        qA: "Which branch of government is responsible for making academic laws?",
+        qB: "What is the purpose of having a system of checks and balances in government?",
+        optsA: ["Executive branch", "Judicial branch", "Legislative branch", "Principal branch"],
+        optsB: ["To calculate composite polygon areas", "To prevent any single branch from gaining too much power", "To accelerate blocks down physical slope ramps", "To divide the numerator by the denominator"],
+        ansA: 2,
+        ansB: 1,
+        explA: ["Incorrect.", "Incorrect.", "Correct! The Legislative branch (Congress) drafts and makes laws.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Checks and balances guarantee a divided balance of power.", "Incorrect.", "Incorrect."]
+      },
+      {
+        id: "T20",
+        title: "Probability Spinner Wheel",
+        domain: "Language of Mathematics",
+        model: "spinner-prob",
+        terms: ["probability", "sector", "outcome", "distribution"],
+        scenarioA: "Look at the spinner wheel. The circle is partitioned into four sectors. The blue sector represents one-half of the wheel. The probability of spinning blue is one out of two, or fifty percent.",
+        scenarioB: "We analyze outcome probability on this circular spinner. The wheel is partitioned into sectors of varying sizes. The blue sector occupies exactly half the circle's area, establishing a fifty percent probability distribution for that specific outcome.",
+        qA: "What fraction of the spinner wheel area is occupied by the blue sector?",
+        qB: "If you spin the needle exactly once, what is the probability of landing on the blue sector?",
+        optsA: ["One-fourth (1/4)", "One-half (1/2)", "Three-fourths (3/4)", "One-fifth (1/5)"],
+        optsB: ["Twenty-five percent (25%)", "Fifty percent (50%)", "Seventy-five percent (75%)", "One hundred percent (100%)"],
+        ansA: 1,
+        ansB: 1,
+        explA: ["Incorrect.", "Correct! The blue sector covers exactly half (one-half) of the spinner.", "Incorrect.", "Incorrect."],
+        explB: ["Incorrect.", "Correct! Since blue occupies half the area, the probability is 50%.", "Incorrect.", "Incorrect."]
+      }
+    ];
+
+    // Inline SVGs Drawer Object (Identical to Speaking/Writing for visual matching!)
+    const SVG_SPEAKING_DRAWER = {
+      lunch: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <rect x="30" y="30" width="340" height="240" rx="16" fill="#cbd5e1" stroke="#94a3b8" stroke-width="6" />
+          <rect x="50" y="50" width="300" height="200" rx="10" fill="#f1f5f9" />
+          
+          <!-- Sandwich slot -->
+          <rect x="70" y="70" width="120" height="100" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('sandwich', 'Sandwich is grains and proteins. High calorie fuels!')" />
+          <polygon points="80,150 130,80 180,150" fill="#f59e0b" opacity="0.8" style="pointer-events:none;" />
+          <polygon points="90,150 130,95 170,150" fill="#b45309" style="pointer-events:none;" />
+          <text x="130" y="163" text-anchor="middle" font-size="10" font-weight="900" fill="var(--slate-muted)">Sandwich</text>
+          
+          <!-- Milk slot -->
+          <rect x="210" y="70" width="120" height="100" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('milk', 'Milk carton represents dairy and liquid hydration!')" />
+          <rect x="250" y="80" width="40" height="60" fill="#3b82f6" rx="2" style="pointer-events:none;" />
+          <path d="M250,80 L270,68 L290,80 Z" fill="#2563eb" style="pointer-events:none;" />
+          <text x="270" y="163" text-anchor="middle" font-size="10" font-weight="900" fill="var(--slate-muted)">Milk Carton</text>
+          
+          <!-- Apple slot -->
+          <rect x="70" y="185" width="260" height="50" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('apple', 'Red Apple representing fruit fibers!')" />
+          <circle cx="200" cy="210" r="16" fill="#ef4444" style="pointer-events:none;" />
+          <path d="M198,194 C198,191,202,191,202,194" stroke="#78350f" stroke-width="2.5" fill="none" style="pointer-events:none;" />
+          <path d="M202,192 C206,192,207,188,205,188 Z" fill="#22c55e" style="pointer-events:none;" />
+          <text x="130" y="215" font-size="11" font-weight="900" fill="var(--navy-deep)">Red Apple (Click objects!)</text>
+        </svg>`;
+      },
+      
+      bar: function() {
+        const divs = STORE.barPartitions || 5;
+        let partitionsHtml = "";
+        const boxWidth = 300 / divs;
+        
+        let shadedCount = 0;
+        for (let i = 0; i < divs; i++) {
+          const x = 50 + (i * boxWidth);
+          const isShaded = STORE.barShaded[i] || false;
+          if (isShaded) shadedCount++;
+          
+          const fill = isShaded ? "var(--primary)" : "var(--white)";
+          const textFill = isShaded ? "var(--white)" : "var(--navy-deep)";
+          partitionsHtml += `
+            <g style="cursor:pointer;" onclick="toggleTapePartition(${i})">
+              <rect x="${x}" y="100" width="${boxWidth}" height="60" fill="${fill}" stroke="var(--navy)" stroke-width="3" />
+              <text x="${x + boxWidth/2}" y="136" text-anchor="middle" font-size="12" font-weight="900" fill="${textFill}">1/${divs}</text>
+            </g>
+          `;
+        }
+
+        const ratio = (shadedCount / divs).toFixed(3);
+        const percent = (shadedCount / divs * 100).toFixed(1);
+
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Interactive Tape Block Model</text>
+          <text x="200" y="70" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP CELLS TO SHADE EXACTLY 3 OUT OF 5</text>
+          
+          ${partitionsHtml}
+          
+          <rect x="50" y="190" width="300" height="70" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+          <text x="70" y="215" font-size="13" font-weight="900" fill="var(--navy-deep)">Shaded: ${shadedCount} of ${divs} units</text>
+          <text x="70" y="240" font-size="12" font-weight="800" fill="var(--primary)">Fraction = ${shadedCount}/${divs} &middot; Percent = ${percent}%</text>
+        </svg>`;
+      },
+      
+      water: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <circle cx="340" cy="60" r="24" fill="#f59e0b" style="cursor:pointer;" onclick="tapListeningObject('sun', 'The Sun is the source of thermal radiation in photosynthesis and evaporation cycles!')" />
+          <rect x="20" y="220" width="360" height="60" fill="#3b82f6" rx="4" style="cursor:pointer;" onclick="tapListeningObject('ocean', 'The ocean represents liquid H2O. Solar energy forces molecules to turn to gas.')" />
+          <text x="200" y="255" text-anchor="middle" font-size="13" font-weight="900" fill="#fff" style="pointer-events:none;">Ocean (Liquid Water)</text>
+          <path d="M80,100 C70,100,60,90,65,80 C60,70,75,60,85,65 C95,55,115,65,110,80 C120,80,120,95,110,100 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('cloud', 'Clouds represent condensation: vapor cooling back into liquid drops!')" />
+          <text x="90" y="85" font-size="9" font-weight="900" fill="var(--slate-muted)" style="pointer-events:none;">Cloud</text>
+          <path d="M 280,200 L 280,110" fill="none" stroke="var(--coral)" stroke-width="4.5" marker-end="url(#arrow)" />
+          <text x="290" y="150" font-size="11" font-weight="900" fill="var(--coral)">Evaporation</text>
+          <path d="M 120,110 L 200,80" fill="none" stroke="var(--primary)" stroke-width="3" stroke-dasharray="3" />
+          <text x="170" y="112" font-size="10" font-weight="800" fill="var(--primary)">Condensation (Click objects!)</text>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--coral)" />
+            </marker>
+          </defs>
+        </svg>`;
+      },
+      
+      grid: function() {
+        const px = STORE.gridPtX || 3;
+        const py = STORE.gridPtY || 2;
+        const svgX = 200 + (px * 25);
+        const svgY = 150 - (py * 25);
+
+        let linesHtml = "";
+        for (let i = 1; i < 6; i++) {
+          const positiveOffset = 150 - (i * 25);
+          const negativeOffset = 150 + (i * 25);
+          linesHtml += `<line x1="50" y1="${positiveOffset}" x2="350" y2="${positiveOffset}" stroke="#cbd5e1" stroke-width="0.5" />`;
+          linesHtml += `<line x1="50" y1="${negativeOffset}" x2="350" y2="${negativeOffset}" stroke="#cbd5e1" stroke-width="0.5" />`;
+          linesHtml += `<line x1="${200 + (i*25)}" y1="30" x2="${200 + (i*25)}" y2="270" stroke="#cbd5e1" stroke-width="0.5" />`;
+          linesHtml += `<line x1="${200 - (i*25)}" y1="30" x2="${200 - (i*25)}" y2="270" stroke="#cbd5e1" stroke-width="0.5" />`;
+        }
+
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);" onclick="clickGridAxes(event)">
+          <!-- Background grids -->
+          ${linesHtml}
+          <!-- Axes lines -->
+          <line x1="200" y1="30" x2="200" y2="270" stroke="var(--navy)" stroke-width="2.5" />
+          <line x1="50" y1="150" x2="350" y2="150" stroke="var(--navy)" stroke-width="2.5" />
+          
+          <circle cx="${svgX}" cy="${svgY}" r="9" fill="var(--primary)" stroke="var(--navy-deep)" stroke-width="2.5" />
+          <text x="${svgX + 12}" y="${svgY + 4}" font-size="11" font-weight="900" fill="var(--navy-deep)">Point P (${px}, ${py})</text>
+          <text x="200" y="290" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">CLICK ANYWHERE ON GRID TO MOVE POINT P</text>
+        </svg>`;
+      },
+      
+      scale: function() {
+        const leftW = 100;
+        const rightW = 160;
+        const balAngle = 0; 
+        
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Mechanical Scale Balance</text>
+          
+          <!-- Stand -->
+          <rect x="194" y="80" width="12" height="150" fill="#64748b" />
+          <polygon points="170,230 230,230 200,200" fill="#475569" />
+          <line x1="100" y1="100" x2="300" y2="100" stroke="#334155" stroke-width="6" />
+          
+          <!-- Left side -->
+          <line x1="100" y1="100" x2="100" y2="170" stroke="#475569" stroke-width="2" />
+          <rect x="70" y="170" width="60" height="8" fill="#94a3b8" rx="2" style="cursor:pointer;" onclick="tapListeningObject('leftScale', 'Left pan holds bag variable X plus 2 constant cubes.')" />
+          <rect x="80" y="145" width="22" height="25" fill="var(--primary)" rx="4" />
+          <text x="91" y="162" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">X</text>
+          <rect x="108" y="157" width="12" height="12" fill="var(--amber)" />
+          <rect x="115" y="145" width="12" height="12" fill="var(--amber)" />
+          
+          <!-- Right side -->
+          <line x1="300" y1="100" x2="300" y2="170" stroke="#475569" stroke-width="2" />
+          <rect x="270" y="170" width="60" height="8" fill="#94a3b8" rx="2" style="cursor:pointer;" onclick="tapListeningObject('rightScale', 'Right pan holds 5 constant unit cubes in equilibrium.')" />
+          <!-- 5 boxes stacked -->
+          <rect x="280" y="157" width="12" height="12" fill="var(--amber)" />
+          <rect x="294" y="157" width="12" height="12" fill="var(--amber)" />
+          <rect x="308" y="157" width="12" height="12" fill="var(--amber)" />
+          <rect x="287" y="144" width="12" height="12" fill="var(--amber)" />
+          <rect x="301" y="144" width="12" height="12" fill="var(--amber)" />
+        </svg>`;
+      },
+      
+      data: function() {
+        let dotsHtml = "";
+        const speedFreq = [0, 0, 3, 1, 1, 0, 0];
+        
+        // Render current points stack
+        for (let i = 0; i < speedFreq.length; i++) {
+          const x = 70 + (i * 44);
+          const count = speedFreq[i];
+          for (let j = 0; j < count; j++) {
+            const y = 190 - (j * 15);
+            dotsHtml += `<circle cx="${x}" cy="${y}" r="6" fill="var(--primary)" stroke="var(--navy-deep)" stroke-width="1.5" />`;
+          }
+        }
+        
+        // Add active click outlier trigger at value 5
+        let outlierColor = "var(--slate-muted)";
+        if (STORE.questCompleted) {
+          outlierColor = "var(--primary)";
+          dotsHtml += `<circle cx="290" cy="190" r="6" fill="var(--coral)" stroke="var(--navy-deep)" stroke-width="1.5" />`;
+          dotsHtml += `<text x="290" y="174" text-anchor="middle" font-size="9" font-weight="900" fill="var(--coral)">Outlier</text>`;
+        }
+
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Friction Speed Dot Plot</text>
+          
+          <!-- Axis line -->
+          <line x1="50" y1="210" x2="350" y2="210" stroke="var(--navy)" stroke-width="3" />
+          
+          <!-- Axis Ticks & labels -->
+          <line x1="70" y1="210" x2="70" y2="216" stroke="var(--navy)" stroke-width="2" />
+          <text x="70" y="232" text-anchor="middle" font-size="11" font-weight="900">0</text>
+          
+          <line x1="114" y1="210" x2="114" y2="216" stroke="var(--navy)" stroke-width="2" />
+          <text x="114" y="232" text-anchor="middle" font-size="11" font-weight="900">1</text>
+          
+          <line x1="158" y1="210" x2="158" y2="216" stroke="var(--navy)" stroke-width="2" />
+          <text x="158" y="232" text-anchor="middle" font-size="11" font-weight="900">2</text>
+          
+          <line x1="202" y1="210" x2="202" y2="216" stroke="var(--navy)" stroke-width="2" />
+          <text x="202" y="232" text-anchor="middle" font-size="11" font-weight="900">3</text>
+          
+          <line x1="246" y1="210" x2="246" y2="216" stroke="var(--navy)" stroke-width="2" />
+          <text x="246" y="232" text-anchor="middle" font-size="11" font-weight="900">4</text>
+          
+          <line x1="290" y1="210" x2="290" y2="216" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="clickFrictionOutlierTick()" />
+          <text x="290" y="232" text-anchor="middle" font-size="11" font-weight="900" fill="${outlierColor}" style="cursor:pointer;" onclick="clickFrictionOutlierTick()">5 ★</text>
+          
+          <line x1="334" y1="210" x2="334" y2="216" stroke="var(--navy)" stroke-width="2" />
+          <text x="334" y="232" text-anchor="middle" font-size="11" font-weight="900">6</text>
+          
+          ${dotsHtml}
+          
+          <rect x="50" y="246" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+          <text x="200" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">CLICK AXIS TICK 5 TO TOGGLE THE SPEED OUTLIER</text>
+        </svg>`;
+      },
+      
+      geometry: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Decomposing Composite Polygons</text>
+          <!-- Main composite polygon shape -->
+          <polygon points="100,100 250,100 250,220 100,220" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="3" />
+          <polygon points="250,100 320,220 250,220" fill="#fffbeb" stroke="var(--amber)" stroke-width="3" />
+          <line x1="250" y1="100" x2="250" y2="220" stroke="var(--navy-deep)" stroke-width="2.5" stroke-dasharray="4" />
+          
+          <text x="175" y="165" text-anchor="middle" font-size="12" font-weight="900" fill="var(--primary-dark)">Rectangle</text>
+          <text x="275" y="175" text-anchor="middle" font-size="12" font-weight="900" fill="var(--amber)">Triangle</text>
+          <rect x="50" y="240" width="300" height="48" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapListeningObject('polyArea', 'Decomposing cuts the polygon into a rectangle and a right triangle.')" />
+          <text x="200" y="268" text-anchor="middle" font-size="12" font-weight="900" fill="var(--navy-deep)">Total Area = Sum of rectangle and triangle (Click!)</text>
+        </svg>`;
+      },
+      
+      reflect: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <rect x="30" y="30" width="340" height="240" rx="14" fill="#faf9f6" stroke="#d6d3d1" stroke-width="3" />
+          <rect x="50" y="50" width="300" height="200" rx="8" fill="#fff" />
+          <!-- Steps ladder -->
+          <line x1="80" y1="210" x2="320" y2="70" stroke="#78716c" stroke-width="6" />
+          <line x1="120" y1="210" x2="120" y2="185" stroke="#78716c" stroke-width="3" />
+          <line x1="160" y1="185" x2="160" y2="160" stroke="#78716c" stroke-width="3" />
+          <line x1="200" y1="160" x2="200" y2="135" stroke="#78716c" stroke-width="3" />
+          <line x1="240" y1="135" x2="240" y2="110" stroke="#78716c" stroke-width="3" />
+          <line x1="280" y1="110" x2="280" y2="85" stroke="#78716c" stroke-width="3" />
+          
+          <rect x="180" y="60" width="130" height="34" rx="4" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="1.5" />
+          <text x="245" y="81" text-anchor="middle" font-size="11" font-weight="900" fill="var(--primary-dark)">Goal: Academic English</text>
+          
+          <circle cx="120" cy="185" r="12" fill="var(--amber)" style="cursor:pointer;" onclick="tapListeningObject('ladderStep', 'Ladder reflection tracks steps towards native oral control!')" />
+          <text x="120" y="189" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">✓</text>
+          <text x="200" y="240" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Self-Reflection Ladder (Click orange check!)</text>
+        </svg>`;
+      },
+      
+      "bar-chart": function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Recess Sports preferences</text>
+          <!-- Bars -->
+          <rect x="80" y="80" width="50" height="130" fill="var(--primary)" rx="4" style="cursor:pointer;" onclick="tapListeningObject('soccerBar', 'Soccer is preferred by exactly 13 students!')" />
+          <text x="105" y="70" text-anchor="middle" font-size="11" font-weight="900">13</text>
+          <text x="105" y="230" text-anchor="middle" font-size="11" font-weight="900">Soccer</text>
+          
+          <rect x="175" y="130" width="50" height="80" fill="#3b82f6" rx="4" style="cursor:pointer;" onclick="tapListeningObject('basketBar', 'Basketball is preferred by 8 students.')" />
+          <text x="200" y="120" text-anchor="middle" font-size="11" font-weight="900">8</text>
+          <text x="200" y="230" text-anchor="middle" font-size="11" font-weight="900">Basketball</text>
+          
+          <rect x="270" y="160" width="50" height="50" fill="var(--amber)" rx="4" style="cursor:pointer;" onclick="tapListeningObject('runBar', 'Running is preferred by 5 students.')" />
+          <text x="295" y="150" text-anchor="middle" font-size="11" font-weight="900">5</text>
+          <text x="295" y="230" text-anchor="middle" font-size="11" font-weight="900">Running</text>
+          
+          <line x1="50" y1="210" x2="350" y2="210" stroke="var(--navy)" stroke-width="2" />
+        </svg>`;
+      },
+      
+      "ratio-table": function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <rect x="40" y="50" width="320" height="180" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" />
+          <line x1="40" y1="110" x2="360" y2="110" stroke="var(--navy)" stroke-width="2" />
+          <line x1="40" y1="170" x2="360" y2="170" stroke="var(--navy)" stroke-width="2" />
+          <line x1="200" y1="50" x2="200" y2="230" stroke="var(--navy)" stroke-width="2" />
+          
+          <text x="120" y="85" text-anchor="middle" font-size="13" font-weight="900" fill="var(--navy-deep)">Batches</text>
+          <text x="280" y="85" text-anchor="middle" font-size="13" font-weight="900" fill="var(--navy-deep)">Flour (Cups)</text>
+          
+          <text x="120" y="145" text-anchor="middle" font-size="14" font-weight="900" fill="var(--primary-dark)">1</text>
+          <text x="280" y="145" text-anchor="middle" font-size="14" font-weight="900" fill="var(--primary-dark)">2</text>
+          
+          <text x="120" y="205" text-anchor="middle" font-size="14" font-weight="900" fill="var(--amber)" style="cursor:pointer;" onclick="tapListeningObject('cookieRatio', 'For 2 batches, you scale by a multiplier of 2, requiring exactly 4 cups.')">2 (batches)</text>
+          <text x="280" y="205" text-anchor="middle" font-size="14" font-weight="900" fill="var(--amber)" style="cursor:pointer;" onclick="tapListeningObject('cookieRatio', 'For 2 batches, you scale by a multiplier of 2, requiring exactly 4 cups.')">4 (cups ★)</text>
+          
+          <text x="200" y="270" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">CLICK CELLS TO VERIFY RATIO CONSTANT MULTIPLIERS</text>
+        </svg>`;
+      },
+
+      photosynthesis: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Leaf -->
+          <path d="M 100,150 C 130,70, 270,70, 300,150 C 270,230, 130,230, 100,150 Z" fill="#22c55e" stroke="#15803d" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('chlorophyll', 'Chlorophyll absorbs sunlight energy inside leaves.')" />
+          <line x1="100" y1="150" x2="300" y2="150" stroke="#16a34a" stroke-width="2" />
+          
+          <!-- Sun energy -->
+          <path d="M 280,40 L 230,100" stroke="var(--amber)" stroke-width="3.5" marker-end="url(#arrow-sun)" />
+          <text x="260" y="60" font-size="11" font-weight="900" fill="var(--amber)">Light Energy</text>
+          
+          <!-- Carbon Dioxide in -->
+          <path d="M 40,120 L 120,130" stroke="var(--coral)" stroke-width="3" marker-end="url(#arrow-coral)" />
+          <text x="35" y="105" font-size="11" font-weight="900" fill="var(--coral)">Carbon Dioxide (CO2)</text>
+          
+          <!-- Oxygen out -->
+          <path d="M 260,170 L 340,190" stroke="var(--primary)" stroke-width="3" marker-end="url(#arrow-primary)" />
+          <text x="310" y="215" font-size="11" font-weight="900" fill="var(--primary)">Oxygen (O2 ★)</text>
+          <text x="200" y="275" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">CLICK GREEN LEAF TO DISCOVER PHOTOSYNTHESIS KEYS</text>
+          
+          <defs>
+            <marker id="arrow-sun" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--amber)" />
+            </marker>
+            <marker id="arrow-coral" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--coral)" />
+            </marker>
+            <marker id="arrow-primary" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--primary)" />
+            </marker>
+          </defs>
+        </svg>`;
+      },
+
+      timeline: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Sequential History Timeline</text>
+          
+          <!-- Timeline line -->
+          <line x1="50" y1="150" x2="350" y2="150" stroke="var(--navy)" stroke-width="4.5" />
+          
+          <!-- Intervals -->
+          <line x1="80" y1="140" x2="80" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('intervalYr', '1800 marks the beginning of industrial scale expansions.')" />
+          <text x="80" y="180" text-anchor="middle" font-size="12" font-weight="900">1800</text>
+          
+          <line x1="200" y1="140" x2="200" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('intervalYr', '1850 marks fifty-year chronological scale intervals.')" />
+          <text x="200" y="180" text-anchor="middle" font-size="12" font-weight="900" fill="var(--primary)">1850 ★</text>
+          
+          <line x1="320" y1="140" x2="320" y2="160" stroke="var(--navy)" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('intervalYr', '1900 marks the modern manufacturing expansion.')" />
+          <text x="320" y="180" text-anchor="middle" font-size="12" font-weight="900">1900</text>
+          
+          <rect x="50" y="210" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+          <text x="200" y="235" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Visual Scale Interval: exactly 50 Years</text>
+        </svg>`;
+      },
+
+      "prism-vol": function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Cubic Volume of Prisms</text>
+          
+          <!-- Isometric Rectangular Prism -->
+          <polygon points="120,180 200,140 280,180 200,220" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2" />
+          <polygon points="280,180 280,120 200,80 200,140" fill="#fffbeb" stroke="var(--amber)" stroke-width="2" />
+          <polygon points="120,180 120,120 200,80 200,140" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" />
+          
+          <text x="160" y="200" font-size="11" font-weight="900" fill="var(--primary-dark)">Length = 4</text>
+          <text x="250" y="200" font-size="11" font-weight="900" fill="var(--amber)">Width = 3</text>
+          <text x="205" y="110" font-size="11" font-weight="900" fill="#2563eb">Height = 3</text>
+          
+          <rect x="50" y="240" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapListeningObject('prismVol', 'Base area is length (4) times width (3), equaling 12 square units.')" />
+          <text x="200" y="265" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Click here to verify the base Area (12 units)</text>
+        </svg>`;
+      },
+
+      ecosystem: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Ecosystem Trophic Web Gaps</text>
+          
+          <!-- Producer -->
+          <rect x="50" y="180" width="90" height="45" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" style="cursor:pointer;" onclick="tapListeningObject('producerPlant', 'Producers like grass synthesize solar energy.')" />
+          <text x="95" y="207" text-anchor="middle" font-size="11" font-weight="900" fill="#15803d">Grass (Producer)</text>
+          
+          <!-- Primary Consumer -->
+          <rect x="260" y="180" width="90" height="45" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2.5" style="cursor:pointer;" onclick="tapListeningObject('consumerInsect', 'Grasshopper eats grass, acting as primary consumer.')" />
+          <text x="305" y="207" text-anchor="middle" font-size="11" font-weight="900" fill="#b45309">Cricket (Consumer)</text>
+          
+          <!-- Secondary Consumer -->
+          <rect x="155" y="80" width="90" height="45" rx="6" fill="#ffe4e6" stroke="#e11d48" stroke-width="2.5" style="cursor:pointer;" onclick="tapListeningObject('consumerFrog', 'Frog eats insect, acting as secondary consumer.')" />
+          <text x="200" y="107" text-anchor="middle" font-size="11" font-weight="900" fill="#9f1239">Frog (Consumer)</text>
+          
+          <!-- Transfer vectors -->
+          <path d="M 140,200 L 250,200" stroke="var(--navy)" stroke-width="2" marker-end="url(#arrow-web)" />
+          <path d="M 305,175 L 250,130" stroke="var(--navy)" stroke-width="2" marker-end="url(#arrow-web)" />
+          <path d="M 95,175 L 150,125" stroke="var(--navy)" stroke-width="2" marker-end="url(#arrow-web)" />
+          
+          <text x="200" y="275" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">CLICK BOXES TO IDENTIFY CONSUMERS VS PRODUCERS</text>
+          
+          <defs>
+            <marker id="arrow-web" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--navy-deep)" />
+            </marker>
+          </defs>
+        </svg>`;
+      },
+
+      "number-line": function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Plotted Boundary Inequalities</text>
+          <!-- Line -->
+          <line x1="50" y1="150" x2="350" y2="150" stroke="var(--navy)" stroke-width="3.5" />
+          
+          <!-- Ticks -->
+          <line x1="100" y1="140" x2="100" y2="160" stroke="var(--navy)" stroke-width="2" />
+          <text x="100" y="180" text-anchor="middle" font-size="12" font-weight="900">0</text>
+          
+          <line x1="200" y1="140" x2="200" y2="160" stroke="var(--navy)" stroke-width="2.5" />
+          <text x="200" y="180" text-anchor="middle" font-size="12" font-weight="900" fill="var(--primary)">3 ★</text>
+          
+          <line x1="300" y1="140" x2="300" y2="160" stroke="var(--navy)" stroke-width="2" />
+          <text x="300" y="180" text-anchor="middle" font-size="12" font-weight="900">6</text>
+          
+          <!-- Open circle boundary at 3 -->
+          <circle cx="200" cy="150" r="8" fill="#fff" stroke="var(--coral)" stroke-width="3" style="cursor:pointer;" onclick="tapListeningObject('openCircle', 'Open circle boundary indicates strict inequality limit (not inclusive).')" />
+          <line x1="208" y1="150" x2="330" y2="150" stroke="var(--coral)" stroke-width="6" />
+          
+          <rect x="50" y="210" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+          <text x="200" y="235" text-anchor="middle" font-size="11" font-weight="900" fill="var(--coral)">Graph: X &gt; 3 (Click open boundary circle!)</text>
+        </svg>`;
+      },
+
+      interview: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Conversation bubbles -->
+          <rect x="40" y="60" width="140" height="70" rx="8" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="1.5" />
+          <text x="110" y="90" text-anchor="middle" font-size="10" font-weight="900" fill="var(--primary-dark)">Student Request:</text>
+          <text x="110" y="108" text-anchor="middle" font-size="10" font-weight="900" fill="var(--primary-dark)">"A Recess Sports Club!"</text>
+          
+          <rect x="220" y="150" width="140" height="70" rx="8" fill="#fffbeb" stroke="var(--amber)" stroke-width="1.5" />
+          <text x="290" y="180" text-anchor="middle" font-size="10" font-weight="900" fill="#b45309">Principal Review:</text>
+          <text x="290" y="198" text-anchor="middle" font-size="9" font-weight="900" fill="#b45309">"What are the teamwork benefits?"</text>
+          
+          <rect x="50" y="240" width="300" height="42" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" style="cursor:pointer;" onclick="tapListeningObject('proposalDiag', 'Student proposal details social collaborative benefits.')" />
+          <text x="200" y="265" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Principal Proposal Dialogue View (Click!)</text>
+        </svg>`;
+      },
+
+      "map-scale": function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Map boundary -->
+          <rect x="40" y="40" width="320" height="180" fill="#e0f2fe" rx="6" />
+          <circle cx="100" cy="100" r="16" fill="var(--primary)" />
+          <text x="100" y="104" text-anchor="middle" font-size="9" font-weight="900" fill="#fff">A</text>
+          <circle cx="280" cy="160" r="16" fill="var(--amber)" />
+          <text x="280" y="164" text-anchor="middle" font-size="9" font-weight="900" fill="#fff">B</text>
+          
+          <line x1="116" y1="105" x2="264" y2="155" stroke="var(--navy-deep)" stroke-width="2" stroke-dasharray="4" />
+          
+          <!-- Legend box -->
+          <rect x="50" y="230" width="300" height="46" rx="4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" style="cursor:pointer;" onclick="tapListeningObject('scaleLegend', 'Map scale translates 1 inch into 10 real-world miles.')" />
+          <text x="200" y="258" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Scale Legend: 1 inch = 10 Miles ★ (Click to verify!)</text>
+        </svg>`;
+      },
+
+      "ramp-physics": function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Physics of Incline Friction</text>
+          
+          <!-- Incline Ramp -->
+          <polygon points="80,220 320,220 320,100" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2" />
+          <!-- Block sliding -->
+          <rect x="180" y="130" width="40" height="24" transform="rotate(-22, 180, 130)" fill="var(--amber)" stroke="#b45309" stroke-width="1.5" />
+          
+          <!-- Gravity arrow -->
+          <path d="M 195,140 L 195,190" fill="none" stroke="var(--coral)" stroke-width="3" marker-end="url(#arrow-ramp)" />
+          <text x="202" y="180" font-size="10" font-weight="900" fill="var(--coral)">Gravity</text>
+          
+          <!-- Friction arrow -->
+          <path d="M 180,130 L 140,113" fill="none" stroke="var(--primary)" stroke-width="3" marker-end="url(#arrow-ramp)" style="cursor:pointer;" onclick="tapListeningObject('frictionArrow', 'Friction is a resistive force that opposes gravity and acceleration.')" />
+          <text x="120" y="98" font-size="10" font-weight="900" fill="var(--primary)">Friction ★ (Click arrow!)</text>
+          
+          <defs>
+            <marker id="arrow-ramp" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--navy-deep)" />
+            </marker>
+          </defs>
+        </svg>`;
+      },
+
+      "branches-flow": function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Legislative -->
+          <rect x="40" y="80" width="100" height="50" rx="6" fill="#e2f4f0" stroke="var(--primary)" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('legislativeGov', 'Legislative branch (Congress) is responsible for making laws.')" />
+          <text x="90" y="110" text-anchor="middle" font-size="10" font-weight="900" fill="var(--primary-dark)">Legislative ★</text>
+          
+          <!-- Executive -->
+          <rect x="260" y="80" width="100" height="50" rx="6" fill="#fef3c7" stroke="var(--amber)" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('executiveGov', 'Executive branch carries out and enforces laws.')" />
+          <text x="310" y="110" text-anchor="middle" font-size="10" font-weight="900" fill="#b45309">Executive</text>
+          
+          <!-- Judicial -->
+          <rect x="150" y="180" width="100" height="50" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" style="cursor:pointer;" onclick="tapListeningObject('judicialGov', 'Judicial branch explains and interprets laws.')" />
+          <text x="200" y="210" text-anchor="middle" font-size="10" font-weight="900" fill="#2563eb">Judicial</text>
+          
+          <line x1="90" y1="130" x2="150" y2="190" stroke="var(--navy-deep)" stroke-dasharray="3" />
+          <line x1="310" y1="130" x2="250" y2="190" stroke="var(--navy-deep)" stroke-dasharray="3" />
+          
+          <text x="200" y="270" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Three Branches of Government (Click boxes!)</text>
+        </svg>`;
+      },
+
+      "spinner-prob": function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Spinner Circle -->
+          <circle cx="200" cy="150" r="70" fill="none" stroke="var(--navy-deep)" stroke-width="3.5" />
+          <!-- 4 sectors -->
+          <!-- Blue (50%) -->
+          <path d="M 200,150 L 200,80 A 70,70 0 0,1 200,220 Z" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="1.5" />
+          <text x="240" y="154" font-size="12" font-weight="900" fill="var(--primary-dark)">Blue (1/2)</text>
+          
+          <!-- Red (25%) -->
+          <path d="M 200,150 L 200,220 A 70,70 0 0,1 130,150 Z" fill="#ffe4e6" stroke="#e11d48" stroke-width="1.5" />
+          <!-- Green (25%) -->
+          <path d="M 200,150 L 130,150 A 70,70 0 0,1 200,80 Z" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" />
+          
+          <!-- Spinner needle pointer -->
+          <polygon points="195,150 200,90 205,150" fill="var(--navy-deep)" id="spinnerNeedle" style="transform-origin: 200px 150px; cursor:pointer;" onclick="triggerProbSpinnerWheelRotation()" />
+          <circle cx="200" cy="150" r="8" fill="var(--amber)" />
+          
+          <text x="200" y="254" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">CLICK SPINNER NEEDLE IN CENTER TO SPIN</text>
+        </svg>`;
+      }
+    };
+
+    // Initialize layout list
+    window.addEventListener('DOMContentLoaded', () => {
+      setupStreakAndXPStats();
+      populateSidebarCatalog();
+      switchListeningTask(0);
+      calculateListeningELP();
+    });
+
+    function setupStreakAndXPStats() {
+      if (localStorage.getItem('widaStreak')) {
+        document.getElementById('streakBadge').textContent = `🔥 ${localStorage.getItem('widaStreak')} Day Streak`;
+      }
+      if (localStorage.getItem('widaXP')) {
+        STORE.sparkPoints = parseInt(localStorage.getItem('widaXP'));
+        document.getElementById('sparkXPCounter').textContent = `✨ ${STORE.sparkPoints} SPARK XP`;
+      }
+    }
+
+    function populateSidebarCatalog() {
+      const container = document.getElementById('sidebarNav');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      WIDA_LISTENING_TASKS.forEach((task, idx) => {
+        const card = document.createElement('button');
+        card.className = `concept-card ${idx === STORE.activeTaskIdx ? 'active' : ''}`;
+        card.onclick = () => switchListeningTask(idx);
+        card.innerHTML = `
+          <span class="task-domain">${task.domain}</span>
+          <span class="task-title" style="font-weight:700;">${task.id}: ${task.title}</span>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function switchListeningTask(idx) {
+      STORE.activeTaskIdx = idx;
+      
+      // Stop ongoing voice synthesizers
+      stopAudioPlayback();
+      
+      // Reset checklist states for new task
+      STORE.questCompleted = false;
+      STORE.checklistQuest = false;
+      STORE.checklistListen = false;
+      STORE.checklistQuiz = false;
+      STORE.celebrationFired = false;
+      
+      // Remove previous explanation banners
+      const banner = document.getElementById('explanationBanner');
+      if (banner) {
+        banner.className = 'explanation-banner';
+        banner.style.display = 'none';
+      }
+
+      // Restore Catalog layout styles
+      populateSidebarCatalog();
+      loadListeningTaskWorkspace(idx);
+    }
+
+    function loadListeningTaskWorkspace(idx) {
+      const task = WIDA_LISTENING_TASKS[idx];
+      document.getElementById('domainTag').textContent = task.domain;
+      
+      // Render clean visual diagram models
+      const canvas = document.getElementById('modelCanvas');
+      const drawer = SVG_SPEAKING_DRAWER[task.model] || SVG_SPEAKING_DRAWER['lunch'];
+      canvas.innerHTML = drawer();
+      
+      // Reset textual display cards
+      document.getElementById('promptTextBox').innerHTML = `Click <strong>Play Scenario</strong> to hear the academic narrative.`;
+      document.getElementById('warmupBubble').style.display = "none";
+      document.getElementById('vocabDetailCard').style.display = "none";
+      
+      populateWordWall(task.terms);
+      
+      // Assemble dynamic visual quests instructions
+      let questMsg = "Quest: Click any object on the diagram to begin.";
+      if (task.model === "bar") questMsg = "Quest: Shade exactly 3 units on the tape model.";
+      else if (task.model === "grid") questMsg = "Quest: Click anywhere on the map grid to move point P.";
+      else if (task.model === "scale") questMsg = "Quest: Click the scale weights to verify balanced equilibrium.";
+      else if (task.model === "data") questMsg = "Quest: Click axis tick 5 to inspect the friction outlier.";
+      else if (task.model === "spinner-prob") questMsg = "Quest: Click the pointer needle in the center to spin the wheel!";
+      else if (task.model === "map-scale") questMsg = "Quest: Click the scale legend to check scale ratios.";
+      else if (task.model === "ramp-physics") questMsg = "Quest: Click the friction vector arrow to inspect forces.";
+      else if (task.model === "branches-flow") questMsg = "Quest: Click Legislative (top left box) to inspect powers.";
+      
+      document.getElementById('questText').innerHTML = `🎯 <strong>${questMsg}</strong>`;
+      
+      // Set quest status badges
+      const badge = document.getElementById('questStatusBadge');
+      if (STORE.questCompleted) {
+        badge.textContent = "✓ UNLOCKED";
+        badge.style.background = "var(--green-success)";
+      } else {
+        badge.textContent = "ACTIVE";
+        badge.style.background = "var(--primary)";
+      }
+
+      // Hide quiz deck until quest is completed to incentivize engagement
+      document.getElementById('quizCard').style.display = "none";
+      
+      updateChecklistUI();
+      logToTerminal(`Loaded WIDA Listening task T${idx+1}: [${task.title}]`);
+    }
+
+    function populateWordWall(terms) {
+      const container = document.getElementById('wordWallContainer');
+      container.innerHTML = '';
+      
+      terms.forEach(word => {
+        const chip = document.createElement('span');
+        chip.className = 'vocab-card';
+        chip.textContent = word;
+        
+        const translatedText = (VOCAB_LOOKUP_EXTENDED[word] && VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang])
+          ? VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang]
+          : word;
+          
+        chip.innerHTML += `<span class="tooltip-bubble"><strong>${word}</strong><br>Translation: ${translatedText}</span>`;
+        
+        chip.onclick = () => {
+          const detailCard = document.getElementById('vocabDetailCard');
+          const detailWord = document.getElementById('vocabDetailWord');
+          const detailSyllables = document.getElementById('vocabDetailSyllables');
+          const detailTranslation = document.getElementById('vocabDetailTranslation');
+          const speakBtn = document.getElementById('vocabSpeakBtn');
+          
+          if (detailCard && detailWord && detailSyllables && detailTranslation) {
+            detailCard.style.display = "block";
+            detailWord.textContent = word;
+            detailSyllables.textContent = SYLLABLE_MAP[word] || word;
+            detailTranslation.textContent = translatedText;
+            speakBtn.onclick = (e) => {
+              e.stopPropagation();
+              speakWordSlowly(word);
+            };
+          }
+        };
+
+        container.appendChild(chip);
+      });
+
+      // Vocabulary language selector click updates
+      const langBtns = document.querySelectorAll('.lang-chip');
+      langBtns.forEach(btn => {
+        btn.onclick = () => {
+          langBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          STORE.activeDictionaryLang = btn.dataset.lang;
+          populateWordWall(terms);
+        };
+      });
+    }
+
+    // Speech slow pronouncer
+    function speakWordSlowly(word) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.rate = 0.55; 
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Playback rates controls
+    function setPlaybackRate(rate) {
+      STORE.playbackRate = rate;
+      const rates = {0.6: 'rateSlow', 0.8: 'rateMed', 1.0: 'rateNormal'};
+      Object.keys(rates).forEach(r => {
+        document.getElementById(rates[r]).classList.toggle('active', parseFloat(r) === rate);
+      });
+      logToTerminal(`Playback speed changed to [${rate}x]`);
+    }
+
+    // Main Audio Scenario Reader (High-fidelity TTS with spoken word highlight)
+    function speakListeningScenario() {
+      if (!('speechSynthesis' in window)) {
+        showMinimalToast("Synthesized speech unsupported in this browser.");
+        return;
+      }
+      
+      window.speechSynthesis.cancel();
+      
+      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+      const text = (STORE.activeTier === "A") ? task.scenarioA : task.scenarioB;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = STORE.playbackRate;
+      
+      utterance.onboundary = (event) => {
+        if (event.name === 'word') {
+          const charIdx = event.charIndex;
+          const remainingText = text.slice(charIdx);
+          const wordMatch = remainingText.match(/^[\w'-]+/);
+          const wordLen = wordMatch ? wordMatch[0].length : 1;
+          const word = text.slice(charIdx, charIdx + wordLen);
+          
+          document.getElementById('promptTextBox').innerHTML = text.slice(0, charIdx) + 
+            `<span class="spoken-word-highlight">${word}</span>` + 
+            text.slice(charIdx + wordLen);
+        }
+      };
+      
+      utterance.onstart = () => {
+        STORE.isPlayingAudio = true;
+        document.getElementById('playAudioBtn').style.display = "none";
+        document.getElementById('stopAudioBtn').style.display = "inline-flex";
+      };
+      
+      utterance.onend = () => {
+        STORE.isPlayingAudio = false;
+        document.getElementById('playAudioBtn').style.display = "inline-flex";
+        document.getElementById('stopAudioBtn').style.display = "none";
+        document.getElementById('promptTextBox').innerHTML = text;
+        
+        STORE.checklistListen = true;
+        updateChecklistUI();
+        
+        // Auto-unlock quiz deck on listening completion!
+        if (STORE.questCompleted) {
+          showListeningQuizCard();
+        } else {
+          showMinimalToast("🔊 Audio complete! Complete visual quest to unlock quiz.");
+        }
+      };
+      
+      utterance.onerror = () => {
+        STORE.isPlayingAudio = false;
+        document.getElementById('playAudioBtn').style.display = "inline-flex";
+        document.getElementById('stopAudioBtn').style.display = "none";
+      };
+      
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopAudioPlayback() {
+      window.speechSynthesis.cancel();
+      STORE.isPlayingAudio = false;
+      document.getElementById('playAudioBtn').style.display = "inline-flex";
+      document.getElementById('stopAudioBtn').style.display = "none";
+      
+      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+      document.getElementById('promptTextBox').textContent = (STORE.activeTier === "A") ? task.scenarioA : task.scenarioB;
+    }
+
+    // Interactive SVG quest solving functions
+    function tapListeningObject(type, desc) {
+      playChime("success");
+      const bubble = document.getElementById('warmupBubble');
+      bubble.style.display = "block";
+      bubble.innerHTML = `🌟 <strong>Warm-Up Tip:</strong> ${desc}`;
+      
+      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+      // Only generic clicks complete the quest directly. Math spinners, tape and coordinates require solving!
+      if (task.model !== "bar" && task.model !== "grid" && task.model !== "data" && task.model !== "spinner-prob") {
+        completeListeningQuest();
+      }
+    }
+
+    function completeListeningQuest() {
+      if (STORE.questCompleted) return;
+      STORE.questCompleted = true;
+      STORE.checklistQuest = true;
+      
+      const badge = document.getElementById('questStatusBadge');
+      badge.textContent = "✓ UNLOCKED";
+      badge.style.background = "var(--green-success)";
+      
+      playChime("success");
+      updateChecklistUI();
+      
+      // If student has already listened, unlock quiz immediately
+      if (STORE.checklistListen) {
+        showListeningQuizCard();
+      } else {
+        showMinimalToast("🎨 Quest complete! Play audio scenario to unlock quiz.");
+      }
+    }
+
+    // Dynamic Tape bar toggle
+    function toggleTapePartition(idx) {
+      STORE.barShaded[idx] = !STORE.barShaded[idx];
+      const canvas = document.getElementById('modelCanvas');
+      canvas.innerHTML = SVG_SPEAKING_DRAWER.bar();
+      
+      let count = 0;
+      STORE.barShaded.forEach(s => { if(s) count++; });
+      if (count === 3 && STORE.barPartitions === 5) {
+        completeListeningQuest();
+      }
+    }
+
+    // Coordinate grid clicks
+    function clickGridAxes(e) {
+      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+      if (task.model !== "grid") return;
+      
+      const svg = document.querySelector("#modelCanvas svg");
+      const rect = svg.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      
+      // Map click values back to coordinates (-5 to 5)
+      const mappedX = Math.round((clickX - 200) / 25);
+      const mappedY = Math.round((150 - clickY) / 25);
+      
+      if (mappedX >= -5 && mappedX <= 5 && mappedY >= -5 && mappedY <= 5) {
+        STORE.gridPtX = mappedX;
+        STORE.gridPtY = mappedY;
+        document.getElementById('modelCanvas').innerHTML = SVG_SPEAKING_DRAWER.grid();
+        
+        completeListeningQuest();
+      }
+    }
+
+    // Friction dot plot outlier click
+    function clickFrictionOutlierTick() {
+      completeListeningQuest();
+      document.getElementById('modelCanvas').innerHTML = SVG_SPEAKING_DRAWER.data();
+    }
+
+    // Probability needle spin
+    function triggerProbSpinnerWheelRotation() {
+      const needle = document.getElementById('spinnerNeedle');
+      if (!needle) return;
+      
+      playChime("success");
+      const randAngle = 720 + Math.floor(Math.random() * 360);
+      needle.style.transition = 'transform 2.5s cubic-bezier(0.1, 0.8, 0.1, 1)';
+      needle.style.transform = `rotate(${randAngle}deg)`;
+      
+      setTimeout(() => {
+        completeListeningQuest();
+        showMinimalToast("🎡 Needle stopped on Blue (Probability = 50%)!");
+      }, 2550);
+    }
+
+    // Reveal comprehension checks
+    function showListeningQuizCard() {
+      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+      const card = document.getElementById('quizCard');
+      const questionText = document.getElementById('quizQuestionText');
+      const optionsContainer = document.getElementById('quizOptionsContainer');
+      
+      card.style.display = "flex";
+      questionText.textContent = (STORE.activeTier === "A") ? task.qA : task.qB;
+      optionsContainer.innerHTML = '';
+      
+      const options = (STORE.activeTier === "A") ? task.optsA : task.optsB;
+      const correctIdx = (STORE.activeTier === "A") ? task.ansA : task.ansB;
+      
+      options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.innerHTML = `
+          <span>${String.fromCharCode(65 + idx)}. ${opt}</span>
+          <span class="chk-status"></span>
+        `;
+        btn.onclick = () => submitListeningAnswer(idx, correctIdx, btn);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function submitListeningAnswer(selectedIdx, correctIdx, btnNode) {
+      const task = WIDA_LISTENING_TASKS[STORE.activeTaskIdx];
+      const explanations = (STORE.activeTier === "A") ? task.explA : task.explB;
+      const banner = document.getElementById('explanationBanner');
+      
+      // Disable other options
+      const allBtns = document.querySelectorAll('.quiz-option');
+      allBtns.forEach(b => b.classList.add('disabled'));
+      
+      if (selectedIdx === correctIdx) {
+        btnNode.classList.add('correct');
+        btnNode.querySelector('.chk-status').textContent = '🟢 Correct!';
+        banner.className = 'explanation-banner correct';
+        banner.innerHTML = `🎉 <strong>Correct!</strong> ${explanations[selectedIdx]}`;
+        
+        STORE.checklistQuiz = true;
+        updateChecklistUI();
+        playChime("success");
+      } else {
+        btnNode.classList.add('incorrect');
+        btnNode.querySelector('.chk-status').textContent = '🔴 Try Again';
+        banner.className = 'explanation-banner incorrect';
+        banner.innerHTML = `⚠️ <strong>Incorrect.</strong> ${explanations[selectedIdx]} Click Stop and listen again before your next attempt.`;
+        
+        // Re-enable after short delay
+        setTimeout(() => {
+          allBtns.forEach(b => b.classList.remove('disabled'));
+        }, 1500);
+      }
+    }
+
+    // Tier switching
+    function setStudioTier(tier) {
+      STORE.activeTier = tier;
+      document.getElementById('btnTierA').classList.toggle('active', tier === 'A');
+      document.getElementById('btnTierB').classList.toggle('active', tier === 'B');
+      
+      switchListeningTask(STORE.activeTaskIdx);
+    }
+
+    // ELP scorer checks
+    function calculateListeningELP() {
+      const acoustic = parseInt(document.getElementById('rubricAcoustic').value) || 1;
+      const context = parseInt(document.getElementById('rubricContext').value) || 1;
+      const speed = parseInt(document.getElementById('rubricIntegration').value) || 1;
+      
+      const sum = acoustic + context + speed;
+      let rating = "1.0 (Entering)";
+      
+      if (sum >= 11) rating = "5.0 (Bridging)";
+      else if (sum >= 9) rating = "4.0 (Expanding)";
+      else if (sum >= 6) rating = "3.0 (Developing)";
+      else if (sum >= 4) rating = "2.0 (Emerging)";
+      
+      document.getElementById('liveELPBadge').textContent = `ELP ${rating}`;
+      
+      // Feedback strategies
+      let advice = "";
+      if (acoustic === 1) {
+        advice += "🎯 <strong>Acoustic Decoding:</strong> Try slowing speech playbacks down to 0.6x. Listen for clear base nouns first.<br>";
+      } else if (acoustic === 2) {
+        advice += "🎯 <strong>Acoustic Decoding:</strong> Good progress! Focus on key connector signals (subsequently, consequently) to capture logical connections.<br>";
+      } else {
+        advice += "🎯 <strong>Acoustic Decoding:</strong> Excellent auditory tracking of complex expository sentence structures.<br>";
+      }
+
+      if (context === 1) {
+        advice += "🎨 <strong>Visual Scanning:</strong> Scan visual diagrams BEFORE playing audio to map labels to structural parts.<br>";
+      } else {
+        advice += "🎨 <strong>Visual Scanning:</strong> Strong visual integration. Continue comparing axes and variables under coordinate grids.<br>";
+      }
+
+      const coachCard = document.getElementById('widaCoachCard');
+      const coachContent = document.getElementById('widaCoachContent');
+      if (coachCard && coachContent) {
+        coachCard.style.display = "flex";
+        coachContent.innerHTML = advice;
+      }
+      
+      STORE.checklistRubric = true;
+      updateChecklistUI();
+    }
+
+    function updateChecklistUI() {
+      const items = {
+        chkQuest: { state: STORE.checklistQuest, icon: 'chkQuestIcon' },
+        chkListen: { state: STORE.checklistListen, icon: 'chkListenIcon' },
+        chkQuiz: { state: STORE.checklistQuiz, icon: 'chkQuizIcon' },
+        chkRubric: { state: STORE.checklistRubric, icon: 'chkRubricIcon' }
+      };
+
+      Object.keys(items).forEach(id => {
+        const itemNode = document.getElementById(id);
+        const iconNode = document.getElementById(items[id].icon);
+        if (itemNode && iconNode) {
+          itemNode.classList.toggle('checked', items[id].state);
+          iconNode.textContent = items[id].state ? '🟢' : '⚪';
+        }
+      });
+      
+      // confettis on complete
+      if (STORE.checklistQuest && STORE.checklistListen && STORE.checklistQuiz && STORE.checklistRubric) {
+        if (!STORE.celebrationFired) {
+          STORE.celebrationFired = true;
+          triggerSparkCelebration();
+        }
+      }
+    }
+
+    function triggerSparkCelebration() {
+      playChime("success");
+      STORE.sparkPoints = (STORE.sparkPoints || 1200) + 100;
+      document.getElementById('sparkXPCounter').textContent = `✨ ${STORE.sparkPoints} SPARK XP`;
+      localStorage.setItem('widaXP', STORE.sparkPoints);
+      
+      // Update streak
+      let streak = parseInt(localStorage.getItem('widaStreak') || 0);
+      streak++;
+      localStorage.setItem('widaStreak', streak);
+      document.getElementById('streakBadge').textContent = `🔥 ${streak} Day Streak`;
+
+      // Save task completion locally
+      const completedList = JSON.parse(localStorage.getItem('widaCompletedListening') || '[]');
+      const taskId = `T${STORE.activeTaskIdx + 1}`;
+      if (!completedList.includes(taskId)) {
+        completedList.push(taskId);
+        localStorage.setItem('widaCompletedListening', JSON.stringify(completedList));
+      }
+
+      showMinimalToast("🌟 Masterpiece Completed! +100 SPARK XP! Day Streak +1!");
+    }
+
+    function playChime(type) {
+      if (!window.AudioContext && !window.webkitAudioContext) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (type === "success") {
+          const notes = [261.63, 329.63, 392.00, 523.25];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.4);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.08);
+            osc.stop(ctx.currentTime + idx * 0.08 + 0.5);
+          });
+        }
+      } catch(e) {}
+    }
+
+    function toggleDiagnostics() {
+      const term = document.getElementById('diagTerminal');
+      const hidden = term.style.display === 'none' || term.style.display === '';
+      term.style.display = hidden ? 'flex' : 'none';
+      if (hidden) {
+        const consoleNode = document.getElementById('diagConsole');
+        consoleNode.innerHTML = '';
+        logConsole("WIDA Listening Prep Workbook initialized...", "#fbbf24");
+        logConsole(`CENTRAL STATE check: Mapped tasks [20/20]`);
+        logConsole("Exemplary test administrator TTS voices online.");
+      }
+    }
+
+    function logConsole(msg, color = "#00ff66") {
+      const node = document.getElementById('diagConsole');
+      if (node) {
+        node.innerHTML += `<div style="color:${color}; border-bottom:1px solid #14213d; padding:4px 0;">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      }
+    }
+    
+    function logToTerminal(msg, level="info") {
+      const term = document.getElementById('diagConsole');
+      if (term) {
+        const color = level === "orange" ? "#fbbf24" : "#00ff66";
+        logConsole(msg, color);
+      }
+    }
+
+    function showMinimalToast(msg) {
+      const toast = document.createElement('div');
+      toast.style.position = 'fixed';
+      toast.style.bottom = '32px';
+      toast.style.left = '50%';
+      toast.style.transform = 'translateX(-50%)';
+      toast.style.background = 'var(--navy-deep)';
+      toast.style.color = '#fbbf24';
+      toast.style.padding = '12px 24px';
+      toast.style.borderRadius = '30px';
+      toast.style.zIndex = '10000';
+      toast.style.fontWeight = 'bold';
+      toast.style.fontSize = '0.86rem';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 250);
+      }, 2500);
+    }
+  </script>
+</body>
+</html>

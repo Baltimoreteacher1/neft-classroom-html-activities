@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Publisher-grade WIDA ACCESS Speaking prep workbook. Interactive simulation with microphone recorders, Canvas wave visualizers, 20 domain tasks with SVGs, and peer model audio.">
-  <title>WIDA ACCESS Speaking Practice Studio | Neft Hub</title>
+  <meta name="description" content="Publisher-grade WIDA ACCESS Writing prep workbook. Interactive simulation with paragraph editors, active word checklists, 20 domain tasks with SVGs, and peer model animations.">
+  <title>WIDA ACCESS Writing Practice Studio | Neft Hub</title>
   
   <!-- High-End Publication Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -259,7 +259,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Speaking Test Simulator ── */
+    /* ── Writing Test Simulator ── */
     .speaking-sim-box {
       border: 1px solid var(--line-muted);
       border-radius: var(--radius-field);
@@ -310,44 +310,6 @@
       font-weight: bold;
     }
 
-    /* Audio visualizer canvas */
-    .visualizer-card {
-      border: 1px solid var(--line-muted);
-      border-radius: var(--radius-field);
-      padding: 16px;
-      background: var(--navy-deep);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .visualizer-canvas {
-      width: 100%;
-      height: 80px;
-      background: rgba(0,0,0,0.25);
-      border-radius: 6px;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .record-controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .timer-ring {
-      font-family: var(--font-space);
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--white);
-      padding: 6px 14px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.18);
-    }
-
     /* Rehearsal Draft Box */
     .rehearsal-card {
       border: 1px solid var(--line-muted);
@@ -361,12 +323,13 @@
 
     .rehearsal-area {
       width: 100%;
-      min-height: 90px;
+      min-height: 140px;
       border: 2px solid var(--line-muted);
       border-radius: 6px;
-      padding: 10px;
+      padding: 12px;
       font-family: inherit;
-      font-size: 0.92rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
       outline: none;
       resize: vertical;
       background: var(--white);
@@ -474,6 +437,13 @@
       transform: translateY(-1px);
     }
 
+    .vocab-card.checked {
+      background: var(--green-light) !important;
+      border-color: var(--green-success) !important;
+      color: var(--green-success) !important;
+      transform: scale(1.05);
+    }
+
     .vocab-card .tooltip-bubble {
       visibility: hidden;
       width: 240px;
@@ -502,7 +472,7 @@
       transform: translateX(-50%) translateY(-2px);
     }
 
-    /* ── WIDA Speaking Rubric Evaluator ── */
+    /* ── WIDA Writing Rubric Evaluator ── */
     .rubric-box {
       border: 1px solid var(--line-muted);
       border-radius: var(--radius-field);
@@ -658,12 +628,6 @@
       gap: 8px;
     }
 
-    /* Paragraph deconstruction highlighting */
-    .cer-topic.highlighted { background: #ffedd5 !important; border-bottom: 2px solid var(--coral); color: #c2410c; font-weight: bold; }
-    .cer-evidence.highlighted { background: #e6f6f5 !important; border-bottom: 2px solid var(--primary); color: var(--primary-dark); font-weight: bold; }
-    .cer-vocab.highlighted { background: #dcfce7 !important; border-bottom: 2px solid var(--green-success); color: var(--green-success); font-weight: bold; }
-    .cer-connector.highlighted { background: #fef3c7 !important; border-bottom: 2px solid var(--amber); color: var(--amber); font-weight: bold; }
-
     /* Actions buttons */
     .action-btn {
       display: inline-flex;
@@ -807,7 +771,7 @@
       <span>/</span>
       <a href="/wida-access/">WIDA Center</a>
       <span>/</span>
-      <span>WIDA ACCESS Speaking Prep Studio</span>
+      <span>WIDA ACCESS Writing Prep Studio</span>
     </nav>
 
     <!-- Header Section -->
@@ -815,16 +779,16 @@
       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
         <div>
           <p class="eyebrow" style="color: var(--primary)">WIDA ACCESS Prep Suite</p>
-          <h1 style="font-family: var(--font-space); font-weight: 700; font-size: 2.2rem; letter-spacing:-0.02em;">ACCESS Speaking Prep Studio</h1>
-          <p class="hero-copy" style="max-width: 800px; margin-bottom: 12px;">Comprehensive 20-task interactive speaking workbook. Built for dual levels: Tiers A (1.0-2.7) and B (2.7-5.0) with local voice recorders, dynamic SVGs, and peer model audios.</p>
-          
-          <!-- Gamification Streak & XP stats -->
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <span id="streakBadge" style="font-family:var(--font-space); font-weight:800; font-size:0.85rem; padding:6px 14px; border-radius:20px; background:var(--coral-light); color:var(--coral); border:1px solid rgba(234,88,12,0.18);">🔥 3 Day Streak</span>
-            <span id="sparkXPCounter" style="font-family:var(--font-space); font-weight:800; font-size:0.85rem; padding:6px 14px; border-radius:20px; background:var(--primary-light); color:var(--primary); border:1px solid rgba(15,118,110,0.18);">✨ 1200 SPARK XP</span>
-          </div>
+          <h1 style="font-family: var(--font-space); font-weight: 700; font-size: 2.2rem; letter-spacing:-0.02em;">ACCESS Writing Prep Studio</h1>
+          <p class="hero-copy" style="max-width: 800px;">Comprehensive 20-task interactive writing workbook. Built for dual levels: Tiers A (1.0-2.7) and B (2.7-5.0) with dynamic SVGs, typewriter-simulated model typing, and live vocab matching.</p>
         </div>
         <div style="display: flex; gap: 8px;">
+          <div class="streak-pill" id="streakBadge" style="background:rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius:30px; padding:8px 16px; font-weight:800; font-size:0.86rem; color:#fff; display:flex; align-items:center; gap:6px;">
+            🔥 0 Day Streak
+          </div>
+          <div class="xp-pill" id="sparkXPCounter" style="background:linear-gradient(135deg, var(--amber), #b45309); border-radius:30px; padding:8px 16px; font-weight:900; font-size:0.86rem; color:#fff; display:flex; align-items:center; gap:6px; box-shadow:var(--shadow-card);">
+            ✨ 1200 SPARK XP
+          </div>
           <button class="action-btn btn-outline-white" style="color: var(--slate-ink); border-color: var(--line-muted);" onclick="toggleDiagnostics()" aria-label="Launch diagnostics console">
             📊 Run Diagnostics
           </button>
@@ -836,9 +800,9 @@
     <div class="studio-shell">
       
       <!-- Sidebar Concept Selector -->
-      <aside class="sidebar-wrapper" aria-label="Speaking Selector">
+      <aside class="sidebar-wrapper" aria-label="Writing Selector">
         <div class="brand-block">
-          <h2>🗣️ Speaking Tiers</h2>
+          <h2>✍️ Writing Tiers</h2>
           <p>Task Selectors</p>
         </div>
         
@@ -884,18 +848,8 @@
               <button class="lang-chip" data-lang="vi">Tiếng Việt (VI)</button>
             </div>
             
-            <!-- Click details panel -->
-            <div id="vocabDetailCard" style="display:none; background:var(--primary-light); border-left:4px solid var(--primary); border-radius:4px; padding:12px; margin-bottom:10px; font-size:0.86rem; line-height:1.5; color:var(--primary-dark);">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong id="vocabDetailWord" style="font-size:1rem; font-family:var(--font-space);">apple</strong>
-                <button class="rate-btn" id="vocabSpeakBtn" style="padding:2px 8px; font-size:0.7rem;">🔊 Pronounce Slowly</button>
-              </div>
-              <div style="margin-top:6px;"><strong>Syllables:</strong> <span id="vocabDetailSyllables">ap·ple</span></div>
-              <div><strong>Translation:</strong> <span id="vocabDetailTranslation">manzana</span></div>
-            </div>
-
             <p style="font-size: 0.76rem; font-weight: bold; color: var(--slate-muted); margin: 0; text-transform: uppercase;">
-              Multilingual Vocab Word Wall &middot; Click to inspect translation & pronunciation!
+              Multilingual Vocab Word Wall &middot; Click to insert & watch checklist check off!
             </p>
             
             <div class="chip-container" id="wordWallContainer">
@@ -904,19 +858,19 @@
           </div>
         </section>
 
-        <!-- Right: Speaking Recorder & Rubrics -->
+        <!-- Right: Writing Editor & Rubrics -->
         <section class="glass-panel" aria-labelledby="recorder-heading">
           <div class="panel-meta">
-            <h3 id="recorder-heading">🎙️ Virtual Speaking Test</h3>
-            <span class="card-kicker" style="background: var(--amber-light); color: var(--amber);">Speaking Lab</span>
+            <h3 id="recorder-heading">✍️ Virtual Writing Test</h3>
+            <span class="card-kicker" style="background: var(--amber-light); color: var(--amber);">Writing Lab</span>
           </div>
 
-          <!-- Pre-Speaking Checklist & Playback rate selector -->
+          <!-- Pre-Writing Checklist & Playback rate selector -->
           <div class="checklist-card">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-              <span class="checklist-title">🎯 Pre-Speaking Prep Checklist</span>
+              <span class="checklist-title">🎯 Pre-Writing Prep Checklist</span>
               <div class="rate-controls">
-                <span style="font-size:0.7rem; font-weight:800; color:var(--slate-muted); text-transform:uppercase;">Rate:</span>
+                <span style="font-size:0.7rem; font-weight:800; color:var(--slate-muted); text-transform:uppercase;">TTS Rate:</span>
                 <button class="rate-btn" id="btnRateSlow" onclick="setPeerPlaybackRate(0.6)">🐢 0.6x</button>
                 <button class="rate-btn" id="btnRateMedium" onclick="setPeerPlaybackRate(0.8)">🚶 0.8x</button>
                 <button class="rate-btn active" id="btnRateNormal" onclick="setPeerPlaybackRate(1.0)">⚡ 1.0x</button>
@@ -927,13 +881,13 @@
                 <span class="checklist-icon" id="chkQuestIcon">⚪</span>
                 <span>Quest: Touch SVG Diagram</span>
               </div>
+              <div class="checklist-item" id="chkVocab">
+                <span class="checklist-icon" id="chkVocabIcon">⚪</span>
+                <span>Vocab: Use 2 Academic Words</span>
+              </div>
               <div class="checklist-item" id="chkDraft">
                 <span class="checklist-icon" id="chkDraftIcon">⚪</span>
-                <span>Draft: Rehearse Answer</span>
-              </div>
-              <div class="checklist-item" id="chkRecord">
-                <span class="checklist-icon" id="chkRecordIcon">⚪</span>
-                <span>Record: Check Speech</span>
+                <span>Draft: Write a Paragraph</span>
               </div>
               <div class="checklist-item" id="chkRubric">
                 <span class="checklist-icon" id="chkRubricIcon">⚪</span>
@@ -942,124 +896,103 @@
             </div>
           </div>
 
-          <!-- Virtual speaking simulator -->
+          <!-- Virtual writing simulator -->
           <div class="speaking-sim-box">
             <div class="sim-header">
               <span class="admin-pill">👩‍🏫 Nina (Test Administrator)</span>
               <div style="display:flex; gap:6px;">
-                <button class="action-btn btn-outline-white" id="modelSpeechBtn" onclick="playPeerModelResponse()" style="padding: 6px 12px; font-size: 0.8rem; color:var(--slate-ink); border-color:var(--line-muted);">
-                  🎧 Hear Peer Model
+                <button class="action-btn btn-control" id="modelSpeechBtn" onclick="playPeerModelResponse()" style="padding: 6px 12px; font-size: 0.8rem;">
+                  📝 Animate Peer Model
                 </button>
-                <button class="action-btn btn-control" id="speakPromptBtn" onclick="speakSimPrompt()" style="padding: 6px 12px; font-size: 0.8rem;">
+                <button class="action-btn btn-outline-white" id="speakPromptBtn" onclick="speakSimPrompt()" style="padding: 6px 12px; font-size: 0.8rem; color:var(--slate-ink); border-color:var(--line-muted);">
                   🔊 Read Prompt
                 </button>
               </div>
             </div>
             <div class="sim-prompt-box" id="promptTextBox">
-              Select a task from the sidebar to begin speaking practice...
+              Select a task from the sidebar to begin writing practice...
             </div>
-
-            <!-- Typewriter Peer Model Display Panel with Color deconstruction -->
-            <div id="modelDisplayTextCard" style="display:none; padding:16px; background:var(--bg-studio); border-left:4px solid var(--primary); border-radius:4px; font-size:0.94rem; line-height:1.6; font-style:italic; color:var(--slate-ink); font-weight:500; white-space:pre-wrap;"></div>
             
-            <div id="cerHighlightControls" style="display:none; gap:6px; flex-wrap:wrap; margin-top:8px; border-top: 1px solid var(--line-muted); padding-top:8px;">
-              <span style="font-size:0.7rem; font-weight:800; color:var(--slate-muted); text-transform:uppercase; align-self:center;">Deconstruct Claim:</span>
-              <button class="rate-btn" id="btnCer_topic" onclick="toggleCERHighlight('topic')" style="border-color:var(--coral); color:var(--coral);">Topic/Claim</button>
-              <button class="rate-btn" id="btnCer_evidence" onclick="toggleCERHighlight('evidence')" style="border-color:var(--primary); color:var(--primary);">Evidence/Details</button>
-              <button class="rate-btn" id="btnCer_vocab" onclick="toggleCERHighlight('vocab')" style="border-color:var(--green-success); color:var(--green-success);">Vocab Terms</button>
-              <button class="rate-btn" id="btnCer_connector" onclick="toggleCERHighlight('connector')" style="border-color:var(--amber); color:var(--amber);">Transitions</button>
-            </div>
+            <!-- Typewriter Peer Model Display Panel -->
+            <div id="modelDisplayTextCard" style="display:none; padding:16px; background:var(--bg-studio); border-left:4px solid var(--primary); border-radius:4px; font-size:0.94rem; line-height:1.6; font-style:italic; color:var(--slate-ink); font-weight:500; white-space:pre-wrap;"></div>
           </div>
 
-          <!-- HTML5 Microphone Audio Recorder Visualizer -->
-          <div class="visualizer-card">
-            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-              <span style="font-size:0.75rem; font-weight:800; color:rgba(255,255,255,0.7); text-transform:uppercase;">🎤 Speak Response Check</span>
-              <span class="timer-ring" id="timerRing">00:30</span>
-            </div>
-            <canvas class="visualizer-canvas" id="voiceCanvas"></canvas>
-            <div class="record-controls">
-              <button class="action-btn btn-red" id="recordBtn" onclick="toggleAudioRecording()">
-                🎙️ Record Response
-              </button>
-              <button class="action-btn btn-outline-white" id="playbackBtn" onclick="playbackRecordedAudio()" disabled style="color:white; border-color:rgba(255,255,255,0.18);">
-                ▶ Playback Response
-              </button>
-              <audio id="audioPlayback" style="display:none;"></audio>
-            </div>
-          </div>
-
-          <!-- Rehearsal Draft Box -->
-          <div class="rehearsal-card">
+          <!-- Paragraph Editor Canvas -->
+          <div class="rehearsal-card" style="border: 2px solid var(--primary); box-shadow: var(--shadow-gaze);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="scaffold-title">📝 Speech Rehearsal Draft Box</span>
-              <!-- Speak to type button -->
-              <button class="rate-btn" id="dictateBtn" onclick="toggleSpeechRecognition()" style="border-color:var(--coral); color:var(--coral); font-weight:800;">🎙️ Speak to Type</button>
+              <span class="scaffold-title" style="color: var(--primary);">📝 Academic Paragraph Editor Canvas</span>
+              <div style="display:flex; gap:8px; align-items:center; font-size:0.75rem; font-weight:800; color:var(--slate-muted);">
+                <span id="discourseBadge" class="admin-pill" style="background:var(--slate-muted); color:white; font-size:0.6rem; padding:2px 8px; border-radius:20px; text-transform:uppercase;">Level 1: Entering</span>
+                <span id="wordsCounter">0 words</span>
+                <span>&middot;</span>
+                <span id="charsCounter">0 chars</span>
+              </div>
             </div>
-            <textarea class="rehearsal-area" id="rehearsalDraftBox" placeholder="Draft your spoken answer here. Click sentence starters below to build..."></textarea>
+            <textarea class="rehearsal-area" id="rehearsalDraftBox" placeholder="Write your paragraph response here. Include at least 2 word-wall vocabulary terms and connect them with academic transitions..."></textarea>
+            
+            <!-- Academic Connectors Row -->
+            <div style="display:flex; flex-direction:column; gap:6px; margin-top:4px;">
+              <span style="font-size:0.7rem; font-weight:800; color:var(--slate-muted); text-transform:uppercase;">Academic Connectors (Click to insert):</span>
+              <div class="chip-container">
+                <span class="vocab-card" onclick="insertConnector('Consequently,')">Consequently,</span>
+                <span class="vocab-card" onclick="insertConnector('Therefore,')">Therefore,</span>
+                <span class="vocab-card" onclick="insertConnector('In comparison,')">In comparison,</span>
+                <span class="vocab-card" onclick="insertConnector('Subsequently,')">Subsequently,</span>
+                <span class="vocab-card" onclick="insertConnector('Specifically,')">Specifically,</span>
+                <span class="vocab-card" onclick="insertConnector('On the other hand,')">On the other hand,</span>
+              </div>
+            </div>
           </div>
 
           <!-- Sentence frame builders -->
           <div class="scaffold-card">
             <span class="scaffold-title">🔑 Recommended Sentence Starters (Click to add to draft)</span>
-            <div id="sentenceStartersWrap" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+            <div id="sentenceStartersWrap" style="display:flex; flex-direction:column; gap:8px;">
               <!-- Dynamically populated frames -->
-            </div>
-            
-            <span class="scaffold-title" style="margin-top:12px;">🔗 Cohesive Conjunctions (Connect thoughts to score Level 3-4!)</span>
-            <div id="conjunctionsWrap" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">
-              <button class="frame-chip" style="background:var(--amber-light); border-color:var(--amber); color:var(--amber);" onclick="injectSentenceStarter('consequently')">Consequently,</button>
-              <button class="frame-chip" style="background:var(--amber-light); border-color:var(--amber); color:var(--amber);" onclick="injectSentenceStarter('therefore')">Therefore,</button>
-              <button class="frame-chip" style="background:var(--amber-light); border-color:var(--amber); color:var(--amber);" onclick="injectSentenceStarter('whereas')">Whereas</button>
-              <button class="frame-chip" style="background:var(--amber-light); border-color:var(--amber); color:var(--amber);" onclick="injectSentenceStarter('although')">Although</button>
-              <button class="frame-chip" style="background:var(--amber-light); border-color:var(--amber); color:var(--amber);" onclick="injectSentenceStarter('furthermore')">Furthermore,</button>
-              <button class="frame-chip" style="background:var(--amber-light); border-color:var(--amber); color:var(--amber);" onclick="injectSentenceStarter('because')">because</button>
-              <button class="frame-chip" style="background:var(--amber-light); border-color:var(--amber); color:var(--amber);" onclick="injectSentenceStarter('since')">since</button>
-              <button class="frame-chip" style="background:var(--amber-light); border-color:var(--amber); color:var(--amber);" onclick="injectSentenceStarter('subsequently')">Subsequently,</button>
             </div>
           </div>
 
-          <!-- WIDA Speaking Rubric Evaluator -->
+          <!-- WIDA Writing Rubric Evaluator -->
           <div class="rubric-box">
             <div class="rubric-header">
-              <h4>🏆 Speaking Rubric Evaluator</h4>
+              <h4>🏆 Writing Rubric Evaluator</h4>
               <span class="rubric-badge" id="liveELPBadge">ELP 1.0 (Entering)</span>
             </div>
             <div class="rubric-grid">
               <div class="rubric-criterion">
                 <label for="rubricLinguistic">Linguistic Complexity</label>
                 <select id="rubricLinguistic" onchange="calculateELPRating()">
-                  <option value="1">Entering: Single words/phrases (1 pt)</option>
-                  <option value="2">Emerging: Simple sentence structures (2 pts)</option>
-                  <option value="3">Developing: Compound sentences (3 pts)</option>
-                  <option value="4">Expanding: Complex sentences & connectors (4 pts)</option>
+                  <option value="1">Entering: Single phrases (1 pt)</option>
+                  <option value="2">Emerging: Simple sentences (2 pts)</option>
+                  <option value="3">Developing: Connected compound sentences (3 pts)</option>
+                  <option value="4">Expanding: Structured complex paragraph (4 pts)</option>
                 </select>
               </div>
               <div class="rubric-criterion">
                 <label for="rubricVocabulary">Vocabulary Usage</label>
                 <select id="rubricVocabulary" onchange="calculateELPRating()">
-                  <option value="1">Entering: General vocabulary (1 pt)</option>
-                  <option value="2">Emerging: High-frequency academic terms (2 pts)</option>
-                  <option value="3">Developing: Mapped domain terms (3 pts)</option>
-                  <option value="4">Expanding: Highly technical expressions (4 pts)</option>
+                  <option value="1">Entering: General words (1 pt)</option>
+                  <option value="2">Emerging: High-frequency terms (2 pts)</option>
+                  <option value="3">Developing: Mapped domain words (3 pts)</option>
+                  <option value="4">Expanding: Highly precise lexicon (4 pts)</option>
                 </select>
               </div>
               <div class="rubric-criterion">
                 <label for="rubricControl">Language Control</label>
                 <select id="rubricControl" onchange="calculateELPRating()">
-                  <option value="1">Entering: Fluency has frequent pauses (1 pt)</option>
-                  <option value="2">Emerging: Grammatical errors present (2 pts)</option>
-                  <option value="3">Developing: Minor phonetic variations (3 pts)</option>
-                  <option value="4">Expanding: Fluent academic structure (4 pts)</option>
+                  <option value="1">Entering: Frequent mechanics pauses (1 pt)</option>
+                  <option value="2">Emerging: Minor phonetic spelling (2 pts)</option>
+                  <option value="3">Developing: Good grammar & spelling (3 pts)</option>
+                  <option value="4">Expanding: Flawless publication structure (4 pts)</option>
                 </select>
               </div>
             </div>
             
             <!-- Dynamic feedback card -->
             <div class="feedback-coach-card" id="widaCoachCard" style="display:none; box-shadow: var(--shadow-card);">
-              <div style="font-weight:800; color:var(--amber); text-transform:uppercase; font-size:0.75rem; letter-spacing:0.04em;">💡 WIDA Speaking Coach Advice</div>
+              <div style="font-weight:800; color:var(--amber); text-transform:uppercase; font-size:0.75rem; letter-spacing:0.04em;">💡 WIDA Writing Coach Advice</div>
               <div id="widaCoachContent" style="font-size:0.84rem; font-weight:500;">
-                Select scores to receive personalized academic speaking developmental feedback...
+                Select scores to receive personalized academic writing developmental feedback...
               </div>
             </div>
           </div>
@@ -1071,7 +1004,7 @@
 
   <div class="diag-overlay" id="diagTerminal">
     <div class="diag-head">
-      <span>⚙️ SPEAKING DIAGNOSTICS MATRIX</span>
+      <span>⚙️ WRITING DIAGNOSTICS MATRIX</span>
       <button onclick="toggleDiagnostics()" style="background:none; border:none; color:#00ff66; cursor:pointer; font-weight:900;">[X]</button>
     </div>
     <div class="diag-stream" id="diagConsole"></div>
@@ -1107,74 +1040,10 @@
       polygon: { es: "polígono", ar: "مضلع", vi: "đa giác" },
       decompose: { es: "descomponer", ar: "تحليل", vi: "phân tích" },
       composite: { es: "compuesto", ar: "merkab", vi: "hợp phần" },
-      area: { es: "área", ar: "mãa", vi: "diện tích" },
+      area: { es: "área", ar: "مساحة", vi: "diện tích" },
       academic: { es: "académico", ar: "أكاديمي", vi: "học thuật" },
       strategy: { es: "estrategia", ar: "استراتيجية", vi: "chiến lược" },
       common: { es: "común", ar: "مشترك", vi: "chung" }
-    };
-
-    const SYLLABLE_MAP = {
-      apple: "ap·ple",
-      milk: "milk",
-      sandwich: "sand·wich",
-      tray: "tray",
-      fraction: "frac·tion",
-      partition: "par·ti·tion",
-      numerator: "nu·mer·a·tor",
-      denominator: "de·nom·i·na·tor",
-      ocean: "o·cean",
-      condensation: "con·den·sa·tion",
-      evaporation: "e·vap·o·ra·tion",
-      thermodynamic: "ther·mo·dy·nam·ic",
-      coordinate: "co·or·di·nate",
-      quadrant: "quad·rant",
-      reflection: "re·flec·tion",
-      axis: "ax·is",
-      equation: "e·qua·tion",
-      variable: "var·i·a·ble",
-      constant: "con·stant",
-      inverse: "in·verse",
-      friction: "fric·tion",
-      mean: "mean",
-      median: "me·di·an",
-      outlier: "out·li·er",
-      polygon: "pol·y·gon",
-      decompose: "de·com·pose",
-      composite: "com·pos·ite",
-      area: "ar·e·a",
-      academic: "ac·a·dem·ic",
-      strategy: "strat·e·gy",
-      common: "com·mon",
-      scale: "scale",
-      legend: "leg·end",
-      ratio: "ra·ti·o",
-      distance: "dis·tance",
-      gravity: "grav·i·ty",
-      slope: "slope",
-      acceleration: "ac·cel·er·a·tion",
-      legislative: "leg·is·la·tive",
-      executive: "ex·ec·u·tive",
-      judicial: "ju·di·cial",
-      checks: "checks",
-      probability: "prob·a·bil·i·ty",
-      sector: "sec·tor",
-      outcome: "out·come",
-      distribution: "dis·tri·bu·tion",
-      comparison: "com·par·i·son",
-      sum: "sum",
-      multiplier: "mul·ti·pli·er",
-      column: "col·umn",
-      cycle: "cy·cle",
-      overlap: "o·ver·lap",
-      interval: "in·ter·val",
-      volume: "vol·ume",
-      prism: "prism",
-      capacity: "ca·pac·i·ty",
-      base: "base",
-      intersection: "in·ter·sec·tion",
-      inequality: "in·e·qual·i·ty",
-      boundary: "bound·a·ry",
-      limit: "lim·it"
     };
 
     // ── Central State Store ──
@@ -1184,16 +1053,7 @@
       activeDictionaryLang: "en",
       isSpeaking: false,
       isSpeakingModel: false,
-      isRecording: false,
-      isDictating: false,
-      mediaRecorder: null,
-      audioChunks: [],
-      audioBlobUrl: null,
-      speakingTimerInterval: null,
-      speakSecondsRemaining: 30,
       peerPlaybackRate: 1.0,
-      sparkPoints: 1200,
-      celebrationFired: false,
       
       // Quest & Checklist state flags
       questCompleted: false,
@@ -1216,15 +1076,11 @@
       timelineYear: 1850,
       spinnerAngle: 0,
       
-      // Audio Visualizer Context
-      audioContext: null,
-      analyser: null,
-      dataArray: null,
-      sourceNode: null,
-      animationFrameId: null
+      // Typewriter interval
+      typewriterInterval: null
     };
 
-    // Comprehensive WIDA ACCESS Speaking Tasks (20 Mapped Tasks with wrapped CER Spans!)
+    // Comprehensive WIDA ACCESS Writing Tasks (20 Mapped Tasks!)
     const WIDA_SPEAKING_TASKS = [
       {
         id: "T1",
@@ -1236,8 +1092,8 @@
         promptB: "Based on the visual lunch tray, explain why a healthy school lunch should balance protein, fruits, and dairy. Explain how these groups support student health.",
         framesA: ["I see a...", "On the tray, there is...", "This is a..."],
         framesB: ["According to the diagram, a healthy tray includes...", "Consequently, balancing protein and dairy ensures...", "Whereas general snacks lack..."],
-        modelA: "On this <span class='cer-vocab'>lunch tray</span>, I see a <span class='cer-evidence'>sandwich</span>, a <span class='cer-evidence'>milk carton</span>, and a <span class='cer-evidence'>red apple</span>. These three items represent grains, dairy, and fruit.",
-        modelB: "<span class='cer-topic'>Based on the visual evidence, a balanced lunch tray includes key groups like fruits, proteins, and dairy.</span> <span class='cer-connector'>Consequently</span>, <span class='cer-evidence'>combining these groups ensures students receive sustained metabolic energy</span>, <span class='cer-connector'>whereas</span> <span class='cer-evidence'>relying on simple sugary snacks causes energy drops</span>."
+        modelA: "On this lunch tray, I see a sandwich, a milk carton, and a red apple. These three items represent grains, dairy, and fruit.",
+        modelB: "Based on the visual evidence, a balanced lunch tray includes key groups like fruits, proteins, and dairy. Consequently, combining these groups ensures students receive sustained metabolic energy, whereas simple sugary snacks cause energy drops."
       },
       {
         id: "T2",
@@ -1249,8 +1105,8 @@
         promptB: "Describe how this visual tape partition explains the relationship between numerator values and equivalent ratio constants.",
         framesA: ["The bar has...", "There are...", "The fraction shaded is..."],
         framesB: ["This tape model demonstrates that...", "Because three of the five partitions are shaded, the ratio is...", "In comparison, scaling the bar..."],
-        modelA: "The <span class='cer-evidence'>tape bar</span> is divided into five equal <span class='cer-vocab'>partitions</span>. <span class='cer-evidence'>Three parts are shaded</span>. The <span class='cer-vocab'>fraction</span> that is shaded is <span class='cer-evidence'>three-fifths</span>.",
-        modelB: "<span class='cer-topic'>This tape model explains equivalent ratios by partitioning the whole into five equal cells.</span> <span class='cer-connector'>Since</span> <span class='cer-evidence'>three cells are shaded, the ratio is three out of five</span>. <span class='cer-connector'>If we scale</span> the partitions by two, <span class='cer-evidence'>the fraction becomes six-tenths</span>, <span class='cer-connector'>which preserves</span> the original <span class='cer-vocab'>ratio constant</span>."
+        modelA: "The tape bar is divided into five equal parts. Three parts are shaded. The fraction that is shaded is three-fifths.",
+        modelB: "This tape model explains equivalent ratios by partitioning the whole into five equal cells. Since three cells are shaded, the ratio is three out of five. If we scale the partitions by two, the fraction becomes six-tenths, which preserves the original ratio constant."
       },
       {
         id: "T3",
@@ -1262,8 +1118,8 @@
         promptB: "Explain the thermodynamic process of evaporation and condensation shown in the diagram, describing how thermal energy alters states of water.",
         framesA: ["The water...", "The sun makes...", "The cloud has..."],
         framesB: ["As thermal energy from the sun increases, liquid water...", "Subsequently, vapor transitions into cloud condensation when...", "This cycle demonstrates the thermodynamic rule of..."],
-        modelA: "The <span class='cer-evidence'>sun heats up</span> the <span class='cer-vocab'>ocean</span> water. The water goes up into the sky. This is called <span class='cer-vocab'>evaporation</span>.",
-        modelB: "<span class='cer-topic'>As thermal energy from the sun increases, liquid water in the ocean undergoes evaporation, converting into vapor.</span> <span class='cer-connector'>Subsequently</span>, <span class='cer-evidence'>the rising vapor cools in the atmosphere, undergoing condensation to form clouds</span>, <span class='cer-connector'>illustrating</span> a closed <span class='cer-vocab'>thermodynamic</span> cycle."
+        modelA: "The sun heats up the ocean water. The water goes up into the sky. This is called evaporation.",
+        modelB: "As thermal energy from the sun increases, liquid water in the ocean undergoes evaporation, converting into vapor. Subsequently, the rising vapor cools in the atmosphere, undergoing condensation to form clouds, illustrating a closed thermodynamic cycle."
       },
       {
         id: "T4",
@@ -1275,8 +1131,8 @@
         promptB: "Explain how to plot and locate coordinate desk reflections across the grid axes, referencing positive and negative quadrants.",
         framesA: ["Point P is at...", "The x number is...", "The y number is..."],
         framesB: ["To locate Point P, we count three units along the horizontal axis...", "Reflecting Point P across the horizontal line changes...", "This quadrant shift illustrates that..."],
-        modelA: "Point P is located at <span class='cer-evidence'>three, two</span>. The horizontal number is three and the vertical number is two.",
-        modelB: "<span class='cer-topic'>To locate Point P, we plot three units on the positive x-axis and two units on the positive y-axis.</span> <span class='cer-connector'>Reflecting</span> Point P across the horizontal x-axis <span class='cer-evidence'>shifts the coordinate to three, negative two</span>, <span class='cer-connector'>which places it</span> directly in the fourth <span class='cer-vocab'>quadrant</span>."
+        modelA: "Point P is located at three, two. The horizontal number is three and the vertical number is two.",
+        modelB: "To locate Point P, we plot three units on the positive x-axis and two units on the positive y-axis. Reflecting Point P across the horizontal x-axis shifts the coordinate to three, negative two, which places it directly in the fourth quadrant."
       },
       {
         id: "T5",
@@ -1288,8 +1144,8 @@
         promptB: "Explain how this balanced mechanical scale represents an equation. Describe how to isolate the variable using inverse operations.",
         framesA: ["The scale is...", "There are blocks on...", "The left side has..."],
         framesB: ["The balanced scale represents an algebraic equation because...", "To isolate the variable x, we must apply the inverse operation of...", "Consequently, removing two constant cubes from both sides..."],
-        modelA: "The <span class='cer-evidence'>scale is perfectly balanced</span>. There are <span class='cer-evidence'>five small blocks</span> on the right side.",
-        modelB: "<span class='cer-topic'>This balanced scale represents the algebraic equation x plus two equals five.</span> <span class='cer-connector'>To isolate</span> the <span class='cer-vocab'>variable</span> x, <span class='cer-evidence'>we apply the inverse operation of subtraction</span>, <span class='cer-connector'>consequently removing</span> two <span class='cer-vocab'>constant</span> cubes from both pans to maintain equilibrium."
+        modelA: "The scale is perfectly balanced. There are five small blocks on the right side and one variable bag plus two blocks on the left.",
+        modelB: "This balanced scale represents the algebraic equation x plus two equals five. To isolate the variable x and find its solution, we apply the inverse operation of subtraction, removing two constant cubes from both pans to maintain equilibrium."
       },
       {
         id: "T6",
@@ -1301,8 +1157,8 @@
         promptB: "Analyze the statistical distribution of speed dots, comparing the mean and median lines to explain the impact of friction outliers.",
         framesA: ["The dots are on...", "This stack is...", "The median is..."],
         framesB: ["The dot plot shows that speed is skewed when...", "Comparing the mean and median reveals the impact of...", "The outlier dot at value 5 indicates..."],
-        modelA: "On this dot plot, the <span class='cer-evidence'>highest stack of dots is at number two</span>.",
-        modelB: "<span class='cer-topic'>The statistical distribution shows a center clustering around value two.</span> <span class='cer-connector'>Because</span> the data has a high <span class='cer-vocab'>outlier</span> at value five, <span class='cer-evidence'>the calculated mean is pulled to the right of the median</span>, <span class='cer-connector'>illustrating</span> how outliers skew central statistics under <span class='cer-vocab'>friction</span> coefficients."
+        modelA: "On this dot plot, the highest stack of dots is at number two. There are three speed dots stacked at that value.",
+        modelB: "The statistical distribution shows a center clustering around value two. Because the data has a high outlier at value five, the calculated mean is pulled to the right of the median, illustrating how outliers skew central statistics."
       },
       {
         id: "T7",
@@ -1314,8 +1170,8 @@
         promptB: "Explain the mathematical process to calculate the total composite area by decomposing the polygon into sub-shapes.",
         framesA: ["I see a...", "The shape has...", "This is a triangle and..."],
         framesB: ["To determine the total composite area, we must first decompose...", "By calculating the base times height area of the triangle...", "Then, summing the rectangles and triangles yields..."],
-        modelA: "I see a <span class='cer-evidence'>rectangle</span> and a <span class='cer-evidence'>triangle</span> inside this composite figure.",
-        modelB: "<span class='cer-topic'>To determine the total area of this composite polygon, we first decompose it into a rectangle and a right triangle.</span> <span class='cer-connector'>We calculate</span> their individual <span class='cer-vocab'>areas</span> using standard formulas <span class='cer-connector'>and then sum</span> the products to find the complete <span class='cer-vocab'>composite</span> area."
+        modelA: "I see a rectangle and a triangle inside this composite figure. They share a vertical dotted line.",
+        modelB: "To determine the total area of this composite polygon, we first decompose it into a rectangle and a right triangle. We calculate their individual areas using standard formulas and sum the products to find the complete area."
       },
       {
         id: "T8",
@@ -1323,12 +1179,12 @@
         domain: "Language of Social Studies",
         model: "reflect",
         terms: ["academic", "strategy", "equivalent", "constant"],
-        promptA: "Look at the progress steps. What is one academic speaking goal you achieved this school year?",
+        promptA: "Look at the progress steps. What is one academic goal you achieved this school year?",
         promptB: "Reflect on your academic language growth this year. Describe a strategy you used to expand your vocabulary in math and science classes.",
         framesA: ["My goal was...", "I learned how to...", "This year, I..."],
-        framesB: ["To expand my academic speaking capability, I utilized the strategy of...", "This linguistic growth has allowed me to express CER arguments in...", "In comparison to the beginning of the year, my vocabulary now..."],
-        modelA: "One <span class='cer-vocab'>academic goal</span> I achieved was using full math words when explaining my answers.",
-        modelB: "<span class='cer-topic'>To expand my academic language capability, I utilized the strategy of tracking translations in Spanish and Vietnamese.</span> <span class='cer-connector'>Consequently</span>, <span class='cer-evidence'>connecting new terms to concrete visual models</span> allowed me to express complex justifications fluently."
+        framesB: ["To expand my academic language capability, I utilized the strategy of...", "This linguistic growth has allowed me to express CER arguments in...", "In comparison to the beginning of the year, my vocabulary now..."],
+        modelA: "One academic goal I achieved was using full math words when explaining my answers in class. I can now write in complete sentences.",
+        modelB: "To expand my academic vocabulary, I utilized the strategy of tracking translations in Spanish and Vietnamese. Consequently, connecting new math and science terms to concrete visual SVG models allowed me to express complex justifications fluently."
       },
       {
         id: "T9",
@@ -1340,8 +1196,8 @@
         promptB: "Analyze the student preference data distribution. Describe the mathematical comparison between team sports and individual activities.",
         framesA: ["Soccer is the...", "The highest bar is...", "More students prefer..."],
         framesB: ["According to the preference data distribution...", "A comparison between soccer and running reveals...", "Summing the total student values illustrates..."],
-        modelA: "According to the bar chart, <span class='cer-evidence'>soccer is the most popular sport</span>. The soccer bar is the highest.",
-        modelB: "<span class='cer-topic'>Analyzing the preference distribution, team sports like soccer and basketball command a massive majority.</span> <span class='cer-connector'>In comparison</span>, <span class='cer-evidence'>individual running represents a much lower frequency</span>, <span class='cer-connector'>suggesting</span> a high preference for collaborative games."
+        modelA: "According to the bar chart, soccer is the most popular sport. The soccer bar is the highest, showing twelve students selected it.",
+        modelB: "Analyzing the preference distribution, team sports like soccer and basketball command a massive majority, totaling twenty student votes. In comparison, individual running represents a much lower frequency, suggesting a high preference for collaborative games."
       },
       {
         id: "T10",
@@ -1353,8 +1209,8 @@
         promptB: "Describe how to determine equivalent ratios in the ingredient columns. Explain how to find the constant multiplier.",
         framesA: ["The table shows...", "For three batches, you...", "Flour goes up..."],
         framesB: ["We scale the columns by applying...", "To find the equivalent ratio, we multiply...", "The constant multiplier in this column represents..."],
-        modelA: "To bake <span class='cer-evidence'>three batches</span> of cookies, you need <span class='cer-evidence'>six cups of flour</span>.",
-        modelB: "<span class='cer-topic'>To determine equivalent ratios across the columns, we calculate the scaling constant multiplier.</span> <span class='cer-connector'>In this case</span>, <span class='cer-evidence'>multiplying the batch count by two yields the flour cups needed</span>, <span class='cer-connector'>establishing</span> a constant <span class='cer-vocab'>equivalent</span> ratio of one to two."
+        modelA: "To bake three batches of cookies, you need six cups of flour. The table shows that flour scales by two for every batch.",
+        modelB: "To determine equivalent ratios across the columns, we calculate the scaling constant multiplier. In this case, multiplying the batch count by two yields the flour cups needed, establishing a constant equivalent ratio of one to two."
       },
       {
         id: "T11",
@@ -1366,8 +1222,8 @@
         promptB: "Describe the chemical process of photosynthesis. Explain how plants transform light energy into chemical glucose.",
         framesA: ["The leaf takes in...", "Sunlight comes from...", "The plant needs..."],
         framesB: ["During photosynthesis, leaves absorb carbon dioxide and...", "This thermodynamic conversion transforms solar photons into...", "Consequently, plants release oxygen as a byproduct while..."],
-        modelA: "The plant leaf takes in <span class='cer-evidence'>sunlight</span>, <span class='cer-evidence'>water</span>, and <span class='cer-evidence'>carbon dioxide</span>.",
-        modelB: "<span class='cer-topic'>During photosynthesis, plant leaves absorb solar energy, carbon dioxide, and water.</span> <span class='cer-connector'>This thermodynamic</span> conversion <span class='cer-evidence'>transforms light energy into chemical glucose</span>, <span class='cer-connector'>consequently releasing</span> oxygen as a vital environmental byproduct."
+        modelA: "The plant leaf takes in sunlight from the sun, water from the ground, and carbon dioxide from the air to make its own food.",
+        modelB: "During photosynthesis, plant leaves absorb solar energy, carbon dioxide, and water. This thermodynamic conversion transforms light energy into chemical glucose, storing essential nutrients for the plant while releasing oxygen as a vital environmental byproduct."
       },
       {
         id: "T12",
@@ -1379,8 +1235,8 @@
         promptB: "Describe the chronological sequence of events on the timeline, detailing how the intervals measure historical periods.",
         framesA: ["The first event is...", "This happened in...", "The timeline starts..."],
         framesB: ["Chronologically, the timeline sequence begins with...", "Analyzing the intervals between events illustrates...", "Although some historic periods overlap, the major cycle..."],
-        modelA: "The first event on the timeline is the <span class='cer-evidence'>founding of the city</span> in the year eighteen-hundred.",
-        modelB: "<span class='cer-topic'>Chronologically, the timeline sequence begins with the founding in eighteen-hundred, followed by the industrial boom fifty years later.</span> <span class='cer-connector'>Each</span> fifty-year <span class='cer-vocab'>interval</span> <span class='cer-evidence'>measures a distinct development period</span>."
+        modelA: "The first event on the timeline is the founding of the city, which occurred in the year eighteen-hundred.",
+        modelB: "Chronologically, the timeline sequence begins with the founding in eighteen-hundred, followed by the industrial boom fifty years later. Each fifty-year interval represents a distinct development period, measuring historical growth."
       },
       {
         id: "T13",
@@ -1392,8 +1248,8 @@
         promptB: "Explain the mathematical calculation to determine the interior capacity of the rectangular prism.",
         framesA: ["The prism has length...", "The height is...", "I see three numbers..."],
         framesB: ["To calculate the prism's volume, we multiply...", "The interior capacity is determined by finding...", "Relating the base area to the height illustrates..."],
-        modelA: "The three dimensions labeled on the <span class='cer-vocab'>prism</span> are length of <span class='cer-evidence'>five</span>, width of <span class='cer-evidence'>three</span>, and height of <span class='cer-evidence'>four</span> centimeters.",
-        modelB: "<span class='cer-topic'>To calculate the volume of this rectangular prism, we determine its base area by multiplying length by width, which equals fifteen.</span> <span class='cer-connector'>We then</span> multiply the base area by the height of four, <span class='cer-evidence'>yielding a total capacity of sixty cubic centimeters</span>."
+        modelA: "The three dimensions labeled on the rectangular prism are length of five centimeters, width of three centimeters, and height of four centimeters.",
+        modelB: "To calculate the volume of this rectangular prism, we determine its base area by multiplying length by width, which equals fifteen. We then multiply the base area by the height of four, yielding a total capacity of sixty cubic centimeters."
       },
       {
         id: "T14",
@@ -1405,8 +1261,8 @@
         promptB: "Explain how energy transfers through the trophic levels of this ecosystem food web, identifying producers and consumers.",
         framesA: ["The frog eats...", "The arrow points to...", "Grass is eaten by..."],
         framesB: ["Energy flows upward from primary producers like...", "As primary consumers digest organic matter, energy...", "At the intersection of trophic levels, apex predators..."],
-        modelA: "According to the food web diagram, the <span class='cer-evidence'>frog eats the grasshopper</span>.",
-        modelB: "<span class='cer-topic'>Energy flows upward from primary producers like grass to primary consumers like the grasshopper.</span> <span class='cer-connector'>As consumers</span> digest organic matter, <span class='cer-evidence'>energy transfers along trophic pathways</span>, <span class='cer-connector'>culminating at the apex</span> predator intersection represented by the hawk."
+        modelA: "According to the food web diagram, the frog eats the grasshopper. The arrow points from the grasshopper to the frog.",
+        modelB: "Energy flows upward from primary producers like grass to primary consumers like the grasshopper. As consumers digest organic matter, energy transfers along trophic pathways, culminating at the apex predator intersection represented by the hawk."
       },
       {
         id: "T15",
@@ -1418,21 +1274,21 @@
         promptB: "Explain how the shaded boundary represents an inequality. Describe the difference between open and closed coordinate limits.",
         framesA: ["The shaded line points...", "The circle is at...", "It goes towards..."],
         framesB: ["This shaded number line illustrates the inequality where...", "The open circle at boundary coordinate three indicates...", "Consequently, the variable limit satisfies all values..."],
-        modelA: "The shaded line points to the <span class='cer-evidence'>right of number three</span> with an <span class='cer-vocab'>open circle</span>.",
-        modelB: "<span class='cer-topic'>This shaded number line illustrates the inequality x is greater than three.</span> <span class='cer-connector'>The open circle</span> at boundary coordinate three <span class='cer-evidence'>indicates that three is not included in the solution set</span>, <span class='cer-connector'>establishing</span> a strict <span class='cer-vocab'>limit</span>."
+        modelA: "The shaded line points to the right of number three. There is an open circle at number three pointing towards larger numbers.",
+        modelB: "This shaded number line illustrates the inequality x is greater than three. The open circle at boundary coordinate three indicates that three is not included in the solution set, establishing a strict limit for all valid variable inputs."
       },
       {
         id: "T16",
-        title: "Principal Oral Interview",
+        title: "Principal Proposal Interview",
         domain: "Social & Instructional",
         model: "interview",
         terms: ["academic", "strategy", "common", "cycle"],
-        promptA: "Imagine you are talking to your school principal. What is one positive classroom activity you enjoyed most?",
+        promptA: "Imagine you are writing to your school principal. What is one positive classroom activity you enjoyed most?",
         promptB: "Verbally construct a formal academic proposal to the principal, explaining how language studios support student learning.",
         framesA: ["I liked...", "My favorite activity was...", "I enjoyed..."],
         framesB: ["To support academic language acquisition in our school, I propose...", "Implementing structured practice studios provides a common...", "Consequently, this cyclical learning method enhances..."],
-        modelA: "The activity I enjoyed most was using the <span class='cer-vocab'>Speaking Practice Studio</span> to record my voice.",
-        modelB: "<span class='cer-topic'>Dear Principal, to support academic language acquisition, I propose expanding access to digital Speaking Studios.</span> <span class='cer-connector'>Implementing</span> structured verbal reviews <span class='cer-evidence'>provides a common learning cycle</span>, <span class='cer-connector'>consequently enhancing</span> student oral skills."
+        modelA: "Hello Principal. The activity I enjoyed most was using the Writing Practice Studio to record my voice and practice math words. It was fun to listen to my recordings.",
+        modelB: "Dear Principal. To support academic language acquisition, I propose expanding access to digital Writing Studios. Implementing structured verbal reviews provides a common learning cycle, enhancing student oral skills in technical math domains."
       },
       {
         id: "T17",
@@ -1444,8 +1300,8 @@
         promptB: "Explain how map scales and legends function as scaling ratios. Describe how to calculate actual geographical distance using map scale models.",
         framesA: ["The legend says...", "On the map, 1 inch represents...", "The distance is..."],
         framesB: ["The map legend functions as a scale ratio because...", "By multiplying the map distance by the scale factor of...", "Consequently, the actual geographical distance measures..."],
-        modelA: "The <span class='cer-vocab'>legend</span> shows that <span class='cer-evidence'>one inch equals ten miles</span>. The actual distance is thirty miles.",
-        modelB: "<span class='cer-topic'>The map legend functions as a linear scale ratio where one unit represents ten miles.</span> <span class='cer-connector'>By multiplying</span> the measured map distance by this scale factor of ten, <span class='cer-evidence'>we calculate that the actual geographical distance measures thirty miles</span>."
+        modelA: "The legend shows that one inch equals ten miles. If they are three inches apart, the distance is thirty miles.",
+        modelB: "The map legend functions as a linear scale ratio where one unit represents ten miles. By multiplying the measured map distance by this scale factor of ten, we calculate that the actual geographical distance measures thirty miles."
       },
       {
         id: "T18",
@@ -1457,8 +1313,8 @@
         promptB: "Explain the mechanical forces active on the ramp incline. Compare how gravity, friction, and slope angles govern car acceleration.",
         framesA: ["The force is...", "The car slides...", "Friction slows down..."],
         framesB: ["As the slope angle of the incline increases, gravity...", "In comparison, the surface material exerts a friction force that...", "This kinetic equilibrium determines the net acceleration of..."],
-        modelA: "The force of <span class='cer-vocab'>gravity</span> pulls the toy car down the <span class='cer-evidence'>slope</span>.",
-        modelB: "<span class='cer-topic'>As the slope angle increases, the downward component of gravity exceeds sliding friction.</span> <span class='cer-connector'>In comparison</span>, <span class='cer-evidence'>rougher surface materials exert greater resistive friction that opposes motion</span>, <span class='cer-connector'>directly governing</span> the car's net <span class='cer-vocab'>acceleration</span>."
+        modelA: "Gravity pulls the toy car down the ramp. The friction between the wheels and the surface slows it down.",
+        modelB: "As the slope angle increases, the downward component of gravity exceeds sliding friction. In comparison, rougher surface materials exert greater resistive friction that opposes motion, directly governing the car's net acceleration down the incline."
       },
       {
         id: "T19",
@@ -1470,8 +1326,8 @@
         promptB: "Describe the structural division of the three government branches. Explain how checks and balances prevent concentrated power.",
         framesA: ["The branches are...", "I see the executive...", "They share..."],
         framesB: ["The structural division of power is partitioned into...", "To prevent concentrated authority, the system of checks and balances...", "Consequently, each branch possesses the constitutional power to..."],
-        modelA: "The three branches of government are the <span class='cer-evidence'>legislative, executive, and judicial branches</span>.",
-        modelB: "<span class='cer-topic'>The structural division of power is partitioned into the legislative, executive, and judicial branches.</span> <span class='cer-connector'>To prevent</span> concentrated authority, <span class='cer-evidence'>checks and balances enable each branch to monitor the others</span>, <span class='cer-connector'>consequently preserving</span> constitutional equilibrium."
+        modelA: "The three branches of government are the legislative, executive, and judicial branches. They share government power.",
+        modelB: "The structural division of power is partitioned into the legislative, executive, and judicial branches. To prevent concentrated authority, checks and balances enable each branch to monitor the others, consequently preserving constitutional equilibrium."
       },
       {
         id: "T20",
@@ -1483,8 +1339,8 @@
         promptB: "Describe the mathematical probability of outcomes on this spinner. Explain how to calculate the theoretical probability fraction for different sectors.",
         framesA: ["The spinner has...", "The blue sector is...", "The fraction is..."],
         framesB: ["To determine the probability of landing on a specific sector...", "Because the spinner is divided into eight equal sectors, the outcome...", "This theoretical probability model indicates that..."],
-        modelA: "The spinner is divided into <span class='cer-evidence'>four equal parts</span>. The probability of landing on the <span class='cer-evidence'>blue sector</span> is one-fourth.",
-        modelB: "<span class='cer-topic'>To determine the theoretical probability of landing on a specific sector, we relate the targeted outcome count to the total divisions.</span> <span class='cer-connector'>Because</span> the wheel has eight equal <span class='cer-vocab'>sectors</span> and two are blue, <span class='cer-evidence'>the probability fraction simplifies to one-fourth</span>."
+        modelA: "The spinner is divided into four equal parts. The probability of landing on the blue part is one-fourth.",
+        modelB: "To determine the theoretical probability of landing on a specific sector, we relate the targeted outcome count to the total divisions. Because the wheel has eight equal sectors and two are blue, the probability fraction simplifies to one-fourth."
       }
     ];
 
@@ -1526,22 +1382,14 @@
       outcome: { es: "Resultado", ar: "نتيجة", vi: "Kết quả" }
     };
 
-    // Syllables slowed down pronouncer
-    function speakWordSlowly(word) {
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.rate = 0.5; // highly slowed down for pronunciation checks
-      window.speechSynthesis.speak(utterance);
-      showMinimalToast(`🔊 Pronouncing slowly: ${word}`);
-    }
-
+    // Interactive clicking triggers
     function tapPrepObject(type, desc) {
       playChime("success");
       const bubble = document.getElementById('warmupBubble');
       bubble.style.display = "block";
       bubble.innerHTML = `🌟 <strong>Warm-Up Tip:</strong> ${desc}`;
       
+      // Auto-unlock clicked simple SVGs
       const task = WIDA_SPEAKING_TASKS[STORE.activeTaskIdx];
       if (task.model !== "bar" && task.model !== "grid" && task.model !== "data" && task.model !== "spinner-prob") {
         completeQuest();
@@ -1556,120 +1404,6 @@
       document.getElementById('questStatusBadge').textContent = "✓ UNLOCKED";
       document.getElementById('questStatusBadge').style.background = "var(--green-success)";
       updateChecklistUI();
-    }
-
-    // Web Speech API dictation
-    let recognition = null;
-    function toggleSpeechRecognition() {
-      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        showMinimalToast("🎙️ Speech-to-Text unsupported in this browser.");
-        return;
-      }
-      
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!recognition) {
-        recognition = new SpeechRec();
-        recognition.continuous = true;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
-        
-        recognition.onstart = () => {
-          document.getElementById('dictateBtn').innerHTML = "⏹️ Stop Typing";
-          document.getElementById('dictateBtn').classList.add('btn-solid-gold');
-          showMinimalToast("🎙️ Listening! Speak your draft...");
-        };
-        
-        recognition.onresult = (event) => {
-          const resultText = event.results[event.results.length - 1][0].transcript;
-          const draftBox = document.getElementById('rehearsalDraftBox');
-          draftBox.value += " " + resultText;
-          updateChecklistUI();
-        };
-        
-        recognition.onend = () => {
-          document.getElementById('dictateBtn').innerHTML = "🎙️ Speak to Type";
-          document.getElementById('dictateBtn').classList.remove('btn-solid-gold');
-        };
-        
-        recognition.onerror = () => {
-          document.getElementById('dictateBtn').innerHTML = "🎙️ Speak to Type";
-          document.getElementById('dictateBtn').classList.remove('btn-solid-gold');
-        };
-      }
-      
-      if (STORE.isDictating) {
-        recognition.stop();
-        STORE.isDictating = false;
-      } else {
-        recognition.start();
-        STORE.isDictating = true;
-      }
-    }
-
-    // Celebration Confetti particles
-    function triggerSparkCelebration() {
-      playChime("success");
-      STORE.sparkPoints = (STORE.sparkPoints || 1200) + 100;
-      document.getElementById('sparkXPCounter').textContent = `✨ ${STORE.sparkPoints} SPARK XP`;
-      localStorage.setItem('widaXP', STORE.sparkPoints);
-      
-      let streak = parseInt(localStorage.getItem('widaStreak') || 0);
-      streak++;
-      localStorage.setItem('widaStreak', streak);
-      if (document.getElementById('streakBadge')) {
-        document.getElementById('streakBadge').textContent = `🔥 ${streak} Day Streak`;
-      }
-      
-      const completedList = JSON.parse(localStorage.getItem('widaCompletedSpeaking') || '[]');
-      const taskId = `T${STORE.activeTaskIdx + 1}`;
-      if (!completedList.includes(taskId)) {
-        completedList.push(taskId);
-        localStorage.setItem('widaCompletedSpeaking', JSON.stringify(completedList));
-      }
-      
-      showMinimalToast("🎉 Masterpiece Completed! +100 SPARK XP! Day Streak +1!");
-      
-      for (let i = 0; i < 40; i++) {
-        const p = document.createElement('div');
-        p.style.position = 'fixed';
-        p.style.top = '-10px';
-        p.style.left = Math.random() * window.innerWidth + 'px';
-        p.style.width = Math.random() * 8 + 6 + 'px';
-        p.style.height = Math.random() * 12 + 8 + 'px';
-        const colors = ['#0f766e', '#d97706', '#ea580c', '#3b82f6', '#22c55e', '#a855f7'];
-        p.style.background = colors[Math.floor(Math.random() * colors.length)];
-        p.style.zIndex = '99999';
-        p.style.transform = `rotate(${Math.random() * 360}deg)`;
-        p.style.borderRadius = '2px';
-        document.body.appendChild(p);
-        
-        const speed = Math.random() * 5 + 4;
-        const horizontalShift = Math.random() * 2 - 1;
-        let top = -10;
-        let left = parseFloat(p.style.left);
-        
-        const anim = setInterval(() => {
-          top += speed;
-          left += horizontalShift;
-          p.style.top = top + 'px';
-          p.style.left = left + 'px';
-          if (top > window.innerHeight) {
-            clearInterval(anim);
-            p.remove();
-          }
-        }, 16);
-      }
-    }
-
-    // Toggle CER highlight deconstruction classes
-    function toggleCERHighlight(type) {
-      const spans = document.querySelectorAll(`.cer-${type}`);
-      const btn = document.getElementById(`btnCer_${type}`);
-      if (spans.length === 0) return;
-      const active = spans[0].classList.contains('highlighted');
-      spans.forEach(s => s.classList.toggle('highlighted', !active));
-      if (btn) btn.classList.toggle('active', !active);
-      playChime("success");
     }
 
     // ── Rebuilt SVG Drawing sub-engines with Interactive Tactile click maps! ──
@@ -2276,7 +2010,7 @@
           <path d="M 155,147 L 95,115" stroke="var(--slate-muted)" stroke-width="1.5" marker-end="url(#earrow)" fill="none" />
           
           <text x="200" y="240" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">System of Checks & Balances</text>
-          <text x="200" y="265" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">CLICK LEGISLATIVE (TOP LEFT) TO UNLOCK SPEAKING CANVASES</text>
+          <text x="200" y="265" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">CLICK LEGISLATIVE (TOP LEFT) TO UNLOCK WRITING CANVASES</text>
           <defs>
             <marker id="earrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
@@ -2411,22 +2145,19 @@
       STORE.activeTaskIdx = idx;
       
       if (STORE.isSpeakingModel) {
-        window.speechSynthesis.cancel();
+        clearInterval(STORE.typewriterInterval);
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         STORE.isSpeakingModel = false;
-        document.getElementById('modelSpeechBtn').innerHTML = "🎧 Hear Peer Model";
+        document.getElementById('modelSpeechBtn').innerHTML = "📝 Animate Peer Model";
       }
-      
       document.getElementById('modelDisplayTextCard').style.display = "none";
-      document.getElementById('cerHighlightControls').style.display = "none";
       document.getElementById('warmupBubble').style.display = "none";
-      document.getElementById('vocabDetailCard').style.display = "none";
       
       // Reset checklist states for the new task
       STORE.questCompleted = false;
       STORE.checklistQuest = false;
       STORE.checklistDraft = false;
       STORE.checklistRecord = false;
-      STORE.celebrationFired = false;
       
       populateSidebarCatalog();
       loadSpeakingTaskWorkspace(idx);
@@ -2471,20 +2202,31 @@
       
       updateChecklistUI();
       
-      // Reset rehearsal text box
+      // Reset text box
       document.getElementById('rehearsalDraftBox').value = "";
+      checkVocabUseInDraft();
       
       logToTerminal(`Loaded WIDA task ${idx+1}: [${task.title}]`);
     }
 
-    function injectSentenceStarter(word) {
-      const textbox = document.getElementById('rehearsalDraftBox');
-      const cursor = textbox.selectionStart;
-      const text = textbox.value;
-      textbox.value = text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
-      textbox.focus();
-      updateChecklistUI();
-    }
+    const POS_MAP = {
+      apple: "n.", milk: "n.", sandwich: "n.", tray: "n.",
+      fraction: "n.", partition: "v.", numerator: "n.", denominator: "n.",
+      ocean: "n.", condensation: "n.", evaporation: "n.", thermodynamic: "adj.",
+      coordinate: "n.", quadrant: "n.", reflection: "n.", axis: "n.",
+      equation: "n.", variable: "n.", constant: "adj.", inverse: "adj.",
+      friction: "n.", mean: "n.", median: "n.", outlier: "n.",
+      polygon: "n.", decompose: "v.", composite: "adj.", area: "n.",
+      academic: "adj.", strategy: "n.", common: "adj.",
+      scale: "n.", legend: "n.", ratio: "n.", distance: "n.",
+      gravity: "n.", slope: "n.", acceleration: "n.",
+      legislative: "adj.", executive: "adj.", judicial: "adj.", checks: "n.",
+      probability: "n.", sector: "n.", outcome: "n.",
+      distribution: "n.", comparison: "n.", sum: "n.", multiplier: "n.",
+      column: "n.", cycle: "n.", overlap: "v.", interval: "n.",
+      volume: "n.", prism: "n.", capacity: "n.", base: "n.",
+      intersection: "n.", inequality: "n.", boundary: "n.", limit: "n."
+    };
 
     function populateWordWall(terms) {
       const container = document.getElementById('wordWallContainer');
@@ -2493,7 +2235,10 @@
       terms.forEach(word => {
         const chip = document.createElement('span');
         chip.className = 'vocab-card';
-        chip.innerHTML = `${word} <span style="margin-left:4px; opacity:0.65; cursor:pointer;" onclick="event.stopPropagation(); speakWordSlowly('${word}')">🔊</span>`;
+        chip.id = `vocabChip_${word}`;
+        
+        const pos = POS_MAP[word] || "n.";
+        chip.innerHTML = `${word} <small style="font-size:0.65rem; opacity:0.6;">(${pos})</small>`;
         
         const translatedText = (VOCAB_LOOKUP_EXTENDED[word] && VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang])
           ? VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang]
@@ -2502,31 +2247,12 @@
         chip.innerHTML += `<span class="tooltip-bubble"><strong>${word}</strong><br>Translation: ${translatedText}</span>`;
         
         chip.onclick = () => {
-          // Show Syllables breakdown & pronounce slow button
-          const detailCard = document.getElementById('vocabDetailCard');
-          const detailWord = document.getElementById('vocabDetailWord');
-          const detailSyllables = document.getElementById('vocabDetailSyllables');
-          const detailTranslation = document.getElementById('vocabDetailTranslation');
-          const speakBtn = document.getElementById('vocabSpeakBtn');
-          
-          if (detailCard && detailWord && detailSyllables && detailTranslation) {
-            detailCard.style.display = "block";
-            detailWord.textContent = word;
-            detailSyllables.textContent = SYLLABLE_MAP[word] || word;
-            detailTranslation.textContent = translatedText;
-            speakBtn.onclick = (e) => {
-              e.stopPropagation();
-              speakWordSlowly(word);
-            };
-          }
-
-          // Insert into draft
           const textbox = document.getElementById('rehearsalDraftBox');
           const cursor = textbox.selectionStart;
           const text = textbox.value;
           textbox.value = text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
           textbox.focus();
-          updateChecklistUI();
+          checkVocabUseInDraft();
         };
 
         container.appendChild(chip);
@@ -2547,10 +2273,93 @@
           const text = textbox.value;
           textbox.value = text.slice(0, cursor) + " " + frame + " " + text.slice(cursor);
           textbox.focus();
-          updateChecklistUI();
+          checkVocabUseInDraft();
         };
         container.appendChild(btn);
       });
+    }
+
+    function insertConnector(connector) {
+      const textbox = document.getElementById('rehearsalDraftBox');
+      const cursor = textbox.selectionStart;
+      const text = textbox.value;
+      textbox.value = text.slice(0, cursor) + " " + connector + " " + text.slice(cursor);
+      textbox.focus();
+      checkVocabUseInDraft();
+    }
+
+    function analyzeWritingComplexity(draft) {
+      const lowerDraft = draft.toLowerCase();
+      
+      const level4Keywords = ["consequently", "therefore", "whereas", "although", "furthermore", "subsequently", "specifically", "in comparison", "on the other hand"];
+      const level3Keywords = ["because", "since", "while", "unless", "in order to", "so that"];
+      const level2Keywords = ["and", "but", "or", "so"];
+      
+      const words = draft.split(/\s+/).filter(w => w.length > 0);
+      const wordsCount = words.length;
+      
+      let level = 1;
+      let label = "Level 1: Entering";
+      let color = "#64748b"; // Slate
+      
+      const hasL4 = level4Keywords.some(kw => new RegExp("\\b" + kw + "\\b", "i").test(lowerDraft));
+      const hasL3 = lowerDraft.indexOf("because") !== -1 || level3Keywords.some(kw => new RegExp("\\b" + kw + "\\b", "i").test(lowerDraft));
+      const hasL2 = level2Keywords.some(kw => new RegExp("\\b" + kw + "\\b", "i").test(lowerDraft));
+      
+      if (hasL4 && wordsCount >= 15) {
+        level = 4;
+        label = "Level 4: Expanding (Cohesive)";
+        color = "#15803d"; // Green success
+      } else if (hasL3 && wordsCount >= 10) {
+        level = 3;
+        label = "Level 3: Developing (Complex)";
+        color = "#0f766e"; // Teal primary
+      } else if ((hasL2 && wordsCount >= 6) || wordsCount >= 10) {
+        level = 2;
+        label = "Level 2: Emerging (Connected)";
+        color = "#d97706"; // Amber
+      } else {
+        level = 1;
+        label = "Level 1: Entering (Simple)";
+        color = "#64748b"; // Slate
+      }
+      
+      const badge = document.getElementById('discourseBadge');
+      if (badge) {
+        badge.textContent = label;
+        badge.style.background = color;
+      }
+    }
+
+    // Active Vocab usage checker
+    function checkVocabUseInDraft() {
+      const draft = document.getElementById('rehearsalDraftBox').value.trim();
+      const task = WIDA_SPEAKING_TASKS[STORE.activeTaskIdx];
+      let usedCount = 0;
+      
+      task.terms.forEach(word => {
+        const regex = new RegExp("\\b" + word + "(s|es|ed|ing)?\\b", "i");
+        const isUsed = regex.test(draft);
+        
+        const chip = document.getElementById(`vocabChip_${word}`);
+        if (chip) {
+          chip.classList.toggle('checked', isUsed);
+          if (isUsed) {
+            chip.style.borderColor = "var(--green-success)";
+            chip.style.background = "var(--green-light)";
+            chip.style.color = "var(--green-success)";
+            usedCount++;
+          } else {
+            chip.style.borderColor = "var(--line-muted)";
+            chip.style.background = "var(--bg-canvas)";
+            chip.style.color = "var(--slate-ink)";
+          }
+        }
+      });
+      
+      STORE.checklistRecord = (usedCount >= 2);
+      analyzeWritingComplexity(draft);
+      updateChecklistUI();
     }
 
     // ── Simulated WIDA Test Administrator prompt speaker ──
@@ -2604,55 +2413,54 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // ── Simulated exemplary peer model response playback ──
+    // ── Simulated exemplary peer model typewriter typing animation ──
     function playPeerModelResponse() {
-      if (!('speechSynthesis' in window)) return;
-      
       if (STORE.isSpeakingModel) {
-        window.speechSynthesis.cancel();
+        clearInterval(STORE.typewriterInterval);
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         STORE.isSpeakingModel = false;
-        document.getElementById('modelSpeechBtn').innerHTML = "🎧 Hear Peer Model";
-        document.getElementById('modelDisplayTextCard').style.display = "none";
-        document.getElementById('cerHighlightControls').style.display = "none";
+        document.getElementById('modelSpeechBtn').innerHTML = "📝 Animate Peer Model";
         return;
       }
-
+      
       const task = WIDA_SPEAKING_TASKS[STORE.activeTaskIdx];
       const text = (STORE.activeTier === "A") ? task.modelA : task.modelB;
       
-      // Clean highlight buttons state
-      document.querySelectorAll('.rate-btn').forEach(btn => {
-        if (btn.id && btn.id.startsWith('btnCer_')) btn.classList.remove('active');
-      });
-
-      // Renders text block so students can follow and deconstruct
       const modelDisplay = document.getElementById('modelDisplayTextCard');
       modelDisplay.style.display = "block";
-      modelDisplay.innerHTML = text;
+      modelDisplay.textContent = "";
       
-      document.getElementById('cerHighlightControls').style.display = "flex";
-
-      const plainText = modelDisplay.textContent; // strips spans for TTS engine
-      const utterance = new SpeechSynthesisUtterance(plainText);
-      utterance.rate = STORE.peerPlaybackRate || 0.85; 
-
-      utterance.onstart = () => {
-        STORE.isSpeakingModel = true;
-        document.getElementById('modelSpeechBtn').innerHTML = "⏹️ Stop Model";
-        logToTerminal(`Playing exemplary WIDA Speaking model standard answer.`);
-      };
+      STORE.isSpeakingModel = true;
+      document.getElementById('modelSpeechBtn').innerHTML = "⏹️ Stop Model";
       
-      utterance.onend = () => {
-        STORE.isSpeakingModel = false;
-        document.getElementById('modelSpeechBtn').innerHTML = "🎧 Hear Peer Model";
-      };
+      let charIdx = 0;
+      STORE.typewriterInterval = setInterval(() => {
+        if (charIdx < text.length) {
+          modelDisplay.textContent += text.charAt(charIdx);
+          charIdx++;
+        } else {
+          clearInterval(STORE.typewriterInterval);
+        }
+      }, 35);
       
-      utterance.onerror = () => {
-        STORE.isSpeakingModel = false;
-        document.getElementById('modelSpeechBtn').innerHTML = "🎧 Hear Peer Model";
-      };
-
-      window.speechSynthesis.speak(utterance);
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = STORE.peerPlaybackRate || 0.8;
+        utterance.onend = () => {
+          STORE.isSpeakingModel = false;
+          document.getElementById('modelSpeechBtn').innerHTML = "📝 Animate Peer Model";
+        };
+        utterance.onerror = () => {
+          STORE.isSpeakingModel = false;
+          document.getElementById('modelSpeechBtn').innerHTML = "📝 Animate Peer Model";
+        };
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setTimeout(() => {
+          STORE.isSpeakingModel = false;
+          document.getElementById('modelSpeechBtn').innerHTML = "📝 Animate Peer Model";
+        }, text.length * 35 + 500);
+      }
     }
 
     function setELPTier(tier) {
@@ -2662,155 +2470,6 @@
       
       logToTerminal(`WIDA ELP Tier selected: Tier ${tier}`);
       loadSpeakingTaskWorkspace(STORE.activeTaskIdx);
-    }
-
-    // ── HTML5 Microphone recording & visualizer ──
-    function toggleAudioRecording() {
-      if (STORE.isRecording) {
-        stopMicrophoneRecording();
-      } else {
-        startMicrophoneRecording();
-      }
-    }
-
-    function startMicrophoneRecording() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showMinimalToast("Microphone recording unsupported.");
-        return;
-      }
-      
-      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-        STORE.audioChunks = [];
-        STORE.isRecording = true;
-        
-        document.getElementById('recordBtn').innerHTML = "⏹️ Stop Recording";
-        document.getElementById('recordBtn').className = "action-btn btn-solid-gold";
-        document.getElementById('playbackBtn').disabled = true;
-        
-        STORE.mediaRecorder = new MediaRecorder(stream);
-        STORE.mediaRecorder.ondataavailable = e => {
-          STORE.audioChunks.push(e.data);
-        };
-        
-        STORE.mediaRecorder.onstop = () => {
-          const blob = new Blob(STORE.audioChunks, { type: 'audio/wav' });
-          STORE.audioBlobUrl = URL.createObjectURL(blob);
-          
-          document.getElementById('audioPlayback').src = STORE.audioBlobUrl;
-          document.getElementById('playbackBtn').disabled = false;
-          
-          STORE.checklistRecord = true;
-          updateChecklistUI();
-          logToTerminal("Speech sample successfully recorded locally.");
-        };
-        
-        STORE.mediaRecorder.start();
-        initAudioVisualizerContext(stream);
-        startSpeakingCountdown();
-      }).catch(err => {
-        logToTerminal("Microphone access denied by user.", "orange");
-        showMinimalToast("⚠️ Microphone access denied.");
-      });
-    }
-
-    function stopMicrophoneRecording() {
-      if (STORE.mediaRecorder && STORE.isRecording) {
-        STORE.mediaRecorder.stop();
-        STORE.mediaRecorder.stream.getTracks().forEach(track => track.stop());
-      }
-      
-      STORE.isRecording = false;
-      document.getElementById('recordBtn').innerHTML = "🎙️ Record Response";
-      document.getElementById('recordBtn').className = "action-btn btn-red";
-      
-      clearInterval(STORE.speakingTimerInterval);
-      cancelAnimationFrame(STORE.animationFrameId);
-    }
-
-    function startSpeakingCountdown() {
-      STORE.speakSecondsRemaining = (STORE.activeTier === "A") ? 30 : 60;
-      document.getElementById('timerRing').textContent = `00:${STORE.speakSecondsRemaining}`;
-      document.getElementById('timerRing').style.color = "var(--white)";
-      
-      clearInterval(STORE.speakingTimerInterval);
-      STORE.speakingTimerInterval = setInterval(() => {
-        STORE.speakSecondsRemaining--;
-        const paddedSec = STORE.speakSecondsRemaining.toString().padStart(2, '0');
-        document.getElementById('timerRing').textContent = `00:${paddedSec}`;
-        
-        if (STORE.speakSecondsRemaining <= 5) {
-          document.getElementById('timerRing').style.color = "var(--coral)";
-        }
-        
-        if (STORE.speakSecondsRemaining <= 0) {
-          stopMicrophoneRecording();
-          showMinimalToast("⏰ WIDA Speaking limit reached!");
-        }
-      }, 1000);
-    }
-
-    function playbackRecordedAudio() {
-      const audio = document.getElementById('audioPlayback');
-      if (audio.src) {
-        audio.play();
-        logToTerminal("Playing back locally recorded speaking file.");
-      }
-    }
-
-    function initAudioVisualizerContext(stream) {
-      const canvas = document.getElementById('voiceCanvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      
-      if (!STORE.audioContext) {
-        STORE.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      
-      STORE.analyser = STORE.audioContext.createAnalyser();
-      STORE.sourceNode = STORE.audioContext.createMediaStreamSource(stream);
-      STORE.sourceNode.connect(STORE.analyser);
-      
-      STORE.analyser.fftSize = 256;
-      const bufferLength = STORE.analyser.frequencyBinCount;
-      STORE.dataArray = new Uint8Array(bufferLength);
-      
-      function drawWave() {
-        if (!STORE.isRecording) return;
-        STORE.animationFrameId = requestAnimationFrame(drawWave);
-        
-        STORE.analyser.getByteFrequencyData(STORE.dataArray);
-        
-        ctx.fillStyle = '#0b1f33';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.beginPath();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#0f766e';
-        ctx.shadowColor = '#0f766e';
-        ctx.shadowBlur = 10;
-        
-        const sliceWidth = canvas.width * 1.0 / bufferLength;
-        let x = 0;
-        
-        for(let i = 0; i < bufferLength; i++) {
-          const v = STORE.dataArray[i] / 128.0;
-          const y = (v * canvas.height / 2);
-          
-          if(i === 0) {
-            ctx.moveTo(x, canvas.height/2 + (y * Math.sin(x/10)));
-          } else {
-            ctx.lineTo(x, canvas.height/2 + (y * Math.sin(x/10)));
-          }
-          
-          x += sliceWidth;
-        }
-        
-        ctx.lineTo(canvas.width, canvas.height/2);
-        ctx.stroke();
-      }
-      
-      drawWave();
     }
 
     function playChime(type) {
@@ -2847,10 +2506,10 @@
       const sum = ling + vocab + ctrl;
       let rating = "1.0 (Entering)";
       
-      if (sum >= 11) rating = "5.0 (Bridging)";
-      else if (sum >= 9) rating = "4.0 (Expanding)";
-      else if (sum >= 6) rating = "3.0 (Developing)";
-      else if (sum >= 4) rating = "2.0 (Emerging)";
+      if (sum >= 11) rating = "4.0-5.0 (Expanding)";
+      else if (sum >= 8) rating = "3.0 (Developing)";
+      else if (sum >= 5) rating = "2.0 (Emerging)";
+      else if (sum >= 3) rating = "1.0-1.5 (Entering)";
       
       document.getElementById('liveELPBadge').textContent = `ELP ${rating}`;
       logToTerminal(`Rubric calculated ELP score: [${rating}]`);
@@ -2878,13 +2537,13 @@
       }
       
       if (ctrl === 1) {
-        advice += "👉 <strong>Language Control:</strong> Don't worry about minor pauses. Practice reading your Rehearsal Draft aloud slowly before recording.<br>";
+        advice += "👉 <strong>Language Control:</strong> Don't worry about spelling errors. Practice reading your draft aloud slowly before reviewing mechanics.<br>";
       } else if (ctrl === 2) {
-        advice += "👉 <strong>Language Control:</strong> Focus on ending sentences with clear, declarative tones. Take deep breaths at punctuation marks.<br>";
+        advice += "👉 <strong>Language Control:</strong> Focus on ending sentences with clear periods. Double-check singular vs. plural noun agreements.<br>";
       } else if (ctrl === 3) {
-        advice += "👉 <strong>Language Control:</strong> Fluent, clean speech flow! Work on precise phonetic pronunciation of complex ending consonants (e.g. -tion, -ing).<br>";
+        advice += "👉 <strong>Language Control:</strong> Great sentence flow! Check capitalization of specialized domain terms and proper punctuations.<br>";
       } else {
-        advice += "👉 <strong>Language Control:</strong> Native-like pronunciation, fluency, and grammatical structure. Exceptional delivery!<br>";
+        advice += "👉 <strong>Language Control:</strong> Exceptional grammatical structure and layout syntax! Outstanding paragraph craftsmanship.<br>";
       }
       
       const coachCard = document.getElementById('widaCoachCard');
@@ -2898,6 +2557,82 @@
       updateChecklistUI();
     }
 
+    function playChime(type) {
+      if (!window.AudioContext && !window.webkitAudioContext) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (type === "success") {
+          const notes = [261.63, 329.63, 392.00, 523.25];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.4);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.08);
+            osc.stop(ctx.currentTime + idx * 0.08 + 0.5);
+          });
+        }
+      } catch(e) {}
+    }
+
+    function triggerSparkCelebration() {
+      playChime("success");
+      STORE.sparkPoints = (STORE.sparkPoints || 1200) + 100;
+      document.getElementById('sparkXPCounter').textContent = `✨ ${STORE.sparkPoints} SPARK XP`;
+      localStorage.setItem('widaXP', STORE.sparkPoints);
+      
+      let streak = parseInt(localStorage.getItem('widaStreak') || 0);
+      streak++;
+      localStorage.setItem('widaStreak', streak);
+      if (document.getElementById('streakBadge')) {
+        document.getElementById('streakBadge').textContent = `🔥 ${streak} Day Streak`;
+      }
+      
+      const completedList = JSON.parse(localStorage.getItem('widaCompletedWriting') || '[]');
+      const taskId = `T${STORE.activeTaskIdx + 1}`;
+      if (!completedList.includes(taskId)) {
+        completedList.push(taskId);
+        localStorage.setItem('widaCompletedWriting', JSON.stringify(completedList));
+      }
+      
+      showMinimalToast("🎉 Masterpiece Completed! +100 SPARK XP! Day Streak +1!");
+      
+      for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.style.position = 'fixed';
+        p.style.top = '-10px';
+        p.style.left = Math.random() * window.innerWidth + 'px';
+        p.style.width = Math.random() * 8 + 6 + 'px';
+        p.style.height = Math.random() * 12 + 8 + 'px';
+        const colors = ['#0f766e', '#d97706', '#ea580c', '#3b82f6', '#22c55e', '#a855f7'];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.zIndex = '99999';
+        p.style.transform = `rotate(${Math.random() * 360}deg)`;
+        p.style.borderRadius = '2px';
+        document.body.appendChild(p);
+        
+        const speed = Math.random() * 5 + 4;
+        const horizontalShift = Math.random() * 2 - 1;
+        let top = -10;
+        let left = parseFloat(p.style.left);
+        
+        const anim = setInterval(() => {
+          top += speed;
+          left += horizontalShift;
+          p.style.top = top + 'px';
+          p.style.left = left + 'px';
+          if (top > window.innerHeight) {
+            clearInterval(anim);
+            p.remove();
+          }
+        }, 16);
+      }
+    }
+
     // Checklist updates
     function updateChecklistUI() {
       const chkQuest = document.getElementById('chkQuest');
@@ -2907,20 +2642,23 @@
         chkQuestIcon.textContent = STORE.checklistQuest ? '🟢' : '⚪';
       }
       
-      const draftBox = document.getElementById('rehearsalDraftBox');
-      STORE.checklistDraft = draftBox && draftBox.value.trim().length > 10;
+      const chkVocab = document.getElementById('chkVocab');
+      const chkVocabIcon = document.getElementById('chkVocabIcon');
+      if (chkVocab && chkVocabIcon) {
+        chkVocab.classList.toggle('checked', STORE.checklistRecord);
+        chkVocabIcon.textContent = STORE.checklistRecord ? '🟢' : '⚪';
+      }
+      
       const chkDraft = document.getElementById('chkDraft');
       const chkDraftIcon = document.getElementById('chkDraftIcon');
+      const draft = document.getElementById('rehearsalDraftBox').value.trim();
+      const wordsCount = draft.split(/\s+/).filter(w => w.length > 0).length;
+      const targetCount = (STORE.activeTier === "A") ? 30 : 60;
+      STORE.checklistDraft = (wordsCount >= targetCount);
+      
       if (chkDraft && chkDraftIcon) {
         chkDraft.classList.toggle('checked', STORE.checklistDraft);
         chkDraftIcon.textContent = STORE.checklistDraft ? '🟢' : '⚪';
-      }
-      
-      const chkRecord = document.getElementById('chkRecord');
-      const chkRecordIcon = document.getElementById('chkRecordIcon');
-      if (chkRecord && chkRecordIcon) {
-        chkRecord.classList.toggle('checked', STORE.checklistRecord);
-        chkRecordIcon.textContent = STORE.checklistRecord ? '🟢' : '⚪';
       }
       
       const chkRubric = document.getElementById('chkRubric');
@@ -2930,8 +2668,10 @@
         chkRubricIcon.textContent = STORE.checklistRubric ? '🟢' : '⚪';
       }
       
-      // Trigger confetti and spark points celebrate when ALL items are finished!
-      if (STORE.checklistQuest && STORE.checklistDraft && STORE.checklistRecord && STORE.checklistRubric) {
+      document.getElementById('wordsCounter').textContent = `${wordsCount} words`;
+      document.getElementById('charsCounter').textContent = `${draft.length} chars`;
+      
+      if (STORE.checklistQuest && STORE.checklistRecord && STORE.checklistDraft && STORE.checklistRubric) {
         if (!STORE.celebrationFired) {
           STORE.celebrationFired = true;
           triggerSparkCelebration();
@@ -2960,7 +2700,7 @@
       const draftBox = document.getElementById('rehearsalDraftBox');
       if (draftBox) {
         draftBox.addEventListener('input', () => {
-          updateChecklistUI();
+          checkVocabUseInDraft();
         });
       }
       
@@ -3004,9 +2744,9 @@
       if (hidden) {
         const consoleNode = document.getElementById('diagConsole');
         consoleNode.innerHTML = '';
-        logConsole("WIDA 20-Task Speaking Prep Workbook initialized...", "#fbbf24");
+        logConsole("WIDA 20-Task Writing Prep Workbook initialized...", "#fbbf24");
         logConsole(`CENTRAL STATE check: Total mapped tasks [${WIDA_SPEAKING_TASKS.length}/20]`);
-        logConsole("Exemplary peer model audio synthesizers active.");
+        logConsole("Active vocabulary match listener active.");
       }
     }
 
