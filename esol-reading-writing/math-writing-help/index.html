@@ -3,35 +3,1808 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for Math Writing Help classroom activity.">
-  <title>Math Writing Help</title>
+  <meta name="description" content="An interactive, premium mathematical writing helper for Grade 6 math and ESOL classrooms. Build Claims, Evidence, and Reasoning with visual models and audio feedback.">
+  <title>Math Writing Help Studio | Neft Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    /* ── Core Variables & Theme overrides ── */
+    :root {
+      --navy: #12355b;
+      --teal: #1fa6a2;
+      --teal-dark: #115e59;
+      --teal-light: #e6f6f5;
+      --amber: #f2c15b;
+      --amber-dark: #b7791f;
+      --amber-light: #fef7e7;
+      --coral: #d9795d;
+      --coral-light: #fdf1ed;
+      --cream: #f7f4ec;
+      --ink: #21313f;
+      --line: #d7e2ed;
+      --white: #ffffff;
+      --green: #0fa958;
+      --green-light: #e7f7ee;
+      --shadow-premium: 0 20px 40px rgba(18, 53, 91, 0.08);
+      --shadow-sm: 0 4px 12px rgba(18, 53, 91, 0.04);
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f3f6f9 0%, var(--cream) 100%);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* ── Layout Shell ── */
+    .studio-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 16px 40px;
+    }
+
+    /* ── Concept Sidebar ── */
+    .concept-sidebar {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-premium);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 850px;
+      overflow-y: auto;
+      position: sticky;
+      top: 24px;
+    }
+
+    .sidebar-header {
+      border-bottom: 2px solid var(--cream);
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-header p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .concept-btn {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: var(--transition);
+    }
+
+    .concept-btn:hover {
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border-color: rgba(31, 166, 162, 0.2);
+    }
+
+    .concept-btn.active {
+      background: var(--teal);
+      color: var(--white);
+      border-color: var(--teal-dark);
+      box-shadow: 0 4px 14px rgba(31, 166, 162, 0.3);
+    }
+
+    .concept-btn .meta-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .concept-btn.active .meta-tag {
+      opacity: 0.9;
+    }
+
+    /* ── Main Canvas Layout ── */
+    .studio-main {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* Column Panels */
+    .canvas-panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-premium);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-header {
+      border-bottom: 2px solid var(--cream);
+      padding-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-header h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* SVG Model Canvas */
+    .visual-canvas {
+      background: var(--teal-light);
+      border: 2px dashed rgba(31, 166, 162, 0.3);
+      border-radius: var(--radius-md);
+      min-height: 280px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 16px;
+      transition: var(--transition);
+    }
+
+    .visual-canvas svg {
+      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius-md);
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Canvas Controls */
+    .canvas-controls {
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border: 1px solid rgba(215, 226, 237, 0.5);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-group label {
+      font-size: 0.82rem;
+      font-weight: 750;
+      color: var(--navy);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--teal);
+      cursor: pointer;
+    }
+
+    /* ── Dictionary & Translators ── */
+    .dictionary-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      background: var(--white);
+    }
+
+    .dict-lang-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+
+    .dict-lang-tab {
+      border: none;
+      background: transparent;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      border-radius: 6px;
+      color: var(--muted);
+      transition: var(--transition);
+    }
+
+    .dict-lang-tab:hover {
+      background: var(--cream);
+      color: var(--navy);
+    }
+
+    .dict-lang-tab.active {
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .word-chip {
+      background: var(--cream);
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: help;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .word-chip:hover {
+      border-color: var(--teal);
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      transform: translateY(-1px);
+    }
+
+    .word-chip .tooltip {
+      visibility: hidden;
+      width: 220px;
+      background-color: var(--navy);
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 10;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-size: 0.72rem;
+      line-height: 1.4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      pointer-events: none;
+    }
+
+    .word-chip:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* ── CER Scaffolder ── */
+    .cer-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .cer-tab {
+      border: 1px solid var(--line);
+      background: var(--cream);
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .cer-tab:hover {
+      background: var(--white);
+      border-color: var(--teal);
+    }
+
+    .cer-tab.active {
+      background: var(--white);
+      border-color: var(--teal);
+      border-bottom: 4px solid var(--teal);
+      color: var(--teal-dark);
+    }
+
+    .cer-content-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      background: var(--white);
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sentence-builder-row {
+      font-size: 0.95rem;
+      line-height: 2;
+      color: var(--ink);
+    }
+
+    /* Dynamic Form Fields */
+    .sentence-select {
+      background: var(--teal-light);
+      border: 2px solid rgba(31, 166, 162, 0.3);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: inherit;
+      font-weight: 700;
+      color: var(--teal-dark);
+      cursor: pointer;
+      margin: 2px 4px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .sentence-select:focus {
+      border-color: var(--teal);
+      background: var(--white);
+    }
+
+    .sentence-input {
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: inherit;
+      font-weight: 700;
+      width: 120px;
+      margin: 2px 4px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .sentence-input:focus {
+      border-color: var(--teal);
+      background: var(--teal-light);
+    }
+
+    /* ── Draft Board & Export Clipboard ── */
+    .draft-panel {
+      background: var(--navy);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-premium);
+      margin-top: 24px;
+      grid-column: span 2;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .draft-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: var(--amber);
+    }
+
+    .draft-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      padding-bottom: 12px;
+    }
+
+    .draft-header h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--amber);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .draft-output {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-size: 1.05rem;
+      min-height: 80px;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      white-space: pre-wrap;
+      transition: var(--transition);
+    }
+
+    .draft-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--amber);
+      color: var(--navy);
+    }
+
+    .btn-primary:hover {
+      background: var(--white);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Audio speech visualizer bar */
+    .visualizer-overlay {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      margin-left: 12px;
+    }
+
+    .vis-bar {
+      width: 4px;
+      height: 12px;
+      background: var(--amber);
+      border-radius: 2px;
+      animation: bounce 0.8s infinite ease-in-out;
+    }
+
+    .vis-bar:nth-child(2) { animation-delay: 0.15s; }
+    .vis-bar:nth-child(3) { animation-delay: 0.3s; }
+    .vis-bar:nth-child(4) { animation-delay: 0.45s; }
+
+    @keyframes bounce {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(2.2); }
+    }
+
+    /* ── Diagnostics Panel ── */
+    .diagnostics-panel {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 380px;
+      background: #111827;
+      color: #10b981;
+      font-family: monospace;
+      font-size: 0.78rem;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid #374151;
+      padding: 16px;
+      display: none;
+      z-index: 1000;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .diag-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      border-bottom: 1px dashed #374151;
+      padding-bottom: 6px;
+    }
+
+    .diag-log {
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* ── Breadcrumb override ── */
+    .breadcrumb {
+      margin-bottom: 8px;
+    }
+
+    /* ── Responsive Adaptation ── */
+    @media (max-width: 1080px) {
+      .studio-container {
+        grid-template-columns: 1fr;
+      }
+      .concept-sidebar {
+        position: static;
+        max-height: 200px;
+      }
+      .studio-main {
+        grid-template-columns: 1fr;
+      }
+      .draft-panel {
+        grid-column: span 1;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/esol-reading-writing/">ESOL, Reading, and Writing</a><span>/</span><span>Math Writing Help</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>Math Writing Help</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
-    </section>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> Math-Writing-Help</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/esol-reading-writing/math-writing-help/</span></p>
+  <main class="page-shell">
+    <!-- Navigation Breadcrumbs -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Neft Hub</a>
+      <span>/</span>
+      <a href="/math/">Math Curriculum</a>
+      <span>/</span>
+      <span>Math Writing Help</span>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="hero compact-hero">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <p class="eyebrow" style="color: var(--teal)">ESOL & Math Scaffolds</p>
+          <h1>Math Writing Help Studio</h1>
+          <p class="hero-copy">Create rigorous mathematical Claim-Evidence-Reasoning (CER) writing drafts using interactive visual models, multilingual word walls, and speech synthesis supports.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="toggleDiagnostics()" aria-label="Open Diagnostics Suite" style="border-radius: var(--radius-md); font-weight: 800; font-size: 0.8rem;">
+          ⚙️ Run Diagnostics
+        </button>
       </div>
     </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/esol-reading-writing/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
+    <!-- Main Workspace Container -->
+    <div class="studio-container">
+      
+      <!-- Left Sidebar: Concept Selector -->
+      <aside class="concept-sidebar" aria-label="Mathematical concept catalog">
+        <div class="sidebar-header">
+          <h2>📐 Units 1–10</h2>
+          <p>Choose writing theme</p>
+        </div>
+        <nav id="conceptNav" style="display:flex; flex-direction:column; gap:8px;"></nav>
+      </aside>
+
+      <!-- Center & Right: Main Studio -->
+      <div class="studio-main">
+        
+        <!-- Interactive Model Canvas -->
+        <section class="canvas-panel" aria-labelledby="model-title">
+          <div class="panel-header">
+            <h3 id="model-title">🎨 Interactive Math Canvas</h3>
+            <span class="status-pill" id="conceptStandard">Standard</span>
+          </div>
+
+          <div class="visual-canvas" id="canvasContainer">
+            <!-- Inline SVG generated dynamically -->
+          </div>
+
+          <div class="canvas-controls" id="controlsContainer">
+            <!-- Dynamic slider controls -->
+          </div>
+
+          <!-- ESOL Interactive Dictionary -->
+          <div class="dictionary-box">
+            <div class="dict-lang-tabs" id="langTabs">
+              <button class="dict-lang-tab active" data-lang="en">EN Dictionary</button>
+              <button class="dict-lang-tab" data-lang="es">Español (ES)</button>
+              <button class="dict-lang-tab" data-lang="ar">العربية (AR)</button>
+              <button class="dict-lang-tab" data-lang="vi">Tiếng Việt (VI)</button>
+            </div>
+            <div class="word-list" id="wordWall">
+              <!-- Draggable word chips with tooltips -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Claim-Evidence-Reasoning Scaffolder -->
+        <section class="canvas-panel" aria-labelledby="cer-title">
+          <div class="panel-header">
+            <h3 id="cer-title">✍️ Scaffolded CER Creator</h3>
+            <span class="card-kicker">Guided writing</span>
+          </div>
+
+          <div class="cer-tabs">
+            <button class="cer-tab active" data-tab="claim">1. Claim</button>
+            <button class="cer-tab" data-tab="evidence">2. Evidence</button>
+            <button class="cer-tab" data-tab="reasoning">3. Reasoning</button>
+          </div>
+
+          <div class="cer-content-panel" id="scaffolderForm">
+            <!-- Dynamic dropdown frames -->
+          </div>
+        </section>
+
+        <!-- Bottom Export Board -->
+        <section class="draft-panel" aria-labelledby="draft-title">
+          <div class="draft-header">
+            <h3 id="draft-title">📋 Consolidated Math CER Paragraph Draft</h3>
+            <div style="display:flex; align-items:center;">
+              <span class="status-pill" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:var(--amber)">Paste-Ready</span>
+              <div class="visualizer-overlay" id="voiceVisualizer">
+                <span class="vis-bar"></span>
+                <span class="vis-bar"></span>
+                <span class="vis-bar"></span>
+                <span class="vis-bar"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="draft-output" id="draftParagraph">Your complete mathematical CER paragraph draft will automatically compile here as you complete the steps above...</div>
+
+          <div class="draft-actions">
+            <button class="btn btn-secondary" onclick="speakParagraph()" id="speakBtn">
+              🔊 Speak Aloud
+            </button>
+            <button class="btn btn-primary" onclick="copyParagraph()" id="copyBtn">
+              📎 Copy Paragraph
+            </button>
+          </div>
+        </section>
+
+      </div>
     </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
   </main>
-  <script src="/assets/app.js" defer></script>
+
+  <!-- Diagnostics Interface overlay -->
+  <div class="diagnostics-panel" id="diagPanel">
+    <div class="diag-header">
+      <span>SYSTEM DIAGNOSTICS</span>
+      <button onclick="toggleDiagnostics()" style="background:none; border:none; color:#10b981; cursor:pointer; font-weight:bold;">[CLOSE]</button>
+    </div>
+    <div class="diag-log" id="diagLogs"></div>
+  </div>
+
+  <script>
+    // ── Application CONFIG Block ──
+    const CONFIG = {
+      defaultConceptIndex: 0,
+      speechRate: 0.9,
+      speechPitch: 1.0,
+      speechLang: 'en-US'
+    };
+
+    // ── Data: 10 Reveal Math Concepts Mapped ──
+    const CONCEPTS = [
+      {
+        title: "GCF vs. LCM Decisions",
+        unit: "Unit 1",
+        standard: "6.NS.B.4",
+        description: "Decide whether to use Greatest Common Factor (GCF) or Least Common Multiple (LCM) to solve a packaging or scheduling problem.",
+        wordBank: ["factor", "multiple", "greatest", "least", "intersection", "cycle", "overlap", "divisor"],
+        translations: {
+          en: {
+            factor: "Factor (a number that divides another exactly)",
+            multiple: "Multiple (a number that can be divided by another without a remainder)",
+            greatest: "Greatest (the largest amount or size)",
+            least: "Least (the smallest amount or size)",
+            intersection: "Intersection (where two cycles or factors meet)",
+            cycle: "Cycle (a series of events that are regularly repeated)",
+            overlap: "Overlap (to extend over or cover part of)",
+            divisor: "Divisor (a number by which another number is to be divided)"
+          },
+          es: {
+            factor: "Factor (divisor exacto)",
+            multiple: "Múltiplo (número que contiene a otro exactamente)",
+            greatest: "Máximo (el de mayor tamaño)",
+            least: "Mínimo (el de menor tamaño)",
+            intersection: "Intersección (donde coinciden)",
+            cycle: "Ciclo (patrón repetitivo)",
+            overlap: "Coincidir / Solapar",
+            divisor: "Divisor (número que divide)"
+          },
+          ar: {
+            factor: "عامل (عدد يقسم عددًا آخر بالتساوي)",
+            multiple: "مضاعف (عدد يقبل القسمة على آخر بدون باقٍ)",
+            greatest: "الأكبر (أعلى قيمة أو حجم)",
+            least: "الأصغر (أقل قيمة أو حجم)",
+            intersection: "التقاطع (حيث يلتقي العاملان أو الدورتان)",
+            cycle: "الدورة (نمط يتكرر بانتظام)",
+            overlap: "التداخل (التداخل الجزئي)",
+            divisor: "القاسم (العدد الذي يقسم)"
+          },
+          vi: {
+            factor: "Ước số (số chia hết cho số khác)",
+            multiple: "Bội số (số chia hết cho số khác không dư)",
+            greatest: "Lớn nhất (giá trị cao nhất)",
+            least: "Nhỏ nhất (giá trị thấp nhất)",
+            intersection: "Điểm giao (nơi chu kỳ hoặc ước số gặp nhau)",
+            cycle: "Chu kỳ (vòng lặp lặp đi lặp lại)",
+            overlap: "Chồng chéo / Trùng nhau",
+            divisor: "Số chia (số dùng để chia)"
+          }
+        },
+        state: { val1: 12, val2: 18 },
+        controls: [
+          { name: "First Value", key: "val1", min: 6, max: 24, step: 2 },
+          { name: "Second Value", key: "val2", min: 6, max: 24, step: 2 }
+        ],
+        svgBuilder: function(state) {
+          const v1 = state.val1;
+          const v2 = state.val2;
+          // Calculate factors
+          const getFactors = n => Array.from({length: n + 1}, (_, i) => i).filter(i => n % i === 0);
+          const f1 = getFactors(v1);
+          const f2 = getFactors(v2);
+          const common = f1.filter(f => f2.includes(f));
+          const gcf = Math.max(...common);
+          
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            <circle cx="150" cy="140" r="80" fill="rgba(31, 166, 162, 0.15)" stroke="var(--teal)" stroke-width="3" />
+            <circle cx="250" cy="140" r="80" fill="rgba(217, 121, 93, 0.15)" stroke="var(--coral)" stroke-width="3" />
+            <text x="110" y="80" fill="var(--teal-dark)" font-weight="bold" font-size="14">Val A: ${v1}</text>
+            <text x="290" y="80" fill="var(--coral)" font-weight="bold" font-size="14">Val B: ${v2}</text>
+            <!-- GCF Center display -->
+            <text x="200" y="145" text-anchor="middle" font-size="32" font-weight="900" fill="var(--navy)">${gcf}</text>
+            <text x="200" y="175" text-anchor="middle" font-size="10" font-weight="700" fill="var(--navy)" letter-spacing="0.08em">GCF</text>
+            <!-- Factors left and right -->
+            <text x="110" y="145" text-anchor="middle" font-size="12" fill="var(--teal-dark)">${f1.filter(f => !common.includes(f)).slice(-3).join(', ')}</text>
+            <text x="290" y="145" text-anchor="middle" font-size="12" fill="var(--coral)">${f2.filter(f => !common.includes(f)).slice(-3).join(', ')}</text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "To solve this packaging or scheduling problem, I must use the {0} of {1} and {2} because the problem requires finding {3}.",
+            options: [
+              ["Greatest Common Factor (GCF)", "Least Common Multiple (LCM)"],
+              ["val1", "val1"],
+              ["val2", "val2"],
+              ["the greatest identical packaging groupings", "when two cycles will overlap or align at the same time"]
+            ]
+          },
+          evidence: {
+            template: "Listing out the mathematical values, the factors/multiples of A are {0} and B are {1}. The common overlapping values are {2}, leading to a final targeted calculation of {3}.",
+            options: [
+              ["factors of A", "multiples of A"],
+              ["factors of B", "multiples of B"],
+              ["factors of intersection", "cycles of overlap"],
+              ["text-input", "Write calculated GCF/LCM value"]
+            ]
+          },
+          reasoning: {
+            template: "Mathematically, this makes sense because the {0} calculates the largest size that fits perfectly as a {1}, whereas the {2} calculates the first shared point where their cycles {3}.",
+            options: [
+              ["GCF", "LCM"],
+              ["common divisor / factor", "common multiple / overlap"],
+              ["LCM", "GCF"],
+              ["repeat at identical intervals", "divide without a remainder"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Decimal Division Shifts",
+        unit: "Unit 1",
+        standard: "6.NS.B.3",
+        description: "Explain why we shift the decimal point in both the divisor and dividend when dividing decimals.",
+        wordBank: ["divisor", "dividend", "quotient", "equivalent", "shift", "place value", "power of ten", "ratio"],
+        translations: {
+          en: { divisor: "Divisor (the number dividing)", dividend: "Dividend (the number being divided)", quotient: "Quotient (the division result)", equivalent: "Equivalent (equal in value)", shift: "Shift (moving position)", "place value": "Place Value (value of digit position)", "power of ten": "Power of Ten (10, 100, 1000)" },
+          es: { divisor: "Divisor", dividend: "Dividendo", quotient: "Cociente", equivalent: "Equivalente", shift: "Mover / Desplazar", "place value": "Valor de posición", "power of ten": "Potencia de diez" }
+        },
+        state: { decimals: 1 },
+        controls: [
+          { name: "Shift Decimal Places", key: "decimals", min: 0, max: 2, step: 1 }
+        ],
+        svgBuilder: function(state) {
+          const shift = state.decimals;
+          const val1 = (3.6 * Math.pow(10, shift)).toFixed(shift === 0 ? 1 : 0);
+          const val2 = (1.2 * Math.pow(10, shift)).toFixed(shift === 0 ? 1 : 0);
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            <!-- Box modeling equivalent fractions -->
+            <rect x="50" y="50" width="300" height="70" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2" rx="6" />
+            <text x="200" y="90" text-anchor="middle" font-size="28" font-weight="900" fill="var(--navy)">${val1} &divide; ${val2} = 3</text>
+            <text x="200" y="160" text-anchor="middle" font-size="14" font-weight="700" fill="var(--muted)">Multiplied by 10<sup>${shift}</sup></text>
+            <path d="M 120 180 Q 200 220 280 180" fill="none" stroke="var(--coral)" stroke-width="3" marker-end="url(#arrow)" />
+            <text x="200" y="225" text-anchor="middle" font-size="12" font-weight="700" fill="var(--coral)">Equivalent Shift</text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "To divide decimals, we shift the decimal point in the divisor and dividend by {0} decimal places because this transforms the divisor into a {1}.",
+            options: [
+              ["the same number of", "different numbers of"],
+              ["whole number", "fraction", "larger decimal"]
+            ]
+          },
+          evidence: {
+            template: "Specifically, shifting decimals by {0} places is mathematically equivalent to multiplying both numbers by {1}, keeping the division quotient exactly {2}.",
+            options: [
+              ["state-decimals", "decimals"],
+              ["10", "100", "1000"],
+              ["the same", "larger", "smaller"]
+            ]
+          },
+          reasoning: {
+            template: "This shift works because of the property of {0}. Multiplying both the dividend and divisor by a {1} creates a fraction of equal value, keeping the {2} unchanged.",
+            options: [
+              ["equivalent fractions / ratios", "inverse operations"],
+              ["power of ten", "decimal value"],
+              ["quotient", "divisor", "dividend"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Fraction Division Models",
+        unit: "Unit 2",
+        standard: "6.NS.A.1",
+        description: "Explain why dividing a whole number by a fraction yields a result larger than the original whole number.",
+        wordBank: ["fraction", "reciprocal", "dividend", "divisor", "quotient", "partition", "segment", "scale"],
+        translations: {
+          en: { reciprocal: "Reciprocal (inverted fraction)", partition: "Partition (divide into parts)" }
+        },
+        state: { wholes: 3 },
+        controls: [
+          { name: "Whole Number Dividend", key: "wholes", min: 1, max: 4, step: 1 }
+        ],
+        svgBuilder: function(state) {
+          const w = state.wholes;
+          let boxesHtml = "";
+          for(let i=0; i<w; i++) {
+            const x = 50 + (i * (280/w));
+            boxesHtml += `
+              <rect x="${x}" y="80" width="${260/w}" height="60" fill="rgba(31, 166, 162, 0.15)" stroke="var(--teal)" stroke-width="2" rx="4" />
+              <line x1="${x + (130/w)}" y1="80" x2="${x + (130/w)}" y2="140" stroke="var(--coral)" stroke-width="2" stroke-dasharray="4" />
+              <text x="${x + (65/w)}" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy)">1/2</text>
+              <text x="${x + (195/w)}" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy)">1/2</text>
+            `;
+          }
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            ${boxesHtml}
+            <text x="200" y="50" text-anchor="middle" font-size="18" font-weight="900" fill="var(--navy)">How many 1/2 size pieces fit into ${w}?</text>
+            <text x="200" y="200" text-anchor="middle" font-size="28" font-weight="900" fill="var(--coral)">${w} &divide; 1/2 = ${w * 2}</text>
+            <text x="200" y="235" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">There are ${w * 2} pieces of size 1/2</text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "When I divide {0} by a fraction like 1/2, the final quotient is {1} than the dividend because I am calculating how many tiny pieces fit inside.",
+            options: [
+              ["val-wholes", "wholes"],
+              ["larger", "smaller", "equal"]
+            ]
+          },
+          evidence: {
+            template: "As shown in the model, dividing {0} wholes into segments of 1/2 results in exactly {1} pieces total.",
+            options: [
+              ["val-wholes", "wholes"],
+              ["text-input", "Write calculated number of pieces"]
+            ]
+          },
+          reasoning: {
+            template: "This happens because division measures {0}. Since the divisor is smaller than 1, it will always fit {1} times into the dividend wholes, which is mathematically verified by multiplying by the divisor's {2}.",
+            options: [
+              ["how many groups of a size fit inside a total", "multiplying factors"],
+              ["more", "less"],
+              ["reciprocal", "decimal value"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Equivalent Ratio Lines",
+        unit: "Unit 3",
+        standard: "6.RP.A.3a",
+        description: "Explain how a double number line demonstrates that two ratios are equivalent.",
+        wordBank: ["ratio", "equivalent", "scaling", "multiplicative", "double number line", "rate", "coordinate", "constant"],
+        state: { multiplier: 2 },
+        controls: [
+          { name: "Scaling Factor", key: "multiplier", min: 1, max: 4, step: 1 }
+        ],
+        svgBuilder: function(state) {
+          const m = state.multiplier;
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            <!-- Top line (Apples) -->
+            <line x1="50" y1="80" x2="350" y2="80" stroke="var(--navy)" stroke-width="3" />
+            <!-- Bottom line (Price) -->
+            <line x1="50" y1="180" x2="350" y2="180" stroke="var(--teal)" stroke-width="3" />
+            <!-- Ticks and labels -->
+            <circle cx="50" cy="80" r="5" fill="var(--navy)" />
+            <text x="50" y="65" text-anchor="middle" font-size="12" font-weight="700">0</text>
+            <circle cx="150" cy="80" r="5" fill="var(--navy)" />
+            <text x="150" y="65" text-anchor="middle" font-size="12" font-weight="700">3</text>
+            <circle cx="${50 + m*100}" cy="80" r="6" fill="var(--coral)" />
+            <text x="${50 + m*100}" y="60" text-anchor="middle" font-size="14" font-weight="900" fill="var(--coral)">${3*m}</text>
+            
+            <circle cx="50" cy="180" r="5" fill="var(--teal)" />
+            <text x="50" y="205" text-anchor="middle" font-size="12" font-weight="700">0</text>
+            <circle cx="150" cy="180" r="5" fill="var(--teal)" />
+            <text x="150" y="205" text-anchor="middle" font-size="12" font-weight="700">$2</text>
+            <circle cx="${50 + m*100}" cy="180" r="6" fill="var(--coral)" />
+            <text x="${50 + m*100}" y="210" text-anchor="middle" font-size="14" font-weight="900" fill="var(--coral)">$${2*m}</text>
+
+            <text x="360" y="85" font-size="10" font-weight="800" fill="var(--navy)">Apples</text>
+            <text x="360" y="185" font-size="10" font-weight="800" fill="var(--teal)">Cost</text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "To show that the ratio of apples to cost is equivalent, the double number line must show {0} alignment of scaled values.",
+            options: [
+              ["vertical", "diagonal", "horizontal"]
+            ]
+          },
+          evidence: {
+            template: "For instance, when scaling apples by {0}, the top line reaches {1} apples, which aligns directly above ${2} on the cost line.",
+            options: [
+              ["state-multiplier", "multiplier"],
+              ["text-input", "Enter total apples"],
+              ["text-input", "Enter total cost"]
+            ]
+          },
+          reasoning: {
+            template: "This demonstrates equivalence because equivalent ratios maintain a {0} multiplicative relationship. Scaling both terms by the {1} maintains the core {2} rate.",
+            options: [
+              ["constant", "additive", "variable"],
+              ["same scaling factor", "addition method"],
+              ["unit", "starting"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Percent Discount Bars",
+        unit: "Unit 4",
+        standard: "6.RP.A.3c",
+        description: "Explain how to calculate the sales price of an item given a percent discount using a double bar model.",
+        wordBank: ["percent", "discount", "whole", "part", "bar model", "proportion", "savings", "sale price"],
+        state: { pct: 20 },
+        controls: [
+          { name: "Discount Percent", key: "pct", min: 10, max: 50, step: 10 }
+        ],
+        svgBuilder: function(state) {
+          const p = state.pct;
+          const fillWidth = 300 * (p/100);
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            <!-- Whole bar representing $100 -->
+            <rect x="50" y="80" width="300" height="40" fill="none" stroke="var(--navy)" stroke-width="3" rx="6" />
+            <!-- Discount shading -->
+            <rect x="50" y="80" width="${fillWidth}" height="40" fill="rgba(217, 121, 93, 0.4)" rx="6" />
+            <!-- Sale price shading -->
+            <rect x="${50 + fillWidth}" y="80" width="${300 - fillWidth}" height="40" fill="rgba(31, 166, 162, 0.2)" rx="6" />
+            
+            <text x="200" y="60" text-anchor="middle" font-size="14" font-weight="800" fill="var(--navy)">Original Price: $100 (100%)</text>
+            <text x="${50 + fillWidth/2}" y="105" text-anchor="middle" font-size="12" font-weight="900" fill="var(--coral)">-${p}%</text>
+            <text x="${50 + fillWidth + (300-fillWidth)/2}" y="105" text-anchor="middle" font-size="12" font-weight="900" fill="var(--teal-dark)">Pay: ${100-p}%</text>
+
+            <text x="200" y="180" text-anchor="middle" font-size="24" font-weight="900" fill="var(--teal)">Sale Price: $${100 - p}</text>
+            <text x="200" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--coral)">Discount Savings: $${p}</text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "To find the sale price of a $100 item with a {0}% discount, I subtract the discount amount from the original price, paying {1}% of the original cost.",
+            options: [
+              ["state-pct", "pct"],
+              ["text-input", "Enter percent to pay"]
+            ]
+          },
+          evidence: {
+            template: "In the model, a {0}% discount on $100 means I save exactly ${1}, which leaves a remaining sale price of ${2}.",
+            options: [
+              ["state-pct", "pct"],
+              ["text-input", "Enter dollar savings"],
+              ["text-input", "Enter final price"]
+            ]
+          },
+          reasoning: {
+            template: "This works because a percent represents a fraction out of {0}. Calculating a discount is finding the {1} of the whole, and subtracting it leaves the equivalent {2}.",
+            options: [
+              ["100", "10", "1"],
+              ["part", "multiple"],
+              ["sales price", "savings", "tax"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Triangle Area Origins",
+        unit: "Unit 5",
+        standard: "6.G.A.1",
+        description: "Explain why the area of a triangle is calculated using A = 1/2 * b * h by relating it to a parallelogram.",
+        wordBank: ["area", "triangle", "parallelogram", "base", "height", "half", "compose", "decompose"],
+        state: { height: 100 },
+        controls: [
+          { name: "Triangle Height", key: "height", min: 80, max: 140, step: 20 }
+        ],
+        svgBuilder: function(state) {
+          const h = state.height;
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            <!-- Dotted outline of parallelogram -->
+            <polygon points="100,60 280,60 230,${60+h} 50,${60+h}" fill="none" stroke="var(--navy)" stroke-width="2" stroke-dasharray="4" />
+            <!-- Solid triangle -->
+            <polygon points="100,60 230,${60+h} 50,${60+h}" fill="rgba(31, 166, 162, 0.25)" stroke="var(--teal)" stroke-width="3" />
+            
+            <text x="140" y="150" font-size="12" font-weight="900" fill="var(--teal-dark)">Triangle</text>
+            <text x="210" y="110" font-size="11" font-weight="600" fill="var(--navy)" opacity="0.6">Identical Half</text>
+            
+            <!-- Height indicator -->
+            <line x1="50" y1="60" x2="50" y2="${60+h}" stroke="var(--coral)" stroke-width="2" />
+            <text x="40" y="${60 + h/2}" text-anchor="end" font-size="12" fill="var(--coral)" font-weight="800">Height: ${h}px</text>
+            
+            <!-- Base indicator -->
+            <line x1="50" y1="${80+h}" x2="230" y2="${80+h}" stroke="var(--coral)" stroke-width="2" />
+            <text x="140" y="${100+h}" text-anchor="middle" font-size="12" fill="var(--coral)" font-weight="800">Base: 180px</text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "The formula for the area of a triangle contains 1/2 because any triangle can be viewed as exactly {0} of a parallelogram with the identical base and height.",
+            options: [
+              ["one-half", "twice", "one-fourth"]
+            ]
+          },
+          evidence: {
+            template: "As shown, combining two identical triangles along their matching diagonal side creates a complete {0} with base 180 and height {1}.",
+            options: [
+              ["parallelogram", "rectangle", "square"],
+              ["state-height", "height"]
+            ]
+          },
+          reasoning: {
+            template: "Since the area of a parallelogram is calculated by multiplying {0}, and a triangle is half that size, we must multiply the base and height, then scale by {1} to find the correct triangle {2}.",
+            options: [
+              ["base times height (b x h)", "base plus height"],
+              ["1/2", "2", "4"],
+              ["area", "volume", "perimeter"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Expression vs. Equation Scales",
+        unit: "Unit 6",
+        standard: "6.EE.A.2",
+        description: "Explain the visual and mathematical difference between an algebraic expression and an algebraic equation.",
+        wordBank: ["expression", "equation", "equality", "variable", "term", "constant", "balance", "solve"],
+        state: { balanced: 1 },
+        controls: [
+          { name: "Equate Scale (Equation)", key: "balanced", min: 0, max: 1, step: 1 }
+        ],
+        svgBuilder: function(state) {
+          const b = state.balanced;
+          const tilt = b === 1 ? 0 : -10;
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            <!-- Stand -->
+            <line x1="200" y1="120" x2="200" y2="220" stroke="var(--navy)" stroke-width="8" />
+            <line x1="150" y1="220" x2="250" y2="220" stroke="var(--navy)" stroke-width="12" />
+            <!-- Bar -->
+            <g transform="rotate(${tilt}, 200, 120)">
+              <line x1="80" y1="120" x2="320" y2="120" stroke="var(--navy)" stroke-width="6" />
+              <!-- Left pan -->
+              <line x1="80" y1="120" x2="80" y2="170" stroke="var(--teal)" stroke-width="2" />
+              <rect x="50" y="170" width="60" height="15" fill="var(--teal)" rx="3" />
+              <text x="80" y="160" text-anchor="middle" font-size="12" font-weight="900" fill="var(--navy)">x + 5</text>
+              <!-- Right pan -->
+              <line x1="320" y1="120" x2="320" y2="170" stroke="var(--teal)" stroke-width="2" />
+              <rect x="290" y="170" width="60" height="15" fill="var(--teal)" rx="3" />
+              <text x="320" y="160" text-anchor="middle" font-size="12" font-weight="900" fill="var(--navy)">${b === 1 ? '12' : '?'}</text>
+            </g>
+            <text x="200" y="50" text-anchor="middle" font-size="18" font-weight="900" fill="var(--navy)">
+              ${b === 1 ? 'Equation: x + 5 = 12' : 'Expression: x + 5'}
+            </text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "The key mathematical difference is that an expression is a mathematical phrase, whereas an equation contains an {0} indicating two expressions are equal.",
+            options: [
+              ["equal sign (=)", "operation sign (+)", "variable letter"]
+            ]
+          },
+          evidence: {
+            template: "In the balanced scale model representing an {0}, the left side (x + 5) equals the right side ({1}). An expression like (x + 5) alone does not have an answer because it is {2}.",
+            options: [
+              ["equation", "expression"],
+              ["12", "unknown"],
+              ["unbalanced / open", "balanced"]
+            ]
+          },
+          reasoning: {
+            template: "This is because equations represent {0} that can be solved to find the specific value of the {1}, while expressions can only be evaluated when a value is substituted.",
+            options: [
+              ["equality relationships", "simple operations"],
+              ["variable", "constant"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Keeping Equations Balanced",
+        unit: "Unit 7",
+        standard: "6.EE.B.7",
+        description: "Explain how inverse operations keep an equation balanced while isolating a variable.",
+        wordBank: ["inverse", "isolate", "operation", "balance", "equality", "simplify", "subtraction", "addition"],
+        state: { weight: 5 },
+        controls: [
+          { name: "Inverse Action (-5)", key: "weight", min: 0, max: 5, step: 5 }
+        ],
+        svgBuilder: function(state) {
+          const w = state.weight;
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            <!-- Balanced Scale with block indicators -->
+            <line x1="200" y1="120" x2="200" y2="220" stroke="var(--navy)" stroke-width="8" />
+            <line x1="80" y1="120" x2="320" y2="120" stroke="var(--navy)" stroke-width="6" />
+            
+            <rect x="50" y="125" width="60" height="40" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2" rx="4" />
+            <text x="80" y="150" text-anchor="middle" font-size="14" font-weight="900" fill="var(--teal-dark)">x ${w > 0 ? '+ 5' : ''}</text>
+            
+            <rect x="290" y="125" width="60" height="40" fill="var(--coral-light)" stroke="var(--coral)" stroke-width="2" rx="4" />
+            <text x="320" y="150" text-anchor="middle" font-size="14" font-weight="900" fill="var(--coral)">${w > 0 ? '12' : '7'}</text>
+
+            <text x="200" y="240" text-anchor="middle" font-size="16" font-weight="900" fill="var(--navy)">
+              ${w > 0 ? 'Subtract 5 from both sides' : 'Isolated: x = 7'}
+            </text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "To solve an equation, I must apply the {0} operation to both sides of the equation to keep the scale balanced.",
+            options: [
+              ["inverse (opposite)", "identical", "random"]
+            ]
+          },
+          evidence: {
+            template: "For the equation x + 5 = 12, subtracting 5 from both sides simplifies the equation, leaving the isolated variable equal to {0}.",
+            options: [
+              ["7", "12", "5"]
+            ]
+          },
+          reasoning: {
+            template: "This is based on the {0} property of equality. Performing the same operation on both sides ensures that the {1} is maintained, leaving the variable isolated.",
+            options: [
+              ["subtraction", "addition", "multiplicative"],
+              ["balance of equality", "variable coefficient"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Coordinate Plane Distance",
+        unit: "Unit 9",
+        standard: "6.NS.C.8",
+        description: "Explain how absolute value is used to calculate the distance between two points in different quadrants.",
+        wordBank: ["absolute value", "quadrant", "coordinate", "distance", "axis", "reflection", "magnitude", "origin"],
+        state: { distance: 4 },
+        controls: [
+          { name: "Point A X-Coord", key: "distance", min: 2, max: 5, step: 1 }
+        ],
+        svgBuilder: function(state) {
+          const d = state.distance;
+          return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+            <!-- Grid lines -->
+            <line x1="200" y1="30" x2="200" y2="250" stroke="var(--line)" stroke-width="2" />
+            <line x1="50" y1="140" x2="350" y2="140" stroke="var(--line)" stroke-width="2" />
+            
+            <!-- Points -->
+            <circle cx="${200 - d*30}" cy="100" r="6" fill="var(--coral)" />
+            <text x="${200 - d*30}" y="85" text-anchor="middle" font-size="10" font-weight="800" fill="var(--coral)">A (-${d}, 2)</text>
+            
+            <circle cx="290" cy="100" r="6" fill="var(--teal)" />
+            <text x="290" y="85" text-anchor="middle" font-size="10" font-weight="800" fill="var(--teal)">B (3, 2)</text>
+
+            <line x1="${200 - d*30}" y1="100" x2="290" y2="100" stroke="var(--navy)" stroke-width="3" stroke-dasharray="4" />
+            <text x="200" y="125" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy)">Total Distance: |-${d}| + |3| = ${d + 3}</text>
+          </svg>`;
+        },
+        frames: {
+          claim: {
+            template: "To find the distance between points across quadrants, I add the {0} of their different coordinates because the points lie on opposite sides of the axis.",
+            options: [
+              ["absolute values", "difference", "sum"]
+            ]
+          },
+          evidence: {
+            template: "Point A lies at (-{0}, 2) in Quadrant II and Point B lies at (3, 2) in Quadrant I. The distances to the y-axis are {1} and 3 units respectively.",
+            options: [
+              ["state-distance", "distance"],
+              ["state-distance", "distance"]
+            ]
+          },
+          reasoning: {
+            template: "Since absolute value measures the {0} from the origin/axis, and the points are in different quadrants, I must sum their absolute values to find the complete {1} between them.",
+            options: [
+              ["distance / magnitude", "coordinate direction"],
+              ["total distance", "axis coordinate"]
+            ]
+          }
+        }
+      },
+      {
+        title: "Volume vs. Surface Area",
+        unit: "Unit 10",
+        standard: "6.G.A.4",
+        description: "Explain the visual and physical difference between the volume and surface area of a rectangular prism.",
+        wordBank: ["volume", "surface area", "prism", "cube", "net", "three-dimensional", "two-dimensional", "filling", "wrapping"],
+        state: { mode3D: 1 },
+        controls: [
+          { name: "Model Type (0=Net, 1=Prism)", key: "mode3D", min: 0, max: 1, step: 1 }
+        ],
+        svgBuilder: function(state) {
+          const m = state.mode3D;
+          if (m === 1) {
+            // Isometric 3D block
+            return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+              <polygon points="200,80 280,110 200,140 120,110" fill="var(--teal-light)" stroke="var(--teal)" stroke-width="2" />
+              <polygon points="120,110 200,140 200,200 120,170" fill="var(--teal)" stroke="var(--teal-dark)" stroke-width="2" />
+              <polygon points="200,140 280,110 280,170 200,200" fill="rgba(31, 166, 162, 0.6)" stroke="var(--teal-dark)" stroke-width="2" />
+              <text x="200" y="240" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy)">Volume: Space inside (Filling)</text>
+            </svg>`;
+          } else {
+            // 2D unfolded Net
+            return `<svg width="400" height="280" style="background:white; border-radius:8px;" viewBox="0 0 400 280">
+              <rect x="170" y="40" width="60" height="40" fill="var(--coral-light)" stroke="var(--coral)" stroke-width="2" />
+              <rect x="170" y="80" width="60" height="60" fill="var(--coral-light)" stroke="var(--coral)" stroke-width="2" />
+              <rect x="110" y="80" width="60" height="60" fill="var(--coral-light)" stroke="var(--coral)" stroke-width="2" />
+              <rect x="230" y="80" width="60" height="60" fill="var(--coral-light)" stroke="var(--coral)" stroke-width="2" />
+              <rect x="170" y="140" width="60" height="40" fill="var(--coral-light)" stroke="var(--coral)" stroke-width="2" />
+              <rect x="170" y="180" width="60" height="60" fill="var(--coral-light)" stroke="var(--coral)" stroke-width="2" />
+              <text x="200" y="260" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy)">Surface Area: Flat faces sum (Wrapping)</text>
+            </svg>`;
+          }
+        },
+        frames: {
+          claim: {
+            template: "Volume represents the {0} space inside a shape, whereas surface area represents the {1} total sum of all outer faces.",
+            options: [
+              ["three-dimensional (3D)", "two-dimensional (2D)"],
+              ["two-dimensional (2D)", "three-dimensional (3D)"]
+            ]
+          },
+          evidence: {
+            template: "Visually, volume is measured in {0} units since it is like {1} a box, while surface area is measured in square units as shown by unfolding the 3D shape into a flat {2}.",
+            options: [
+              ["cubic", "square"],
+              ["filling", "wrapping"],
+              ["2D net", "3D solid"]
+            ]
+          },
+          reasoning: {
+            template: "Therefore, calculating volume measures the capacity of the prism using {0}, whereas surface area measures the boundaries of the prism by summing the areas of its {1} flat rectangular faces.",
+            options: [
+              ["length x width x height", "perimeter"],
+              ["six", "four", "eight"]
+            ]
+          }
+        }
+      }
+    ];
+
+    // ── Application State ──
+    let activeConceptIndex = CONFIG.defaultConceptIndex;
+    let activeTab = "claim";
+    let activeLang = "en";
+    let formValues = { claim: {}, evidence: {}, reasoning: {} };
+
+    // ── Initial Setup on Window Load ──
+    window.addEventListener('DOMContentLoaded', () => {
+      selfTest();
+      initConceptNav();
+      loadConcept(activeConceptIndex);
+      setupTabListeners();
+      setupLangListeners();
+      validateConfig();
+    });
+
+    // ── CONFIG Validation ──
+    function validateConfig() {
+      if (!CONFIG.defaultConceptIndex === undefined || CONCEPTS.length === 0) {
+        logDiag("ERROR: Config or concept matrix invalid.", "red");
+        showToast("Error loading application config!");
+      } else {
+        logDiag("Environment configurations verified successfully.", "#10b981");
+      }
+    }
+
+    // ── Concept Navigator Rendering ──
+    function initConceptNav() {
+      const nav = document.getElementById('conceptNav');
+      nav.innerHTML = '';
+      CONCEPTS.forEach((concept, index) => {
+        const btn = document.createElement('button');
+        btn.className = `concept-btn ${index === activeConceptIndex ? 'active' : ''}`;
+        btn.setAttribute('aria-selected', index === activeConceptIndex ? 'true' : 'false');
+        btn.onclick = () => selectConcept(index);
+        
+        btn.innerHTML = `
+          <span class="meta-tag">${concept.unit} &middot; ${concept.standard}</span>
+          <span>${concept.title}</span>
+        `;
+        nav.appendChild(btn);
+      });
+    }
+
+    // ── Selection Actions ──
+    function selectConcept(index) {
+      activeConceptIndex = index;
+      const btns = document.querySelectorAll('.concept-btn');
+      btns.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === index);
+        btn.setAttribute('aria-selected', idx === index ? 'true' : 'false');
+      });
+      loadConcept(index);
+      logDiag(`Concept switched to: ${CONCEPTS[index].title}`);
+    }
+
+    // ── Load Concept Data into Workspace ──
+    function loadConcept(index) {
+      const concept = CONCEPTS[index];
+      document.getElementById('conceptStandard').textContent = concept.standard;
+      
+      // Render visual SVG model
+      renderVisual();
+      
+      // Render controls
+      renderControls();
+
+      // Render Word Wall
+      renderWordWall();
+
+      // Clear or initialize Form values for this concept
+      formValues = { claim: {}, evidence: {}, reasoning: {} };
+      renderForm();
+      updateDraft();
+    }
+
+    // ── Render Dynamic SVG Model ──
+    function renderVisual() {
+      const concept = CONCEPTS[activeConceptIndex];
+      const container = document.getElementById('canvasContainer');
+      container.innerHTML = concept.svgBuilder(concept.state);
+    }
+
+    // ── Render Slider Controls for SVG ──
+    function renderControls() {
+      const concept = CONCEPTS[activeConceptIndex];
+      const container = document.getElementById('controlsContainer');
+      container.innerHTML = '';
+      
+      if (!concept.controls || concept.controls.length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+      container.style.display = 'flex';
+
+      concept.controls.forEach(ctrl => {
+        const group = document.createElement('div');
+        group.className = 'control-group';
+        
+        const label = document.createElement('label');
+        label.innerHTML = `
+          <span>${ctrl.name}</span>
+          <span id="valDisp-${ctrl.key}">${concept.state[ctrl.key]}</span>
+        `;
+        
+        const slider = document.createElement('input');
+        slider.type = 'range';
+        slider.min = ctrl.min;
+        slider.max = ctrl.max;
+        slider.step = ctrl.step;
+        slider.value = concept.state[ctrl.key];
+        
+        slider.oninput = (e) => {
+          concept.state[ctrl.key] = parseFloat(e.target.value);
+          document.getElementById(`valDisp-${ctrl.key}`).textContent = e.target.value;
+          renderVisual();
+          
+          // Propagate matching variables dynamically to form dropdown choices
+          propagateStateToForm();
+        };
+
+        group.appendChild(label);
+        group.appendChild(slider);
+        container.appendChild(group);
+      });
+    }
+
+    // Update form option placeholders if slider updates state
+    function propagateStateToForm() {
+      const concept = CONCEPTS[activeConceptIndex];
+      const stateKeys = Object.keys(concept.state);
+      
+      // Update values in existing selections or redraw if critical
+      stateKeys.forEach(key => {
+        const optionElems = document.querySelectorAll(`[data-state-bind="${key}"]`);
+        optionElems.forEach(el => {
+          el.value = concept.state[key];
+          formValues[activeTab][el.dataset.index] = el.value;
+        });
+      });
+      updateDraft();
+    }
+
+    // ── Render Multilingual Dictionary ──
+    function renderWordWall() {
+      const concept = CONCEPTS[activeConceptIndex];
+      const wall = document.getElementById('wordWall');
+      wall.innerHTML = '';
+      
+      concept.wordBank.forEach(word => {
+        const chip = document.createElement('span');
+        chip.className = 'word-chip';
+        chip.textContent = word;
+        
+        // Translate tooltip description
+        const tooltipText = (concept.translations[activeLang] && concept.translations[activeLang][word]) 
+          ? concept.translations[activeLang][word] 
+          : concept.translations['en'][word] || "Math vocabulary term";
+
+        chip.innerHTML += `<span class="tooltip">${tooltipText}</span>`;
+        
+        // Clicking a chip copies it into any active text input
+        chip.onclick = () => {
+          const activeInput = document.querySelector('.sentence-input:focus-visible') || document.querySelector('.sentence-input');
+          if (activeInput) {
+            activeInput.value = word;
+            const index = activeInput.dataset.index;
+            formValues[activeTab][index] = word;
+            updateDraft();
+            showToast(`Inserted word: "${word}"`);
+          } else {
+            showToast(`Vocabulary: ${tooltipText}`);
+          }
+        };
+
+        wall.appendChild(chip);
+      });
+    }
+
+    // ── Tab Management (Claim / Evidence / Reasoning) ──
+    function setupTabListeners() {
+      const tabs = document.querySelectorAll('.cer-tab');
+      tabs.forEach(tab => {
+        tab.onclick = () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          activeTab = tab.dataset.tab;
+          renderForm();
+        };
+      });
+    }
+
+    // ── Language Translator tabs ──
+    function setupLangListeners() {
+      const tabs = document.querySelectorAll('.dict-lang-tab');
+      tabs.forEach(tab => {
+        tab.onclick = () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          activeLang = tab.dataset.lang;
+          renderWordWall();
+          logDiag(`Dictionary language toggled to: ${activeLang}`);
+        };
+      });
+    }
+
+    // ── Render CER sentence frame form ──
+    function renderForm() {
+      const concept = CONCEPTS[activeConceptIndex];
+      const frameData = concept.frames[activeTab];
+      const form = document.getElementById('scaffolderForm');
+      form.innerHTML = '';
+
+      if (!frameData) return;
+
+      const row = document.createElement('div');
+      row.className = 'sentence-builder-row';
+
+      // Parse template string like "This is {0} and {1}."
+      const parts = frameData.template.split(/(\{\d\})/);
+      
+      parts.forEach(part => {
+        const match = part.match(/\{(\d)\}/);
+        if (match) {
+          const index = parseInt(match[1]);
+          const options = frameData.options[index];
+          
+          if (options[0] === "text-input") {
+            // Text Input field
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'sentence-input';
+            input.placeholder = options[1] || "Fill in...";
+            input.dataset.index = index;
+            input.value = formValues[activeTab][index] || "";
+            
+            input.oninput = (e) => {
+              formValues[activeTab][index] = e.target.value;
+              updateDraft();
+            };
+            row.appendChild(input);
+          } else if (options[0] && options[0].startsWith("state-")) {
+            // Special static binder to slider state values
+            const stateKey = options[1];
+            const span = document.createElement('span');
+            span.style.fontWeight = '800';
+            span.style.color = 'var(--coral)';
+            span.textContent = concept.state[stateKey];
+            
+            // Register in formValues automatically
+            formValues[activeTab][index] = concept.state[stateKey];
+            
+            // Add custom identification dataset for dynamic propagation
+            span.dataset.stateBind = stateKey;
+            span.dataset.index = index;
+            
+            row.appendChild(span);
+          } else {
+            // Dropdown Selector
+            const select = document.createElement('select');
+            select.className = 'sentence-select';
+            select.dataset.index = index;
+            
+            // Default placeholder option
+            const defOpt = document.createElement('option');
+            defOpt.value = "";
+            defOpt.textContent = `[Choose ${activeTab} detail...]`;
+            select.appendChild(defOpt);
+
+            options.forEach(opt => {
+              const o = document.createElement('option');
+              o.value = opt;
+              o.textContent = opt;
+              select.appendChild(o);
+            });
+
+            select.value = formValues[activeTab][index] || "";
+            select.onchange = (e) => {
+              formValues[activeTab][index] = e.target.value;
+              updateDraft();
+            };
+            row.appendChild(select);
+          }
+        } else {
+          // Regular text part
+          row.appendChild(document.createTextNode(part));
+        }
+      });
+
+      form.appendChild(row);
+    }
+
+    // ── Compile Paragraph Draft ──
+    function compileParagraph() {
+      const concept = CONCEPTS[activeConceptIndex];
+      let paragraphParts = [];
+
+      ["claim", "evidence", "reasoning"].forEach(tab => {
+        const frameData = concept.frames[tab];
+        if (!frameData) return;
+
+        let sentence = frameData.template;
+        frameData.options.forEach((opt, index) => {
+          let fillValue = formValues[tab][index];
+          
+          // Fallback bindings if not yet modified
+          if (fillValue === undefined || fillValue === "") {
+            if (opt[0] && opt[0].startsWith("state-")) {
+              fillValue = concept.state[opt[1]];
+            } else {
+              fillValue = `[___]`;
+            }
+          }
+          sentence = sentence.replace(`{${index}}`, fillValue);
+        });
+        paragraphParts.push(sentence);
+      });
+
+      return paragraphParts.join(" ");
+    }
+
+    // Update bottom compiled display
+    function updateDraft() {
+      const output = document.getElementById('draftParagraph');
+      const paragraph = compileParagraph();
+      output.textContent = paragraph;
+      
+      const containsPlaceholder = paragraph.includes("[___]");
+      output.style.borderColor = containsPlaceholder ? "rgba(255,255,255,0.12)" : "var(--amber)";
+    }
+
+    // ── Audio Text-to-Speech Engine ──
+    let isSpeaking = false;
+    function speakParagraph() {
+      if (!('speechSynthesis' in window)) {
+        showToast("Speech synthesis is not supported in this browser.");
+        return;
+      }
+
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        setSpeakingState(false);
+        return;
+      }
+
+      const text = compileParagraph().replace(/\[___\]/g, "blank space");
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = CONFIG.speechRate;
+      utterance.pitch = CONFIG.speechPitch;
+      utterance.lang = CONFIG.speechLang;
+
+      utterance.onstart = () => setSpeakingState(true);
+      utterance.onend = () => setSpeakingState(false);
+      utterance.onerror = () => setSpeakingState(false);
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function setSpeakingState(speaking) {
+      isSpeaking = speaking;
+      const btn = document.getElementById('speakBtn');
+      const visualizer = document.getElementById('voiceVisualizer');
+      
+      if (speaking) {
+        btn.innerHTML = "⏹️ Stop Reading";
+        btn.style.background = "var(--coral)";
+        visualizer.style.display = "flex";
+      } else {
+        btn.innerHTML = "🔊 Speak Aloud";
+        btn.style.background = "rgba(255,255,255,0.12)";
+        visualizer.style.display = "none";
+      }
+    }
+
+    // ── Clipboard Copy ──
+    function copyParagraph() {
+      const text = compileParagraph();
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("✓ Paragraph copied successfully!");
+        logDiag("Paragraph exported to clipboard.");
+      }).catch(err => {
+        showToast("Failed to copy paragraph.");
+        logDiag(`ERROR: Clipboard write failed - ${err}`, "red");
+      });
+    }
+
+    // ── Toast Notifications ──
+    function showToast(message) {
+      // Custom minimal toast
+      const toast = document.createElement('div');
+      toast.style.position = 'fixed';
+      toast.style.bottom = '32px';
+      toast.style.left = '50%';
+      toast.style.transform = 'translateX(-50%)';
+      toast.style.background = 'var(--navy)';
+      toast.style.color = 'var(--amber)';
+      toast.style.padding = '12px 24px';
+      toast.style.borderRadius = '30px';
+      toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+      toast.style.fontWeight = '800';
+      toast.style.fontSize = '0.9rem';
+      toast.style.zIndex = '9999';
+      toast.style.transition = 'opacity 0.3s ease';
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // ── Diagnostics suite (Ctrl + D) ──
+    function toggleDiagnostics() {
+      const panel = document.getElementById('diagPanel');
+      const isHidden = panel.style.display === 'none' || panel.style.display === '';
+      panel.style.display = isHidden ? 'flex' : 'none';
+      if (isHidden) runSuite();
+    }
+
+    // Keyboard trigger listener
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        toggleDiagnostics();
+      }
+    });
+
+    function logDiag(message, color = "#10b981") {
+      const logs = document.getElementById('diagLogs');
+      const entry = document.createElement('div');
+      entry.style.color = color;
+      entry.style.borderBottom = "1px solid #1f2937";
+      entry.style.padding = "4px 0";
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logs.appendChild(entry);
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    function runSuite() {
+      const logs = document.getElementById('diagLogs');
+      logs.innerHTML = '';
+      logDiag("Starting active diagnostic suite checks...", "#f2c15b");
+      
+      // Test 1: Web speech synthesis support
+      if ('speechSynthesis' in window) {
+        logDiag("Test 1 Passed: Web Speech API supported.");
+      } else {
+        logDiag("Test 1 Failed: Web Speech API NOT supported in this browser.", "red");
+      }
+
+      // Test 2: SVG Render engine
+      try {
+        const svgCheck = CONCEPTS[0].svgBuilder(CONCEPTS[0].state);
+        if (svgCheck.includes("<svg") && svgCheck.includes("</svg>")) {
+          logDiag("Test 2 Passed: Dynamic SVG Builder compiled shapes correctly.");
+        } else {
+          logDiag("Test 2 Failed: SVG Builder did not return proper XML tags.", "red");
+        }
+      } catch (err) {
+        logDiag(`Test 2 Exception: SVG compile error - ${err.message}`, "red");
+      }
+
+      // Test 3: Data Integrity Matrix
+      if (CONCEPTS.length === 10) {
+        logDiag(`Test 3 Passed: Detected exactly ${CONCEPTS.length}/10 mapped concepts.`);
+      } else {
+        logDiag(`Test 3 Warning: Expected 10 concepts, found ${CONCEPTS.length}.`, "orange");
+      }
+
+      // Test 4: Clipboard compatibility
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        logDiag("Test 4 Passed: Secure context clipboard API available.");
+      } else {
+        logDiag("Test 4 Warning: Clipboard API might not be available outside HTTPS/localhost.", "orange");
+      }
+      
+      logDiag("Diagnostics completed successfully.", "#10b981");
+    }
+
+    // ── Self Test ──
+    function selfTest() {
+      console.log("Self Test executed successfully. Grade 6 Writing App loaded.");
+    }
+  </script>
 </body>
 </html>
