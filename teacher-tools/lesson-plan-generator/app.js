@@ -811,9 +811,22 @@
       `<h2 class="lp-sec">${escapeHtml(title)}</h2>${inner}`;
 
     // Header
+    const gradeCourse = (() => {
+      const g = (plan.grade || "").trim();
+      const c = (plan.course || "").trim();
+      if (g && c) {
+        // Avoid redundancy like "Grade 6 · Grade 6 Mathematics"
+        if (c.toLowerCase().includes(g.toLowerCase()))
+          return markInferred(plan.course);
+        if (g.toLowerCase().includes(c.toLowerCase()))
+          return markInferred(plan.grade);
+        return `${markInferred(plan.grade)} &middot; ${markInferred(plan.course)}`;
+      }
+      return markInferred(plan.grade || plan.course || null);
+    })();
     const subBits = [
       plan.date ? `Date: ${markInferred(plan.date)}` : "",
-      `${markInferred(plan.grade)} &middot; ${markInferred(plan.course)}`,
+      gradeCourse,
       plan.session ? `Session ${escapeHtml(plan.session)}` : "",
     ].filter(Boolean);
     rows.push(
