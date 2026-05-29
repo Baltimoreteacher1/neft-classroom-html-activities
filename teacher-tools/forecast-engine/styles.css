@@ -295,6 +295,17 @@ a:focus-visible {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.86rem;
 }
+.field.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+.field.checkbox-field input {
+  width: auto;
+}
 .table-wrap {
   overflow: auto;
   border: 1px solid var(--line);
@@ -625,5 +636,19 @@ input[type="range"] {
     border: 0;
     padding: 0;
     background: none;
+  }
+}
+
+/* Respect users who prefer reduced motion: neutralize non-essential
+   transitions and animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
   }
 }

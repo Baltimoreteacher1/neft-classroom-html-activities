@@ -63,6 +63,24 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
 @media print{
   @page{size:letter;margin:0.75in;}
   body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
@@ -78,6 +96,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
   .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
 }
 </style>
 </head>
@@ -89,62 +111,64 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 <main class="sheet">
   <header class="packet">
     <p class="eyebrow">Unit 8 · Standard 6.SP.3</p>
-    <h1>Mean, Median, and Mode</h1>
+    <h1>Mean, Median, and Mode </h1>
     <p class="meta">Lesson 8-2</p>
     <div class="name-line">
       <span>Name:</span><span>Date:</span><span>Class:</span>
     </div>
   </header>
+  
   <section class="section vocab">
-  <h2>Vocabulary</h2>
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
   <div class="vocab-grid">
 <div class="vocab-card">
-  <h3 class="vocab-term">Mean</h3>
-  <p class="vocab-def">The sum of all values divided by the number of values (average)</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/mean.svg" alt="The sum of all values divided by the number of values (average)" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/mean.svg" alt="Illustration of Mean: The sum of all values divided by the number of values (average)" onerror="this.style.display='none'" />
     <p class="vocab-caption">Mean of 2, 4, 6: add them (2+4+6=12), divide by 3 → mean = 4</p>
   </div>
+  <h3 class="vocab-term">Mean</h3>
+  <p class="vocab-def">The sum of all values divided by the number of values (average)</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Median</h3>
-  <p class="vocab-def">The middle value when data is ordered from least to greatest</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/median.svg" alt="The middle value when data is ordered from least to greatest" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/median.svg" alt="Illustration of Median: The middle value when data is ordered from least to greatest" onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 1, 3, 5, 7, 9 → the middle (3rd) value is 5, so median = 5</p>
   </div>
+  <h3 class="vocab-term">Median</h3>
+  <p class="vocab-def">The middle value when data is ordered from least to greatest</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Mode</h3>
-  <p class="vocab-def">The value that appears most often in a data set</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/mode.svg" alt="The value that appears most often in a data set" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/mode.svg" alt="Illustration of Mode: The value that appears most often in a data set" onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 2, 3, 3, 5, 7 → 3 appears twice (most often), so mode = 3</p>
   </div>
+  <h3 class="vocab-term">Mode</h3>
+  <p class="vocab-def">The value that appears most often in a data set</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Outlier</h3>
-  <p class="vocab-def">A data value that is much greater or less than most other values</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/outlier.svg" alt="A data value that is much greater or less than most other values" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/box-plot.svg" alt="Illustration of Outlier: A data value that is much greater or less than most other values" onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 10, 12, 11, 13, 50 → 50 is far from the others, so 50 is an outlier</p>
   </div>
+  <h3 class="vocab-term">Outlier</h3>
+  <p class="vocab-def">A data value that is much greater or less than most other values</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Data distribution</h3>
-  <p class="vocab-def">The shape and spread of a data set</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/data-distribution.svg" alt="The shape and spread of a data set" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Data distribution: The shape and spread of a data set" onerror="this.style.display='none'" />
     <p class="vocab-caption">If most values cluster in the center with fewer at the ends, the distribution is symmetric</p>
   </div>
+  <h3 class="vocab-term">Data distribution</h3>
+  <p class="vocab-def">The shape and spread of a data set</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Variability</h3>
-  <p class="vocab-def">How spread out the values in a data set are</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/variability.svg" alt="How spread out the values in a data set are" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the values in a data set are" onerror="this.style.display='none'" />
     <p class="vocab-caption">8, 9, 10, 11 has low variability (close together); 2, 10, 25, 40 has high variability (far apart)</p>
   </div>
+  <h3 class="vocab-term">Variability</h3>
+  <p class="vocab-def">How spread out the values in a data set are</p>
 </div>
   </div>
 </section>
@@ -194,6 +218,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <ol class="try-choices" type="A"><li>7</li><li>6</li><li>8</li><li>7.67</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">A basketball player scored 15, 18, 16, 42, and 14 points in 5 games. Find the mean and median. Which better represents the player's typical game? Explain how the outlier affects each measure.</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Mean = ___. Median = ___. The ___ better represents a typical game because the outlier (___) pulls the ___ toward it, making it ___ than most scores. The median is not affected because ___.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>

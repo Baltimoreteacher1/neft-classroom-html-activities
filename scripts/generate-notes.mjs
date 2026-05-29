@@ -1,6 +1,10 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import {
+  resolveVocabImage,
+  vocabImageAlt,
+} from "../engine/core/vocab-images.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -24,18 +28,35 @@ const blankLines = (n) =>
 
 const choiceLetter = (i) => String.fromCharCode(65 + i);
 
+// Matches core lessons ("3-2") and flagship lessons ("3-2-flagship").
+const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
+
 function lessonConfigs() {
   return readdirSync(lessonsDir)
-    .filter((d) => /^\d+-\d+$/.test(d))
+    .filter((d) => LESSON_DIR_RE.test(d))
     .filter((d) => existsSync(join(lessonsDir, d, "config.json")))
-    .map((id) => ({
-      id,
-      cfg: JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8")),
-    }))
+    .map((id) => {
+      const cfg = JSON.parse(
+        readFileSync(join(lessonsDir, id, "config.json"), "utf8")
+      );
+      // A lesson is "flagship" if the dir is suffixed OR the config carries a
+      // flagship block (mission/scenes/finale). Both are handled gracefully.
+      const isFlagship = id.endsWith("-flagship") || cfg.flagship != null;
+      return { id, cfg, isFlagship };
+    })
     .sort((a, b) => {
-      const [au, al] = a.id.split("-").map(Number);
-      const [bu, bl] = b.id.split("-").map(Number);
-      return au - bu || al - bl;
+      const ma = a.id.match(LESSON_DIR_RE);
+      const mb = b.id.match(LESSON_DIR_RE);
+      const au = Number(ma[1]);
+      const al = Number(ma[2]);
+      const bu = Number(mb[1]);
+      const bl = Number(mb[2]);
+      // Order by unit, then lesson, then core before flagship.
+      return (
+        au - bu ||
+        al - bl ||
+        (a.id.endsWith("-flagship") ? 1 : 0) - (b.id.endsWith("-flagship") ? 1 : 0)
+      );
     });
 }
 
@@ -45,19 +66,21 @@ function vocabSection(vocab = []) {
   if (!vocab.length) return "";
   const cards = vocab
     .map((v) => {
-      const s = slug(v.term);
+      const imgSrc = resolveVocabImage(v.term);
+      const imgAlt = vocabImageAlt(v.term, v.definition);
       return `<div class="vocab-card">
-  <h3 class="vocab-term">${esc(v.term)}</h3>
-  <p class="vocab-def">${esc(v.definition)}</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/${s}.svg" alt="${esc(v.definition)}" onerror="this.style.display='none'" />
+    <img src="${imgSrc}" alt="${esc(imgAlt)}" onerror="this.style.display='none'" />
     <p class="vocab-caption">${esc(v.visual)}</p>
   </div>
+  <h3 class="vocab-term">${esc(v.term)}</h3>
+  <p class="vocab-def">${esc(v.definition)}</p>
 </div>`;
     })
     .join("\n");
   return `<section class="section vocab">
-  <h2>Vocabulary</h2>
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
   <div class="vocab-grid">
 ${cards}
   </div>
@@ -160,31 +183,77 @@ function examplesSection(practice = {}) {
 </section>`;
 }
 
+function tryItProblem(it, i) {
+  let choiceHtml = "";
+  if (Array.isArray(it.choices)) {
+    choiceHtml = `<ol class="try-choices" type="A">${it.choices
+      .map((c) => `<li>${esc(c)}</li>`)
+      .join("")}</ol>`;
+  }
+  return `<div class="tryit">
+  <p class="tryit-num">${i + 1}. ${esc(it.stem)}</p>
+  ${choiceHtml}
+  <div class="work-space"><span class="ws-label">Show your work:</span>${blankLines(3)}</div>
+</div>`;
+}
+
 function tryItSection(practice = {}) {
   const items = gatherPractice(practice).filter((it) => it.stem);
   // Pick a couple that were not necessarily used above; take from middle/end.
   const picks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
   if (!picks.length) return "";
-  const probs = picks
-    .map((it, i) => {
-      let choiceHtml = "";
-      if (Array.isArray(it.choices)) {
-        choiceHtml = `<ol class="try-choices" type="A">${it.choices
-          .map((c) => `<li>${esc(c)}</li>`)
-          .join("")}</ol>`;
-      }
-      return `<div class="tryit">
-  <p class="tryit-num">${i + 1}. ${esc(it.stem)}</p>
-  ${choiceHtml}
-  <div class="work-space"><span class="ws-label">Show your work:</span>${blankLines(3)}</div>
-</div>`;
-    })
-    .join("\n");
+  const probs = picks.map((it, i) => tryItProblem(it, i)).join("\n");
+
   return `<section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   ${probs}
+  ${enrichSection(practice, new Set(picks.map((p) => p.stem)))}
 </section>`;
+}
+
+// Level 2 enrichment: pull a harder challenge from the "extending" practice
+// items. Prefers an open-response prompt (with a sentence frame), then an
+// item with a stem, then an error-analysis to investigate. Always renders
+// something when extending content exists so every sheet shows Level 2.
+function enrichSection(practice = {}, usedStems = new Set()) {
+  const ext = practice.extending || [];
+  if (!ext.length) return "";
+
+  let promptHtml = "";
+  let frameHtml = "";
+  let choiceHtml = "";
+
+  const open = ext.find((it) => it.type === "open-response" && it.prompt);
+  const stemItem = ext.find((it) => it.stem && !usedStems.has(it.stem));
+  const errItem = ext.find((it) => it.type === "error-analysis");
+
+  if (open) {
+    promptHtml = `<p class="tryit-num">${esc(open.prompt)}</p>`;
+    if (open.sentenceFrame) {
+      frameHtml = `<p class="sentence-frame"><span class="ws-label">Sentence starter:</span> ${esc(open.sentenceFrame)}</p>`;
+    }
+  } else if (stemItem) {
+    promptHtml = `<p class="tryit-num">${esc(stemItem.stem)}</p>`;
+    if (Array.isArray(stemItem.choices)) {
+      choiceHtml = `<ol class="try-choices" type="A">${stemItem.choices
+        .map((c) => `<li>${esc(c)}</li>`)
+        .join("")}</ol>`;
+    }
+  } else if (errItem) {
+    promptHtml = `<p class="tryit-num">${esc(errItem.title || "Find and fix the mistake")} — find the error, then write the correct reasoning.</p>`;
+  } else {
+    return "";
+  }
+
+  return `<div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    ${promptHtml}
+    ${choiceHtml}
+    ${frameHtml}
+    <div class="work-space"><span class="ws-label">Show your work:</span>${blankLines(4)}</div>
+  </div>`;
 }
 
 function reflectSection(reflect = {}) {
@@ -306,6 +375,24 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
 @media print{
   @page{size:letter;margin:0.75in;}
   body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
@@ -321,13 +408,30 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
   .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
 }
 </style>`;
 }
 
-function buildPacket(id, cfg) {
+function missionBanner(cfg) {
+  const m = cfg.flagship && cfg.flagship.mission;
+  if (!m) return "";
+  return `<section class="section mission">
+  <p class="mission-eyebrow">${esc(m.eyebrow || "Flagship Mission")}</p>
+  <h2 class="mission-title">${esc(m.title || "")}</h2>
+  ${m.story ? `<p class="mission-story">${esc(m.story)}</p>` : ""}
+</section>`;
+}
+
+function buildPacket(id, cfg, isFlagship) {
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
+  const flagBadge = isFlagship
+    ? `<span class="flagship-badge">Flagship</span>`
+    : "";
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -344,12 +448,13 @@ ${styles()}
 <main class="sheet">
   <header class="packet">
     <p class="eyebrow">${[unit, standard].filter(Boolean).join(" · ")}</p>
-    <h1>${esc(cfg.title)}</h1>
+    <h1>${esc(cfg.title)} ${flagBadge}</h1>
     <p class="meta">Lesson ${esc(id)}</p>
     <div class="name-line">
       <span>Name:</span><span>Date:</span><span>Class:</span>
     </div>
   </header>
+  ${missionBanner(cfg)}
   ${vocabSection(cfg.vocabulary)}
   ${notesSection(cfg.launch, cfg.explore)}
   ${examplesSection(cfg.practice)}
@@ -363,11 +468,13 @@ ${styles()}
 }
 
 function buildIndex(lessons) {
+  const flagshipTotal = lessons.filter((l) => l.isFlagship).length;
+  const coreTotal = lessons.length - flagshipTotal;
   const byUnit = new Map();
-  for (const { id, cfg } of lessons) {
+  for (const { id, cfg, isFlagship } of lessons) {
     const u = cfg.unit ?? id.split("-")[0];
     if (!byUnit.has(u)) byUnit.set(u, []);
-    byUnit.get(u).push({ id, cfg });
+    byUnit.get(u).push({ id, cfg, isFlagship });
   }
   const units = [...byUnit.keys()].sort((a, b) => Number(a) - Number(b));
   const groups = units
@@ -375,8 +482,12 @@ function buildIndex(lessons) {
       const items = byUnit
         .get(u)
         .map(
-          ({ id, cfg }) =>
+          ({ id, cfg, isFlagship }) =>
             `<li><a href="/lessons/${id}/notes.html">${esc(id)} — ${esc(cfg.title)}</a>${
+              isFlagship
+                ? ` <span class="tag tag-flagship">Flagship</span>`
+                : ` <span class="tag tag-core">Core</span>`
+            }${
               cfg.standard ? ` <span class="std">${esc(cfg.standard)}</span>` : ""
             }</li>`
         )
@@ -405,12 +516,18 @@ h1{font-family:Outfit,system-ui,sans-serif;color:#12355b;}
 a{color:#12355b;text-decoration:none;font-weight:600;}
 a:hover{text-decoration:underline;}
 .std{color:#5f6f80;font-weight:400;font-size:13px;margin-left:6px;}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle;}
+.tag-core{background:#dff2ee;color:#1fa6a2;border:1px solid #1fa6a2;}
+.tag-flagship{background:#fef0d8;color:#9a6b12;border:1px solid #f2c15b;}
+.legend{color:#5f6f80;font-size:14px;margin:0 0 20px;}
+.legend .tag{margin-left:0;margin-right:4px;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Notes Packets</h1>
-  <p>Printable notes packets for all ${lessons.length} Grade 6 math lessons.</p>
+  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons (${coreTotal} core + ${flagshipTotal} flagship). Each sheet includes a <strong>Key Vocabulary — Level 1 support</strong> section (visual-first) and a <strong>Level 2 enrichment</strong> stretch challenge.</p>
+  <p class="legend"><span class="tag tag-core">Core</span> standard lesson &nbsp; <span class="tag tag-flagship">Flagship</span> mission-based lesson</p>
   ${groups}
 </div>
 </body>
@@ -422,13 +539,17 @@ a:hover{text-decoration:underline;}
 function main() {
   const lessons = lessonConfigs();
   let count = 0;
-  for (const { id, cfg } of lessons) {
+  let flagshipCount = 0;
+  for (const { id, cfg, isFlagship } of lessons) {
     const out = join(lessonsDir, id, "notes.html");
-    writeFileSync(out, buildPacket(id, cfg));
+    writeFileSync(out, buildPacket(id, cfg, isFlagship));
     count++;
+    if (isFlagship) flagshipCount++;
   }
   writeFileSync(join(lessonsDir, "notes-index.html"), buildIndex(lessons));
-  console.log(`Generated ${count} notes packets + notes-index.html`);
+  console.log(
+    `Generated ${count} notes packets (${count - flagshipCount} core + ${flagshipCount} flagship) + notes-index.html`
+  );
 }
 
 main();

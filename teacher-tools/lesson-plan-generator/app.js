@@ -827,30 +827,42 @@
     let html = "";
 
     if (settings.mode === "api" && settings.apiUrl.trim()) {
-      status.innerHTML =
-        '<span class="badge info">Contacting AI endpoint…</span>';
+      const apiUrl = settings.apiUrl.trim();
+      let parsedUrl;
       try {
-        const res = await fetch(settings.apiUrl.trim(), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ inputs: m }),
-        });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        if (data && (data.html || data.markdown)) {
-          html = data.html || "<pre>" + esc(data.markdown) + "</pre>";
-          lastMarkdown = data.markdown || renderPlanMarkdown(m);
-          out.innerHTML = html;
-          status.innerHTML =
-            '<span class="badge ok">Generated via AI endpoint.</span>';
-          return;
-        }
-        throw new Error("Endpoint returned no html/markdown");
-      } catch (e) {
+        parsedUrl = new URL(apiUrl);
+      } catch (_) {
+        parsedUrl = null;
+      }
+      if (!parsedUrl || parsedUrl.protocol !== "https:") {
         status.innerHTML =
-          '<span class="badge warn">AI endpoint unavailable (' +
-          esc(e.message) +
-          "). Fell back to local generation.</span> ";
+          '<span class="badge warn">AI endpoint must be a valid https:// URL — using local generation.</span>';
+        // fall through to local generation below
+      } else {
+        status.innerHTML = `<span class="badge info">Contacting AI endpoint (${esc(parsedUrl.origin)})…</span>`;
+        try {
+          const res = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ inputs: m }),
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+          if (data && (data.html || data.markdown)) {
+            html = data.html || "<pre>" + esc(data.markdown) + "</pre>";
+            lastMarkdown = data.markdown || renderPlanMarkdown(m);
+            out.innerHTML = html;
+            status.innerHTML =
+              '<span class="badge ok">Generated via AI endpoint.</span>';
+            return;
+          }
+          throw new Error("Endpoint returned no html/markdown");
+        } catch (e) {
+          status.innerHTML =
+            '<span class="badge warn">AI endpoint unavailable (' +
+            esc(e.message) +
+            "). Fell back to local generation.</span> ";
+        }
       }
     }
 

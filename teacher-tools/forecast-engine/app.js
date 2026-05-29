@@ -380,6 +380,8 @@
       const on = button.dataset.tab === next;
       button.classList.toggle("active", on);
       button.setAttribute("aria-selected", on ? "true" : "false");
+      // Roving tabindex: only the active tab is in the tab order.
+      button.setAttribute("tabindex", on ? "0" : "-1");
     });
     $("#pageTitle").textContent = TABS[next][0];
     $("#pageSubtitle").textContent = TABS[next][1];
@@ -420,7 +422,10 @@
   function syncThresholdUI() {
     const slider = $("#groupThreshold"),
       label = $("#groupThresholdValue");
-    if (slider) slider.value = String(getThreshold());
+    if (slider) {
+      slider.value = String(getThreshold());
+      slider.setAttribute("aria-valuetext", getThreshold() + " percent");
+    }
     if (label) label.textContent = String(getThreshold());
   }
 
@@ -471,21 +476,23 @@
 
   function renderSetupTables() {
     $("#studentTable").innerHTML =
-      "<tr><th>ID</th><th>Name</th><th>Tags</th><th>Avg</th></tr>" +
+      '<caption>Students in this class</caption><thead><tr><th scope="col">ID</th><th scope="col">Name</th><th scope="col">Tags</th><th scope="col">Avg</th></tr></thead><tbody>' +
       State.current.students
         .map(
           (student) =>
             `<tr><td>${escapeHtml(student.id)}</td><td>${escapeHtml(student.name)}</td><td>${escapeHtml(student.tags || "")}</td><td>${bound(average(rowsFor(student.id).map((row) => row.pct)))}%</td></tr>`,
         )
-        .join("");
+        .join("") +
+      "</tbody>";
     $("#standardTable").innerHTML =
-      "<tr><th>Code</th><th>Description</th></tr>" +
+      '<caption>Standards for this class</caption><thead><tr><th scope="col">Code</th><th scope="col">Description</th></tr></thead><tbody>' +
       State.current.standards
         .map(
           (standard) =>
             `<tr><td>${escapeHtml(standard.code)}</td><td>${escapeHtml(standard.desc)}</td></tr>`,
         )
-        .join("");
+        .join("") +
+      "</tbody>";
   }
 
   function renderSelectors() {
@@ -546,32 +553,34 @@
 
   function renderEvidenceTable() {
     $("#evidenceTable").innerHTML =
-      "<tr><th>Date</th><th>Student</th><th>Standard</th><th>Assessment</th><th>Score</th></tr>" +
+      '<caption>Evidence records</caption><thead><tr><th scope="col">Date</th><th scope="col">Student</th><th scope="col">Standard</th><th scope="col">Assessment</th><th scope="col">Score</th></tr></thead><tbody>' +
       State.current.evidence
         .map(
           (row) =>
             `<tr><td>${escapeHtml(row.date)}</td><td>${escapeHtml(row.student)}</td><td>${escapeHtml(row.standard)}</td><td>${escapeHtml(row.assessment)}</td><td>${row.score}/${row.max} (${row.pct}%)</td></tr>`,
         )
-        .join("");
+        .join("") +
+      "</tbody>";
   }
   function renderForecastGrid(grid) {
     $("#forecastTable").innerHTML =
-      "<tr><th>Student</th>" +
+      '<caption>Forecast by student and standard</caption><thead><tr><th scope="col">Student</th>' +
       State.current.standards
-        .map((standard) => `<th>${escapeHtml(standard.code)}</th>`)
+        .map((standard) => `<th scope="col">${escapeHtml(standard.code)}</th>`)
         .join("") +
-      "</tr>" +
+      "</tr></thead><tbody>" +
       grid
         .map(
           (row) =>
-            `<tr><td>${escapeHtml(row.student.name)}</td>${row.forecasts
+            `<tr><th scope="row">${escapeHtml(row.student.name)}</th>${row.forecasts
               .map((cell) => {
                 const f = cell.result;
                 return `<td><span class="badge ${f.cls}">${cue(f.cls)}${f.n ? `${f.p}%` : "No data"}</span><br><small>${escapeHtml(f.label)}</small>${f.n ? `<br>${trendBadge(f)}` : ""}</td>`;
               })
               .join("")}</tr>`,
         )
-        .join("");
+        .join("") +
+      "</tbody>";
   }
   function renderDiagnostics() {
     $("#diagText").textContent = JSON.stringify(
@@ -992,7 +1001,7 @@
       <p class="muted">Generated: ${escapeHtml(new Date().toLocaleString())} · Class: ${escapeHtml(State.current.class.name || "Unnamed")} (${escapeHtml(State.current.class.grade || "")})</p>
       <p><strong>${State.current.students.length}</strong> students · <strong>${State.current.standards.length}</strong> standards · <strong>${State.current.evidence.length}</strong> evidence records · class average <strong>${classAvg}%</strong></p>
       <h4>Standards Overview</h4>
-      <table><tr><th>Code</th><th>Description</th><th>Avg</th><th>Status</th></tr>${standardRows || '<tr><td colspan="4">No standards.</td></tr>'}</table>
+      <table><caption>Standards overview</caption><thead><tr><th scope="col">Code</th><th scope="col">Description</th><th scope="col">Avg</th><th scope="col">Status</th></tr></thead><tbody>${standardRows || '<tr><td colspan="4">No standards.</td></tr>'}</tbody></table>
       <h4>Priority Next Move</h4>
       <p>Build flexible support groups for standards with students below ${threshold}%. Reteach with a worked example, a visual model, and a short exit check.</p>
       <h4>Data Quality Notes</h4>
@@ -1200,11 +1209,42 @@
     Gradebook.matrix = null;
   }
 
+  // Opt-in (default OFF): include support tags in CSV/JSON exports.
+  function exportTagsEnabled() {
+    const checkbox = $("#includeTagsExport");
+    return Boolean(checkbox && checkbox.checked);
+  }
+
   function wireEvents() {
     document.addEventListener("click", (event) => {
       const target = event.target.closest("[data-tab],[data-go]");
       if (target) setTab(target.dataset.tab || target.dataset.go);
     });
+    // Keyboard support for the tablist (ArrowLeft/Right/Home/End).
+    const tablist = document.querySelector(".nav[role='tablist']");
+    if (tablist) {
+      tablist.addEventListener("keydown", (event) => {
+        const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+        if (!keys.includes(event.key)) return;
+        const tabs = Array.from(tablist.querySelectorAll("button[role='tab']"));
+        if (!tabs.length) return;
+        const currentIndex = tabs.indexOf(document.activeElement);
+        const from = currentIndex === -1 ? 0 : currentIndex;
+        let nextIndex = from;
+        if (event.key === "ArrowLeft")
+          nextIndex = (from - 1 + tabs.length) % tabs.length;
+        else if (event.key === "ArrowRight")
+          nextIndex = (from + 1) % tabs.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = tabs.length - 1;
+        event.preventDefault();
+        const nextTab = tabs[nextIndex];
+        if (nextTab && nextTab.dataset.tab) {
+          setTab(nextTab.dataset.tab);
+          nextTab.focus();
+        }
+      });
+    }
     $("#themeBtn").onclick = () => {
       State.current.theme = State.current.theme === "dark" ? "light" : "dark";
       persist();
@@ -1320,13 +1360,22 @@
       const htmlEl = $("#reportHtml");
       if (htmlEl) htmlEl.innerHTML = buildReportHtml();
     };
-    $("#csvBtn").onclick = () =>
+    $("#csvBtn").onclick = () => {
+      const includeTags = exportTagsEnabled();
+      const tagFor = (studentId) => {
+        const student = State.current.students.find((s) => s.id === studentId);
+        return student ? student.tags || "" : "";
+      };
+      const header = includeTags
+        ? "studentId,standard,score,maxScore,percent,date,assessment,tags"
+        : "studentId,standard,score,maxScore,percent,date,assessment";
       downloadFile(
         "forecast-evidence.csv",
-        "studentId,standard,score,maxScore,percent,date,assessment\n" +
+        header +
+          "\n" +
           State.current.evidence
-            .map((row) =>
-              [
+            .map((row) => {
+              const cells = [
                 row.student,
                 row.standard,
                 row.score,
@@ -1334,19 +1383,31 @@
                 row.pct,
                 row.date,
                 row.assessment,
-              ]
+              ];
+              if (includeTags) cells.push(tagFor(row.student));
+              return cells
                 .map((value) => `"${String(value).replace(/"/g, '""')}"`)
-                .join(","),
-            )
+                .join(",");
+            })
             .join("\n"),
         "text/csv",
       );
-    $("#jsonBtn").onclick = () =>
+    };
+    $("#jsonBtn").onclick = () => {
+      const includeTags = exportTagsEnabled();
+      // Deep clone so the in-memory state and localStorage are untouched.
+      const snapshot = JSON.parse(JSON.stringify(State.current));
+      if (!includeTags && Array.isArray(snapshot.students)) {
+        snapshot.students.forEach((student) => {
+          delete student.tags;
+        });
+      }
       downloadFile(
         "forecast-backup.json",
-        JSON.stringify(State.current, null, 2),
+        JSON.stringify(snapshot, null, 2),
         "application/json",
       );
+    };
     $("#saveProfileBtn").onclick = () => {
       const profile =
         $("#profileName").value.trim() || State.current.profile || "Default";
@@ -1413,6 +1474,10 @@
         State.current.threshold =
           Number.isFinite(v) && v >= 40 && v <= 90 ? v : 70;
         $("#groupThresholdValue").textContent = String(getThreshold());
+        thresholdSlider.setAttribute(
+          "aria-valuetext",
+          getThreshold() + " percent",
+        );
       };
       thresholdSlider.onchange = () => {
         persist();
@@ -1481,6 +1546,7 @@
   State.current = loadState();
   bootWorker();
   wireEvents();
+  setTab(State.current.active || "start");
   render();
   updateSheetjsStatus();
 })();

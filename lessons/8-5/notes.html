@@ -63,6 +63,24 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
 @media print{
   @page{size:letter;margin:0.75in;}
   body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
@@ -78,6 +96,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
   .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
 }
 </style>
 </head>
@@ -89,62 +111,64 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 <main class="sheet">
   <header class="packet">
     <p class="eyebrow">Unit 8 · Standard 6.SP.4</p>
-    <h1>Display Data: Box Plots</h1>
+    <h1>Display Data: Box Plots </h1>
     <p class="meta">Lesson 8-5</p>
     <div class="name-line">
       <span>Name:</span><span>Date:</span><span>Class:</span>
     </div>
   </header>
+  
   <section class="section vocab">
-  <h2>Vocabulary</h2>
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
   <div class="vocab-grid">
 <div class="vocab-card">
-  <h3 class="vocab-term">Box Plot</h3>
-  <p class="vocab-def">A graph that shows the distribution of data using a five-number summary</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/box-plot.svg" alt="A graph that shows the distribution of data using a five-number summary" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/box-plot.svg" alt="Illustration of Box Plot: A graph that shows the distribution of data using a five-number summary" onerror="this.style.display='none'" />
     <p class="vocab-caption">A box from Q1 to Q3 with a line at the median, and whiskers from min to max</p>
   </div>
+  <h3 class="vocab-term">Box Plot</h3>
+  <p class="vocab-def">A graph that shows the distribution of data using a five-number summary</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Median</h3>
-  <p class="vocab-def">The middle value of an ordered data set; splits the data into two equal halves</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/median.svg" alt="The middle value of an ordered data set; splits the data into two equal halves" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/median.svg" alt="Illustration of Median: The middle value of an ordered data set; splits the data into two equal halves" onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 10, 15, 20, 25, 30 → median is 20 (the 3rd value)</p>
   </div>
+  <h3 class="vocab-term">Median</h3>
+  <p class="vocab-def">The middle value of an ordered data set; splits the data into two equal halves</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Quartile</h3>
-  <p class="vocab-def">Values that divide an ordered data set into four equal parts (Q1 and Q3)</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/quartile.svg" alt="Values that divide an ordered data set into four equal parts (Q1 and Q3)" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/box-plot.svg" alt="Illustration of Quartile: Values that divide an ordered data set into four equal parts (Q1 and Q3)" onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 2, 4, 6, 8, 10, 12, 14 → Q1 = 4 (median of lower half), Q3 = 12 (median of upper half)</p>
   </div>
+  <h3 class="vocab-term">Quartile</h3>
+  <p class="vocab-def">Values that divide an ordered data set into four equal parts (Q1 and Q3)</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Interquartile Range</h3>
-  <p class="vocab-def">The difference between the third quartile and first quartile (IQR = Q3 − Q1)</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/interquartile-range.svg" alt="The difference between the third quartile and first quartile (IQR = Q3 − Q1)" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/box-plot.svg" alt="Illustration of Interquartile Range: The difference between the third quartile and first quartile (IQR = Q3 − Q1)" onerror="this.style.display='none'" />
     <p class="vocab-caption">If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units</p>
   </div>
+  <h3 class="vocab-term">Interquartile Range</h3>
+  <p class="vocab-def">The difference between the third quartile and first quartile (IQR = Q3 − Q1)</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Data distribution</h3>
-  <p class="vocab-def">The shape and spread of a data set</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/data-distribution.svg" alt="The shape and spread of a data set" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Data distribution: The shape and spread of a data set" onerror="this.style.display='none'" />
     <p class="vocab-caption">A box plot where the median is centered in the box shows symmetric distribution</p>
   </div>
+  <h3 class="vocab-term">Data distribution</h3>
+  <p class="vocab-def">The shape and spread of a data set</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Variability</h3>
-  <p class="vocab-def">How spread out the values in a data set are</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/variability.svg" alt="How spread out the values in a data set are" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the values in a data set are" onerror="this.style.display='none'" />
     <p class="vocab-caption">Small IQR = low variability in the middle 50%. Large IQR = high variability</p>
   </div>
+  <h3 class="vocab-term">Variability</h3>
+  <p class="vocab-def">How spread out the values in a data set are</p>
 </div>
   </div>
 </section>
@@ -194,6 +218,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <ol class="try-choices" type="A"><li>Team A's middle 50% is more consistent; Team B's is more spread out</li><li>Team B is a better team</li><li>Team A has a higher median</li><li>The IQRs don't tell you about consistency</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">Two basketball teams played 9 games each. Team A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Team B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Find the five-number summary and IQR for each team. Which team is more consistent? Which has a wider spread in the middle 50%?</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Team A: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team B: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team ___ is more consistent because its IQR is ___.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>

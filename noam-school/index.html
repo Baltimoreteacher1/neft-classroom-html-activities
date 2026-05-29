@@ -97,11 +97,11 @@
         --line: #f0d4c0;
         --navy: #8a3b1e;
         --navy2: #b04e26;
-        --teal: #b3621b;
+        --teal: #8f4e15;
         --amber: #d97706;
         --red: #c23b3b;
-        --green: #6b8e23;
-        --blue: #b85c2e;
+        --green: #536f1b;
+        --blue: #9a4a20;
         --softT: #fde6cf;
         --softA: #ffe3b8;
         --softR: #fcdcd2;
@@ -390,7 +390,20 @@
       .amber {
         background: var(--amber);
         border-color: var(--amber);
-        color: white;
+        color: #1f1402;
+      }
+      /* Contrast scheme keeps a dark amber fill designed for white text. */
+      [data-scheme="contrast"] .amber {
+        color: #ffffff;
+      }
+      /* Dark scheme uses bright accent fills; pair them with dark ink so
+         button labels meet AA (white-on-#2bb3ad was ~2.58:1). */
+      [data-scheme="dark"] .primary {
+        color: #0a1a19;
+      }
+      [data-scheme="dark"] .navy-btn,
+      [data-theme="dark"] .navy-btn {
+        color: #0a1a19;
       }
       .danger {
         background: var(--softR);
@@ -690,6 +703,29 @@
       .pill.blue {
         background: var(--softB);
         color: var(--blue);
+      }
+      /* Dark scheme/theme soft pill backgrounds are very dark, so the
+         default dark pill ink would be dark-on-dark (~2.3-3.2:1). Use light
+         tints of each hue to restore AA (all >=7:1 on the soft fills). */
+      [data-scheme="dark"] .pill,
+      [data-theme="dark"] .pill {
+        color: #5fd6cf;
+      }
+      [data-scheme="dark"] .pill.green,
+      [data-theme="dark"] .pill.green {
+        color: #7dd3a0;
+      }
+      [data-scheme="dark"] .pill.amber,
+      [data-theme="dark"] .pill.amber {
+        color: #f0b75a;
+      }
+      [data-scheme="dark"] .pill.red,
+      [data-theme="dark"] .pill.red {
+        color: #f0a89c;
+      }
+      [data-scheme="dark"] .pill.blue,
+      [data-theme="dark"] .pill.blue {
+        color: #7fb0f0;
       }
 
       /* Items */
@@ -1134,6 +1170,26 @@
       }
       .syncing {
         animation: pulse 1.5s infinite;
+      }
+
+      /* Respect users who prefer reduced motion: neutralize the page's
+         fadeIn/slideUp/pulse animations and CSS transitions. */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        .modalBack,
+        .modal {
+          animation: none !important;
+        }
+        .syncing {
+          animation: none !important;
+        }
       }
 
       /* Search highlight */
@@ -2291,7 +2347,22 @@
           el._t = setTimeout(() => el.classList.remove("show"), 2400);
         }
 
+        let modalLastFocus = null;
+        function getModalFocusable() {
+          return Array.from(
+            $("#modalBack").querySelectorAll(
+              'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            ),
+          ).filter(
+            (el) => el.offsetParent !== null || el === document.activeElement,
+          );
+        }
         function openModal(title, body) {
+          // Remember the element that opened the modal so focus can return.
+          modalLastFocus =
+            document.activeElement instanceof HTMLElement
+              ? document.activeElement
+              : null;
           $("#modalTitle").textContent = title;
           $("#modalBody").innerHTML = body;
           $("#modalBack").classList.add("open");
@@ -2300,12 +2371,43 @@
               "#modalBody input, #modalBody select, #modalBody textarea",
             );
             if (firstInput) firstInput.focus();
+            else {
+              const focusable = getModalFocusable();
+              if (focusable.length) focusable[0].focus();
+            }
           }, 50);
         }
         function closeModal() {
+          const wasOpen = $("#modalBack").classList.contains("open");
           $("#modalBack").classList.remove("open");
           $("#modalBody").innerHTML = "";
+          // Restore focus to whatever opened the modal.
+          if (wasOpen && modalLastFocus && modalLastFocus.focus) {
+            modalLastFocus.focus();
+          }
+          modalLastFocus = null;
         }
+        // Trap Tab focus within the modal while it is open.
+        $("#modalBack").addEventListener("keydown", (e) => {
+          if (e.key !== "Tab") return;
+          if (!$("#modalBack").classList.contains("open")) return;
+          const focusable = getModalFocusable();
+          if (!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          const active = document.activeElement;
+          if (e.shiftKey) {
+            if (active === first || !$("#modalBack").contains(active)) {
+              e.preventDefault();
+              last.focus();
+            }
+          } else {
+            if (active === last || !$("#modalBack").contains(active)) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        });
 
         // ═══════════════════════════════════════════════════════════════
         // COMMAND PALETTE
@@ -3889,6 +3991,14 @@
           if (e.target === $("#cmdOverlay")) closeCmd();
         });
         $("#cmdTrigger").addEventListener("click", openCmd);
+        // The trigger is a role="button" element, so keyboard users need
+        // Enter/Space to activate it (Cmd/Ctrl+K also opens it).
+        $("#cmdTrigger").addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+            e.preventDefault();
+            openCmd();
+          }
+        });
         $("#cmdResults").addEventListener("click", (e) => {
           const item = e.target.closest(".cmd-item");
           if (!item) return;

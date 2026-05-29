@@ -294,7 +294,3 @@ function escHtml(str) {
   d.textContent = str ?? "";
   return d.innerHTML;
 }
-
-function escAttr(str) {
-  return (str ?? "").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-}

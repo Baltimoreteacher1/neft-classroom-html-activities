@@ -18,3 +18,9 @@ export { renderFractionBars } from "./fraction-bars.js";
 export { renderNetFolder } from "./net-folder.js";
 export { renderCoordinatePlane } from "./coordinate-plane.js";
 export { renderRemediation } from "./remediation-panel.js";
+export { renderShape3D } from "./shape-3d.js";
+export {
+  openExplorer,
+  exploreLabel,
+  resolveExplorer,
+} from "./vocab-explore.js";

@@ -1,29 +1,17 @@
 const STORAGE_PREFIX = "rma_";
-const PROGRESS_API = "https://eduwonderlab.pages.dev/api/progress";
 
-export async function loadFromServer(lessonId, studentName) {
-  try {
-    const url = `${PROGRESS_API}?lessonId=${encodeURIComponent(lessonId)}&studentName=${encodeURIComponent(studentName)}`;
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data && data.ok && data.item ? data.item.state : null;
-  } catch (_) {
-    return null;
-  }
+// PRIVACY: Student progress is local-first only. Remote sync was removed because
+// it silently sent children's real names + free-text responses to an
+// unauthenticated, legacy endpoint with no consent. Work persists in
+// localStorage (see save()/load()). These functions are kept as no-ops so
+// existing callers keep working; reintroduce sync only behind explicit opt-in,
+// a pseudonymous id, auth, and a first-party, owned endpoint.
+export async function loadFromServer(_lessonId, _studentName) {
+  return null;
 }
 
-export function syncToServer(lessonId, state, studentName, studentPeriod) {
-  try {
-    fetch(PROGRESS_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ studentName, studentPeriod, lessonId, state }),
-      keepalive: true,
-    }).catch(() => {});
-  } catch (_) {
-    /* fire-and-forget */
-  }
+export function syncToServer(_lessonId, _state, _studentName, _studentPeriod) {
+  /* disabled: local-first only, no PII egress */
 }
 
 export function normalizeStudentId(name) {

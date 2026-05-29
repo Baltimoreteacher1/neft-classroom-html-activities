@@ -51,6 +51,28 @@ function copyStandaloneHtml() {
         const dest = resolve(__dirname, "dist", file);
         if (existsSync(src)) cpSync(src, dest);
       }
+      // lessons/ is skipped above (its index.html files are Rollup entries), but
+      // the generated guided-notes are plain static HTML that must be copied.
+      const lessonsDir = resolve(__dirname, "lessons");
+      if (existsSync(lessonsDir)) {
+        const idx = resolve(lessonsDir, "notes-index.html");
+        if (existsSync(idx)) {
+          mkdirSync(resolve(__dirname, "dist", "lessons"), { recursive: true });
+          cpSync(
+            idx,
+            resolve(__dirname, "dist", "lessons", "notes-index.html"),
+          );
+        }
+        for (const dir of readdirSync(lessonsDir, { withFileTypes: true })) {
+          if (!dir.isDirectory()) continue;
+          const notes = resolve(lessonsDir, dir.name, "notes.html");
+          if (existsSync(notes)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(notes, resolve(destDir, "notes.html"));
+          }
+        }
+      }
     },
   };
 }

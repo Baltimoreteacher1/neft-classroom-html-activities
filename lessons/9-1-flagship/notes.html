@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Graph on the Coordinate Plane — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 9 · Standard 6.NS.6</p>
+    <h1>Graph on the Coordinate Plane <span class="flagship-badge">Flagship</span></h1>
+    <p class="meta">Lesson 9-1-flagship</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section mission">
+  <p class="mission-eyebrow">Lost Cove Mission</p>
+  <h2 class="mission-title">Captain Vega's Coordinates</h2>
+  <p class="mission-story">You are the navigator on Captain Vega's expedition. Instead of 'X marks the spot,' she hid the treasure route as ordered pairs scrawled across a four-quadrant chart. Plot every point in the right order and the lost cove treasure is yours.</p>
+</section>
+  <section class="section vocab">
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/coordinate-plane.svg" alt="Illustration of Coordinate plane: A grid formed by a horizontal x-axis and a vertical y-axis that intersect at the origin" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A grid with a horizontal line (x-axis) crossing a vertical line (y-axis), making four sections</p>
+  </div>
+  <h3 class="vocab-term">Coordinate plane</h3>
+  <p class="vocab-def">A grid formed by a horizontal x-axis and a vertical y-axis that intersect at the origin</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/ordered-pair.svg" alt="Illustration of Ordered pair: A pair of numbers (x, y) that identifies a point on the coordinate plane" onerror="this.style.display='none'" />
+    <p class="vocab-caption">(3, 5) means move right 3 from the origin, then up 5</p>
+  </div>
+  <h3 class="vocab-term">Ordered pair</h3>
+  <p class="vocab-def">A pair of numbers (x, y) that identifies a point on the coordinate plane</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/origin.svg" alt="Illustration of Origin: The point (0, 0) where the x-axis and y-axis intersect" onerror="this.style.display='none'" />
+    <p class="vocab-caption">The starting point at the center where both axes cross — (0, 0)</p>
+  </div>
+  <h3 class="vocab-term">Origin</h3>
+  <p class="vocab-def">The point (0, 0) where the x-axis and y-axis intersect</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/quadrant.svg" alt="Illustration of Quadrant: One of four sections of the coordinate plane" onerror="this.style.display='none'" />
+    <p class="vocab-caption">I (+,+) top-right, II (-,+) top-left, III (-,-) bottom-left, IV (+,-) bottom-right</p>
+  </div>
+  <h3 class="vocab-term">Quadrant</h3>
+  <p class="vocab-def">One of four sections of the coordinate plane</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/coordinate-plane.svg" alt="Illustration of Reflection: A mirror image across an axis" onerror="this.style.display='none'" />
+    <p class="vocab-caption">(3, 2) reflected over the x-axis becomes (3, -2) — same x, opposite y</p>
+  </div>
+  <h3 class="vocab-term">Reflection</h3>
+  <p class="vocab-def">A mirror image across an axis</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/integer.svg" alt="Illustration of Integer: Whole numbers and their opposites, including zero" onerror="this.style.display='none'" />
+    <p class="vocab-caption">..., -3, -2, -1, 0, 1, 2, 3, ...</p>
+  </div>
+  <h3 class="vocab-term">Integer</h3>
+  <p class="vocab-def">Whole numbers and their opposites, including zero</p>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>Captain Vega left a treasure map, but instead of an 'X marks the spot,' she hid the directions as ordered pairs!</li><li>To find the treasure, you need to plot each point on the coordinate plane and connect them in order.</li><li>The first clue says: Start at (2, 1), then go to (5, 4), then (8, 1).</li><li>Plot Captain Vega's treasure map points and connect them to reveal the path!</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>What shape will the three points make when connected?</li><li>Which number tells you how far right/left? Which tells you up/down?</li><li>Why is the ORDER in an ordered pair important?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">Which ordered pair names a point 3 units right and 7 units up from the origin?</p>
+    <p class="ex-solution"><strong>Solution:</strong> The first coordinate is horizontal (right 3), the second is vertical (up 7). So (3, 7).</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. (3, 7)</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">What are the coordinates of the origin?</p>
+    <p class="ex-solution"><strong>Solution:</strong> The origin is where the x-axis and y-axis cross, at (0, 0).</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. (0, 0)</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">A point is at (6, 2). What does the 6 tell you?</p>
+    <p class="ex-solution"><strong>Solution:</strong> The first number (x-coordinate) tells you horizontal movement. 6 means go right 6 units from the origin.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. Move 6 units to the right</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. What are the coordinates of the origin?</p>
+  <ol class="try-choices" type="A"><li>(0, 0)</li><li>(1, 1)</li><li>(0, 1)</li><li>(1, 0)</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A point is at (6, 2). What does the 6 tell you?</p>
+  <ol class="try-choices" type="A"><li>Move 6 units to the right</li><li>Move 6 units up</li><li>Move 6 units to the left</li><li>The point is in Quadrant 6</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">A student says that (3, 5) and (5, 3) are the same point because they use the same numbers. Is the student correct? Explain why or why not, and describe where each point is located on the coordinate plane.</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> The student is ___ because (3, 5) means ___ while (5, 3) means ___. The ORDER matters because ___.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">Point P is located 6 units right and 3 units up from the origin. What ordered pair names point P?</p>
+  <ol class="try-choices" type="A"><li>(6, 3)</li><li>(3, 6)</li><li>(6, 0)</li><li>(0, 3)</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. (0, 0) <span class="ak-why">— The origin is where the x-axis and y-axis cross, at (0, 0).</span></li><li><strong>Try It 2:</strong> A. Move 6 units to the right <span class="ak-why">— The first number (x-coordinate) tells you horizontal movement. 6 means go right 6 units from the origin.</span></li><li><strong>Exit Ticket:</strong> A. (6, 3) <span class="ak-why">— Right 6 = x-coordinate of 6, Up 3 = y-coordinate of 3. The ordered pair is (6, 3).</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 9-1-flagship · Standard 6.NS.6</footer>
+</main>
+</body>
+</html>
