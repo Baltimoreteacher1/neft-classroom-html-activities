@@ -231,6 +231,10 @@
   // ---- Tabs ----------------------------------------------------------------
   const TITLES = {
     start: ["Start Here", "Turn your lesson inputs into a polished plan."],
+    quick: [
+      "Quick Generate",
+      "Type a topic or upload slides — get the full plan.",
+    ],
     info: ["Lesson Info", "Identity, class context, and materials."],
     standards: [
       "Standards & Target",
@@ -885,6 +889,512 @@
     }
   }
 
+  // ==========================================================================
+  // QUICK GENERATE — two input modes that fill the SAME locked-in state model
+  // then route through the existing local deterministic pipeline (generate()).
+  //
+  //  Mode A "type": teacher pastes a free-text description of the lesson.
+  //  Mode B "upload": teacher uploads a .pptx (parsed locally via self-hosted
+  //                   JSZip) or a .txt; we extract slide text, then map it.
+  //
+  // Both paths run mapTextToState(), which mirrors the deterministic heuristics
+  // of the source Python project (codex-lesson-plan-generator): standards from
+  // standard codes, phase mapping by markers (opening/mini/guided/independent/
+  // closure), support detection (SPED Profiles A-G, Level 1/2). Missing fields
+  // are left blank so the renderer marks them [INFERRED - VERIFY].
+  // ==========================================================================
+
+  let quickMode = "type";
+
+  function setQuickMode(mode) {
+    quickMode = mode === "upload" ? "upload" : "type";
+    const typeCard = $("quickType");
+    const upCard = $("quickUpload");
+    if (typeCard) typeCard.style.display = quickMode === "type" ? "" : "none";
+    if (upCard) upCard.style.display = quickMode === "upload" ? "" : "none";
+    document.querySelectorAll(".mode-tab").forEach((b) => {
+      const on = b.dataset.mode === quickMode;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+  }
+
+  // --- PPTX text extraction (client-side, JSZip) ----------------------------
+  // A .pptx is a zip. Slide text lives in ppt/slides/slideN.xml inside <a:t>.
+  async function extractPptxText(file) {
+    if (typeof JSZip === "undefined") {
+      throw new Error(
+        "Slide reader (JSZip) failed to load. Paste slide text instead.",
+      );
+    }
+    const zip = await JSZip.loadAsync(file);
+    // Collect slide files and sort by numeric slide index.
+    const slideFiles = Object.keys(zip.files)
+      .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+      .sort((a, b) => {
+        const na = parseInt(a.replace(/\D+/g, ""), 10);
+        const nb = parseInt(b.replace(/\D+/g, ""), 10);
+        return na - nb;
+      });
+    if (!slideFiles.length) {
+      throw new Error("No slides found in this .pptx file.");
+    }
+    const out = [];
+    for (let i = 0; i < slideFiles.length; i++) {
+      const xml = await zip.files[slideFiles[i]].async("string");
+      // Pull text runs. Runs inside the same paragraph join with no space;
+      // separate paragraphs / runs with spaces, then collapse.
+      const runs = xml.match(/<a:t>([\s\S]*?)<\/a:t>/g) || [];
+      const text = runs
+        .map((r) =>
+          r
+            .replace(/<a:t>/, "")
+            .replace(/<\/a:t>/, "")
+            .replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&quot;/g, '"')
+            .replace(/&apos;/g, "'"),
+        )
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim();
+      out.push("--- Slide " + (i + 1) + " ---" + (text ? "\n" + text : ""));
+    }
+    return { count: slideFiles.length, text: out.join("\n\n") };
+  }
+
+  // --- Free-text / slide-text -> state model --------------------------------
+  // Recognizes optional "Label: value" lines and otherwise classifies content
+  // into the correct lesson phase using the same marker families as the source.
+  const FIELD_LABELS = [
+    { keys: ["title", "lesson title", "lesson"], set: "title" },
+    { keys: ["unit", "topic", "unit / topic"], set: "unit" },
+    { keys: ["grade", "grade level"], set: "grade" },
+    { keys: ["subject", "content area"], set: "subject" },
+    { keys: ["teacher"], set: "teacher" },
+    { keys: ["school"], set: "school" },
+    { keys: ["date"], set: "date" },
+    {
+      keys: ["duration", "minutes", "lesson length", "time"],
+      set: "duration",
+    },
+    {
+      keys: ["objective", "learning target", "target", "goal", "aim"],
+      set: "objective",
+    },
+    {
+      keys: ["success criteria", "i can", "criteria"],
+      set: "successCriteria",
+      append: true,
+    },
+    { keys: ["materials", "materials and preparation"], set: "materials" },
+    {
+      keys: [
+        "opening",
+        "warm-up",
+        "warm up",
+        "launch",
+        "do now",
+        "bell ringer",
+      ],
+      set: "opening",
+    },
+    {
+      keys: [
+        "mini-lesson",
+        "mini lesson",
+        "modeling",
+        "model",
+        "direct instruction",
+        "concept development",
+      ],
+      set: "mini",
+    },
+    {
+      keys: [
+        "guided practice",
+        "guided",
+        "collaborative",
+        "we do",
+        "turn and talk",
+        "partner",
+      ],
+      set: "guided",
+    },
+    {
+      keys: [
+        "independent practice",
+        "independent",
+        "stations",
+        "application",
+        "you do",
+        "on your own",
+      ],
+      set: "independent",
+    },
+    {
+      keys: ["closure", "exit ticket", "assessment", "summary", "wrap-up"],
+      set: "closure",
+    },
+    { keys: ["supports", "support", "differentiation"], set: "_supports" },
+    { keys: ["notes", "teacher notes"], set: "teacherNotes" },
+    { keys: ["standard", "standards", "standard code"], set: "_standard" },
+  ];
+
+  // Marker families for classifying unlabeled lines (mirrors source extract).
+  const PHASE_MARKERS = {
+    opening: [
+      "do now",
+      "warm-up",
+      "warm up",
+      "launch",
+      "bell ringer",
+      "notice",
+      "wonder",
+      "hook",
+      "this or that",
+    ],
+    mini: [
+      "mini-lesson",
+      "mini lesson",
+      "model",
+      "i do",
+      "vocabulary",
+      "define",
+      "introduce",
+      "concept",
+      "example",
+      "demonstrate",
+    ],
+    guided: [
+      "guided practice",
+      "we do",
+      "turn and talk",
+      "partner",
+      "collaborate",
+      "discuss",
+      "check for understanding",
+      "together",
+    ],
+    independent: [
+      "independent",
+      "on your own",
+      "station",
+      "practice set",
+      "apply",
+      "workspace",
+      "workbook",
+      "you do",
+      "problem set",
+    ],
+    closure: [
+      "exit ticket",
+      "closure",
+      "summarize",
+      "summary",
+      "wrap-up",
+      "reflect",
+      "final check",
+    ],
+  };
+
+  // Standard code patterns: e.g. 6.G.A.1, MA.6.GR.1.1, CCSS.6.NS.1, RL.6.2
+  const STANDARD_RE =
+    /\b([A-Z]{0,5}\.?\d{1,2}\.[A-Z]{1,4}(?:\.[A-Z0-9]{1,4}){0,3})\b/g;
+
+  function detectStandards(text) {
+    const found = [];
+    const seen = {};
+    const m = text.match(STANDARD_RE) || [];
+    m.forEach((code) => {
+      const c = code.replace(/^\.+|\.+$/g, "");
+      if (!seen[c] && /\d/.test(c) && c.length >= 4) {
+        seen[c] = true;
+        found.push(c);
+      }
+    });
+    return found;
+  }
+
+  function classifyPhase(line) {
+    const low = line.toLowerCase();
+    let best = null;
+    let bestScore = 0;
+    Object.keys(PHASE_MARKERS).forEach((phase) => {
+      let score = 0;
+      PHASE_MARKERS[phase].forEach((mk) => {
+        if (low.includes(mk)) score += 1;
+      });
+      if (score > bestScore) {
+        bestScore = score;
+        best = phase;
+      }
+    });
+    return bestScore > 0 ? best : null;
+  }
+
+  // Map free text or slide text into the locked-in state model.
+  function mapTextToState(rawText, opts) {
+    opts = opts || {};
+    const acc = {
+      title: "",
+      unit: "",
+      grade: "",
+      subject: "",
+      teacher: "",
+      school: "",
+      date: "",
+      duration: "",
+      objective: "",
+      successCriteria: [],
+      materials: [],
+      teacherNotes: "",
+      opening: [],
+      mini: [],
+      guided: [],
+      independent: [],
+      closure: [],
+      standards: [],
+      spedSel: {},
+      l1Sel: {},
+      l2Sel: {},
+    };
+
+    const rawLines = String(rawText || "")
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter((s) => s && !/^---\s*slide/i.test(s));
+
+    const PHASE_KEYS = ["opening", "mini", "guided", "independent", "closure"];
+
+    rawLines.forEach((line) => {
+      // Try "Label: value"
+      const colon = line.match(/^([A-Za-z][A-Za-z /&'-]{1,30}?)\s*:\s*(.+)$/);
+      let handled = false;
+      if (colon) {
+        const label = colon[1].trim().toLowerCase();
+        const value = colon[2].trim();
+        for (const f of FIELD_LABELS) {
+          if (f.keys.includes(label)) {
+            if (f.set === "_standard") {
+              const codes = detectStandards(value);
+              if (codes.length) {
+                // value may be "6.G.A.1 — description"
+                const desc = value
+                  .replace(STANDARD_RE, "")
+                  .replace(/^[\s—–:-]+/, "")
+                  .trim();
+                codes.forEach((c, idx) =>
+                  acc.standards.push({ code: c, desc: idx === 0 ? desc : "" }),
+                );
+              } else {
+                acc.standards.push({ code: value, desc: "" });
+              }
+            } else if (f.set === "_supports") {
+              applySupportText(acc, value);
+            } else if (PHASE_KEYS.includes(f.set)) {
+              acc[f.set].push(value);
+            } else if (f.set === "successCriteria") {
+              value
+                .split(/;|•|·/)
+                .map((x) => x.trim())
+                .filter(Boolean)
+                .forEach((x) => acc.successCriteria.push(x));
+            } else if (f.set === "materials") {
+              value
+                .split(/,|;|•|·/)
+                .map((x) => x.trim())
+                .filter(Boolean)
+                .forEach((x) => acc.materials.push(x));
+            } else if (!acc[f.set]) {
+              acc[f.set] = value;
+            }
+            handled = true;
+            break;
+          }
+        }
+      }
+      if (handled) return;
+
+      // Unlabeled line: detect inline standards + supports, then classify phase.
+      detectStandards(line).forEach((c) => {
+        if (!acc.standards.some((s) => s.code === c))
+          acc.standards.push({ code: c, desc: "" });
+      });
+      applySupportText(acc, line, true);
+
+      const phase = classifyPhase(line);
+      if (phase) {
+        acc[phase].push(line);
+      } else if (opts.collectExtra) {
+        opts.extra.push(line);
+      }
+    });
+
+    // First non-empty content line becomes the title if none labeled.
+    if (!acc.title && rawLines.length) {
+      const cand = rawLines.find(
+        (l) => !/^[A-Za-z][A-Za-z /&'-]{1,30}?\s*:/.test(l),
+      );
+      acc.title = (cand || rawLines[0]).slice(0, 90);
+    }
+
+    return acc;
+  }
+
+  // Detect approved supports referenced in text. quiet=true avoids noise.
+  function applySupportText(acc, text, quiet) {
+    const low = " " + text.toLowerCase() + " ";
+    // SPED Profiles A-G by explicit "Profile X"
+    SPED_PROFILES.forEach((p) => {
+      const re = new RegExp("profile\\s*" + p.id.toLowerCase() + "\\b");
+      if (re.test(low)) acc.spedSel[p.id] = true;
+    });
+    // Level 1 / Level 2 by keyword
+    const L1_KW = {
+      l1_vocab: ["vocabulary", "word bank", "definition", "preteach"],
+      l1_starters: ["sentence starter", "sentence frame", "frames"],
+      l1_partner: ["partner talk", "turn and talk", "turn-and-talk"],
+      l1_visual: ["visual", "diagram", "anchor chart", "color-cod"],
+      l1_directions: [
+        "repeated direction",
+        "clarified direction",
+        "repeat directions",
+      ],
+      l1_chunk: ["chunk", "smaller steps", "break the task"],
+    };
+    const L2_KW = {
+      l2_extend: ["extension", "challenge", "early finisher", "enrichment"],
+      l2_explain: ["justify", "critique", "explain reasoning", "evaluate"],
+      l2_apply: ["real-world", "real world", "novel context", "application"],
+    };
+    Object.keys(L1_KW).forEach((id) => {
+      if (L1_KW[id].some((kw) => low.includes(kw))) acc.l1Sel[id] = true;
+    });
+    Object.keys(L2_KW).forEach((id) => {
+      if (L2_KW[id].some((kw) => low.includes(kw))) acc.l2Sel[id] = true;
+    });
+  }
+
+  // Commit a parsed acc object into the live state, then generate + show plan.
+  function commitParsedToState(acc, sourceLabel) {
+    const join = (arr) => arr.filter(Boolean).join(" ");
+    state = {
+      standards: acc.standards.slice(),
+      spedSel: acc.spedSel,
+      l1Sel: acc.l1Sel,
+      l2Sel: acc.l2Sel,
+      title: acc.title || "",
+      unit: acc.unit || "",
+      date: acc.date || "",
+      teacher: acc.teacher || "",
+      school: acc.school || "",
+      grade: acc.grade || "",
+      subject: acc.subject || "",
+      duration: (acc.duration || "").replace(/[^\d]/g, ""),
+      materials: acc.materials.join("\n"),
+      objective: acc.objective || "",
+      successCriteria: acc.successCriteria.join("\n"),
+      teacherNotes:
+        (acc.teacherNotes ? acc.teacherNotes + "\n" : "") +
+        "Generated from " +
+        sourceLabel +
+        ". Review all [INFERRED - VERIFY] items.",
+      opening: join(acc.opening),
+      mini: join(acc.mini),
+      guided: join(acc.guided),
+      independent: join(acc.independent),
+      closure: join(acc.closure),
+    };
+    saveState();
+    // Auto-distribute timing if a duration was provided, else leave blank.
+    if (state.duration) autoDistribute();
+    hydrateAll();
+    showTab("plan");
+    generate();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function quickStatus(html, kind) {
+    const el = $("quickStatus");
+    if (!el) return;
+    const badge = kind
+      ? '<span class="badge ' + kind + '">' + html + "</span>"
+      : html;
+    el.innerHTML = badge;
+  }
+
+  function generateFromType() {
+    const txt = ($("quickText") && $("quickText").value) || "";
+    if (!txt.trim()) {
+      quickStatus("Type or paste a lesson description first.", "warn");
+      return;
+    }
+    const acc = mapTextToState(txt);
+    commitParsedToState(acc, "typed description");
+    quickStatus("Full plan generated from your description.", "ok");
+  }
+
+  function generateFromUpload() {
+    const txt = ($("slideText") && $("slideText").value) || "";
+    if (!txt.trim()) {
+      quickStatus(
+        "Choose a .pptx/.txt file or paste slide text first.",
+        "warn",
+      );
+      return;
+    }
+    const acc = mapTextToState(txt);
+    commitParsedToState(acc, "uploaded slides");
+    quickStatus("Full plan generated from your slides.", "ok");
+  }
+
+  async function handleSlideFile(file) {
+    if (!file) return;
+    const name = file.name.toLowerCase();
+    $("fileStatus").textContent = "Reading " + file.name + "…";
+    try {
+      let text = "";
+      if (name.endsWith(".pptx")) {
+        const res = await extractPptxText(file);
+        text = res.text;
+        $("fileStatus").textContent =
+          file.name + " — " + res.count + " slides read.";
+      } else if (name.endsWith(".txt")) {
+        text = await file.text();
+        $("fileStatus").textContent = file.name + " — text loaded.";
+      } else {
+        $("fileStatus").textContent = "Unsupported file. Use .pptx or .txt.";
+        return;
+      }
+      if ($("slideText")) $("slideText").value = text;
+      quickStatus(
+        "Slide text extracted. Review it, then press Generate Full Plan.",
+        "info",
+      );
+    } catch (e) {
+      $("fileStatus").textContent = "Could not read file: " + e.message;
+      quickStatus("Could not read file: " + esc(e.message), "warn");
+    }
+  }
+
+  const QUICK_SAMPLE_TEXT = [
+    "Topic: Area of Composite Polygons",
+    "Unit: Unit 5 — Geometry",
+    "Standard: 6.G.A.1 — find area of polygons by composing and decomposing",
+    "Grade: 6   Subject: Mathematics   Duration: 55",
+    "Objective: Students will find the area of composite polygons by decomposing them into rectangles and triangles.",
+    "Success criteria: I can decompose a composite shape; I can add the sub-areas; I can explain my reasoning with units.",
+    "Materials: Teacher slide deck, grid paper, rulers, exit ticket slips",
+    "Opening: Number talk — how many ways can we split an L-shape? Quick visual hook.",
+    "Mini-lesson: Model decomposing an L-shape into two rectangles; think-aloud on choosing cuts and tracking units.",
+    "Guided practice: Partners solve two composite shapes on grid paper; teacher circulates and prompts reasoning.",
+    "Independent practice: Practice set 1-6; challenge problem for early finishers.",
+    "Closure: Exit ticket — one composite shape, find the area and explain the cut.",
+    "Supports: Profile C, Profile E, sentence starters, visuals, extension challenge",
+  ].join("\n");
+
   // ---- Sample data ---------------------------------------------------------
   function loadSample() {
     state = {
@@ -1019,6 +1529,52 @@
     document
       .querySelectorAll("[data-go]")
       .forEach((b) => b.addEventListener("click", () => showTab(b.dataset.go)));
+
+    // Quick Generate wiring
+    document
+      .querySelectorAll(".mode-tab")
+      .forEach((b) =>
+        b.addEventListener("click", () => setQuickMode(b.dataset.mode)),
+      );
+    if ($("quickGenTypeBtn"))
+      $("quickGenTypeBtn").addEventListener("click", generateFromType);
+    if ($("quickGenUploadBtn"))
+      $("quickGenUploadBtn").addEventListener("click", generateFromUpload);
+    if ($("quickFillSampleBtn"))
+      $("quickFillSampleBtn").addEventListener("click", () => {
+        if ($("quickText")) $("quickText").value = QUICK_SAMPLE_TEXT;
+      });
+    if ($("chooseFileBtn"))
+      $("chooseFileBtn").addEventListener("click", () =>
+        $("slideFile").click(),
+      );
+    if ($("slideFile"))
+      $("slideFile").addEventListener(
+        "change",
+        (e) => e.target.files[0] && handleSlideFile(e.target.files[0]),
+      );
+    const dz = $("dropzone");
+    if (dz) {
+      ["dragenter", "dragover"].forEach((ev) =>
+        dz.addEventListener(ev, (e) => {
+          e.preventDefault();
+          dz.classList.add("dragover");
+        }),
+      );
+      ["dragleave", "drop"].forEach((ev) =>
+        dz.addEventListener(ev, (e) => {
+          e.preventDefault();
+          dz.classList.remove("dragover");
+        }),
+      );
+      dz.addEventListener("drop", (e) => {
+        const f = e.dataTransfer && e.dataTransfer.files[0];
+        if (f) handleSlideFile(f);
+      });
+      dz.addEventListener("click", (e) => {
+        if (e.target === dz) $("slideFile").click();
+      });
+    }
 
     $("addStandardBtn").addEventListener("click", addStandard);
     $("standardDesc").addEventListener("keydown", (e) => {

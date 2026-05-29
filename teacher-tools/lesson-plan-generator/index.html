@@ -22,6 +22,7 @@
           <button class="active" data-tab="start" type="button">
             Start Here
           </button>
+          <button data-tab="quick" type="button">Quick Generate</button>
           <button data-tab="info" type="button">Lesson Info</button>
           <button data-tab="standards" type="button">
             Standards &amp; Target
@@ -63,8 +64,11 @@
                 account, no server, works offline.
               </p>
               <div class="button-row">
-                <button class="btn primary" data-go="info" type="button">
-                  Start a New Plan
+                <button class="btn primary" data-go="quick" type="button">
+                  Quick Generate (type or upload)
+                </button>
+                <button class="btn" data-go="info" type="button">
+                  Build Step-by-Step
                 </button>
                 <button class="btn" id="loadSampleBtn" type="button">
                   Load Sample Lesson
@@ -77,7 +81,36 @@
 
             <div class="grid g2">
               <article class="card">
-                <h3>Fastest way to use this</h3>
+                <h3>Two ways to generate a full plan</h3>
+                <div class="step">
+                  <span class="num">A</span>
+                  <p>
+                    <strong>Type / paste:</strong> describe the lesson (topic,
+                    standard, grade, notes) and get the complete 10-section plan
+                    instantly.
+                  </p>
+                </div>
+                <div class="step">
+                  <span class="num">B</span>
+                  <p>
+                    <strong>Upload slides:</strong> drop a .pptx (or paste slide
+                    text). The tool reads your slides and builds the full plan
+                    from them.
+                  </p>
+                </div>
+                <p class="muted">
+                  Format, sections, and supports are locked in — you never
+                  configure structure. Missing details are filled with sensible
+                  defaults marked <strong>[INFERRED - VERIFY]</strong>.
+                </p>
+                <div class="button-row">
+                  <button class="btn primary" data-go="quick" type="button">
+                    Go to Quick Generate
+                  </button>
+                </div>
+              </article>
+              <article class="card">
+                <h3>Prefer to fill it in yourself?</h3>
                 <div class="step">
                   <span class="num">1</span>
                   <p>
@@ -131,6 +164,110 @@
                 </ol>
               </article>
             </div>
+          </section>
+
+          <!-- QUICK GENERATE -->
+          <section id="quick" class="screen">
+            <div class="notice">
+              <strong>One step to a full plan.</strong> Choose a mode below,
+              give the tool your topic or your slides, and press Generate. The
+              locked-in 10-section flagship structure, SPED Profiles A–G, and
+              Level 1 / Level 2 differentiation are applied automatically.
+              Anything you don't provide is filled with a sensible default
+              marked <strong>[INFERRED - VERIFY]</strong>.
+            </div>
+
+            <div class="mode-tabs" role="tablist" aria-label="Input mode">
+              <button
+                class="mode-tab active"
+                id="modeTypeBtn"
+                data-mode="type"
+                type="button"
+                role="tab"
+                aria-selected="true"
+              >
+                ✍️ Type / paste a topic
+              </button>
+              <button
+                class="mode-tab"
+                id="modeUploadBtn"
+                data-mode="upload"
+                type="button"
+                role="tab"
+                aria-selected="false"
+              >
+                📂 Upload slides (.pptx / .txt)
+              </button>
+            </div>
+
+            <!-- TYPE MODE -->
+            <article class="card" id="quickType">
+              <h3>Describe your lesson</h3>
+              <p class="muted">
+                Write a few lines: topic, standard code, grade, and any notes
+                for each part of the lesson. Plain sentences are fine — the more
+                you give, the less gets inferred.
+              </p>
+              <label class="field"
+                >Lesson description<textarea
+                  id="quickText"
+                  rows="10"
+                  placeholder="Topic: Area of composite polygons&#10;Standard: 6.G.A.1 — find area by composing/decomposing&#10;Grade: 6  Subject: Mathematics  Duration: 55&#10;Objective: Students will find the area of composite polygons.&#10;Opening: Number talk on splitting an L-shape.&#10;Mini-lesson: Model decomposing into rectangles + triangle.&#10;Guided: Partners solve two shapes on grid paper.&#10;Independent: Practice set 1-6; challenge for early finishers.&#10;Closure: Exit ticket — one composite shape, explain the cut.&#10;Supports: Profile C, Profile E, sentence starters, visuals"
+                ></textarea>
+              </label>
+              <div class="button-row">
+                <button class="btn primary" id="quickGenTypeBtn" type="button">
+                  Generate Full Plan
+                </button>
+                <button class="btn" id="quickFillSampleBtn" type="button">
+                  Fill Example Text
+                </button>
+              </div>
+            </article>
+
+            <!-- UPLOAD MODE -->
+            <article class="card" id="quickUpload" style="display: none">
+              <h3>Upload your slides</h3>
+              <p class="muted">
+                Drop a PowerPoint <strong>.pptx</strong> file (parsed locally in
+                your browser — nothing is uploaded) or a plain
+                <strong>.txt</strong> export of your slide text.
+              </p>
+              <div class="dropzone" id="dropzone" tabindex="0">
+                <p>
+                  <strong>Drag &amp; drop</strong> a .pptx or .txt file here
+                </p>
+                <p class="muted">or</p>
+                <button class="btn" id="chooseFileBtn" type="button">
+                  Choose File
+                </button>
+                <input
+                  type="file"
+                  id="slideFile"
+                  accept=".pptx,.txt,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain"
+                  style="display: none"
+                />
+                <p class="muted" id="fileStatus" style="margin-top: 10px"></p>
+              </div>
+              <label class="field" style="margin-top: 14px"
+                >Extracted slide text (editable)<textarea
+                  id="slideText"
+                  rows="9"
+                  placeholder="Slide text will appear here after you choose a file. You can also paste slide text directly."
+                ></textarea>
+              </label>
+              <div class="button-row">
+                <button
+                  class="btn primary"
+                  id="quickGenUploadBtn"
+                  type="button"
+                >
+                  Generate Full Plan
+                </button>
+              </div>
+            </article>
+
+            <div id="quickStatus" class="muted" style="margin-top: 12px"></div>
           </section>
 
           <!-- LESSON INFO -->
@@ -515,6 +652,8 @@
       </main>
     </div>
 
+    <!-- Self-hosted JSZip (no CDN). Used to parse uploaded .pptx files. -->
+    <script src="./vendor/jszip.min.js" defer></script>
     <script src="./app.js" defer></script>
   </body>
 </html>

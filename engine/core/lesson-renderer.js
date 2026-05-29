@@ -62,6 +62,163 @@ function phaseHeader(el, icon, iconClass, title, desc) {
   el.append(h);
 }
 
+// ── Turn & Talk (non-graded student discussion moments) ──────────────────────
+// A reusable, visually distinct "🗣️ Turn & Talk" block. It is driven by an
+// optional config field `config.turnAndTalk` (array of
+// `{ phase, question, stems:[...] }`) but ALWAYS falls back to engine defaults
+// so every lesson surfaces at least one discussion moment per supported phase.
+// Turn & Talk never affects phase completion, scoring, stars, or XP — it is a
+// purely formative prompt the student confirms with a "We talked! ✓" button.
+
+// Bilingual sentence stems used when a lesson supplies none of its own.
+const DEFAULT_TURN_TALK_STEMS = [
+  { en: "I think ___ because ___.", es: "Pienso que ___ porque ___." },
+  { en: "First I ___, then I ___.", es: "Primero ___, luego ___." },
+  {
+    en: "I agree / disagree because ___.",
+    es: "Estoy de acuerdo / en desacuerdo porque ___.",
+  },
+];
+
+// Build a generic, topic-aware prompt for a phase when the lesson has no
+// authored turn-and-talk entry. Keeps language simple for English learners.
+function defaultTurnTalkPrompt(phase, config) {
+  const topic = config.title || "today's math";
+  if (phase === "explore") {
+    return {
+      phase,
+      question: `Turn and talk: explain your thinking about ${topic} to your partner.`,
+      stems: DEFAULT_TURN_TALK_STEMS,
+    };
+  }
+  return {
+    phase,
+    question: `Turn and talk: how does ${topic} connect to the real world or to what you already know?`,
+    stems: DEFAULT_TURN_TALK_STEMS,
+  };
+}
+
+// Resolve the turn-and-talk prompt for a given phase: prefer the authored
+// config entry, otherwise return the engine default so the block always shows.
+function resolveTurnTalk(phase, config) {
+  const authored = Array.isArray(config.turnAndTalk)
+    ? config.turnAndTalk.find((t) => t && t.phase === phase)
+    : null;
+  if (authored && authored.question) {
+    // Normalize stems: accept ["..."] strings or {en, es} objects.
+    const stems =
+      Array.isArray(authored.stems) && authored.stems.length
+        ? authored.stems.map((s) =>
+            typeof s === "string"
+              ? { en: s, es: "" }
+              : { en: s.en || "", es: s.es || "" },
+          )
+        : DEFAULT_TURN_TALK_STEMS;
+    return { phase, question: authored.question, stems };
+  }
+  return defaultTurnTalkPrompt(phase, config);
+}
+
+let turnTalkSeq = 0;
+
+// Render the Turn & Talk card into `host`. Calls `onDone` (if given) when the
+// student confirms they talked. Fully keyboard- and screen-reader-accessible.
+function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
+  const uid = `tt-${phaseId}-${turnTalkSeq++}`;
+  const respKey = `turntalk_${prompt.phase}`;
+  const alreadyDone = state.getResponse(phaseId, respKey) === "done";
+
+  const card = document.createElement("section");
+  card.className = "card card-coral turn-talk";
+  card.setAttribute("aria-labelledby", `${uid}-title`);
+  card.style.cssText =
+    "border:2px dashed var(--coral); background:rgba(217,121,93,0.06); margin-top:var(--sp-6);";
+
+  const stemsHtml = prompt.stems
+    .map(
+      (s) => `
+      <li class="sentence-frame" style="margin-bottom:var(--sp-2); list-style:none;">
+        <span style="font-weight:700;">${esc(s.en)}</span>
+        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:600;">${esc(s.es)}</span>` : ""}
+      </li>`,
+    )
+    .join("");
+
+  card.innerHTML = `
+    <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2);">
+      <span style="font-size:1.6rem;" aria-hidden="true">🗣️</span>
+      <h4 id="${uid}-title" style="color:var(--coral); margin:0;">Turn &amp; Talk</h4>
+    </div>
+    <p style="font-weight:700; font-size:1.05rem; margin:0 0 var(--sp-3);">${esc(prompt.question)}</p>
+    <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-3);">
+      <span class="badge badge-teal">🅰️ Partner A shares first</span>
+      <span class="badge badge-amber">🅱️ Partner B goes next</span>
+    </div>
+    <p style="font-weight:700; margin:0 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p>
+    <ul style="margin:0 0 var(--sp-3); padding:0;">${stemsHtml}</ul>
+  `;
+
+  // Optional ~60s talk timer (low-friction, fully optional).
+  const timerRow = document.createElement("div");
+  timerRow.style.cssText =
+    "display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-3);";
+  const timerBtn = document.createElement("button");
+  timerBtn.type = "button";
+  timerBtn.className = "btn btn-secondary";
+  timerBtn.textContent = "⏱️ Start 60s timer";
+  const timerLabel = document.createElement("span");
+  timerLabel.setAttribute("role", "timer");
+  timerLabel.setAttribute("aria-live", "polite");
+  timerLabel.style.cssText = "font-weight:800; color:var(--coral);";
+  let timerId = null;
+  timerBtn.addEventListener("click", () => {
+    if (timerId) return;
+    let remaining = 60;
+    timerLabel.textContent = `0:${String(remaining).padStart(2, "0")}`;
+    timerBtn.disabled = true;
+    timerBtn.style.opacity = "0.6";
+    timerId = setInterval(() => {
+      remaining--;
+      timerLabel.textContent = `0:${String(Math.max(remaining, 0)).padStart(2, "0")}`;
+      if (remaining <= 0) {
+        clearInterval(timerId);
+        timerId = null;
+        timerLabel.textContent = "⏰ Time! Wrap up your ideas.";
+        timerBtn.disabled = false;
+        timerBtn.style.opacity = "1";
+        timerBtn.textContent = "⏱️ Restart 60s timer";
+      }
+    }, 1000);
+  });
+  timerRow.append(timerBtn, timerLabel);
+  card.append(timerRow);
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.type = "button";
+  confirmBtn.className = "btn btn-primary";
+  const markDone = () => {
+    confirmBtn.textContent = "We talked! ✓";
+    confirmBtn.classList.add("btn-success");
+    confirmBtn.setAttribute("aria-pressed", "true");
+    confirmBtn.disabled = true;
+    state.saveResponse(phaseId, respKey, "done");
+  };
+  if (alreadyDone) {
+    markDone();
+  } else {
+    confirmBtn.textContent = "We talked! ✓";
+    confirmBtn.setAttribute("aria-pressed", "false");
+    confirmBtn.addEventListener("click", () => {
+      markDone();
+      onDone?.();
+    });
+  }
+  card.append(confirmBtn);
+
+  host.append(card);
+  return card;
+}
+
 async function completePhase(el, ctx, state, phaseIdx, name, correct, total) {
   const xp = ctx.engagement.awardXP(phaseIdx, { correct, total });
   const stars = state.get().phases[phaseIdx]?.stars ?? 0;
@@ -492,6 +649,23 @@ function renderExplorePhase(el, state, ctx, config) {
     cfg.instructions || "Investigate the concept with an interactive tool.",
   );
 
+  // Surface a Turn & Talk discussion moment after the Explore interaction.
+  // It is non-graded: confirming it advances the phase. A "Skip / Continue"
+  // affordance is built into the button flow so it never blocks progress.
+  const showTurnTalkThenComplete = () => {
+    renderTurnAndTalk(el, resolveTurnTalk("explore", config), state, 2, () => {
+      completePhase(el, ctx, state, 2, "Explore", 1, 1);
+    });
+    const cont = document.createElement("button");
+    cont.type = "button";
+    cont.className = "btn btn-primary btn-lg mt-4";
+    cont.textContent = "Continue to Practice →";
+    cont.addEventListener("click", () =>
+      completePhase(el, ctx, state, 2, "Explore", 1, 1),
+    );
+    el.append(cont);
+  };
+
   renderComponent(el, cfg, () => {
     if (cfg.discourse) {
       const disc = document.createElement("div");
@@ -503,12 +677,12 @@ function renderExplorePhase(el, state, ctx, config) {
         keywords: cfg.discourse.keywords,
         minLength: 20,
         onSubmit() {
-          completePhase(el, ctx, state, 2, "Explore", 1, 1);
+          showTurnTalkThenComplete();
         },
       });
       el.append(disc);
     } else {
-      completePhase(el, ctx, state, 2, "Explore", 1, 1);
+      showTurnTalkThenComplete();
     }
   });
 }
@@ -666,6 +840,10 @@ function renderConnectPhase(el, state, ctx, config) {
   card.className = "card";
   card.innerHTML = `<div class="badge badge-amber mb-4">Math in the Wild</div><p style="font-size:1.05rem; line-height:1.6; margin:0;">${esc(cfg.scenario)}</p>`;
   el.append(card);
+
+  // Turn & Talk primes the written response below. Non-graded; does not gate
+  // the Connect submit, so phase completion/scoring are unaffected.
+  renderTurnAndTalk(el, resolveTurnTalk("connect", config), state, 4);
 
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;
@@ -872,6 +1050,69 @@ function renderReflectPhase(el, state, ctx, config) {
   });
 }
 
+// End-of-lesson objective self-review ("Did I get it?"). Reuses the same
+// objective resolvers as the launch header so the text matches exactly.
+function renderObjectiveReview(state, config) {
+  const card = document.createElement("section");
+  card.className = "card card-teal objective-review";
+  card.setAttribute("aria-labelledby", "obj-review-title");
+  card.style.cssText = "text-align:left; margin-top:var(--sp-6);";
+
+  const items = [
+    {
+      key: "review_content",
+      label: "Content Objective",
+      // resolveContentObjective returns HTML-escaped text; show as text node.
+      html: resolveContentObjective(config),
+    },
+    {
+      key: "review_language",
+      label: "Language Objective",
+      html: resolveLanguageObjective(config),
+    },
+  ];
+
+  card.innerHTML = `
+    <h4 id="obj-review-title" style="color:var(--teal); margin-bottom:var(--sp-2);">✅ Did I get it?</h4>
+    <p style="color:var(--muted); margin:0 0 var(--sp-4); font-size:0.92rem;">Check off each goal you can do. Be honest — it helps you know what to practice!</p>
+  `;
+
+  items.forEach((item) => {
+    const checked = state.getResponse(5, item.key) === "yes";
+    const row = document.createElement("label");
+    row.style.cssText =
+      "display:flex; align-items:flex-start; gap:var(--sp-3); padding:var(--sp-3); background:white; border-radius:var(--radius-sm); margin-bottom:var(--sp-3); cursor:pointer; border:1px solid var(--line);";
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = checked;
+    cb.style.cssText =
+      "width:1.4rem; height:1.4rem; margin-top:2px; flex:0 0 auto; cursor:pointer;";
+    cb.setAttribute("aria-label", `I can do this — ${item.label}`);
+
+    const text = document.createElement("div");
+    text.innerHTML = `
+      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal); margin-bottom:2px;">${item.label}</div>
+      <div style="font-weight:600;">${item.html}</div>
+    `;
+
+    cb.addEventListener("change", () => {
+      state.saveResponse(5, item.key, cb.checked ? "yes" : "no");
+      row.style.borderColor = cb.checked ? "var(--teal)" : "var(--line)";
+      row.style.background = cb.checked ? "var(--teal-light)" : "white";
+    });
+    if (checked) {
+      row.style.borderColor = "var(--teal)";
+      row.style.background = "var(--teal-light)";
+    }
+
+    row.append(cb, text);
+    card.append(row);
+  });
+
+  return card;
+}
+
 function showFinalSummary(el, state, config) {
   el.innerHTML = "";
   const s = state.get();
@@ -921,6 +1162,12 @@ function showFinalSummary(el, state, config) {
     </div>
     <p style="margin-top:var(--sp-6); color:var(--muted); font-size:0.85rem;">Neft Teacher · ${esc(config.standard)} · ${new Date().toLocaleDateString()}</p>`;
   el.append(summary);
+
+  // "Did I get it?" objective self-review. Re-shows the same Content + Language
+  // objectives from the launch header, each with a checkbox the student ticks
+  // to self-assess. Checks persist to state (localStorage). No new config —
+  // reuses the existing objective fields and the launch-header fallbacks.
+  el.append(renderObjectiveReview(state, config));
 
   // Auto-grade + save/export (additive; does not affect scoring above).
   // Grades the student, persists to the localStorage gradebook, and offers

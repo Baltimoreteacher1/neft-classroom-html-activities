@@ -502,6 +502,54 @@ a:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+/* ---- Quick Generate: mode tabs + dropzone ---- */
+.mode-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 4px 0 18px;
+  flex-wrap: wrap;
+}
+.mode-tab {
+  flex: 1 1 220px;
+  cursor: pointer;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    background 0.15s;
+}
+.mode-tab:hover {
+  border-color: var(--teal);
+}
+.mode-tab.active {
+  border-color: var(--teal);
+  background: var(--info-bg);
+  box-shadow: var(--focus);
+}
+.dropzone {
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+  padding: 26px 18px;
+  text-align: center;
+  background: var(--paper-2);
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.dropzone.dragover {
+  border-color: var(--teal);
+  background: var(--info-bg);
+}
+.dropzone p {
+  margin: 6px 0;
+}
 @media print {
   .sidebar,
   .topbar,
