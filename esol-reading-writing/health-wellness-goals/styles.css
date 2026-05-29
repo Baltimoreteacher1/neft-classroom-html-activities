@@ -759,3 +759,547 @@ a {
     display: none !important;
   }
 }
+
+/* =====================================================================
+   EXPANSION STYLES — multi-part stops, readings, creating/art
+   ===================================================================== */
+
+/* ---------- Stop card extras (multiple activities) ---------- */
+.stop .part-count {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--green-deep);
+  background: #e6f7ec;
+  border: 2px solid #bfe6cd;
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.stop .stop-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+.stop .stop-dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #d7e7e0;
+  border: 1px solid #c2d9cf;
+  display: inline-block;
+}
+.stop .stop-dots i.on {
+  background: var(--green);
+  border-color: var(--green-deep);
+}
+
+/* ---------- Multi-part stepper inside a stop ---------- */
+.parts-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 16px;
+  padding: 10px 12px;
+  background: #f3fbf6;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+}
+.parts-bar .pchip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.parts-bar .pchip[aria-current="true"] {
+  border-color: var(--sky);
+  color: var(--ink);
+  background: #eaf5ff;
+  box-shadow: 0 0 0 3px #d3e9fb;
+}
+.parts-bar .pchip.done {
+  border-color: var(--green);
+  background: #effaf2;
+  color: var(--green-deep);
+}
+.parts-bar .pchip .dot {
+  font-size: 0.95rem;
+}
+.part-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 6px;
+}
+.part-title h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.part-title .es-name {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--grape);
+  font-style: italic;
+}
+.part-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* ---------- Reading card with picture support ---------- */
+.reading-card {
+  background: #f3fbf6;
+  border: 3px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  margin: 10px 0 14px;
+}
+.reading-scene {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  margin: 0 auto 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 2px solid var(--line);
+}
+.reading-text {
+  font-size: 1.18rem;
+  line-height: 1.65;
+}
+.reading-text .kw {
+  background: #fff3cf;
+  border-radius: 6px;
+  padding: 0 3px;
+  font-weight: 700;
+}
+.reading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+.reading-actions .lbl {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* ---------- Inline SVG scene wrapper ---------- */
+.scene-svg {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  margin: 0 auto 8px;
+}
+.float-soft {
+  animation: floaty 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* ---------- Canvas drawing tool ---------- */
+.draw-wrap {
+  margin: 12px 0;
+}
+.draw-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: #f4f8fb;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.swatch {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--line);
+  cursor: pointer;
+  padding: 0;
+}
+.swatch[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 3px var(--ink),
+    0 0 0 6px #fff;
+  transform: scale(1.08);
+}
+.tool-btn {
+  border: 2px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.tool-btn[aria-pressed="true"] {
+  border-color: var(--sky);
+  background: #eaf5ff;
+}
+.tool-btn:hover {
+  border-color: var(--green);
+}
+.size-range {
+  width: 110px;
+}
+.draw-canvas {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  touch-action: none;
+  cursor: crosshair;
+}
+.stamp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.stamp-btn {
+  border: 2px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  width: 46px;
+  height: 46px;
+  cursor: pointer;
+  line-height: 1;
+}
+.stamp-btn[aria-pressed="true"] {
+  border-color: var(--grape);
+  background: #f1ecfb;
+}
+
+/* ---------- Design-a-plate ---------- */
+.plate-stage {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 16px;
+  margin: 12px 0;
+}
+@media (max-width: 620px) {
+  .plate-stage {
+    grid-template-columns: 1fr;
+  }
+}
+.food-tray {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+.food-chip {
+  border: 3px solid var(--line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 4px;
+  font-size: 1.9rem;
+  cursor: grab;
+  text-align: center;
+  font-family: inherit;
+}
+.food-chip small {
+  display: block;
+  font-size: 0.62rem;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+.food-chip:hover {
+  border-color: var(--sky);
+  transform: translateY(-2px);
+}
+.food-chip.selected {
+  border-color: var(--grape);
+  box-shadow: 0 0 0 3px #e7defa;
+}
+.plate {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #ffffff 64%, #eef4f1 65%);
+  border: 10px solid #cfe0d8;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 22px;
+  overflow: hidden;
+}
+.plate.over {
+  border-color: var(--green);
+  background: radial-gradient(circle at 50% 45%, #f3fbf6 64%, #e0f2e7 65%);
+}
+.plate .dropped {
+  font-size: 2rem;
+  line-height: 1;
+}
+.plate-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  padding: 24px;
+  pointer-events: none;
+}
+
+/* ---------- Poster / collage maker ---------- */
+.poster {
+  background: #fff;
+  border: 4px dashed var(--grape);
+  border-radius: 18px;
+  padding: 16px;
+  min-height: 150px;
+  margin: 10px 0;
+}
+.poster .poster-title {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  border: none;
+  width: 100%;
+  font-family: inherit;
+  color: var(--grape);
+  background: transparent;
+}
+.poster .poster-title:focus-visible {
+  background: #faf7ff;
+  border-radius: 8px;
+}
+.poster-canvas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  min-height: 90px;
+  align-content: center;
+}
+.poster-canvas .sticker {
+  font-size: 2.6rem;
+  line-height: 1;
+  animation: pop 0.35s ease;
+}
+
+/* ---------- Comic builder ---------- */
+.comic-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+.comic-panel {
+  border: 4px solid var(--ink);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.comic-panel .panel-num {
+  font-weight: 800;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+.comic-panel .panel-scene {
+  font-size: 3rem;
+  text-align: center;
+  line-height: 1;
+  min-height: 60px;
+  border-radius: 10px;
+  background: #f3fbf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px dashed var(--line);
+}
+.comic-panel select,
+.comic-panel input {
+  font-family: inherit;
+  font-size: 0.95rem;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 7px 8px;
+  width: 100%;
+}
+.comic-panel .bubble {
+  background: #fff8e9;
+  border: 2px solid var(--sun);
+  border-radius: 12px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
+/* ---------- Kindness badge designer ---------- */
+.badge-stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 12px 0;
+  align-items: start;
+}
+@media (max-width: 560px) {
+  .badge-stage {
+    grid-template-columns: 1fr;
+  }
+}
+.badge-preview {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #fff;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 8px solid rgba(255, 255, 255, 0.6);
+  transition: background 0.2s;
+}
+.badge-preview .b-emoji {
+  font-size: 3.4rem;
+  line-height: 1;
+}
+.badge-preview .b-word {
+  font-size: 1.25rem;
+  font-weight: 900;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+  padding: 0 8px;
+}
+.badge-controls {
+  display: grid;
+  gap: 10px;
+}
+.badge-controls .grp-label {
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin: 2px 0;
+}
+
+/* ---------- Color-a-scene ---------- */
+.color-scene svg {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  margin: 0 auto;
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+.color-scene svg .fillable {
+  cursor: pointer;
+  transition: fill 0.15s;
+}
+.color-scene svg .fillable:hover {
+  stroke: var(--grape);
+  stroke-width: 3;
+}
+
+/* ---------- Save / download row ---------- */
+.make-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  align-items: center;
+}
+.make-note {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- Tap-counter / move-your-body ---------- */
+.move-card {
+  text-align: center;
+  background: #eaf5ff;
+  border: 3px solid #bfdcf3;
+  border-radius: 18px;
+  padding: 18px;
+  margin: 12px 0;
+}
+.move-emoji {
+  font-size: 4rem;
+  display: inline-block;
+}
+.move-emoji.go {
+  animation: jump 0.5s ease infinite;
+}
+.move-count {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--sky);
+}
+.big-tap {
+  font-size: 1.4rem;
+  padding: 18px 34px;
+}
+
+/* ---------- Match meadow extra columns label ---------- */
+.col-head {
+  font-weight: 800;
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+@keyframes jump {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-16px);
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 18px;
+  }
+  .map {
+    grid-template-columns: 1fr;
+  }
+}
