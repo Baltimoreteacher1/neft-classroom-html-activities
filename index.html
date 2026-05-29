@@ -477,6 +477,62 @@
       <div class="overlay" id="overlay"></div>
 
       <main class="content">
+        <div class="hub-search">
+          <input
+            type="search"
+            id="hubSearch"
+            placeholder="Search activities, tools, lessons…  (press /)"
+            aria-label="Search everything on the hub"
+            autocomplete="off"
+          />
+          <span
+            class="hub-search-count"
+            id="hubSearchCount"
+            aria-live="polite"
+          ></span>
+        </div>
+        <style>
+          .hub-search {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            padding: 12px 0 12px;
+            background: var(--bg, #f7f8fa);
+          }
+          .hub-search input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 18px;
+            font-size: 1rem;
+            border: 2px solid var(--line, #d9dee5);
+            border-radius: 12px;
+            outline: none;
+            background: #fff;
+          }
+          .hub-search input:focus {
+            border-color: var(--accent, #0f766e);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.18);
+          }
+          .hub-search-count {
+            display: block;
+            font-size: 0.85rem;
+            color: #667085;
+            margin-top: 6px;
+            min-height: 1em;
+          }
+          .content.searching .panel {
+            display: block;
+          }
+          .content.searching .panel.search-empty {
+            display: none;
+          }
+          .card.search-hide {
+            display: none !important;
+          }
+          .unit-group.search-empty {
+            display: none;
+          }
+        </style>
         <!-- ═══ LESSONS ═══ -->
         <div class="panel active" id="panel-lessons">
           <div class="content-header">
@@ -2803,6 +2859,72 @@
         document.getElementById("sidebar").classList.remove("open");
         document.getElementById("overlay").style.display = "none";
       });
+
+      // Hub search — filter cards across ALL panels
+      (function () {
+        const search = document.getElementById("hubSearch");
+        const content = document.querySelector("main.content");
+        const countEl = document.getElementById("hubSearchCount");
+        if (!search || !content) return;
+
+        function runSearch(raw) {
+          const q = raw.trim().toLowerCase();
+          if (!q) {
+            content.classList.remove("searching");
+            content
+              .querySelectorAll(".search-hide, .search-empty")
+              .forEach((el) =>
+                el.classList.remove("search-hide", "search-empty"),
+              );
+            countEl.textContent = "";
+            return;
+          }
+          content.classList.add("searching");
+          let total = 0;
+          content.querySelectorAll(".panel").forEach((panel) => {
+            let matches = 0;
+            panel.querySelectorAll(".card").forEach((card) => {
+              const hit = card.textContent.toLowerCase().includes(q);
+              card.classList.toggle("search-hide", !hit);
+              if (hit) matches++;
+            });
+            panel.querySelectorAll(".unit-group").forEach((g) => {
+              g.classList.toggle(
+                "search-empty",
+                !g.querySelector(".card:not(.search-hide)"),
+              );
+            });
+            panel.classList.toggle("search-empty", matches === 0);
+            total += matches;
+          });
+          countEl.textContent =
+            total === 0
+              ? "No matches — try another word."
+              : total + (total === 1 ? " result" : " results");
+        }
+
+        search.addEventListener("input", (e) => runSearch(e.target.value));
+        search.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            search.value = "";
+            runSearch("");
+            search.blur();
+          }
+        });
+        // "/" focuses the search box
+        document.addEventListener("keydown", (e) => {
+          const tag = (document.activeElement.tagName || "").toLowerCase();
+          if (
+            e.key === "/" &&
+            document.activeElement !== search &&
+            tag !== "input" &&
+            tag !== "textarea"
+          ) {
+            e.preventDefault();
+            search.focus();
+          }
+        });
+      })();
     </script>
   </body>
 </html>
