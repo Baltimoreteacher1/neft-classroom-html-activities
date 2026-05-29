@@ -302,13 +302,35 @@ export default {
       updateRatioLive();
     }
 
-    function removeScoop() {
+    // Keep the visible stack gap-free after a removal.
+    function restack() {
+      scoops.forEach((s, i) => s.mesh.position.set(0, 0.7 + i * 0.62, 0));
+    }
+
+    // Remove the most recent scoop of a given fruit, or the last scoop overall
+    // when no fruit is passed (keeps the Enter/"confirm" shortcut working).
+    function removeScoop(fruit) {
       if (solved || !scoops.length) return;
-      const s = scoops.pop();
+      let idx = -1;
+      if (fruit) {
+        for (let i = scoops.length - 1; i >= 0; i--) {
+          if (scoops[i].fruit === fruit) {
+            idx = i;
+            break;
+          }
+        }
+      } else {
+        idx = scoops.length - 1;
+      }
+      if (idx < 0) return;
+      const [s] = scoops.splice(idx, 1);
       counts[s.fruit] -= 1;
       blenderGroup.remove(s.mesh);
       s.mesh.material.dispose();
-      announce(`Removed a ${FRUIT[s.fruit].name} scoop.`);
+      restack();
+      announce(
+        `Removed a ${FRUIT[s.fruit].name} scoop. Mixture is ${counts.strawberry} strawberry to ${counts.banana} banana.`,
+      );
       updateRatioLive();
     }
 
@@ -457,6 +479,7 @@ export default {
       // Keep an exact "Step X of Y" visible for the whole round.
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
+      renderControls();
       if (round.kind === "rate") {
         buildRate();
         return;
@@ -520,11 +543,81 @@ export default {
     let unbindTap = null;
     let unbindFrame = null;
 
+    // ---- On-screen controls (discoverable + touch-friendly) ----
+    // The keyboard already supports add/remove/serve, but tap-only players had
+    // no way to LOWER the scoop count. This bar exposes every action visibly.
+    function injectControlStyles() {
+      if (document.getElementById("smoothie-controls-styles")) return;
+      const st = document.createElement("style");
+      st.id = "smoothie-controls-styles";
+      st.textContent = `
+        .smoothie-controls{position:absolute;left:0;right:0;bottom:14px;display:flex;
+          gap:8px;justify-content:center;flex-wrap:wrap;padding:0 12px;z-index:5;
+          pointer-events:none;}
+        .smoothie-btn{pointer-events:auto;font:700 1rem/1 system-ui,sans-serif;
+          min-width:54px;min-height:48px;padding:10px 14px;border-radius:12px;
+          border:1px solid rgba(255,255,255,.25);background:rgba(18,53,91,.92);
+          color:#fff;cursor:pointer;backdrop-filter:blur(3px);
+          box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .12s,background .12s;}
+        .smoothie-btn:hover{background:rgba(31,166,162,.95);}
+        .smoothie-btn:active{transform:translateY(1px) scale(.97);}
+        .smoothie-btn.serve{background:rgba(15,169,88,.95);}
+        .smoothie-btn.minus{background:rgba(217,121,93,.92);}`;
+      document.head.appendChild(st);
+    }
+    const controlHost = renderer.domElement.parentElement || document.body;
+    const controlBar = document.createElement("div");
+    controlBar.className = "smoothie-controls";
+    function mkBtn(label, aria, cls, onClick) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "smoothie-btn" + (cls ? " " + cls : "");
+      b.textContent = label;
+      b.setAttribute("aria-label", aria);
+      b.addEventListener("click", (e) => {
+        e.preventDefault();
+        onClick();
+      });
+      return b;
+    }
+    function renderControls() {
+      controlBar.textContent = "";
+      if (!round) return;
+      if (round.kind === "rate") {
+        controlBar.append(
+          mkBtn("− 1", "Lower your answer by one", "minus", () =>
+            adjustRate(-1),
+          ),
+          mkBtn("+ 1", "Raise your answer by one", "", () => adjustRate(1)),
+          mkBtn("Serve", "Serve and check your answer", "serve", () =>
+            serveRate(),
+          ),
+        );
+      } else {
+        controlBar.append(
+          mkBtn("🍓 +", "Add a strawberry scoop", "", () =>
+            addScoop("strawberry"),
+          ),
+          mkBtn("🍓 −", "Remove a strawberry scoop", "minus", () =>
+            removeScoop("strawberry"),
+          ),
+          mkBtn("🍌 +", "Add a banana scoop", "", () => addScoop("banana")),
+          mkBtn("🍌 −", "Remove a banana scoop", "minus", () =>
+            removeScoop("banana"),
+          ),
+          mkBtn("Serve", "Serve the smoothie", "serve", () => serveRatio()),
+        );
+      }
+    }
+
     return {
       start() {
         camera.position.set(0, 6.5, 11);
         camera.lookAt(0, 2, 0);
         feel.syncCamera();
+
+        injectControlStyles();
+        controlHost.appendChild(controlBar);
 
         startRound();
 
@@ -543,6 +636,8 @@ export default {
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();
+        if (controlBar.parentNode)
+          controlBar.parentNode.removeChild(controlBar);
         timers.forEach(clearTimeout);
         timers.length = 0;
         disposables.forEach((g) => g.dispose());
