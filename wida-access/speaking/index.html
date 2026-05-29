@@ -4103,7 +4103,7 @@
         STORE.activeTaskIdx = idx;
 
         if (STORE.isSpeakingModel) {
-          window.speechSynthesis.cancel();
+          if ("speechSynthesis" in window) window.speechSynthesis.cancel();
           STORE.isSpeakingModel = false;
           document.getElementById("modelSpeechBtn").innerHTML =
             "🎧 Step 1 · Hear the Model";
@@ -4254,7 +4254,7 @@
         terms.forEach((word) => {
           const chip = document.createElement("span");
           chip.className = "vocab-card";
-          chip.innerHTML = `${word} <span style="margin-left:4px; opacity:0.65; cursor:pointer;" onclick="event.stopPropagation(); speakWordSlowly('${word}')">🔊</span>`;
+          chip.innerHTML = `${word} <span role="button" aria-label="Hear ${word} pronounced slowly" style="margin-left:4px; opacity:0.65; cursor:pointer;" onclick="event.stopPropagation(); speakWordSlowly('${word}')">🔊</span>`;
 
           const translatedText =
             VOCAB_LOOKUP_EXTENDED[word] &&
