@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neft Teacher Lesson Plan Generator</title>
+    <meta
+      name="description"
+      content="Local-first teacher tool that turns lesson inputs into a polished, printable 10-section classroom lesson plan."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <aside class="sidebar" aria-label="Lesson Plan Generator navigation">
+        <div class="brand">
+          <span class="badge info">Local-first</span>
+          <h1>Neft Teacher Lesson Plan Generator</h1>
+          <p>Inputs → standards → phases → supports → printable plan.</p>
+        </div>
+        <nav class="nav">
+          <button class="active" data-tab="start" type="button">
+            Start Here
+          </button>
+          <button data-tab="info" type="button">Lesson Info</button>
+          <button data-tab="standards" type="button">
+            Standards &amp; Target
+          </button>
+          <button data-tab="phases" type="button">Lesson Phases</button>
+          <button data-tab="supports" type="button">Supports</button>
+          <button data-tab="plan" type="button">Lesson Plan</button>
+          <button data-tab="settings" type="button">Settings</button>
+        </nav>
+        <div class="sidebar-foot">v1.0 · 10-section flagship structure</div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h2 id="pageTitle">Start Here</h2>
+            <p id="pageSubtitle">
+              Turn your lesson inputs into a polished plan.
+            </p>
+          </div>
+          <div class="top-actions">
+            <span class="badge neutral" id="modeBadge">Local generation</span>
+            <span class="badge neutral" id="saveBadge">Saved locally</span>
+            <button class="btn" id="themeBtn" type="button">Theme</button>
+          </div>
+        </header>
+
+        <section class="body">
+          <!-- START -->
+          <section id="start" class="screen active">
+            <div class="hero">
+              <span class="badge info">Recommended workflow</span>
+              <h2>Build a flagship lesson plan in minutes.</h2>
+              <p>
+                Enter your lesson details, standards, learning target, phase
+                notes, and active supports. The generator composes a printable
+                plan in the exact 10-section flagship structure used across Neft
+                Teacher. Everything saves automatically in this browser. No
+                account, no server, works offline.
+              </p>
+              <div class="button-row">
+                <button class="btn primary" data-go="info" type="button">
+                  Start a New Plan
+                </button>
+                <button class="btn" id="loadSampleBtn" type="button">
+                  Load Sample Lesson
+                </button>
+                <button class="btn" data-go="plan" type="button">
+                  Go to Plan Output
+                </button>
+              </div>
+            </div>
+
+            <div class="grid g2">
+              <article class="card">
+                <h3>Fastest way to use this</h3>
+                <div class="step">
+                  <span class="num">1</span>
+                  <p>
+                    <strong>Lesson Info:</strong> grade, subject, title, date,
+                    duration.
+                  </p>
+                </div>
+                <div class="step">
+                  <span class="num">2</span>
+                  <p>
+                    <strong>Standards &amp; Target:</strong> add standard codes,
+                    learning target, success criteria.
+                  </p>
+                </div>
+                <div class="step">
+                  <span class="num">3</span>
+                  <p>
+                    <strong>Lesson Phases:</strong> jot notes for each phase,
+                    then set timing.
+                  </p>
+                </div>
+                <div class="step">
+                  <span class="num">4</span>
+                  <p>
+                    <strong>Supports:</strong> turn on the approved SPED/ESOL
+                    supports you need.
+                  </p>
+                </div>
+                <div class="step">
+                  <span class="num">5</span>
+                  <p>
+                    <strong>Lesson Plan:</strong> generate, review, and print.
+                  </p>
+                </div>
+              </article>
+              <article class="card">
+                <h3>The 10-section flagship structure</h3>
+                <ol class="muted tight">
+                  <li>Lesson Information</li>
+                  <li>Standards and Learning Targets</li>
+                  <li>Lesson Objective and Student Success Criteria</li>
+                  <li>Materials and Preparation</li>
+                  <li>Opening / Warm-Up / Launch</li>
+                  <li>Mini-Lesson / Modeling / Concept Development</li>
+                  <li>Guided Practice / Collaborative Learning</li>
+                  <li>Independent Practice / Application / Stations</li>
+                  <li>Closure / Exit Ticket / Assessment</li>
+                  <li>
+                    Differentiation, SPED/ESOL Supports, and Teacher Notes
+                  </li>
+                </ol>
+              </article>
+            </div>
+          </section>
+
+          <!-- LESSON INFO -->
+          <section id="info" class="screen">
+            <div class="notice">
+              <strong>Lesson information:</strong> These fields populate Section
+              1 and the plan header. Everything saves automatically.
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Lesson Identity</h3>
+                <label class="field"
+                  >Lesson title<input
+                    id="title"
+                    placeholder="Area of Composite Polygons"
+                    autocomplete="off"
+                /></label>
+                <label class="field"
+                  >Unit / topic<input
+                    id="unit"
+                    placeholder="Unit 5: Geometry"
+                    autocomplete="off"
+                /></label>
+                <label class="field">Date<input id="date" type="date" /></label>
+              </article>
+              <article class="card">
+                <h3>Class Context</h3>
+                <label class="field"
+                  >Teacher name<input
+                    id="teacher"
+                    placeholder="Mr. Neft"
+                    autocomplete="off"
+                /></label>
+                <label class="field"
+                  >School<input
+                    id="school"
+                    placeholder="Example Middle School"
+                    autocomplete="off"
+                /></label>
+                <div class="grid g2 no-margin">
+                  <label class="field"
+                    >Grade<input id="grade" placeholder="6" autocomplete="off"
+                  /></label>
+                  <label class="field"
+                    >Subject<input
+                      id="subject"
+                      placeholder="Mathematics"
+                      autocomplete="off"
+                  /></label>
+                </div>
+                <label class="field"
+                  >Total lesson minutes<input
+                    id="duration"
+                    type="number"
+                    min="5"
+                    step="1"
+                    placeholder="55"
+                    inputmode="numeric"
+                /></label>
+              </article>
+            </div>
+            <article class="card">
+              <h3>Materials</h3>
+              <label class="field"
+                >Materials and preparation (one per line)<textarea
+                  id="materials"
+                  placeholder="Teacher slide deck&#10;Grid paper&#10;Rulers&#10;Exit ticket slips"
+                ></textarea>
+              </label>
+            </article>
+            <div class="button-row">
+              <button class="btn primary" data-go="standards" type="button">
+                Next: Standards &amp; Target
+              </button>
+            </div>
+          </section>
+
+          <!-- STANDARDS -->
+          <section id="standards" class="screen">
+            <div class="notice">
+              <strong>Standards rule:</strong> Standards are the instructional
+              anchor. Add each standard code with its description.
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Standards</h3>
+                <label class="field"
+                  >Standard code<input
+                    id="standardCode"
+                    placeholder="6.G.A.1"
+                    autocomplete="off"
+                /></label>
+                <label class="field"
+                  >Description<input
+                    id="standardDesc"
+                    placeholder="Find area of polygons by composing/decomposing"
+                    autocomplete="off"
+                /></label>
+                <button class="btn primary" id="addStandardBtn" type="button">
+                  Add Standard
+                </button>
+                <div class="table-wrap" style="margin-top: 12px">
+                  <table class="table" id="standardTable"></table>
+                </div>
+              </article>
+              <article class="card">
+                <h3>Learning Target &amp; Success Criteria</h3>
+                <label class="field"
+                  >Learning target / objective<textarea
+                    id="objective"
+                    placeholder="Students will find the area of composite polygons by decomposing them into rectangles and triangles."
+                  ></textarea>
+                </label>
+                <label class="field"
+                  >Student success criteria (one per line)<textarea
+                    id="successCriteria"
+                    placeholder="I can decompose a composite shape into known shapes.&#10;I can find and add sub-areas correctly.&#10;I can explain my reasoning with units."
+                  ></textarea>
+                </label>
+              </article>
+            </div>
+            <div class="button-row">
+              <button class="btn primary" data-go="phases" type="button">
+                Next: Lesson Phases
+              </button>
+            </div>
+          </section>
+
+          <!-- PHASES -->
+          <section id="phases" class="screen">
+            <div class="notice">
+              <strong>Lesson phases:</strong> Add notes for each phase. Leave a
+              phase blank to use a structured placeholder. Timing auto-fills
+              from total minutes but you can override each value.
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Opening / Warm-Up / Launch</h3>
+                <label class="field"
+                  >Minutes<input
+                    id="openingMin"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                /></label>
+                <label class="field"
+                  >Notes<textarea
+                    id="opening"
+                    placeholder="Number talk on splitting shapes; quick visual hook."
+                  ></textarea>
+                </label>
+              </article>
+              <article class="card">
+                <h3>Mini-Lesson / Modeling</h3>
+                <label class="field"
+                  >Minutes<input
+                    id="miniMin"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                /></label>
+                <label class="field"
+                  >Notes<textarea
+                    id="mini"
+                    placeholder="Model decomposing an L-shape; think-aloud on choosing cuts."
+                  ></textarea>
+                </label>
+              </article>
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Guided Practice / Collaborative</h3>
+                <label class="field"
+                  >Minutes<input
+                    id="guidedMin"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                /></label>
+                <label class="field"
+                  >Notes<textarea
+                    id="guided"
+                    placeholder="Partners solve 2 composite shapes; teacher checks in."
+                  ></textarea>
+                </label>
+              </article>
+              <article class="card">
+                <h3>Independent Practice / Stations</h3>
+                <label class="field"
+                  >Minutes<input
+                    id="independentMin"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                /></label>
+                <label class="field"
+                  >Notes<textarea
+                    id="independent"
+                    placeholder="Practice set 1-6; challenge problem for early finishers."
+                  ></textarea>
+                </label>
+              </article>
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>Closure / Exit Ticket / Assessment</h3>
+                <label class="field"
+                  >Minutes<input
+                    id="closureMin"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                /></label>
+                <label class="field"
+                  >Notes<textarea
+                    id="closure"
+                    placeholder="Exit ticket: one composite shape, explain the cut."
+                  ></textarea>
+                </label>
+              </article>
+              <article class="card">
+                <h3>Timing</h3>
+                <p class="muted">
+                  Total minutes: <strong id="timingTotal">0</strong> · Lesson
+                  length: <strong id="timingTarget">0</strong>
+                </p>
+                <div id="timingStatus" class="muted">
+                  Enter a total lesson length on Lesson Info to auto-distribute.
+                </div>
+                <div class="button-row">
+                  <button class="btn" id="autoTimeBtn" type="button">
+                    Auto-Distribute Timing
+                  </button>
+                </div>
+              </article>
+            </div>
+            <div class="button-row">
+              <button class="btn primary" data-go="supports" type="button">
+                Next: Supports
+              </button>
+            </div>
+          </section>
+
+          <!-- SUPPORTS -->
+          <section id="supports" class="screen">
+            <div class="notice">
+              <strong>Approved supports:</strong> Turn on the SPED profiles and
+              ESOL/leveled supports you need. Selected supports are embedded
+              across phases and summarized in Section 10. Content is labeled
+              Level 1 (support) and Level 2 (enrichment), never "ESOL".
+            </div>
+            <div class="grid g2">
+              <article class="card">
+                <h3>SPED Support Profiles</h3>
+                <div id="spedList" class="check-list"></div>
+              </article>
+              <article class="card">
+                <h3>Level 1 Supports (scaffolds)</h3>
+                <div id="level1List" class="check-list"></div>
+                <h3 style="margin-top: 18px">Level 2 Enrichment</h3>
+                <div id="level2List" class="check-list"></div>
+              </article>
+            </div>
+            <article class="card">
+              <h3>Additional Teacher Notes</h3>
+              <label class="field"
+                >Notes for Section 10 (optional)<textarea
+                  id="teacherNotes"
+                  placeholder="Watch for unit errors. Pre-seat partners. Have manipulatives ready."
+                ></textarea>
+              </label>
+            </article>
+            <div class="button-row">
+              <button class="btn primary" data-go="plan" type="button">
+                Next: Generate Plan
+              </button>
+            </div>
+          </section>
+
+          <!-- PLAN -->
+          <section id="plan" class="screen">
+            <article class="card no-print-card">
+              <h3>Generate Lesson Plan</h3>
+              <p class="muted">
+                Composes the 10-section flagship plan from your inputs. Blank
+                fields become structured, clearly-marked placeholders so the
+                plan is always complete and usable.
+              </p>
+              <div class="button-row">
+                <button class="btn primary" id="generateBtn" type="button">
+                  Generate Plan
+                </button>
+                <button class="btn" id="printBtn" type="button">
+                  Print / Save PDF
+                </button>
+                <button class="btn" id="copyMdBtn" type="button">
+                  Copy Markdown
+                </button>
+                <button class="btn" id="downloadMdBtn" type="button">
+                  Download .md
+                </button>
+              </div>
+              <div
+                id="validationStatus"
+                class="muted"
+                style="margin-top: 10px"
+              ></div>
+            </article>
+            <article class="card lesson-output" id="lessonOutput">
+              <p class="muted">
+                No plan generated yet. Click <strong>Generate Plan</strong>.
+              </p>
+            </article>
+          </section>
+
+          <!-- SETTINGS -->
+          <section id="settings" class="screen">
+            <div class="grid g2">
+              <article class="card">
+                <h3>Generation Mode</h3>
+                <p class="muted">
+                  Default mode composes the plan entirely in your browser (no
+                  network, no keys). Optional AI mode is a clearly-marked stub:
+                  it is disabled unless you supply an endpoint and falls back to
+                  local generation. See the NOTES block at the top of app.js.
+                </p>
+                <label class="field"
+                  >Mode<select id="genMode">
+                    <option value="local">
+                      Local generation (default, offline)
+                    </option>
+                    <option value="api">
+                      AI endpoint (stub — requires your own endpoint)
+                    </option>
+                  </select></label
+                >
+                <label class="field"
+                  >API endpoint URL (optional)<input
+                    id="apiUrl"
+                    placeholder="https://your-worker.example.com/lesson-plan"
+                    autocomplete="off"
+                /></label>
+                <p class="muted">
+                  No API key is stored or shipped with this tool. If you use AI
+                  mode, route through your own proxy that holds the key
+                  server-side.
+                </p>
+              </article>
+              <article class="card">
+                <h3>Data Controls</h3>
+                <div class="button-row">
+                  <button class="btn" id="exportJsonBtn" type="button">
+                    Export Inputs JSON
+                  </button>
+                  <button class="btn" id="importJsonBtn" type="button">
+                    Import Inputs JSON
+                  </button>
+                  <button class="btn danger" id="clearBtn" type="button">
+                    Clear Local Data
+                  </button>
+                </div>
+                <input
+                  type="file"
+                  id="importFile"
+                  accept="application/json,.json"
+                  style="display: none"
+                />
+                <div
+                  id="settingsStatus"
+                  class="muted"
+                  style="margin-top: 10px"
+                ></div>
+              </article>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

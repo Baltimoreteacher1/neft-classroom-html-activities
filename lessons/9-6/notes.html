@@ -63,6 +63,24 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
 @media print{
   @page{size:letter;margin:0.75in;}
   body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
@@ -78,6 +96,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key{border-top:2px solid #000;}
   .vocab-card{border:1px solid #000;}
   .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
 }
 </style>
 </head>
@@ -89,62 +111,64 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 <main class="sheet">
   <header class="packet">
     <p class="eyebrow">Unit 9 · Standard 6.NS.8</p>
-    <h1>Distance on the Coordinate Plane</h1>
+    <h1>Distance on the Coordinate Plane </h1>
     <p class="meta">Lesson 9-6</p>
     <div class="name-line">
       <span>Name:</span><span>Date:</span><span>Class:</span>
     </div>
   </header>
+  
   <section class="section vocab">
-  <h2>Vocabulary</h2>
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
   <div class="vocab-grid">
 <div class="vocab-card">
-  <h3 class="vocab-term">Distance</h3>
-  <p class="vocab-def">The number of units between two points; always positive or zero</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/distance.svg" alt="The number of units between two points; always positive or zero" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/number-line.svg" alt="Illustration of Distance: The number of units between two points; always positive or zero" onerror="this.style.display='none'" />
     <p class="vocab-caption">The distance from -3 to 4 on a number line is |-3| + |4| = 3 + 4 = 7 units</p>
   </div>
+  <h3 class="vocab-term">Distance</h3>
+  <p class="vocab-def">The number of units between two points; always positive or zero</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Absolute value</h3>
-  <p class="vocab-def">The distance a number is from zero; used to calculate distances between points</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/absolute-value.svg" alt="The distance a number is from zero; used to calculate distances between points" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/absolute-value.svg" alt="Illustration of Absolute value: The distance a number is from zero; used to calculate distances between points" onerror="this.style.display='none'" />
     <p class="vocab-caption">|-3| = 3 and |4| = 4; to find distance: |4 - (-3)| = 7</p>
   </div>
+  <h3 class="vocab-term">Absolute value</h3>
+  <p class="vocab-def">The distance a number is from zero; used to calculate distances between points</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Horizontal distance</h3>
-  <p class="vocab-def">The distance between two points measured left-right (same y-coordinate)</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/horizontal-distance.svg" alt="The distance between two points measured left-right (same y-coordinate)" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/coordinate-plane.svg" alt="Illustration of Horizontal distance: The distance between two points measured left-right (same y-coordinate)" onerror="this.style.display='none'" />
     <p class="vocab-caption">From (-2, 3) to (5, 3): count from -2 to 5 = 7 units across</p>
   </div>
+  <h3 class="vocab-term">Horizontal distance</h3>
+  <p class="vocab-def">The distance between two points measured left-right (same y-coordinate)</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Vertical distance</h3>
-  <p class="vocab-def">The distance between two points measured up-down (same x-coordinate)</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/vertical-distance.svg" alt="The distance between two points measured up-down (same x-coordinate)" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/coordinate-plane.svg" alt="Illustration of Vertical distance: The distance between two points measured up-down (same x-coordinate)" onerror="this.style.display='none'" />
     <p class="vocab-caption">From (4, -1) to (4, 6): count from -1 to 6 = 7 units up</p>
   </div>
+  <h3 class="vocab-term">Vertical distance</h3>
+  <p class="vocab-def">The distance between two points measured up-down (same x-coordinate)</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Coordinate plane</h3>
-  <p class="vocab-def">A grid formed by a horizontal x-axis and vertical y-axis intersecting at the origin</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/coordinate-plane.svg" alt="A grid formed by a horizontal x-axis and vertical y-axis intersecting at the origin" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/coordinate-plane.svg" alt="Illustration of Coordinate plane: A grid formed by a horizontal x-axis and vertical y-axis intersecting at the origin" onerror="this.style.display='none'" />
     <p class="vocab-caption">Two number lines crossing at (0, 0), creating four quadrants</p>
   </div>
+  <h3 class="vocab-term">Coordinate plane</h3>
+  <p class="vocab-def">A grid formed by a horizontal x-axis and vertical y-axis intersecting at the origin</p>
 </div>
 <div class="vocab-card">
-  <h3 class="vocab-term">Integer</h3>
-  <p class="vocab-def">Whole numbers and their opposites, including zero</p>
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/integer.svg" alt="Whole numbers and their opposites, including zero" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/integer.svg" alt="Illustration of Integer: Whole numbers and their opposites, including zero" onerror="this.style.display='none'" />
     <p class="vocab-caption">..., -3, -2, -1, 0, 1, 2, 3, ...</p>
   </div>
+  <h3 class="vocab-term">Integer</h3>
+  <p class="vocab-def">Whole numbers and their opposites, including zero</p>
 </div>
   </div>
 </section>
@@ -194,6 +218,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <ol class="try-choices" type="A"><li>12 units</li><li>2 units</li><li>7 units</li><li>8 units</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">A rectangle has vertices at (-4, -2), (3, -2), (3, 5), and (-4, 5). Find the length, width, perimeter, and area of the rectangle. Show your work using absolute value.</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> The width is |___ - (___)| = ___ units. The height is |___ - (___)| = ___ units. The perimeter is 2(___ + ___) = ___ units. The area is ___ × ___ = ___ square units.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
 </section>
   <section class="section reflect">
   <h2>Reflect — Exit Ticket</h2>

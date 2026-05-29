@@ -23,6 +23,10 @@ import {
   renderCoordinatePlane,
   renderRemediation,
 } from "../components/index.js";
+import {
+  renderActivityChooser,
+  renderOptionalPracticeOptIn,
+} from "../components/activity-chooser.js";
 
 export function bootLesson(config) {
   createApp({
@@ -339,7 +343,7 @@ function resolveVocabActivities(config) {
     const acts = config.vocabActivities;
     return acts[0] === "intro" ? acts : ["intro", ...acts];
   }
-  if (config.vocabMode === "matching") return ["intro", "matching", "cloze"];
+  if (config.vocabMode === "matching") return ["intro", "drag-match", "cloze"];
   return ["intro", "builder", "drag-match"];
 }
 
@@ -408,11 +412,54 @@ function renderPracticePhase(el, state, ctx, config) {
     totalAttempts = 0,
     shown = 0;
 
+  function finishPractice() {
+    area.innerHTML = "";
+    completePhase(el, ctx, state, 3, "Practice", totalCorrect, totalAttempts);
+  }
+
+  // Run the ungraded optional items through the shared component loop, then
+  // finish. Correctness is intentionally ignored — these never affect scoring.
+  function runOptionalPractice(host, items, done) {
+    let i = 0;
+    function step() {
+      if (i >= items.length) {
+        done();
+        return;
+      }
+      host.innerHTML = "";
+      const label = document.createElement("div");
+      label.style.cssText =
+        "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
+      label.textContent = `Extra Practice ${i + 1} of ${items.length} · optional`;
+      host.append(label);
+      const slot = document.createElement("div");
+      host.append(slot);
+      renderComponent(slot, items[i], () => {
+        i++;
+        setTimeout(step, 800);
+      });
+    }
+    step();
+  }
+
   function next() {
     const prob = seq.nextProblem(levelOverride(state));
     if (!prob) {
       area.innerHTML = "";
-      completePhase(el, ctx, state, 3, "Practice", totalCorrect, totalAttempts);
+      // Optional, ungraded Extra Practice opt-in. Does not touch scoring,
+      // stars, or adaptive logic. Lessons without practice.optional finish
+      // exactly as before.
+      const optional = config.practice?.optional;
+      if (optional?.length) {
+        tierBadge.textContent = "";
+        tierBadge.className = "";
+        renderOptionalPracticeOptIn(area, {
+          onSkip: finishPractice,
+          onTry: () => runOptionalPractice(area, optional, finishPractice),
+        });
+        return;
+      }
+      finishPractice();
       return;
     }
     shown++;
@@ -633,6 +680,16 @@ function showFinalSummary(el, state, config) {
     </div>
     <p style="margin-top:var(--sp-6); color:var(--muted); font-size:0.85rem;">Neft Teacher · ${esc(config.standard)} · ${new Date().toLocaleDateString()}</p>`;
   el.append(summary);
+
+  // Optional "Choose an Activity" menu — surfaced at completion on every
+  // lesson. Auto-populated from existing lesson data (vocab terms +
+  // optional practice); everything here is ungraded and does not affect
+  // the summary above. Renders nothing if the lesson has no eligible
+  // activities.
+  const chooserSlot = document.createElement("div");
+  chooserSlot.style.cssText = "margin-top:var(--sp-6);";
+  renderActivityChooser(chooserSlot, { config, renderComponent });
+  if (chooserSlot.childNodes.length) el.append(chooserSlot);
 
   const counterEl = summary.querySelector(".xp-counter");
   if (counterEl && s.xp > 0) {

@@ -1,4 +1,5 @@
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
+import { exploreLabel, openExplorer } from "./vocab-explore.js";
 
 function vocabImageEl(term, definition) {
   const fig = document.createElement("img");
@@ -47,14 +48,21 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     `;
     termEl.textContent = t.term;
 
-    card.append(vocabImageEl(t.term, t.definition));
-    card.append(termEl);
+    // The "study" view of the card: image + word + definition + visual + Explore.
+    // When Explore is opened, this view is hidden and an inline explorer panel
+    // takes its place; closing the explorer restores this view.
+    const studyView = document.createElement("div");
+    studyView.style.cssText =
+      "display:flex; flex-direction:column; gap:var(--sp-3);";
+
+    studyView.append(vocabImageEl(t.term, t.definition));
+    studyView.append(termEl);
 
     const defEl = document.createElement("div");
     defEl.style.cssText =
       "font-size:0.95rem; line-height:1.6; color:var(--ink); padding:0 var(--sp-2);";
     defEl.textContent = t.definition;
-    card.append(defEl);
+    studyView.append(defEl);
 
     if (t.visual) {
       const vizEl = document.createElement("div");
@@ -65,8 +73,29 @@ export function renderVocabIntro(container, { terms, onComplete }) {
         color:var(--teal); font-weight:600; border:1px dashed var(--teal-light, #b2dfdb);
       `;
       vizEl.textContent = t.visual;
-      card.append(vizEl);
+      studyView.append(vizEl);
     }
+
+    // Explore affordance — opens an inline interactive panel for this term.
+    const exploreBtn = exploreLabel(t);
+    const exploreHost = document.createElement("div");
+    exploreHost.hidden = true;
+
+    exploreBtn.addEventListener("click", () => {
+      studyView.hidden = true;
+      exploreHost.hidden = false;
+      openExplorer(exploreHost, t, {
+        onClose: () => {
+          exploreHost.hidden = true;
+          studyView.hidden = false;
+          exploreBtn.focus({ preventScroll: true });
+        },
+      });
+    });
+
+    studyView.append(exploreBtn);
+    card.append(studyView);
+    card.append(exploreHost);
 
     grid.append(card);
   });

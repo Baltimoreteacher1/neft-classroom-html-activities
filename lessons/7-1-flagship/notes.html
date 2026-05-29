@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Write Equations — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 7 · Standard 6.EE.6</p>
+    <h1>Write Equations <span class="flagship-badge">Flagship</span></h1>
+    <p class="meta">Lesson 7-1-flagship</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section mission">
+  <p class="mission-eyebrow">Cold Case Mission</p>
+  <h2 class="mission-title">The Equation Vault</h2>
+  <p class="mission-story">You are Detective Ruiz's new code analyst. A tip just came in: 'A number of stolen gems plus 8 more equals 20 total.' The evidence vault only opens when the clue is translated into a correct equation. Master writing equations and the case cracks wide open.</p>
+</section>
+  <section class="section vocab">
+  <h2>Key Vocabulary <span class="level-tag level-1">Level 1 support</span></h2>
+  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/equation.svg" alt="Illustration of Equation: A mathematical sentence that uses an equal sign to show two expressions have the same value" onerror="this.style.display='none'" />
+    <p class="vocab-caption">x + 5 = 12 means 'some number plus 5 equals 12'</p>
+  </div>
+  <h3 class="vocab-term">Equation</h3>
+  <p class="vocab-def">A mathematical sentence that uses an equal sign to show two expressions have the same value</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/variable.svg" alt="Illustration of Variable: A letter or symbol that represents an unknown value" onerror="this.style.display='none'" />
+    <p class="vocab-caption">In n + 3 = 10, the letter n stands for the unknown number (n = 7)</p>
+  </div>
+  <h3 class="vocab-term">Variable</h3>
+  <p class="vocab-def">A letter or symbol that represents an unknown value</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/equation.svg" alt="Illustration of Equal sign: A symbol (=) showing that two sides have the same value" onerror="this.style.display='none'" />
+    <p class="vocab-caption">7 + 3 = 10 — both sides equal 10</p>
+  </div>
+  <h3 class="vocab-term">Equal sign</h3>
+  <p class="vocab-def">A symbol (=) showing that two sides have the same value</p>
+</div>
+<div class="vocab-card">
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/expression.svg" alt="Illustration of Expression: A combination of numbers, variables, and operations without an equal sign" onerror="this.style.display='none'" />
+    <p class="vocab-caption">2x + 5 is an expression; it becomes an equation when you write 2x + 5 = 15</p>
+  </div>
+  <h3 class="vocab-term">Expression</h3>
+  <p class="vocab-def">A combination of numbers, variables, and operations without an equal sign</p>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>Detective Ruiz received a tip: 'A number of stolen gems plus 8 more equals 20 total gems.' She needs to write an equation to represent this clue before she can solve the case.</li><li>How would you write this situation as an equation?</li><li>Use the balance scale to see how each word problem translates into an equation. Drag the correct expression to each side of the scale to make it balance.</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>What quantity is unknown in this situation?</li><li>What does 'plus 8 more' tell you about the operation?</li><li>What does 'equals 20 total' tell you?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">Which equation represents: 'A number plus 12 equals 30'?</p>
+    <p class="ex-solution"><strong>Solution:</strong> 'Plus' means addition, so the equation is n + 12 = 30.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. n + 12 = 30</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">Which equation represents: 'Seven less than a number is 18'?</p>
+    <p class="ex-solution"><strong>Solution:</strong> 'Seven less than a number' means start with the number and subtract 7: n − 7 = 18.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. n − 7 = 18</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">Which equation represents: 'Three times a number equals 21'?</p>
+    <p class="ex-solution"><strong>Solution:</strong> 'Three times' means multiply by 3, so the equation is 3n = 21.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 3n = 21</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. Which equation represents: 'A number divided by 4 equals 8'?</p>
+  <ol class="try-choices" type="A"><li>n / 4 = 8</li><li>4n = 8</li><li>n − 4 = 8</li><li>n + 4 = 8</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p>
+  <ol class="try-choices" type="A"><li>f + 14 = 30</li><li>f − 14 = 30</li><li>14f = 30</li><li>f / 14 = 30</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+  <div class="enrich-block">
+    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
+    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
+    <p class="tryit-num">Write a real-world situation that can be modeled by the equation n / 5 = 9. Explain what n represents and verify your equation makes sense.</p>
+    
+    <p class="sentence-frame"><span class="ws-label">Sentence starter:</span> Situation: ___. In this problem, n represents ___. Check: n = ___ because ___ ÷ 5 = 9.</p>
+    <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+  </div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">Which equation represents: 'A number divided by 6 equals 9'?</p>
+  <ol class="try-choices" type="A"><li>n / 6 = 9</li><li>6n = 9</li><li>n − 6 = 9</li><li>n + 6 = 9</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. n / 4 = 8 <span class="ak-why">— 'Divided by 4' means division: n / 4 = 8.</span></li><li><strong>Try It 2:</strong> A. f + 14 = 30 <span class="ak-why">— The detective's Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.</span></li><li><strong>Exit Ticket:</strong> A. n / 6 = 9 <span class="ak-why">— 'Divided by 6' means division: n / 6 = 9. Check: 54 / 6 = 9 ✓</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-1-flagship · Standard 6.EE.6</footer>
+</main>
+</body>
+</html>

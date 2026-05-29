@@ -1,0 +1,595 @@
+// shape-3d.js — Interactive 3D solid explorer built with pure CSS 3D transforms.
+// No three.js, no dependencies. Spin by drag (pointer) or arrow keys, with a
+// slow auto-rotate that pauses on interaction and honors prefers-reduced-motion.
+// Tap a face / edge / vertex to highlight it and show its name + live counts.
+// "Unfold net" animates the solid flattening into its 2D net and back.
+//
+// Public API:
+//   renderShape3D(container, { shape, label }) -> { destroy }
+//     shape: "cube" | "rectangular-prism" | "triangular-prism" | "square-pyramid"
+//
+// Geometry teaching: each solid exposes its element counts (faces/edges/vertices)
+// so the panel can teach the vocabulary directly.
+
+const PALETTE = {
+  navy: "#12355b",
+  teal: "#1fa6a2",
+  tealLight: "#dff2ee",
+  amber: "#f2c15b",
+  coral: "#d9795d",
+  cream: "#f7f4ec",
+};
+
+// Per-shape definition. Faces are described as positioned/rotated planes built
+// from CSS transforms. We also store net-layout transforms so the same face
+// elements can animate flat. s = base size in px.
+function shapeDef(shape) {
+  const s = 120;
+  const h = s; // height
+  switch (shape) {
+    case "rectangular-prism":
+      return rectPrism(150, 90, 100);
+    case "triangular-prism":
+      return triPrism(140, 120, 120);
+    case "square-pyramid":
+      return squarePyramid(140, 130);
+    case "cube":
+    default:
+      return rectPrism(s, s, s, "Cube");
+  }
+}
+
+function reduceMotion() {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+// ── Rectangular prism / cube ─────────────────────────────────────────────
+// w (x), h (y), d (z). Six rectangular faces.
+function rectPrism(w, h, d, name) {
+  const hw = w / 2;
+  const hh = h / 2;
+  const hd = d / 2;
+  const colors = [
+    PALETTE.teal,
+    PALETTE.navy,
+    PALETTE.amber,
+    PALETTE.amber,
+    PALETTE.coral,
+    PALETTE.coral,
+  ];
+  // Solid transform (assembled box) and net transform (flat cross).
+  const faces = [
+    {
+      // front
+      w,
+      h,
+      solid: `translateZ(${hd}px)`,
+      net: `translate(0px, 0px)`,
+    },
+    {
+      // back
+      w,
+      h,
+      solid: `rotateY(180deg) translateZ(${hd}px)`,
+      net: `translate(0px, ${h * 2}px)`,
+    },
+    {
+      // top
+      w,
+      h: d,
+      solid: `rotateX(90deg) translateZ(${hh}px)`,
+      net: `translate(0px, ${-(h / 2 + d / 2)}px)`,
+    },
+    {
+      // bottom
+      w,
+      h: d,
+      solid: `rotateX(-90deg) translateZ(${hh}px)`,
+      net: `translate(0px, ${h / 2 + d / 2}px)`,
+    },
+    {
+      // left
+      w: d,
+      h,
+      solid: `rotateY(-90deg) translateZ(${hw}px)`,
+      net: `translate(${-(w / 2 + d / 2)}px, 0px)`,
+    },
+    {
+      // right
+      w: d,
+      h,
+      solid: `rotateY(90deg) translateZ(${hw}px)`,
+      net: `translate(${w / 2 + d / 2}px, 0px)`,
+    },
+  ].map((f, i) => ({ ...f, color: colors[i], kind: "face" }));
+
+  return {
+    name: name || "Rectangular prism",
+    counts: { faces: 6, edges: 12, vertices: 8 },
+    faces,
+    fitW: w + 2 * d,
+    fitH: 2 * h + 2 * d,
+  };
+}
+
+// ── Triangular prism ─────────────────────────────────────────────────────
+// 2 triangular faces + 3 rectangular faces. Built as a length-l prism whose
+// cross-section is an isosceles triangle (base b, height th).
+function triPrism(b, th, l) {
+  const hb = b / 2;
+  const hl = l / 2;
+  // Triangle clip path (pointing up): top-center, bottom-left, bottom-right.
+  const triClip = "polygon(50% 0, 100% 100%, 0 100%)";
+  const slant = Math.sqrt(hb * hb + th * th);
+  // angle each slant rectangle tilts from vertical
+  const ang = (Math.atan2(hb, th) * 180) / Math.PI;
+
+  const faces = [
+    {
+      // front triangle
+      w: b,
+      h: th,
+      color: PALETTE.teal,
+      kind: "face",
+      clip: triClip,
+      solid: `translateZ(${hl}px)`,
+      net: `translate(0px, ${-(th + l) / 1}px)`,
+    },
+    {
+      // back triangle
+      w: b,
+      h: th,
+      color: PALETTE.navy,
+      kind: "face",
+      clip: triClip,
+      solid: `translateZ(${-hl}px) rotateY(180deg)`,
+      net: `translate(0px, ${th + l}px)`,
+    },
+    {
+      // bottom rectangle
+      w: b,
+      h: l,
+      color: PALETTE.amber,
+      kind: "face",
+      solid: `rotateX(90deg) translateY(0px) translateZ(${-th / 2}px)`,
+      net: `translate(0px, 0px)`,
+    },
+    {
+      // left slant rectangle
+      w: slant,
+      h: l,
+      color: PALETTE.coral,
+      kind: "face",
+      solid: `translateX(${-b / 4}px) rotateX(90deg) rotateY(${-(90 - ang)}deg) translateZ(0px)`,
+      net: `translate(${-(b / 2)}px, 0px) rotate(0deg)`,
+    },
+    {
+      // right slant rectangle
+      w: slant,
+      h: l,
+      color: PALETTE.coral,
+      kind: "face",
+      solid: `translateX(${b / 4}px) rotateX(90deg) rotateY(${90 - ang}deg) translateZ(0px)`,
+      net: `translate(${b / 2}px, 0px) rotate(0deg)`,
+    },
+  ];
+
+  return {
+    name: "Triangular prism",
+    counts: { faces: 5, edges: 9, vertices: 6 },
+    faces,
+    fitW: b + 2 * slant,
+    fitH: 2 * (th + l),
+  };
+}
+
+// ── Square pyramid ───────────────────────────────────────────────────────
+// 1 square base + 4 triangular lateral faces meeting at an apex.
+function squarePyramid(b, ph) {
+  const hb = b / 2;
+  const triClip = "polygon(50% 0, 100% 100%, 0 100%)";
+  const slantH = Math.sqrt(ph * ph + hb * hb); // apothem slant height
+  const tilt = (Math.atan2(hb, ph) * 180) / Math.PI; // lean of each face
+
+  const lateral = (rotY, color) => ({
+    w: b,
+    h: slantH,
+    color,
+    kind: "face",
+    clip: triClip,
+    solid: `rotateY(${rotY}deg) translateZ(${hb}px) rotateX(${-(90 - tilt)}deg) translateY(${-slantH / 2}px)`,
+  });
+
+  const faces = [
+    {
+      // base
+      w: b,
+      h: b,
+      color: PALETTE.navy,
+      kind: "face",
+      solid: `rotateX(90deg) translateZ(${-hb}px)`,
+      net: `translate(0px, 0px)`,
+    },
+    {
+      ...lateral(0, PALETTE.teal),
+      net: `translate(0px, ${-(b / 2 + slantH / 2)}px)`,
+    },
+    {
+      ...lateral(90, PALETTE.amber),
+      net: `translate(${b / 2 + slantH / 2}px, 0px) rotate(90deg)`,
+    },
+    {
+      ...lateral(180, PALETTE.coral),
+      net: `translate(0px, ${b / 2 + slantH / 2}px) rotate(180deg)`,
+    },
+    {
+      ...lateral(270, PALETTE.teal),
+      net: `translate(${-(b / 2 + slantH / 2)}px, 0px) rotate(270deg)`,
+    },
+  ];
+
+  return {
+    name: "Square pyramid",
+    counts: { faces: 5, edges: 8, vertices: 5 },
+    faces,
+    fitW: b + 2 * slantH,
+    fitH: b + 2 * slantH,
+  };
+}
+
+export function renderShape3D(container, { shape = "cube", label } = {}) {
+  const def = shapeDef(shape);
+  const prefersReduced = reduceMotion();
+
+  const root = document.createElement("div");
+  root.className = "shape3d";
+
+  // ── Live region for screen readers ──
+  const live = document.createElement("div");
+  live.setAttribute("aria-live", "polite");
+  live.className = "sr-only-shape3d";
+  live.style.cssText =
+    "position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;";
+  root.append(live);
+
+  // ── Stage ──
+  const stage = document.createElement("div");
+  stage.tabIndex = 0;
+  stage.setAttribute("role", "application");
+  stage.setAttribute(
+    "aria-label",
+    `${def.name} 3D model. Drag or use arrow keys to rotate. Press Tab then Enter on a face to select it. ${def.counts.faces} faces, ${def.counts.edges} edges, ${def.counts.vertices} vertices.`,
+  );
+  stage.style.cssText = `
+    position:relative; height:300px; perspective:1100px;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(ellipse at 50% 30%, #ffffff 0%, var(--cream) 100%);
+    border:1px solid var(--line); border-radius:var(--radius-md);
+    overflow:hidden; cursor:grab; touch-action:none; outline-offset:3px;`;
+
+  const scene = document.createElement("div");
+  scene.style.cssText =
+    "position:relative; transform-style:preserve-3d; will-change:transform; width:0; height:0;";
+  stage.append(scene);
+
+  // Soft ground shadow for tactility.
+  const shadow = document.createElement("div");
+  shadow.setAttribute("aria-hidden", "true");
+  shadow.style.cssText = `
+    position:absolute; bottom:34px; left:50%; width:170px; height:34px;
+    transform:translateX(-50%); border-radius:50%;
+    background:radial-gradient(ellipse, rgba(18,53,91,0.22), transparent 70%);
+    filter:blur(2px); pointer-events:none;`;
+  stage.append(shadow);
+
+  // ── Build faces ──
+  let netT = 0; // 0 = solid, 1 = net (flat)
+  const faceEls = def.faces.map((f, i) => {
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = "shape3d-face";
+    el.dataset.index = String(i);
+    el.setAttribute(
+      "aria-label",
+      `Face ${i + 1} of ${def.name}. Select to label it.`,
+    );
+    el.style.cssText = `
+      position:absolute; left:50%; top:50%;
+      width:${f.w}px; height:${f.h}px;
+      margin-left:${-f.w / 2}px; margin-top:${-f.h / 2}px;
+      background:${hexToRgba(f.color, 0.82)};
+      border:2px solid rgba(255,255,255,0.65); box-sizing:border-box;
+      padding:0; cursor:pointer; backface-visibility:visible;
+      box-shadow:inset 0 0 0 1px rgba(18,53,91,0.18);
+      transition:${prefersReduced ? "none" : "transform 0.6s var(--ease-out), background 0.18s ease, box-shadow 0.18s ease"};
+      transform:${f.solid};`;
+    if (f.clip) el.style.clipPath = f.clip;
+    scene.append(el);
+    return el;
+  });
+
+  function applyFaceTransforms() {
+    def.faces.forEach((f, i) => {
+      const t = netT >= 0.5 && f.net ? f.net : f.solid;
+      faceEls[i].style.transform = t;
+    });
+  }
+  applyFaceTransforms();
+
+  // ── Rotation state ──
+  let rotX = -22;
+  let rotY = 28;
+  function applyScene() {
+    scene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  }
+  applyScene();
+
+  // ── Auto-rotate ──
+  let rafId = null;
+  let autoOn = !prefersReduced;
+  let lastTs = 0;
+  function tick(ts) {
+    if (!autoOn) {
+      rafId = null;
+      return;
+    }
+    if (lastTs) {
+      const dt = ts - lastTs;
+      rotY += dt * 0.012; // slow drift
+      if (netT < 0.5) applyScene();
+    }
+    lastTs = ts;
+    rafId = requestAnimationFrame(tick);
+  }
+  function startAuto() {
+    if (prefersReduced || rafId) return;
+    autoOn = true;
+    lastTs = 0;
+    rafId = requestAnimationFrame(tick);
+  }
+  function stopAuto() {
+    autoOn = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+  startAuto();
+
+  // ── Pointer drag ──
+  let dragging = false;
+  let lastX = 0;
+  let lastY = 0;
+  stage.addEventListener("pointerdown", (e) => {
+    if (e.target.classList.contains("shape3d-face")) return; // let clicks select
+    dragging = true;
+    stopAuto();
+    lastX = e.clientX;
+    lastY = e.clientY;
+    stage.setPointerCapture(e.pointerId);
+    stage.style.cursor = "grabbing";
+  });
+  stage.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    rotY += (e.clientX - lastX) * 0.5;
+    rotX -= (e.clientY - lastY) * 0.5;
+    rotX = Math.max(-89, Math.min(89, rotX));
+    lastX = e.clientX;
+    lastY = e.clientY;
+    if (netT < 0.5) applyScene();
+  });
+  function endDrag(e) {
+    if (!dragging) return;
+    dragging = false;
+    stage.style.cursor = "grab";
+    try {
+      stage.releasePointerCapture(e.pointerId);
+    } catch (_) {}
+  }
+  stage.addEventListener("pointerup", endDrag);
+  stage.addEventListener("pointercancel", endDrag);
+
+  // ── Keyboard rotate ──
+  stage.addEventListener("keydown", (e) => {
+    const step = 9;
+    let handled = true;
+    switch (e.key) {
+      case "ArrowLeft":
+        rotY -= step;
+        break;
+      case "ArrowRight":
+        rotY += step;
+        break;
+      case "ArrowUp":
+        rotX = Math.max(-89, rotX - step);
+        break;
+      case "ArrowDown":
+        rotX = Math.min(89, rotX + step);
+        break;
+      default:
+        handled = false;
+    }
+    if (handled) {
+      e.preventDefault();
+      stopAuto();
+      if (netT < 0.5) applyScene();
+    }
+  });
+
+  root.append(stage);
+
+  // ── Geometry counts readout ──
+  const counts = document.createElement("div");
+  counts.style.cssText = `
+    display:flex; flex-wrap:wrap; gap:var(--sp-2); justify-content:center;
+    margin-top:var(--sp-3);`;
+  const chip = (kind, n) => {
+    const c = document.createElement("span");
+    c.dataset.kind = kind;
+    c.style.cssText = `
+      display:inline-flex; align-items:center; gap:6px; padding:6px 12px;
+      border-radius:var(--radius-full); font-weight:700; font-size:0.85rem;
+      background:var(--teal-light); color:var(--navy); border:2px solid transparent;
+      transition:border-color 0.15s ease, background 0.15s ease;`;
+    c.innerHTML = `<strong>${n}</strong> ${kind}${n === 1 ? "" : kind === "vertex" ? "es" : "s"}`;
+    return c;
+  };
+  const chipFace = chip("face", def.counts.faces);
+  const chipEdge = chip("edge", def.counts.edges);
+  const chipVertex = chip("vertex", def.counts.vertices);
+  counts.append(chipFace, chipEdge, chipVertex);
+  root.append(counts);
+
+  // ── Selection / labeling ──
+  const labelBar = document.createElement("div");
+  labelBar.setAttribute("role", "status");
+  labelBar.style.cssText = `
+    margin-top:var(--sp-3); text-align:center; min-height:1.5em;
+    font-weight:600; color:var(--muted); font-size:0.95rem;`;
+  labelBar.textContent =
+    "Tap a face to label it. The whole solid is made of faces, edges, and vertices.";
+  root.append(labelBar);
+
+  let selectedEl = null;
+  function clearSelection() {
+    if (selectedEl) {
+      const idx = Number(selectedEl.dataset.index);
+      selectedEl.style.background = hexToRgba(def.faces[idx].color, 0.82);
+      selectedEl.style.boxShadow = "inset 0 0 0 1px rgba(18,53,91,0.18)";
+    }
+    selectedEl = null;
+    [chipFace, chipEdge, chipVertex].forEach((c) => {
+      c.style.borderColor = "transparent";
+    });
+  }
+  function selectFace(el) {
+    if (selectedEl === el) {
+      clearSelection();
+      labelBar.textContent = "Selection cleared.";
+      return;
+    }
+    clearSelection();
+    selectedEl = el;
+    el.style.background = hexToRgba(PALETTE.amber, 0.95);
+    el.style.boxShadow =
+      "inset 0 0 0 3px var(--navy), 0 0 0 3px rgba(31,166,162,0.5)";
+    chipFace.style.borderColor = "var(--navy)";
+    const msg = `Selected a face. A face is a flat surface of the solid. This ${def.name.toLowerCase()} has ${def.counts.faces} faces, ${def.counts.edges} edges, and ${def.counts.vertices} vertices.`;
+    labelBar.textContent =
+      "🟨 face — a flat surface where you could place a sticker.";
+    live.textContent = msg;
+  }
+  faceEls.forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      stopAuto();
+      selectFace(el);
+    });
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        stopAuto();
+        selectFace(el);
+      }
+    });
+  });
+  stage.addEventListener("click", (e) => {
+    if (e.target === stage || e.target === scene) clearSelection();
+  });
+
+  // ── Controls ──
+  const controls = document.createElement("div");
+  controls.style.cssText = `
+    display:flex; flex-wrap:wrap; gap:var(--sp-2); justify-content:center;
+    margin-top:var(--sp-4);`;
+
+  // Unfold net toggle (only for shapes that define a net for every face).
+  const hasNet = def.faces.every((f) => f.net);
+  if (hasNet) {
+    const netBtn = document.createElement("button");
+    netBtn.type = "button";
+    netBtn.className = "btn btn-secondary";
+    netBtn.setAttribute("aria-pressed", "false");
+    netBtn.textContent = "Unfold net ▸";
+    netBtn.addEventListener("click", () => {
+      const unfolding = netT < 0.5;
+      netT = unfolding ? 1 : 0;
+      netBtn.setAttribute("aria-pressed", String(unfolding));
+      netBtn.textContent = unfolding ? "◂ Fold up" : "Unfold net ▸";
+      if (unfolding) {
+        stopAuto();
+        clearSelection();
+        // Face the net toward the viewer.
+        rotX = 0;
+        rotY = 0;
+        applyScene();
+        labelBar.textContent =
+          "This flat pattern is the net. Its total area is the solid's surface area.";
+        live.textContent = `${def.name} unfolded into its net. The net shows every face flattened out; adding their areas gives the surface area.`;
+      } else {
+        labelBar.textContent = "Folded back into a solid.";
+        live.textContent = `${def.name} folded back into a solid.`;
+      }
+      applyFaceTransforms();
+    });
+    controls.append(netBtn);
+  }
+
+  // Reset view + resume spin.
+  const resetBtn = document.createElement("button");
+  resetBtn.type = "button";
+  resetBtn.className = "btn btn-secondary";
+  resetBtn.textContent = "↺ Reset view";
+  resetBtn.addEventListener("click", () => {
+    rotX = -22;
+    rotY = 28;
+    netT = 0;
+    applyFaceTransforms();
+    applyScene();
+    clearSelection();
+    labelBar.textContent = "View reset.";
+    startAuto();
+  });
+  controls.append(resetBtn);
+
+  if (!prefersReduced) {
+    const spinBtn = document.createElement("button");
+    spinBtn.type = "button";
+    spinBtn.className = "btn btn-secondary";
+    spinBtn.setAttribute("aria-pressed", "true");
+    spinBtn.textContent = "⏸ Pause spin";
+    spinBtn.addEventListener("click", () => {
+      if (autoOn) {
+        stopAuto();
+        spinBtn.textContent = "▶ Auto-spin";
+        spinBtn.setAttribute("aria-pressed", "false");
+      } else {
+        startAuto();
+        spinBtn.textContent = "⏸ Pause spin";
+        spinBtn.setAttribute("aria-pressed", "true");
+      }
+    });
+    controls.append(spinBtn);
+  }
+
+  root.append(controls);
+  container.append(root);
+
+  return {
+    destroy() {
+      stopAuto();
+    },
+  };
+}
+
+function hexToRgba(hex, a) {
+  const m = hex.replace("#", "");
+  const r = parseInt(m.slice(0, 2), 16);
+  const g = parseInt(m.slice(2, 4), 16);
+  const b = parseInt(m.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
+export default renderShape3D;
