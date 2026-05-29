@@ -1564,10 +1564,17 @@
       )
         return;
       State.current.profile = profile;
-      localStorage.setItem(
-        PROFILE_PREFIX + profile,
-        JSON.stringify(State.current),
-      );
+      try {
+        localStorage.setItem(
+          PROFILE_PREFIX + profile,
+          JSON.stringify(State.current),
+        );
+      } catch {
+        alert(
+          "Could not save the profile — local storage is full. Export a backup and remove old profiles, then try again.",
+        );
+        return;
+      }
       transition("SUCCESS", `Profile saved: ${profile}`);
       render();
     };
@@ -1670,11 +1677,27 @@
     };
   }
 
+  function showWorkerError() {
+    const status = $("#workerStatus");
+    if (status) {
+      status.classList.add("show");
+      status.textContent = "Forecast calculation unavailable — please refresh.";
+    }
+  }
+
   function bootWorker() {
     try {
       State.worker = new Worker("./forecast.worker.js");
+      // A worker can construct fine but still fail to load/parse at runtime
+      // (e.g. the script 404s or throws). Surface that instead of silently
+      // failing; drop back to the synchronous compute path on next render.
+      State.worker.onerror = () => {
+        State.worker = null;
+        showWorkerError();
+      };
     } catch {
       State.worker = null;
+      showWorkerError();
     }
   }
 
