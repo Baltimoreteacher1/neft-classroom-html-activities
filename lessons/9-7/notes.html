@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reflect Points Across Axes — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 9 · Standard 6.NS.6b</p>
+    <h1>Reflect Points Across Axes</h1>
+    <p class="meta">Lesson 9-7</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section vocab">
+  <h2>Vocabulary</h2>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <h3 class="vocab-term">Reflection</h3>
+  <p class="vocab-def">A mirror image of a point across a line; the reflected point is the same distance from the line but on the opposite side</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/reflection.svg" alt="A mirror image of a point across a line; the reflected point is the same distance from the line but on the opposite side" onerror="this.style.display='none'" />
+    <p class="vocab-caption">(3, 2) reflected over the y-axis becomes (-3, 2) — x changes sign, y stays</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">x-axis</h3>
+  <p class="vocab-def">The horizontal axis on the coordinate plane; reflecting over the x-axis changes the sign of the y-coordinate</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/x-axis.svg" alt="The horizontal axis on the coordinate plane; reflecting over the x-axis changes the sign of the y-coordinate" onerror="this.style.display='none'" />
+    <p class="vocab-caption">(4, 3) → (4, -3): the y flips from +3 to -3, like folding the paper along the horizontal line</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">y-axis</h3>
+  <p class="vocab-def">The vertical axis on the coordinate plane; reflecting over the y-axis changes the sign of the x-coordinate</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/y-axis.svg" alt="The vertical axis on the coordinate plane; reflecting over the y-axis changes the sign of the x-coordinate" onerror="this.style.display='none'" />
+    <p class="vocab-caption">(4, 3) → (-4, 3): the x flips from +4 to -4, like folding the paper along the vertical line</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Symmetry</h3>
+  <p class="vocab-def">When a shape or arrangement looks the same on both sides of a line of reflection</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/symmetry.svg" alt="When a shape or arrangement looks the same on both sides of a line of reflection" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A butterfly's wings are symmetric — fold it down the middle and both sides match</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Integer</h3>
+  <p class="vocab-def">Whole numbers and their opposites, including zero</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/integer.svg" alt="Whole numbers and their opposites, including zero" onerror="this.style.display='none'" />
+    <p class="vocab-caption">..., -3, -2, -1, 0, 1, 2, 3, ...</p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>Captain Vega discovers that her treasure map has a magic mirror trick!</li><li>When she folds the map along the x-axis, some clues match up perfectly with clues on the other side.</li><li>For example, a marker at (2, 4) has a matching marker at (2, -4) when reflected over the x-axis.</li><li>Another pair reflects over the y-axis: (5, 3) and (-5, 3).</li><li>Plot each original point and then plot its reflection across the given axis.</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>When (2, 4) reflects over the x-axis to (2, -4), which coordinate changed?</li><li>When (5, 3) reflects over the y-axis to (-5, 3), which coordinate changed?</li><li>What stays the same in each reflection?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">What is the reflection of (4, -3) over the x-axis?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Reflecting over the x-axis changes the sign of the y-coordinate. The x stays the same (4), and the y changes from -3 to 3. The answer is (4, 3).</p>
+    <p class="ex-answer"><strong>Answer:</strong> B. (4, 3)</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">What is the reflection of (-2, 6) over the y-axis?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -2 to 2, and y stays 6. The answer is (2, 6).</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. (2, 6)</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">Which point is on the y-axis?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Points on the y-axis have x-coordinate = 0. (0, 5) is on the y-axis.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. (0, 5)</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. Which point is on the y-axis?</p>
+  <ol class="try-choices" type="A"><li>(0, 5)</li><li>(5, 0)</li><li>(3, 3)</li><li>(-2, 4)</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. Point A is at (-3, 5). It is reflected over the x-axis to A', then A' is reflected over the y-axis to A''. What are the coordinates of A''?</p>
+  <ol class="try-choices" type="A"><li>(3, -5)</li><li>(-3, -5)</li><li>(3, 5)</li><li>(-3, 5)</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">What is the reflection of (-5, 2) over the y-axis?</p>
+  <ol class="try-choices" type="A"><li>(-5, -2)</li><li>(5, -2)</li><li>(5, 2)</li><li>(2, -5)</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. (0, 5) <span class="ak-why">— Points on the y-axis have x-coordinate = 0. (0, 5) is on the y-axis.</span></li><li><strong>Try It 2:</strong> A. (3, -5) <span class="ak-why">— Over x-axis: (-3, 5) → (-3, -5). Then over y-axis: (-3, -5) → (3, -5). Both coordinates changed sign.</span></li><li><strong>Exit Ticket:</strong> C. (5, 2) <span class="ak-why">— Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -5 to 5, and y stays 2. The reflection is (5, 2).</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 9-7 · Standard 6.NS.6b</footer>
+</main>
+</body>
+</html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Math Lab Missions | Reveal Math Student Tools</title>
     <link rel="stylesheet" href="/assets/reveal-math-tools.css" />
+    <link rel="stylesheet" href="/assets/design-tokens.css" />
     <style>
       :root {
         color-scheme: light;
@@ -557,1406 +558,357 @@
       </section>
 
       <!-- ═══ MISSION LIBRARY ═══ -->
-      <section style="margin: 32px 0 40px">
-        <h2
-          style="
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--navy);
-            margin-bottom: 6px;
-          "
-        >
-          Mission Library
-        </h2>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px">
-          Click any mission for a comprehensive, interactive investigation guide
-          with visuals, ESOL support, and hands-on tools.
+      <style id="mlm-hub-upgrade">
+        .mlm-library h2 {
+          font-family: var(--font-display, "Outfit", sans-serif);
+          font-size: 1.5rem;
+          color: var(--navy);
+          margin-bottom: 4px;
+        }
+        .mlm-library .mlm-intro {
+          color: var(--muted);
+          font-size: 1rem;
+          margin-bottom: 22px;
+          max-width: 60ch;
+        }
+        .mlm-unit { margin-bottom: 26px; }
+        .mlm-unit-title {
+          font-family: var(--font-display, "Outfit", sans-serif);
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: var(--teal-dark, #115e59);
+          margin: 0 0 12px;
+          padding-bottom: 6px;
+          border-bottom: 2px solid var(--teal-light, #dff2ee);
+        }
+        .mlm-unit-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          gap: 14px;
+        }
+        .mlm-card {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 16px 18px;
+          background: var(--card, #fff);
+          border: 1px solid var(--line, #d7e2ed);
+          border-radius: var(--radius-md, 14px);
+          box-shadow: 0 2px 10px rgba(18, 53, 91, 0.06);
+          text-decoration: none;
+          color: var(--ink, #21313f);
+          transition: box-shadow 0.18s ease, transform 0.15s ease, border-color 0.18s ease;
+        }
+        .mlm-card:hover {
+          box-shadow: 0 10px 26px rgba(18, 53, 91, 0.14);
+          transform: translateY(-2px);
+          border-color: var(--teal, #1fa6a2);
+        }
+        .mlm-card:focus-visible {
+          outline: 3px solid var(--teal, #1fa6a2);
+          outline-offset: 2px;
+        }
+        .mlm-card-num {
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          background: var(--navy, #12355b);
+          color: #fff;
+          font-family: var(--font-display, "Outfit", sans-serif);
+          font-weight: 800;
+          font-size: 0.95rem;
+        }
+        .mlm-card-body { display: flex; flex-direction: column; gap: 4px; }
+        .mlm-card-body strong {
+          font-size: 1rem;
+          color: var(--navy, #12355b);
+          line-height: 1.25;
+        }
+        .mlm-card-std {
+          align-self: flex-start;
+          padding: 2px 9px;
+          border-radius: 999px;
+          background: var(--teal-light, #dff2ee);
+          color: var(--navy, #12355b);
+          font-family: var(--font-display, "Outfit", sans-serif);
+          font-weight: 700;
+          font-size: 0.78rem;
+        }
+        .mlm-card-arrow {
+          margin-left: auto;
+          color: var(--teal, #1fa6a2);
+          font-size: 1.25rem;
+          font-weight: 700;
+        }
+      </style>
+      <section class="mlm-library" style="margin: 32px 0 40px" aria-labelledby="mlm-library-title">
+        <h2 id="mlm-library-title">Mission Library</h2>
+        <p class="mlm-intro">
+          26 collaborative investigations covering every Grade 6 standard. Each
+          card shows the standard it targets. Click any mission for a guided,
+          interactive lab with visuals, language support, and hands-on tools.
         </p>
-        <div
-          style="
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 14px;
-          "
-        >
-          <a
-            href="mission-1/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--navy);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >1</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Factors &amp; Multiples</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 1 — Distributive property</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 1 · The Number System: Factors &amp; Multiples</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-1/">
+            <span class="mlm-card-num">1</span>
+            <span class="mlm-card-body">
+              <strong>Factors and Multiples</strong>
+              <span class="mlm-card-std">6.NS.B.4</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-2/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--navy);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >2</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Prime Factorization</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 1 — Factor trees &amp; structures</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-2/">
+            <span class="mlm-card-num">2</span>
+            <span class="mlm-card-body">
+              <strong>Prime Factorization</strong>
+              <span class="mlm-card-std">6.NS.B.4</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-3/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--teal);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >3</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Fraction Meanings</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 2 — Diagrams &amp; number lines</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 2 · Fractions</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-3/">
+            <span class="mlm-card-num">3</span>
+            <span class="mlm-card-body">
+              <strong>Fraction Meanings</strong>
+              <span class="mlm-card-std">6.NS.A.1</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-4/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--teal);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >4</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Fraction Operations</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 2 — Multiply &amp; divide fractions</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-4/">
+            <span class="mlm-card-num">4</span>
+            <span class="mlm-card-body">
+              <strong>Fraction Operations</strong>
+              <span class="mlm-card-std">6.NS.A.1</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-5/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--gold);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >5</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Ratios &amp; Rates</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 3 — Ratio language &amp; tape diagrams</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 3 · Ratios, Rates &amp; Percent</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-5/">
+            <span class="mlm-card-num">5</span>
+            <span class="mlm-card-body">
+              <strong>Ratios and Rates</strong>
+              <span class="mlm-card-std">6.RP.A.1</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-6/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--gold);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >6</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Unit Rates</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 3 — Fair comparisons</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-6/">
+            <span class="mlm-card-num">6</span>
+            <span class="mlm-card-body">
+              <strong>Unit Rates</strong>
+              <span class="mlm-card-std">6.RP.A.2</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-7/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--gold);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >7</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Percent Reasoning</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 3 — Fractions, decimals &amp; percents</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-7/">
+            <span class="mlm-card-num">7</span>
+            <span class="mlm-card-body">
+              <strong>Percent Reasoning</strong>
+              <span class="mlm-card-std">6.RP.A.3.C</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-8/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--red);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >8</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Decimal Operations</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 4 — All four operations</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 4 · Decimal &amp; Whole-Number Operations</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-8/">
+            <span class="mlm-card-num">8</span>
+            <span class="mlm-card-body">
+              <strong>Decimal Operations</strong>
+              <span class="mlm-card-std">6.NS.B.3</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-9/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--red);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >9</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Long Division</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 4 — Quotients &amp; remainders</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-9/">
+            <span class="mlm-card-num">9</span>
+            <span class="mlm-card-body">
+              <strong>Long Division</strong>
+              <span class="mlm-card-std">6.NS.B.2</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-10/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--green);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >10</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Area of Polygons</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 5 — Compose &amp; decompose shapes</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 5 · Geometry: Area, Surface Area &amp; Volume</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-10/">
+            <span class="mlm-card-num">10</span>
+            <span class="mlm-card-body">
+              <strong>Area of Polygons</strong>
+              <span class="mlm-card-std">6.G.A.1</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-11/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--green);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >11</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Surface Area</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 5 — Nets &amp; faces</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-11/">
+            <span class="mlm-card-num">11</span>
+            <span class="mlm-card-body">
+              <strong>Surface Area</strong>
+              <span class="mlm-card-std">6.G.A.4</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-12/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--green);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >12</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Volume</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 5 — Layers, prisms &amp; cubic units</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-12/">
+            <span class="mlm-card-num">12</span>
+            <span class="mlm-card-body">
+              <strong>Volume</strong>
+              <span class="mlm-card-std">6.G.A.2</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-13/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #7c3aed;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >13</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Expressions</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 6 — Write, evaluate &amp; interpret</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-25/">
+            <span class="mlm-card-num">25</span>
+            <span class="mlm-card-body">
+              <strong>Geometry Models</strong>
+              <span class="mlm-card-std">6.G.A.3</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-14/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #7c3aed;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >14</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Equivalent Expressions</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 6 — Properties of operations</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 6 · Expressions</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-13/">
+            <span class="mlm-card-num">13</span>
+            <span class="mlm-card-body">
+              <strong>Expressions</strong>
+              <span class="mlm-card-std">6.EE.A.2</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-15/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #7c3aed;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >15</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Inequalities</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 6 — Constraints &amp; number lines</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-14/">
+            <span class="mlm-card-num">14</span>
+            <span class="mlm-card-body">
+              <strong>Equivalent Expressions</strong>
+              <span class="mlm-card-std">6.EE.A.3</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-16/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #0891b2;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >16</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Equations</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 7 — One-step &amp; inverse operations</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 7 · Equations &amp; Inequalities</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-16/">
+            <span class="mlm-card-num">16</span>
+            <span class="mlm-card-body">
+              <strong>Equations</strong>
+              <span class="mlm-card-std">6.EE.B.7</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-17/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #0891b2;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >17</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Rational Numbers</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 7 — Compare &amp; order signed numbers</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-15/">
+            <span class="mlm-card-num">15</span>
+            <span class="mlm-card-body">
+              <strong>Inequalities</strong>
+              <span class="mlm-card-std">6.EE.B.8</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-18/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #0891b2;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >18</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Coordinate Plane</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 7 — Plotting &amp; distance</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 8 · Rational Numbers &amp; the Coordinate Plane</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-17/">
+            <span class="mlm-card-num">17</span>
+            <span class="mlm-card-body">
+              <strong>Rational Numbers</strong>
+              <span class="mlm-card-std">6.NS.C.6</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-19/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #dc2626;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >19</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Statistical Questions</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 8 — Statistical vs. non-statistical</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-18/">
+            <span class="mlm-card-num">18</span>
+            <span class="mlm-card-body">
+              <strong>Coordinate Plane</strong>
+              <span class="mlm-card-std">6.NS.C.8</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-20/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #dc2626;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >20</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Data Displays</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 8 — Dot plots, histograms &amp; box plots</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 9 · Statistics &amp; Data</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-19/">
+            <span class="mlm-card-num">19</span>
+            <span class="mlm-card-body">
+              <strong>Statistical Questions</strong>
+              <span class="mlm-card-std">6.SP.A.1</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-21/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #dc2626;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >21</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Center &amp; Spread</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 8 — Mean, median, range &amp; IQR</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-20/">
+            <span class="mlm-card-num">20</span>
+            <span class="mlm-card-body">
+              <strong>Data Displays</strong>
+              <span class="mlm-card-std">6.SP.B.4</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-22/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #ea580c;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >22</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Dependent Variables</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 9 — Independent &amp; dependent</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-21/">
+            <span class="mlm-card-num">21</span>
+            <span class="mlm-card-body">
+              <strong>Center and Spread</strong>
+              <span class="mlm-card-std">6.SP.B.5</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-23/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #ea580c;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >23</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Tables &amp; Graphs</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 9 — Tables, graphs &amp; equations</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          </div>
+        </div>
+        <div class="mlm-unit">
+          <h3 class="mlm-unit-title">Unit 10 · Relationships &amp; Design Challenge</h3>
+          <div class="mlm-unit-grid">
+          <a class="mlm-card" href="mission-22/">
+            <span class="mlm-card-num">22</span>
+            <span class="mlm-card-body">
+              <strong>Dependent Variables</strong>
+              <span class="mlm-card-std">6.EE.C.9</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-24/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: #ea580c;
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >24</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Patterns &amp; Rules</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 9 — Rules from patterns &amp; data</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-23/">
+            <span class="mlm-card-num">23</span>
+            <span class="mlm-card-body">
+              <strong>Tables and Graphs</strong>
+              <span class="mlm-card-std">6.EE.C.9</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-25/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--navy);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >25</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Geometry Models</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 10 — Real objects &amp; measurements</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-24/">
+            <span class="mlm-card-num">24</span>
+            <span class="mlm-card-body">
+              <strong>Patterns and Rules</strong>
+              <span class="mlm-card-std">6.EE.C.9</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a
-            href="mission-26/"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 14px 16px;
-              background: #fff;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              text-decoration: none;
-              color: inherit;
-              transition:
-                box-shadow 0.2s,
-                transform 0.15s;
-            "
-            onmouseover="
-              this.style.boxShadow = '0 4px 16px rgba(0,0,0,.12)';
-              this.style.transform = 'translateY(-2px)';
-            "
-            onmouseout="
-              this.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)';
-              this.style.transform = 'none';
-            "
-          >
-            <span
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-                background: var(--navy);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-              "
-              >26</span
-            >
-            <div>
-              <strong style="font-size: 0.88rem; color: var(--navy)"
-                >Culminating Design Lab</strong
-              ><br /><span style="font-size: 0.75rem; color: var(--muted)"
-                >Unit 10 — Multi-step design challenge</span
-              >
-            </div>
-            <span
-              style="margin-left: auto; color: var(--teal); font-size: 1.1rem"
-              >&rarr;</span
-            >
+          <a class="mlm-card" href="mission-26/">
+            <span class="mlm-card-num">26</span>
+            <span class="mlm-card-body">
+              <strong>Culminating Design Lab</strong>
+              <span class="mlm-card-std">6.G.A · 6.EE.C</span>
+            </span>
+            <span class="mlm-card-arrow" aria-hidden="true">&rarr;</span>
           </a>
+          </div>
         </div>
       </section>
 

@@ -1,4 +1,6 @@
 import { createApp } from "./app.js";
+import { createAdaptiveSequence } from "./adaptive.js";
+import { levelOverride, mountLevelSelector } from "./levels.js";
 import {
   renderVocabBuilder,
   renderMultipleChoice,
@@ -15,6 +17,11 @@ import {
   renderVocabCloze,
   renderVocabSort,
   renderVocabIntro,
+  renderAlgebraTiles,
+  renderFractionBars,
+  renderNetFolder,
+  renderCoordinatePlane,
+  renderRemediation,
 } from "../components/index.js";
 
 export function bootLesson(config) {
@@ -112,6 +119,30 @@ function renderComponent(container, problemDef, onAnswer) {
       break;
     case "balance-scale":
       renderBalanceScale(container, {
+        ...problemDef,
+        onComplete: (c, t) => onAnswer?.(true),
+      });
+      break;
+    case "algebra-tiles":
+      renderAlgebraTiles(container, {
+        ...problemDef,
+        onComplete: (c) => onAnswer?.(c > 0),
+      });
+      break;
+    case "fraction-bars":
+      renderFractionBars(container, {
+        ...problemDef,
+        onComplete: (c) => onAnswer?.(c > 0),
+      });
+      break;
+    case "net-folder":
+      renderNetFolder(container, {
+        ...problemDef,
+        onComplete: (c) => onAnswer?.(c > 0),
+      });
+      break;
+    case "coordinate-plane":
+      renderCoordinatePlane(container, {
         ...problemDef,
         onComplete: (c, t) => onAnswer?.(true),
       });
@@ -344,53 +375,65 @@ function renderExplorePhase(el, state, ctx, config) {
   });
 }
 
-// ── Phase 4: Practice ──
+// ── Phase 4: Practice (adaptive) ──
+const TIER_LABELS = {
+  level1: { name: "Level 1", badge: "badge-teal" },
+  core: { name: "On Level", badge: "badge-amber" },
+  level2: { name: "Level 2", badge: "badge-navy" },
+};
+
 function renderPracticePhase(el, state, ctx, config) {
   phaseHeader(
     el,
     "✏️",
     "section-icon-navy",
     "Practice",
-    "Work through problems at your level.",
+    "Problems adapt to how you're doing — keep going!",
   );
 
-  const tierNames = ["Approaching", "On Level", "Extending"];
-  const tierBadgeClasses = ["badge-teal", "badge-amber", "badge-navy"];
-  const allProblems = [];
-  ["approaching", "onLevel", "extending"].forEach((tier, ti) => {
-    (config.practice[tier] || []).forEach((p) =>
-      allProblems.push({ ...p, tierIdx: ti }),
-    );
-  });
+  // Non-stigmatizing Level 1 / Level 2 / Adaptive selector.
+  const selectorSlot = document.createElement("div");
+  el.append(selectorSlot);
+  mountLevelSelector(selectorSlot, state);
 
   const tierBadge = document.createElement("div");
-  tierBadge.className = `badge ${tierBadgeClasses[0]} mb-4`;
-  tierBadge.textContent = `Tier 1: ${tierNames[0]}`;
+  tierBadge.className = "badge badge-amber mb-4";
   el.append(tierBadge);
 
   const area = document.createElement("div");
   el.append(area);
 
-  let idx = 0,
-    totalCorrect = 0,
-    totalAttempts = 0;
+  const seq = createAdaptiveSequence(config, state);
+  let totalCorrect = 0,
+    totalAttempts = 0,
+    shown = 0;
 
   function next() {
-    if (idx >= allProblems.length) {
+    const prob = seq.nextProblem(levelOverride(state));
+    if (!prob) {
       area.innerHTML = "";
       completePhase(el, ctx, state, 3, "Practice", totalCorrect, totalAttempts);
       return;
     }
-    const prob = allProblems[idx];
-    tierBadge.className = `badge ${tierBadgeClasses[prob.tierIdx]} mb-4`;
-    tierBadge.textContent = `Tier ${prob.tierIdx + 1}: ${tierNames[prob.tierIdx]}`;
+    shown++;
+    const tl = TIER_LABELS[prob.tier] || TIER_LABELS.core;
+    tierBadge.className = `badge ${tl.badge} mb-4`;
+    tierBadge.textContent = tl.name;
 
     area.innerHTML = "";
     const counter = document.createElement("div");
     counter.style.cssText =
       "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
-    counter.textContent = `Problem ${idx + 1} of ${allProblems.length}`;
+    counter.textContent = `Problem ${shown} of ${seq.total}`;
     area.append(counter);
+
+    // Level 1 items get an always-visible scaffold hint when provided.
+    if (prob.tier === "level1" && (prob.scaffold || prob.hint)) {
+      const hint = document.createElement("div");
+      hint.className = "feedback feedback-hint visible";
+      hint.innerHTML = `<span class="feedback-icon">💡</span><span>${esc(prob.scaffold || prob.hint)}</span>`;
+      area.append(hint);
+    }
 
     renderComponent(area, prob, (isCorrect) => {
       totalAttempts++;
@@ -404,13 +447,24 @@ function renderPracticePhase(el, state, ctx, config) {
           toast.innerHTML = `<span class="feedback-icon">✓</span><span>${result.message} ${result.streakMessage}</span>`;
           area.append(toast);
         }
+        setTimeout(() => next(), 1500);
       } else {
         ctx.engagement.recordIncorrect(null);
+        // Run the scaffolded remediation sequence (hint -> worked example ->
+        // guided steps -> easier retry) before advancing. The flow also biases
+        // the adaptive tier toward Level 1 on repeated misses via state hooks.
+        const remSlot = document.createElement("div");
+        remSlot.className = "mt-4";
+        area.append(remSlot);
+        renderRemediation(remSlot, {
+          question: prob,
+          state,
+          level: prob.tier,
+          onComplete() {
+            setTimeout(() => next(), 600);
+          },
+        });
       }
-      setTimeout(() => {
-        idx++;
-        next();
-      }, 1500);
     });
   }
   next();

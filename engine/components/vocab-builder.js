@@ -1,3 +1,18 @@
+import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
+
+function vocabImageEl(term, definition) {
+  const img = document.createElement("img");
+  img.src = resolveVocabImage(term);
+  img.alt = vocabImageAlt(term, definition);
+  img.loading = "lazy";
+  img.style.cssText = `
+    display:block; width:100%; max-width:180px; aspect-ratio:4 / 3;
+    margin:0 auto var(--sp-3); border-radius:var(--radius-md);
+    background:var(--card); border:1px solid var(--line); object-fit:contain;
+  `;
+  return img;
+}
+
 export function renderVocabBuilder(container, { terms, onComplete }) {
   const wrapper = document.createElement("div");
 
@@ -39,6 +54,8 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
     const card = document.createElement("div");
     card.className = "card";
     card.style.cssText = "animation:phaseIn 0.3s var(--ease-out);";
+
+    card.append(vocabImageEl(term.term, term.definition));
 
     const termDisplay = document.createElement("div");
     termDisplay.style.cssText = `

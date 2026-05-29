@@ -1,3 +1,19 @@
+import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
+
+function vocabImageEl(term, definition) {
+  const img = document.createElement("img");
+  img.src = resolveVocabImage(term);
+  img.alt = vocabImageAlt(term, definition);
+  img.loading = "lazy";
+  img.draggable = false;
+  img.style.cssText = `
+    width:40px; aspect-ratio:4 / 3; flex:0 0 auto; vertical-align:middle;
+    border-radius:var(--radius-sm); background:var(--card);
+    border:1px solid var(--line); object-fit:contain;
+  `;
+  return img;
+}
+
 export function renderVocabDragMatch(container, { terms, onComplete }) {
   const wrapper = document.createElement("div");
 
@@ -50,12 +66,16 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     el.dataset.termIdx = String(i);
     el.dataset.termName = term.term;
     el.style.cssText = `
+      display:flex; align-items:center; gap:var(--sp-2);
       padding:12px 16px; border:2px solid var(--teal); border-radius:var(--radius-md);
       background:white; font-weight:700; font-size:0.92rem; text-align:left;
       cursor:pointer; transition:all var(--duration-fast) ease; width:100%;
       color:var(--ink);
     `;
-    el.textContent = term.term;
+    el.append(vocabImageEl(term.term, term.definition));
+    const termLabel = document.createElement("span");
+    termLabel.textContent = term.term;
+    el.append(termLabel);
 
     el.setAttribute("draggable", "true");
     el.addEventListener("dragstart", (e) => {

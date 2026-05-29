@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Volume with Whole Number Edges — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 10 · Standard 6.G.2</p>
+    <h1>Volume with Whole Number Edges</h1>
+    <p class="meta">Lesson 10-1</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section vocab">
+  <h2>Vocabulary</h2>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <h3 class="vocab-term">Volume</h3>
+  <p class="vocab-def">The amount of space inside a three-dimensional figure, measured in cubic units</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/volume.svg" alt="The amount of space inside a three-dimensional figure, measured in cubic units" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Rectangular prism</h3>
+  <p class="vocab-def">A 3D shape with six rectangular faces</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/rectangular-prism.svg" alt="A 3D shape with six rectangular faces" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A cereal box or shoe box — it has length, width, and height</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Cubic units</h3>
+  <p class="vocab-def">Units used to measure volume (cubic inches, cubic feet, etc.)</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/cubic-units.svg" alt="Units used to measure volume (cubic inches, cubic feet, etc.)" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Length, width, height</h3>
+  <p class="vocab-def">The three dimensions of a rectangular prism used to calculate volume</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/length-width-height.svg" alt="The three dimensions of a rectangular prism used to calculate volume" onerror="this.style.display='none'" />
+    <p class="vocab-caption">V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Net</h3>
+  <p class="vocab-def">A 2D pattern that folds into a 3D solid</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/net.svg" alt="A 2D pattern that folds into a 3D solid" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A cross-shaped pattern of 6 rectangles folds into a rectangular box</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Edge</h3>
+  <p class="vocab-def">A line segment where two faces of a solid meet</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/edge.svg" alt="A line segment where two faces of a solid meet" onerror="this.style.display='none'" />
+    <p class="vocab-caption">A cube has 12 edges — 4 along the top, 4 along the bottom, 4 vertical</p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>Your team is building time capsule containers to store class memories.</li><li>Each container is a rectangular prism, and you need to figure out how much each one can hold.</li><li>That means calculating the volume using whole number dimensions!</li><li>Calculate the volume of each time capsule container. Use V = l × w × h.</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>What three measurements do you need to find the volume of a box?</li><li>What does volume tell us about a container?</li><li>How is volume different from the area of one face?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
+    <p class="ex-solution"><strong>Solution:</strong> V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 84 in³</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
+    <p class="ex-solution"><strong>Solution:</strong> V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 3 cm</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">Which unit is used for volume?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. Cubic inches (in³)</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. Which unit is used for volume?</p>
+  <ol class="try-choices" type="A"><li>Cubic inches (in³)</li><li>Square inches (in²)</li><li>Inches (in)</li><li>Degrees (°)</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
+  <ol class="try-choices" type="A"><li>Bin B by 12 in³</li><li>Bin A by 12 in³</li><li>Bin B by 24 in³</li><li>They hold the same</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">A rectangular prism has l = 11 in, w = 5 in, h = 4 in. What is the volume?</p>
+  <ol class="try-choices" type="A"><li>220 in³</li><li>55 in³</li><li>220 in²</li><li>200 in³</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. Cubic inches (in³) <span class="ak-why">— Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.</span></li><li><strong>Try It 2:</strong> A. Bin B by 12 in³ <span class="ak-why">— Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.</span></li><li><strong>Exit Ticket:</strong> A. 220 in³ <span class="ak-why">— V = 11 × 5 × 4 = 220 cubic inches. Remember: volume uses cubic units (in³).</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 10-1 · Standard 6.G.2</footer>
+</main>
+</body>
+</html>

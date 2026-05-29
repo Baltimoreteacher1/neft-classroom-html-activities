@@ -1,0 +1,5067 @@
+<!doctype html>
+<html data-nt-level="1" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Space Mission Control — GCF, LCM &amp; Factors | Neft Teacher — Level 1 (Support)</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Theme: Cosmic Navy / Gold / Purple ── */
+      :root {
+        --space-deep: #0b1026;
+        --space-navy: #131b3a;
+        --space-mid: #1e2a5e;
+        --space-accent: #3b5bdb;
+        --space-gold: #f0c040;
+        --space-purple: #7c3aed;
+        --space-teal: #22d3ee;
+        --space-coral: #f97066;
+        --space-surface: #1a2347;
+        --space-card: rgba(26, 35, 71, 0.92);
+        --space-glass: rgba(255, 255, 255, 0.06);
+        --space-text: #e2e8f0;
+        --space-muted: #94a3b8;
+        --space-line: rgba(255, 255, 255, 0.1);
+        --space-success: #34d399;
+        --space-warn: #fbbf24;
+        --space-error: #f87171;
+        --radius: 14px;
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        --font:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--space-text);
+        line-height: 1.6;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100vh;
+        background: var(--space-deep);
+        overflow-x: hidden;
+      }
+
+      /* ── Starfield Background ── */
+      .starfield {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .starfield .layer {
+        position: absolute;
+        inset: 0;
+        background-repeat: repeat;
+      }
+      .starfield .layer-1 {
+        background-image:
+          radial-gradient(
+            1px 1px at 20px 30px,
+            rgba(255, 255, 255, 0.8),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 80px 120px,
+            rgba(255, 255, 255, 0.6),
+            transparent
+          ),
+          radial-gradient(
+            1.5px 1.5px at 160px 60px,
+            rgba(255, 255, 255, 0.9),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 240px 180px,
+            rgba(255, 255, 255, 0.5),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 300px 90px,
+            rgba(255, 255, 255, 0.7),
+            transparent
+          );
+        background-size: 400px 300px;
+        animation: drift 80s linear infinite;
+      }
+      .starfield .layer-2 {
+        background-image:
+          radial-gradient(
+            1.5px 1.5px at 50px 200px,
+            rgba(255, 255, 255, 0.4),
+            transparent
+          ),
+          radial-gradient(
+            2px 2px at 180px 50px,
+            rgba(255, 255, 255, 0.3),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 280px 160px,
+            rgba(255, 255, 255, 0.5),
+            transparent
+          );
+        background-size: 600px 400px;
+        animation: drift 120s linear infinite;
+      }
+      @keyframes drift {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-300px);
+        }
+      }
+
+      /* ── Nebula Gradient ── */
+      .nebula {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse at 20% 50%,
+            rgba(124, 58, 237, 0.15),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 80% 30%,
+            rgba(59, 91, 219, 0.12),
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 50% 80%,
+            rgba(34, 211, 238, 0.08),
+            transparent 50%
+          );
+      }
+
+      /* ── Shell ── */
+      .app-shell {
+        position: relative;
+        z-index: 1;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+
+      /* ── Progress Bar ── */
+      .progress-bar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--space-navy);
+        border-bottom: 1px solid var(--space-line);
+        padding: 12px 24px;
+        border-radius: 0 0 var(--radius) var(--radius);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        backdrop-filter: blur(12px);
+      }
+      .progress-bar .phase-dots {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+      }
+      .phase-dot {
+        width: 100%;
+        height: 8px;
+        border-radius: 99px;
+        background: var(--space-glass);
+        transition: background 0.4s;
+      }
+      .phase-dot.completed {
+        background: var(--space-success);
+      }
+      .phase-dot.active {
+        background: var(--space-gold);
+        box-shadow: 0 0 12px rgba(240, 192, 64, 0.5);
+      }
+      .progress-label {
+        font-size: 0.82rem;
+        color: var(--space-muted);
+        white-space: nowrap;
+        font-weight: 700;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--space-card);
+        border: 1px solid var(--space-line);
+        border-radius: var(--radius);
+        padding: 32px;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(8px);
+      }
+      .card-glow {
+        border-color: rgba(59, 91, 219, 0.3);
+        box-shadow:
+          0 0 40px rgba(59, 91, 219, 0.1),
+          var(--shadow);
+      }
+      .card h2 {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+        background: linear-gradient(
+          135deg,
+          var(--space-gold),
+          var(--space-teal)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .card h3 {
+        font-size: 1.2rem;
+        color: var(--space-gold);
+        margin-bottom: 12px;
+      }
+      .card p,
+      .card li {
+        color: var(--space-text);
+        line-height: 1.7;
+      }
+
+      /* ── Phase Sections ── */
+      .phase {
+        display: none;
+        animation: fadeUp 0.5s ease;
+      }
+      .phase.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Phase Header ── */
+      .phase-header {
+        text-align: center;
+        padding: 40px 20px 32px;
+        position: relative;
+      }
+      .phase-header .phase-number {
+        display: inline-block;
+        padding: 6px 18px;
+        background: linear-gradient(
+          135deg,
+          var(--space-accent),
+          var(--space-purple)
+        );
+        border-radius: 99px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+      .phase-header h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        background: linear-gradient(135deg, #fff, var(--space-gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .phase-header p {
+        color: var(--space-muted);
+        max-width: 640px;
+        margin: 0 auto;
+        font-size: 1.05rem;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--space-accent),
+          var(--space-purple)
+        );
+        color: #fff;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(59, 91, 219, 0.4);
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, var(--space-gold), #f59e0b);
+        color: var(--space-deep);
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(240, 192, 64, 0.4);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--space-line);
+        color: var(--space-text);
+      }
+      .btn-outline:hover {
+        border-color: var(--space-gold);
+        color: var(--space-gold);
+      }
+      .btn-sm {
+        padding: 8px 18px;
+        font-size: 0.85rem;
+      }
+      .btn-block {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* ── Forms ── */
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--space-gold);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--space-line);
+        border-radius: var(--radius);
+        color: var(--space-text);
+        font-size: 1rem;
+        transition: border-color 0.2s;
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--space-gold);
+        box-shadow: 0 0 0 3px rgba(240, 192, 64, 0.15);
+      }
+      .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 640px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Task Cards ── */
+      .task {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--space-line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+        transition: border-color 0.3s;
+      }
+      .task.completed {
+        border-color: var(--space-success);
+      }
+      .task-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .task-number {
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(
+          135deg,
+          var(--space-accent),
+          var(--space-purple)
+        );
+        border-radius: 50%;
+        font-size: 0.85rem;
+        font-weight: 800;
+      }
+      .task-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+      .task-check {
+        margin-left: auto;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid var(--space-line);
+        display: grid;
+        place-items: center;
+        transition: all 0.3s;
+      }
+      .task.completed .task-check {
+        background: var(--space-success);
+        border-color: var(--space-success);
+      }
+
+      /* ── SVG Containers ── */
+      .svg-scene {
+        display: flex;
+        justify-content: center;
+        margin: 24px 0;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: var(--radius);
+        border: 1px solid var(--space-line);
+      }
+      .svg-scene svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* ── Data Tables ── */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+      }
+      .data-table th {
+        background: rgba(59, 91, 219, 0.2);
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--space-gold);
+        border-bottom: 2px solid var(--space-accent);
+      }
+      .data-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--space-line);
+      }
+      .data-table tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .data-table input {
+        width: 100%;
+        background: transparent;
+        border: 1px solid var(--space-line);
+        border-radius: 8px;
+        padding: 8px;
+        color: var(--space-text);
+        text-align: center;
+      }
+
+      /* ── Calculator Tool ── */
+      .calc-tool {
+        background: linear-gradient(
+          135deg,
+          rgba(59, 91, 219, 0.15),
+          rgba(124, 58, 237, 0.1)
+        );
+        border: 1px solid rgba(59, 91, 219, 0.3);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin: 20px 0;
+      }
+      .calc-tool h4 {
+        color: var(--space-teal);
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .calc-row {
+        display: flex;
+        gap: 12px;
+        align-items: end;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .calc-row .form-group {
+        margin-bottom: 0;
+        flex: 1;
+        min-width: 120px;
+      }
+      .calc-result {
+        padding: 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: var(--radius);
+        font-family: ui-monospace, monospace;
+        font-size: 1.1rem;
+        color: var(--space-gold);
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+      }
+
+      /* ── Hint System ── */
+      .hint-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--space-teal);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 12px;
+        background: none;
+        border: none;
+        padding: 4px 0;
+      }
+      .hint-toggle:hover {
+        color: var(--space-gold);
+      }
+      .hint-content {
+        display: none;
+        margin-top: 8px;
+        padding: 16px;
+        background: rgba(34, 211, 238, 0.05);
+        border-left: 3px solid var(--space-teal);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 0.92rem;
+        color: var(--space-muted);
+      }
+      .hint-content.open {
+        display: block;
+        animation: fadeUp 0.3s ease;
+      }
+
+      /* ── Differentiation Modes ── */
+      .mode-toggle {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        padding: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius);
+        width: fit-content;
+      }
+      .mode-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--space-muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .mode-btn.active {
+        background: var(--space-accent);
+        color: #fff;
+      }
+      .challenge-content,
+      .support-content {
+        display: none;
+      }
+      .challenge-mode .challenge-content {
+        display: block;
+      }
+      .support-mode .support-content {
+        display: block;
+      }
+
+      /* ── Canvas Area ── */
+      .canvas-area {
+        background: #0d1330;
+        border: 2px solid var(--space-line);
+        border-radius: var(--radius);
+        position: relative;
+        overflow: hidden;
+      }
+      .canvas-area canvas {
+        display: block;
+        width: 100%;
+        cursor: crosshair;
+      }
+      .canvas-toolbar {
+        display: flex;
+        gap: 8px;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid var(--space-line);
+      }
+      .canvas-toolbar button {
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--space-line);
+        border-radius: 8px;
+        color: var(--space-text);
+        font-size: 0.82rem;
+        cursor: pointer;
+      }
+      .canvas-toolbar button.active {
+        background: var(--space-accent);
+        border-color: var(--space-accent);
+      }
+
+      /* ── Badges ── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+      .badge-gold {
+        background: rgba(240, 192, 64, 0.15);
+        color: var(--space-gold);
+        border: 1px solid rgba(240, 192, 64, 0.3);
+      }
+      .badge-purple {
+        background: rgba(124, 58, 237, 0.15);
+        color: #a78bfa;
+        border: 1px solid rgba(124, 58, 237, 0.3);
+      }
+      .badge-teal {
+        background: rgba(34, 211, 238, 0.15);
+        color: var(--space-teal);
+        border: 1px solid rgba(34, 211, 238, 0.3);
+      }
+
+      /* ── Grid Layouts ── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+      }
+      @media (max-width: 768px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Achievement Badges ── */
+      .achievement-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .achievement {
+        text-align: center;
+        padding: 24px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--space-line);
+        border-radius: var(--radius);
+        transition: all 0.3s;
+      }
+      .achievement.earned {
+        border-color: var(--space-gold);
+        background: rgba(240, 192, 64, 0.05);
+      }
+      .achievement svg {
+        margin-bottom: 12px;
+      }
+      .achievement h4 {
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+      .achievement p {
+        font-size: 0.78rem;
+        color: var(--space-muted);
+      }
+
+      /* ── Rubric ── */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 0.9rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        padding: 12px;
+        border: 1px solid var(--space-line);
+        text-align: left;
+      }
+      .rubric-table th {
+        background: rgba(59, 91, 219, 0.15);
+        color: var(--space-gold);
+        font-weight: 700;
+      }
+      .rubric-table td {
+        vertical-align: top;
+      }
+      .rubric-table input[type="radio"] {
+        accent-color: var(--space-gold);
+      }
+
+      /* ── Results Screen ── */
+      .results-hero {
+        text-align: center;
+        padding: 48px 24px;
+        background: linear-gradient(
+          135deg,
+          var(--space-navy),
+          var(--space-mid)
+        );
+        border-radius: var(--radius);
+        margin-bottom: 28px;
+        border: 1px solid var(--space-line);
+      }
+      .results-hero h1 {
+        font-size: 2rem;
+        background: linear-gradient(
+          135deg,
+          var(--space-gold),
+          var(--space-teal)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .score-ring {
+        width: 140px;
+        height: 140px;
+        margin: 24px auto;
+      }
+      .score-breakdown {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .score-item {
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--space-line);
+        border-radius: var(--radius);
+        text-align: center;
+      }
+      .score-item .score-val {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--space-gold);
+      }
+      .score-item .score-label {
+        font-size: 0.82rem;
+        color: var(--space-muted);
+        margin-top: 4px;
+      }
+
+      /* ── Drag and Drop ── */
+      .drag-zone {
+        min-height: 80px;
+        padding: 16px;
+        border: 2px dashed var(--space-line);
+        border-radius: var(--radius);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+      .drag-zone.over {
+        border-color: var(--space-gold);
+        background: rgba(240, 192, 64, 0.05);
+      }
+      .drag-item {
+        padding: 8px 16px;
+        background: var(--space-accent);
+        border-radius: 8px;
+        cursor: grab;
+        font-size: 0.9rem;
+        font-weight: 600;
+        user-select: none;
+        transition: transform 0.15s;
+      }
+      .drag-item:active {
+        cursor: grabbing;
+        transform: scale(1.05);
+      }
+
+      /* ── Print ── */
+      @media print {
+        .starfield,
+        .nebula,
+        .progress-bar,
+        .btn,
+        .canvas-toolbar,
+        .mode-toggle,
+        .hint-toggle,
+        .calc-tool button {
+          display: none !important;
+        }
+        body {
+          background: #fff !important;
+          color: #000 !important;
+        }
+        .app-shell {
+          max-width: 100%;
+        }
+        .card {
+          background: #fff !important;
+          border: 1px solid #ccc !important;
+          color: #000 !important;
+          box-shadow: none !important;
+          page-break-inside: avoid;
+        }
+        .card h2,
+        .card h3 {
+          -webkit-text-fill-color: #000 !important;
+          color: #000 !important;
+        }
+        .phase {
+          display: block !important;
+        }
+        .phase-header h1 {
+          -webkit-text-fill-color: #000 !important;
+        }
+        .data-table th {
+          background: #eee !important;
+          color: #000 !important;
+        }
+        .data-table td {
+          color: #000 !important;
+        }
+        .form-input,
+        .form-textarea {
+          border: 1px solid #999 !important;
+          color: #000 !important;
+          background: #fff !important;
+        }
+      }
+
+      /* ══ ENHANCEMENT: Animations ══ */
+      @keyframes cardEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 8px rgba(240, 192, 64, 0.3);
+        }
+        50% {
+          box-shadow:
+            0 0 20px rgba(240, 192, 64, 0.3),
+            0 0 40px rgba(34, 211, 238, 0.2);
+        }
+      }
+      @keyframes statCountUp {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes badgePop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .phase.active .card,
+      .phase.active .task {
+        animation: cardEntrance 0.5s ease-out both;
+      }
+      .phase.active .card:nth-child(2),
+      .phase.active .task:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .phase.active .card:nth-child(3),
+      .phase.active .task:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+      .phase.active .card:nth-child(4),
+      .phase.active .task:nth-child(4) {
+        animation-delay: 0.24s;
+      }
+      .btn:active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      /* ══ ENHANCEMENT: XP Bar ══ */
+      .xp-bar-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 16px;
+        margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .xp-bar-container .xp-label {
+        color: var(--space-gold);
+        white-space: nowrap;
+        min-width: 70px;
+      }
+      .xp-bar-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .xp-bar-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--space-gold),
+          var(--space-teal)
+        );
+        border-radius: 99px;
+        transition: width 0.6s ease;
+        width: 0%;
+      }
+      .xp-bar-container .xp-value {
+        color: var(--space-muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ══ ENHANCEMENT: Validation Feedback ══ */
+      .validation-feedback {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-top: 6px;
+        padding: 4px 10px;
+        border-radius: 8px;
+        animation: cardEntrance 0.3s ease;
+      }
+      .validation-feedback.correct {
+        background: rgba(52, 211, 153, 0.08);
+        color: var(--space-success);
+      }
+      .validation-feedback.incorrect {
+        background: rgba(248, 113, 113, 0.08);
+        color: var(--space-error, #f87171);
+      }
+      .form-input.input-correct,
+      .form-textarea.input-correct {
+        border-color: var(--space-success) !important;
+      }
+      .form-input.input-incorrect,
+      .form-textarea.input-incorrect {
+        border-color: var(--space-error, #f87171) !important;
+      }
+
+      /* ══ ENHANCEMENT: Word Bank ══ */
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        margin: 8px 0;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 10px;
+        border: 1px dashed var(--space-line);
+      }
+      .word-bank-title {
+        width: 100%;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--space-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .word-chip {
+        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--space-line);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--space-text);
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+      }
+      .word-chip:hover {
+        border-color: var(--space-gold);
+        transform: translateY(-1px);
+      }
+
+      /* ══ ENHANCEMENT: Show Example Toggle ══ */
+      .example-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--space-teal);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px 0;
+        margin-top: 6px;
+      }
+      .example-toggle:hover {
+        color: var(--space-gold);
+      }
+      .example-box {
+        display: none;
+        margin-top: 8px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border-left: 3px solid var(--space-teal);
+        border-radius: 0 10px 10px 0;
+        font-size: 0.9rem;
+        color: var(--space-muted);
+      }
+      .example-box.visible {
+        display: block;
+        animation: cardEntrance 0.3s ease;
+      }
+
+      /* ══ ENHANCEMENT: Certificate Screen ══ */
+      .certificate-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .certificate-overlay.visible {
+        display: flex;
+      }
+      .certificate-card {
+        background: var(--space-card);
+        border: 3px solid var(--space-gold);
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+        animation: badgePop 0.5s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .certificate-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(240, 192, 64, 0.3),
+          transparent 50%,
+          rgba(34, 211, 238, 0.2)
+        );
+        pointer-events: none;
+      }
+      .certificate-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .cert-badge {
+        font-size: 4rem;
+        margin-bottom: 12px;
+        animation: float 3s ease-in-out infinite;
+      }
+      .cert-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--space-gold);
+        margin-bottom: 4px;
+      }
+      .cert-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--space-text);
+        margin-bottom: 16px;
+      }
+      .cert-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .cert-stat {
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--space-line);
+        animation: statCountUp 0.5s ease both;
+      }
+      .cert-stat:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .cert-stat:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .cert-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--space-gold);
+      }
+      .cert-stat-label {
+        font-size: 0.75rem;
+        color: var(--space-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .cert-close {
+        margin-top: 16px;
+        padding: 10px 28px;
+        border: none;
+        border-radius: 12px;
+        background: var(--space-gold);
+        color: var(--space-deep);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      @media (max-width: 500px) {
+        .cert-stats {
+          grid-template-columns: 1fr;
+        }
+        .certificate-card {
+          padding: 24px;
+        }
+      }
+      @media print {
+        .xp-bar-container,
+        .certificate-overlay,
+        .example-toggle,
+        .word-bank {
+          display: none !important;
+        }
+      }
+
+      /* ── Scrollbar ── */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--space-deep);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--space-mid);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--space-accent);
+      }
+    </style>
+  <style id="nt-upgrade-styles">
+    /* ── Neft Teacher readability upgrade ── */
+    html { font-size: 112.5%; }            /* lift root so rem-based text grows */
+    body { line-height: 1.65; }
+    p, li, td, th, label, span, a, button, input, textarea, select,
+    .question, .task, .prompt, .instructions, figcaption, dd, dt {
+      font-size: max(1em, 17px);
+    }
+    /* Restore intentionally-large display text rather than shrink it */
+    h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); line-height: 1.2; }
+    h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: 1.25; }
+    h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); line-height: 1.3; }
+    h4 { font-size: 1.18rem; }
+    /* Floor any element that set a tiny rem/px font inline or via class */
+    [style*="font-size:0.7"], [style*="font-size: 0.7"],
+    [style*="font-size:0.75"], [style*="font-size: 0.75"],
+    [style*="font-size:0.78"], [style*="font-size: 0.78"],
+    [style*="font-size:0.8"], [style*="font-size: 0.8"],
+    [style*="font-size:0.82"], [style*="font-size: 0.82"],
+    [style*="font-size:0.85"], [style*="font-size: 0.85"],
+    [style*="font-size:0.88"], [style*="font-size: 0.88"],
+    [style*="font-size:0.9"], [style*="font-size: 0.9"],
+    [style*="font-size:11px"], [style*="font-size: 11px"],
+    [style*="font-size:12px"], [style*="font-size: 12px"],
+    [style*="font-size:13px"], [style*="font-size: 13px"],
+    [style*="font-size:14px"], [style*="font-size: 14px"] {
+      font-size: 1rem !important;
+    }
+  
+    /* ── Neft Teacher help widgets ── */
+    .nt-level-banner {
+      position: sticky; top: 0; z-index: 9000;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 16px; font-size: 1rem; font-weight: 700;
+      color: #0b1f33; background: linear-gradient(90deg,#f2c15b,#1fa6a2);
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+    .nt-level-banner .nt-pill {
+      background: rgba(255,255,255,.92); color:#12355b; border-radius:999px;
+      padding: 3px 12px; font-size: .95rem;
+    }
+    .nt-level-banner .nt-sub { font-weight: 600; color:#06283d; font-size:.95rem; }
+
+    .nt-fab-wrap {
+      position: fixed; right: 18px; bottom: 18px; z-index: 9500;
+      display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    }
+    .nt-fab {
+      border: none; cursor: pointer; border-radius: 999px;
+      padding: 12px 18px; font-size: 1rem; font-weight: 700; color:#fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,.35); display:flex; gap:8px; align-items:center;
+    }
+    .nt-fab-help { background:#1fa6a2; }
+    .nt-fab-hint { background:#7c3aed; }
+    .nt-fab:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
+
+    .nt-panel {
+      position: fixed; right: 18px; bottom: 90px; z-index: 9600;
+      width: min(340px, calc(100vw - 36px)); max-height: 70vh; overflow:auto;
+      background:#fff; color:#21313f; border-radius:16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.4); padding: 18px; display:none;
+      border: 2px solid #1fa6a2;
+    }
+    .nt-panel[data-open="true"] { display:block; }
+    .nt-panel h3 { margin:0 0 6px; color:#12355b; font-size:1.25rem; }
+    .nt-panel p.nt-lede { margin:0 0 12px; color:#5f6f80; font-size:1rem; }
+    .nt-panel h4 { margin:14px 0 6px; color:#12355b; font-size:1.05rem; }
+    .nt-panel ul { margin:0; padding-left: 18px; }
+    .nt-panel li { margin: 6px 0; font-size:1rem; }
+    .nt-panel a { color:#0f6f6b; font-weight:600; }
+    .nt-panel .nt-close {
+      float:right; border:none; background:#eef3f7; border-radius:8px;
+      cursor:pointer; font-size:1.1rem; line-height:1; padding:6px 10px; color:#12355b;
+    }
+    .nt-vocab { margin:0; padding:0; list-style:none; }
+    .nt-vocab li { padding:8px 0; border-bottom:1px solid #e6edf3; }
+    .nt-vocab b { color:#7c3aed; }
+
+    /* Hint pop-ups attached to tasks */
+    .nt-hint-btn {
+      display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+      border:1px solid #f2c15b; background:#fef7e0; color:#875f00;
+      border-radius:999px; padding:5px 12px; font-size:.95rem; font-weight:700;
+      margin: 6px 6px 6px 0;
+    }
+    .nt-hint-btn:focus-visible { outline:3px solid #7c3aed; outline-offset:2px; }
+    .nt-hint-body {
+      display:none; margin:6px 0 10px; padding:12px 14px; font-size:1rem;
+      background:#fef7e0; color:#5a4300; border-left:4px solid #f2c15b;
+      border-radius:0 10px 10px 0;
+    }
+    .nt-hint-body[data-open="true"] { display:block; }
+
+    /* Inline tooltips on key terms */
+    .nt-tip {
+      border-bottom:2px dotted #1fa6a2; cursor:help; position:relative;
+      color: inherit;
+    }
+    .nt-tip:focus-visible { outline:2px solid #1fa6a2; outline-offset:2px; }
+    .nt-tip[data-show="true"]::after, .nt-tip:hover::after {
+      content: attr(data-nt-tip);
+      position:absolute; left:0; bottom:calc(100% + 8px); z-index:9700;
+      width: max-content; max-width:260px; padding:8px 12px;
+      background:#12355b; color:#fff; border-radius:10px; font-size:.95rem;
+      font-weight:500; line-height:1.4; box-shadow:0 8px 24px rgba(0,0,0,.35);
+    }
+
+    /* Level 1 scaffolding callouts */
+    .nt-scaffold {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#dff2ee; border:1px solid #1fa6a2; color:#0b4d4a; font-size:1rem;
+    }
+    html[data-nt-level="1"] .nt-scaffold { display:block; }
+    /* Level 2 enrichment callouts */
+    .nt-enrich {
+      display:none; margin:12px 0; padding:14px 16px; border-radius:12px;
+      background:#fef7e0; border:1px solid #f2c15b; color:#5a4300; font-size:1rem;
+    }
+    html[data-nt-level="2"] .nt-enrich { display:block; }
+    .nt-enrich b, .nt-scaffold b { display:block; margin-bottom:4px; }
+
+    @media (max-width: 520px) {
+      .nt-fab { padding:11px 15px; font-size:.95rem; }
+    }
+  </style>
+</head>
+  <body>
+<div class="nt-level-banner"><span class="nt-pill">Level 1</span><span class="nt-sub">Support version — simpler language, smaller numbers, and step-by-step help.</span></div>
+
+<div class="nt-scaffold" role="note">
+  <b>🪜 Step-by-step support</b>
+  Take it one small step at a time. Use these word helpers and the 💡 Hint buttons whenever you need them. It is okay to go slowly.
+  <ul class="nt-vocab" style="margin-top:8px"><li><b>Factor:</b> A number that divides evenly into another number with no remainder.</li><li><b>GCF:</b> Greatest Common Factor — the largest factor two numbers share.</li><li><b>LCM:</b> Least Common Multiple — the smallest multiple two numbers share.</li><li><b>Multiple:</b> The result of multiplying a number by 1, 2, 3, and so on.</li><li><b>Prime:</b> A number greater than 1 whose only factors are 1 and itself.</li></ul>
+</div>
+
+    <!-- Starfield Background -->
+    <div class="starfield">
+      <div class="layer layer-1"></div>
+      <div class="layer layer-2"></div>
+    </div>
+    <div class="nebula"></div>
+
+    <div class="app-shell">
+      <!-- ══════════════════════════════════════ -->
+      <!-- PROGRESS BAR                          -->
+      <!-- ══════════════════════════════════════ -->
+      <div class="progress-bar" id="progressBar">
+        <div class="phase-dots">
+          <div class="phase-dot active" data-phase="1"></div>
+          <div class="phase-dot" data-phase="2"></div>
+          <div class="phase-dot" data-phase="3"></div>
+          <div class="phase-dot" data-phase="4"></div>
+          <div class="phase-dot" data-phase="5"></div>
+        </div>
+        <div class="progress-label" id="progressLabel">Phase 1 of 5</div>
+      </div>
+
+      <!-- Enhancement: XP Bar -->
+      <div class="xp-bar-container" id="xpBarContainer">
+        <span class="xp-label">Mission XP</span>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBarFill"></div>
+        </div>
+        <span class="xp-value" id="xpValue">0 / 500 XP</span>
+      </div>
+
+      <!-- ══════════════════════════════════════ -->
+      <!-- PHASE 1: MISSION BRIEFING             -->
+      <!-- ══════════════════════════════════════ -->
+      <div class="phase active" id="phase1">
+        <div class="phase-header">
+          <div class="phase-number">Phase 1 — Mission Briefing</div>
+          <h1>Space Mission Control</h1>
+          <p>
+            Welcome, Cadet. You have been selected to join NASA's deep-space
+            exploration team. Your mission: plan, coordinate, and launch a fleet
+            of spacecraft using the power of GCF, LCM, and factor analysis.
+          </p>
+        </div>
+
+        <!-- Hero Scene SVG -->
+        <div class="svg-scene">
+          <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Deep space background -->
+            <defs>
+              <radialGradient id="nebulaGrad" cx="50%" cy="50%">
+                <stop offset="0%" stop-color="#1e2a5e" />
+                <stop offset="100%" stop-color="#0b1026" />
+              </radialGradient>
+              <radialGradient id="starGlow" cx="50%" cy="50%">
+                <stop offset="0%" stop-color="#f0c040" stop-opacity="0.8" />
+                <stop offset="100%" stop-color="#f0c040" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="rocketBody" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e2e8f0" />
+                <stop offset="100%" stop-color="#94a3b8" />
+              </linearGradient>
+              <linearGradient id="rocketFire" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f97066" />
+                <stop offset="40%" stop-color="#f0c040" />
+                <stop offset="100%" stop-color="#f0c040" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <rect width="800" height="300" fill="url(#nebulaGrad)" />
+            <!-- Stars -->
+            <circle cx="100" cy="40" r="1.5" fill="#fff" opacity="0.8" />
+            <circle cx="200" cy="80" r="1" fill="#fff" opacity="0.6" />
+            <circle cx="350" cy="30" r="2" fill="#fff" opacity="0.9" />
+            <circle cx="500" cy="60" r="1" fill="#fff" opacity="0.7" />
+            <circle cx="650" cy="45" r="1.5" fill="#fff" opacity="0.8" />
+            <circle cx="720" cy="90" r="1" fill="#fff" opacity="0.5" />
+            <circle cx="150" cy="200" r="1" fill="#fff" opacity="0.6" />
+            <circle cx="450" cy="250" r="1.5" fill="#fff" opacity="0.7" />
+            <circle cx="600" cy="180" r="1" fill="#fff" opacity="0.9" />
+            <circle cx="50" cy="120" r="2" fill="#fff" opacity="0.4" />
+            <circle cx="750" cy="200" r="1.5" fill="#fff" opacity="0.6" />
+            <!-- Planet -->
+            <circle cx="680" cy="220" r="45" fill="#3b5bdb" opacity="0.6" />
+            <ellipse
+              cx="680"
+              cy="220"
+              rx="65"
+              ry="12"
+              fill="none"
+              stroke="#7c3aed"
+              stroke-width="2"
+              opacity="0.4"
+            />
+            <!-- Rocket 1 -->
+            <g transform="translate(200,100) rotate(-15)">
+              <ellipse cx="0" cy="0" rx="12" ry="40" fill="url(#rocketBody)" />
+              <polygon points="-12,0 0,-50 12,0" fill="#e2e8f0" />
+              <polygon points="-15,30 -8,15 -8,30" fill="#3b5bdb" />
+              <polygon points="15,30 8,15 8,30" fill="#3b5bdb" />
+              <ellipse
+                cx="0"
+                cy="42"
+                rx="6"
+                ry="18"
+                fill="url(#rocketFire)"
+                opacity="0.8"
+              />
+              <circle cx="0" cy="-10" r="5" fill="#22d3ee" opacity="0.8" />
+            </g>
+            <!-- Rocket 2 -->
+            <g transform="translate(400,130) rotate(-5)">
+              <ellipse cx="0" cy="0" rx="10" ry="35" fill="url(#rocketBody)" />
+              <polygon points="-10,0 0,-44 10,0" fill="#e2e8f0" />
+              <polygon points="-13,26 -7,12 -7,26" fill="#7c3aed" />
+              <polygon points="13,26 7,12 7,26" fill="#7c3aed" />
+              <ellipse
+                cx="0"
+                cy="38"
+                rx="5"
+                ry="15"
+                fill="url(#rocketFire)"
+                opacity="0.7"
+              />
+              <circle cx="0" cy="-8" r="4" fill="#f0c040" opacity="0.8" />
+            </g>
+            <!-- Space Station -->
+            <g transform="translate(550,80)">
+              <rect
+                x="-40"
+                y="-8"
+                width="80"
+                height="16"
+                rx="4"
+                fill="#94a3b8"
+              />
+              <rect
+                x="-8"
+                y="-30"
+                width="16"
+                height="60"
+                rx="4"
+                fill="#e2e8f0"
+              />
+              <rect
+                x="-55"
+                y="-4"
+                width="15"
+                height="8"
+                rx="2"
+                fill="#3b5bdb"
+              />
+              <rect x="40" y="-4" width="15" height="8" rx="2" fill="#3b5bdb" />
+              <circle cx="0" cy="0" r="6" fill="#22d3ee" opacity="0.6" />
+            </g>
+            <!-- Mission text -->
+            <text
+              x="400"
+              y="280"
+              text-anchor="middle"
+              fill="#f0c040"
+              font-size="14"
+              font-weight="700"
+              letter-spacing="0.15em"
+              opacity="0.7"
+            >
+              DEEP SPACE EXPLORATION COMMAND
+            </text>
+          </svg>
+        </div>
+
+        <div class="card card-glow">
+          <h2>Mission Dossier</h2>
+          <p>
+            The year is 2087. Earth's Space Exploration Command (SEC) needs your
+            mathematical expertise to coordinate a multi-craft mission to the
+            outer solar system. Every launch window, orbit synchronization, and
+            supply schedule depends on your ability to find
+            <strong>Greatest Common Factors</strong>,
+            <strong>Least Common Multiples</strong>, and work with
+            <strong>prime factorization</strong>.
+          </p>
+          <br />
+          <p>
+            You will progress through 5 mission phases, each building on the
+            last. Complete all tasks to earn your Mission Commander
+            certification!
+          </p>
+
+          <div style="margin-top: 24px">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Cadet Name</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="studentName"
+                  placeholder="Your name"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="form-group">
+                <label>Class Period</label>
+                <select class="form-select" id="classPeriod">
+                  <option value="">Select...</option>
+                  <option>Period 1</option>
+                  <option>Period 2</option>
+                  <option>Period 3</option>
+                  <option>Period 4</option>
+                  <option>Period 5</option>
+                  <option>Period 6</option>
+                  <option>Period 7</option>
+                  <option>Period 8</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Date</label>
+                <input type="date" class="form-input" id="activityDate" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Learning Objectives -->
+        <div class="card">
+          <h3>Mission Objectives (Learning Goals)</h3>
+          <!-- Objectives SVG Icon -->
+          <div
+            style="
+              display: flex;
+              gap: 16px;
+              margin-bottom: 16px;
+              flex-wrap: wrap;
+            "
+          >
+            <div class="badge badge-gold">
+              &#9733; Find GCF using prime factorization
+            </div>
+            <div class="badge badge-purple">
+              &#9733; Find LCM using prime factorization
+            </div>
+            <div class="badge badge-teal">
+              &#9733; Apply GCF &amp; LCM to real-world problems
+            </div>
+          </div>
+          <ul style="list-style: none; padding: 0; display: grid; gap: 10px">
+            <li style="padding-left: 24px; position: relative">
+              <span
+                style="position: absolute; left: 0; color: var(--space-gold)"
+                >&#9656;</span
+              >Identify factors and multiples of whole numbers
+            </li>
+            <li style="padding-left: 24px; position: relative">
+              <span
+                style="position: absolute; left: 0; color: var(--space-gold)"
+                >&#9656;</span
+              >Use prime factorization to find the GCF and LCM of two or more
+              numbers
+            </li>
+            <li style="padding-left: 24px; position: relative">
+              <span
+                style="position: absolute; left: 0; color: var(--space-gold)"
+                >&#9656;</span
+              >Apply the distributive property using GCF
+            </li>
+            <li style="padding-left: 24px; position: relative">
+              <span
+                style="position: absolute; left: 0; color: var(--space-gold)"
+                >&#9656;</span
+              >Solve real-world problems involving GCF and LCM
+            </li>
+            <li style="padding-left: 24px; position: relative">
+              <span
+                style="position: absolute; left: 0; color: var(--space-gold)"
+                >&#9656;</span
+              >Create and interpret factor trees and Venn diagrams
+            </li>
+          </ul>
+        </div>
+
+        <!-- Differentiation Toggle -->
+        <div class="card">
+          <h3>Select Your Difficulty Level</h3>
+          <div class="mode-toggle">
+            <button
+              class="mode-btn"
+              data-mode="support"
+              onclick="setMode('support')"
+            >
+              &#128218; Support Mode
+            </button>
+            <button
+              class="mode-btn active"
+              data-mode="standard"
+              onclick="setMode('standard')"
+            >
+              &#128640; Standard Mode
+            </button>
+            <button
+              class="mode-btn"
+              data-mode="challenge"
+              onclick="setMode('challenge')"
+            >
+              &#9889; Challenge Mode
+            </button>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--space-muted)">
+            Support Mode includes extra vocabulary help and step-by-step guides.
+            Challenge Mode adds bonus tasks and higher numbers.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 16px">
+          <button class="btn btn-gold" onclick="goToPhase(2)">
+            Begin Mission &#10140;
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ -->
+      <!-- PHASE 2: RESEARCH & DISCOVER          -->
+      <!-- ══════════════════════════════════════ -->
+      <div class="phase" id="phase2">
+        <div class="phase-header">
+          <div class="phase-number">Phase 2 — Research &amp; Discover</div>
+          <h1>Deep Space Data Lab</h1>
+          <p>
+            Before launching any spacecraft, you must master the mathematics of
+            space coordination. Analyze orbital data, decode transmissions, and
+            build your factor analysis skills.
+          </p>
+        </div>
+
+        <!-- Factor Tree SVG Diagram -->
+        <div class="card card-glow">
+          <h3>Interactive Factor Tree Reference</h3>
+          <div class="svg-scene">
+            <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+              <style>
+                .ft-node {
+                  fill: #1e2a5e;
+                  stroke: #3b5bdb;
+                  stroke-width: 2;
+                }
+                .ft-prime {
+                  fill: #7c3aed;
+                  stroke: #a78bfa;
+                  stroke-width: 2;
+                }
+                .ft-text {
+                  fill: #e2e8f0;
+                  font-size: 14px;
+                  font-weight: 700;
+                  text-anchor: middle;
+                  dominant-baseline: central;
+                }
+                .ft-line {
+                  stroke: #3b5bdb;
+                  stroke-width: 1.5;
+                  stroke-dasharray: 4, 3;
+                }
+                .ft-label {
+                  fill: #f0c040;
+                  font-size: 11px;
+                  font-weight: 600;
+                  text-anchor: middle;
+                }
+              </style>
+              <!-- Factor tree for 60 -->
+              <text x="150" y="15" class="ft-label">FACTOR TREE: 60</text>
+              <line x1="150" y1="40" x2="100" y2="80" class="ft-line" />
+              <line x1="150" y1="40" x2="200" y2="80" class="ft-line" />
+              <circle cx="150" cy="35" r="20" class="ft-node" />
+              <text x="150" y="35" class="ft-text">60</text>
+              <circle cx="100" cy="90" r="18" class="ft-node" />
+              <text x="100" y="90" class="ft-text">6</text>
+              <circle cx="200" cy="90" r="18" class="ft-node" />
+              <text x="200" y="90" class="ft-text">10</text>
+              <line x1="100" y1="110" x2="70" y2="150" class="ft-line" />
+              <line x1="100" y1="110" x2="130" y2="150" class="ft-line" />
+              <line x1="200" y1="110" x2="170" y2="150" class="ft-line" />
+              <line x1="200" y1="110" x2="230" y2="150" class="ft-line" />
+              <circle cx="70" cy="160" r="16" class="ft-prime" />
+              <text x="70" y="160" class="ft-text">2</text>
+              <circle cx="130" cy="160" r="16" class="ft-prime" />
+              <text x="130" y="160" class="ft-text">3</text>
+              <circle cx="170" cy="160" r="16" class="ft-prime" />
+              <text x="170" y="160" class="ft-text">2</text>
+              <circle cx="230" cy="160" r="16" class="ft-prime" />
+              <text x="230" y="160" class="ft-text">5</text>
+              <text
+                x="150"
+                y="210"
+                fill="#22d3ee"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                60 = 2 &#215; 2 &#215; 3 &#215; 5 = 2&#178; &#215; 3 &#215; 5
+              </text>
+
+              <!-- Factor tree for 48 -->
+              <text x="440" y="15" class="ft-label">FACTOR TREE: 48</text>
+              <line x1="440" y1="40" x2="390" y2="80" class="ft-line" />
+              <line x1="440" y1="40" x2="490" y2="80" class="ft-line" />
+              <circle cx="440" cy="35" r="20" class="ft-node" />
+              <text x="440" y="35" class="ft-text">48</text>
+              <circle cx="390" cy="90" r="18" class="ft-node" />
+              <text x="390" y="90" class="ft-text">8</text>
+              <circle cx="490" cy="90" r="18" class="ft-node" />
+              <text x="490" y="90" class="ft-text">6</text>
+              <line x1="390" y1="110" x2="360" y2="150" class="ft-line" />
+              <line x1="390" y1="110" x2="420" y2="150" class="ft-line" />
+              <line x1="490" y1="110" x2="460" y2="150" class="ft-line" />
+              <line x1="490" y1="110" x2="520" y2="150" class="ft-line" />
+              <circle cx="360" cy="160" r="16" class="ft-prime" />
+              <text x="360" y="160" class="ft-text">2</text>
+              <circle cx="420" cy="160" r="16" class="ft-node" />
+              <text x="420" y="160" class="ft-text">4</text>
+              <circle cx="460" cy="160" r="16" class="ft-prime" />
+              <text x="460" y="160" class="ft-text">2</text>
+              <circle cx="520" cy="160" r="16" class="ft-prime" />
+              <text x="520" y="160" class="ft-text">3</text>
+              <line x1="420" y1="178" x2="400" y2="210" class="ft-line" />
+              <line x1="420" y1="178" x2="440" y2="210" class="ft-line" />
+              <circle cx="400" cy="218" r="14" class="ft-prime" />
+              <text x="400" y="218" class="ft-text" style="font-size: 12px">
+                2
+              </text>
+              <circle cx="440" cy="218" r="14" class="ft-prime" />
+              <text x="440" y="218" class="ft-text" style="font-size: 12px">
+                2
+              </text>
+              <text
+                x="440"
+                y="250"
+                fill="#22d3ee"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                48 = 2 &#215; 2 &#215; 2 &#215; 2 &#215; 3 = 2&#8308; &#215; 3
+              </text>
+            </svg>
+          </div>
+          <p style="font-size: 0.9rem; color: var(--space-muted)">
+            Study these factor trees carefully. Purple circles show
+            <strong>prime numbers</strong> — the building blocks of all numbers.
+          </p>
+        </div>
+
+        <!-- Task 2.1: Orbital Period Analysis -->
+        <div class="task" id="task2-1">
+          <div class="task-header">
+            <div class="task-number">2.1</div>
+            <div class="task-title">Orbital Period Analysis</div>
+            <div class="task-check" id="check2-1"></div>
+          </div>
+          <p>
+            Three satellites orbit different planets. Their orbital periods are:
+          </p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Satellite</th>
+                <th>Planet</th>
+                <th>Orbital Period (hours)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&#127760; Alpha-7</td>
+                <td>Mars</td>
+                <td>24</td>
+              </tr>
+              <tr>
+                <td>&#127761; Beta-3</td>
+                <td>Jupiter</td>
+                <td>36</td>
+              </tr>
+              <tr>
+                <td>&#11088; Gamma-9</td>
+                <td>Saturn</td>
+                <td>18</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="form-group">
+            <label>List all factors of 24:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="factors24"
+              placeholder="e.g. 1, 2, 3, ..."
+            />
+          </div>
+          <div class="form-group">
+            <label>List all factors of 36:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="factors36"
+              placeholder="e.g. 1, 2, 3, ..."
+            />
+          </div>
+          <div class="form-group">
+            <label>List all factors of 18:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="factors18"
+              placeholder="e.g. 1, 2, 3, ..."
+            />
+          </div>
+          <div class="form-group">
+            <label>What is the GCF of 24, 36, and 18? Show your work:</label>
+            <textarea
+              class="form-textarea"
+              id="gcf243618work"
+              placeholder="Show prime factorization or list method..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>GCF = </label>
+            <input
+              type="text"
+              class="form-input"
+              id="gcf243618"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >In your own words, what does the GCF tell us about these
+              satellites?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="gcfMeaning"
+              placeholder="Explain..."
+            ></textarea>
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint2-1')">
+            &#128161; Need a hint?
+          </button>
+          <div class="hint-content" id="hint2-1">
+            The GCF is the largest number that divides evenly into ALL three
+            periods. Try breaking each number into prime factors first: 24 =
+            2&#179; &#215; 3, 36 = 2&#178; &#215; 3&#178;, 18 = 2 &#215;
+            3&#178;. Then take the lowest power of each shared prime.
+          </div>
+          <div class="support-content">
+            <div
+              style="
+                margin-top: 12px;
+                padding: 16px;
+                background: rgba(34, 211, 238, 0.05);
+                border-radius: var(--radius);
+                border: 1px solid rgba(34, 211, 238, 0.2);
+              "
+            >
+              <strong style="color: var(--space-teal)"
+                >Vocabulary Support:</strong
+              >
+              <ul
+                style="
+                  margin-top: 8px;
+                  padding-left: 20px;
+                  color: var(--space-muted);
+                  font-size: 0.9rem;
+                "
+              >
+                <li>
+                  <strong>Factor:</strong> A number that divides into another
+                  number with no remainder.
+                </li>
+                <li>
+                  <strong>GCF (Greatest Common Factor):</strong> The biggest
+                  factor shared by all numbers.
+                </li>
+                <li>
+                  <strong>Prime number:</strong> A number with exactly 2
+                  factors: 1 and itself (like 2, 3, 5, 7).
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 2.2: Supply Crate Scheduling -->
+        <div class="task" id="task2-2">
+          <div class="task-header">
+            <div class="task-number">2.2</div>
+            <div class="task-title">Supply Crate Scheduling</div>
+            <div class="task-check" id="check2-2"></div>
+          </div>
+          <p>The space station receives deliveries on two schedules:</p>
+          <ul style="padding-left: 24px; margin: 12px 0">
+            <li>
+              <strong>Food supplies:</strong> every <strong>12</strong> days
+            </li>
+            <li><strong>Fuel cells:</strong> every <strong>8</strong> days</li>
+          </ul>
+          <p>
+            Both were last delivered on Day 0. When will they next arrive on the
+            <em>same day</em>?
+          </p>
+
+          <div class="form-group">
+            <label>Prime factorization of 12:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="pf12"
+              placeholder="e.g. 2² × 3"
+            />
+          </div>
+          <div class="form-group">
+            <label>Prime factorization of 8:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="pf8"
+              placeholder="e.g. 2³"
+            />
+          </div>
+          <div class="form-group">
+            <label>LCM of 12 and 8:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="lcm128"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label>Explain what the LCM means in this situation:</label>
+            <textarea
+              class="form-textarea"
+              id="lcmExplain"
+              placeholder="In your own words..."
+            ></textarea>
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint2-2')">
+            &#128161; Need a hint?
+          </button>
+          <div class="hint-content" id="hint2-2">
+            LCM = Least Common Multiple. To find it using prime factorization,
+            take the HIGHEST power of each prime factor. 12 = 2&#178; &#215; 3,
+            8 = 2&#179;. Highest powers: 2&#179; and 3&#185; = 8 &#215; 3 = ?
+          </div>
+        </div>
+
+        <!-- Task 2.3: Crew Rotation Patterns -->
+        <div class="task" id="task2-3">
+          <div class="task-header">
+            <div class="task-number">2.3</div>
+            <div class="task-title">Crew Rotation Patterns</div>
+            <div class="task-check" id="check2-3"></div>
+          </div>
+          <p>Three teams rotate duties on the station:</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Rotation Cycle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&#128308; Navigation Team</td>
+                <td>Every 15 days</td>
+              </tr>
+              <tr>
+                <td>&#128309; Engineering Team</td>
+                <td>Every 20 days</td>
+              </tr>
+              <tr>
+                <td>&#128992; Science Team</td>
+                <td>Every 10 days</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="form-group">
+            <label>Find the LCM of 15, 20, and 10. Show all work:</label>
+            <textarea
+              class="form-textarea"
+              id="lcm152010work"
+              placeholder="Show prime factorization..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>LCM =</label>
+            <input
+              type="text"
+              class="form-input"
+              id="lcm152010"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >How many times will all three teams be on duty together in one
+              year (365 days)?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="meetingsPerYear"
+              placeholder="?"
+              style="max-width: 200px"
+            />
+          </div>
+          <div class="form-group">
+            <label>Explain your reasoning:</label>
+            <textarea
+              class="form-textarea"
+              id="meetingsExplain"
+              placeholder="Show how you calculated..."
+            ></textarea>
+          </div>
+          <div class="challenge-content">
+            <div
+              class="task"
+              style="border-color: var(--space-purple); margin-top: 16px"
+            >
+              <div class="task-header">
+                <div
+                  class="task-number"
+                  style="background: var(--space-purple)"
+                >
+                  &#9889;
+                </div>
+                <div class="task-title">
+                  Challenge: If a fourth team rotates every 14 days, find the
+                  new LCM of all four teams.
+                </div>
+              </div>
+              <textarea
+                class="form-textarea"
+                id="challengeLcm"
+                placeholder="Show work..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- GCF/LCM Calculator Tool -->
+        <div class="calc-tool">
+          <h4>&#9881; GCF / LCM Calculator</h4>
+          <p
+            style="
+              font-size: 0.85rem;
+              color: var(--space-muted);
+              margin-bottom: 16px;
+            "
+          >
+            Use this tool to check your work. Enter two numbers to find their
+            GCF and LCM.
+          </p>
+          <div class="calc-row">
+            <div class="form-group">
+              <label>Number A</label>
+              <input
+                type="number"
+                class="form-input"
+                id="calcA"
+                placeholder="e.g. 24"
+                min="1"
+              />
+            </div>
+            <div class="form-group">
+              <label>Number B</label>
+              <input
+                type="number"
+                class="form-input"
+                id="calcB"
+                placeholder="e.g. 36"
+                min="1"
+              />
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="runCalculator()">
+              Calculate
+            </button>
+          </div>
+          <div class="calc-result" id="calcResult">
+            Enter two numbers above and click Calculate
+          </div>
+        </div>
+
+        <!-- Task 2.4: Distributive Property -->
+        <div class="task" id="task2-4">
+          <div class="task-header">
+            <div class="task-number">2.4</div>
+            <div class="task-title">Distributive Property in Space</div>
+            <div class="task-check" id="check2-4"></div>
+          </div>
+          <p>
+            The supply officer needs to distribute
+            <strong>36 oxygen tanks</strong> and
+            <strong>48 water containers</strong> equally among cargo bays with
+            no leftover items.
+          </p>
+          <div class="form-group">
+            <label>What is the greatest number of cargo bays possible?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="cargoBays"
+              placeholder="GCF of 36 and 48 = ?"
+              style="max-width: 200px"
+            />
+          </div>
+          <div class="form-group">
+            <label>How many oxygen tanks per bay?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="o2PerBay"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label>How many water containers per bay?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="waterPerBay"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Write the expression using the distributive property: 36 + 48 =
+              GCF &#215; (? + ?)</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="distProp"
+              placeholder="e.g. 12 × (3 + 4)"
+            />
+          </div>
+          <button class="hint-toggle" onclick="toggleHint('hint2-4')">
+            &#128161; Need a hint?
+          </button>
+          <div class="hint-content" id="hint2-4">
+            The distributive property says: a + b = GCF(a,b) &#215; (a/GCF +
+            b/GCF). Find GCF(36, 48) first, then divide each number by the GCF.
+          </div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+          "
+        >
+          <button class="btn btn-outline" onclick="goToPhase(1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-gold" onclick="goToPhase(3)">
+            Continue to Phase 3 &#10140;
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ -->
+      <!-- PHASE 3: PLAN & DESIGN                -->
+      <!-- ══════════════════════════════════════ -->
+      <div class="phase" id="phase3">
+        <div class="phase-header">
+          <div class="phase-number">Phase 3 — Plan &amp; Design</div>
+          <h1>Mission Planning Center</h1>
+          <p>
+            Using your research, plan the launch schedule, crew assignments, and
+            supply distribution for a 6-month deep-space expedition.
+          </p>
+        </div>
+
+        <!-- Mission Planning SVG -->
+        <div class="svg-scene">
+          <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Timeline -->
+            <line
+              x1="50"
+              y1="100"
+              x2="650"
+              y2="100"
+              stroke="#3b5bdb"
+              stroke-width="2"
+            />
+            <text
+              x="350"
+              y="25"
+              text-anchor="middle"
+              fill="#f0c040"
+              font-size="13"
+              font-weight="700"
+            >
+              6-MONTH MISSION TIMELINE
+            </text>
+            <!-- Month markers -->
+            <g fill="#94a3b8" font-size="11" text-anchor="middle">
+              <line
+                x1="50"
+                y1="90"
+                x2="50"
+                y2="110"
+                stroke="#94a3b8"
+                stroke-width="1"
+              />
+              <text x="50" y="130">Month 0</text>
+              <line
+                x1="170"
+                y1="90"
+                x2="170"
+                y2="110"
+                stroke="#94a3b8"
+                stroke-width="1"
+              />
+              <text x="170" y="130">Month 1</text>
+              <line
+                x1="290"
+                y1="90"
+                x2="290"
+                y2="110"
+                stroke="#94a3b8"
+                stroke-width="1"
+              />
+              <text x="290" y="130">Month 2</text>
+              <line
+                x1="410"
+                y1="90"
+                x2="410"
+                y2="110"
+                stroke="#94a3b8"
+                stroke-width="1"
+              />
+              <text x="410" y="130">Month 3</text>
+              <line
+                x1="530"
+                y1="90"
+                x2="530"
+                y2="110"
+                stroke="#94a3b8"
+                stroke-width="1"
+              />
+              <text x="530" y="130">Month 4</text>
+              <line
+                x1="650"
+                y1="90"
+                x2="650"
+                y2="110"
+                stroke="#94a3b8"
+                stroke-width="1"
+              />
+              <text x="650" y="130">Month 5+</text>
+            </g>
+            <!-- Supply drops -->
+            <circle cx="50" cy="70" r="8" fill="#22d3ee" />
+            <circle cx="170" cy="70" r="8" fill="#22d3ee" />
+            <circle cx="290" cy="70" r="8" fill="#22d3ee" />
+            <circle cx="410" cy="70" r="8" fill="#22d3ee" />
+            <circle cx="530" cy="70" r="8" fill="#22d3ee" />
+            <text
+              x="350"
+              y="60"
+              text-anchor="middle"
+              fill="#22d3ee"
+              font-size="10"
+            >
+              SUPPLY DROPS
+            </text>
+            <!-- Crew rotations -->
+            <circle cx="50" cy="155" r="6" fill="#f0c040" />
+            <circle cx="230" cy="155" r="6" fill="#f0c040" />
+            <circle cx="410" cy="155" r="6" fill="#f0c040" />
+            <circle cx="590" cy="155" r="6" fill="#f0c040" />
+            <text
+              x="350"
+              y="180"
+              text-anchor="middle"
+              fill="#f0c040"
+              font-size="10"
+            >
+              CREW ROTATIONS
+            </text>
+          </svg>
+        </div>
+
+        <!-- Task 3.1: Launch Window Planning -->
+        <div class="task" id="task3-1">
+          <div class="task-header">
+            <div class="task-number">3.1</div>
+            <div class="task-title">Launch Window Planning</div>
+            <div class="task-check" id="check3-1"></div>
+          </div>
+          <p>
+            You have <strong>3 rockets</strong> that need to launch in
+            synchronized windows. Their preparation cycles are:
+          </p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rocket</th>
+                <th>Prep Cycle (days)</th>
+                <th>Prime Factorization</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&#128640; Falcon-X</td>
+                <td>28</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="pf28"
+                    placeholder="2² × 7"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>&#128640; Nova-II</td>
+                <td>42</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="pf42"
+                    placeholder="?"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>&#128640; Titan-V</td>
+                <td>35</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="pf35"
+                    placeholder="?"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="form-group">
+            <label>What is the LCM of 28, 42, and 35?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="lcmRockets"
+              placeholder="?"
+              style="max-width: 160px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >If all rockets launched on Day 0, when is the next day ALL three
+              can launch together?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="nextLaunchDay"
+              placeholder="Day ?"
+              style="max-width: 160px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Create a Venn diagram showing the prime factors. You can sketch
+              below or describe it:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="vennDesc"
+              placeholder="Describe the Venn diagram: shared primes in overlapping regions, unique primes in outer regions..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Task 3.2: Crew Assignment Optimization -->
+        <div class="task" id="task3-2">
+          <div class="task-header">
+            <div class="task-number">3.2</div>
+            <div class="task-title">Crew Assignment Optimization</div>
+            <div class="task-check" id="check3-2"></div>
+          </div>
+          <p>
+            You have <strong>72 astronauts</strong> and
+            <strong>54 scientists</strong> to organize into mixed teams. Each
+            team must have equal numbers of astronauts AND equal numbers of
+            scientists.
+          </p>
+          <div class="form-group">
+            <label>What is the maximum number of teams you can create?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="maxTeams"
+              placeholder="GCF of 72 and 54 = ?"
+              style="max-width: 200px"
+            />
+          </div>
+          <div class="form-group">
+            <label>Astronauts per team:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="astPerTeam"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label>Scientists per team:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="sciPerTeam"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Write the distributive property expression: 72 + 54 = GCF &#215;
+              (? + ?)</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="distPropTeams"
+              placeholder="e.g. 18 × (4 + 3)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Give your teams creative space-themed names! List at least
+              3:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="teamNames"
+              placeholder="e.g. Nebula Navigators, Stellar Scientists, Cosmic Commanders..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Task 3.3: Communication Schedule -->
+        <div class="task" id="task3-3">
+          <div class="task-header">
+            <div class="task-number">3.3</div>
+            <div class="task-title">Communication Schedule Design</div>
+            <div class="task-check" id="check3-3"></div>
+          </div>
+          <p>
+            Design a communication schedule for three deep-space probes. Each
+            probe sends a signal at regular intervals:
+          </p>
+          <div class="grid-3" style="margin: 16px 0">
+            <div
+              style="
+                padding: 16px;
+                background: rgba(59, 91, 219, 0.1);
+                border-radius: var(--radius);
+                text-align: center;
+              "
+            >
+              <div style="font-size: 2rem">&#128225;</div>
+              <div style="font-weight: 700; color: var(--space-gold)">
+                Probe Artemis
+              </div>
+              <div
+                style="
+                  font-size: 1.5rem;
+                  font-weight: 800;
+                  color: var(--space-teal);
+                "
+              >
+                Every 16 min
+              </div>
+            </div>
+            <div
+              style="
+                padding: 16px;
+                background: rgba(124, 58, 237, 0.1);
+                border-radius: var(--radius);
+                text-align: center;
+              "
+            >
+              <div style="font-size: 2rem">&#128225;</div>
+              <div style="font-weight: 700; color: var(--space-gold)">
+                Probe Apollo
+              </div>
+              <div
+                style="
+                  font-size: 1.5rem;
+                  font-weight: 800;
+                  color: var(--space-teal);
+                "
+              >
+                Every 20 min
+              </div>
+            </div>
+            <div
+              style="
+                padding: 16px;
+                background: rgba(34, 211, 238, 0.1);
+                border-radius: var(--radius);
+                text-align: center;
+              "
+            >
+              <div style="font-size: 2rem">&#128225;</div>
+              <div style="font-weight: 700; color: var(--space-gold)">
+                Probe Mercury
+              </div>
+              <div
+                style="
+                  font-size: 1.5rem;
+                  font-weight: 800;
+                  color: var(--space-teal);
+                "
+              >
+                Every 30 min
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Find the LCM of 16, 20, and 30:</label>
+            <textarea
+              class="form-textarea"
+              id="lcm162030work"
+              placeholder="Show your prime factorization work..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>LCM =</label>
+            <input
+              type="text"
+              class="form-input"
+              id="lcm162030"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >If all probes transmitted at 8:00 AM, when do all three transmit
+              again at the same time?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="nextTransmit"
+              placeholder="e.g. 10:00 AM"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Fill in the table — mark an X when each probe transmits (up to
+              120 min):</label
+            >
+          </div>
+          <div style="overflow-x: auto">
+            <table class="data-table" style="min-width: 600px">
+              <thead>
+                <tr>
+                  <th>Probe</th>
+                  <th>16</th>
+                  <th>20</th>
+                  <th>30</th>
+                  <th>32</th>
+                  <th>40</th>
+                  <th>48</th>
+                  <th>60</th>
+                  <th>64</th>
+                  <th>80</th>
+                  <th>90</th>
+                  <th>96</th>
+                  <th>100</th>
+                  <th>112</th>
+                  <th>120</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 700">Artemis (16)</td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700">Apollo (20)</td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700">Mercury (30)</td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      style="
+                        width: 30px;
+                        text-align: center;
+                        background: transparent;
+                        border: 1px solid var(--space-line);
+                        color: var(--space-text);
+                        border-radius: 4px;
+                      "
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Task 3.4: Design Your Mission Patch -->
+        <div class="task" id="task3-4">
+          <div class="task-header">
+            <div class="task-number">3.4</div>
+            <div class="task-title">Design Your Mission Patch</div>
+            <div class="task-check" id="check3-4"></div>
+          </div>
+          <p>
+            Every NASA mission has a patch. Design yours! Use the drawing canvas
+            below. Your patch must include at least one mathematical symbol or
+            number related to GCF/LCM.
+          </p>
+          <div class="canvas-area">
+            <div class="canvas-toolbar">
+              <button class="active" onclick="setCanvasTool('pen')">
+                &#9999; Pen
+              </button>
+              <button onclick="setCanvasTool('eraser')">&#9003; Eraser</button>
+              <button onclick="setCanvasColor('#f0c040')">
+                &#127760; Gold
+              </button>
+              <button onclick="setCanvasColor('#3b5bdb')">
+                &#128309; Blue
+              </button>
+              <button onclick="setCanvasColor('#7c3aed')">
+                &#128316; Purple
+              </button>
+              <button onclick="setCanvasColor('#22d3ee')">
+                &#128313; Cyan
+              </button>
+              <button onclick="setCanvasColor('#ffffff')">&#9898; White</button>
+              <button onclick="clearCanvas()">&#128465; Clear</button>
+            </div>
+            <canvas id="patchCanvas" width="700" height="400"></canvas>
+          </div>
+          <div class="form-group" style="margin-top: 16px">
+            <label
+              >Describe your mission patch design and the math it
+              represents:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="patchDesc"
+              placeholder="My patch shows..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+          "
+        >
+          <button class="btn btn-outline" onclick="goToPhase(2)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-gold" onclick="goToPhase(4)">
+            Continue to Phase 4 &#10140;
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ -->
+      <!-- PHASE 4: BUILD & CREATE               -->
+      <!-- ══════════════════════════════════════ -->
+      <div class="phase" id="phase4">
+        <div class="phase-header">
+          <div class="phase-number">Phase 4 — Build &amp; Create</div>
+          <h1>Mission Execution</h1>
+          <p>
+            It is time to put your plans into action. Solve complex multi-step
+            problems to successfully launch, navigate, and resupply your fleet.
+          </p>
+        </div>
+
+        <!-- Mission Control SVG -->
+        <div class="svg-scene">
+          <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg">
+            <!-- Control room -->
+            <rect width="700" height="220" fill="#0b1026" rx="12" />
+            <!-- Main screen -->
+            <rect
+              x="50"
+              y="20"
+              width="300"
+              height="180"
+              rx="8"
+              fill="#131b3a"
+              stroke="#3b5bdb"
+              stroke-width="2"
+            />
+            <text
+              x="200"
+              y="50"
+              text-anchor="middle"
+              fill="#f0c040"
+              font-size="12"
+              font-weight="700"
+            >
+              MISSION CONTROL — LIVE
+            </text>
+            <!-- Grid lines -->
+            <line
+              x1="80"
+              y1="70"
+              x2="320"
+              y2="70"
+              stroke="#1e2a5e"
+              stroke-width="0.5"
+            />
+            <line
+              x1="80"
+              y1="100"
+              x2="320"
+              y2="100"
+              stroke="#1e2a5e"
+              stroke-width="0.5"
+            />
+            <line
+              x1="80"
+              y1="130"
+              x2="320"
+              y2="130"
+              stroke="#1e2a5e"
+              stroke-width="0.5"
+            />
+            <line
+              x1="80"
+              y1="160"
+              x2="320"
+              y2="160"
+              stroke="#1e2a5e"
+              stroke-width="0.5"
+            />
+            <!-- Orbit paths -->
+            <ellipse
+              cx="200"
+              cy="120"
+              rx="100"
+              ry="40"
+              fill="none"
+              stroke="#22d3ee"
+              stroke-width="1"
+              opacity="0.4"
+            />
+            <ellipse
+              cx="200"
+              cy="120"
+              rx="70"
+              ry="28"
+              fill="none"
+              stroke="#f0c040"
+              stroke-width="1"
+              opacity="0.4"
+            />
+            <ellipse
+              cx="200"
+              cy="120"
+              rx="40"
+              ry="16"
+              fill="none"
+              stroke="#f97066"
+              stroke-width="1"
+              opacity="0.4"
+            />
+            <!-- Satellites on orbits -->
+            <circle cx="300" cy="120" r="4" fill="#22d3ee" />
+            <circle cx="200" cy="92" r="4" fill="#f0c040" />
+            <circle cx="160" cy="120" r="3" fill="#f97066" />
+            <!-- Side panels -->
+            <rect
+              x="380"
+              y="20"
+              width="140"
+              height="85"
+              rx="6"
+              fill="#131b3a"
+              stroke="#3b5bdb"
+              stroke-width="1"
+            />
+            <text
+              x="450"
+              y="42"
+              text-anchor="middle"
+              fill="#94a3b8"
+              font-size="9"
+              font-weight="600"
+            >
+              FUEL STATUS
+            </text>
+            <rect
+              x="400"
+              y="52"
+              width="100"
+              height="12"
+              rx="3"
+              fill="#1e2a5e"
+            />
+            <rect x="400" y="52" width="72" height="12" rx="3" fill="#34d399" />
+            <text x="450" y="60" text-anchor="middle" fill="#fff" font-size="8">
+              72%
+            </text>
+            <rect
+              x="400"
+              y="72"
+              width="100"
+              height="12"
+              rx="3"
+              fill="#1e2a5e"
+            />
+            <rect x="400" y="72" width="88" height="12" rx="3" fill="#22d3ee" />
+            <text x="450" y="80" text-anchor="middle" fill="#fff" font-size="8">
+              88%
+            </text>
+            <rect
+              x="400"
+              y="92"
+              width="100"
+              height="12"
+              rx="3"
+              fill="#1e2a5e"
+            />
+            <rect x="400" y="92" width="55" height="12" rx="3" fill="#fbbf24" />
+            <text
+              x="450"
+              y="100"
+              text-anchor="middle"
+              fill="#fff"
+              font-size="8"
+            >
+              55%
+            </text>
+            <!-- Crew status -->
+            <rect
+              x="540"
+              y="20"
+              width="140"
+              height="85"
+              rx="6"
+              fill="#131b3a"
+              stroke="#3b5bdb"
+              stroke-width="1"
+            />
+            <text
+              x="610"
+              y="42"
+              text-anchor="middle"
+              fill="#94a3b8"
+              font-size="9"
+              font-weight="600"
+            >
+              CREW STATUS
+            </text>
+            <circle cx="570" cy="65" r="10" fill="#34d399" opacity="0.3" />
+            <text
+              x="570"
+              y="68"
+              text-anchor="middle"
+              fill="#34d399"
+              font-size="9"
+            >
+              OK
+            </text>
+            <circle cx="610" cy="65" r="10" fill="#34d399" opacity="0.3" />
+            <text
+              x="610"
+              y="68"
+              text-anchor="middle"
+              fill="#34d399"
+              font-size="9"
+            >
+              OK
+            </text>
+            <circle cx="650" cy="65" r="10" fill="#34d399" opacity="0.3" />
+            <text
+              x="650"
+              y="68"
+              text-anchor="middle"
+              fill="#34d399"
+              font-size="9"
+            >
+              OK
+            </text>
+            <text
+              x="610"
+              y="95"
+              text-anchor="middle"
+              fill="#94a3b8"
+              font-size="9"
+            >
+              All Systems Go
+            </text>
+            <!-- Bottom status bar -->
+            <rect
+              x="380"
+              y="120"
+              width="300"
+              height="80"
+              rx="6"
+              fill="#131b3a"
+              stroke="#3b5bdb"
+              stroke-width="1"
+            />
+            <text
+              x="530"
+              y="142"
+              text-anchor="middle"
+              fill="#94a3b8"
+              font-size="9"
+              font-weight="600"
+            >
+              TRANSMISSION LOG
+            </text>
+            <text
+              x="395"
+              y="162"
+              fill="#22d3ee"
+              font-size="9"
+              font-family="monospace"
+            >
+              [08:00] All probes synced
+            </text>
+            <text
+              x="395"
+              y="177"
+              fill="#f0c040"
+              font-size="9"
+              font-family="monospace"
+            >
+              [10:40] Next sync in 240 min
+            </text>
+            <text
+              x="395"
+              y="192"
+              fill="#34d399"
+              font-size="9"
+              font-family="monospace"
+            >
+              [12:00] Supply drop confirmed
+            </text>
+          </svg>
+        </div>
+
+        <!-- Task 4.1: Multi-Ship Fuel Management -->
+        <div class="task" id="task4-1">
+          <div class="task-header">
+            <div class="task-number">4.1</div>
+            <div class="task-title">Multi-Ship Fuel Management</div>
+            <div class="task-check" id="check4-1"></div>
+          </div>
+          <p>
+            Three ships carry different fuel amounts. You must divide fuel
+            equally into transfer pods.
+          </p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Ship</th>
+                <th>Fuel Units</th>
+                <th>Prime Factorization</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Voyager-1</td>
+                <td>120</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="pf120"
+                    placeholder="?"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Voyager-2</td>
+                <td>84</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="pf84"
+                    placeholder="?"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Voyager-3</td>
+                <td>156</td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="pf156"
+                    placeholder="?"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="form-group">
+            <label
+              >What is the largest pod size that works for ALL ships (GCF of
+              120, 84, 156)?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="gcfFuel"
+              placeholder="Show your work..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>GCF =</label>
+            <input
+              type="text"
+              class="form-input"
+              id="gcfFuelAns"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label>How many pods does each ship fill?</label>
+            <div class="grid-3">
+              <div class="form-group">
+                <label>Voyager-1</label
+                ><input
+                  type="text"
+                  class="form-input"
+                  id="pods1"
+                  placeholder="?"
+                />
+              </div>
+              <div class="form-group">
+                <label>Voyager-2</label
+                ><input
+                  type="text"
+                  class="form-input"
+                  id="pods2"
+                  placeholder="?"
+                />
+              </div>
+              <div class="form-group">
+                <label>Voyager-3</label
+                ><input
+                  type="text"
+                  class="form-input"
+                  id="pods3"
+                  placeholder="?"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Write the distributive property for 120 + 84 + 156:</label>
+            <input
+              type="text"
+              class="form-input"
+              id="distPropFuel"
+              placeholder="GCF × (? + ? + ?)"
+            />
+          </div>
+        </div>
+
+        <!-- Task 4.2: Navigation Grid Puzzle -->
+        <div class="task" id="task4-2">
+          <div class="task-header">
+            <div class="task-number">4.2</div>
+            <div class="task-title">Navigation Grid Puzzle</div>
+            <div class="task-check" id="check4-2"></div>
+          </div>
+          <p>
+            You need to tile the navigation display with identical square tiles
+            (no cutting). The display is <strong>180 cm wide</strong> and
+            <strong>240 cm tall</strong>.
+          </p>
+          <div class="form-group">
+            <label
+              >What is the side length of the largest possible square tile? (GCF
+              of 180 and 240)</label
+            >
+            <textarea
+              class="form-textarea"
+              id="tileWork"
+              placeholder="Show your work..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Largest tile side =</label>
+            <input
+              type="text"
+              class="form-input"
+              id="tileSide"
+              placeholder="? cm"
+              style="max-width: 160px"
+            />
+          </div>
+          <div class="form-group">
+            <label>How many tiles across?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="tilesAcross"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label>How many tiles down?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="tilesDown"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+          <div class="form-group">
+            <label>Total number of tiles needed?</label>
+            <input
+              type="text"
+              class="form-input"
+              id="tilesTotal"
+              placeholder="?"
+              style="max-width: 120px"
+            />
+          </div>
+        </div>
+
+        <!-- Task 4.3: Asteroid Belt Timing -->
+        <div class="task" id="task4-3">
+          <div class="task-header">
+            <div class="task-number">4.3</div>
+            <div class="task-title">Asteroid Belt Timing</div>
+            <div class="task-check" id="check4-3"></div>
+          </div>
+          <p>
+            Three asteroid clusters pass through your flight path at regular
+            intervals:
+          </p>
+          <ul style="padding-left: 24px; margin: 12px 0">
+            <li>Cluster Alpha: every <strong>45</strong> minutes</li>
+            <li>Cluster Beta: every <strong>60</strong> minutes</li>
+            <li>Cluster Gamma: every <strong>72</strong> minutes</li>
+          </ul>
+          <p>
+            All three clusters just passed at 0 minutes. You need to find safe
+            windows between encounters.
+          </p>
+          <div class="form-group">
+            <label>Find the LCM of 45, 60, and 72:</label>
+            <textarea
+              class="form-textarea"
+              id="lcmAsteroid"
+              placeholder="Show prime factorization..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>LCM =</label>
+            <input
+              type="text"
+              class="form-input"
+              id="lcmAsteroidAns"
+              placeholder="?"
+              style="max-width: 160px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >When is the next time ALL three clusters pass at the same
+              moment?</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="nextAsteroid"
+              placeholder="? minutes"
+              style="max-width: 200px"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >How many safe windows exist in a 24-hour period (1440 minutes)
+              when NONE of the clusters are passing? Explain your
+              strategy:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="safeWindows"
+              placeholder="Think about when each cluster passes and find gaps..."
+            ></textarea>
+          </div>
+          <div class="challenge-content">
+            <div
+              class="task"
+              style="border-color: var(--space-purple); margin-top: 16px"
+            >
+              <div class="task-header">
+                <div
+                  class="task-number"
+                  style="background: var(--space-purple)"
+                >
+                  &#9889;
+                </div>
+                <div class="task-title">
+                  Challenge: If you can only fly when EXACTLY ONE cluster is
+                  present, how many minutes in a 12-hour period allow travel?
+                </div>
+              </div>
+              <textarea
+                class="form-textarea"
+                id="challengeAsteroid"
+                placeholder="Show your strategy and work..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 4.4: Supply Manifest -->
+        <div class="task" id="task4-4">
+          <div class="task-header">
+            <div class="task-number">4.4</div>
+            <div class="task-title">Supply Manifest Challenge</div>
+            <div class="task-check" id="check4-4"></div>
+          </div>
+          <p>
+            Create a supply manifest for a deep-space station. You must package
+            items in equal groups.
+          </p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Supply Item</th>
+                <th>Quantity</th>
+                <th>Your Package Size (GCF)</th>
+                <th>Number of Packages</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Freeze-dried meals</td>
+                <td>144</td>
+                <td><input type="text" class="form-input" id="pkg1" /></td>
+                <td><input type="text" class="form-input" id="npkg1" /></td>
+              </tr>
+              <tr>
+                <td>Water pouches</td>
+                <td>108</td>
+                <td><input type="text" class="form-input" id="pkg2" /></td>
+                <td><input type="text" class="form-input" id="npkg2" /></td>
+              </tr>
+              <tr>
+                <td>Oxygen canisters</td>
+                <td>90</td>
+                <td><input type="text" class="form-input" id="pkg3" /></td>
+                <td><input type="text" class="form-input" id="npkg3" /></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="form-group">
+            <label>GCF of 144, 108, and 90:</label>
+            <textarea
+              class="form-textarea"
+              id="gcfSupply"
+              placeholder="Show work..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Write the expression: 144 + 108 + 90 = GCF &#215; (? + ? +
+              ?)</label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="distPropSupply"
+              placeholder="e.g. 18 × (8 + 6 + 5)"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Now create your OWN supply problem using two numbers between 50
+              and 200. State the problem and solve it:</label
+            >
+            <textarea
+              class="form-textarea"
+              id="ownProblem"
+              placeholder="My problem: ... My solution: ..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Task 4.5: Mission Report -->
+        <div class="task" id="task4-5">
+          <div class="task-header">
+            <div class="task-number">4.5</div>
+            <div class="task-title">Mission Log Entry</div>
+            <div class="task-check" id="check4-5"></div>
+          </div>
+          <p>
+            Write a mission log entry (at least 4 sentences) describing one
+            scenario where you used GCF or LCM during your mission. Include:
+          </p>
+          <ul style="padding-left: 24px; margin: 12px 0">
+            <li>The real-world situation</li>
+            <li>The specific numbers involved</li>
+            <li>How you solved it (which method)</li>
+            <li>Why the answer made sense</li>
+          </ul>
+          <div class="form-group">
+            <label>Mission Log — Entry #1</label>
+            <textarea
+              class="form-textarea"
+              id="missionLog"
+              placeholder="Captain's Log, Stardate..."
+              style="min-height: 160px"
+            ></textarea>
+          </div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+          "
+        >
+          <button class="btn btn-outline" onclick="goToPhase(3)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-gold" onclick="goToPhase(5)">
+            Continue to Phase 5 &#10140;
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ -->
+      <!-- PHASE 5: PRESENT & REFLECT            -->
+      <!-- ══════════════════════════════════════ -->
+      <div class="phase" id="phase5">
+        <div class="phase-header">
+          <div class="phase-number">Phase 5 — Present &amp; Reflect</div>
+          <h1>Mission Debrief</h1>
+          <p>
+            Your mission is complete, Commander. Review your work, assess your
+            performance, and reflect on what you learned.
+          </p>
+        </div>
+
+        <!-- Achievement Badges -->
+        <div class="card card-glow">
+          <h2>Achievement Badges</h2>
+          <p>Badges earned based on completed tasks across all phases.</p>
+          <div class="achievement-grid">
+            <div class="achievement" id="badge-explorer">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="3"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="22"
+                >
+                  &#128640;
+                </text>
+                <text
+                  x="32"
+                  y="46"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="8"
+                  font-weight="700"
+                >
+                  EXPLORER
+                </text>
+              </svg>
+              <h4>Space Explorer</h4>
+              <p>Completed Phase 1</p>
+            </div>
+            <div class="achievement" id="badge-analyst">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="3"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="22"
+                >
+                  &#128300;
+                </text>
+                <text
+                  x="32"
+                  y="46"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="8"
+                  font-weight="700"
+                >
+                  ANALYST
+                </text>
+              </svg>
+              <h4>Data Analyst</h4>
+              <p>Completed Phase 2</p>
+            </div>
+            <div class="achievement" id="badge-planner">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="3"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="22"
+                >
+                  &#128203;
+                </text>
+                <text
+                  x="32"
+                  y="46"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="8"
+                  font-weight="700"
+                >
+                  PLANNER
+                </text>
+              </svg>
+              <h4>Mission Planner</h4>
+              <p>Completed Phase 3</p>
+            </div>
+            <div class="achievement" id="badge-commander">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="3"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="22"
+                >
+                  &#11088;
+                </text>
+                <text
+                  x="32"
+                  y="46"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="8"
+                  font-weight="700"
+                >
+                  COMMANDER
+                </text>
+              </svg>
+              <h4>Mission Commander</h4>
+              <p>Completed Phase 4</p>
+            </div>
+            <div class="achievement" id="badge-master">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="3"
+                />
+                <text
+                  x="32"
+                  y="28"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="22"
+                >
+                  &#127942;
+                </text>
+                <text
+                  x="32"
+                  y="46"
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="8"
+                  font-weight="700"
+                >
+                  MASTER
+                </text>
+              </svg>
+              <h4>GCF/LCM Master</h4>
+              <p>All phases complete</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Self-Assessment Rubric -->
+        <div class="card">
+          <h3>Self-Assessment Rubric</h3>
+          <p style="margin-bottom: 16px">
+            Rate your performance honestly in each area.
+          </p>
+          <table class="rubric-table">
+            <thead>
+              <tr>
+                <th style="width: 30%">Skill</th>
+                <th style="width: 17%">Beginning (1)</th>
+                <th style="width: 17%">Developing (2)</th>
+                <th style="width: 17%">Proficient (3)</th>
+                <th style="width: 17%">Advanced (4)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Finding Factors</strong></td>
+                <td>
+                  <input type="radio" name="rubric1" value="1" /> I need more
+                  help
+                </td>
+                <td>
+                  <input type="radio" name="rubric1" value="2" /> I can find
+                  some factors
+                </td>
+                <td>
+                  <input type="radio" name="rubric1" value="3" /> I can find all
+                  factors
+                </td>
+                <td>
+                  <input type="radio" name="rubric1" value="4" /> I can teach
+                  others
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Prime Factorization</strong></td>
+                <td>
+                  <input type="radio" name="rubric2" value="1" /> I need more
+                  help
+                </td>
+                <td>
+                  <input type="radio" name="rubric2" value="2" /> I can do
+                  simple ones
+                </td>
+                <td>
+                  <input type="radio" name="rubric2" value="3" /> I can do any
+                  number
+                </td>
+                <td>
+                  <input type="radio" name="rubric2" value="4" /> I use exponent
+                  form
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Finding GCF</strong></td>
+                <td>
+                  <input type="radio" name="rubric3" value="1" /> I need more
+                  help
+                </td>
+                <td>
+                  <input type="radio" name="rubric3" value="2" /> I can find GCF
+                  of 2 numbers
+                </td>
+                <td>
+                  <input type="radio" name="rubric3" value="3" /> I can find GCF
+                  of 3+ numbers
+                </td>
+                <td>
+                  <input type="radio" name="rubric3" value="4" /> I apply GCF to
+                  word problems
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Finding LCM</strong></td>
+                <td>
+                  <input type="radio" name="rubric4" value="1" /> I need more
+                  help
+                </td>
+                <td>
+                  <input type="radio" name="rubric4" value="2" /> I can find LCM
+                  of 2 numbers
+                </td>
+                <td>
+                  <input type="radio" name="rubric4" value="3" /> I can find LCM
+                  of 3+ numbers
+                </td>
+                <td>
+                  <input type="radio" name="rubric4" value="4" /> I apply LCM to
+                  word problems
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Distributive Property</strong></td>
+                <td>
+                  <input type="radio" name="rubric5" value="1" /> I need more
+                  help
+                </td>
+                <td>
+                  <input type="radio" name="rubric5" value="2" /> I know the
+                  idea
+                </td>
+                <td>
+                  <input type="radio" name="rubric5" value="3" /> I can apply it
+                </td>
+                <td>
+                  <input type="radio" name="rubric5" value="4" /> I can explain
+                  it
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Reflection Journal -->
+        <div class="card">
+          <h3>Reflection Journal</h3>
+          <div class="form-group">
+            <label
+              >What was the most interesting thing you learned in this
+              project?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect1"
+              placeholder="I found it interesting that..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >Which task was the most challenging? What made it hard?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect2"
+              placeholder="The hardest part was..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >How might GCF and LCM be useful in your everyday life? Give at
+              least 2 examples.</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect3"
+              placeholder="GCF and LCM could help with..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label
+              >If you could add one more phase to this mission, what would it
+              be?</label
+            >
+            <textarea
+              class="form-textarea"
+              id="reflect4"
+              placeholder="I would add..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Portfolio Summary -->
+        <div class="card card-glow" id="portfolioSummary">
+          <h2>Mission Portfolio Summary</h2>
+          <div id="portfolioContent">
+            <p>Click "Generate Portfolio" to create your mission summary.</p>
+          </div>
+          <div
+            style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px"
+          >
+            <button class="btn btn-gold" onclick="generatePortfolio()">
+              &#128196; Generate Portfolio
+            </button>
+            <button class="btn btn-primary" onclick="copyPortfolio()">
+              &#128203; Copy to Clipboard
+            </button>
+            <button class="btn btn-outline" onclick="downloadPortfolio()">
+              &#128229; Download as Text
+            </button>
+            <button class="btn btn-outline" onclick="window.print()">
+              &#128424; Print
+            </button>
+            <button class="btn btn-gold" onclick="showCertificate()">
+              &#128640; View Certificate
+            </button>
+          </div>
+        </div>
+
+        <!-- Score Display -->
+        <div class="card" id="scoreCard" style="display: none">
+          <h2>Mission Score</h2>
+          <div class="score-breakdown" id="scoreBreakdown"></div>
+        </div>
+      </div>
+    </div>
+    <!-- end app-shell -->
+
+    <script>
+      /* ══════════════════════════════════════ */
+      /* SPACE MISSION CONTROL — JS ENGINE     */
+      /* ══════════════════════════════════════ */
+
+      // ── State ──
+      let currentPhase = 1;
+      let currentMode = "standard";
+      const STORAGE_KEY = "neft_space_mission_v2";
+
+      // ── Phase Navigation ──
+      function goToPhase(n) {
+        document
+          .querySelectorAll(".phase")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("phase" + n).classList.add("active");
+        currentPhase = n;
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        saveState();
+      }
+
+      function updateProgress() {
+        document.querySelectorAll(".phase-dot").forEach((dot, i) => {
+          dot.classList.remove("active", "completed");
+          if (i + 1 < currentPhase) dot.classList.add("completed");
+          if (i + 1 === currentPhase) dot.classList.add("active");
+        });
+        document.getElementById("progressLabel").textContent =
+          `Phase ${currentPhase} of 5`;
+      }
+
+      // ── Differentiation Mode ──
+      function setMode(mode) {
+        currentMode = mode;
+        document.body.classList.remove("challenge-mode", "support-mode");
+        if (mode === "challenge") document.body.classList.add("challenge-mode");
+        if (mode === "support") document.body.classList.add("support-mode");
+        document.querySelectorAll(".mode-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.mode === mode);
+        });
+        saveState();
+      }
+
+      // ── Hint System ──
+      function toggleHint(id) {
+        const el = document.getElementById(id);
+        el.classList.toggle("open");
+      }
+
+      // ── GCF/LCM Calculator ──
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+      function lcm(a, b) {
+        return (a / gcd(a, b)) * b;
+      }
+
+      function primeFactorize(n) {
+        const factors = {};
+        let d = 2;
+        while (d * d <= n) {
+          while (n % d === 0) {
+            factors[d] = (factors[d] || 0) + 1;
+            n /= d;
+          }
+          d++;
+        }
+        if (n > 1) factors[n] = (factors[n] || 0) + 1;
+        return factors;
+      }
+
+      function formatFactors(factors) {
+        return Object.entries(factors)
+          .map(([p, e]) => (e > 1 ? p + "^" + e : p))
+          .join(" x ");
+      }
+
+      function runCalculator() {
+        const a = parseInt(document.getElementById("calcA").value);
+        const b = parseInt(document.getElementById("calcB").value);
+        if (!a || !b || a < 1 || b < 1) {
+          document.getElementById("calcResult").textContent =
+            "Please enter two positive numbers.";
+          return;
+        }
+        const g = gcd(a, b);
+        const l = lcm(a, b);
+        const fa = primeFactorize(a);
+        const fb = primeFactorize(b);
+        document.getElementById("calcResult").innerHTML =
+          `<div><strong>${a}</strong> = ${formatFactors(fa)} | <strong>${b}</strong> = ${formatFactors(fb)}<br>` +
+          `<span style="color:var(--space-teal)">GCF = ${g}</span> &nbsp;&nbsp; <span style="color:var(--space-gold)">LCM = ${l}</span></div>`;
+      }
+
+      // ── Canvas Drawing ──
+      let canvasTool = "pen";
+      let canvasColor = "#f0c040";
+      let isDrawing = false;
+      let lastX, lastY;
+
+      function initCanvas() {
+        const canvas = document.getElementById("patchCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#0d1330";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Draw guide circle
+        ctx.strokeStyle = "rgba(59,91,219,0.3)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(350, 200, 150, 0, Math.PI * 2);
+        ctx.stroke();
+
+        canvas.addEventListener("mousedown", (e) => {
+          isDrawing = true;
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          lastX = (e.clientX - rect.left) * scaleX;
+          lastY = (e.clientY - rect.top) * scaleY;
+        });
+        canvas.addEventListener("mousemove", (e) => {
+          if (!isDrawing) return;
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          const x = (e.clientX - rect.left) * scaleX;
+          const y = (e.clientY - rect.top) * scaleY;
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(x, y);
+          ctx.strokeStyle = canvasTool === "eraser" ? "#0d1330" : canvasColor;
+          ctx.lineWidth = canvasTool === "eraser" ? 20 : 3;
+          ctx.lineCap = "round";
+          ctx.stroke();
+          lastX = x;
+          lastY = y;
+        });
+        canvas.addEventListener("mouseup", () => (isDrawing = false));
+        canvas.addEventListener("mouseleave", () => (isDrawing = false));
+
+        // Touch support
+        canvas.addEventListener(
+          "touchstart",
+          (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            isDrawing = true;
+            lastX = (touch.clientX - rect.left) * scaleX;
+            lastY = (touch.clientY - rect.top) * scaleY;
+          },
+          { passive: false },
+        );
+        canvas.addEventListener(
+          "touchmove",
+          (e) => {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleY;
+            const ctx2 = canvas.getContext("2d");
+            ctx2.beginPath();
+            ctx2.moveTo(lastX, lastY);
+            ctx2.lineTo(x, y);
+            ctx2.strokeStyle =
+              canvasTool === "eraser" ? "#0d1330" : canvasColor;
+            ctx2.lineWidth = canvasTool === "eraser" ? 20 : 3;
+            ctx2.lineCap = "round";
+            ctx2.stroke();
+            lastX = x;
+            lastY = y;
+          },
+          { passive: false },
+        );
+        canvas.addEventListener("touchend", () => (isDrawing = false));
+      }
+
+      function setCanvasTool(tool) {
+        canvasTool = tool;
+        document
+          .querySelectorAll(".canvas-toolbar button")
+          .forEach((b) => b.classList.remove("active"));
+        event.target.classList.add("active");
+      }
+      function setCanvasColor(color) {
+        canvasColor = color;
+        canvasTool = "pen";
+      }
+      function clearCanvas() {
+        const canvas = document.getElementById("patchCanvas");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#0d1330";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "rgba(59,91,219,0.3)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(350, 200, 150, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // ── Portfolio Generation ──
+      function generatePortfolio() {
+        const name =
+          document.getElementById("studentName").value || "Unnamed Cadet";
+        const period = document.getElementById("classPeriod").value || "N/A";
+        const date =
+          document.getElementById("activityDate").value ||
+          new Date().toLocaleDateString();
+
+        let filledCount = 0;
+        let totalFields = 0;
+        document
+          .querySelectorAll(".form-input, .form-textarea, .form-select")
+          .forEach((el) => {
+            if (el.id === "calcA" || el.id === "calcB") return;
+            totalFields++;
+            if (el.value && el.value.trim()) filledCount++;
+          });
+        const pct = Math.round((filledCount / totalFields) * 100);
+
+        const rubricScore = [1, 2, 3, 4, 5].reduce((sum, i) => {
+          const checked = document.querySelector(
+            `input[name="rubric${i}"]:checked`,
+          );
+          return sum + (checked ? parseInt(checked.value) : 0);
+        }, 0);
+
+        const html = `
+    <div style="text-align:center;margin-bottom:24px">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="54" fill="none" stroke="var(--space-line)" stroke-width="8"/>
+        <circle cx="60" cy="60" r="54" fill="none" stroke="var(--space-gold)" stroke-width="8"
+          stroke-dasharray="${(pct / 100) * 339} 339" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+        <text x="60" y="55" text-anchor="middle" fill="var(--space-gold)" font-size="28" font-weight="800">${pct}%</text>
+        <text x="60" y="72" text-anchor="middle" fill="var(--space-muted)" font-size="10">COMPLETE</text>
+      </svg>
+    </div>
+    <div class="grid-2" style="gap:16px;margin-bottom:20px">
+      <div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:var(--radius)">
+        <div style="font-size:0.82rem;color:var(--space-muted)">CADET</div>
+        <div style="font-weight:700;font-size:1.1rem">${name}</div>
+      </div>
+      <div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:var(--radius)">
+        <div style="font-size:0.82rem;color:var(--space-muted)">PERIOD / DATE</div>
+        <div style="font-weight:700;font-size:1.1rem">${period} | ${date}</div>
+      </div>
+      <div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:var(--radius)">
+        <div style="font-size:0.82rem;color:var(--space-muted)">TASKS COMPLETED</div>
+        <div style="font-weight:700;font-size:1.1rem;color:var(--space-gold)">${filledCount} / ${totalFields}</div>
+      </div>
+      <div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:var(--radius)">
+        <div style="font-size:0.82rem;color:var(--space-muted)">SELF-ASSESSMENT</div>
+        <div style="font-weight:700;font-size:1.1rem;color:var(--space-teal)">${rubricScore} / 20</div>
+      </div>
+    </div>
+    <div style="padding:16px;background:rgba(240,192,64,0.05);border:1px solid rgba(240,192,64,0.2);border-radius:var(--radius)">
+      <strong style="color:var(--space-gold)">Mission Status:</strong>
+      ${
+        pct >= 90
+          ? '<span style="color:var(--space-success)"> MISSION COMPLETE — Outstanding work, Commander!</span>'
+          : pct >= 70
+            ? '<span style="color:var(--space-teal)"> MISSION SUCCESSFUL — Great effort!</span>'
+            : pct >= 50
+              ? '<span style="color:var(--space-warn)"> MISSION IN PROGRESS — Keep going!</span>'
+              : '<span style="color:var(--space-coral)"> MISSION NEEDS WORK — Talk to your Mission Director (teacher).</span>'
+      }
+    </div>`;
+        document.getElementById("portfolioContent").innerHTML = html;
+      }
+
+      function copyPortfolio() {
+        const name = document.getElementById("studentName").value || "Unnamed";
+        const period = document.getElementById("classPeriod").value || "N/A";
+        let text = `SPACE MISSION CONTROL — Portfolio\nCadet: ${name} | Period: ${period}\n\n`;
+        document
+          .querySelectorAll(".form-input, .form-textarea")
+          .forEach((el) => {
+            if (
+              el.value &&
+              el.value.trim() &&
+              el.id !== "calcA" &&
+              el.id !== "calcB"
+            ) {
+              const label = el.previousElementSibling
+                ? el.previousElementSibling.textContent
+                : el.id;
+              text += `${label}: ${el.value}\n\n`;
+            }
+          });
+        navigator.clipboard
+          .writeText(text)
+          .then(() => alert("Portfolio copied to clipboard!"));
+      }
+
+      function downloadPortfolio() {
+        const name = document.getElementById("studentName").value || "Unnamed";
+        let text = `SPACE MISSION CONTROL — GCF, LCM & Factors\nCadet: ${name}\n${"=".repeat(50)}\n\n`;
+        document.querySelectorAll(".task, .card").forEach((section) => {
+          const h = section.querySelector("h3, .task-title");
+          if (h) text += `--- ${h.textContent} ---\n`;
+          section
+            .querySelectorAll(".form-input, .form-textarea")
+            .forEach((el) => {
+              if (
+                el.value &&
+                el.value.trim() &&
+                el.id !== "calcA" &&
+                el.id !== "calcB"
+              ) {
+                const label =
+                  el.closest(".form-group")?.querySelector("label")
+                    ?.textContent || el.id;
+                text += `${label}\n${el.value}\n\n`;
+              }
+            });
+        });
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Space_Mission_Control_${name.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      // ── Auto-Save ──
+      function saveState() {
+        const data = { phase: currentPhase, mode: currentMode, fields: {} };
+        document
+          .querySelectorAll(".form-input, .form-textarea, .form-select")
+          .forEach((el) => {
+            if (el.id) data.fields[el.id] = el.value;
+          });
+        document
+          .querySelectorAll('input[type="radio"]:checked')
+          .forEach((el) => {
+            data.fields[el.name] = el.value;
+          });
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (data.phase) goToPhase(data.phase);
+          if (data.mode) setMode(data.mode);
+          if (data.fields) {
+            Object.entries(data.fields).forEach(([id, val]) => {
+              const el = document.getElementById(id);
+              if (el) el.value = val;
+              // Radio buttons
+              if (!el && val) {
+                const radio = document.querySelector(
+                  `input[name="${id}"][value="${val}"]`,
+                );
+                if (radio) radio.checked = true;
+              }
+            });
+          }
+        } catch (e) {}
+      }
+
+      // ── Auto-save on input ──
+      document.addEventListener("input", () => {
+        clearTimeout(window._saveTimer);
+        window._saveTimer = setTimeout(saveState, 500);
+      });
+
+      // ── Init ──
+      document.addEventListener("DOMContentLoaded", () => {
+        loadState();
+        initCanvas();
+        // Set default date
+        if (!document.getElementById("activityDate").value) {
+          document.getElementById("activityDate").value = new Date()
+            .toISOString()
+            .split("T")[0];
+        }
+      });
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: XP & Points System
+      // ══════════════════════════════════════
+      var _xp = 0;
+      var _xpMax = 500;
+      var _fieldsAwarded = {};
+
+      function addXP(amount, fieldId) {
+        if (fieldId && _fieldsAwarded[fieldId]) return;
+        if (fieldId) _fieldsAwarded[fieldId] = true;
+        _xp = Math.min(_xp + amount, _xpMax);
+        updateXPBar();
+        if (amount > 0) playSound("xp");
+        saveEnhancementState();
+      }
+
+      function updateXPBar() {
+        var bar = document.getElementById("xpBarFill");
+        var val = document.getElementById("xpValue");
+        if (bar) bar.style.width = Math.round((_xp / _xpMax) * 100) + "%";
+        if (val) val.textContent = _xp + " / " + _xpMax + " XP";
+      }
+
+      // Award XP when fields are filled
+      document.addEventListener("input", function (e) {
+        var el = e.target;
+        if (!el.id) return;
+        if (
+          (el.classList.contains("form-input") ||
+            el.classList.contains("form-textarea") ||
+            el.tagName === "TEXTAREA" ||
+            el.tagName === "INPUT") &&
+          el.value &&
+          el.value.trim().length > 2
+        ) {
+          addXP(5, "field_" + el.id);
+        }
+      });
+
+      // Award XP for phase completion
+      var _origGoToPhase = goToPhase;
+      goToPhase = function (n) {
+        var prev = currentPhase;
+        _origGoToPhase(n);
+        if (n > prev) {
+          addXP(25, "phase_" + prev);
+        }
+      };
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: Sound Effects (Web Audio)
+      // ══════════════════════════════════════
+      var _audioCtx = null;
+      function getAudioCtx() {
+        if (!_audioCtx) {
+          try {
+            _audioCtx = new (
+              window.AudioContext || window.webkitAudioContext
+            )();
+          } catch (e) {}
+        }
+        return _audioCtx;
+      }
+
+      function playSound(type) {
+        var ctx = getAudioCtx();
+        if (!ctx) return;
+        try {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          gain.gain.value = 0.08;
+          if (type === "xp") {
+            osc.frequency.value = 440;
+            osc.type = "sine";
+            gain.gain.exponentialRampToValueAtTime(
+              0.01,
+              ctx.currentTime + 0.15,
+            );
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.15);
+          } else if (type === "correct") {
+            osc.frequency.value = 440;
+            osc.type = "sine";
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+            var osc2 = ctx.createOscillator();
+            var g2 = ctx.createGain();
+            osc2.connect(g2);
+            g2.connect(ctx.destination);
+            osc2.frequency.value = 550;
+            osc2.type = "sine";
+            g2.gain.value = 0.06;
+            g2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+            osc2.start(ctx.currentTime + 0.12);
+            osc2.stop(ctx.currentTime + 0.35);
+          } else if (type === "incorrect") {
+            osc.frequency.value = 330;
+            osc.type = "square";
+            gain.gain.value = 0.04;
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.2);
+          } else if (type === "complete") {
+            var notes = [1, 1.25, 1.5, 2];
+            notes.forEach(function (n, i) {
+              var o = ctx.createOscillator();
+              var g = ctx.createGain();
+              o.connect(g);
+              g.connect(ctx.destination);
+              o.frequency.value = 440 * n;
+              o.type = "sine";
+              g.gain.value = 0.06;
+              g.gain.exponentialRampToValueAtTime(
+                0.01,
+                ctx.currentTime + 0.15 * (i + 1) + 0.2,
+              );
+              o.start(ctx.currentTime + 0.15 * i);
+              o.stop(ctx.currentTime + 0.15 * (i + 1) + 0.2);
+            });
+          }
+        } catch (e) {}
+      }
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: Show Example Toggle
+      // ══════════════════════════════════════
+      window.toggleExample = function (id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle("visible");
+      };
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: Certificate
+      // ══════════════════════════════════════
+      window.showCertificate = function () {
+        var nameEl = document.getElementById("studentName");
+        var name = nameEl ? nameEl.value || "Cadet" : "Cadet";
+        document.getElementById("certStudentName").textContent = name;
+        document.getElementById("certXP").textContent = _xp;
+        var fields = document.querySelectorAll('input[type="text"], textarea');
+        var filled = 0;
+        fields.forEach(function (f) {
+          if (f.value && f.value.trim().length > 0) filled++;
+        });
+        document.getElementById("certTasks").textContent = filled;
+        var pct =
+          fields.length > 0 ? Math.round((filled / fields.length) * 100) : 0;
+        document.getElementById("certAccuracy").textContent = pct + "%";
+        document.getElementById("certificateOverlay").classList.add("visible");
+        playSound("complete");
+        addXP(50, "certificate_earned");
+      };
+
+      // ══════════════════════════════════════
+      // ENHANCEMENT: Save/Load Enhancement State
+      // ══════════════════════════════════════
+      function saveEnhancementState() {
+        try {
+          localStorage.setItem(
+            "neft_space_mission_v2_enhance",
+            JSON.stringify({ xp: _xp, fields: _fieldsAwarded }),
+          );
+        } catch (e) {}
+      }
+
+      function loadEnhancementState() {
+        try {
+          var raw = localStorage.getItem("neft_space_mission_v2_enhance");
+          if (raw) {
+            var d = JSON.parse(raw);
+            if (d.xp) _xp = d.xp;
+            if (d.fields) _fieldsAwarded = d.fields;
+            updateXPBar();
+          }
+        } catch (e) {}
+      }
+
+      // Init enhancements
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () {
+          loadEnhancementState();
+          updateXPBar();
+        });
+      } else {
+        loadEnhancementState();
+        updateXPBar();
+      }
+    </script>
+
+    <!-- Enhancement: Certificate Overlay -->
+    <div class="certificate-overlay" id="certificateOverlay">
+      <div class="certificate-card">
+        <div class="cert-badge">&#128640;</div>
+        <div class="cert-title">Mission Commander Certificate</div>
+        <div class="cert-name" id="certStudentName">Cadet Name</div>
+        <p
+          style="
+            color: var(--space-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+          "
+        >
+          Has demonstrated outstanding mathematical skills and earned the rank
+          of <strong>Commander</strong>.
+        </p>
+        <div class="cert-stats">
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certXP">0</div>
+            <div class="cert-stat-label">Total XP</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certTasks">0</div>
+            <div class="cert-stat-label">Tasks Done</div>
+          </div>
+          <div class="cert-stat">
+            <div class="cert-stat-value" id="certAccuracy">0%</div>
+            <div class="cert-stat-label">Completion</div>
+          </div>
+        </div>
+        <button
+          class="cert-close"
+          onclick="
+            document
+              .getElementById('certificateOverlay')
+              .classList.remove('visible')
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  
+<!-- ── Neft Teacher help widgets ── -->
+<div class="nt-fab-wrap">
+  <button type="button" class="nt-fab nt-fab-hint" id="ntHintFab"
+    aria-expanded="false" aria-controls="ntHintPanel">💡 <span>Hints</span></button>
+  <button type="button" class="nt-fab nt-fab-help" id="ntHelpFab"
+    aria-expanded="false" aria-controls="ntHelpPanel">🛟 <span>Need help?</span></button>
+</div>
+
+<div class="nt-panel" id="ntHelpPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHelpTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHelpClose" aria-label="Close help panel">✕</button>
+  <h3 id="ntHelpTitle">Need help? Explore these</h3>
+  <p class="nt-lede">Trusted sites for <strong>GCF, LCM & Factors</strong>. Each opens in a new tab.</p>
+  <h4>Vocabulary</h4>
+  <ul class="nt-vocab"><li><b>Factor:</b> A number that divides evenly into another number with no remainder.</li><li><b>GCF:</b> Greatest Common Factor — the largest factor two numbers share.</li><li><b>LCM:</b> Least Common Multiple — the smallest multiple two numbers share.</li><li><b>Multiple:</b> The result of multiplying a number by 1, 2, 3, and so on.</li><li><b>Prime:</b> A number greater than 1 whose only factors are 1 and itself.</li></ul>
+  <h4>Learn more</h4>
+  <ul><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-factors-and-multiples/cc-6th-gcf/v/greatest-common-divisor" target="_blank" rel="noopener noreferrer">Khan Academy: GCF</a></li><li><a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-factors-and-multiples/cc-6th-lcm/v/least-common-multiple-exercise" target="_blank" rel="noopener noreferrer">Khan Academy: LCM</a></li><li><a href="https://www.mathsisfun.com/greatest-common-factor.html" target="_blank" rel="noopener noreferrer">Math is Fun: GCF & LCM</a></li><li><a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer">Desmos Calculator</a></li></ul>
+</div>
+
+<div class="nt-panel" id="ntHintPanel" role="dialog" aria-modal="false"
+  aria-labelledby="ntHintTitle" data-open="false">
+  <button type="button" class="nt-close" id="ntHintClose" aria-label="Close hints panel">✕</button>
+  <h3 id="ntHintTitle">Helpful hints</h3>
+  <p class="nt-lede">Stuck on a step? Try these tips for <strong>GCF, LCM & Factors</strong>.</p>
+  <ul id="ntHintList"></ul>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var HINTS = ["List the factors of each number, then circle the biggest one they share — that is the GCF.","For LCM, list multiples (5, 10, 15…) of each number until you find the first match.","Prime factors are like building blocks. Break each number down into primes first.","Take your time and check your factor lists twice before you compare them."];
+  var VOCAB = [["Factor","A number that divides evenly into another number with no remainder."],["GCF","Greatest Common Factor — the largest factor two numbers share."],["LCM","Least Common Multiple — the smallest multiple two numbers share."],["Multiple","The result of multiplying a number by 1, 2, 3, and so on."],["Prime","A number greater than 1 whose only factors are 1 and itself."]];
+
+  /* Build hint list */
+  var hl = document.getElementById("ntHintList");
+  if (hl) HINTS.forEach(function(h){ var li=document.createElement("li"); li.textContent=h; hl.appendChild(li); });
+
+  function wirePanel(fabId, panelId, closeId){
+    var fab=document.getElementById(fabId), panel=document.getElementById(panelId),
+        close=document.getElementById(closeId);
+    if(!fab||!panel) return;
+    function setOpen(o){
+      panel.setAttribute("data-open", o?"true":"false");
+      fab.setAttribute("aria-expanded", o?"true":"false");
+      if(o){ var f=panel.querySelector("a,button"); if(f) f.focus(); }
+    }
+    fab.addEventListener("click", function(){ setOpen(panel.getAttribute("data-open")!=="true"); });
+    if(close) close.addEventListener("click", function(){ setOpen(false); fab.focus(); });
+    panel.addEventListener("keydown", function(e){ if(e.key==="Escape"){ setOpen(false); fab.focus(); } });
+  }
+  wirePanel("ntHelpFab","ntHelpPanel","ntHelpClose");
+  wirePanel("ntHintFab","ntHintPanel","ntHintClose");
+
+  /* Auto-attach a Hint button to each task/question section */
+  var SEL = ".task, .question, .challenge-card, .mission-card, .activity, .problem, .qcard, .task-card, [data-task]";
+  var blocks = document.querySelectorAll(SEL);
+  var seen = 0;
+  blocks.forEach(function(b, i){
+    if (b.querySelector(".nt-hint-btn")) return;
+    if (seen >= 40) return; seen++;
+    var tip = HINTS[i % HINTS.length];
+    var btn = document.createElement("button");
+    btn.type="button"; btn.className="nt-hint-btn";
+    btn.setAttribute("aria-expanded","false");
+    btn.innerHTML='💡 Hint';
+    var body = document.createElement("div");
+    body.className="nt-hint-body"; body.setAttribute("data-open","false");
+    body.textContent = tip;
+    btn.addEventListener("click", function(){
+      var open = body.getAttribute("data-open")==="true";
+      body.setAttribute("data-open", open?"false":"true");
+      btn.setAttribute("aria-expanded", open?"false":"true");
+    });
+    b.appendChild(btn); b.appendChild(body);
+  });
+
+  /* Tooltip key terms in body text (first occurrence each) */
+  var done = {};
+  function tipify(node){
+    if(node.nodeType===3){
+      var txt=node.nodeValue; if(!txt||!txt.trim()) return;
+      for(var k=0;k<VOCAB.length;k++){
+        var term=VOCAB[k][0]; if(done[term]) continue;
+        var re=new RegExp("\\b("+term.replace(/[.*+?^${}()|[\]\\]/g,function(c){return "\\"+c;})+")\\b");
+        var m=re.exec(txt);
+        if(m){
+          var span=document.createElement("span");
+          span.className="nt-tip"; span.tabIndex=0;
+          span.setAttribute("data-nt-tip", VOCAB[k][1]);
+          span.setAttribute("role","note");
+          span.textContent=m[0];
+          var after=node.splitText(m.index);
+          after.nodeValue=after.nodeValue.substring(m[0].length);
+          node.parentNode.insertBefore(span, after);
+          done[term]=true;
+          span.addEventListener("focus",function(){this.setAttribute("data-show","true");});
+          span.addEventListener("blur",function(){this.removeAttribute("data-show");});
+          return;
+        }
+      }
+    } else if(node.nodeType===1){
+      var tn=node.tagName;
+      if(/^(SCRIPT|STYLE|BUTTON|A|INPUT|TEXTAREA|SELECT|SVG|H1)$/.test(tn)) return;
+      if(node.classList && (node.classList.contains("nt-tip")||node.classList.contains("nt-panel")||node.classList.contains("nt-level-banner")||node.classList.contains("nt-fab-wrap"))) return;
+      var kids=Array.prototype.slice.call(node.childNodes);
+      for(var i=0;i<kids.length;i++) tipify(kids[i]);
+    }
+  }
+  try { tipify(document.body); } catch(e){}
+})();
+</script>
+
+</body>
+</html>

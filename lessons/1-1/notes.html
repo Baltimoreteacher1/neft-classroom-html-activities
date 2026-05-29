@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prime Factorization — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 1 · Standard 6.NS.4</p>
+    <h1>Prime Factorization</h1>
+    <p class="meta">Lesson 1-1</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section vocab">
+  <h2>Vocabulary</h2>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <h3 class="vocab-term">Prime number</h3>
+  <p class="vocab-def">A whole number greater than 1 that has exactly two factors: 1 and itself</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/prime-number.svg" alt="A whole number greater than 1 that has exactly two factors: 1 and itself" onerror="this.style.display='none'" />
+    <p class="vocab-caption">7 has only two factors: 1 × 7. So 7 is prime.</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Composite number</h3>
+  <p class="vocab-def">A whole number greater than 1 that has more than two factors</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/composite-number.svg" alt="A whole number greater than 1 that has more than two factors" onerror="this.style.display='none'" />
+    <p class="vocab-caption">12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Prime factorization</h3>
+  <p class="vocab-def">Writing a number as a product of its prime factors</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/prime-factorization.svg" alt="Writing a number as a product of its prime factors" onerror="this.style.display='none'" />
+    <p class="vocab-caption">36 = 2 × 2 × 3 × 3 = 2² × 3²</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Factor tree</h3>
+  <p class="vocab-def">A diagram that breaks a number into its prime factors step by step</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/factor-tree.svg" alt="A diagram that breaks a number into its prime factors step by step" onerror="this.style.display='none'" />
+    <p class="vocab-caption">24 → 4 × 6 → (2 × 2) × (2 × 3) → 2 × 2 × 2 × 3</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Exponent</h3>
+  <p class="vocab-def">A small number that shows how many times a base is multiplied by itself</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/exponent.svg" alt="A small number that shows how many times a base is multiplied by itself" onerror="this.style.display='none'" />
+    <p class="vocab-caption">2³ means 2 × 2 × 2 = 8</p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>The space station received 60 supply crates.</li><li>Mission Control needs to break this quantity into its prime components so the sorting robots can distribute them into equally sized pods.</li><li>Help the crew find the prime factorization of 60!</li><li>Sort these numbers — which are prime and which are composite?</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>What number are we breaking down into factors?</li><li>What's the difference between a factor and a prime factor?</li><li>How many different ways can we start breaking 60 apart?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">Which of the following is a prime number?</p>
+    <p class="ex-solution"><strong>Solution:</strong> 17 has exactly two factors: 1 and 17. 15 = 3 × 5, 21 = 3 × 7, and 9 = 3 × 3, so they are all composite.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 17</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">What is the prime factorization of 30?</p>
+    <p class="ex-solution"><strong>Solution:</strong> 30 = 2 × 15 = 2 × 3 × 5. All three factors (2, 3, 5) are prime, so 2 × 3 × 5 is the prime factorization.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 2 × 3 × 5</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">What is the prime factorization of 18?</p>
+    <p class="ex-solution"><strong>Solution:</strong> 18 = 2 × 9 = 2 × 3 × 3. Both 2 and 3 are prime, so 2 × 3 × 3 is the prime factorization.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. 2 × 3 × 3</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. Which of these numbers is composite?</p>
+  <ol class="try-choices" type="A"><li>27</li><li>23</li><li>29</li><li>31</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. Two students found different factor trees for 60. Student A started with 2 × 30. Student B started with 6 × 10. Which statement is true?</p>
+  <ol class="try-choices" type="A"><li>Both get the same prime factorization: 2 × 2 × 3 × 5</li><li>Only Student A gets the correct prime factorization</li><li>Only Student B gets the correct prime factorization</li><li>They will get different prime factorizations</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">What is the prime factorization of 40?</p>
+  <ol class="try-choices" type="A"><li>2 × 2 × 2 × 5</li><li>4 × 10</li><li>5 × 8</li><li>2 × 20</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 27 <span class="ak-why">— 27 = 3 × 9 = 3 × 3 × 3, so it has more than two factors. 23, 29, and 31 are all prime.</span></li><li><strong>Try It 2:</strong> A. Both get the same prime factorization: 2 × 2 × 3 × 5 <span class="ak-why">— The Fundamental Theorem of Arithmetic says every composite number has exactly one prime factorization. No matter how you start the factor tree, you always end with 2 × 2 × 3 × 5.</span></li><li><strong>Exit Ticket:</strong> A. 2 × 2 × 2 × 5 <span class="ak-why">— 40 = 2 × 20 = 2 × 2 × 10 = 2 × 2 × 2 × 5. All factors (2, 2, 2, 5) are prime.</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 1-1 · Standard 6.NS.4</footer>
+</main>
+</body>
+</html>

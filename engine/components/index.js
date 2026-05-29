@@ -13,3 +13,8 @@ export { renderVocabDragMatch } from "./vocab-drag-match.js";
 export { renderVocabCloze } from "./vocab-cloze.js";
 export { renderVocabSort } from "./vocab-sort.js";
 export { renderVocabIntro } from "./vocab-intro.js";
+export { renderAlgebraTiles } from "./algebra-tiles.js";
+export { renderFractionBars } from "./fraction-bars.js";
+export { renderNetFolder } from "./net-folder.js";
+export { renderCoordinatePlane } from "./coordinate-plane.js";
+export { renderRemediation } from "./remediation-panel.js";

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shape of Data Distributions — Notes Packet</title>
+<style>
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.name-line span{flex:1;border-bottom:1px solid var(--ink);padding:4px 0;min-width:140px;}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-why{color:var(--muted);font-style:italic;}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+@media print{
+  @page{size:letter;margin:0.75in;}
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
+  .topbar,.print-btn,.no-print{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+}
+</style>
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet</span>
+  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<main class="sheet">
+  <header class="packet">
+    <p class="eyebrow">Unit 8 · Standard 6.SP.2</p>
+    <h1>Shape of Data Distributions</h1>
+    <p class="meta">Lesson 8-7</p>
+    <div class="name-line">
+      <span>Name:</span><span>Date:</span><span>Class:</span>
+    </div>
+  </header>
+  <section class="section vocab">
+  <h2>Vocabulary</h2>
+  <div class="vocab-grid">
+<div class="vocab-card">
+  <h3 class="vocab-term">Symmetric</h3>
+  <p class="vocab-def">A distribution where the left and right sides are approximately mirror images of each other</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/symmetric.svg" alt="A distribution where the left and right sides are approximately mirror images of each other" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Heights: 60, 62, 64, 66, 68, 66, 64, 62, 60 — rises and falls evenly like a hill</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Skewed</h3>
+  <p class="vocab-def">A distribution where data is bunched on one side with a tail stretching to the other side</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/skewed.svg" alt="A distribution where data is bunched on one side with a tail stretching to the other side" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Skewed right: most data low (1,2,2,3,3,3,15) — tail stretches toward the high value</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Cluster</h3>
+  <p class="vocab-def">A group of data values that are close together</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/cluster.svg" alt="A group of data values that are close together" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Scores 18, 19, 20, 21, 22 form a cluster around 20 — they are tightly grouped</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Gap</h3>
+  <p class="vocab-def">A large space between data values where no data falls</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/gap.svg" alt="A large space between data values where no data falls" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Data: 5, 6, 7, 8, ___, ___, ___, 20 — the empty space from 9 to 19 is a gap</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Data distribution</h3>
+  <p class="vocab-def">The shape and spread of a data set</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/data-distribution.svg" alt="The shape and spread of a data set" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps</p>
+  </div>
+</div>
+<div class="vocab-card">
+  <h3 class="vocab-term">Variability</h3>
+  <p class="vocab-def">How spread out the values in a data set are</p>
+  <div class="vocab-figure">
+    <img src="/assets/vocab-images/variability.svg" alt="How spread out the values in a data set are" onerror="this.style.display='none'" />
+    <p class="vocab-caption">Symmetric data with low variability: tightly packed around the center. Skewed data: spread unevenly</p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section notes">
+  <h2>Key Ideas &amp; Notes</h2>
+  <ul class="notes-bullets"><li>The league analyst is studying three different data sets from the season: (1) Player heights across all teams, (2) Number of 3-pointers per game by each player, and (3) Years of experience for all coaches.</li><li>Each data set has a different shape when graphed.</li><li>Your job is to describe each shape and explain what it tells us about the data.</li></ul>
+  <div class="think-block">
+    <h3>Think About It</h3>
+    <ul class="prompt-list"><li>Do the three data sets look the same when graphed?</li><li>Which graph has data bunched in the middle? Which has a long tail?</li><li>Are there any gaps or clusters you can spot?</li></ul>
+  </div>
+  <div class="my-notes">
+    <h3>My Notes</h3>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
+  <section class="section examples">
+  <h2>Guided Examples</h2>
+  <div class="example">
+  <h3 class="example-head">Example 1</h3>
+  <p class="ex-problem">A histogram of basketball players' ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p>
+    <p class="ex-solution"><strong>Solution:</strong> Most data is on the left (younger ages) with a tail stretching right (older ages). This is skewed right.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. Skewed right</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 2</h3>
+  <p class="ex-problem">A data set is symmetric. What is likely true about the mean and median?</p>
+    <p class="ex-solution"><strong>Solution:</strong> In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. They are approximately equal</p>
+</div>
+<div class="example">
+  <h3 class="example-head">Example 3</h3>
+  <p class="ex-problem">Which word describes the direction of the TAIL, not the peak?</p>
+    <p class="ex-solution"><strong>Solution:</strong> The skew direction is named after the TAIL. If the tail stretches to the right, it is skewed right, even though the peak is on the left.</p>
+    <p class="ex-answer"><strong>Answer:</strong> A. Skew — the direction of the long tail tells you the skew direction</p>
+</div>
+</section>
+  <section class="section tryit-section">
+  <h2>Try It</h2>
+  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
+  <div class="tryit">
+  <p class="tryit-num">1. A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?</p>
+  <ol class="try-choices" type="A"><li>Skewed right — most values at the low end with a tail to the right</li><li>Symmetric — equal on both sides</li><li>Skewed left — most values at the high end</li><li>Uniform — all bars the same height</li></ol>
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+<div class="tryit">
+  <p class="tryit-num">2. Match the data shape with the best measure of center.</p>
+  
+  <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</div>
+</section>
+  <section class="section reflect">
+  <h2>Reflect — Exit Ticket</h2>
+  <p class="reflect-stem">A data set has most values clustered between 40–60, with a few values at 90–100. What is the shape of the distribution and which measure of center is best?</p>
+  <ol class="try-choices" type="A"><li>Skewed right; use median</li><li>Symmetric; use mean</li><li>Skewed left; use median</li><li>Uniform; use mean</li></ol>
+  <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key</h2>
+  <ol class="ak-list"><li><strong>Try It 1:</strong> A. Skewed right — most values at the low end with a tail to the right <span class="ak-why">— The data peaks at 0–1 goals and tails off toward 4. Most data is on the left with fewer values stretching right — this is skewed right.</span></li><li><strong>Try It 2:</strong> </li><li><strong>Exit Ticket:</strong> A. Skewed right; use median <span class="ak-why">— The data clusters on the left (40–60) with a tail to the right (90–100). This is skewed right. The median is best because the mean would be pulled toward the high values.</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-7 · Standard 6.SP.2</footer>
+</main>
+</body>
+</html>
