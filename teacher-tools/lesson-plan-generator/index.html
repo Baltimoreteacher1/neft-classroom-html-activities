@@ -32,33 +32,41 @@
           <h2 class="card-title">1 · Give the generator your source</h2>
           <p class="muted">
             The lesson plan is built <strong>only</strong> from what you provide
-            here — your slides, PDF, doc, or notes are the source of truth.
-            Nothing is invented. Missing-but-required details are marked
-            <span class="inferred-chip">[INFERRED — VERIFY]</span>. Give as much
-            real detail as you can.
+            — your notes, slides, PDF, or doc are the source of truth. Nothing
+            is invented; only genuinely missing required details are marked
+            <span class="inferred-chip">[INFERRED — VERIFY]</span>.
           </p>
 
           <div class="input-grid">
             <label class="field big">
-              <span class="field-label">Type or paste your lesson source</span>
+              <span class="field-label">Type or paste your lesson notes</span>
               <textarea
                 id="sourceText"
                 rows="12"
                 placeholder="Paste slide text, a linked-activity description, or write your lesson notes here. Helpful things to include when you have them:&#10;&#10;Title: Area of Composite Polygons&#10;Grade/Course: Grade 6 Mathematics&#10;Date: &#10;Standard: 6.G.A.1 — find area by composing / decomposing&#10;Objective: Students will find the area of composite polygons by decomposing into rectangles and triangles.&#10;Vocabulary: composite figure, decompose, area&#10;Do Now: number talk splitting an L-shape&#10;Mini-lesson: model decomposing an L-shape; think-aloud on choosing cuts&#10;Guided: partners solve 2 shapes on grid paper&#10;Independent: practice set problems 1-6; challenge for early finishers&#10;Exit ticket: one composite shape, explain the cut"
               ></textarea>
+              <span class="helper small"
+                >Plain text is fine — the more real detail you give, the more
+                complete the plan.</span
+              >
             </label>
 
+            <div class="or-divider" aria-hidden="true"><span>or</span></div>
+
             <div class="upload-col">
-              <span class="field-label">…or upload a file</span>
+              <span class="field-label">Upload a file</span>
+              <button class="btn upload primary" id="uploadBtn" type="button">
+                <span class="up-emoji">📎</span> Upload slides / file
+              </button>
               <div
                 class="dropzone"
                 id="dropzone"
                 tabindex="0"
                 role="button"
-                aria-label="Upload a .pptx, .pdf, or .docx file"
+                aria-label="Upload a .pptx, .pdf, .docx, or .txt file"
               >
                 <div class="dz-icon">⬆</div>
-                <p><strong>Drag &amp; drop</strong> or click to choose</p>
+                <p class="muted small">…or drag &amp; drop here</p>
                 <p class="muted small">.pptx · .pdf · .docx · .txt</p>
                 <input
                   type="file"
@@ -67,7 +75,7 @@
                   hidden
                 />
               </div>
-              <p class="muted small" id="fileStatus"></p>
+              <p class="file-status small" id="fileStatus"></p>
               <p class="muted small">
                 Files are read inside your browser. Nothing is sent anywhere.
               </p>
@@ -76,7 +84,7 @@
 
           <div class="generate-row">
             <button class="btn primary big" id="generateBtn" type="button">
-              Generate Lesson Plan
+              ✦ Generate Lesson Plan
             </button>
             <button class="btn ghost" id="sampleBtn" type="button">
               Load example

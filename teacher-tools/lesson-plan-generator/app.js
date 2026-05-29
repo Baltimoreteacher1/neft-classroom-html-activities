@@ -31,6 +31,7 @@
   const els = {
     sourceText: $("sourceText"),
     fileInput: $("fileInput"),
+    uploadBtn: $("uploadBtn"),
     dropzone: $("dropzone"),
     fileStatus: $("fileStatus"),
     generateBtn: $("generateBtn"),
@@ -189,6 +190,7 @@
   async function handleFile(file) {
     const name = file.name || "file";
     const lower = name.toLowerCase();
+    els.fileStatus.className = "file-status";
     els.fileStatus.textContent = `Reading "${name}"…`;
     try {
       let text = "";
@@ -209,14 +211,18 @@
         throw new Error("Unsupported file type. Use .pptx, .pdf, .docx, .txt.");
       }
       uploadedExtract = { text, name, kind };
-      els.fileStatus.innerHTML = `Read <strong>${escapeHtml(
-        name,
-      )}</strong> (${kind}) — ${text.length.toLocaleString()} characters. It will be used as the source when you click Generate.`;
-      // Mirror into the textarea if it is empty so the teacher can see/edit it.
-      if (!els.sourceText.value.trim()) els.sourceText.value = text;
+      els.fileStatus.className = "file-status ok";
+      els.fileStatus.innerHTML =
+        `<strong>${escapeHtml(name)}</strong> (${kind})<br>` +
+        `<span class="extract-ok">Extracted ✓ (${text.length.toLocaleString()} characters)</span> ` +
+        `— review the text below, then click Generate.`;
+      // Mirror extracted text into the editable box so the teacher can review
+      // and edit it before generating. Always populate after a successful read.
+      els.sourceText.value = text;
     } catch (e) {
       uploadedExtract = null;
-      els.fileStatus.innerHTML = `<span style="color:var(--red);font-weight:700">Could not read this file:</span> ${escapeHtml(
+      els.fileStatus.className = "file-status bad";
+      els.fileStatus.innerHTML = `<strong>Could not read this file:</strong> ${escapeHtml(
         e.message,
       )}`;
     }
@@ -225,6 +231,11 @@
   /* =================================================================
      CONTENT MAP — parse the raw source into structured fields.
      Pull only what the source supports. Never fabricate.
+
+     Works for clean "Label: value" lines AND realistic free-form prose
+     (typed paragraphs, pasted activity text, extracted slide/PDF/DOCX
+     text). Parsing is case-insensitive and tolerant of punctuation and
+     whitespace.
   ================================================================= */
   function buildContentMap(raw) {
     const text = (raw || "").replace(/\r/g, "");
@@ -260,103 +271,203 @@
       .map((l) => l.trim())
       .filter(Boolean);
 
-    const grab = (re) => {
+    // SEGMENTS: split realistic prose into clause-sized pieces so a single
+    // pasted paragraph (or a slide line with several sentences) is parsed as
+    // well as a clean "Label: value" line. A clause boundary is a sentence
+    // end (". "/"! "/"? ") followed by a NON-digit — this keeps decimals like
+    // 8.4 and standard codes like 6.NS.3 intact — plus newlines, semicolons,
+    // and bullet markers.
+    const SENT = "␟"; // sentinel for a clause boundary
+    const segText = text
+      .replace(/([.!?])\s+(?=[^0-9])/g, "$1" + SENT)
+      .replace(/[\r\n]+/g, SENT)
+      .replace(/[;•]/g, SENT);
+    const segments = segText
+      .split(SENT)
+      .map((s) => s.replace(/^[.!?\s]+/, "").trim())
+      .filter(Boolean);
+
+    // grab(): scan clause-sized SEGMENTS first (each clean "Label: value"
+    // line is already its own segment, and prose is split at sentence
+    // boundaries) so a captured value stops at the end of its own clause
+    // instead of greedily swallowing the rest of a one-line paragraph. Fall
+    // back to whole lines, then a final un-anchored whole-text scan.
+    const grab = (re, segRe) => {
+      const sr = segRe || re;
+      for (const s of segments) {
+        const m = s.match(sr);
+        if (m && m[1]) return m[1].trim();
+      }
       for (const l of lines) {
         const m = l.match(re);
-        if (m) return m[1].trim();
+        if (m && m[1]) return m[1].trim();
+      }
+      const flat = (re.source || "").replace(/^\^/, "").replace(/\$$/, "");
+      try {
+        const loose = new RegExp(flat, re.flags.replace("g", ""));
+        const m = text.match(loose);
+        if (m && m[1]) return m[1].trim();
+      } catch (_) {
+        /* ignore */
       }
       return null;
     };
+
+    // Flexible "label : value" matcher. Value runs to the clause boundary
+    // already applied by segmentation.
+    const lbl = (alts) =>
+      new RegExp(`(?:^|\\b)(?:${alts})\\s*[:\\-=]\\s*(.+)`, "i");
+
+    const splitList = (val) =>
+      val
+        .split(/[,;]|•|\||\band\b/i)
+        .map((x) => x.replace(/[.\s]+$/, "").trim())
+        .filter(Boolean);
+
     const grabList = (label) => {
-      const re = new RegExp(`^${label}\\s*[:\\-]\\s*(.+)$`, "i");
+      const re = lbl(label);
+      // Prefer the dedicated whole LINE only when it does NOT also contain a
+      // following labeled section (e.g. one-line prose where "Vocabulary: a, b,
+      // c. Do Now: ..." would otherwise swallow the next phase). Detect a
+      // trailing "Word:" label and trim the list at that boundary.
+      const NEXT_LABEL =
+        /\b(?:do now|warm[\- ]?up|opening|bell ?ringer|mini[\- ]?lesson|modeling|direct instruction|guided|collaborative|independent|closure|wrap[\- ]?up|exit (?:ticket|slip)|homework|objective|standard|materials|resources|success criteria)\b\s*[:\-]/i;
       for (const l of lines) {
         const m = l.match(re);
-        if (m)
-          return m[1]
-            .split(/[,;]|•|\|/)
-            .map((s) => s.trim())
-            .filter(Boolean);
+        if (m && m[1]) {
+          let val = m[1];
+          // Cut the captured value at the next labeled section if present.
+          const cut = val.search(NEXT_LABEL);
+          if (cut > 0) val = val.slice(0, cut);
+          const items = splitList(val);
+          if (items.length) return items;
+        }
+      }
+      // Fall back to clause-sized segments (already bounded by sentence ends).
+      for (const s of segments) {
+        const m = s.match(re);
+        if (m && m[1]) {
+          const items = splitList(m[1]);
+          if (items.length) return items;
+        }
       }
       return [];
     };
 
-    map.title = grab(/^(?:title|lesson title|lesson)\s*[:\-]\s*(.+)$/i);
-    map.grade = grab(/^(?:grade)\s*[:\-]\s*(.+)$/i);
-    map.course = grab(/^(?:course|subject|class)\s*[:\-]\s*(.+)$/i);
-    map.date = grab(/^(?:date)\s*[:\-]\s*(.+)$/i);
-    map.session = grab(
-      /^(?:session|day|lesson #|lesson number)\s*[:\-]\s*(.+)$/i,
-    );
-    map.objective = grab(
-      /^(?:objective|content objective|learning target|target|goal|swbat|we will|i can)\s*[:\-]\s*(.+)$/i,
-    );
-    map.languageObjective = grab(
-      /^(?:language objective|lang objective|esol objective)\s*[:\-]\s*(.+)$/i,
-    );
+    map.title = grab(lbl("title|lesson title"));
+    map.grade = grab(lbl("grade(?:\\s*level)?"));
+    map.course = grab(lbl("course|subject|class"));
+    map.date = grab(lbl("date"));
+    map.session = grab(lbl("session|day|lesson #|lesson number"));
 
-    // Grade/Course combined e.g. "Grade 6 Mathematics"
-    const gc = grab(/^(?:grade\s*\/\s*course|grade\/course)\s*[:\-]\s*(.+)$/i);
+    // OBJECTIVE — explicit label, OR an "I can ..." / SWBAT statement anywhere.
+    map.objective =
+      grab(lbl("objective|content objective|learning target|target|goal")) ||
+      // Keep the "I can …" / "SWBAT …" lead-in so the objective reads as a
+      // complete learning-target statement (e.g. "I can divide decimals …").
+      grab(
+        /\b((?:swbat|students will(?:\s+be able to)?|we will|i can)\b\s*[:\-]?\s*.+)/i,
+      );
+    // Language objective — explicit label, or an "I can ... using ..." cue.
+    map.languageObjective =
+      grab(lbl("language objective|lang objective|esol objective")) ||
+      grab(/\bi can\b\s+(.+?\busing\b.+)/i);
+
+    // Grade/Course combined e.g. "Grade 6 math lesson" / "Grade 6 Mathematics"
+    const gc =
+      grab(lbl("grade\\s*\\/\\s*course|grade\\/course")) ||
+      (() => {
+        const m = text.match(/\bgrade\s*(\d+|[A-Za-z]+)\b/i);
+        return m ? m[0] : null;
+      })();
     if (gc) {
       const gm = gc.match(/grade\s*(\d+|[A-Za-z]+)/i);
       if (gm && !map.grade) map.grade = gm[0];
-      if (!map.course)
-        map.course = gc.replace(/grade\s*\d+\s*/i, "").trim() || null;
+      if (!map.course) {
+        const subj = text.match(
+          /\b(math(?:ematics)?|science|reading|ela|english|history|social studies|biology|algebra|geometry)\b/i,
+        );
+        if (subj)
+          map.course =
+            subj[1].toLowerCase() === "math"
+              ? "Mathematics"
+              : subj[1].replace(/\b\w/, (c) => c.toUpperCase());
+      }
     }
 
-    // Standards: codes like 6.G.A.1, CCSS.MATH.6.RP.A.3, MA.6.GR.2.1, etc.
-    const stdLine = grab(
-      /^(?:standard|standards|ccss|standard code)\s*[:\-]\s*(.+)$/i,
-    );
+    // STANDARDS: scan the WHOLE text for CCSS-style codes anywhere
+    // (6.NS.3, 6.NS.B.3, 6.RP.A.1, 6.G.A.1, CCSS.MATH.6.RP.A.3, MA.6.GR.2.1).
     const codeRe =
-      /\b(?:CCSS\.?[A-Z.]*|MA|MAFS|TEKS|SOL)?\.?\d?[A-Z]{0,4}\.?\d+\.[A-Z0-9.]+\b|\b\d+\.[A-Z]{1,3}\.[A-Z0-9.]+\b/g;
-    if (stdLine) {
-      const codes = stdLine.match(codeRe) || [];
-      const desc = stdLine
-        .replace(codeRe, "")
-        .replace(/^[\s:\-–—]+/, "")
-        .trim();
-      if (codes.length) {
-        codes.forEach((c, i) =>
-          map.standards.push({ code: c, desc: i === 0 ? desc : "" }),
-        );
-      } else if (stdLine) {
-        map.standards.push({ code: "", desc: stdLine });
+      /\b(?:CCSS\.?(?:MATH|ELA-?LITERACY)?\.?)?\d+\.[A-Z]{1,3}(?:\.[A-Z])?\.\d+[a-z]?\b|\b(?:MA|MAFS|TEKS|SOL)\.\d+\.[A-Z0-9.]+\b/g;
+    const codeMatches = [...text.matchAll(codeRe)].map((m) => m[0]);
+    const stdLine = grab(lbl("standard|standards|ccss|standard code"));
+    const seen = new Set();
+    codeMatches.forEach((c, i) => {
+      if (seen.has(c)) return;
+      seen.add(c);
+      let desc = "";
+      if (i === 0 && stdLine) {
+        desc = stdLine
+          .replace(codeRe, "")
+          .replace(/^[\s:\-–—()]+/, "")
+          .trim();
       }
+      map.standards.push({ code: c, desc });
+    });
+    if (!map.standards.length && stdLine) {
+      map.standards.push({ code: "", desc: stdLine });
     }
 
     map.materials = grabList("materials");
     if (!map.materials.length) map.materials = grabList("resources");
-    map.vocabulary = grabList("vocabulary");
-    if (!map.vocabulary.length) map.vocabulary = grabList("vocab");
+    map.vocabulary = grabList("vocabulary|vocab|key terms?");
     map.successCriteria = grabList("success criteria");
 
-    // Phases — accept several common labels.
-    map.phases.opening = grab(
-      /^(?:do now|warm[\- ]?up|warmup|opening|bell ?ringer|launch|hook|entrance)\s*[:\-]\s*(.+)$/i,
-    );
-    map.phases.mini = grab(
-      /^(?:mini[\- ]?lesson|minilesson|modeling|model|direct instruction|i do|concept)\s*[:\-]\s*(.+)$/i,
-    );
-    map.phases.guided = grab(
-      /^(?:guided practice|guided|we do|teacher[\- ]?guided)\s*[:\-]\s*(.+)$/i,
-    );
-    map.phases.collaborative = grab(
-      /^(?:collaborative|collaboration|partner|group work|you do together|turn and talk)\s*[:\-]\s*(.+)$/i,
-    );
-    map.phases.independent = grab(
-      /^(?:independent|independent practice|you do|stations|practice set|seatwork)\s*[:\-]\s*(.+)$/i,
-    );
-    map.phases.closure = grab(
-      /^(?:closure|close|wrap[\- ]?up|reflection|summary)\s*[:\-]\s*(.+)$/i,
-    );
-    map.exitTicket = grab(
-      /^(?:exit ticket|exit slip|exit|ticket out)\s*[:\-]\s*(.+)$/i,
-    );
-    map.homework = grab(
-      /^(?:homework|hw|continuation|home practice)\s*[:\-]\s*(.+)$/i,
-    );
+    // PHASES — for each phase, accept (a) an explicit label anywhere, OR
+    // (b) prose containing a keyword cue; capture the surrounding clause
+    // (which carries the actual problems / examples, e.g. "8.4 / 2.1").
+    const phaseFrom = (labelAlts, cueRe) => {
+      const byLabel = grab(lbl(labelAlts));
+      if (byLabel) return byLabel;
+      if (cueRe) {
+        for (const s of segments) {
+          if (cueRe.test(s)) return s;
+        }
+      }
+      return null;
+    };
 
-    // If nothing labeled was found, keep slide/page chunks as activity flow.
+    map.phases.opening = phaseFrom(
+      "do now|warm[\\- ]?up|warmup|opening|bell ?ringer|launch|hook|entrance|entrance ticket",
+      /\b(do now|warm[\- ]?up|bell ?ringer|opening)\b/i,
+    );
+    map.phases.mini = phaseFrom(
+      "mini[\\- ]?lesson|minilesson|modeling|direct instruction|i do|concept",
+      /\b(mini[\- ]?lesson|model(?:s|ing)?|think[\- ]?aloud|direct instruction)\b/i,
+    );
+    map.phases.guided = phaseFrom(
+      "guided practice|guided|we do|teacher[\\- ]?guided",
+      /\bguided(?:\s+practice)?\b/i,
+    );
+    map.phases.collaborative = phaseFrom(
+      "collaborative|collaboration|partner work|group work|you do together|turn and talk",
+      /\b(collaborat|partner|group work|turn and talk)\b/i,
+    );
+    map.phases.independent = phaseFrom(
+      "independent practice|independent|you do|stations|practice set|seatwork",
+      /\bindependent(?:\s+practice)?\b/i,
+    );
+    map.phases.closure = phaseFrom(
+      "closure|close|wrap[\\- ]?up|reflection|summary",
+      /\b(closure|wrap[\- ]?up|reflect)\b/i,
+    );
+    map.exitTicket = phaseFrom(
+      "exit ticket|exit slip|exit|ticket out",
+      /\bexit (?:ticket|slip)\b/i,
+    );
+    map.homework = grab(lbl("homework|hw|continuation|home practice"));
+
+    // If still no phases found, keep slide/page chunks as activity flow.
     const hasAnyPhase = Object.values(map.phases).some(Boolean);
     if (!hasAnyPhase) {
       const chunks = text
@@ -366,10 +477,27 @@
       if (chunks.length >= 1) map._chunks = chunks;
     }
 
-    // Title fallback: first non-marker line.
+    // TITLE fallback: explicit topic phrase, else a heading / first real line.
     if (!map.title) {
-      const first = lines.find((l) => !/^---/.test(l));
-      if (first && first.length <= 90) map.title = first;
+      map.title =
+        grab(/\b(?:lesson on|topic|unit|teaching)\s*[:\-]?\s*(.+)/i) || null;
+    }
+    if (!map.title) {
+      const firstSeg = segments.find((s) => !/^---/.test(s) && s.length <= 120);
+      if (firstSeg) {
+        // Capture text after a leading "intro:" label (e.g. "Grade 6 math
+        // lesson:"), keeping the rest of the clause (codes/decimals intact).
+        const afterColon = firstSeg.match(/^[^:]{0,40}:\s*(.+)/);
+        map.title = (afterColon ? afterColon[1] : firstSeg).trim();
+      }
+    }
+    if (map.title) {
+      // Tidy: drop a trailing standard-code parenthetical (closed or not)
+      // and any trailing punctuation.
+      map.title = map.title
+        .replace(/\s*\(\s*(?:CCSS\.?\S*\s*)?\d+\.[A-Z][A-Z0-9.]*\)?\s*$/i, "")
+        .replace(/[.\s]+$/, "")
+        .trim();
     }
 
     return map;
@@ -634,6 +762,11 @@
         ? `${plan.inferredFlags.length} unsupported item(s) marked ${INFERRED}.`
         : "No unsupported content; nothing inferred.",
     );
+    add(
+      "Objective Review present",
+      !!(plan.objective && plan.languageObjective),
+      "End-of-lesson Objective Review revisits the content & language objectives.",
+    );
 
     return checks;
   }
@@ -810,8 +943,8 @@
           ],
           [
             [
-              `Re-teach the lesson's core skill. ${markInferred(INFERRED)}`,
-              `Students who miss the Do Now / CFU. ${markInferred(INFERRED)}`,
+              "Re-teach the lesson's core skill.",
+              "Students who miss the Do Now / CFU.",
               "Model one problem step-by-step; guided turn.",
               "Solve a parallel problem with support.",
               "Manipulatives / worked example / sentence frame.",
@@ -862,6 +995,35 @@
         ),
       );
     }
+
+    // Objective Review — final end-of-lesson self-check (revisits objectives)
+    rows.push(
+      sec(
+        "Objective Review",
+        `<p>Revisit the objectives: Can you do what we set out to do today?</p>` +
+          tableHtml(
+            ["Objective", "Met it", "Not yet", "Need more practice"],
+            [
+              [
+                `<strong>Content Objective:</strong> ${markInferred(
+                  plan.objective,
+                )}`,
+                "&#9744;",
+                "&#9744;",
+                "&#9744;",
+              ],
+              [
+                `<strong>Language Objective:</strong> ${markInferred(
+                  plan.languageObjective,
+                )}`,
+                "&#9744;",
+                "&#9744;",
+                "&#9744;",
+              ],
+            ],
+          ),
+      ),
+    );
 
     return rows.join("\n");
   }
@@ -1121,6 +1283,16 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
     L.push("");
     L.push("## Continuation / Homework");
     L.push(plan.homework || `No homework stated in the source. ${INFERRED}`);
+    L.push("");
+    L.push("## Objective Review");
+    L.push("Revisit the objectives: Can you do what we set out to do today?");
+    L.push("");
+    L.push("| Objective | Met it | Not yet | Need more practice |");
+    L.push("|---|---|---|---|");
+    L.push(`| **Content Objective:** ${plan.objective} | [ ] | [ ] | [ ] |`);
+    L.push(
+      `| **Language Objective:** ${plan.languageObjective} | [ ] | [ ] | [ ] |`,
+    );
     return L.map(strip).join("\n");
   }
 
@@ -1175,23 +1347,28 @@ Success criteria: I can decompose a composite figure; I can find and add the sub
     els.sampleBtn.addEventListener("click", () => {
       els.sourceText.value = SAMPLE;
       uploadedExtract = null;
+      els.fileStatus.className = "file-status";
       els.fileStatus.textContent = "";
     });
 
     els.clearBtn.addEventListener("click", () => {
       els.sourceText.value = "";
       uploadedExtract = null;
+      els.fileInput.value = "";
+      els.fileStatus.className = "file-status";
       els.fileStatus.textContent = "";
       els.statusCard.hidden = true;
       els.outputCard.hidden = true;
     });
 
-    // File input
+    // File input — the prominent Upload button and the dropzone both open it.
     els.fileInput.addEventListener("change", (e) => {
       const f = e.target.files && e.target.files[0];
       if (f) handleFile(f);
     });
-    els.dropzone.addEventListener("click", () => els.fileInput.click());
+    const openPicker = () => els.fileInput.click();
+    els.uploadBtn.addEventListener("click", openPicker);
+    els.dropzone.addEventListener("click", openPicker);
     els.dropzone.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();

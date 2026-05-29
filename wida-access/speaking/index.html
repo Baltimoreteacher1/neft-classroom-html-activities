@@ -834,6 +834,63 @@
         }
       }
 
+      /* ── Themed folders (authentic ACCESS Speaking structure) ── */
+      .theme-folder {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-bottom: 12px;
+        margin-bottom: 6px;
+        border-bottom: 1px dashed var(--line-muted);
+      }
+      .theme-folder:last-child {
+        border-bottom: none;
+      }
+      .theme-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .theme-icon {
+        font-size: 1.05rem;
+      }
+      .theme-name {
+        font-family: var(--font-space);
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--navy-deep);
+        letter-spacing: -0.01em;
+      }
+      .theme-blurb {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--slate-muted);
+        margin: -4px 0 2px;
+        line-height: 1.35;
+      }
+      /* Proficiency-level progression rail on each task card */
+      .plevel-rail {
+        display: flex;
+        gap: 4px;
+        margin-top: 4px;
+      }
+      .plevel-pip {
+        width: 18px;
+        height: 5px;
+        border-radius: 3px;
+        background: var(--line-muted);
+      }
+      .plevel-pip.on {
+        background: var(--amber);
+      }
+      .concept-card.active .plevel-pip {
+        background: rgba(255, 255, 255, 0.35);
+      }
+      .concept-card.active .plevel-pip.on {
+        background: var(--white);
+      }
+
       /* ── Activity-type badge in the task catalog ── */
       .task-kind {
         display: inline-block;
@@ -916,9 +973,11 @@
               ACCESS Speaking Prep Studio
             </h1>
             <p class="hero-copy" style="max-width: 800px; margin-bottom: 12px">
-              Comprehensive 20-task interactive speaking workbook. Built for
-              dual levels: Tiers A (1.0-2.7) and B (2.7-5.0) with local voice
-              recorders, dynamic SVGs, and peer model audios.
+              Modeled on the ACCESS Speaking test for grades 6-8: themed folders
+              of tasks that build from Proficiency Level 1 to 5 (name → describe
+              → compare → explain → discuss). Hear a model student first, then
+              respond aloud with a local voice recorder, visual support, and
+              fading scaffolds.
             </p>
 
             <!-- Gamification Streak & XP stats -->
@@ -979,22 +1038,40 @@
         <!-- Sidebar Concept Selector -->
         <aside class="sidebar-wrapper" aria-label="Speaking Selector">
           <div class="brand-block">
-            <h2>🗣️ Speaking Tiers</h2>
-            <p>Task Selectors</p>
+            <h2>🗣️ Speaking Themes</h2>
+            <p>Folders · Levels 1-5</p>
           </div>
 
-          <div class="tier-switcher">
+          <div
+            class="tier-switcher"
+            role="group"
+            aria-label="Support level for prompts and scaffolds"
+          >
             <button
               class="tier-btn active"
               id="btnTierA"
               onclick="setELPTier('A')"
             >
-              Tier A (1.0-2.7)
+              Level 1 · More Support
             </button>
             <button class="tier-btn" id="btnTierB" onclick="setELPTier('B')">
-              Tier B (2.7-5.0)
+              Level 2 · Less Support
             </button>
           </div>
+
+          <p
+            style="
+              font-size: 0.68rem;
+              font-weight: 600;
+              color: var(--slate-muted);
+              margin: -6px 0 0;
+              line-height: 1.4;
+            "
+          >
+            Each folder is a theme. Tasks below it grow in complexity from
+            Proficiency Level 1 to 5. Hear the model first, then record your own
+            answer.
+          </p>
 
           <nav class="concept-catalog" id="sidebarNav"></nav>
         </aside>
@@ -1227,7 +1304,7 @@
                       border-color: var(--line-muted);
                     "
                   >
-                    🎧 Hear Peer Model
+                    🎧 Step 1 · Hear the Model
                   </button>
                   <button
                     class="action-btn btn-control"
@@ -1235,10 +1312,50 @@
                     onclick="speakSimPrompt()"
                     style="padding: 6px 12px; font-size: 0.8rem"
                   >
-                    🔊 Read Prompt
+                    🔊 Read My Prompt
                   </button>
                 </div>
               </div>
+
+              <!-- Model-then-respond step banner (authentic ACCESS structure) -->
+              <div
+                id="taskStepBanner"
+                style="
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 8px;
+                  align-items: center;
+                  font-size: 0.72rem;
+                  font-weight: 800;
+                  color: var(--primary-dark);
+                "
+              >
+                <span
+                  id="taskThemeChip"
+                  style="
+                    background: var(--primary-light);
+                    border: 1px solid rgba(15, 118, 110, 0.25);
+                    border-radius: 20px;
+                    padding: 3px 10px;
+                  "
+                  >Theme</span
+                >
+                <span
+                  id="taskLevelChip"
+                  style="
+                    background: var(--amber-light);
+                    color: var(--amber);
+                    border: 1px solid rgba(217, 119, 6, 0.25);
+                    border-radius: 20px;
+                    padding: 3px 10px;
+                  "
+                  >Proficiency Level</span
+                >
+                <span style="color: var(--slate-muted); font-weight: 700">
+                  Listen to the model first, then it is your turn to speak.
+                </span>
+              </div>
+
               <div class="sim-prompt-box" id="promptTextBox">
                 Select a task from the sidebar to begin speaking practice...
               </div>
@@ -1561,19 +1678,21 @@
                   </select>
                 </div>
                 <div class="rubric-criterion">
-                  <label for="rubricControl">Language Control</label>
+                  <label for="rubricControl"
+                    >Language Forms &amp; Conventions</label
+                  >
                   <select id="rubricControl" onchange="calculateELPRating()">
                     <option value="1">
-                      Entering: Fluency has frequent pauses (1 pt)
+                      Entering: Words/phrases, frequent pauses (1 pt)
                     </option>
                     <option value="2">
-                      Emerging: Grammatical errors present (2 pts)
+                      Emerging: Simple grammar, some errors (2 pts)
                     </option>
                     <option value="3">
-                      Developing: Minor phonetic variations (3 pts)
+                      Developing: Mostly controlled sentence grammar (3 pts)
                     </option>
                     <option value="4">
-                      Expanding: Fluent academic structure (4 pts)
+                      Expanding: Varied, controlled academic structures (4 pts)
                     </option>
                   </select>
                 </div>
@@ -2681,6 +2800,133 @@
             "<span class='cer-topic'>I will copy the model greeting so my introduction sounds clear and polite.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I listen to how the model says hello and gives their name slowly</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I record myself: hello, my name is Sam, and I am in grade five</span>, <span class='cer-connector'>and I finish by saying</span> <span class='cer-evidence'>it is nice to meet you</span>.",
         },
       ];
+
+      // ── Index tasks by id for fast theme lookup ──
+      const TASK_BY_ID = {};
+      WIDA_SPEAKING_TASKS.forEach((t, i) => {
+        t._idx = i;
+        TASK_BY_ID[t.id] = t;
+      });
+
+      // ── WIDA ACCESS Speaking THEMES (folders) ──
+      // The authentic ACCESS Speaking test (grades 6-8) is organized into
+      // thematic folders. Inside each folder the tasks progress from low to
+      // high cognitive + linguistic complexity (roughly Proficiency Levels
+      // 1 -> 5): name/identify -> describe with details -> compare ->
+      // explain/give reasons -> discuss/justify with evidence.
+      // Each entry lists task ids in that increasing-complexity order, plus
+      // the WIDA "cognitive function" label shown beside each step.
+      const SPEAKING_THEMES = [
+        {
+          id: "social",
+          icon: "🏫",
+          name: "Social & Instructional Language",
+          context: "Social & Instructional",
+          blurb: "Talking about school life, opinions, and routines.",
+          sequence: [
+            { id: "T1", fn: "Name / Identify" },
+            { id: "T27", fn: "Describe with Details" },
+            { id: "T24", fn: "Compare" },
+            { id: "T23", fn: "Give an Opinion & Reasons" },
+            { id: "T16", fn: "Discuss & Justify" },
+          ],
+        },
+        {
+          id: "languagearts",
+          icon: "📖",
+          name: "Language of Language Arts",
+          context: "Language of Language Arts",
+          blurb: "Retelling and describing stories and scenes.",
+          sequence: [
+            { id: "T21", fn: "Name / Identify" },
+            { id: "T2", fn: "Describe in Order" },
+            { id: "T34", fn: "Retell with Detail" },
+            { id: "T32", fn: "Predict & Explain" },
+            { id: "T7", fn: "Discuss & Justify" },
+          ],
+        },
+        {
+          id: "science",
+          icon: "🔬",
+          name: "Language of Science",
+          context: "Language of Science",
+          blurb: "Observing, explaining processes, and comparing.",
+          sequence: [
+            { id: "T30", fn: "Name / Observe" },
+            { id: "T29", fn: "Describe with Details" },
+            { id: "T5", fn: "Compare" },
+            { id: "T11", fn: "Explain a Process" },
+            { id: "T14", fn: "Discuss & Justify" },
+          ],
+        },
+        {
+          id: "socialstudies",
+          icon: "🗺️",
+          name: "Language of Social Studies",
+          context: "Language of Social Studies",
+          blurb: "Maps, timelines, community, and government.",
+          sequence: [
+            { id: "T4", fn: "Name / Locate" },
+            { id: "T17", fn: "Describe with Details" },
+            { id: "T12", fn: "Sequence Events" },
+            { id: "T19", fn: "Explain Roles" },
+            { id: "T18", fn: "Discuss & Justify" },
+          ],
+        },
+        {
+          id: "data",
+          icon: "📊",
+          name: "Reading Visuals & Data",
+          context: "Social & Instructional",
+          blurb: "Describing charts, surveys, and chance.",
+          sequence: [
+            { id: "T6", fn: "Name / Identify" },
+            { id: "T9", fn: "Describe with Details" },
+            { id: "T13", fn: "Describe an Object" },
+            { id: "T20", fn: "Explain Likelihood" },
+            { id: "T10", fn: "Explain a Process" },
+          ],
+        },
+        {
+          id: "speakingskills",
+          icon: "🎧",
+          name: "Speaking Skills & Pronunciation",
+          context: "Social & Instructional",
+          blurb: "Echoing the model, clear speech, and asking questions.",
+          sequence: [
+            { id: "T25", fn: "Say in Parts" },
+            { id: "T33", fn: "Clear Endings" },
+            { id: "T26", fn: "Say It Like the Model" },
+            { id: "T38", fn: "Greet & Introduce" },
+            { id: "T28", fn: "Ask & Answer" },
+          ],
+        },
+      ];
+
+      // The cognitive demand grows down each folder. Map each ordered step to
+      // a WIDA Proficiency Level label (1 Entering -> 5 Bridging).
+      const PLEVEL_META = [
+        { n: 1, label: "Entering", scaffold: "Full support" },
+        { n: 2, label: "Emerging", scaffold: "Strong support" },
+        { n: 3, label: "Developing", scaffold: "Moderate support" },
+        { n: 4, label: "Expanding", scaffold: "Light support" },
+        { n: 5, label: "Bridging", scaffold: "Minimal support" },
+      ];
+
+      // Attach theme + proficiency-level metadata onto each task object so the
+      // rest of the studio can read it directly.
+      SPEAKING_THEMES.forEach((theme) => {
+        theme.sequence.forEach((step, order) => {
+          const task = TASK_BY_ID[step.id];
+          if (task) {
+            task.theme = theme.name;
+            task.themeId = theme.id;
+            task.themeIcon = theme.icon;
+            task.cogFn = step.fn;
+            task.plevel = order + 1; // 1..5 within the folder
+          }
+        });
+      });
 
       // Multilingual dictionary translations
       const VOCAB_LOOKUP_EXTENDED = {
@@ -3860,7 +4106,7 @@
           window.speechSynthesis.cancel();
           STORE.isSpeakingModel = false;
           document.getElementById("modelSpeechBtn").innerHTML =
-            "🎧 Hear Peer Model";
+            "🎧 Step 1 · Hear the Model";
         }
 
         document.getElementById("modelDisplayTextCard").style.display = "none";
@@ -3883,7 +4129,16 @@
         const task = WIDA_SPEAKING_TASKS[idx];
         document.getElementById("domainTag").textContent = task.domain;
 
-        // Update prompt box text based on active Tier
+        // Update the model-then-respond step banner with theme + level
+        const meta = PLEVEL_META[(task.plevel || 1) - 1];
+        const themeChip = document.getElementById("taskThemeChip");
+        const levelChip = document.getElementById("taskLevelChip");
+        if (themeChip)
+          themeChip.textContent = `${task.themeIcon || "📚"} ${task.theme || task.domain}`;
+        if (levelChip)
+          levelChip.textContent = `Proficiency Level ${meta.n} · ${meta.label} · ${task.cogFn || ""}`;
+
+        // Update prompt box text based on active support level
         const promptText =
           STORE.activeTier === "A" ? task.promptA : task.promptB;
         document.getElementById("promptTextBox").textContent = promptText;
@@ -3895,9 +4150,15 @@
         container.innerHTML = drawer();
 
         populateWordWall(task.terms);
-        populateSentenceStarters(
-          STORE.activeTier === "A" ? task.framesA : task.framesB,
-        );
+
+        // Scaffold fading: like the real ACCESS test, lower proficiency-level
+        // tasks get full sentence frames; higher levels (PL 4-5) get fewer
+        // frames so the test-taker produces more language independently.
+        let frames = STORE.activeTier === "A" ? task.framesA : task.framesB;
+        const lvl = task.plevel || 1;
+        if (lvl >= 5) frames = frames.slice(0, 1);
+        else if (lvl >= 4) frames = frames.slice(0, 2);
+        populateSentenceStarters(frames, lvl);
 
         // Establish Quest challenge message
         let questMsg = "Quest: Click any object on the diagram to begin.";
@@ -4045,9 +4306,20 @@
         });
       }
 
-      function populateSentenceStarters(frames) {
+      function populateSentenceStarters(frames, level) {
         const container = document.getElementById("sentenceStartersWrap");
         container.innerHTML = "";
+
+        if (level && level >= 4) {
+          const note = document.createElement("p");
+          note.style.cssText =
+            "font-size:0.72rem; font-weight:700; color:var(--slate-muted); margin:0 0 4px;";
+          note.textContent =
+            level >= 5
+              ? "Higher level: only one starter is given. Try to speak on your own."
+              : "Higher level: fewer starters. Add your own ideas and reasons.";
+          container.appendChild(note);
+        }
 
         frames.forEach((frame) => {
           const btn = document.createElement("button");
@@ -4130,7 +4402,7 @@
           window.speechSynthesis.cancel();
           STORE.isSpeakingModel = false;
           document.getElementById("modelSpeechBtn").innerHTML =
-            "🎧 Hear Peer Model";
+            "🎧 Step 1 · Hear the Model";
           document.getElementById("modelDisplayTextCard").style.display =
             "none";
           document.getElementById("cerHighlightControls").style.display =
@@ -4169,13 +4441,13 @@
         utterance.onend = () => {
           STORE.isSpeakingModel = false;
           document.getElementById("modelSpeechBtn").innerHTML =
-            "🎧 Hear Peer Model";
+            "🎧 Step 1 · Hear the Model";
         };
 
         utterance.onerror = () => {
           STORE.isSpeakingModel = false;
           document.getElementById("modelSpeechBtn").innerHTML =
-            "🎧 Hear Peer Model";
+            "🎧 Step 1 · Hear the Model";
         };
 
         window.speechSynthesis.speak(utterance);
@@ -4436,16 +4708,16 @@
 
         if (ctrl === 1) {
           advice +=
-            "👉 <strong>Language Control:</strong> Don't worry about minor pauses. Practice reading your Rehearsal Draft aloud slowly before recording.<br>";
+            "👉 <strong>Language Forms & Conventions:</strong> Try to say a full simple sentence, like 'I see a ___.' Practice reading your Rehearsal Draft aloud slowly before recording.<br>";
         } else if (ctrl === 2) {
           advice +=
-            "👉 <strong>Language Control:</strong> Focus on ending sentences with clear, declarative tones. Take deep breaths at punctuation marks.<br>";
+            "👉 <strong>Language Forms & Conventions:</strong> Good simple sentences! Watch your verb endings (is/are, -ed, -ing) and finish each sentence with a clear ending.<br>";
         } else if (ctrl === 3) {
           advice +=
-            "👉 <strong>Language Control:</strong> Fluent, clean speech flow! Work on precise phonetic pronunciation of complex ending consonants (e.g. -tion, -ing).<br>";
+            "👉 <strong>Language Forms & Conventions:</strong> Mostly controlled grammar! Work on linking clauses correctly with 'because', 'so', and 'when' and on clear endings like -tion and -ing.<br>";
         } else {
           advice +=
-            "👉 <strong>Language Control:</strong> Native-like pronunciation, fluency, and grammatical structure. Exceptional delivery!<br>";
+            "👉 <strong>Language Forms & Conventions:</strong> Varied, well-controlled academic sentence structures. Exceptional delivery!<br>";
         }
 
         const coachCard = document.getElementById("widaCoachCard");
@@ -4551,20 +4823,56 @@
         const container = document.getElementById("sidebarNav");
         if (!container) return;
         container.innerHTML = "";
-        WIDA_SPEAKING_TASKS.forEach((task, idx) => {
-          const card = document.createElement("button");
-          card.className = `concept-card ${idx === STORE.activeTaskIdx ? "active" : ""}`;
-          card.onclick = () => switchSpeakingTask(idx);
 
-          const kindBadge = task.kind
-            ? `<span class="task-kind">${task.kind}</span>`
-            : "";
-          card.innerHTML = `
-          <span class="task-domain">${task.domain}</span>
-          <span class="task-title" style="font-weight:700;">${task.id}: ${task.title}</span>
-          ${kindBadge}
-        `;
-          container.appendChild(card);
+        SPEAKING_THEMES.forEach((theme) => {
+          // ── Folder header ──
+          const folder = document.createElement("div");
+          folder.className = "theme-folder";
+          folder.setAttribute("role", "group");
+          folder.setAttribute("aria-label", `${theme.name} folder`);
+
+          const head = document.createElement("div");
+          head.className = "theme-head";
+          head.innerHTML = `
+            <span class="theme-icon" aria-hidden="true">${theme.icon}</span>
+            <span class="theme-name">${theme.name}</span>`;
+          folder.appendChild(head);
+
+          const blurb = document.createElement("p");
+          blurb.className = "theme-blurb";
+          blurb.textContent = theme.blurb;
+          folder.appendChild(blurb);
+
+          // ── Ordered tasks (increasing complexity, level 1 -> 5) ──
+          theme.sequence.forEach((step) => {
+            const task = TASK_BY_ID[step.id];
+            if (!task) return;
+            const idx = task._idx;
+            const meta = PLEVEL_META[(task.plevel || 1) - 1];
+
+            const card = document.createElement("button");
+            card.className = `concept-card ${idx === STORE.activeTaskIdx ? "active" : ""}`;
+            card.onclick = () => switchSpeakingTask(idx);
+            card.setAttribute(
+              "aria-label",
+              `${theme.name}, step ${task.plevel} of 5, Proficiency Level ${meta.n} ${meta.label}: ${step.fn}, ${task.title}`,
+            );
+
+            card.innerHTML = `
+              <span class="task-domain">PL ${meta.n} · ${meta.label} · ${step.fn}</span>
+              <span class="task-title" style="font-weight:700;">${task.title}</span>
+              <span class="plevel-rail" aria-hidden="true">
+                ${[1, 2, 3, 4, 5]
+                  .map(
+                    (n) =>
+                      `<span class="plevel-pip ${n <= (task.plevel || 1) ? "on" : ""}"></span>`,
+                  )
+                  .join("")}
+              </span>`;
+            folder.appendChild(card);
+          });
+
+          container.appendChild(folder);
         });
       }
 
