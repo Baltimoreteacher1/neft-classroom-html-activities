@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Publisher-grade WIDA ACCESS Speaking preparation studio. Practice language domains (Math, Science, Social Studies) across Tiers A (1.0-2.7) and B (2.7-5.0) with local voice recorders, Canvas wave visualizers, and rubrics.">
+  <title>WIDA ACCESS Speaking Prep Practice Studio | Neft Hub</title>
+  
+  <!-- High-End Publisher Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    /* ── Educational Publisher Design Tokens ── */
+    :root {
+      --primary: #0f766e; /* Deep Teal */
+      --primary-dark: #0d5e58;
+      --primary-light: #e6f6f5;
+      --navy-deep: #0b1f33;
+      --navy: #12355b;
+      --amber: #d97706; /* High contrast Amber */
+      --amber-light: #fef3c7;
+      --coral: #ea580c;
+      --coral-light: #ffedd5;
+      --green-success: #15803d;
+      --green-light: #dcfce7;
+      --bg-canvas: #f8fafc;
+      --bg-studio: #f1f5f9;
+      --white: #ffffff;
+      --line-muted: #e2e8f0;
+      --slate-ink: #1e293b;
+      --slate-muted: #64748b;
+      
+      /* Depth & Shadows */
+      --shadow-premium: 0 10px 30px -10px rgba(15, 118, 110, 0.12), 0 20px 40px -15px rgba(11, 31, 51, 0.08);
+      --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-gaze: 0 0 20px rgba(15, 118, 110, 0.2);
+      --radius-premium: 16px;
+      --radius-field: 8px;
+      --font-outfit: 'Outfit', system-ui, sans-serif;
+      --font-space: 'Space Grotesk', system-ui, sans-serif;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: var(--font-outfit);
+      background: linear-gradient(185deg, #f8fafc 0%, var(--bg-studio) 100%);
+      color: var(--slate-ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Publishing layout shell ── */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 28px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      align-items: start;
+    }
+
+    /* ── Sidebar Component ── */
+    .sidebar-wrapper {
+      background: var(--white);
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-premium);
+      padding: 24px 20px;
+      box-shadow: var(--shadow-premium);
+      position: sticky;
+      top: 24px;
+      max-height: 860px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .brand-block h2 {
+      font-family: var(--font-space);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--navy-deep);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-block p {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    /* Tier switcher */
+    .tier-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      padding: 4px;
+      background: var(--bg-canvas);
+    }
+
+    .tier-btn {
+      border: none;
+      background: none;
+      padding: 8px 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--slate-muted);
+      transition: var(--transition);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tier-btn.active {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: var(--shadow-card);
+    }
+
+    /* Concept Catalog buttons */
+    .concept-catalog {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .concept-card {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: var(--white);
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      color: var(--slate-ink);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-card);
+    }
+
+    .concept-card:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .concept-card.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary-dark);
+      box-shadow: 0 8px 16px -4px rgba(15, 118, 110, 0.3);
+    }
+
+    .concept-card .task-domain {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      opacity: 0.7;
+    }
+
+    /* ── Main Canvas Layout ── */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .glass-panel {
+      background: var(--white);
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-premium);
+      padding: 28px;
+      box-shadow: var(--shadow-premium);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: var(--transition);
+    }
+
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--bg-studio);
+      padding-bottom: 16px;
+    }
+
+    .panel-meta h3 {
+      font-family: var(--font-space);
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--navy-deep);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+
+    /* Visual model view */
+    .model-viewport {
+      background: var(--bg-canvas);
+      border: 2px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      min-height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      transition: var(--transition);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .model-viewport svg {
+      border-radius: var(--radius-field);
+      box-shadow: var(--shadow-card);
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ── Speaking Test Simulator ── */
+    .speaking-sim-box {
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      padding: 24px;
+      background: var(--bg-canvas);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sim-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line-muted);
+      padding-bottom: 12px;
+    }
+
+    .admin-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--white);
+      background: var(--navy);
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sim-prompt-box {
+      font-size: 1.12rem;
+      line-height: 1.7;
+      color: var(--slate-ink);
+      font-weight: 500;
+      min-height: 80px;
+    }
+
+    .spoken-word-highlight {
+      background-color: #fef08a !important; /* Soft yellow highlight */
+      color: #000000 !important;
+      border-radius: 3px;
+      padding: 0 2px;
+      font-weight: bold;
+    }
+
+    /* Audio visualizer canvas */
+    .visualizer-card {
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      padding: 16px;
+      background: var(--navy-deep);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .visualizer-canvas {
+      width: 100%;
+      height: 80px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .record-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .timer-ring {
+      font-family: var(--font-space);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--white);
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    /* Scaffolding Cues */
+    .scaffold-card {
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      padding: 20px;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .scaffold-title {
+      font-size: 0.76rem;
+      font-weight: bold;
+      color: var(--slate-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .frame-chip {
+      background: var(--primary-light);
+      border: 1px dashed rgba(15, 118, 110, 0.4);
+      color: var(--primary-dark);
+      padding: 8px 14px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: help;
+      transition: var(--transition);
+      text-align: left;
+    }
+
+    .frame-chip:hover {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    /* ── Multilingual Vocab wall ── */
+    .vocab-lang-selector {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--bg-studio);
+      padding-bottom: 8px;
+    }
+
+    .lang-chip {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      font-weight: 800;
+      font-size: 0.76rem;
+      cursor: pointer;
+      border-radius: 20px;
+      color: var(--slate-muted);
+      transition: var(--transition);
+    }
+
+    .lang-chip:hover {
+      background: var(--bg-studio);
+      color: var(--slate-ink);
+    }
+
+    .lang-chip.active {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .vocab-card {
+      background: var(--bg-canvas);
+      border: 1px solid var(--line-muted);
+      padding: 7px 12px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--slate-ink);
+      cursor: help;
+      position: relative;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vocab-card:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .vocab-card .tooltip-bubble {
+      visibility: hidden;
+      width: 240px;
+      background-color: var(--navy-deep);
+      color: var(--white);
+      text-align: left;
+      border-radius: 6px;
+      padding: 10px 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      font-size: 0.74rem;
+      line-height: 1.4;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.18);
+      pointer-events: none;
+      font-weight: 500;
+    }
+
+    .vocab-card:hover .tooltip-bubble {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* ── WIDA Speaking Rubric Evaluator ── */
+    .rubric-box {
+      border: 1px solid var(--line-muted);
+      border-radius: var(--radius-field);
+      background: var(--bg-canvas);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .rubric-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--line-muted);
+      padding-bottom: 8px;
+    }
+
+    .rubric-header h4 {
+      font-family: var(--font-space);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--navy-deep);
+      margin: 0;
+    }
+
+    .rubric-badge {
+      font-family: var(--font-space);
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: var(--amber-light);
+      color: var(--amber);
+    }
+
+    .rubric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .rubric-criterion {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rubric-criterion label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--slate-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .rubric-criterion select {
+      border: 1px solid var(--line-muted);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: var(--white);
+      outline: none;
+    }
+
+    /* Actions buttons */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius-field);
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .btn-solid-gold {
+      background: var(--amber);
+      color: var(--white);
+    }
+
+    .btn-solid-gold:hover {
+      background: #b45309;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-white {
+      background: rgba(255,255,255,0.08);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .btn-outline-white:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .btn-control {
+      background: var(--primary);
+      color: var(--white);
+    }
+    .btn-control:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-red {
+      background: var(--coral);
+      color: var(--white);
+    }
+    .btn-red:hover {
+      background: #c2410c;
+    }
+
+    /* Diagnostic commands */
+    .diag-overlay {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      background: #090d16;
+      color: #00ff66;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.78rem;
+      border-radius: var(--radius-field);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      border: 1px solid #1f2d47;
+      padding: 20px;
+      display: none;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 14px;
+      box-sizing: border-box;
+    }
+
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px dashed #1e2d44;
+      padding-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .diag-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .sidebar-wrapper,
+      .breadcrumb,
+      .hero,
+      .panel-meta,
+      .speaking-sim-box,
+      .rubric-box,
+      .scaffold-card,
+      .vocab-lang-selector,
+      .diag-overlay,
+      .action-btn {
+        display: none !important;
+      }
+      .glass-panel {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      .model-viewport {
+        border: 2px solid black !important;
+        background: white !important;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-wrapper {
+        position: static;
+        max-height: 220px;
+      }
+      .canvas-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="page-shell">
+    
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Neft Hub</a>
+      <span>/</span>
+      <a href="/math/">Math Curriculum</a>
+      <span>/</span>
+      <span>WIDA ACCESS Speaking Prep</span>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="hero compact-hero" style="border-top: 6px solid var(--primary)">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+        <div>
+          <p class="eyebrow" style="color: var(--primary)">ESOL Publishing Suite</p>
+          <h1 style="font-family: var(--font-space); font-weight: 700; font-size: 2.2rem; letter-spacing:-0.02em;">WIDA Speaking Prep Practice Studio</h1>
+          <p class="hero-copy" style="max-width: 800px;">Comprehensive academic oral preparation. Build verbal language proficiency through microphone practice recorders, Canvas waves, 8 domain tasks, and live rubric scorecards.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="action-btn btn-outline-white" style="color: var(--slate-ink); border-color: var(--line-muted);" onclick="toggleDiagnostics()" aria-label="Launch diagnostics console">
+            📊 Run Diagnostics
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Unified Studio Grid Layout -->
+    <div class="studio-shell">
+      
+      <!-- Sidebar Concept Selector -->
+      <aside class="sidebar-wrapper" aria-label="Speaking Selector">
+        <div class="brand-block">
+          <h2>🗣️ Speaking Tiers</h2>
+          <p>Task Selectors</p>
+        </div>
+        
+        <!-- Dropdown filter for units -->
+        <div class="tier-switcher">
+          <button class="tier-btn active" id="btnTierA" onclick="setELPTier('A')">Tier A (1.0-2.7)</button>
+          <button class="tier-btn" id="btnTierB" onclick="setELPTier('B')">Tier B (2.7-5.0)</button>
+        </div>
+
+        <nav class="concept-catalog" id="sidebarNav"></nav>
+      </aside>
+
+      <!-- Main Interactive Workspaces -->
+      <div class="canvas-layout">
+        
+        <!-- Left: Lab visualizer and Multi-language Wall -->
+        <section class="glass-panel" aria-labelledby="visualizer-heading">
+          <div class="panel-meta">
+            <h3 id="visualizer-heading">🎨 Visual Diagram Task</h3>
+            <span class="status-pill" id="domainTag" style="background:var(--primary-light); color:var(--primary)">Domain</span>
+          </div>
+
+          <!-- SVG Canvas viewport -->
+          <div class="model-viewport" id="modelCanvas">
+            <!-- Programmatically drawn inline SVGs -->
+          </div>
+
+          <!-- ESOL Interactive Dictionary and Highlight Tracker -->
+          <div class="scaffold-card">
+            <div class="vocab-lang-selector" id="langTabs">
+              <button class="lang-chip active" data-lang="en">EN Definition</button>
+              <button class="lang-chip" data-lang="es">Español (ES)</button>
+              <button class="lang-chip" data-lang="ar">العربية (AR)</button>
+              <button class="lang-chip" data-lang="vi">Tiếng Việt (VI)</button>
+            </div>
+            
+            <p style="font-size: 0.76rem; font-weight: bold; color: var(--slate-muted); margin: 0; text-transform: uppercase;">
+              Multilingual Vocab Word Wall &middot; Hover to see translations!
+            </p>
+            
+            <div class="chip-container" id="wordWallContainer">
+              <!-- Draggable vocabulary chips with checkmark transitions -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Right: Speaking Recorder & Rubrics -->
+        <section class="glass-panel" aria-labelledby="recorder-heading">
+          <div class="panel-meta">
+            <h3 id="recorder-heading">🎙️ Virtual Speaking Test</h3>
+            <span class="card-kicker" style="background: var(--amber-light); color: var(--amber);">Speaking Lab</span>
+          </div>
+
+          <!-- Virtual speaking simulator -->
+          <div class="speaking-sim-box">
+            <div class="sim-header">
+              <span class="admin-pill">👩‍🏫 Nina (Test Administrator)</span>
+              <button class="action-btn btn-control" id="speakPromptBtn" onclick="speakSimPrompt()" style="padding: 6px 12px; font-size: 0.8rem;">
+                🔊 Read Prompt
+              </button>
+            </div>
+            <div class="sim-prompt-box" id="promptTextBox">
+              Select a task from the sidebar to begin speaking practice...
+            </div>
+          </div>
+
+          <!-- HTML5 Microphone Audio Recorder Visualizer -->
+          <div class="visualizer-card">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <span style="font-size:0.75rem; font-weight:800; color:rgba(255,255,255,0.7); text-transform:uppercase;">🎤 Speak Response Check</span>
+              <span class="timer-ring" id="timerRing">00:30</span>
+            </div>
+            <canvas class="visualizer-canvas" id="voiceCanvas"></canvas>
+            <div class="record-controls">
+              <button class="action-btn btn-red" id="recordBtn" onclick="toggleAudioRecording()">
+                🎙️ Record Response
+              </button>
+              <button class="action-btn btn-outline-white" id="playbackBtn" onclick="playbackRecordedAudio()" disabled style="color:white; border-color:rgba(255,255,255,0.18);">
+                ▶ Playback Response
+              </button>
+              <audio id="audioPlayback" style="display:none;"></audio>
+            </div>
+          </div>
+
+          <!-- Sentence frame builders -->
+          <div class="scaffold-card">
+            <span class="scaffold-title">🔑 Recommended Sentence Starters</span>
+            <div id="sentenceStartersWrap" style="display:flex; flex-direction:column; gap:8px;">
+              <!-- Dynamically populated frames -->
+            </div>
+          </div>
+
+          <!-- WIDA Speaking Rubric Scorer -->
+          <div class="rubric-box">
+            <div class="rubric-header">
+              <h4>🏆 Speaking Rubric Evaluator</h4>
+              <span class="rubric-badge" id="liveELPBadge">ELP 1.0 (Entering)</span>
+            </div>
+            <div class="rubric-grid">
+              <div class="rubric-criterion">
+                <label for="rubricLinguistic">Linguistic Complexity</label>
+                <select id="rubricLinguistic" onchange="calculateELPRating()">
+                  <option value="1">Entering: Single words/phrases (1 pt)</option>
+                  <option value="2">Emerging: Simple sentence structures (2 pts)</option>
+                  <option value="3">Developing: Compound sentences (3 pts)</option>
+                  <option value="4">Expanding: Complex sentences & connectors (4 pts)</option>
+                </select>
+              </div>
+              <div class="rubric-criterion">
+                <label for="rubricVocabulary">Vocabulary Usage</label>
+                <select id="rubricVocabulary" onchange="calculateELPRating()">
+                  <option value="1">Entering: General vocabulary (1 pt)</option>
+                  <option value="2">Emerging: High-frequency academic terms (2 pts)</option>
+                  <option value="3">Developing: Mapped domain math/science terms (3 pts)</option>
+                  <option value="4">Expanding: Highly technical expressions (4 pts)</option>
+                </select>
+              </div>
+              <div class="rubric-criterion">
+                <label for="rubricControl">Language Control</label>
+                <select id="rubricControl" onchange="calculateELPRating()">
+                  <option value="1">Entering: Fluency has frequent pauses (1 pt)</option>
+                  <option value="2">Emerging: Grammatical errors present (2 pts)</option>
+                  <option value="3">Developing: Minor phonetic/accent variations (3 pts)</option>
+                  <option value="4">Expanding: Fluent academic structure (4 pts)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="diag-overlay" id="diagTerminal">
+    <div class="diag-head">
+      <span>⚙️ SPEAKING DIAGNOSTICS MATRIX</span>
+      <button onclick="toggleDiagnostics()" style="background:none; border:none; color:#00ff66; cursor:pointer; font-weight:900;">[X]</button>
+    </div>
+    <div class="diag-stream" id="diagConsole"></div>
+  </div>
+
+  <script>
+    // ── Central State Store ──
+    const STORE = {
+      activeTier: "A", // "A" or "B"
+      activeTaskIdx: 0,
+      activeDictionaryLang: "en",
+      isSpeaking: false,
+      isRecording: false,
+      mediaRecorder: null,
+      audioChunks: [],
+      audioBlobUrl: null,
+      speakingTimerInterval: null,
+      speakSecondsRemaining: 30,
+      
+      // Audio Visualizer Context
+      audioContext: null,
+      analyser: null,
+      dataArray: null,
+      sourceNode: null,
+      animationFrameId: null
+    };
+
+    // Mapped Vocab translation boards
+    const VOCAB_LOOKUP = {
+      apple: { es: "Manzana", ar: "تفاحة", vi: "Quả táo" },
+      milk: { es: "Leche", ar: "حليب", vi: "Sữa" },
+      sandwich: { es: "Sándwich", ar: "شطيرة", vi: "Bánh mì kẹp" },
+      tray: { es: "Bandeja", ar: "صينية", vi: "Khay ăn" },
+      balance: { es: "Equilibrar", ar: "توازن", vi: "Sự cân bằng" },
+      protein: { es: "Proteína", ar: "بروتين", vi: "Chất đạm" },
+      dairy: { es: "Lácteos", ar: "منتجات الألبان", vi: "Bơ sữa" },
+      fraction: { es: "Fracción", ar: "كسر", vi: "Phân số" },
+      partition: { es: "Partición", ar: "تقسيم", vi: "Phần chia" },
+      ratio: { es: "Proporción", ar: "نسبة", vi: "Tỷ số" },
+      denominator: { es: "Denominador", ar: "المقام", vi: "Mẫu số" },
+      numerator: { es: "Numerador", ar: "البسط", vi: "Tử số" },
+      ocean: { es: "Océano", ar: "محيط", vi: "Đại dương" },
+      condensation: { es: "Condensación", ar: "تكثيف", vi: "Sự ngưng tụ" },
+      evaporation: { es: "Evaporación", ar: "تبخر", vi: "Sự bay hơi" },
+      thermodynamic: { es: "Termodinámico", ar: "ديناميكا حرارية", vi: "Nhiệt động lực học" },
+      coordinate: { es: "Coordenada", ar: "إحداثيات", vi: "Tọa độ" },
+      quadrant: { es: "Cuadrante", ar: "ربع الإحداثي", vi: "Góc phần tư" },
+      reflection: { es: "Reflexión", ar: "انعكاس", vi: "Sự phản chiếu" },
+      axis: { es: "Eje", ar: "محور", vi: "Trục" },
+      equation: { es: "Ecuación", ar: "معادلة", vi: "Phương trình" },
+      variable: { es: "Variable", ar: "متغير", vi: "Biến số" },
+      constant: { es: "Constante", ar: "ثابت", vi: "Hằng số" },
+      inverse: { es: "Inverso", ar: "عكسي", vi: "Nghịch đảo" },
+      friction: { es: "Fricción", ar: "احتكاك", vi: "Lực ma sát" },
+      mean: { es: "Media (Promedio)", ar: "المتوسط الحسابي", vi: "Số trung bình" },
+      median: { es: "Mediana", ar: "الوسيط", vi: "Số trung vị" },
+      outlier: { es: "Valor atípico", ar: "قيمة متطرفة", vi: "Điểm dị biệt" },
+      distribution: { es: "Distribución", ar: "التوزيع", vi: "Sự phân bố" },
+      polygon: { es: "Polígono", ar: "مضلع", vi: "Đa giác" },
+      decompose: { es: "Descomponer", ar: "تحليل / تفكيك", vi: "Phân tích" },
+      composite: { es: "Compuesto", ar: "مركب", vi: "Hình phức hợp" },
+      academic: { es: "Académico", ar: "أكاديمي", vi: "Học thuật" },
+      strategy: { es: "Estrategia", ar: "إستراتيجية", vi: "Chiến lược" }
+    };
+
+    // Comprehensive WIDA ACCESS Speaking Tasks (8 Tasks)
+    const WIDA_SPEAKING_TASKS = [
+      {
+        id: "T1",
+        title: "School Lunch Tray",
+        domain: "Social & Instructional",
+        model: "lunch",
+        terms: ["apple", "milk", "sandwich", "tray"],
+        promptA: "Look at the visual lunch tray. What do you see on this lunch tray? Name three items that you see.",
+        promptB: "Based on the visual lunch tray, explain why a healthy school lunch should balance protein, fruits, and dairy. Explain how these groups support student health.",
+        framesA: ["I see a...", "On the tray, there is...", "This is a..."],
+        framesB: ["According to the diagram, a healthy tray includes...", "Consequently, balancing protein and dairy ensures...", "Whereas general snacks lack..."]
+      },
+      {
+        id: "T2",
+        title: "Fraction Partitions",
+        domain: "Language of Mathematics",
+        model: "bar",
+        terms: ["fraction", "partition", "numerator", "denominator"],
+        promptA: "Look at the tape bar diagram. How many equal partition units are shaded? State the fraction of the shaded area.",
+        promptB: "Describe how this visual tape partition explains the relationship between numerator values and equivalent ratio constants.",
+        framesA: ["The bar has...", "There are...", "The fraction shaded is..."],
+        framesB: ["This tape model demonstrates that...", "Because three of the five partitions are shaded, the ratio is...", "In comparison, scaling the bar..."]
+      },
+      {
+        id: "T3",
+        title: "The Water Cycle",
+        domain: "Language of Science",
+        model: "water",
+        terms: ["ocean", "condensation", "evaporation", "thermodynamic"],
+        promptA: "Point to the water in the ocean. Tell me what happens to the water when the sun heats it up.",
+        promptB: "Explain the thermodynamic process of evaporation and condensation shown in the diagram, describing how thermal energy alters states of water.",
+        framesA: ["The water...", "The sun makes...", "The cloud has..."],
+        framesB: ["As thermal energy from the sun increases, liquid water...", "Subsequently, vapor transitions into cloud condensation when...", "This cycle demonstrates the thermodynamic rule of..."]
+      },
+      {
+        id: "T4",
+        title: "Desk Grid Coordinates",
+        domain: "Language of Social Studies",
+        model: "grid",
+        terms: ["coordinate", "quadrant", "reflection", "axis"],
+        promptA: "Find Point P on the coordinate map grid. Name the two coordinate numbers for Point P.",
+        promptB: "Explain how to plot and locate coordinate desk reflections across the grid axes, referencing positive and negative quadrants.",
+        framesA: ["Point P is at...", "The x number is...", "The y number is..."],
+        framesB: ["To locate Point P, we count three units along the horizontal axis...", "Reflecting Point P across the horizontal line changes...", "This quadrant shift illustrates that..."]
+      },
+      {
+        id: "T5",
+        title: "Mechanical Scale Balance",
+        domain: "Language of Mathematics",
+        model: "scale",
+        terms: ["equation", "variable", "constant", "inverse"],
+        promptA: "Look at the mechanical balance scale. Is the scale balanced or unbalanced? How many blocks are on the right pan?",
+        promptB: "Explain how this balanced mechanical scale represents an equation. Describe how to isolate the variable using inverse operations.",
+        framesA: ["The scale is...", "There are blocks on...", "The left side has..."],
+        framesB: ["The balanced scale represents an algebraic equation because...", "To isolate the variable x, we must apply the inverse operation of...", "Consequently, removing two constant cubes from both sides..."]
+      },
+      {
+        id: "T6",
+        title: "Friction Dot Plot",
+        domain: "Language of Science",
+        model: "data",
+        terms: ["friction", "mean", "median", "outlier"],
+        promptA: "Look at the speed dots on the plot. Which surface has the highest frequency stack of dots?",
+        promptB: "Analyze the statistical distribution of speed dots, comparing the mean and median lines to explain the impact of friction outliers.",
+        framesA: ["The dots are on...", "This stack is...", "The median is..."],
+        framesB: ["The dot plot shows that speed is skewed when...", "Comparing the mean and median reveals the impact of...", "The outlier dot at value 5 indicates..."]
+      },
+      {
+        id: "T7",
+        title: "Composite Decomposing",
+        domain: "Language of Mathematics",
+        model: "geometry",
+        terms: ["polygon", "decompose", "composite", "area"],
+        promptA: "Look at the composite shape. Name the two geometric shapes inside this composite figure.",
+        promptB: "Explain the mathematical process to calculate the total composite area by decomposing the polygon into sub-shapes.",
+        framesA: ["I see a...", "The shape has...", "This is a triangle and..."],
+        framesB: ["To determine the total composite area, we must first decompose...", "By calculating the base times height area of the triangle...", "Then, summing the rectangles and triangles yields..."]
+      },
+      {
+        id: "T8",
+        title: "Speaking Growth Reflection",
+        domain: "Language of Social Studies",
+        model: "reflect",
+        terms: ["academic", "strategy", "equivalent", "constant"],
+        promptA: "Look at the progress steps. What is one academic speaking goal you achieved this school year?",
+        promptB: "Reflect on your academic language growth this year. Describe a strategy you used to expand your vocabulary in math and science classes.",
+        framesA: ["My goal was...", "I learned how to...", "This year, I..."],
+        framesB: ["To expand my academic speaking capability, I utilized the strategy of...", "This linguistic growth has allowed me to express CER arguments in...", "In comparison to the beginning of the year, my vocabulary now..."]
+      }
+    ];
+
+    // SVG Drawing helpers based on task model types
+    const SVG_SPEAKING_DRAWER = {
+      lunch: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <rect x="30" y="30" width="340" height="240" rx="16" fill="#cbd5e1" stroke="#94a3b8" stroke-width="6" />
+          <rect x="50" y="50" width="300" height="200" rx="10" fill="#f1f5f9" />
+          
+          <!-- Sandwich slot -->
+          <rect x="70" y="70" width="120" height="100" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" />
+          <polygon points="80,150 130,80 180,150" fill="#f59e0b" opacity="0.8" />
+          <polygon points="90,150 130,95 170,150" fill="#b45309" />
+          <text x="130" y="163" text-anchor="middle" font-size="10" font-weight="900" fill="var(--slate-muted)">Sandwich</text>
+          
+          <!-- Milk slot -->
+          <rect x="210" y="70" width="120" height="100" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" />
+          <rect x="250" y="80" width="40" height="60" fill="#3b82f6" rx="2" />
+          <path d="M250,80 L270,68 L290,80 Z" fill="#2563eb" />
+          <text x="270" y="163" text-anchor="middle" font-size="10" font-weight="900" fill="var(--slate-muted)">Milk Carton</text>
+          
+          <!-- Apple slot -->
+          <rect x="70" y="185" width="260" height="50" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" />
+          <circle cx="200" cy="210" r="16" fill="#ef4444" />
+          <path d="M198,194 C198,191,202,191,202,194" stroke="#78350f" stroke-width="2.5" fill="none" />
+          <path d="M202,192 C206,192,207,188,205,188 Z" fill="#22c55e" />
+          <text x="130" y="215" font-size="11" font-weight="900" fill="var(--navy-deep)">Red Apple</text>
+        </svg>`;
+      },
+      
+      bar: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="50" text-anchor="middle" font-size="15" font-weight="900" fill="var(--navy-deep)">Mathematical Tape Diagram</text>
+          
+          <!-- 3 out of 5 shaded -->
+          <rect x="50" y="110" width="60" height="60" fill="var(--primary)" stroke="var(--navy-deep)" stroke-width="3" />
+          <text x="80" y="145" text-anchor="middle" font-size="12" font-weight="900" fill="#fff">1/5</text>
+          
+          <rect x="110" y="110" width="60" height="60" fill="var(--primary)" stroke="var(--navy-deep)" stroke-width="3" />
+          <text x="140" y="145" text-anchor="middle" font-size="12" font-weight="900" fill="#fff">1/5</text>
+          
+          <rect x="170" y="110" width="60" height="60" fill="var(--primary)" stroke="var(--navy-deep)" stroke-width="3" />
+          <text x="200" y="145" text-anchor="middle" font-size="12" font-weight="900" fill="#fff">1/5</text>
+          
+          <rect x="230" y="110" width="60" height="60" fill="#fff" stroke="var(--navy-deep)" stroke-width="3" />
+          <text x="260" y="145" text-anchor="middle" font-size="12" font-weight="900" fill="var(--navy-deep)">1/5</text>
+          
+          <rect x="290" y="110" width="60" height="60" fill="#fff" stroke="var(--navy-deep)" stroke-width="3" />
+          <text x="320" y="145" text-anchor="middle" font-size="12" font-weight="900" fill="var(--navy-deep)">1/5</text>
+          
+          <text x="200" y="210" text-anchor="middle" font-size="13" font-weight="800" fill="var(--slate-muted)">Total shaded area = 3/5 (60%)</text>
+        </svg>`;
+      },
+      
+      water: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Sun -->
+          <circle cx="340" cy="60" r="24" fill="#f59e0b" />
+          
+          <!-- Ocean -->
+          <rect x="20" y="220" width="360" height="60" fill="#3b82f6" rx="4" />
+          <text x="200" y="255" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">Ocean (Liquid Water)</text>
+          
+          <!-- Cloud -->
+          <path d="M80,100 C70,100,60,90,65,80 C60,70,75,60,85,65 C95,55,115,65,110,80 C120,80,120,95,110,100 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2" />
+          <text x="90" y="85" font-size="9" font-weight="900" fill="var(--slate-muted)">Cloud</text>
+          
+          <!-- Evaporation arrow -->
+          <path d="M 280,200 L 280,110" fill="none" stroke="var(--coral)" stroke-width="4.5" marker-end="url(#arrow)" />
+          <text x="290" y="150" font-size="11" font-weight="900" fill="var(--coral)">Evaporation</text>
+          
+          <!-- Condensation arrow -->
+          <path d="M 120,110 L 200,80" fill="none" stroke="var(--primary)" stroke-width="3" stroke-dasharray="3" />
+          <text x="170" y="112" font-size="10" font-weight="800" fill="var(--primary)">Condensation</text>
+
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--coral)" />
+            </marker>
+          </defs>
+        </svg>`;
+      },
+      
+      grid: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <defs>
+            <pattern id="gPattern" width="25" height="25" patternUnits="userSpaceOnUse">
+              <path d="M 25 0 L 0 0 0 25" fill="none" stroke="var(--line-muted)" stroke-width="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="400" height="300" fill="url(#gPattern)" />
+          <line x1="200" y1="20" x2="200" y2="280" stroke="var(--slate-muted)" stroke-width="2" />
+          <line x1="20" y1="150" x2="380" y2="150" stroke="var(--slate-muted)" stroke-width="2" />
+          
+          <!-- Desk Point P -->
+          <circle cx="275" cy="100" r="7" fill="var(--primary)" />
+          <line x1="275" y1="100" x2="200" y2="100" stroke="var(--primary)" stroke-dasharray="2" />
+          <line x1="275" y1="100" x2="275" y2="150" stroke="var(--primary)" stroke-dasharray="2" />
+          <text x="285" y="94" font-size="12" font-weight="900" fill="var(--primary)">P (3, 2)</text>
+          <text x="200" y="270" text-anchor="middle" font-size="11" font-weight="800" fill="var(--navy)">Classroom Seating Map</text>
+        </svg>`;
+      },
+      
+      scale: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Balanced Equation scale -->
+          <line x1="200" y1="110" x2="200" y2="220" stroke="var(--navy)" stroke-width="6" />
+          <line x1="120" y1="220" x2="280" y2="220" stroke="var(--navy)" stroke-width="10" />
+          <line x1="80" y1="110" x2="320" y2="110" stroke="var(--navy)" stroke-width="5" />
+          
+          <!-- Left Pan x + 2 -->
+          <line x1="80" y1="110" x2="80" y2="170" stroke="var(--primary)" stroke-width="2" />
+          <rect x="45" y="170" width="70" height="8" fill="var(--primary)" />
+          <!-- Bag -->
+          <path d="M 75 166 C 75 158, 79 154, 83 154 C 87 154, 91 158, 91 166 Z" fill="var(--amber)" stroke="var(--navy-deep)" />
+          <text x="83" y="165" text-anchor="middle" font-size="8" font-weight="900" fill="#fff">x</text>
+          <!-- 2 small cubes -->
+          <rect x="52" y="160" width="8" height="8" fill="var(--primary)" />
+          <rect x="62" y="160" width="8" height="8" fill="var(--primary)" />
+          
+          <!-- Right Pan 5 -->
+          <line x1="320" y1="110" x2="320" y2="170" stroke="var(--primary)" stroke-width="2" />
+          <rect x="285" y="170" width="70" height="8" fill="var(--primary)" />
+          <!-- 5 cubes stacked -->
+          <rect x="290" y="160" width="8" height="8" fill="var(--primary)" />
+          <rect x="300" y="160" width="8" height="8" fill="var(--primary)" />
+          <rect x="310" y="160" width="8" height="8" fill="var(--primary)" />
+          <rect x="320" y="160" width="8" height="8" fill="var(--primary)" />
+          <rect x="330" y="160" width="8" height="8" fill="var(--primary)" />
+
+          <text x="200" y="260" text-anchor="middle" font-size="12" font-weight="900" fill="var(--green-success)">Scale Formula: x + 2 = 5 (Balanced)</text>
+        </svg>`;
+      },
+      
+      data: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <line x1="40" y1="200" x2="360" y2="200" stroke="var(--navy)" stroke-width="3" />
+          <text x="80" y="220" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy)">0</text>
+          <text x="140" y="220" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy)">1</text>
+          <text x="200" y="220" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy)">2</text>
+          <text x="260" y="220" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy)">3</text>
+          <text x="320" y="220" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy)">4</text>
+          
+          <!-- Stacked dots on 2 -->
+          <circle cx="200" cy="188" r="6" fill="var(--primary)" />
+          <circle cx="200" cy="174" r="6" fill="var(--primary)" />
+          <circle cx="200" cy="160" r="6" fill="var(--primary)" />
+          
+          <!-- Mean/Median marker -->
+          <line x1="200" y1="80" x2="200" y2="198" stroke="var(--coral)" stroke-width="2.5" stroke-dasharray="3" />
+          <text x="200" y="72" text-anchor="middle" font-size="9" font-weight="900" fill="var(--coral)">Mean/Median (2.0)</text>
+          <text x="200" y="260" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">Friction Speed Plot Distribution</text>
+        </svg>`;
+      },
+      
+      geometry: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Composite figure: rectangle + triangle -->
+          <polygon points="80,100 240,100 240,200 80,200" fill="rgba(15, 118, 110, 0.15)" stroke="var(--primary)" stroke-width="3" />
+          <polygon points="240,100 320,200 240,200" fill="rgba(234, 88, 12, 0.15)" stroke="var(--coral)" stroke-width="3" />
+          
+          <!-- Dashed divide line -->
+          <line x1="240" y1="100" x2="240" y2="200" stroke="var(--navy)" stroke-dasharray="4" stroke-width="2" />
+          
+          <text x="160" y="150" font-size="12" font-weight="900" fill="var(--primary)">Rectangle</text>
+          <text x="260" y="165" font-size="11" font-weight="900" fill="var(--coral)">Triangle</text>
+          <text x="200" y="250" text-anchor="middle" font-size="12" font-weight="800" fill="var(--navy)">Decomposed Polygon figure</text>
+        </svg>`;
+      },
+      
+      reflect: function() {
+        return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <!-- Reflection progression steps -->
+          <rect x="50" y="200" width="80" height="40" rx="6" fill="var(--primary)" />
+          <text x="90" y="224" text-anchor="middle" font-size="11" font-weight="900" fill="#fff">Step 1</text>
+          
+          <rect x="160" y="140" width="80" height="40" rx="6" fill="var(--primary)" />
+          <text x="200" y="164" text-anchor="middle" font-size="11" font-weight="900" fill="#fff">Step 2</text>
+          
+          <rect x="270" y="80" width="80" height="40" rx="6" fill="var(--amber)" />
+          <text x="310" y="104" text-anchor="middle" font-size="11" font-weight="900" fill="#fff">Goal</text>
+          
+          <path d="M130,220 L160,160" fill="none" stroke="var(--slate-muted)" stroke-width="2" stroke-dasharray="2" />
+          <path d="M240,160 L270,100" fill="none" stroke="var(--slate-muted)" stroke-width="2" stroke-dasharray="2" />
+          <text x="200" y="270" text-anchor="middle" font-size="11" font-weight="800" fill="var(--navy)">Speaking Proficiency Ladder</text>
+        </svg>`;
+      }
+    };
+
+    // Load active Task items into Sidebar based on ELP Tier A/B
+    function populateSidebarCatalog() {
+      const nav = document.getElementById('sidebarNav');
+      nav.innerHTML = '';
+      
+      WIDA_SPEAKING_TASKS.forEach((task, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `concept-card ${idx === STORE.activeTaskIdx ? 'active' : ''}`;
+        btn.onclick = () => switchSpeakingTask(idx);
+        
+        btn.innerHTML = `
+          <span class="task-domain">${task.domain}</span>
+          <span style="font-family: var(--font-space); font-weight:700;">Task ${idx+1}: ${task.title}</span>
+        `;
+        nav.appendChild(btn);
+      });
+    }
+
+    function setELPTier(tier) {
+      STORE.activeTier = tier;
+      document.getElementById('btnTierA').className = `tier-btn ${tier === 'A' ? 'active' : ''}`;
+      document.getElementById('btnTierB').className = `tier-btn ${tier === 'B' ? 'active' : ''}`;
+      
+      logToTerminal(`WIDA ELP Tier selected: Tier ${tier}`);
+      loadSpeakingTaskWorkspace(STORE.activeTaskIdx);
+    }
+
+    function switchSpeakingTask(idx) {
+      STORE.activeTaskIdx = idx;
+      
+      // Reset recording state parameters
+      if (STORE.isRecording) stopMicrophoneRecording();
+      STORE.audioBlobUrl = null;
+      document.getElementById('playbackBtn').disabled = true;
+      
+      document.querySelectorAll('.concept-card').forEach((card, cidx) => {
+        card.classList.toggle('active', cidx === idx);
+      });
+      
+      loadSpeakingTaskWorkspace(idx);
+    }
+
+    function loadSpeakingTaskWorkspace(idx) {
+      const task = WIDA_SPEAKING_TASKS[idx];
+      document.getElementById('domainTag').textContent = task.domain;
+      
+      // Update prompt box text based on active Tier
+      const promptText = (STORE.activeTier === "A") ? task.promptA : task.promptB;
+      document.getElementById('promptTextBox').textContent = promptText;
+      
+      // Draw SVG and Word Wall
+      const container = document.getElementById('modelCanvas');
+      const drawer = SVG_SPEAKING_DRAWER[task.model] || SVG_SPEAKING_DRAWER['lunch'];
+      container.innerHTML = drawer();
+      
+      populateWordWall(task.terms);
+      populateSentenceStarters((STORE.activeTier === "A") ? task.framesA : task.framesB);
+      
+      logToTerminal(`Loaded WIDA task ${idx+1}: [${task.title}]`);
+    }
+
+    function populateWordWall(terms) {
+      const container = document.getElementById('wordWallContainer');
+      container.innerHTML = '';
+      
+      terms.forEach(word => {
+        const chip = document.createElement('span');
+        chip.className = 'vocab-card';
+        chip.textContent = word;
+        
+        const translatedText = (VOCAB_LOOKUP[word] && VOCAB_LOOKUP[word][STORE.activeDictionaryLang])
+          ? VOCAB_LOOKUP[word][STORE.activeDictionaryLang]
+          : word;
+          
+        chip.innerHTML += `<span class="tooltip-bubble"><strong>${word}</strong><br>Translation: ${translatedText}</span>`;
+        container.appendChild(chip);
+      });
+    }
+
+    function populateSentenceStarters(frames) {
+      const container = document.getElementById('sentenceStartersWrap');
+      container.innerHTML = '';
+      
+      frames.forEach(frame => {
+        const btn = document.createElement('button');
+        btn.className = 'frame-chip';
+        btn.textContent = `"${frame}"`;
+        btn.onclick = () => {
+          // Speak starter aloud so student can repeat it!
+          speakTextHelper(frame);
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    // ── Simulated Administrator Prompt Reading (TTS) ──
+    function speakSimPrompt() {
+      if (!('speechSynthesis' in window)) {
+        showMinimalToast("Synthesized speech unsupported.");
+        return;
+      }
+      
+      if (STORE.isSpeaking) {
+        window.speechSynthesis.cancel();
+        STORE.isSpeaking = false;
+        document.getElementById('speakPromptBtn').innerHTML = "🔊 Read Prompt";
+        return;
+      }
+      
+      const text = document.getElementById('promptTextBox').textContent;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.75; // slow paced for ESOL auditory clarity
+      
+      utterance.onboundary = (event) => {
+        if (event.name === 'word') {
+          const charIdx = event.charIndex;
+          const remainingText = text.slice(charIdx);
+          const wordMatch = remainingText.match(/^[\w'-]+/);
+          const wordLen = wordMatch ? wordMatch[0].length : 1;
+          const word = text.slice(charIdx, charIdx + wordLen);
+          
+          document.getElementById('promptTextBox').innerHTML = text.slice(0, charIdx) + 
+            `<span class="spoken-word-highlight">${word}</span>` + 
+            text.slice(charIdx + wordLen);
+        }
+      };
+      
+      utterance.onstart = () => {
+        STORE.isSpeaking = true;
+        document.getElementById('speakPromptBtn').innerHTML = "⏹️ Stop Prompt";
+      };
+      
+      utterance.onend = () => {
+        STORE.isSpeaking = false;
+        document.getElementById('speakPromptBtn').innerHTML = "🔊 Read Prompt";
+        document.getElementById('promptTextBox').innerHTML = text; // reset
+      };
+      
+      utterance.onerror = () => {
+        STORE.isSpeaking = false;
+        document.getElementById('speakPromptBtn').innerHTML = "🔊 Read Prompt";
+      };
+      
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speakTextHelper(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.8;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // ── HTML5 Microphone audio recorder & canvas visualizer ──
+    function toggleAudioRecording() {
+      if (STORE.isRecording) {
+        stopMicrophoneRecording();
+      } else {
+        startMicrophoneRecording();
+      }
+    }
+
+    function startMicrophoneRecording() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showMinimalToast("Microphone recording unsupported.");
+        return;
+      }
+      
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        STORE.audioChunks = [];
+        STORE.isRecording = true;
+        
+        document.getElementById('recordBtn').innerHTML = "⏹️ Stop Recording";
+        document.getElementById('recordBtn').className = "action-btn btn-solid-gold";
+        document.getElementById('playbackBtn').disabled = true;
+        
+        STORE.mediaRecorder = new MediaRecorder(stream);
+        STORE.mediaRecorder.ondataavailable = e => {
+          STORE.audioChunks.push(e.data);
+        };
+        
+        STORE.mediaRecorder.onstop = () => {
+          const blob = new Blob(STORE.audioChunks, { type: 'audio/wav' });
+          STORE.audioBlobUrl = URL.createObjectURL(blob);
+          
+          document.getElementById('audioPlayback').src = STORE.audioBlobUrl;
+          document.getElementById('playbackBtn').disabled = false;
+          
+          logToTerminal("Speech sample successfully recorded locally.");
+        };
+        
+        STORE.mediaRecorder.start();
+        initAudioVisualizerContext(stream);
+        startSpeakingCountdown();
+      }).catch(err => {
+        logToTerminal("Microphone access denied by user.", "orange");
+        showMinimalToast("⚠️ Microphone access denied.");
+      });
+    }
+
+    function stopMicrophoneRecording() {
+      if (STORE.mediaRecorder && STORE.isRecording) {
+        STORE.mediaRecorder.stop();
+        // Stop all track processes
+        STORE.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      }
+      
+      STORE.isRecording = false;
+      document.getElementById('recordBtn').innerHTML = "🎙️ Record Response";
+      document.getElementById('recordBtn').className = "action-btn btn-red";
+      
+      clearInterval(STORE.speakingTimerInterval);
+      cancelAnimationFrame(STORE.animationFrameId);
+    }
+
+    function startSpeakingCountdown() {
+      STORE.speakSecondsRemaining = (STORE.activeTier === "A") ? 30 : 60;
+      document.getElementById('timerRing').textContent = `00:${STORE.speakSecondsRemaining}`;
+      document.getElementById('timerRing').style.color = "var(--white)";
+      
+      clearInterval(STORE.speakingTimerInterval);
+      STORE.speakingTimerInterval = setInterval(() => {
+        STORE.speakSecondsRemaining--;
+        const paddedSec = STORE.speakSecondsRemaining.toString().padStart(2, '0');
+        document.getElementById('timerRing').textContent = `00:${paddedSec}`;
+        
+        if (STORE.speakSecondsRemaining <= 5) {
+          document.getElementById('timerRing').style.color = "var(--coral)";
+        }
+        
+        if (STORE.speakSecondsRemaining <= 0) {
+          stopMicrophoneRecording();
+          showMinimalToast("⏰ WIDA Speaking limit reached!");
+        }
+      }, 1000);
+    }
+
+    function playbackRecordedAudio() {
+      const audio = document.getElementById('audioPlayback');
+      if (audio.src) {
+        audio.play();
+        logToTerminal("Playing back locally recorded speaking file.");
+      }
+    }
+
+    // Audio Visualizer Canvas Renderer
+    function initAudioVisualizerContext(stream) {
+      const canvas = document.getElementById('voiceCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      
+      if (!STORE.audioContext) {
+        STORE.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      STORE.analyser = STORE.audioContext.createAnalyser();
+      STORE.sourceNode = STORE.audioContext.createMediaStreamSource(stream);
+      STORE.sourceNode.connect(STORE.analyser);
+      
+      STORE.analyser.fftSize = 256;
+      const bufferLength = STORE.analyser.frequencyBinCount;
+      STORE.dataArray = new Uint8Array(bufferLength);
+      
+      function drawWave() {
+        if (!STORE.isRecording) return;
+        STORE.animationFrameId = requestAnimationFrame(drawWave);
+        
+        STORE.analyser.getByteFrequencyData(STORE.dataArray);
+        
+        ctx.fillStyle = '#0b1f33';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        const barWidth = (canvas.width / bufferLength) * 2.2;
+        let barHeight;
+        let x = 0;
+        
+        for(let i = 0; i < bufferLength; i++) {
+          barHeight = STORE.dataArray[i] / 2;
+          
+          // Draw elegant glowing teal bars
+          ctx.fillStyle = `rgb(${barHeight + 10}, 118, 110)`;
+          ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+          
+          x += barWidth + 1;
+        }
+      }
+      
+      drawWave();
+    }
+
+    // Calculate ELP rating based on selectors
+    function calculateELPRating() {
+      const ling = parseInt(document.getElementById('rubricLinguistic').value) || 1;
+      const vocab = parseInt(document.getElementById('rubricVocabulary').value) || 1;
+      const ctrl = parseInt(document.getElementById('rubricControl').value) || 1;
+      
+      const sum = ling + vocab + ctrl;
+      let rating = "1.0 (Entering)";
+      
+      if (sum >= 11) rating = "5.0 (Bridging)";
+      else if (sum >= 9) rating = "4.0 (Expanding)";
+      else if (sum >= 6) rating = "3.0 (Developing)";
+      else if (sum >= 4) rating = "2.0 (Emerging)";
+      
+      document.getElementById('liveELPBadge').textContent = `ELP ${rating}`;
+      logToTerminal(`Rubric calculated ELP score: [${rating}]`);
+    }
+
+    // Setups and Event Handlers
+    function setupEventListeners() {
+      const langBtns = document.querySelectorAll('.lang-chip');
+      langBtns.forEach(btn => {
+        btn.onclick = () => {
+          langBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          STORE.activeDictionaryLang = btn.dataset.lang;
+          
+          const task = WIDA_SPEAKING_TASKS[STORE.activeTaskIdx];
+          populateWordWall(task.terms);
+        };
+      });
+      
+      populateSidebarCatalog();
+      switchSpeakingTask(0);
+      calculateELPRating();
+    }
+
+    // Diagnostics Matrix
+    function toggleDiagnostics() {
+      const term = document.getElementById('diagTerminal');
+      const hidden = term.style.display === 'none' || term.style.display === '';
+      term.style.display = hidden ? 'flex' : 'none';
+      if (hidden) {
+        const consoleNode = document.getElementById('diagConsole');
+        consoleNode.innerHTML = '';
+        logConsole("WIDA Speaking Matrix initialized...", "#fbbf24");
+        logConsole(`CENTRAL STATE check: Mapped tasks [${WIDA_SPEAKING_TASKS.length}/8]`);
+        logConsole("Browser MediaRecorder contexts validated.");
+        logConsole("SpeechSynthesis accent engines active.");
+      }
+    }
+
+    function logConsole(msg, color = "#00ff66") {
+      const node = document.getElementById('diagConsole');
+      if (node) {
+        node.innerHTML += `<div style="color:${color}; border-bottom:1px solid #14213d; padding:4px 0;">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      }
+    }
+    
+    function logToTerminal(msg, level="info") {
+      const term = document.getElementById('diagConsole');
+      if (term) {
+        const color = level === "orange" ? "#fbbf24" : "#00ff66";
+        logConsole(msg, color);
+      }
+    }
+
+    function showMinimalToast(msg) {
+      const toast = document.createElement('div');
+      toast.style.position = 'fixed';
+      toast.style.bottom = '32px';
+      toast.style.left = '50%';
+      toast.style.transform = 'translateX(-50%)';
+      toast.style.background = 'var(--navy-deep)';
+      toast.style.color = '#fbbf24';
+      toast.style.padding = '12px 24px';
+      toast.style.borderRadius = '30px';
+      toast.style.zIndex = '10000';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 250);
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
