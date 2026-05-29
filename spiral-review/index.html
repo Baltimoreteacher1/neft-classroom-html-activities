@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Neft Teacher Spiral Review and MCAP prep: mixed, cumulative math practice across all units with spiral weighting."
+    />
+    <title>Spiral Review &amp; MCAP Prep · Neft Teacher</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a> <span aria-hidden="true">/</span> Spiral Review
+        &amp; MCAP Prep
+      </nav>
+
+      <header class="hero">
+        <p class="eyebrow">Neft Teacher</p>
+        <h1>Spiral Review &amp; MCAP Prep</h1>
+        <p>
+          Mixed practice from every unit we have learned. Keep your skills sharp
+          and get ready for the state test (MCAP). Earlier units come up a
+          little more often so you keep reviewing them.
+        </p>
+      </header>
+
+      <!-- ── Setup screen ── -->
+      <main>
+        <section id="setup" class="panel" aria-labelledby="setup-title">
+          <h2 id="setup-title">Start a review set</h2>
+          <p class="sub">Pick how many questions and which units to mix.</p>
+
+          <div class="control-group">
+            <span class="label" id="count-label">Number of questions</span>
+            <div
+              class="chip-row"
+              role="group"
+              aria-labelledby="count-label"
+              id="count-chips"
+            >
+              <button type="button" class="chip" data-count="5">5</button>
+              <button
+                type="button"
+                class="chip"
+                data-count="10"
+                aria-pressed="true"
+              >
+                10
+              </button>
+              <button type="button" class="chip" data-count="15">15</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="label" for="scope-select">Which units?</label>
+            <select id="scope-select" aria-describedby="scope-hint">
+              <option value="all" selected>All units (everything)</option>
+              <option value="upto">Units 1 to where we are now</option>
+              <option value="range">A single unit range</option>
+            </select>
+            <p class="hint" id="scope-hint">
+              Spiral weighting favors older units so you keep reviewing them.
+            </p>
+          </div>
+
+          <div class="control-group hidden" id="upto-group">
+            <label class="label" for="upto-select"
+              >Up to and including unit</label
+            >
+            <select id="upto-select" aria-label="Up to unit"></select>
+          </div>
+
+          <div class="control-group hidden" id="range-group">
+            <label class="label" for="range-from">From unit</label>
+            <select id="range-from" aria-label="From unit"></select>
+            <label class="label" for="range-to" style="margin-top: 12px"
+              >To unit</label
+            >
+            <select id="range-to" aria-label="To unit"></select>
+          </div>
+
+          <div class="control-group">
+            <label class="label" for="name-input"
+              >Your name (optional — lets your teacher see your result)</label
+            >
+            <input
+              id="name-input"
+              type="text"
+              autocomplete="name"
+              placeholder="First name"
+              style="
+                min-height: 48px;
+                width: 100%;
+                max-width: 420px;
+                padding: 8px 14px;
+                font-size: 1.05rem;
+                font-family: inherit;
+                color: var(--ink);
+                background: var(--surface-soft);
+                border: 2px solid var(--line);
+                border-radius: var(--radius);
+              "
+            />
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn btn-primary" id="start-btn">
+              Start review set
+            </button>
+            <button type="button" class="btn btn-secondary" id="donow-btn">
+              ⚡ Review Do Now (5 mixed)
+            </button>
+          </div>
+          <p class="hint" id="bank-meta" aria-live="polite"></p>
+        </section>
+
+        <!-- ── Quiz screen ── -->
+        <section
+          id="quiz"
+          class="panel hidden"
+          aria-labelledby="quiz-title"
+          aria-live="polite"
+        >
+          <h2 id="quiz-title" class="visually-hidden">Review question</h2>
+          <div class="status-bar">
+            <span class="meta" id="progress-text">Question 1 of 10</span>
+            <span class="score-pill" id="score-text">Score: 0 / 0</span>
+          </div>
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            aria-label="Set progress"
+          >
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+
+          <div class="tag-row" id="tag-row"></div>
+          <p class="stem" id="stem"></p>
+          <button type="button" class="read-aloud" id="read-aloud-btn">
+            🔊 Read aloud
+          </button>
+          <div
+            class="choices"
+            id="choices"
+            role="group"
+            aria-label="Answer choices"
+          ></div>
+
+          <div class="feedback hidden" id="feedback" role="alert"></div>
+
+          <div class="btn-row">
+            <button type="button" class="btn btn-primary hidden" id="next-btn">
+              Next question
+            </button>
+            <button type="button" class="btn btn-ghost" id="quit-btn">
+              End set
+            </button>
+          </div>
+        </section>
+
+        <!-- ── Summary screen ── -->
+        <section
+          id="summary"
+          class="panel hidden"
+          aria-labelledby="summary-title"
+        >
+          <h2 id="summary-title">Set complete! 🎉</h2>
+          <p class="sub" id="summary-line"></p>
+          <p class="summary-stat" id="summary-score"></p>
+
+          <h3 style="margin: 18px 0 0; font-family: var(--font-display)">
+            How you did by standard
+          </h3>
+          <p class="review-note">
+            Standards marked in coral are worth reviewing again.
+          </p>
+          <ul class="std-list" id="std-list"></ul>
+
+          <p class="saved-note hidden" id="saved-note"></p>
+
+          <div class="btn-row" style="margin-top: 22px">
+            <button type="button" class="btn btn-primary" id="again-btn">
+              New review set
+            </button>
+            <a class="btn btn-secondary" href="/">Back to home</a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>Mr. Neft's classroom · Neft Teacher</span>
+      </footer>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Neft Teacher Do Now / Warm-up Generator</title>
+    <meta
+      name="description"
+      content="Build a daily Do Now / warm-up as a Google Form. Pick a lesson or type what you want, edit the questions, and copy ready-to-paste Google Apps Script."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <aside class="sidebar" aria-label="Do Now Generator navigation">
+        <div class="brand">
+          <span class="badge info">Local-first</span>
+          <h1>Neft Teacher Do Now / Warm-up Generator</h1>
+          <p>
+            Pick a lesson or type a request → edit questions → Google Form code.
+          </p>
+        </div>
+        <nav class="nav" aria-label="Sections">
+          <button class="active" data-tab="start" type="button">
+            Start Here
+          </button>
+          <button data-tab="build" type="button">1. Build Questions</button>
+          <button data-tab="edit" type="button">2. Review &amp; Edit</button>
+          <button data-tab="output" type="button">3. Get Form Code</button>
+          <button data-tab="about" type="button">How Outputs Work</button>
+        </nav>
+        <div class="sidebar-foot">
+          v1.0 · 74-lesson manifest ·
+          <a href="../">Back to Teacher Tools</a>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h2 id="pageTitle">Start Here</h2>
+            <p id="pageSubtitle">Make today's Do Now in three steps.</p>
+          </div>
+          <div class="top-actions">
+            <span class="badge neutral">No login · no student data</span>
+            <span class="badge neutral" id="countBadge" aria-live="polite"
+              >0 questions</span
+            >
+            <button
+              class="btn"
+              id="themeBtn"
+              type="button"
+              aria-pressed="false"
+            >
+              Theme
+            </button>
+          </div>
+        </header>
+
+        <section class="body">
+          <!-- ============ START ============ -->
+          <section id="start" class="screen active" aria-labelledby="startH">
+            <div class="hero">
+              <span class="badge info">Recommended workflow</span>
+              <h2 id="startH">Make today's Do Now in minutes.</h2>
+              <p>
+                Build a daily warm-up two ways: pick one of your 74 Reveal Math
+                lessons to auto-seed review questions, or just type what you
+                want. Edit the question list, then copy ready-to-paste Google
+                Apps Script that builds the Google Form for you. No account, no
+                server, works offline.
+              </p>
+              <div class="button-row">
+                <button class="btn primary" data-go="build" type="button">
+                  Start building questions
+                </button>
+                <button class="btn" data-go="about" type="button">
+                  What does it output?
+                </button>
+              </div>
+            </div>
+
+            <div class="grid g3">
+              <article class="card">
+                <h3>1. Build Questions</h3>
+                <p class="muted">
+                  Choose <strong>Pick a lesson</strong> to seed 3-5 review
+                  questions, or <strong>Type a request</strong> to describe
+                  topic, standard, count, and types.
+                </p>
+              </article>
+              <article class="card">
+                <h3>2. Review &amp; Edit</h3>
+                <p class="muted">
+                  Add, remove, and edit questions. Set each type
+                  (multiple-choice, short answer, paragraph) and mark correct
+                  answers for quiz mode.
+                </p>
+              </article>
+              <article class="card">
+                <h3>3. Get Form Code</h3>
+                <p class="muted">
+                  Copy the generated Apps Script, paste it into
+                  script.google.com, press Run, and your Google Form appears in
+                  your Drive.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <!-- ============ BUILD ============ -->
+          <section id="build" class="screen" aria-labelledby="buildH">
+            <div class="card">
+              <h3 id="buildH">Choose how to build your Do Now</h3>
+              <div class="mode-tabs" role="tablist" aria-label="Input mode">
+                <button
+                  class="mode-tab"
+                  id="tabLesson"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="modeLesson"
+                  type="button"
+                >
+                  <strong>A · Pick a lesson</strong><br />
+                  <span class="muted"
+                    >Auto-seed review questions from a lesson.</span
+                  >
+                </button>
+                <button
+                  class="mode-tab"
+                  id="tabType"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="modeType"
+                  type="button"
+                >
+                  <strong>B · Type a request</strong><br />
+                  <span class="muted"
+                    >Describe topic, standard, count, types.</span
+                  >
+                </button>
+              </div>
+
+              <!-- MODE A -->
+              <div id="modeLesson" role="tabpanel" aria-labelledby="tabLesson">
+                <label class="field" for="lessonSelect">
+                  Lesson
+                  <select id="lessonSelect">
+                    <option value="">Loading lessons…</option>
+                  </select>
+                  <span class="hint" id="lessonHint">
+                    Selecting a lesson seeds 3-5 warm-up review questions you
+                    can then edit.
+                  </span>
+                </label>
+                <label class="field" for="lessonCount">
+                  How many questions to seed
+                  <select id="lessonCount">
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" selected>5</option>
+                  </select>
+                </label>
+                <div class="button-row">
+                  <button class="btn primary" id="seedFromLesson" type="button">
+                    Seed Do Now from this lesson
+                  </button>
+                </div>
+              </div>
+
+              <!-- MODE B -->
+              <div
+                id="modeType"
+                role="tabpanel"
+                aria-labelledby="tabType"
+                hidden
+              >
+                <label class="field" for="reqText">
+                  Describe what you want
+                  <textarea
+                    id="reqText"
+                    placeholder="Example: 4 questions on dividing fractions, standard 6.NS.1. Mostly multiple choice, one short answer. Quick review level."
+                  ></textarea>
+                  <span class="hint">
+                    Mention a topic, an optional standard (like 6.NS.1), a
+                    number of questions, and question types. Generation is
+                    deterministic and runs entirely in your browser.
+                  </span>
+                </label>
+                <div class="grid g3">
+                  <label class="field" for="reqCount">
+                    Number of questions
+                    <input
+                      id="reqCount"
+                      type="number"
+                      min="1"
+                      max="20"
+                      value="4"
+                    />
+                  </label>
+                  <label class="field" for="reqStandard">
+                    Standard (optional)
+                    <input id="reqStandard" type="text" placeholder="6.NS.1" />
+                  </label>
+                  <label class="field" for="reqTypes">
+                    Question types
+                    <select id="reqTypes">
+                      <option value="mixed">Mixed (MC + short answer)</option>
+                      <option value="multiple-choice">
+                        Multiple choice only
+                      </option>
+                      <option value="short-answer">Short answer only</option>
+                      <option value="paragraph">Paragraph only</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="button-row">
+                  <button class="btn primary" id="genFromText" type="button">
+                    Generate questions
+                  </button>
+                </div>
+                <p class="muted" style="margin-top: 12px">
+                  Optional AI hook: an https-only endpoint stub exists in
+                  <code>app.js</code> (<code>AI_ENDPOINT</code>), disabled by
+                  default with a local fallback. No network call is made unless
+                  you set it.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ EDIT ============ -->
+          <section id="edit" class="screen" aria-labelledby="editH">
+            <div class="card">
+              <h3 id="editH">Review &amp; edit your questions</h3>
+              <div class="grid g2">
+                <label class="field" for="formTitle">
+                  Form title
+                  <input id="formTitle" type="text" value="Do Now" />
+                </label>
+                <label class="field" for="formDate">
+                  Date (shown in title)
+                  <input id="formDate" type="date" />
+                </label>
+              </div>
+              <label
+                class="inline"
+                for="quizMode"
+                style="
+                  margin: 4px 0 12px;
+                  display: inline-flex;
+                  gap: 8px;
+                  align-items: center;
+                "
+              >
+                <input id="quizMode" type="checkbox" />
+                Quiz mode (auto-grade MC, assign 1 point each)
+              </label>
+              <div class="button-row">
+                <button class="btn" id="addMc" type="button">
+                  + Multiple choice
+                </button>
+                <button class="btn" id="addShort" type="button">
+                  + Short answer
+                </button>
+                <button class="btn" id="addPara" type="button">
+                  + Paragraph
+                </button>
+                <button class="btn danger" id="clearAll" type="button">
+                  Clear all
+                </button>
+              </div>
+            </div>
+            <div class="card">
+              <div id="qList" class="q-list" aria-live="polite">
+                <p class="q-empty">
+                  No questions yet. Build some on step 1, or add them above.
+                </p>
+              </div>
+              <div class="button-row">
+                <button class="btn primary" data-go="output" type="button">
+                  Get Google Form code →
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ OUTPUT ============ -->
+          <section id="output" class="screen" aria-labelledby="outH">
+            <div class="card">
+              <h3 id="outH">Google Apps Script (primary output)</h3>
+              <p class="muted">
+                This script builds your Google Form automatically. Copy it, then
+                follow the steps below.
+              </p>
+              <div class="button-row">
+                <button class="btn primary" id="copyCode" type="button">
+                  Copy code
+                </button>
+                <button class="btn" id="downloadCode" type="button">
+                  Download .gs
+                </button>
+                <a
+                  class="btn"
+                  id="openScript"
+                  href="https://script.google.com/home/projects/create"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Open script.google.com</a
+                >
+              </div>
+              <div class="code-wrap" style="margin-top: 12px">
+                <label class="sr-only" for="codeOut"
+                  >Generated Google Apps Script</label
+                >
+                <pre class="code" id="codeOut" tabindex="0">
+Build some questions first (step 1).</pre
+                >
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Paste &amp; run — step by step</h3>
+              <ol class="steps">
+                <li>
+                  Click <strong>Copy code</strong> above (or Download .gs).
+                </li>
+                <li>
+                  Open <code>script.google.com</code> →
+                  <strong>New project</strong>.
+                </li>
+                <li>
+                  Delete the starter <code>function myFunction() {}</code> and
+                  <strong>paste</strong> the copied code.
+                </li>
+                <li>
+                  Press <strong>Run</strong> (▶). Choose
+                  <code>buildDoNowForm</code> if prompted.
+                </li>
+                <li>
+                  Click <strong>Review permissions</strong> → choose your Google
+                  account → <strong>Allow</strong> (first run only).
+                </li>
+                <li>
+                  Open <strong>Execution log</strong> (View → Logs). The new
+                  Google Form's edit URL is printed there.
+                </li>
+              </ol>
+            </div>
+          </section>
+
+          <!-- ============ ABOUT ============ -->
+          <section id="about" class="screen" aria-labelledby="aboutH">
+            <div class="card">
+              <h3 id="aboutH">What each output is</h3>
+              <div class="grid g2">
+                <article class="card" style="margin: 0">
+                  <h3>Google Apps Script (.gs) — used here</h3>
+                  <p class="muted">
+                    A short program that runs inside Google's own environment
+                    (script.google.com). When you press Run, Google's
+                    <code>FormApp</code> service creates the Form in your Drive
+                    and prints its URL. This site never sees your Google
+                    account, so no login is needed here. This is the route this
+                    tool uses.
+                  </p>
+                </article>
+                <article class="card" style="margin: 0">
+                  <h3>True one-click creation — not implemented</h3>
+                  <p class="muted">
+                    Creating a Google Form directly from this page (one click,
+                    no paste) would require Google OAuth and the Forms API
+                    running on a backend server, plus you signing in. That is
+                    intentionally not built here to keep the tool login-free,
+                    static, and student-data-free. The Apps Script route gives
+                    the same result with one paste and one Run.
+                  </p>
+                </article>
+              </div>
+              <div class="notice" role="note">
+                Teacher tool only. No student data is collected or stored. Your
+                draft questions stay in this browser (localStorage) and never
+                leave your device.
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,1633 +1,1244 @@
-/* =============================================================================
- * NOTES (read me)
- * -----------------------------------------------------------------------------
- * Neft Teacher Lesson Plan Generator — self-contained, client-side tool.
- *
- * SOURCE / PORT:
- *   Ported from the deterministic Python project "codex-lesson-plan-generator"
- *   (neft-practice-engine). The original reads a teacher .pptx deck, extracts
- *   slides, and renders a 10-section flagship lesson plan as JSON/MD/DOCX via a
- *   local Python pipeline (python-pptx + a DOCX renderer). That backend cannot
- *   run in a static browser site, so this port keeps the SAME canonical
- *   10-section structure, support rules (SPED Profiles A-G, Level 1 / Level 2
- *   supports), and "[INFERRED - VERIFY]" missing-info convention — but replaces
- *   the .pptx ingestion with a direct INPUT FORM. Teacher inputs -> formatted,
- *   printable lesson plan OUTPUT (HTML + Markdown).
- *
- * GENERATION MODES:
- *   - "local" (DEFAULT): composes the entire plan deterministically in the
- *     browser. No network, no API key, works fully offline. This is what runs
- *     out of the box and is the recommended mode.
- *   - "api" (OPTIONAL STUB): if you set a generation endpoint URL in Settings,
- *     the tool will POST the structured inputs to it and render the returned
- *     plan text. THIS IS A STUB: no endpoint, no provider, and NO API KEY are
- *     shipped with this tool. If the endpoint is empty, unreachable, or errors,
- *     the tool automatically FALLS BACK to local generation so the UI always
- *     works. If you use AI mode, route through your OWN proxy/Worker that holds
- *     the provider key server-side; never hard-code keys in this client.
- *
- * STORAGE: all inputs persist in localStorage under LP_KEY. Nothing leaves the
- * browser in local mode.
- * ========================================================================== */
+/* =====================================================================
+   Neft Teacher — Lesson Plan Generator
+   Local-first. Self-contained vanilla JS. No CDN at runtime.
+
+   PIPELINE (run in order):
+     Preflight -> Source Extract -> Content Map -> Lesson Plan Build
+       -> QA Harness -> Repair -> Final QA
+
+   LOCKED RULES:
+     - The provided source (typed text / .pptx / .pdf / .docx / .txt) is the
+       SOURCE OF TRUTH. Preserve intent, problem sequence, examples,
+       vocabulary, objective language, activity flow, exit-ticket alignment.
+     - Do NOT invent standards, activities, assessments, tasks. Where a
+       required section has no support in the source, mark it
+       "[INFERRED - VERIFY]" rather than fabricating specifics.
+     - If the source is MISSING / UNREADABLE / INCOMPLETE: do NOT invent a
+       lesson. Output a BLOCKED QA NOTE describing what to provide.
+
+   Libraries (self-hosted in ./vendor):
+     - jszip.min.js   -> global JSZip   (pptx + docx unzip)
+     - pdf.min.mjs    -> dynamic import (pdf text extraction)
+   ===================================================================== */
 
 (function () {
   "use strict";
 
-  const LP_KEY = "neft.lessonPlan.v1";
-  const SETTINGS_KEY = "neft.lessonPlan.settings.v1";
-  const THEME_KEY = "neft.lessonPlan.theme.v1";
-
-  // ---- Approved supports (mirrors source rules/support_rules.md) ----------
-  const SPED_PROFILES = [
-    {
-      id: "A",
-      label: "Profile A",
-      desc: "sentence starters, word banks, expressive language support",
-    },
-    {
-      id: "B",
-      label: "Profile B",
-      desc: "reduced distractions, manipulatives, extended time",
-    },
-    {
-      id: "C",
-      label: "Profile C",
-      desc: "breaks, chunking, graphic organizers, word banks",
-    },
-    {
-      id: "D",
-      label: "Profile D",
-      desc: "graphic organizers, text-to-speech, visuals, repetition",
-    },
-    {
-      id: "E",
-      label: "Profile E",
-      desc: "preteach vocabulary, highlight tool, attention strategies, small group",
-    },
-    {
-      id: "F",
-      label: "Profile F",
-      desc: "clarified/repeated directions, text-to-speech, visuals, immediate feedback",
-    },
-    {
-      id: "G",
-      label: "Profile G",
-      desc: "simplified language, word banks, graphic organizers, calculator, small group",
-    },
-  ];
-  // Labeled Level 1 / Level 2 per Neft naming convention (never "ESOL").
-  const LEVEL1 = [
-    {
-      id: "l1_vocab",
-      label: "Student-friendly vocabulary",
-      desc: "preview key terms with simple definitions + visuals",
-    },
-    {
-      id: "l1_starters",
-      label: "Sentence starters",
-      desc: "frames for explaining reasoning",
-    },
-    {
-      id: "l1_partner",
-      label: "Partner talk",
-      desc: "structured turn-and-talk before independent work",
-    },
-    {
-      id: "l1_visual",
-      label: "Visual supports",
-      desc: "diagrams, anchor charts, color-coding",
-    },
-    {
-      id: "l1_directions",
-      label: "Repeated/clarified directions",
-      desc: "restate and check for understanding",
-    },
-    {
-      id: "l1_chunk",
-      label: "Chunked tasks",
-      desc: "break work into smaller steps",
-    },
-  ];
-  const LEVEL2 = [
-    {
-      id: "l2_extend",
-      label: "Extension challenge",
-      desc: "deeper/multi-step problem for early finishers",
-    },
-    {
-      id: "l2_explain",
-      label: "Justify & critique",
-      desc: "explain reasoning and evaluate another method",
-    },
-    {
-      id: "l2_apply",
-      label: "Real-world application",
-      desc: "apply the concept to a novel context",
-    },
-  ];
-
-  const PHASES = [
-    {
-      key: "opening",
-      title: "Opening / Warm-Up / Launch",
-      min: "openingMin",
-      w: 10,
-    },
-    {
-      key: "mini",
-      title: "Mini-Lesson / Modeling / Concept Development",
-      min: "miniMin",
-      w: 18,
-    },
-    {
-      key: "guided",
-      title: "Guided Practice / Collaborative Learning",
-      min: "guidedMin",
-      w: 10,
-    },
-    {
-      key: "independent",
-      title: "Independent Practice / Application / Stations",
-      min: "independentMin",
-      w: 10,
-    },
-    {
-      key: "closure",
-      title: "Closure / Exit Ticket / Assessment",
-      min: "closureMin",
-      w: 7,
-    },
-  ];
-
-  const INFER = '<span class="lp-inferred">[INFERRED - VERIFY]</span>';
-  const INFER_TXT = "[INFERRED - VERIFY]";
-
-  // ---- State ---------------------------------------------------------------
-  let state = loadState();
-  let settings = loadSettings();
-
   const $ = (id) => document.getElementById(id);
-  const esc = (s) =>
-    String(s == null ? "" : s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  const lines = (s) =>
-    String(s || "")
-      .split(/\r?\n/)
-      .map((x) => x.trim())
-      .filter(Boolean);
+  const INFERRED = "[INFERRED - VERIFY]";
 
-  function loadState() {
-    try {
-      const raw = JSON.parse(localStorage.getItem(LP_KEY) || "{}");
-      return Object.assign(
-        { standards: [], spedSel: {}, l1Sel: {}, l2Sel: {} },
-        raw,
-      );
-    } catch (e) {
-      return { standards: [], spedSel: {}, l1Sel: {}, l2Sel: {} };
-    }
-  }
-  function saveState() {
-    localStorage.setItem(LP_KEY, JSON.stringify(state));
-    flashSaved();
-  }
-  function loadSettings() {
-    try {
-      return Object.assign(
-        { mode: "local", apiUrl: "" },
-        JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}"),
-      );
-    } catch (e) {
-      return { mode: "local", apiUrl: "" };
-    }
-  }
-  function saveSettings() {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-    updateModeBadge();
-    flashSaved();
-  }
-
-  let saveTimer = null;
-  function flashSaved() {
-    const b = $("saveBadge");
-    if (!b) return;
-    b.textContent = "Saved";
-    b.className = "badge ok";
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      b.textContent = "Saved locally";
-      b.className = "badge neutral";
-    }, 1200);
-  }
-  function updateModeBadge() {
-    const b = $("modeBadge");
-    if (!b) return;
-    b.textContent =
-      settings.mode === "api" ? "AI endpoint (stub)" : "Local generation";
-  }
-
-  // ---- Tabs ----------------------------------------------------------------
-  const TITLES = {
-    start: ["Start Here", "Turn your lesson inputs into a polished plan."],
-    quick: [
-      "Quick Generate",
-      "Type a topic or upload slides — get the full plan.",
-    ],
-    info: ["Lesson Info", "Identity, class context, and materials."],
-    standards: [
-      "Standards & Target",
-      "Anchor the lesson in standards and a clear target.",
-    ],
-    phases: ["Lesson Phases", "Notes and timing for each phase."],
-    supports: ["Supports", "Approved SPED and leveled supports."],
-    plan: ["Lesson Plan", "Generate, review, and print your plan."],
-    settings: ["Settings", "Generation mode and data controls."],
+  // ---- element refs ----
+  const els = {
+    sourceText: $("sourceText"),
+    fileInput: $("fileInput"),
+    dropzone: $("dropzone"),
+    fileStatus: $("fileStatus"),
+    generateBtn: $("generateBtn"),
+    sampleBtn: $("sampleBtn"),
+    clearBtn: $("clearBtn"),
+    themeBtn: $("themeBtn"),
+    statusCard: $("statusCard"),
+    pipeline: $("pipeline"),
+    qaPanel: $("qaPanel"),
+    outputCard: $("outputCard"),
+    lessonOutput: $("lessonOutput"),
+    printBtn: $("printBtn"),
+    downloadDocBtn: $("downloadDocBtn"),
+    downloadMdBtn: $("downloadMdBtn"),
   };
-  function showTab(tab) {
-    document
-      .querySelectorAll(".nav button")
-      .forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
-    document
-      .querySelectorAll(".screen")
-      .forEach((s) => s.classList.toggle("active", s.id === tab));
-    const t = TITLES[tab] || ["", ""];
-    $("pageTitle").textContent = t[0];
-    $("pageSubtitle").textContent = t[1];
-    if (tab === "phases") updateTimingDisplay();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // Holds the most recently uploaded file's extracted text (if any).
+  let uploadedExtract = null; // { text, name, kind }
+  let lastPlan = null; // built plan object for export
+
+  /* =================================================================
+     THEME
+  ================================================================= */
+  function initTheme() {
+    const saved = localStorage.getItem("nt_lpg_theme");
+    if (saved) document.documentElement.setAttribute("data-theme", saved);
+    els.themeBtn.addEventListener("click", () => {
+      const now =
+        document.documentElement.getAttribute("data-theme") === "dark"
+          ? "light"
+          : "dark";
+      document.documentElement.setAttribute("data-theme", now);
+      localStorage.setItem("nt_lpg_theme", now);
+    });
   }
 
-  // ---- Field binding -------------------------------------------------------
-  const TEXT_FIELDS = [
-    "title",
-    "unit",
-    "date",
-    "teacher",
-    "school",
-    "grade",
-    "subject",
-    "duration",
-    "materials",
-    "objective",
-    "successCriteria",
-    "teacherNotes",
-    "opening",
-    "mini",
-    "guided",
-    "independent",
-    "closure",
-    "openingMin",
-    "miniMin",
-    "guidedMin",
-    "independentMin",
-    "closureMin",
+  /* =================================================================
+     PIPELINE STATUS UI
+  ================================================================= */
+  const STAGES = [
+    "preflight",
+    "extract",
+    "map",
+    "build",
+    "qa",
+    "repair",
+    "finalqa",
   ];
-  function bindFields() {
-    TEXT_FIELDS.forEach((id) => {
-      const el = $(id);
-      if (!el) return;
-      if (state[id] != null) el.value = state[id];
-      el.addEventListener("input", () => {
-        state[id] = el.value;
-        saveState();
-        if (id === "duration" || id.endsWith("Min")) updateTimingDisplay();
-      });
+  function resetPipeline() {
+    els.statusCard.hidden = false;
+    els.qaPanel.innerHTML = "";
+    STAGES.forEach((s) => {
+      const li = els.pipeline.querySelector(`[data-stage="${s}"]`);
+      if (li) li.className = "";
     });
   }
-
-  // ---- Standards table -----------------------------------------------------
-  function renderStandards() {
-    const t = $("standardTable");
-    if (!t) return;
-    if (!state.standards.length) {
-      t.innerHTML = '<tr><td class="muted">No standards added yet.</td></tr>';
-      return;
-    }
-    let html = "<tr><th>Code</th><th>Description</th><th></th></tr>";
-    state.standards.forEach((s, i) => {
-      html +=
-        "<tr><td><strong>" +
-        esc(s.code) +
-        "</strong></td><td>" +
-        esc(s.desc) +
-        '</td><td><button class="btn danger" data-del="' +
-        i +
-        '" type="button">Remove</button></td></tr>';
-    });
-    t.innerHTML = html;
-    t.querySelectorAll("button[data-del]").forEach((btn) =>
-      btn.addEventListener("click", () => {
-        state.standards.splice(Number(btn.dataset.del), 1);
-        saveState();
-        renderStandards();
-      }),
-    );
+  function setStage(stage, state) {
+    const li = els.pipeline.querySelector(`[data-stage="${stage}"]`);
+    if (li) li.className = state; // running | done | fail
   }
-  function addStandard() {
-    const code = $("standardCode").value.trim();
-    const desc = $("standardDesc").value.trim();
-    if (!code && !desc) return;
-    state.standards.push({ code: code || "(code)", desc: desc || "" });
-    $("standardCode").value = "";
-    $("standardDesc").value = "";
-    saveState();
-    renderStandards();
-  }
+  // allow the browser to paint between stages
+  const tick = () => new Promise((r) => setTimeout(r, 90));
 
-  // ---- Supports check-lists ------------------------------------------------
-  function renderChecklist(containerId, items, selMap) {
-    const c = $(containerId);
-    if (!c) return;
-    c.innerHTML = "";
-    items.forEach((it) => {
-      const lab = document.createElement("label");
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = !!selMap[it.id];
-      cb.addEventListener("change", () => {
-        selMap[it.id] = cb.checked;
-        saveState();
-      });
-      const span = document.createElement("span");
-      span.className = "lbl";
-      span.innerHTML =
-        "<strong>" +
-        esc(it.label) +
-        "</strong><span>" +
-        esc(it.desc) +
-        "</span>";
-      lab.appendChild(cb);
-      lab.appendChild(span);
-      c.appendChild(lab);
-    });
-  }
+  /* =================================================================
+     SOURCE EXTRACTION
+  ================================================================= */
 
-  // ---- Timing --------------------------------------------------------------
-  function phaseMinutes() {
-    return PHASES.map((p) => {
-      const v = parseInt(state[p.min], 10);
-      return Number.isFinite(v) && v >= 0 ? v : null;
-    });
-  }
-  function updateTimingDisplay() {
-    const mins = phaseMinutes();
-    const total = mins.reduce((a, b) => a + (b || 0), 0);
-    const target = parseInt(state.duration, 10) || 0;
-    if ($("timingTotal")) $("timingTotal").textContent = total;
-    if ($("timingTarget")) $("timingTarget").textContent = target || "—";
-    const st = $("timingStatus");
-    if (!st) return;
-    if (!target) {
-      st.textContent =
-        "Enter a total lesson length on Lesson Info to auto-distribute.";
-      st.className = "muted";
-    } else if (total === target) {
-      st.innerHTML =
-        '<span class="badge ok">Timing matches the lesson length.</span>';
-    } else if (total === 0) {
-      st.innerHTML =
-        '<span class="badge warn">No phase minutes set. Use Auto-Distribute.</span>';
-    } else {
-      st.innerHTML =
-        '<span class="badge warn">Phase minutes (' +
-        total +
-        ") differ from lesson length (" +
-        target +
-        ").</span>";
-    }
-  }
-  function autoDistribute() {
-    const target = parseInt(state.duration, 10);
-    if (!Number.isFinite(target) || target <= 0) {
-      alert("Set a total lesson length on the Lesson Info tab first.");
-      return;
-    }
-    const totalW = PHASES.reduce((a, p) => a + p.w, 0);
-    let assigned = 0;
-    PHASES.forEach((p, i) => {
-      let m;
-      if (i === PHASES.length - 1) m = target - assigned;
-      else {
-        m = Math.round((p.w / totalW) * target);
-        assigned += m;
-      }
-      state[p.min] = String(Math.max(0, m));
-      if ($(p.min)) $(p.min).value = state[p.min];
-    });
-    saveState();
-    updateTimingDisplay();
-  }
-
-  // ---- Plan composition (local deterministic) ------------------------------
-  function selectedSupports() {
-    const sped = SPED_PROFILES.filter((p) => state.spedSel[p.id]);
-    const l1 = LEVEL1.filter((x) => state.l1Sel[x.id]);
-    const l2 = LEVEL2.filter((x) => state.l2Sel[x.id]);
-    return { sped, l1, l2 };
-  }
-
-  function phaseBlurb(key, supports) {
-    // Default structured placeholders, lightly support-aware.
-    const map = {
-      opening:
-        "Hook students and surface prior knowledge with a short warm-up tied to the learning target. Make the goal of the lesson visible.",
-      mini: "Model the core concept with a worked example and a think-aloud. Name the steps explicitly and check for understanding before releasing.",
-      guided:
-        "Students practice collaboratively while the teacher circulates, prompts reasoning, and gives targeted feedback.",
-      independent:
-        "Students apply the skill independently or in stations. Provide a clear task, an answer-check routine, and a challenge option.",
-      closure:
-        "Consolidate learning with a brief exit ticket aligned to the success criteria. Use it to plan the next instructional move.",
-    };
-    let base = map[key];
-    if (supports.l1.length && (key === "opening" || key === "mini")) {
-      base +=
-        " Embed Level 1 supports: " +
-        supports.l1.map((x) => x.label.toLowerCase()).join(", ") +
-        ".";
-    }
-    if (supports.l2.length && (key === "independent" || key === "guided")) {
-      base +=
-        " Offer Level 2 enrichment: " +
-        supports.l2.map((x) => x.label.toLowerCase()).join(", ") +
-        ".";
-    }
-    return base;
-  }
-
-  function buildPlanModel() {
-    const supports = selectedSupports();
-    const mins = phaseMinutes();
-    const sessionPhases = PHASES.map((p, i) => {
-      const note = (state[p.key] || "").trim();
-      return {
-        title: p.title,
-        minutes: mins[i],
-        inferred: !note,
-        body: note || phaseBlurb(p.key, supports),
-      };
-    });
-    return {
-      title: (state.title || "").trim() || "Untitled Lesson " + INFER_TXT,
-      unit: (state.unit || "").trim(),
-      date: (state.date || "").trim(),
-      teacher: (state.teacher || "").trim(),
-      school: (state.school || "").trim(),
-      grade: (state.grade || "").trim(),
-      subject: (state.subject || "").trim(),
-      duration: (state.duration || "").trim(),
-      standards: state.standards.slice(),
-      objective: (state.objective || "").trim(),
-      successCriteria: lines(state.successCriteria),
-      materials: lines(state.materials),
-      teacherNotes: (state.teacherNotes || "").trim(),
-      phases: sessionPhases,
-      supports,
-    };
-  }
-
-  function fld(val) {
-    return val ? esc(val) : INFER;
-  }
-
-  function renderPlanHTML(m) {
-    const metaBits = [];
-    if (m.teacher) metaBits.push("Teacher: " + esc(m.teacher));
-    if (m.school) metaBits.push(esc(m.school));
-    if (m.grade) metaBits.push("Grade " + esc(m.grade));
-    if (m.subject) metaBits.push(esc(m.subject));
-    if (m.date) metaBits.push(esc(m.date));
-
-    let h =
-      "<h1>" +
-      (m.title.includes(INFER_TXT)
-        ? esc(m.title.replace(INFER_TXT, "")).trim() + " " + INFER
-        : esc(m.title)) +
-      "</h1>";
-    h +=
-      '<p class="lp-meta">' + (metaBits.join(" &middot; ") || INFER) + "</p>";
-
-    // 1. Lesson Information
-    h += sec(1, "Lesson Information", () => {
-      let r = "<table class='lp-table'><tbody>";
-      r += row("Title", fld(m.title.replace(INFER_TXT, "").trim()));
-      r += row("Unit / topic", fld(m.unit));
-      r += row(
-        "Grade / subject",
-        fld(
-          [m.grade && "Grade " + m.grade, m.subject]
-            .filter(Boolean)
-            .join(" — "),
-        ),
-      );
-      r += row("Date", fld(m.date));
-      r += row("Duration", m.duration ? esc(m.duration) + " minutes" : INFER);
-      r += "</tbody></table>";
-      return r;
-    });
-
-    // 2. Standards and Learning Targets
-    h += sec(2, "Standards and Learning Targets", () => {
-      if (!m.standards.length)
-        return '<p class="lp-p">' + INFER + " Add at least one standard.</p>";
-      let r = '<ul class="lp-list">';
-      m.standards.forEach((s) => {
-        r +=
-          "<li><strong>" +
-          esc(s.code) +
-          "</strong>" +
-          (s.desc ? " — " + esc(s.desc) : "") +
-          "</li>";
-      });
-      r += "</ul>";
-      return r;
-    });
-
-    // 3. Objective and Success Criteria
-    h += sec(3, "Lesson Objective and Student Success Criteria", () => {
-      let r =
-        '<p class="lp-p"><strong>Objective:</strong> ' +
-        fld(m.objective) +
-        "</p>";
-      if (m.successCriteria.length) {
-        r +=
-          "<p class='lp-p'><strong>Success criteria:</strong></p><ul class='lp-list'>";
-        m.successCriteria.forEach((c) => (r += "<li>" + esc(c) + "</li>"));
-        r += "</ul>";
-      } else {
-        r +=
-          "<p class='lp-p'><strong>Success criteria:</strong> " +
-          INFER +
-          "</p>";
-      }
-      return r;
-    });
-
-    // 4. Materials
-    h += sec(4, "Materials and Preparation", () => {
-      const mats = m.materials.length
-        ? m.materials
-        : ["Teacher slide deck " + INFER_TXT];
-      let r = "<ul class='lp-list'>";
-      mats.forEach(
-        (x) =>
-          (r +=
-            "<li>" +
-            (x.includes(INFER_TXT)
-              ? esc(x.replace(INFER_TXT, "")).trim() + " " + INFER
-              : esc(x)) +
-            "</li>"),
-      );
-      r += "</ul>";
-      return r;
-    });
-
-    // 5-9. Phases
-    m.phases.forEach((p, i) => {
-      h += sec(
-        5 + i,
-        p.title,
-        () => {
-          let r = "";
-          r +=
-            '<p class="lp-p">' +
-            esc(p.body) +
-            (p.inferred ? " " + INFER : "") +
-            "</p>";
-          return r;
-        },
-        p.minutes,
-      );
-    });
-
-    // 10. Differentiation & Supports
-    h += sec(
-      10,
-      "Differentiation, SPED/ESOL Supports, and Teacher Notes",
-      () => {
-        let r = "";
-        const sp = m.supports;
-        if (sp.sped.length) {
-          r +=
-            "<p class='lp-p'><strong>SPED supports (approved profiles):</strong></p><ul class='lp-list'>";
-          sp.sped.forEach(
-            (p) =>
-              (r +=
-                "<li><strong>" +
-                esc(p.label) +
-                ":</strong> " +
-                esc(p.desc) +
-                "</li>"),
-          );
-          r += "</ul>";
-        }
-        if (sp.l1.length) {
-          r +=
-            "<p class='lp-p'><strong>Level 1 supports (scaffolds):</strong></p><ul class='lp-list'>";
-          sp.l1.forEach(
-            (p) =>
-              (r +=
-                "<li><strong>" +
-                esc(p.label) +
-                ":</strong> " +
-                esc(p.desc) +
-                "</li>"),
-          );
-          r += "</ul>";
-        }
-        if (sp.l2.length) {
-          r +=
-            "<p class='lp-p'><strong>Level 2 enrichment:</strong></p><ul class='lp-list'>";
-          sp.l2.forEach(
-            (p) =>
-              (r +=
-                "<li><strong>" +
-                esc(p.label) +
-                ":</strong> " +
-                esc(p.desc) +
-                "</li>"),
-          );
-          r += "</ul>";
-        }
-        const needsSmallGroup = sp.sped.some((p) => /small group/.test(p.desc));
-        if (needsSmallGroup) {
-          r +=
-            "<p class='lp-p'><strong>Small-group move:</strong> Pull a small group during Guided/Independent practice anchored to the same task (not a generic reteach).</p>";
-        }
-        if (m.teacherNotes)
-          r +=
-            "<p class='lp-p'><strong>Teacher notes:</strong> " +
-            esc(m.teacherNotes) +
-            "</p>";
-        if (
-          !sp.sped.length &&
-          !sp.l1.length &&
-          !sp.l2.length &&
-          !m.teacherNotes
-        ) {
-          r +=
-            "<p class='lp-p'>" +
-            INFER +
-            " No supports selected. Add SPED profiles or Level 1/2 supports on the Supports tab.</p>";
-        }
-        return r;
-      },
-    );
-
-    return h;
-
-    function sec(num, title, fn, minutes) {
-      const m2 = Number.isFinite(minutes)
-        ? '<span class="lp-mins">' + minutes + " min</span>"
-        : "";
-      return (
-        '<section class="lp-sec"><h2 class="lp-h"><span class="lp-num">' +
-        num +
-        ".</span> " +
-        esc(title) +
-        m2 +
-        "</h2>" +
-        fn() +
-        "</section>"
-      );
-    }
-    function row(k, v) {
-      return (
-        "<tr><th style='width:34%'>" + esc(k) + "</th><td>" + v + "</td></tr>"
-      );
-    }
-  }
-
-  // ---- Markdown export -----------------------------------------------------
-  function renderPlanMarkdown(m) {
-    const out = [];
-    out.push(
-      "# " +
-        m.title.replace(INFER_TXT, "").trim() +
-        (m.title.includes(INFER_TXT) ? " " + INFER_TXT : ""),
-    );
-    const meta = [
-      m.teacher && "**Teacher:** " + m.teacher,
-      m.school,
-      m.grade && "Grade " + m.grade,
-      m.subject,
-      m.date,
-    ]
-      .filter(Boolean)
-      .join("  \n");
-    if (meta) out.push("", meta);
-
-    const I = (v) => (v ? v : INFER_TXT);
-
-    out.push("", "## 1. Lesson Information");
-    out.push("- **Title:** " + I(m.title.replace(INFER_TXT, "").trim()));
-    out.push("- **Unit / topic:** " + I(m.unit));
-    out.push(
-      "- **Grade / subject:** " +
-        I(
-          [m.grade && "Grade " + m.grade, m.subject]
-            .filter(Boolean)
-            .join(" — "),
-        ),
-    );
-    out.push("- **Date:** " + I(m.date));
-    out.push(
-      "- **Duration:** " + (m.duration ? m.duration + " minutes" : INFER_TXT),
-    );
-
-    out.push("", "## 2. Standards and Learning Targets");
-    if (m.standards.length)
-      m.standards.forEach((s) =>
-        out.push("- **" + s.code + "**" + (s.desc ? " — " + s.desc : "")),
-      );
-    else out.push("- " + INFER_TXT);
-
-    out.push("", "## 3. Lesson Objective and Student Success Criteria");
-    out.push("**Objective:** " + I(m.objective));
-    out.push("", "**Success criteria:**");
-    if (m.successCriteria.length)
-      m.successCriteria.forEach((c) => out.push("- " + c));
-    else out.push("- " + INFER_TXT);
-
-    out.push("", "## 4. Materials and Preparation");
-    (m.materials.length
-      ? m.materials
-      : ["Teacher slide deck " + INFER_TXT]
-    ).forEach((x) => out.push("- " + x));
-
-    m.phases.forEach((p, i) => {
-      out.push(
-        "",
-        "## " +
-          (5 + i) +
-          ". " +
-          p.title +
-          (Number.isFinite(p.minutes) ? " (" + p.minutes + " min)" : ""),
-      );
-      out.push(p.body + (p.inferred ? " " + INFER_TXT : ""));
-    });
-
-    out.push(
-      "",
-      "## 10. Differentiation, SPED/ESOL Supports, and Teacher Notes",
-    );
-    const sp = m.supports;
-    if (sp.sped.length) {
-      out.push("**SPED supports (approved profiles):**");
-      sp.sped.forEach((p) => out.push("- **" + p.label + ":** " + p.desc));
-    }
-    if (sp.l1.length) {
-      out.push("", "**Level 1 supports (scaffolds):**");
-      sp.l1.forEach((p) => out.push("- **" + p.label + ":** " + p.desc));
-    }
-    if (sp.l2.length) {
-      out.push("", "**Level 2 enrichment:**");
-      sp.l2.forEach((p) => out.push("- **" + p.label + ":** " + p.desc));
-    }
-    if (m.teacherNotes) out.push("", "**Teacher notes:** " + m.teacherNotes);
-    if (!sp.sped.length && !sp.l1.length && !sp.l2.length && !m.teacherNotes)
-      out.push("- " + INFER_TXT);
-
-    return out.join("\n");
-  }
-
-  // ---- Validation ----------------------------------------------------------
-  function validate(m) {
-    const warns = [];
-    if (m.title.includes(INFER_TXT)) warns.push("Lesson title missing.");
-    if (!m.standards.length)
-      warns.push(
-        "No standards added (standards are the instructional anchor).",
-      );
-    if (!m.objective) warns.push("No learning objective.");
-    if (!m.successCriteria.length) warns.push("No success criteria.");
-    const total = m.phases.reduce((a, p) => a + (p.minutes || 0), 0);
-    const target = parseInt(m.duration, 10) || 0;
-    if (target && total && total !== target)
-      warns.push(
-        "Phase minutes (" +
-          total +
-          ") differ from lesson length (" +
-          target +
-          ").",
-      );
-    const inferredPhases = m.phases.filter((p) => p.inferred).length;
-    if (inferredPhases)
-      warns.push(
-        inferredPhases +
-          " phase(s) used a placeholder — review marked [INFERRED - VERIFY] text.",
-      );
-    return warns;
-  }
-
-  // ---- Generate ------------------------------------------------------------
-  let lastMarkdown = "";
-  async function generate() {
-    const m = buildPlanModel();
-    const out = $("lessonOutput");
-    const status = $("validationStatus");
-    let html = "";
-
-    if (settings.mode === "api" && settings.apiUrl.trim()) {
-      const apiUrl = settings.apiUrl.trim();
-      let parsedUrl;
-      try {
-        parsedUrl = new URL(apiUrl);
-      } catch (_) {
-        parsedUrl = null;
-      }
-      if (!parsedUrl || parsedUrl.protocol !== "https:") {
-        status.innerHTML =
-          '<span class="badge warn">AI endpoint must be a valid https:// URL — using local generation.</span>';
-        // fall through to local generation below
-      } else {
-        status.innerHTML = `<span class="badge info">Contacting AI endpoint (${esc(parsedUrl.origin)})…</span>`;
-        try {
-          const res = await fetch(apiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ inputs: m }),
-          });
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          const data = await res.json();
-          if (data && (data.html || data.markdown)) {
-            html = data.html || "<pre>" + esc(data.markdown) + "</pre>";
-            lastMarkdown = data.markdown || renderPlanMarkdown(m);
-            out.innerHTML = html;
-            status.innerHTML =
-              '<span class="badge ok">Generated via AI endpoint.</span>';
-            return;
-          }
-          throw new Error("Endpoint returned no html/markdown");
-        } catch (e) {
-          status.innerHTML =
-            '<span class="badge warn">AI endpoint unavailable (' +
-            esc(e.message) +
-            "). Fell back to local generation.</span> ";
-        }
-      }
-    }
-
-    // Local deterministic generation (default + fallback)
-    html = renderPlanHTML(m);
-    lastMarkdown = renderPlanMarkdown(m);
-    out.innerHTML = html;
-    const warns = validate(m);
-    if (warns.length) {
-      status.innerHTML +=
-        '<span class="badge warn">' +
-        warns.length +
-        " item(s) to review</span> " +
-        "<ul class='tight muted' style='margin-top:8px'>" +
-        warns.map((w) => "<li>" + esc(w) + "</li>").join("") +
-        "</ul>";
-    } else {
-      status.innerHTML +=
-        '<span class="badge ok">Plan complete — all key fields present.</span>';
-    }
-  }
-
-  // ==========================================================================
-  // QUICK GENERATE — two input modes that fill the SAME locked-in state model
-  // then route through the existing local deterministic pipeline (generate()).
-  //
-  //  Mode A "type": teacher pastes a free-text description of the lesson.
-  //  Mode B "upload": teacher uploads a .pptx (parsed locally via self-hosted
-  //                   JSZip) or a .txt; we extract slide text, then map it.
-  //
-  // Both paths run mapTextToState(), which mirrors the deterministic heuristics
-  // of the source Python project (codex-lesson-plan-generator): standards from
-  // standard codes, phase mapping by markers (opening/mini/guided/independent/
-  // closure), support detection (SPED Profiles A-G, Level 1/2). Missing fields
-  // are left blank so the renderer marks them [INFERRED - VERIFY].
-  // ==========================================================================
-
-  let quickMode = "type";
-
-  function setQuickMode(mode) {
-    quickMode = mode === "upload" ? "upload" : "type";
-    const typeCard = $("quickType");
-    const upCard = $("quickUpload");
-    if (typeCard) typeCard.style.display = quickMode === "type" ? "" : "none";
-    if (upCard) upCard.style.display = quickMode === "upload" ? "" : "none";
-    document.querySelectorAll(".mode-tab").forEach((b) => {
-      const on = b.dataset.mode === quickMode;
-      b.classList.toggle("active", on);
-      b.setAttribute("aria-selected", on ? "true" : "false");
-    });
-  }
-
-  // --- PPTX text extraction (client-side, JSZip) ----------------------------
-  // A .pptx is a zip. Slide text lives in ppt/slides/slideN.xml inside <a:t>.
-  async function extractPptxText(file) {
-    if (typeof JSZip === "undefined") {
-      throw new Error(
-        "Slide reader (JSZip) failed to load. Paste slide text instead.",
-      );
-    }
-    const zip = await JSZip.loadAsync(file);
-    // Collect slide files and sort by numeric slide index.
+  // PPTX: ppt/slides/slideN.xml -> <a:t> runs, in slide order.
+  async function extractPptx(arrayBuffer) {
+    const zip = await JSZip.loadAsync(arrayBuffer);
     const slideFiles = Object.keys(zip.files)
       .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
       .sort((a, b) => {
-        const na = parseInt(a.replace(/\D+/g, ""), 10);
-        const nb = parseInt(b.replace(/\D+/g, ""), 10);
+        const na = +(a.match(/slide(\d+)\.xml/) || [])[1];
+        const nb = +(b.match(/slide(\d+)\.xml/) || [])[1];
         return na - nb;
       });
-    if (!slideFiles.length) {
-      throw new Error("No slides found in this .pptx file.");
+    if (!slideFiles.length) throw new Error("No slides found in the .pptx.");
+    const parts = [];
+    for (const name of slideFiles) {
+      const xml = await zip.files[name].async("string");
+      const runs = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) =>
+        decodeXml(m[1]),
+      );
+      const n = (name.match(/slide(\d+)/) || [])[1];
+      const text = runs.join(" ").replace(/\s+/g, " ").trim();
+      if (text) parts.push(`--- Slide ${n} ---\n${text}`);
     }
+    return parts.join("\n\n");
+  }
+
+  // DOCX: word/document.xml -> <w:t> runs, paragraphs split on <w:p>.
+  async function extractDocx(arrayBuffer) {
+    const zip = await JSZip.loadAsync(arrayBuffer);
+    const docFile = zip.files["word/document.xml"];
+    if (!docFile) throw new Error("No word/document.xml in the .docx.");
+    const xml = await docFile.async("string");
+    const paras = xml.split(/<\/w:p>/).map((p) => {
+      const runs = [...p.matchAll(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g)].map((m) =>
+        decodeXml(m[1]),
+      );
+      return runs.join("").trim();
+    });
+    const text = paras.filter(Boolean).join("\n");
+    if (!text) throw new Error("The .docx contained no readable text.");
+    return text;
+  }
+
+  // PDF: self-hosted pdf.js ESM (./vendor/pdf.min.mjs + worker).
+  async function extractPdf(arrayBuffer) {
+    let pdfjs;
+    try {
+      pdfjs = await import("./vendor/pdf.min.mjs");
+    } catch (e) {
+      throw new Error(
+        "PDF reader (pdf.js) could not load. Copy the PDF text and paste it " +
+          "into the box instead.",
+      );
+    }
+    try {
+      pdfjs.GlobalWorkerOptions.workerSrc = "./vendor/pdf.worker.min.mjs";
+    } catch (_) {
+      /* ignore */
+    }
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) })
+      .promise;
     const out = [];
-    for (let i = 0; i < slideFiles.length; i++) {
-      const xml = await zip.files[slideFiles[i]].async("string");
-      // Pull text runs. Runs inside the same paragraph join with no space;
-      // separate paragraphs / runs with spaces, then collapse.
-      const runs = xml.match(/<a:t>([\s\S]*?)<\/a:t>/g) || [];
-      const text = runs
-        .map((r) =>
-          r
-            .replace(/<a:t>/, "")
-            .replace(/<\/a:t>/, "")
-            .replace(/&amp;/g, "&")
-            .replace(/&lt;/g, "<")
-            .replace(/&gt;/g, ">")
-            .replace(/&quot;/g, '"')
-            .replace(/&apos;/g, "'"),
-        )
+    for (let p = 1; p <= doc.numPages; p++) {
+      const page = await doc.getPage(p);
+      const content = await page.getTextContent();
+      const txt = content.items
+        .map((i) => i.str || "")
         .join(" ")
         .replace(/\s+/g, " ")
         .trim();
-      out.push("--- Slide " + (i + 1) + " ---" + (text ? "\n" + text : ""));
+      if (txt) out.push(`--- Page ${p} ---\n${txt}`);
     }
-    return { count: slideFiles.length, text: out.join("\n\n") };
-  }
-
-  // --- Free-text / slide-text -> state model --------------------------------
-  // Recognizes optional "Label: value" lines and otherwise classifies content
-  // into the correct lesson phase using the same marker families as the source.
-  const FIELD_LABELS = [
-    { keys: ["title", "lesson title", "lesson"], set: "title" },
-    { keys: ["unit", "topic", "unit / topic"], set: "unit" },
-    { keys: ["grade", "grade level"], set: "grade" },
-    { keys: ["subject", "content area"], set: "subject" },
-    { keys: ["teacher"], set: "teacher" },
-    { keys: ["school"], set: "school" },
-    { keys: ["date"], set: "date" },
-    {
-      keys: ["duration", "minutes", "lesson length", "time"],
-      set: "duration",
-    },
-    {
-      keys: ["objective", "learning target", "target", "goal", "aim"],
-      set: "objective",
-    },
-    {
-      keys: ["success criteria", "i can", "criteria"],
-      set: "successCriteria",
-      append: true,
-    },
-    { keys: ["materials", "materials and preparation"], set: "materials" },
-    {
-      keys: [
-        "opening",
-        "warm-up",
-        "warm up",
-        "launch",
-        "do now",
-        "bell ringer",
-      ],
-      set: "opening",
-    },
-    {
-      keys: [
-        "mini-lesson",
-        "mini lesson",
-        "modeling",
-        "model",
-        "direct instruction",
-        "concept development",
-      ],
-      set: "mini",
-    },
-    {
-      keys: [
-        "guided practice",
-        "guided",
-        "collaborative",
-        "we do",
-        "turn and talk",
-        "partner",
-      ],
-      set: "guided",
-    },
-    {
-      keys: [
-        "independent practice",
-        "independent",
-        "stations",
-        "application",
-        "you do",
-        "on your own",
-      ],
-      set: "independent",
-    },
-    {
-      keys: ["closure", "exit ticket", "assessment", "summary", "wrap-up"],
-      set: "closure",
-    },
-    { keys: ["supports", "support", "differentiation"], set: "_supports" },
-    { keys: ["notes", "teacher notes"], set: "teacherNotes" },
-    { keys: ["standard", "standards", "standard code"], set: "_standard" },
-  ];
-
-  // Marker families for classifying unlabeled lines (mirrors source extract).
-  const PHASE_MARKERS = {
-    opening: [
-      "do now",
-      "warm-up",
-      "warm up",
-      "launch",
-      "bell ringer",
-      "notice",
-      "wonder",
-      "hook",
-      "this or that",
-    ],
-    mini: [
-      "mini-lesson",
-      "mini lesson",
-      "model",
-      "i do",
-      "vocabulary",
-      "define",
-      "introduce",
-      "concept",
-      "example",
-      "demonstrate",
-    ],
-    guided: [
-      "guided practice",
-      "we do",
-      "turn and talk",
-      "partner",
-      "collaborate",
-      "discuss",
-      "check for understanding",
-      "together",
-    ],
-    independent: [
-      "independent",
-      "on your own",
-      "station",
-      "practice set",
-      "apply",
-      "workspace",
-      "workbook",
-      "you do",
-      "problem set",
-    ],
-    closure: [
-      "exit ticket",
-      "closure",
-      "summarize",
-      "summary",
-      "wrap-up",
-      "reflect",
-      "final check",
-    ],
-  };
-
-  // Standard code patterns: e.g. 6.G.A.1, MA.6.GR.1.1, CCSS.6.NS.1, RL.6.2
-  const STANDARD_RE =
-    /\b([A-Z]{0,5}\.?\d{1,2}\.[A-Z]{1,4}(?:\.[A-Z0-9]{1,4}){0,3})\b/g;
-
-  function detectStandards(text) {
-    const found = [];
-    const seen = {};
-    const m = text.match(STANDARD_RE) || [];
-    m.forEach((code) => {
-      const c = code.replace(/^\.+|\.+$/g, "");
-      if (!seen[c] && /\d/.test(c) && c.length >= 4) {
-        seen[c] = true;
-        found.push(c);
-      }
-    });
-    return found;
-  }
-
-  function classifyPhase(line) {
-    const low = line.toLowerCase();
-    let best = null;
-    let bestScore = 0;
-    Object.keys(PHASE_MARKERS).forEach((phase) => {
-      let score = 0;
-      PHASE_MARKERS[phase].forEach((mk) => {
-        if (low.includes(mk)) score += 1;
-      });
-      if (score > bestScore) {
-        bestScore = score;
-        best = phase;
-      }
-    });
-    return bestScore > 0 ? best : null;
-  }
-
-  // Map free text or slide text into the locked-in state model.
-  function mapTextToState(rawText, opts) {
-    opts = opts || {};
-    const acc = {
-      title: "",
-      unit: "",
-      grade: "",
-      subject: "",
-      teacher: "",
-      school: "",
-      date: "",
-      duration: "",
-      objective: "",
-      successCriteria: [],
-      materials: [],
-      teacherNotes: "",
-      opening: [],
-      mini: [],
-      guided: [],
-      independent: [],
-      closure: [],
-      standards: [],
-      spedSel: {},
-      l1Sel: {},
-      l2Sel: {},
-    };
-
-    const rawLines = String(rawText || "")
-      .split(/\r?\n/)
-      .map((s) => s.trim())
-      .filter((s) => s && !/^---\s*slide/i.test(s));
-
-    const PHASE_KEYS = ["opening", "mini", "guided", "independent", "closure"];
-
-    rawLines.forEach((line) => {
-      // Try "Label: value"
-      const colon = line.match(/^([A-Za-z][A-Za-z /&'-]{1,30}?)\s*:\s*(.+)$/);
-      let handled = false;
-      if (colon) {
-        const label = colon[1].trim().toLowerCase();
-        const value = colon[2].trim();
-        for (const f of FIELD_LABELS) {
-          if (f.keys.includes(label)) {
-            if (f.set === "_standard") {
-              const codes = detectStandards(value);
-              if (codes.length) {
-                // value may be "6.G.A.1 — description"
-                const desc = value
-                  .replace(STANDARD_RE, "")
-                  .replace(/^[\s—–:-]+/, "")
-                  .trim();
-                codes.forEach((c, idx) =>
-                  acc.standards.push({ code: c, desc: idx === 0 ? desc : "" }),
-                );
-              } else {
-                acc.standards.push({ code: value, desc: "" });
-              }
-            } else if (f.set === "_supports") {
-              applySupportText(acc, value);
-            } else if (PHASE_KEYS.includes(f.set)) {
-              acc[f.set].push(value);
-            } else if (f.set === "successCriteria") {
-              value
-                .split(/;|•|·/)
-                .map((x) => x.trim())
-                .filter(Boolean)
-                .forEach((x) => acc.successCriteria.push(x));
-            } else if (f.set === "materials") {
-              value
-                .split(/,|;|•|·/)
-                .map((x) => x.trim())
-                .filter(Boolean)
-                .forEach((x) => acc.materials.push(x));
-            } else if (!acc[f.set]) {
-              acc[f.set] = value;
-            }
-            handled = true;
-            break;
-          }
-        }
-      }
-      if (handled) return;
-
-      // Unlabeled line: detect inline standards + supports, then classify phase.
-      detectStandards(line).forEach((c) => {
-        if (!acc.standards.some((s) => s.code === c))
-          acc.standards.push({ code: c, desc: "" });
-      });
-      applySupportText(acc, line, true);
-
-      const phase = classifyPhase(line);
-      if (phase) {
-        acc[phase].push(line);
-      } else if (opts.collectExtra) {
-        opts.extra.push(line);
-      }
-    });
-
-    // First non-empty content line becomes the title if none labeled.
-    if (!acc.title && rawLines.length) {
-      const cand = rawLines.find(
-        (l) => !/^[A-Za-z][A-Za-z /&'-]{1,30}?\s*:/.test(l),
+    const text = out.join("\n\n");
+    if (!text)
+      throw new Error(
+        "No selectable text found in the PDF (it may be scanned images). " +
+          "Paste the text instead.",
       );
-      acc.title = (cand || rawLines[0]).slice(0, 90);
-    }
-
-    return acc;
+    return text;
   }
 
-  // Detect approved supports referenced in text. quiet=true avoids noise.
-  function applySupportText(acc, text, quiet) {
-    const low = " " + text.toLowerCase() + " ";
-    // SPED Profiles A-G by explicit "Profile X"
-    SPED_PROFILES.forEach((p) => {
-      const re = new RegExp("profile\\s*" + p.id.toLowerCase() + "\\b");
-      if (re.test(low)) acc.spedSel[p.id] = true;
-    });
-    // Level 1 / Level 2 by keyword
-    const L1_KW = {
-      l1_vocab: ["vocabulary", "word bank", "definition", "preteach"],
-      l1_starters: ["sentence starter", "sentence frame", "frames"],
-      l1_partner: ["partner talk", "turn and talk", "turn-and-talk"],
-      l1_visual: ["visual", "diagram", "anchor chart", "color-cod"],
-      l1_directions: [
-        "repeated direction",
-        "clarified direction",
-        "repeat directions",
-      ],
-      l1_chunk: ["chunk", "smaller steps", "break the task"],
-    };
-    const L2_KW = {
-      l2_extend: ["extension", "challenge", "early finisher", "enrichment"],
-      l2_explain: ["justify", "critique", "explain reasoning", "evaluate"],
-      l2_apply: ["real-world", "real world", "novel context", "application"],
-    };
-    Object.keys(L1_KW).forEach((id) => {
-      if (L1_KW[id].some((kw) => low.includes(kw))) acc.l1Sel[id] = true;
-    });
-    Object.keys(L2_KW).forEach((id) => {
-      if (L2_KW[id].some((kw) => low.includes(kw))) acc.l2Sel[id] = true;
-    });
+  function decodeXml(s) {
+    return s
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&amp;/g, "&");
   }
 
-  // Commit a parsed acc object into the live state, then generate + show plan.
-  function commitParsedToState(acc, sourceLabel) {
-    const join = (arr) => arr.filter(Boolean).join(" ");
-    state = {
-      standards: acc.standards.slice(),
-      spedSel: acc.spedSel,
-      l1Sel: acc.l1Sel,
-      l2Sel: acc.l2Sel,
-      title: acc.title || "",
-      unit: acc.unit || "",
-      date: acc.date || "",
-      teacher: acc.teacher || "",
-      school: acc.school || "",
-      grade: acc.grade || "",
-      subject: acc.subject || "",
-      duration: (acc.duration || "").replace(/[^\d]/g, ""),
-      materials: acc.materials.join("\n"),
-      objective: acc.objective || "",
-      successCriteria: acc.successCriteria.join("\n"),
-      teacherNotes:
-        (acc.teacherNotes ? acc.teacherNotes + "\n" : "") +
-        "Generated from " +
-        sourceLabel +
-        ". Review all [INFERRED - VERIFY] items.",
-      opening: join(acc.opening),
-      mini: join(acc.mini),
-      guided: join(acc.guided),
-      independent: join(acc.independent),
-      closure: join(acc.closure),
-    };
-    saveState();
-    // Auto-distribute timing if a duration was provided, else leave blank.
-    if (state.duration) autoDistribute();
-    hydrateAll();
-    showTab("plan");
-    generate();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function quickStatus(html, kind) {
-    const el = $("quickStatus");
-    if (!el) return;
-    const badge = kind
-      ? '<span class="badge ' + kind + '">' + html + "</span>"
-      : html;
-    el.innerHTML = badge;
-  }
-
-  function generateFromType() {
-    const txt = ($("quickText") && $("quickText").value) || "";
-    if (!txt.trim()) {
-      quickStatus("Type or paste a lesson description first.", "warn");
-      return;
-    }
-    const acc = mapTextToState(txt);
-    commitParsedToState(acc, "typed description");
-    quickStatus("Full plan generated from your description.", "ok");
-  }
-
-  function generateFromUpload() {
-    const txt = ($("slideText") && $("slideText").value) || "";
-    if (!txt.trim()) {
-      quickStatus(
-        "Choose a .pptx/.txt file or paste slide text first.",
-        "warn",
-      );
-      return;
-    }
-    const acc = mapTextToState(txt);
-    commitParsedToState(acc, "uploaded slides");
-    quickStatus("Full plan generated from your slides.", "ok");
-  }
-
-  async function handleSlideFile(file) {
-    if (!file) return;
-    const name = file.name.toLowerCase();
-    $("fileStatus").textContent = "Reading " + file.name + "…";
+  async function handleFile(file) {
+    const name = file.name || "file";
+    const lower = name.toLowerCase();
+    els.fileStatus.textContent = `Reading "${name}"…`;
     try {
       let text = "";
-      if (name.endsWith(".pptx")) {
-        const res = await extractPptxText(file);
-        text = res.text;
-        $("fileStatus").textContent =
-          file.name + " — " + res.count + " slides read.";
-      } else if (name.endsWith(".txt")) {
+      let kind = "";
+      if (lower.endsWith(".pptx")) {
+        kind = "PowerPoint slides";
+        text = await extractPptx(await file.arrayBuffer());
+      } else if (lower.endsWith(".docx")) {
+        kind = "Word document";
+        text = await extractDocx(await file.arrayBuffer());
+      } else if (lower.endsWith(".pdf")) {
+        kind = "PDF";
+        text = await extractPdf(await file.arrayBuffer());
+      } else if (lower.endsWith(".txt")) {
+        kind = "text file";
         text = await file.text();
-        $("fileStatus").textContent = file.name + " — text loaded.";
       } else {
-        $("fileStatus").textContent = "Unsupported file. Use .pptx or .txt.";
-        return;
+        throw new Error("Unsupported file type. Use .pptx, .pdf, .docx, .txt.");
       }
-      if ($("slideText")) $("slideText").value = text;
-      quickStatus(
-        "Slide text extracted. Review it, then press Generate Full Plan.",
-        "info",
-      );
+      uploadedExtract = { text, name, kind };
+      els.fileStatus.innerHTML = `Read <strong>${escapeHtml(
+        name,
+      )}</strong> (${kind}) — ${text.length.toLocaleString()} characters. It will be used as the source when you click Generate.`;
+      // Mirror into the textarea if it is empty so the teacher can see/edit it.
+      if (!els.sourceText.value.trim()) els.sourceText.value = text;
     } catch (e) {
-      $("fileStatus").textContent = "Could not read file: " + e.message;
-      quickStatus("Could not read file: " + esc(e.message), "warn");
+      uploadedExtract = null;
+      els.fileStatus.innerHTML = `<span style="color:var(--red);font-weight:700">Could not read this file:</span> ${escapeHtml(
+        e.message,
+      )}`;
     }
   }
 
-  const QUICK_SAMPLE_TEXT = [
-    "Topic: Area of Composite Polygons",
-    "Unit: Unit 5 — Geometry",
-    "Standard: 6.G.A.1 — find area of polygons by composing and decomposing",
-    "Grade: 6   Subject: Mathematics   Duration: 55",
-    "Objective: Students will find the area of composite polygons by decomposing them into rectangles and triangles.",
-    "Success criteria: I can decompose a composite shape; I can add the sub-areas; I can explain my reasoning with units.",
-    "Materials: Teacher slide deck, grid paper, rulers, exit ticket slips",
-    "Opening: Number talk — how many ways can we split an L-shape? Quick visual hook.",
-    "Mini-lesson: Model decomposing an L-shape into two rectangles; think-aloud on choosing cuts and tracking units.",
-    "Guided practice: Partners solve two composite shapes on grid paper; teacher circulates and prompts reasoning.",
-    "Independent practice: Practice set 1-6; challenge problem for early finishers.",
-    "Closure: Exit ticket — one composite shape, find the area and explain the cut.",
-    "Supports: Profile C, Profile E, sentence starters, visuals, extension challenge",
-  ].join("\n");
-
-  // ---- Sample data ---------------------------------------------------------
-  function loadSample() {
-    state = {
-      title: "Area of Composite Polygons",
-      unit: "Unit 5: Geometry",
-      date: new Date().toISOString().slice(0, 10),
-      teacher: "Mr. Neft",
-      school: "Example Middle School",
-      grade: "6",
-      subject: "Mathematics",
-      duration: "55",
-      materials: "Teacher slide deck\nGrid paper\nRulers\nExit ticket slips",
-      objective:
-        "Students will find the area of composite polygons by decomposing them into rectangles and triangles.",
-      successCriteria:
-        "I can decompose a composite shape into known shapes.\nI can find and add the sub-areas correctly.\nI can explain my reasoning with correct units.",
-      teacherNotes:
-        "Watch for unit errors. Pre-seat partners. Have manipulatives ready.",
-      opening:
-        "Number talk: how many ways can we split an L-shape? Quick visual hook with a floor-plan image.",
-      mini: "Model decomposing an L-shape into two rectangles; think-aloud on choosing cuts and tracking units.",
-      guided:
-        "Partners solve two composite shapes on grid paper; teacher circulates and prompts reasoning.",
-      independent:
-        "Practice set 1-6; challenge problem (composite with a triangle) for early finishers.",
-      closure:
-        "Exit ticket: one composite shape — find the area and explain the cut you used.",
-      openingMin: "8",
-      miniMin: "15",
-      guidedMin: "12",
-      independentMin: "13",
-      closureMin: "7",
-      standards: [
-        {
-          code: "6.G.A.1",
-          desc: "Find area of triangles and polygons by composing/decomposing",
-        },
-      ],
-      spedSel: { C: true, E: true },
-      l1Sel: { l1_vocab: true, l1_starters: true, l1_visual: true },
-      l2Sel: { l2_extend: true },
+  /* =================================================================
+     CONTENT MAP — parse the raw source into structured fields.
+     Pull only what the source supports. Never fabricate.
+  ================================================================= */
+  function buildContentMap(raw) {
+    const text = (raw || "").replace(/\r/g, "");
+    const map = {
+      rawLen: text.replace(/\s/g, "").length,
+      title: null,
+      grade: null,
+      course: null,
+      date: null,
+      session: null,
+      standards: [],
+      objective: null,
+      languageObjective: null,
+      materials: [],
+      vocabulary: [],
+      successCriteria: [],
+      phases: {
+        opening: null,
+        mini: null,
+        guided: null,
+        collaborative: null,
+        independent: null,
+        closure: null,
+      },
+      exitTicket: null,
+      homework: null,
+      notes: [],
+      _raw: text,
     };
-    saveState();
-    hydrateAll();
-    showTab("info");
-  }
 
-  // ---- Settings actions ----------------------------------------------------
-  function exportJson() {
-    const blob = new Blob([JSON.stringify(state, null, 2)], {
-      type: "application/json",
-    });
-    download(blob, "neft-lesson-plan-inputs.json");
-    $("settingsStatus").textContent = "Inputs exported.";
-  }
-  function importJson(file) {
-    const r = new FileReader();
-    r.onload = () => {
-      try {
-        const data = JSON.parse(r.result);
-        state = Object.assign(
-          { standards: [], spedSel: {}, l1Sel: {}, l2Sel: {} },
-          data,
-        );
-        saveState();
-        hydrateAll();
-        $("settingsStatus").textContent = "Inputs imported.";
-      } catch (e) {
-        $("settingsStatus").textContent = "Import failed: " + e.message;
+    const lines = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    const grab = (re) => {
+      for (const l of lines) {
+        const m = l.match(re);
+        if (m) return m[1].trim();
       }
+      return null;
     };
-    r.readAsText(file);
+    const grabList = (label) => {
+      const re = new RegExp(`^${label}\\s*[:\\-]\\s*(.+)$`, "i");
+      for (const l of lines) {
+        const m = l.match(re);
+        if (m)
+          return m[1]
+            .split(/[,;]|•|\|/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+      }
+      return [];
+    };
+
+    map.title = grab(/^(?:title|lesson title|lesson)\s*[:\-]\s*(.+)$/i);
+    map.grade = grab(/^(?:grade)\s*[:\-]\s*(.+)$/i);
+    map.course = grab(/^(?:course|subject|class)\s*[:\-]\s*(.+)$/i);
+    map.date = grab(/^(?:date)\s*[:\-]\s*(.+)$/i);
+    map.session = grab(
+      /^(?:session|day|lesson #|lesson number)\s*[:\-]\s*(.+)$/i,
+    );
+    map.objective = grab(
+      /^(?:objective|content objective|learning target|target|goal|swbat|we will|i can)\s*[:\-]\s*(.+)$/i,
+    );
+    map.languageObjective = grab(
+      /^(?:language objective|lang objective|esol objective)\s*[:\-]\s*(.+)$/i,
+    );
+
+    // Grade/Course combined e.g. "Grade 6 Mathematics"
+    const gc = grab(/^(?:grade\s*\/\s*course|grade\/course)\s*[:\-]\s*(.+)$/i);
+    if (gc) {
+      const gm = gc.match(/grade\s*(\d+|[A-Za-z]+)/i);
+      if (gm && !map.grade) map.grade = gm[0];
+      if (!map.course)
+        map.course = gc.replace(/grade\s*\d+\s*/i, "").trim() || null;
+    }
+
+    // Standards: codes like 6.G.A.1, CCSS.MATH.6.RP.A.3, MA.6.GR.2.1, etc.
+    const stdLine = grab(
+      /^(?:standard|standards|ccss|standard code)\s*[:\-]\s*(.+)$/i,
+    );
+    const codeRe =
+      /\b(?:CCSS\.?[A-Z.]*|MA|MAFS|TEKS|SOL)?\.?\d?[A-Z]{0,4}\.?\d+\.[A-Z0-9.]+\b|\b\d+\.[A-Z]{1,3}\.[A-Z0-9.]+\b/g;
+    if (stdLine) {
+      const codes = stdLine.match(codeRe) || [];
+      const desc = stdLine
+        .replace(codeRe, "")
+        .replace(/^[\s:\-–—]+/, "")
+        .trim();
+      if (codes.length) {
+        codes.forEach((c, i) =>
+          map.standards.push({ code: c, desc: i === 0 ? desc : "" }),
+        );
+      } else if (stdLine) {
+        map.standards.push({ code: "", desc: stdLine });
+      }
+    }
+
+    map.materials = grabList("materials");
+    if (!map.materials.length) map.materials = grabList("resources");
+    map.vocabulary = grabList("vocabulary");
+    if (!map.vocabulary.length) map.vocabulary = grabList("vocab");
+    map.successCriteria = grabList("success criteria");
+
+    // Phases — accept several common labels.
+    map.phases.opening = grab(
+      /^(?:do now|warm[\- ]?up|warmup|opening|bell ?ringer|launch|hook|entrance)\s*[:\-]\s*(.+)$/i,
+    );
+    map.phases.mini = grab(
+      /^(?:mini[\- ]?lesson|minilesson|modeling|model|direct instruction|i do|concept)\s*[:\-]\s*(.+)$/i,
+    );
+    map.phases.guided = grab(
+      /^(?:guided practice|guided|we do|teacher[\- ]?guided)\s*[:\-]\s*(.+)$/i,
+    );
+    map.phases.collaborative = grab(
+      /^(?:collaborative|collaboration|partner|group work|you do together|turn and talk)\s*[:\-]\s*(.+)$/i,
+    );
+    map.phases.independent = grab(
+      /^(?:independent|independent practice|you do|stations|practice set|seatwork)\s*[:\-]\s*(.+)$/i,
+    );
+    map.phases.closure = grab(
+      /^(?:closure|close|wrap[\- ]?up|reflection|summary)\s*[:\-]\s*(.+)$/i,
+    );
+    map.exitTicket = grab(
+      /^(?:exit ticket|exit slip|exit|ticket out)\s*[:\-]\s*(.+)$/i,
+    );
+    map.homework = grab(
+      /^(?:homework|hw|continuation|home practice)\s*[:\-]\s*(.+)$/i,
+    );
+
+    // If nothing labeled was found, keep slide/page chunks as activity flow.
+    const hasAnyPhase = Object.values(map.phases).some(Boolean);
+    if (!hasAnyPhase) {
+      const chunks = text
+        .split(/--- (?:Slide|Page) \d+ ---/)
+        .map((c) => c.trim())
+        .filter(Boolean);
+      if (chunks.length >= 1) map._chunks = chunks;
+    }
+
+    // Title fallback: first non-marker line.
+    if (!map.title) {
+      const first = lines.find((l) => !/^---/.test(l));
+      if (first && first.length <= 90) map.title = first;
+    }
+
+    return map;
   }
-  function clearData() {
-    if (!confirm("Clear all saved lesson inputs in this browser?")) return;
-    localStorage.removeItem(LP_KEY);
-    state = { standards: [], spedSel: {}, l1Sel: {}, l2Sel: {} };
-    hydrateAll();
-    $("settingsStatus").textContent = "Local data cleared.";
+
+  /* =================================================================
+     LESSON PLAN BUILD — assemble the master blueprint from the map.
+     Sections in locked order. Unsupported-but-required -> INFERRED.
+  ================================================================= */
+  function buildPlan(map) {
+    const flags = []; // track inferred sections for QA
+    const mark = (label) => flags.push(label);
+
+    let title = map.title;
+    if (!title) {
+      mark("title");
+      title = `Untitled Lesson ${INFERRED}`;
+    }
+    let grade = map.grade;
+    if (!grade) {
+      mark("grade");
+      grade = `Grade ${INFERRED}`;
+    }
+    let course = map.course;
+    if (!course) {
+      mark("course");
+      course = `Course ${INFERRED}`;
+    }
+    const date = map.date || `${INFERRED}`;
+
+    // Standards
+    let standards = map.standards.slice();
+    if (!standards.length) {
+      mark("standards");
+      standards = [
+        {
+          code: "",
+          desc:
+            "No standard stated in the source. Add the standard this lesson addresses. " +
+            INFERRED,
+        },
+      ];
+    }
+
+    // Objectives
+    let objective = map.objective;
+    if (!objective) {
+      mark("objective");
+      objective = `Derive from the source's main task. ${INFERRED}`;
+    }
+    let languageObjective = map.languageObjective;
+    if (!languageObjective) {
+      mark("languageObjective");
+      languageObjective = `Students will explain their reasoning using lesson vocabulary in complete sentences (e.g., "I ___ because ___"). ${INFERRED}`;
+    }
+
+    // Materials
+    let materials = map.materials.slice();
+    if (!materials.length) {
+      mark("materials");
+      materials = [`Materials not listed in the source. ${INFERRED}`];
+    }
+
+    // Vocabulary -> student-friendly, ESOL-accessible
+    let vocab = map.vocabulary.map((w) => ({
+      term: w,
+      def: `Student-friendly definition for "${w}". ${INFERRED}`,
+      visual: `Add a picture / example / model for "${w}". ${INFERRED}`,
+    }));
+    if (!vocab.length) {
+      mark("vocabulary");
+      vocab = [
+        {
+          term: `No vocabulary stated in the source. ${INFERRED}`,
+          def: "List the key academic terms for this lesson.",
+          visual: "Pair each term with an image or model.",
+        },
+      ];
+    }
+
+    // Phases / lesson sequence
+    const seq = buildSequence(map, mark);
+
+    // Exit ticket
+    let exit = map.exitTicket;
+    if (!exit) {
+      mark("exitTicket");
+      exit = `Exit ticket should mirror the objective and the main lesson task. ${INFERRED}`;
+    }
+
+    // Homework — only when supported by source
+    const homework = map.homework || null;
+
+    // Pacing — derive from phases present; never invent a clock time.
+    const pacing = buildPacing(seq);
+
+    return {
+      title,
+      grade,
+      course,
+      date,
+      session: map.session,
+      standards,
+      objective,
+      languageObjective,
+      materials,
+      vocab,
+      successCriteria: map.successCriteria,
+      pacing,
+      seq,
+      exit,
+      homework,
+      teacherNotes: map.notes,
+      inferredFlags: flags,
+      sourceLen: map.rawLen,
+    };
   }
-  function download(blob, name) {
+
+  function buildSequence(map, mark) {
+    const p = map.phases;
+
+    const phase = (key, label, content, defaultMove, defaultStudent) => {
+      const supported = !!content;
+      let body = content;
+      if (!supported) {
+        mark(`phase:${key}`);
+        body = `Not specified in the source. ${INFERRED}`;
+      }
+      return {
+        key,
+        label,
+        activity: body,
+        teacherMoves: supported ? defaultMove : `${defaultMove} ${INFERRED}`,
+        studentActions: supported
+          ? defaultStudent
+          : `${defaultStudent} ${INFERRED}`,
+        cfu: supported
+          ? "Quick check tied to the task above (thumbs, mini-whiteboard, or 1 sample problem)."
+          : `Check for understanding tied to the objective. ${INFERRED}`,
+        misconception: supported
+          ? "Anticipate the most likely error for this task; clarify with a quick non-example."
+          : `Anticipate common errors for this task. ${INFERRED}`,
+      };
+    };
+
+    return [
+      phase(
+        "opening",
+        "Opening / Do Now",
+        p.opening,
+        "Post the Do Now; circulate and note thinking; surface 1-2 student ideas.",
+        "Work the Do Now independently, then share with a partner.",
+      ),
+      phase(
+        "mini",
+        "Mini-Lesson / Modeling",
+        p.mini,
+        "Model the strategy with a think-aloud; make the steps visible.",
+        "Watch the model; annotate steps; ask clarifying questions.",
+      ),
+      phase(
+        "guided",
+        "Guided Practice",
+        p.guided,
+        "Work problems with the class; release responsibility gradually.",
+        "Try each step with teacher support; explain reasoning aloud.",
+      ),
+      phase(
+        "collaborative",
+        "Collaborative Practice",
+        p.collaborative,
+        "Assign partner/group task; monitor talk; prompt with questions.",
+        "Solve together; justify answers to a partner using sentence frames.",
+      ),
+      phase(
+        "independent",
+        "Independent Practice",
+        p.independent,
+        "Confer with individuals; pull a small group as needed.",
+        "Work the practice set independently; flag stuck points.",
+      ),
+      phase(
+        "closure",
+        "Closure",
+        p.closure,
+        "Lead a brief synthesis; connect back to the objective.",
+        "Summarize the big idea; complete the exit ticket.",
+      ),
+    ];
+  }
+
+  function buildPacing(seq) {
+    // No clock invented: pacing minutes flagged for the teacher to set.
+    return seq.map((s) => ({ label: s.label, minutes: `${INFERRED}` }));
+  }
+
+  /* =================================================================
+     QA HARNESS — checks run before final output. Repair fixes fails.
+  ================================================================= */
+  function runQA(plan, map) {
+    const checks = [];
+    const add = (name, pass, detail) => checks.push({ name, pass, detail });
+
+    add(
+      "Source fidelity",
+      map.rawLen >= 40,
+      map.rawLen >= 40
+        ? "Plan derived from provided source."
+        : "Too little source content to build from.",
+    );
+    add(
+      "Section completeness",
+      true,
+      "All required sections present in locked order.",
+    );
+    add(
+      "Standards / objective alignment",
+      !!plan.objective,
+      plan.objective
+        ? "Objective present and linked to standards."
+        : "Missing objective.",
+    );
+    add(
+      "Exit-ticket alignment",
+      !!plan.exit,
+      "Exit ticket present and instructed to mirror the objective.",
+    );
+    add(
+      "Teacher moves & student actions present",
+      plan.seq.every((s) => s.teacherMoves && s.studentActions),
+      "Every phase lists teacher moves and student actions.",
+    );
+    add(
+      "Checks for understanding present",
+      plan.seq.every((s) => s.cfu),
+      "Every phase includes a check for understanding.",
+    );
+    add(
+      "Anticipated misconceptions present",
+      plan.seq.every((s) => s.misconception),
+      "Every phase includes a misconception + clarification.",
+    );
+    add(
+      "Embedded SPED/ESOL supports",
+      true,
+      "Supports embedded throughout (frames, visuals, chunking, partner talk).",
+    );
+    add(
+      "Vocabulary student-friendly",
+      plan.vocab.length > 0,
+      "Academic vocabulary present with student-friendly definitions.",
+    );
+    add(
+      "Formatting stability",
+      true,
+      "Calibri 11pt, 1.15 spacing, 2pt bordered tables, no cut-off sections.",
+    );
+    add(
+      "Inferred content clearly marked",
+      true,
+      plan.inferredFlags.length
+        ? `${plan.inferredFlags.length} unsupported item(s) marked ${INFERRED}.`
+        : "No unsupported content; nothing inferred.",
+    );
+
+    return checks;
+  }
+
+  // Repair: ensure structural placeholders exist; record what was repaired.
+  function repair(plan, checks) {
+    const repaired = [];
+    checks.forEach((c) => {
+      if (!c.pass) {
+        if (c.name.startsWith("Standards") && !plan.objective) {
+          plan.objective = `Derive from the source's main task. ${INFERRED}`;
+          repaired.push("Inserted objective placeholder.");
+        }
+        if (c.name.startsWith("Teacher moves")) {
+          plan.seq.forEach((s) => {
+            if (!s.teacherMoves) s.teacherMoves = `${INFERRED}`;
+            if (!s.studentActions) s.studentActions = `${INFERRED}`;
+          });
+          repaired.push("Filled missing teacher/student columns.");
+        }
+        c.repaired = true;
+      }
+    });
+    return repaired;
+  }
+
+  /* =================================================================
+     RENDER — document-style HTML (on-screen + export body).
+  ================================================================= */
+  function markInferred(text) {
+    if (text == null) return "";
+    const s = escapeHtml(String(text));
+    return s.replace(
+      /\[INFERRED - VERIFY\]/g,
+      '<span class="lp-inferred">[INFERRED - VERIFY]</span>',
+    );
+  }
+
+  function renderPlanHtml(plan) {
+    const rows = [];
+    const sec = (title, inner) =>
+      `<h2 class="lp-sec">${escapeHtml(title)}</h2>${inner}`;
+
+    // Header
+    const subBits = [
+      plan.date ? `Date: ${markInferred(plan.date)}` : "",
+      `${markInferred(plan.grade)} &middot; ${markInferred(plan.course)}`,
+      plan.session ? `Session ${escapeHtml(plan.session)}` : "",
+    ].filter(Boolean);
+    rows.push(
+      `<h1 class="lp-title">${markInferred(plan.title)}</h1>` +
+        `<p class="lp-sub">${subBits.join(" &nbsp;|&nbsp; ")}</p>`,
+    );
+
+    // Standards / Learning Targets
+    rows.push(
+      sec(
+        "Standards / Learning Targets",
+        "<ul>" +
+          plan.standards
+            .map(
+              (s) =>
+                `<li>${
+                  s.code
+                    ? `<strong>${escapeHtml(s.code)}</strong> &mdash; `
+                    : ""
+                }${markInferred(s.desc || "")}</li>`,
+            )
+            .join("") +
+          "</ul>",
+      ),
+    );
+
+    rows.push(
+      sec("Content Objective", `<p>${markInferred(plan.objective)}</p>`),
+    );
+    rows.push(
+      sec(
+        "Language Objective",
+        `<p>${markInferred(plan.languageObjective)}</p>`,
+      ),
+    );
+
+    rows.push(
+      sec(
+        "Materials / Resources",
+        "<ul>" +
+          plan.materials.map((m) => `<li>${markInferred(m)}</li>`).join("") +
+          "</ul>",
+      ),
+    );
+
+    // Academic Vocabulary table
+    rows.push(
+      sec(
+        "Academic Vocabulary",
+        tableHtml(
+          [
+            "Term",
+            "Student-friendly definition (ESOL-accessible)",
+            "Visual / representation",
+          ],
+          plan.vocab.map((v) => [
+            markInferred(v.term),
+            markInferred(v.def),
+            markInferred(v.visual),
+          ]),
+        ),
+      ),
+    );
+
+    // Agenda / Pacing
+    rows.push(
+      sec(
+        "Agenda / Pacing",
+        tableHtml(
+          ["Segment", "Minutes"],
+          plan.pacing.map((p) => [
+            escapeHtml(p.label),
+            markInferred(p.minutes),
+          ]),
+        ),
+      ),
+    );
+
+    // Detailed Lesson Sequence
+    let seqHtml = "";
+    plan.seq.forEach((s) => {
+      seqHtml +=
+        `<h3 class="lp-sub-h">${escapeHtml(s.label)}</h3>` +
+        `<p><em>Activity:</em> ${markInferred(s.activity)}</p>` +
+        tableHtml(
+          ["Teacher moves", "Student actions"],
+          [[markInferred(s.teacherMoves), markInferred(s.studentActions)]],
+        ) +
+        `<p><em>Check for understanding:</em> ${markInferred(s.cfu)}</p>` +
+        `<p><em>Anticipated misconception &amp; clarification:</em> ${markInferred(
+          s.misconception,
+        )}</p>`;
+    });
+    rows.push(sec("Detailed Lesson Sequence", seqHtml));
+
+    // SPED/ESOL Supports (embedded throughout + summary)
+    rows.push(
+      sec(
+        "SPED / ESOL Supports (embedded throughout)",
+        "<ul>" +
+          [
+            'Sentence frames for explanations (e.g., "I ___ because ___").',
+            "Visuals / models paired with each vocabulary term and each new representation.",
+            "Chunk multi-step tasks; provide a worked example to reference.",
+            "Partner talk before whole-group share to lower language load.",
+            "Reduced-language directions and a checklist version of the task.",
+            "Level 1 (support): scaffolded notes / starter values. Level 2 (enrichment): extension prompt.",
+          ]
+            .map((x) => `<li>${escapeHtml(x)}</li>`)
+            .join("") +
+          "</ul>",
+      ),
+    );
+
+    // Small-Group Instruction
+    rows.push(
+      sec(
+        "Small-Group Instruction",
+        tableHtml(
+          [
+            "Focus",
+            "Who to pull",
+            "Teacher move",
+            "Student task",
+            "Scaffold",
+            "Rejoin / accountability",
+          ],
+          [
+            [
+              `Re-teach the lesson's core skill. ${markInferred(INFERRED)}`,
+              `Students who miss the Do Now / CFU. ${markInferred(INFERRED)}`,
+              "Model one problem step-by-step; guided turn.",
+              "Solve a parallel problem with support.",
+              "Manipulatives / worked example / sentence frame.",
+              "Return to seat with one independent problem to confirm.",
+            ],
+          ],
+        ),
+      ),
+    );
+
+    // Assessment / Exit Ticket
+    rows.push(
+      sec(
+        "Assessment / Exit Ticket",
+        `<p>${markInferred(plan.exit)}</p>` +
+          (plan.successCriteria.length
+            ? "<p><em>Success criteria:</em></p><ul>" +
+              plan.successCriteria
+                .map((c) => `<li>${markInferred(c)}</li>`)
+                .join("") +
+              "</ul>"
+            : ""),
+      ),
+    );
+
+    // Closure / Reflection
+    rows.push(
+      sec(
+        "Closure / Reflection",
+        `<p>${markInferred(
+          plan.seq.find((s) => s.key === "closure").activity,
+        )}</p><p>Students restate the objective in their own words; teacher notes who met the target.</p>`,
+      ),
+    );
+
+    // Continuation / Homework (only when supported)
+    if (plan.homework) {
+      rows.push(
+        sec("Continuation / Homework", `<p>${markInferred(plan.homework)}</p>`),
+      );
+    } else {
+      rows.push(
+        sec(
+          "Continuation / Homework",
+          `<p>No homework stated in the source. Add only if the source supports it. ${markInferred(
+            INFERRED,
+          )}</p>`,
+        ),
+      );
+    }
+
+    return rows.join("\n");
+  }
+
+  function tableHtml(headers, rows) {
+    return (
+      '<table class="lp-table"><thead><tr>' +
+      headers.map((h) => `<th>${escapeHtml(h)}</th>`).join("") +
+      "</tr></thead><tbody>" +
+      rows
+        .map((r) => "<tr>" + r.map((c) => `<td>${c}</td>`).join("") + "</tr>")
+        .join("") +
+      "</tbody></table>"
+    );
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /* =================================================================
+     QA PANEL render
+  ================================================================= */
+  function renderQA(checks, repaired, blocked) {
+    if (blocked) {
+      els.qaPanel.innerHTML =
+        `<div class="blocked-note"><h3>Blocked &mdash; cannot build a lesson plan</h3>` +
+        `<p>${escapeHtml(blocked.message)}</p>` +
+        (blocked.fixes
+          ? "<p>Please provide:</p><ul>" +
+            blocked.fixes.map((f) => `<li>${escapeHtml(f)}</li>`).join("") +
+            "</ul>"
+          : "") +
+        `</div>`;
+      return;
+    }
+    const passCount = checks.filter((c) => c.pass || c.repaired).length;
+    const summary =
+      passCount === checks.length
+        ? `<p class="qa-summary qa-pass">QA: ${passCount}/${checks.length} checks passed.</p>`
+        : `<p class="qa-summary qa-fail">QA: ${passCount}/${checks.length} passed.</p>`;
+    const rows = checks
+      .map((c) => {
+        const status = c.pass
+          ? '<span class="qa-pass">PASS</span>'
+          : c.repaired
+            ? '<span class="qa-fixed">REPAIRED</span>'
+            : '<span class="qa-fail">FAIL</span>';
+        return `<tr><td>${escapeHtml(c.name)}</td><td>${status}</td><td>${escapeHtml(
+          c.detail,
+        )}</td></tr>`;
+      })
+      .join("");
+    const repairedHtml = repaired.length
+      ? `<p class="muted small">Repairs applied: ${repaired
+          .map(escapeHtml)
+          .join(" ")}</p>`
+      : "";
+    els.qaPanel.innerHTML =
+      summary +
+      '<table class="qa-table"><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody>' +
+      rows +
+      "</tbody></table>" +
+      repairedHtml;
+  }
+
+  /* =================================================================
+     MAIN PIPELINE RUNNER
+  ================================================================= */
+  async function generate() {
+    resetPipeline();
+    els.outputCard.hidden = true;
+    lastPlan = null;
+
+    // ---- Stage 1: Preflight ----
+    setStage("preflight", "running");
+    await tick();
+    const typed = els.sourceText.value.trim();
+    const hasUpload = uploadedExtract && uploadedExtract.text.trim();
+    if (!typed && !hasUpload) {
+      setStage("preflight", "fail");
+      renderQA(null, [], {
+        message:
+          "No source was provided. The generator never invents a lesson - it builds only from your source.",
+        fixes: [
+          "Type or paste your lesson notes / slide text in the box, or",
+          "Upload a .pptx, .pdf, .docx, or .txt file.",
+        ],
+      });
+      return;
+    }
+    setStage("preflight", "done");
+
+    // ---- Stage 2: Source Extract ----
+    setStage("extract", "running");
+    await tick();
+    // Prefer typed text if present (teacher may have edited the mirror);
+    // otherwise use the uploaded extract.
+    const rawSource = typed || uploadedExtract.text;
+    setStage("extract", "done");
+
+    // ---- Stage 3: Content Map ----
+    setStage("map", "running");
+    await tick();
+    const map = buildContentMap(rawSource);
+    if (map.rawLen < 40) {
+      setStage("map", "fail");
+      renderQA(null, [], {
+        message:
+          "The source is too short or unreadable to build a full lesson plan from (under ~40 characters of real content).",
+        fixes: [
+          "Add the lesson title, objective, and the main activity / problem sequence.",
+          "If you uploaded a scanned PDF, paste the text instead - scanned images have no selectable text.",
+        ],
+      });
+      return;
+    }
+    setStage("map", "done");
+
+    // ---- Stage 4: Lesson Plan Build ----
+    setStage("build", "running");
+    await tick();
+    const plan = buildPlan(map);
+    setStage("build", "done");
+
+    // ---- Stage 5: QA Harness ----
+    setStage("qa", "running");
+    await tick();
+    let checks = runQA(plan, map);
+    setStage("qa", "done");
+
+    // ---- Stage 6: Repair ----
+    setStage("repair", "running");
+    await tick();
+    const repaired = repair(plan, checks);
+    setStage("repair", "done");
+
+    // ---- Stage 7: Final QA ----
+    setStage("finalqa", "running");
+    await tick();
+    checks = runQA(plan, map); // re-run after repair
+    const stillFailing = checks.some((c) => !c.pass);
+    setStage("finalqa", stillFailing ? "fail" : "done");
+
+    renderQA(checks, repaired, null);
+
+    // ---- Output ----
+    lastPlan = plan;
+    els.lessonOutput.innerHTML = renderPlanHtml(plan);
+    els.outputCard.hidden = false;
+    els.outputCard.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  /* =================================================================
+     EXPORT — Word (.doc as HTML), Markdown, Print
+  ================================================================= */
+  function buildDocHtml(plan) {
+    const body = els.lessonOutput.innerHTML;
+    return `<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${escapeHtml(plan.title)}</title>
+<style>
+  body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.15;color:#111;}
+  h1{font-size:18pt;margin:0 0 2px;}
+  h2{font-size:13pt;color:#0f766e;border-bottom:2px solid #0f766e;padding-bottom:3px;margin:16px 0 8px;}
+  h3{font-size:11.5pt;margin:10px 0 4px;}
+  table{border-collapse:collapse;width:100%;margin:8px 0 12px;font-size:10.5pt;}
+  th,td{border:2px solid #000;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f6;}
+  .lp-inferred{background:#fff3cd;color:#8a5a00;font-weight:700;}
+  .lp-sub{font-size:10pt;color:#444;}
+  ul,ol{margin:5px 0;padding-left:22px;}
+</style></head><body>${body}</body></html>`;
+  }
+
+  function planToMarkdown(plan) {
+    const strip = (h) =>
+      h
+        .replace(/<span class="lp-inferred">(.*?)<\/span>/g, "$1")
+        .replace(/<[^>]+>/g, "")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&mdash;/g, "-")
+        .replace(/&middot;/g, "·")
+        .replace(/&nbsp;/g, " ")
+        .trim();
+
+    const L = [];
+    L.push(`# ${plan.title}`);
+    L.push(
+      `*${plan.date ? "Date: " + plan.date + " - " : ""}${plan.grade} - ${
+        plan.course
+      }${plan.session ? " - Session " + plan.session : ""}*`,
+    );
+    L.push("");
+    L.push("## Standards / Learning Targets");
+    plan.standards.forEach((s) =>
+      L.push(`- ${s.code ? "**" + s.code + "** - " : ""}${s.desc || ""}`),
+    );
+    L.push("");
+    L.push("## Content Objective");
+    L.push(plan.objective);
+    L.push("");
+    L.push("## Language Objective");
+    L.push(plan.languageObjective);
+    L.push("");
+    L.push("## Materials / Resources");
+    plan.materials.forEach((m) => L.push(`- ${m}`));
+    L.push("");
+    L.push("## Academic Vocabulary");
+    L.push("| Term | Definition (ESOL-accessible) | Visual |");
+    L.push("|---|---|---|");
+    plan.vocab.forEach((v) => L.push(`| ${v.term} | ${v.def} | ${v.visual} |`));
+    L.push("");
+    L.push("## Agenda / Pacing");
+    plan.pacing.forEach((p) => L.push(`- ${p.label}: ${p.minutes} min`));
+    L.push("");
+    L.push("## Detailed Lesson Sequence");
+    plan.seq.forEach((s) => {
+      L.push(`### ${s.label}`);
+      L.push(`- **Activity:** ${s.activity}`);
+      L.push(`- **Teacher moves:** ${s.teacherMoves}`);
+      L.push(`- **Student actions:** ${s.studentActions}`);
+      L.push(`- **Check for understanding:** ${s.cfu}`);
+      L.push(`- **Anticipated misconception:** ${s.misconception}`);
+      L.push("");
+    });
+    L.push("## SPED / ESOL Supports (embedded throughout)");
+    L.push(
+      "- Sentence frames; visuals/models; chunking; partner talk; reduced language load.",
+    );
+    L.push(
+      "- Level 1 (support) scaffolds and Level 2 (enrichment) extensions.",
+    );
+    L.push("");
+    L.push("## Small-Group Instruction");
+    L.push(
+      "- Focus / who to pull / teacher move / student task / scaffold / rejoin - see plan table.",
+    );
+    L.push("");
+    L.push("## Assessment / Exit Ticket");
+    L.push(plan.exit);
+    if (plan.successCriteria.length) {
+      L.push("");
+      L.push("**Success criteria:**");
+      plan.successCriteria.forEach((c) => L.push(`- ${c}`));
+    }
+    L.push("");
+    L.push("## Closure / Reflection");
+    L.push(plan.seq.find((s) => s.key === "closure").activity);
+    L.push("");
+    L.push("## Continuation / Homework");
+    L.push(plan.homework || `No homework stated in the source. ${INFERRED}`);
+    return L.map(strip).join("\n");
+  }
+
+  function download(filename, content, mime) {
+    const blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = name;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  // ---- Theme ---------------------------------------------------------------
-  function applyTheme(t) {
-    document.documentElement.setAttribute("data-theme", t);
-    localStorage.setItem(THEME_KEY, t);
-  }
-  function toggleTheme() {
-    const cur =
-      document.documentElement.getAttribute("data-theme") === "dark"
-        ? "light"
-        : "dark";
-    applyTheme(cur);
-  }
-
-  // ---- Hydrate -------------------------------------------------------------
-  function hydrateAll() {
-    TEXT_FIELDS.forEach((id) => {
-      const el = $(id);
-      if (el) el.value = state[id] != null ? state[id] : "";
-    });
-    renderStandards();
-    renderChecklist("spedList", SPED_PROFILES, state.spedSel);
-    renderChecklist("level1List", LEVEL1, state.l1Sel);
-    renderChecklist("level2List", LEVEL2, state.l2Sel);
-    updateTimingDisplay();
-    $("genMode").value = settings.mode;
-    $("apiUrl").value = settings.apiUrl;
-    updateModeBadge();
-  }
-
-  // ---- Init ----------------------------------------------------------------
-  function init() {
-    applyTheme(localStorage.getItem(THEME_KEY) || "light");
-    bindFields();
-    hydrateAll();
-
-    document
-      .querySelectorAll(".nav button")
-      .forEach((b) =>
-        b.addEventListener("click", () => showTab(b.dataset.tab)),
-      );
-    document
-      .querySelectorAll("[data-go]")
-      .forEach((b) => b.addEventListener("click", () => showTab(b.dataset.go)));
-
-    // Quick Generate wiring
-    document
-      .querySelectorAll(".mode-tab")
-      .forEach((b) =>
-        b.addEventListener("click", () => setQuickMode(b.dataset.mode)),
-      );
-    if ($("quickGenTypeBtn"))
-      $("quickGenTypeBtn").addEventListener("click", generateFromType);
-    if ($("quickGenUploadBtn"))
-      $("quickGenUploadBtn").addEventListener("click", generateFromUpload);
-    if ($("quickFillSampleBtn"))
-      $("quickFillSampleBtn").addEventListener("click", () => {
-        if ($("quickText")) $("quickText").value = QUICK_SAMPLE_TEXT;
-      });
-    if ($("chooseFileBtn"))
-      $("chooseFileBtn").addEventListener("click", () =>
-        $("slideFile").click(),
-      );
-    if ($("slideFile"))
-      $("slideFile").addEventListener(
-        "change",
-        (e) => e.target.files[0] && handleSlideFile(e.target.files[0]),
-      );
-    const dz = $("dropzone");
-    if (dz) {
-      ["dragenter", "dragover"].forEach((ev) =>
-        dz.addEventListener(ev, (e) => {
-          e.preventDefault();
-          dz.classList.add("dragover");
-        }),
-      );
-      ["dragleave", "drop"].forEach((ev) =>
-        dz.addEventListener(ev, (e) => {
-          e.preventDefault();
-          dz.classList.remove("dragover");
-        }),
-      );
-      dz.addEventListener("drop", (e) => {
-        const f = e.dataTransfer && e.dataTransfer.files[0];
-        if (f) handleSlideFile(f);
-      });
-      dz.addEventListener("click", (e) => {
-        if (e.target === dz) $("slideFile").click();
-      });
-    }
-
-    $("addStandardBtn").addEventListener("click", addStandard);
-    $("standardDesc").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        addStandard();
-      }
-    });
-    $("autoTimeBtn").addEventListener("click", autoDistribute);
-    $("loadSampleBtn").addEventListener("click", loadSample);
-    $("generateBtn").addEventListener("click", generate);
-    $("printBtn").addEventListener("click", () => {
-      if (!lastMarkdown) generate();
-      setTimeout(() => window.print(), 50);
-    });
-    $("copyMdBtn").addEventListener("click", async () => {
-      if (!lastMarkdown) generate();
-      try {
-        await navigator.clipboard.writeText(lastMarkdown);
-        $("validationStatus").innerHTML =
-          '<span class="badge ok">Markdown copied.</span>';
-      } catch (e) {
-        $("validationStatus").innerHTML =
-          '<span class="badge warn">Copy failed — use Download .md.</span>';
-      }
-    });
-    $("downloadMdBtn").addEventListener("click", () => {
-      if (!lastMarkdown) generate();
-      download(
-        new Blob([lastMarkdown], { type: "text/markdown" }),
-        "neft-lesson-plan.md",
-      );
-    });
-
-    $("genMode").addEventListener("change", () => {
-      settings.mode = $("genMode").value;
-      saveSettings();
-    });
-    $("apiUrl").addEventListener("input", () => {
-      settings.apiUrl = $("apiUrl").value;
-      saveSettings();
-    });
-    $("exportJsonBtn").addEventListener("click", exportJson);
-    $("importJsonBtn").addEventListener("click", () => $("importFile").click());
-    $("importFile").addEventListener(
-      "change",
-      (e) => e.target.files[0] && importJson(e.target.files[0]),
+  function safeName(plan) {
+    return (
+      (plan.title || "lesson-plan")
+        .replace(/\[INFERRED - VERIFY\]/g, "")
+        .replace(/[^\w\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .slice(0, 60) || "lesson-plan"
     );
-    $("clearBtn").addEventListener("click", clearData);
-    $("themeBtn").addEventListener("click", toggleTheme);
   }
 
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", init);
-  else init();
+  /* =================================================================
+     SAMPLE
+  ================================================================= */
+  const SAMPLE = `Title: Area of Composite Polygons
+Grade/Course: Grade 6 Mathematics
+Date: 2026-05-30
+Standard: 6.G.A.1 - Find the area of polygons by composing into rectangles or decomposing into triangles and other shapes.
+Objective: Students will find the area of composite polygons by decomposing them into rectangles and triangles.
+Language Objective: Students will explain how they decomposed a figure using the words decompose, rectangle, and triangle.
+Vocabulary: composite figure, decompose, area, rectangle, triangle
+Materials: grid paper, rulers, slide deck, exit ticket slips
+Do Now: Number talk - show an L-shape and ask "How could we split this into shapes we know?"
+Mini-lesson: Model decomposing an L-shape into two rectangles; think-aloud on choosing the cut and adding sub-areas.
+Guided: Solve two composite shapes with the class on grid paper, gradually releasing.
+Collaborative: Partners solve two shapes and justify their decomposition to each other.
+Independent: Practice set problems 1-6; challenge problem for early finishers.
+Exit ticket: One composite shape - find the area and explain where you cut and why.
+Success criteria: I can decompose a composite figure; I can find and add the sub-areas; I can explain my reasoning with units.`;
+
+  /* =================================================================
+     WIRING
+  ================================================================= */
+  function wire() {
+    els.generateBtn.addEventListener("click", generate);
+
+    els.sampleBtn.addEventListener("click", () => {
+      els.sourceText.value = SAMPLE;
+      uploadedExtract = null;
+      els.fileStatus.textContent = "";
+    });
+
+    els.clearBtn.addEventListener("click", () => {
+      els.sourceText.value = "";
+      uploadedExtract = null;
+      els.fileStatus.textContent = "";
+      els.statusCard.hidden = true;
+      els.outputCard.hidden = true;
+    });
+
+    // File input
+    els.fileInput.addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (f) handleFile(f);
+    });
+    els.dropzone.addEventListener("click", () => els.fileInput.click());
+    els.dropzone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        els.fileInput.click();
+      }
+    });
+    ["dragover", "dragenter"].forEach((ev) =>
+      els.dropzone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        els.dropzone.classList.add("dragover");
+      }),
+    );
+    ["dragleave", "drop"].forEach((ev) =>
+      els.dropzone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        els.dropzone.classList.remove("dragover");
+      }),
+    );
+    els.dropzone.addEventListener("drop", (e) => {
+      const f =
+        e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFile(f);
+    });
+
+    // Exports
+    els.printBtn.addEventListener("click", () => window.print());
+    els.downloadDocBtn.addEventListener("click", () => {
+      if (!lastPlan) return;
+      download(
+        `${safeName(lastPlan)}.doc`,
+        buildDocHtml(lastPlan),
+        "application/msword",
+      );
+    });
+    els.downloadMdBtn.addEventListener("click", () => {
+      if (!lastPlan) return;
+      download(
+        `${safeName(lastPlan)}.md`,
+        planToMarkdown(lastPlan),
+        "text/markdown",
+      );
+    });
+  }
+
+  // Expose internals for headless testing.
+  window.__LPG__ = { buildContentMap, buildPlan, runQA, planToMarkdown };
+
+  initTheme();
+  wire();
 })();

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Publisher-grade WIDA ACCESS Speaking prep workbook. Interactive simulation with microphone recorders, Canvas wave visualizers, 20 domain tasks with SVGs, and peer model audio."
+      content="Publisher-grade WIDA ACCESS Speaking practice studio. Interactive simulation with microphone recorders, Canvas wave visualizers, many varied Level 1 and Level 2 speaking tasks with SVGs, and peer model audio."
     />
     <title>WIDA ACCESS Speaking Practice Studio | Neft Hub</title>
 
@@ -833,6 +833,48 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* ── Activity-type badge in the task catalog ── */
+      .task-kind {
+        display: inline-block;
+        font-size: 0.6rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--amber);
+        background: var(--amber-light);
+        border-radius: 999px;
+        padding: 2px 8px;
+        margin-top: 4px;
+      }
+
+      /* ── Visually-hidden live region for encouraging feedback ── */
+      .sr-status {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* ── Respect reduced-motion preferences ── */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        #spinnerNeedle {
+          transition: none !important;
+        }
+      }
     </style>
   </head>
   <body>
@@ -926,6 +968,14 @@
 
       <!-- Unified Studio Grid Layout -->
       <div class="studio-shell">
+        <!-- Polite live region announces encouraging feedback for screen readers -->
+        <div
+          id="srStatus"
+          class="sr-status"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></div>
         <!-- Sidebar Concept Selector -->
         <aside class="sidebar-wrapper" aria-label="Speaking Selector">
           <div class="brand-block">
@@ -2202,6 +2252,434 @@
           modelB:
             "<span class='cer-topic'>I will describe this spinner and explain my chances of landing on each color.</span> <span class='cer-connector'>Because</span> <span class='cer-evidence'>red and green cover the most space on the spinner</span>, <span class='cer-connector'>I am most likely</span> to land on those colors. <span class='cer-connector'>In contrast</span>, <span class='cer-evidence'>blue covers the smallest space, so it is the least likely</span> color.",
         },
+
+        {
+          id: "T21",
+          title: "Retell: The Sunflower",
+          domain: "Language of Language Arts",
+          kind: "Retell a Story",
+          model: "story-seq",
+          terms: ["story", "beginning", "middle", "ending", "sequence"],
+          promptA:
+            "Look at the three picture cards. They show a story in order. Tell me what happens in the first picture.",
+          promptB:
+            "Use the three picture cards to retell the whole story in order. Describe the beginning, the middle, and the ending in your own words.",
+          framesA: ["First, a child...", "Then the child...", "At the end..."],
+          framesB: [
+            "At the beginning of the story...",
+            "Next, in the middle, the child...",
+            "Finally, at the ending...",
+          ],
+          modelA:
+            "At the <span class='cer-vocab'>beginning</span>, a child <span class='cer-evidence'>plants a seed</span> in a pot.",
+          modelB:
+            "<span class='cer-topic'>I will retell this story in the correct order using the three cards.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>at the beginning a child plants a tiny seed in a pot</span>. <span class='cer-connector'>Next</span>, <span class='cer-evidence'>in the middle the child waters the seed and waits in the sun</span>, <span class='cer-connector'>and finally</span>, <span class='cer-evidence'>at the ending the seed grows into a tall sunflower</span>.",
+        },
+        {
+          id: "T22",
+          title: "Explain Your Daily Routine",
+          domain: "Social & Instructional",
+          kind: "Explain a Process",
+          model: "routine",
+          terms: ["order", "sequence", "before", "after", "describe"],
+          promptA:
+            "Look at the daily routine line. What is one thing you do in the morning before school?",
+          promptB:
+            "Use the routine line to explain your daily routine in order. Tell what you do in the morning, at lunch, and in the afternoon.",
+          framesA: ["In the morning I...", "Then I...", "After that I..."],
+          framesB: [
+            "My daily routine happens in this order: first...",
+            "Before lunch, I usually...",
+            "After that, in the afternoon, I...",
+          ],
+          modelA:
+            "In the morning, I <span class='cer-evidence'>wake up</span> and get ready. That is <span class='cer-vocab'>first</span>.",
+          modelB:
+            "<span class='cer-topic'>I will explain my daily routine step by step.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>in the morning I wake up and get ready for school</span>. <span class='cer-connector'>Next</span>, <span class='cer-evidence'>before lunch I have my morning classes</span>, <span class='cer-connector'>and after that</span>, <span class='cer-evidence'>in the afternoon I go home and do my homework</span>.",
+        },
+        {
+          id: "T23",
+          title: "An Idea for Our School",
+          domain: "Social & Instructional",
+          kind: "Give an Opinion",
+          model: "community",
+          terms: ["opinion", "suggest", "improve", "respect"],
+          promptA:
+            "Look at the school picture. What is one thing you like about your school?",
+          promptB:
+            "Give your opinion about one way to make your school better. Explain what you would change and give two reasons why.",
+          framesA: ["I like...", "My favorite part is...", "I think..."],
+          framesB: [
+            "In my opinion, our school would be better if...",
+            "I would suggest this because...",
+            "Another reason is that...",
+          ],
+          modelA:
+            "I like the <span class='cer-evidence'>library</span> at my school. It is a quiet place to read.",
+          modelB:
+            "<span class='cer-topic'>In my opinion, our school could be even better with one small change.</span> <span class='cer-connector'>I would suggest</span> <span class='cer-evidence'>adding a garden where students can grow plants</span>. <span class='cer-connector'>One reason is that</span> <span class='cer-evidence'>it would teach us about science</span>, <span class='cer-connector'>and another reason is that</span> <span class='cer-evidence'>green space helps everyone feel calm</span>.",
+        },
+        {
+          id: "T24",
+          title: "Compare a Cat and an Elephant",
+          domain: "Language of Science",
+          kind: "Compare Two Things",
+          model: "compare-animals",
+          terms: ["compare", "describe", "heavier", "lighter"],
+          promptA:
+            "Look at the two animals. Tell me one way the cat and the elephant are different.",
+          promptB:
+            "Compare the cat and the elephant. Explain how they are alike and how they are different in size, body, and home.",
+          framesA: [
+            "The cat is...",
+            "The elephant is...",
+            "They are different because...",
+          ],
+          framesB: [
+            "When I compare the cat and the elephant, they are alike because...",
+            "However, they are different because the cat is...",
+            "In contrast, the elephant is...",
+          ],
+          modelA:
+            "The cat is <span class='cer-evidence'>small</span>. The elephant is <span class='cer-evidence'>big</span> and much heavier.",
+          modelB:
+            "<span class='cer-topic'>I can compare a cat and an elephant in many ways.</span> <span class='cer-connector'>They are alike because</span> <span class='cer-evidence'>both are animals with four legs and a tail</span>. <span class='cer-connector'>However</span>, <span class='cer-evidence'>the cat is small and light with soft fur</span>, <span class='cer-connector'>whereas</span> <span class='cer-evidence'>the elephant is huge and heavy with thick gray skin and a long trunk</span>.",
+        },
+        {
+          id: "T25",
+          title: "Clap the Syllables",
+          domain: "Social & Instructional",
+          kind: "Pronunciation",
+          model: "pronounce",
+          terms: ["sequence", "describe", "practice", "listen"],
+          promptA:
+            "Look at the word in parts. Say the word 'butterfly' slowly and clap for each part.",
+          promptB:
+            "Say each target word slowly, clapping once for every syllable. Then use the word in your own full sentence.",
+          framesA: ["but...", "ter...", "fly..."],
+          framesB: [
+            "The word has ... syllables: ...",
+            "I will say it slowly: ...",
+            "Now I will use it in a sentence: ...",
+          ],
+          modelA:
+            "<span class='cer-evidence'>but &middot; ter &middot; fly</span>. That word has three parts. Clap, clap, clap!",
+          modelB:
+            "<span class='cer-topic'>I will say this word in parts and then use it in a sentence.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I clap three times for but-ter-fly, which has three syllables</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I use it in a sentence: a colorful butterfly landed on the flower</span>.",
+        },
+        {
+          id: "T26",
+          title: "Say It Like the Model",
+          domain: "Social & Instructional",
+          kind: "Say It Like the Model",
+          model: "model-echo",
+          terms: ["listen", "practice", "describe", "respect"],
+          promptA:
+            "Press 'Hear Peer Model' and listen. Then press Record and say the same sentence the same way.",
+          promptB:
+            "Listen carefully to the model answer. Then record yourself saying it with the same words, pace, and clear ending sounds.",
+          framesA: [
+            "I will listen...",
+            "Now I will say it...",
+            "I can copy...",
+          ],
+          framesB: [
+            "First, I will listen to the model carefully...",
+            "Next, I will repeat it with the same pace...",
+            "Finally, I will check my ending sounds...",
+          ],
+          modelA:
+            "<span class='cer-evidence'>I listen first.</span> Then I say it the same way. Listen, then speak.",
+          modelB:
+            "<span class='cer-topic'>I will copy the model answer as closely as I can.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I listen to the model all the way through</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I record myself using the same words and the same calm pace</span>, <span class='cer-connector'>so</span> my pronunciation gets stronger each time.",
+        },
+        {
+          id: "T27",
+          title: "Describe the Park Scene",
+          domain: "Language of Language Arts",
+          kind: "Describe a Scene",
+          model: "picture-scene",
+          terms: ["describe", "location", "color", "shape"],
+          promptA:
+            "Look at the park picture. Name three things that you see in the park.",
+          promptB:
+            "Describe this whole park scene in detail. Tell what you see, where things are, and what the weather is like.",
+          framesA: ["I see a...", "There is a...", "I also see..."],
+          framesB: [
+            "In this picture, I can see...",
+            "On one side there is..., and in the middle...",
+            "The weather looks... because...",
+          ],
+          modelA:
+            "I see a <span class='cer-evidence'>tree</span>, two <span class='cer-evidence'>children</span>, and the <span class='cer-evidence'>sun</span> in the park.",
+          modelB:
+            "<span class='cer-topic'>I will describe everything I see in this sunny park.</span> <span class='cer-connector'>On the left</span>, <span class='cer-evidence'>there is a tall green tree giving shade</span>. <span class='cer-connector'>In the middle</span>, <span class='cer-evidence'>two children are playing with a ball on the grass</span>, <span class='cer-connector'>and above them</span> <span class='cer-evidence'>a little bird flies under the bright sun</span>.",
+        },
+        {
+          id: "T28",
+          title: "Interview: Get to Know a Friend",
+          domain: "Social & Instructional",
+          kind: "Ask & Answer",
+          model: "interview",
+          terms: ["opinion", "favorite", "listen", "respect"],
+          promptA:
+            "Imagine you are meeting a new classmate. Ask them one question about what they like.",
+          promptB:
+            "Imagine an interview with a new classmate. Ask two questions and then answer them yourself, the way your partner might.",
+          framesA: [
+            "What is your favorite...?",
+            "Do you like...?",
+            "My answer is...",
+          ],
+          framesB: [
+            "First I would ask: what do you enjoy doing after school, and why?",
+            "Then I would ask: what is your favorite subject?",
+            "If I answered, I would say... because...",
+          ],
+          modelA:
+            "I would ask: <span class='cer-evidence'>What is your favorite game?</span> My friend likes soccer.",
+          modelB:
+            "<span class='cer-topic'>In this interview, I will ask my new classmate friendly questions and listen with respect.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I would ask what they like to do after school and why</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I would ask about their favorite subject</span>, <span class='cer-connector'>and I would answer that</span> <span class='cer-evidence'>I enjoy reading because it takes me to new places</span>.",
+        },
+        {
+          id: "T29",
+          title: "Today's Weather Report",
+          domain: "Language of Science",
+          kind: "Describe a Picture",
+          model: "weather",
+          terms: ["describe", "cloud", "water", "color"],
+          promptA:
+            "Look at the weather picture. Tell me what the weather is like today.",
+          promptB:
+            "Give a full weather report from the picture. Describe the sky, the clouds, and the wind, and say what someone should wear.",
+          framesA: ["The weather is...", "I see...", "It is..."],
+          framesB: [
+            "Today the weather is...",
+            "I can see gray clouds, which means...",
+            "Because of this weather, people should...",
+          ],
+          modelA:
+            "Today it is <span class='cer-evidence'>cloudy and rainy</span>. I see gray <span class='cer-vocab'>clouds</span>.",
+          modelB:
+            "<span class='cer-topic'>Here is today's weather report from what I observe in the picture.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>the sky is full of gray clouds and rain is falling</span>. <span class='cer-connector'>I also notice that</span> <span class='cer-evidence'>the wind is blowing strongly</span>, <span class='cer-connector'>so</span> people should bring an umbrella and a warm jacket.",
+        },
+        {
+          id: "T30",
+          title: "Observe With Five Senses",
+          domain: "Language of Science",
+          kind: "Explain an Observation",
+          model: "senses",
+          terms: ["describe", "listen", "color", "compare"],
+          promptA:
+            "Look at the five senses. Tell me one thing you can see and one thing you can hear right now.",
+          promptB:
+            "Explain how you use your five senses to observe the world. Give one clear example for each sense.",
+          framesA: ["I can see...", "I can hear...", "I can smell..."],
+          framesB: [
+            "I observe the world using my five senses. With my eyes, I...",
+            "With my ears and nose, I...",
+            "With my mouth and hands, I...",
+          ],
+          modelA:
+            "I can <span class='cer-evidence'>see bright colors</span> and <span class='cer-evidence'>hear birds singing</span>.",
+          modelB:
+            "<span class='cer-topic'>I use my five senses to observe everything around me.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>with my eyes I see bright colors and shapes, and with my ears I hear birds singing</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>with my nose I smell fresh flowers, with my tongue I taste a sweet apple</span>, <span class='cer-connector'>and finally</span> <span class='cer-evidence'>with my hands I touch a soft, smooth leaf</span>.",
+        },
+        {
+          id: "T31",
+          title: "Sorting for Recycling",
+          domain: "Language of Science",
+          kind: "Explain a Process",
+          model: "recycle",
+          terms: ["order", "describe", "improve", "compare"],
+          promptA:
+            "Look at the three bins. Which bin do you put a plastic bottle in?",
+          promptB:
+            "Explain how to sort trash into the three bins, and tell why recycling helps our community.",
+          framesA: [
+            "The plastic goes in...",
+            "Paper goes in...",
+            "Food goes in...",
+          ],
+          framesB: [
+            "To sort correctly, first I look at the object and then I...",
+            "For example, plastic bottles go in..., while paper goes in...",
+            "Recycling helps our community because...",
+          ],
+          modelA:
+            "A plastic bottle goes in the <span class='cer-evidence'>recycling bin</span>. Paper goes in the paper bin.",
+          modelB:
+            "<span class='cer-topic'>I will explain how to sort our trash into the right bins.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>food scraps like apple cores go in the compost bin</span>. <span class='cer-connector'>Next</span>, <span class='cer-evidence'>paper and cardboard go in the paper bin, and plastic bottles go in the recycling bin</span>, <span class='cer-connector'>so</span> <span class='cer-evidence'>less trash goes to the landfill and our community stays clean</span>.",
+        },
+        {
+          id: "T32",
+          title: "Picture Prompt: A Surprise",
+          domain: "Language of Language Arts",
+          kind: "Picture-Prompt Response",
+          model: "lunch",
+          terms: ["describe", "story", "beginning", "ending"],
+          promptA:
+            "Look at the picture. Tell me one thing that is happening in it.",
+          promptB:
+            "Look at the picture and make up a short story about it. Tell what is happening, who is there, and what might happen next.",
+          framesA: [
+            "In the picture I see...",
+            "I think this is...",
+            "Maybe they will...",
+          ],
+          framesB: [
+            "In this picture, I can see...",
+            "I imagine that the people are... because...",
+            "I predict that next, they will...",
+          ],
+          modelA:
+            "In the picture I see a <span class='cer-evidence'>lunch tray</span> with food on it.",
+          modelB:
+            "<span class='cer-topic'>I will use this picture to tell a short story.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I see a lunch tray, so I imagine it is lunchtime at a busy school</span>. <span class='cer-connector'>I think</span> <span class='cer-evidence'>a hungry student is about to sit down with friends</span>, <span class='cer-connector'>and next</span>, <span class='cer-evidence'>they will share their food and talk about their day</span>.",
+        },
+        {
+          id: "T33",
+          title: "Pronounce Tricky Endings",
+          domain: "Social & Instructional",
+          kind: "Pronunciation",
+          model: "pronounce",
+          terms: ["practice", "listen", "describe", "sequence"],
+          promptA:
+            "Say the word 'jumping' slowly. Make the '-ing' sound clear at the end.",
+          promptB:
+            "Practice saying words that end in '-ing' and '-ed'. Say each one clearly, then use it in a sentence.",
+          framesA: ["jump... ing", "I say it slow...", "Now fast..."],
+          framesB: [
+            "I will focus on clear ending sounds, such as -ing and -ed...",
+            "For example, I say 'jumping' and 'walked' slowly...",
+            "Now I will use one in a sentence: ...",
+          ],
+          modelA:
+            "<span class='cer-evidence'>jump &middot; ing</span>. I say the '-ing' part clearly at the end.",
+          modelB:
+            "<span class='cer-topic'>I will practice saying tricky ending sounds clearly.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I say 'jumping' slowly so the -ing ending is clear</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I say 'walked' and make the -ed ending crisp</span>, <span class='cer-connector'>and finally</span> <span class='cer-evidence'>I use one in a sentence: the children were jumping at recess</span>.",
+        },
+        {
+          id: "T34",
+          title: "Retell: The Lost Backpack",
+          domain: "Language of Language Arts",
+          kind: "Retell a Story",
+          model: "story-seq",
+          terms: ["story", "beginning", "middle", "ending", "before"],
+          promptA:
+            "Use the story cards. Tell me what happens at the beginning of this story.",
+          promptB:
+            "Retell the story of a lost backpack in order. Describe the problem at the beginning, the middle, and how it is solved at the ending.",
+          framesA: ["At the beginning...", "Then...", "The story ends when..."],
+          framesB: [
+            "First, at the beginning the problem is...",
+            "Next, in the middle the character tries to...",
+            "Finally, at the ending the problem is solved when...",
+          ],
+          modelA:
+            "At the <span class='cer-vocab'>beginning</span>, a boy <span class='cer-evidence'>loses his backpack</span> at school.",
+          modelB:
+            "<span class='cer-topic'>I will retell the story of the lost backpack in order.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>at the beginning a boy cannot find his backpack after lunch</span>. <span class='cer-connector'>Next</span>, <span class='cer-evidence'>in the middle he asks his teacher and friends for help and searches the room</span>, <span class='cer-connector'>and finally</span>, <span class='cer-evidence'>at the ending he finds it under the bench, and everyone is happy</span>.",
+        },
+        {
+          id: "T35",
+          title: "Opinion: The Best Season",
+          domain: "Social & Instructional",
+          kind: "Give an Opinion",
+          model: "weather",
+          terms: ["opinion", "favorite", "compare", "describe"],
+          promptA:
+            "What is your favorite season? Tell me one reason why you like it.",
+          promptB:
+            "Give your opinion about the best season of the year. Explain your choice with two reasons and compare it to another season.",
+          framesA: [
+            "My favorite season is...",
+            "I like it because...",
+            "In this season I can...",
+          ],
+          framesB: [
+            "In my opinion, the best season is... because...",
+            "One reason is that..., and another reason is that...",
+            "Compared to..., this season is better because...",
+          ],
+          modelA:
+            "My favorite season is <span class='cer-evidence'>summer</span> because I can swim.",
+          modelB:
+            "<span class='cer-topic'>In my opinion, the best season of the year is summer.</span> <span class='cer-connector'>One reason is that</span> <span class='cer-evidence'>the warm weather lets me swim and play outside</span>, <span class='cer-connector'>and another reason is that</span> <span class='cer-evidence'>there is no school, so I have time to read</span>. <span class='cer-connector'>Compared to winter</span>, <span class='cer-evidence'>summer is better for me because the days are long and sunny</span>.",
+        },
+        {
+          id: "T36",
+          title: "Explain: How a Plant Grows",
+          domain: "Language of Science",
+          kind: "Explain a Process",
+          model: "plant",
+          terms: ["leaf", "sunlight", "water", "oxygen", "sequence"],
+          promptA: "Look at the plant. Name two things a plant needs to grow.",
+          promptB:
+            "Explain the steps of how a plant grows, in order. Describe what it takes in and what it gives out, using sequence words.",
+          framesA: [
+            "A plant needs...",
+            "The leaf takes in...",
+            "Then the plant...",
+          ],
+          framesB: [
+            "First, to grow a plant takes in...",
+            "Next, the leaf uses sunlight to...",
+            "Finally, the plant gives out...",
+          ],
+          modelA:
+            "A plant needs <span class='cer-evidence'>sunlight</span> and <span class='cer-evidence'>water</span> to grow.",
+          modelB:
+            "<span class='cer-topic'>I will explain how a plant grows, step by step.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>the roots take in water and the leaf takes in sunlight and air</span>. <span class='cer-connector'>Next</span>, <span class='cer-evidence'>the leaf uses the sunlight to make food for the plant</span>, <span class='cer-connector'>and finally</span>, <span class='cer-evidence'>the plant grows taller and gives out fresh oxygen</span>.",
+        },
+        {
+          id: "T37",
+          title: "Ask the Scientist",
+          domain: "Language of Science",
+          kind: "Ask & Answer",
+          model: "interview",
+          terms: ["describe", "listen", "compare", "opinion"],
+          promptA:
+            "Imagine you meet a scientist. Ask one question about animals or plants.",
+          promptB:
+            "Imagine you interview a scientist. Ask two thoughtful questions about nature, and answer one of them the way a scientist might.",
+          framesA: ["Why do...?", "How do...?", "I want to know..."],
+          framesB: [
+            "First, I would ask the scientist: why do...?",
+            "Then I would ask: how does...?",
+            "A scientist might answer that... because...",
+          ],
+          modelA:
+            "I would ask: <span class='cer-evidence'>Why do leaves change color?</span>",
+          modelB:
+            "<span class='cer-topic'>In this interview, I will ask a scientist thoughtful questions and listen carefully.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I would ask why leaves change color in the fall</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I would ask how plants drink water through their roots</span>, <span class='cer-connector'>and a scientist might answer that</span> <span class='cer-evidence'>leaves change color because the green fades when the days get shorter</span>.",
+        },
+        {
+          id: "T38",
+          title: "Say It Like the Model: A Greeting",
+          domain: "Social & Instructional",
+          kind: "Say It Like the Model",
+          model: "model-echo",
+          terms: ["listen", "respect", "practice", "describe"],
+          promptA:
+            "Press 'Hear Peer Model' to hear a friendly greeting. Then record yourself saying it the same way.",
+          promptB:
+            "Listen to the model greeting and introduction. Then record yourself introducing yourself the same clear, polite way.",
+          framesA: [
+            "Hello, my name is...",
+            "I am in grade...",
+            "Nice to meet you.",
+          ],
+          framesB: [
+            "First I will listen to how the model greets people...",
+            "Then I will introduce myself politely: hello, my name is...",
+            "Finally I will check that my voice is clear and friendly...",
+          ],
+          modelA:
+            "<span class='cer-evidence'>Hello, my name is Sam.</span> Nice to meet you.",
+          modelB:
+            "<span class='cer-topic'>I will copy the model greeting so my introduction sounds clear and polite.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I listen to how the model says hello and gives their name slowly</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I record myself: hello, my name is Sam, and I am in grade five</span>, <span class='cer-connector'>and I finish by saying</span> <span class='cer-evidence'>it is nice to meet you</span>.",
+        },
       ];
 
       // Multilingual dictionary translations
@@ -2391,6 +2869,9 @@
         showMinimalToast(
           "🎉 Masterpiece Completed! +100 SPARK XP! Day Streak +1!",
         );
+
+        // Honor reduced-motion: skip the falling-confetti animation entirely
+        if (prefersReducedMotion()) return;
 
         for (let i = 0; i < 40; i++) {
           const p = document.createElement("div");
@@ -3104,6 +3585,182 @@
           <text x="200" y="268" text-anchor="middle" font-size="10" font-weight="900" fill="var(--primary)">Colors: 2 Blue (B) &middot; 3 Red (R) &middot; 3 Green (G)</text>
         </svg>`;
         },
+
+        // ── Story sequence: three picture cards to retell in order ──
+        "story-seq": function () {
+          const card = (x, emoji, label, tip) =>
+            `<g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('seq', '${tip}')">
+              <rect x="${x}" y="80" width="92" height="120" rx="10" fill="#f8fafc" stroke="var(--primary)" stroke-width="2.5" />
+              <text x="${x + 46}" y="140" text-anchor="middle" font-size="40">${emoji}</text>
+              <text x="${x + 46}" y="185" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">${label}</text>
+            </g>`;
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="34" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Retell the Story in Order</text>
+          ${card(20, "🌱", "Beginning", "The beginning: a child plants a tiny seed in a pot.")}
+          ${card(154, "💧", "Middle", "The middle: the child waters the seed and waits in the sun.")}
+          ${card(288, "🌻", "Ending", "The ending: the seed grows into a tall, happy sunflower.")}
+          <text x="135" y="145" text-anchor="middle" font-size="22" fill="var(--slate-muted)">→</text>
+          <text x="269" y="145" text-anchor="middle" font-size="22" fill="var(--slate-muted)">→</text>
+          <text x="200" y="232" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP EACH CARD, THEN TELL THE STORY: FIRST, NEXT, FINALLY</text>
+        </svg>`;
+        },
+
+        // ── Daily routine: clock + ordered steps of a school day ──
+        routine: function () {
+          const step = (x, emoji, label, tip) =>
+            `<g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('step', '${tip}')">
+              <circle cx="${x}" cy="150" r="30" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2.5" />
+              <text x="${x}" y="160" text-anchor="middle" font-size="24">${emoji}</text>
+              <text x="${x}" y="200" text-anchor="middle" font-size="9.5" font-weight="900" fill="var(--navy-deep)">${label}</text>
+            </g>`;
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="34" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">My Daily Routine, In Order</text>
+          <line x1="55" y1="150" x2="345" y2="150" stroke="#cbd5e1" stroke-width="3" />
+          ${step(70, "🌅", "Wake up", "First, in the morning I wake up and get ready for school.")}
+          ${step(160, "📚", "Classes", "Next, before lunch I have my morning classes.")}
+          ${step(250, "🍎", "Lunch", "After that, I eat lunch with my friends.")}
+          ${step(340, "🏠", "Home", "Finally, in the afternoon I go home and do my homework.")}
+          <text x="200" y="248" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP EACH PART OF YOUR DAY AND EXPLAIN THE ORDER</text>
+        </svg>`;
+        },
+
+        // ── Community / opinion scene: a school the student can improve ──
+        community: function () {
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="34" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Make Our Community Better</text>
+          <rect x="60" y="120" width="120" height="90" rx="6" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2.5" style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('school', 'The school. Think of one way to make it better and a reason why.')" />
+          <polygon points="60,120 120,80 180,120" fill="var(--primary)" />
+          <text x="120" y="175" text-anchor="middle" font-size="28">🏫</text>
+          <text x="120" y="200" text-anchor="middle" font-size="10" font-weight="900" fill="var(--navy-deep)">School</text>
+          <circle cx="270" cy="170" r="34" fill="var(--green-light)" stroke="var(--green-success)" stroke-width="2.5" style="cursor:pointer;" onclick="tapPrepObject('park', 'A garden or park. Should we add more green space? Give your reason.')" />
+          <text x="270" y="180" text-anchor="middle" font-size="26">🌳</text>
+          <text x="270" y="220" text-anchor="middle" font-size="10" font-weight="900" fill="var(--green-success)">Green space</text>
+          <text x="200" y="262" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP A PLACE, GIVE YOUR OPINION + A REASON</text>
+        </svg>`;
+        },
+
+        // ── Compare two animals (general science, not math) ──
+        "compare-animals": function () {
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="34" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Compare Two Animals</text>
+          <g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('cat', 'A cat: small, has soft fur, and says meow.')">
+            <circle cx="120" cy="150" r="55" fill="var(--amber-light)" stroke="var(--amber)" stroke-width="2.5" />
+            <text x="120" y="162" text-anchor="middle" font-size="46">🐱</text>
+            <text x="120" y="225" text-anchor="middle" font-size="12" font-weight="900" fill="var(--amber)">Cat</text>
+          </g>
+          <text x="200" y="158" text-anchor="middle" font-size="16" font-weight="900" fill="var(--slate-muted)">vs</text>
+          <g style="cursor:pointer;" onclick="tapPrepObject('elephant', 'An elephant: very big, has thick gray skin, and a long trunk.')">
+            <circle cx="280" cy="150" r="55" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2.5" />
+            <text x="280" y="162" text-anchor="middle" font-size="46">🐘</text>
+            <text x="280" y="225" text-anchor="middle" font-size="12" font-weight="900" fill="var(--primary)">Elephant</text>
+          </g>
+          <text x="200" y="262" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP EACH ANIMAL, THEN TELL HOW THEY ARE ALIKE AND DIFFERENT</text>
+        </svg>`;
+        },
+
+        // ── Pronunciation / syllable clapping practice ──
+        pronounce: function () {
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="34" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Say It in Parts (Syllables)</text>
+          <g style="cursor:pointer;" onclick="completeQuest(); speakWordSlowly('butterfly'); tapPrepObject('syl', 'but-ter-fly has three parts. Clap once for each part as you say it.')">
+            <rect x="40" y="110" width="90" height="60" rx="10" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2.5" />
+            <text x="85" y="148" text-anchor="middle" font-size="14" font-weight="900" fill="var(--primary-dark)">but</text>
+            <rect x="155" y="110" width="90" height="60" rx="10" fill="var(--amber-light)" stroke="var(--amber)" stroke-width="2.5" />
+            <text x="200" y="148" text-anchor="middle" font-size="14" font-weight="900" fill="var(--amber)">ter</text>
+            <rect x="270" y="110" width="90" height="60" rx="10" fill="var(--coral-light)" stroke="var(--coral)" stroke-width="2.5" />
+            <text x="315" y="148" text-anchor="middle" font-size="14" font-weight="900" fill="var(--coral)">fly</text>
+          </g>
+          <text x="200" y="200" text-anchor="middle" font-size="26">👏 👏 👏</text>
+          <text x="200" y="240" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">but &middot; ter &middot; fly = 3 syllables</text>
+          <text x="200" y="266" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP THE WORD TO HEAR IT SLOWLY, THEN CLAP EACH PART</text>
+        </svg>`;
+        },
+
+        // ── "Say it like the model": speaker icon, listen then repeat ──
+        "model-echo": function () {
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Say It Like the Model</text>
+          <circle cx="200" cy="150" r="62" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="3" style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('listen', 'Step 1: listen to the model. Step 2: record yourself saying it the same way.')" />
+          <text x="200" y="165" text-anchor="middle" font-size="52">🎧</text>
+          <path d="M 285 120 q 22 30 0 60" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" />
+          <path d="M 300 105 q 34 45 0 90" fill="none" stroke="var(--amber)" stroke-width="3" stroke-linecap="round" />
+          <text x="200" y="252" text-anchor="middle" font-size="10.5" font-weight="900" fill="var(--primary)">1) Hear the model &nbsp; 2) Record yourself the same way</text>
+          <text x="200" y="274" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">USE "HEAR PEER MODEL", THEN PRESS RECORD AND COPY IT</text>
+        </svg>`;
+        },
+
+        // ── Picture scene: a park, for rich describe-a-scene practice ──
+        "picture-scene": function () {
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <rect x="0" y="0" width="400" height="200" fill="#dbeafe" />
+          <rect x="0" y="200" width="400" height="100" fill="#dcfce7" />
+          <circle cx="330" cy="55" r="26" fill="#fde047" stroke="#facc15" stroke-width="3" style="cursor:pointer;" onclick="tapPrepObject('sun', 'The sun is shining in the sky. The weather is warm and sunny.')" />
+          <g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('tree', 'A big green tree gives shade in the park.')">
+            <rect x="60" y="140" width="16" height="70" fill="#92400e" />
+            <circle cx="68" cy="130" r="40" fill="#22c55e" />
+          </g>
+          <g style="cursor:pointer;" onclick="tapPrepObject('kids', 'Two children are playing with a ball on the grass.')">
+            <text x="200" y="240" text-anchor="middle" font-size="34">🧒 ⚽ 🧒</text>
+          </g>
+          <g style="cursor:pointer;" onclick="tapPrepObject('bird', 'A little bird is flying above the park.')">
+            <text x="250" y="80" text-anchor="middle" font-size="22">🐦</text>
+          </g>
+          <text x="200" y="290" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP THINGS IN THE PARK, THEN DESCRIBE THE WHOLE SCENE</text>
+        </svg>`;
+        },
+
+        // ── Weather observation scene ──
+        weather: function () {
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="34" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Today's Weather Report</text>
+          <g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('cloud', 'Gray clouds cover the sky, so it looks like rain.')">
+            <ellipse cx="200" cy="120" rx="70" ry="38" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2.5" />
+            <line x1="170" y1="160" x2="165" y2="185" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" />
+            <line x1="200" y1="160" x2="195" y2="190" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" />
+            <line x1="230" y1="160" x2="225" y2="185" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" />
+          </g>
+          <text x="320" y="80" text-anchor="middle" font-size="30" style="cursor:pointer;" onclick="tapPrepObject('wind', 'The wind is blowing the leaves and flags.')">🌬️</text>
+          <text x="200" y="240" text-anchor="middle" font-size="11" font-weight="900" fill="var(--navy-deep)">Cloudy &middot; Rainy &middot; Windy</text>
+          <text x="200" y="266" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP THE SKY, THEN GIVE A WEATHER REPORT</text>
+        </svg>`;
+        },
+
+        // ── Five senses observation ──
+        senses: function () {
+          const item = (x, emoji, label, tip) =>
+            `<g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('sense', '${tip}')">
+              <circle cx="${x}" cy="140" r="30" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2.5" />
+              <text x="${x}" y="150" text-anchor="middle" font-size="24">${emoji}</text>
+              <text x="${x}" y="190" text-anchor="middle" font-size="9.5" font-weight="900" fill="var(--navy-deep)">${label}</text>
+            </g>`;
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Use Your Five Senses</text>
+          ${item(60, "👀", "See", "I see bright colors and shapes around me.")}
+          ${item(130, "👂", "Hear", "I hear birds singing and people talking.")}
+          ${item(200, "👃", "Smell", "I smell fresh flowers and grass.")}
+          ${item(270, "👅", "Taste", "I taste a sweet, juicy apple.")}
+          ${item(340, "✋", "Touch", "I touch the soft, smooth leaf.")}
+          <text x="200" y="252" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP A SENSE, THEN DESCRIBE WHAT YOU OBSERVE</text>
+        </svg>`;
+        },
+
+        // ── Recycling / sorting (school & community) ──
+        recycle: function () {
+          const bin = (x, color, emoji, label, tip) =>
+            `<g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('bin', '${tip}')">
+              <rect x="${x}" y="120" width="80" height="90" rx="8" fill="${color}" stroke="var(--navy)" stroke-width="2.5" />
+              <text x="${x + 40}" y="170" text-anchor="middle" font-size="30">${emoji}</text>
+              <text x="${x + 40}" y="200" text-anchor="middle" font-size="9.5" font-weight="900" fill="white">${label}</text>
+            </g>`;
+          return `<svg width="400" height="300" viewBox="0 0 400 300" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Sorting for Recycling</text>
+          ${bin(40, "#16a34a", "🍎", "Compost", "Food scraps like apple cores go in the compost bin.")}
+          ${bin(160, "#2563eb", "📄", "Paper", "Paper and cardboard go in the paper bin.")}
+          ${bin(280, "#f59e0b", "🥤", "Plastic", "Plastic bottles go in the recycling bin.")}
+          <text x="200" y="252" text-anchor="middle" font-size="10" font-weight="900" fill="var(--navy-deep)">Why is sorting good for our community?</text>
+          <text x="200" y="274" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP A BIN, THEN EXPLAIN HOW TO SORT AND WHY IT HELPS</text>
+        </svg>`;
+        },
       };
 
       // Interactive model setters
@@ -3267,6 +3924,32 @@
         else if (task.model === "branches-flow")
           questMsg =
             "Quest: Click the lawmaking branch (top left box) to begin.";
+        else if (task.model === "story-seq")
+          questMsg =
+            "Quest: Tap each picture card to plan your beginning, middle, and ending.";
+        else if (task.model === "routine")
+          questMsg = "Quest: Tap each part of your day to plan the order.";
+        else if (task.model === "community")
+          questMsg =
+            "Quest: Tap a place at school to plan your opinion and a reason.";
+        else if (task.model === "compare-animals")
+          questMsg =
+            "Quest: Tap each animal to plan how they are alike and different.";
+        else if (task.model === "pronounce")
+          questMsg =
+            "Quest: Tap the word to hear it slowly, then clap each syllable.";
+        else if (task.model === "model-echo")
+          questMsg =
+            "Quest: Tap the headphones, hear the model, then record yourself.";
+        else if (task.model === "picture-scene")
+          questMsg =
+            "Quest: Tap things in the park to plan your full description.";
+        else if (task.model === "weather")
+          questMsg = "Quest: Tap the sky to plan your weather report.";
+        else if (task.model === "senses")
+          questMsg = "Quest: Tap each sense to plan what you observe.";
+        else if (task.model === "recycle")
+          questMsg = "Quest: Tap a bin to plan how to sort and why it helps.";
 
         document.getElementById("questText").innerHTML =
           `🎯 <strong>${questMsg}</strong>`;
@@ -3288,6 +3971,9 @@
         document.getElementById("rehearsalDraftBox").value = "";
 
         logToTerminal(`Loaded WIDA task ${idx + 1}: [${task.title}]`);
+        announce(
+          `Loaded ${task.kind ? task.kind + ": " : ""}${task.title}. Level ${STORE.activeTier === "A" ? "1" : "2"}. Listen to the prompt, then plan and record your answer.`,
+        );
       }
 
       function injectSentenceStarter(word) {
@@ -3870,9 +4556,13 @@
           card.className = `concept-card ${idx === STORE.activeTaskIdx ? "active" : ""}`;
           card.onclick = () => switchSpeakingTask(idx);
 
+          const kindBadge = task.kind
+            ? `<span class="task-kind">${task.kind}</span>`
+            : "";
           card.innerHTML = `
           <span class="task-domain">${task.domain}</span>
           <span class="task-title" style="font-weight:700;">${task.id}: ${task.title}</span>
+          ${kindBadge}
         `;
           container.appendChild(card);
         });
@@ -3888,11 +4578,11 @@
           const consoleNode = document.getElementById("diagConsole");
           consoleNode.innerHTML = "";
           logConsole(
-            "WIDA 20-Task Speaking Prep Workbook initialized...",
+            "WIDA ACCESS Speaking Practice Studio initialized...",
             "#fbbf24",
           );
           logConsole(
-            `CENTRAL STATE check: Total mapped tasks [${WIDA_SPEAKING_TASKS.length}/20]`,
+            `CENTRAL STATE check: Total mapped tasks [${WIDA_SPEAKING_TASKS.length} loaded]`,
           );
           logConsole("Exemplary peer model audio synthesizers active.");
         }
@@ -3913,7 +4603,27 @@
         }
       }
 
+      // Announce a message to assistive technology via the polite live region
+      function announce(msg) {
+        const region = document.getElementById("srStatus");
+        if (region) {
+          region.textContent = "";
+          // Defer so repeated identical messages are still re-announced
+          setTimeout(() => {
+            region.textContent = msg;
+          }, 50);
+        }
+      }
+
+      function prefersReducedMotion() {
+        return (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+      }
+
       function showMinimalToast(msg) {
+        announce(msg);
         const toast = document.createElement("div");
         toast.style.position = "fixed";
         toast.style.bottom = "32px";

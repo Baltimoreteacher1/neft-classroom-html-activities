@@ -777,6 +777,557 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* ════════════════════════════════════════════════════
+         WRITING PRACTICE SUITE  (namespaced .ps-*)
+         Self-contained skill-builder activities. Additive —
+         does not touch the existing studio above.
+         ════════════════════════════════════════════════════ */
+      .ps-suite {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+      }
+      .ps-suite__intro {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-left: 6px solid var(--amber);
+        border-radius: var(--radius-premium);
+        padding: 24px 28px;
+        box-shadow: var(--shadow-card);
+        margin-bottom: 24px;
+      }
+      .ps-suite__intro h2 {
+        font-family: var(--font-space);
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        letter-spacing: -0.02em;
+        margin: 0 0 6px;
+      }
+      .ps-suite__intro p {
+        margin: 0;
+        color: var(--slate-muted);
+        font-size: 0.95rem;
+        max-width: 760px;
+        line-height: 1.55;
+      }
+      .ps-statbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .ps-stat {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-canvas);
+        border: 1px solid var(--line-muted);
+        border-radius: 30px;
+        padding: 8px 16px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--navy-deep);
+      }
+      .ps-stat b {
+        color: var(--primary);
+      }
+      .ps-progress-track {
+        flex: 1;
+        min-width: 180px;
+        height: 14px;
+        background: var(--bg-studio);
+        border: 1px solid var(--line-muted);
+        border-radius: 30px;
+        overflow: hidden;
+        align-self: center;
+      }
+      .ps-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary), var(--amber));
+        border-radius: 30px;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Filter toolbar */
+      .ps-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-premium);
+        padding: 18px 22px;
+        box-shadow: var(--shadow-card);
+        margin-bottom: 20px;
+        align-items: center;
+      }
+      .ps-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .ps-filter-group > span {
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--slate-muted);
+      }
+      .ps-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .ps-pill {
+        border: 1.5px solid var(--line-muted);
+        background: var(--bg-canvas);
+        color: var(--slate-ink);
+        border-radius: 30px;
+        padding: 6px 14px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: var(--font-outfit);
+      }
+      .ps-pill:hover {
+        border-color: var(--primary);
+      }
+      .ps-pill[aria-pressed="true"] {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+      }
+      .ps-pill.ps-pill--lvl[aria-pressed="true"] {
+        background: var(--amber);
+        border-color: var(--amber);
+      }
+
+      /* Activity card grid */
+      .ps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+        gap: 18px;
+      }
+      .ps-card {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-premium);
+        padding: 20px 22px 22px;
+        box-shadow: var(--shadow-card);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        transition: var(--transition);
+      }
+      .ps-card.is-done {
+        border-color: var(--green-success);
+        box-shadow: 0 0 0 1px var(--green-success);
+      }
+      .ps-card__head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .ps-card__type {
+        font-size: 0.64rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--primary);
+      }
+      .ps-card__title {
+        font-family: var(--font-space);
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        margin: 2px 0 0;
+        line-height: 1.25;
+      }
+      .ps-tag {
+        font-size: 0.6rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 3px 9px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .ps-tag--lvl1 {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+      }
+      .ps-tag--lvl2 {
+        background: var(--amber-light);
+        color: #92400e;
+      }
+      .ps-tag--narrative {
+        background: #ede9fe;
+        color: #6d28d9;
+      }
+      .ps-tag--informational {
+        background: #cffafe;
+        color: #0e7490;
+      }
+      .ps-tag--opinion {
+        background: var(--coral-light);
+        color: #9a3412;
+      }
+      .ps-card__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .ps-card__prompt {
+        font-size: 0.88rem;
+        color: var(--slate-ink);
+        line-height: 1.5;
+        margin: 0;
+      }
+      .ps-card__foot {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: auto;
+      }
+      .ps-btn {
+        border: none;
+        border-radius: var(--radius-field);
+        padding: 10px 16px;
+        font-weight: 800;
+        font-size: 0.84rem;
+        font-family: var(--font-outfit);
+        cursor: pointer;
+        transition: var(--transition);
+      }
+      .ps-btn--primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .ps-btn--primary:hover {
+        background: var(--primary-dark);
+      }
+      .ps-btn--ghost {
+        background: var(--bg-canvas);
+        border: 1.5px solid var(--line-muted);
+        color: var(--slate-ink);
+      }
+      .ps-btn--ghost:hover {
+        border-color: var(--primary);
+      }
+      .ps-btn--sm {
+        padding: 6px 12px;
+        font-size: 0.76rem;
+      }
+      .ps-done-flag {
+        margin-left: auto;
+        font-weight: 800;
+        font-size: 0.78rem;
+        color: var(--green-success);
+      }
+
+      /* Workspace (expands inside the card) */
+      .ps-work {
+        border-top: 1px dashed var(--line-muted);
+        padding-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .ps-work[hidden] {
+        display: none;
+      }
+      .ps-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .ps-token {
+        background: var(--bg-studio);
+        border: 1.5px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 7px 13px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: var(--font-outfit);
+        color: var(--navy-deep);
+      }
+      .ps-token:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+      }
+      .ps-token:disabled {
+        opacity: 0.35;
+        cursor: default;
+        transform: none;
+      }
+      .ps-token--used {
+        background: var(--green-light);
+        border-color: var(--green-success);
+        color: var(--green-success);
+      }
+      .ps-build-line {
+        min-height: 48px;
+        border: 2px dashed var(--primary);
+        border-radius: var(--radius-field);
+        background: var(--primary-light);
+        padding: 10px 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+      .ps-build-line:empty::before {
+        content: "Tap words below in order to build your sentence…";
+        color: var(--slate-muted);
+        font-size: 0.82rem;
+        font-style: italic;
+      }
+      .ps-built-word {
+        background: var(--white);
+        border: 1.5px solid var(--primary);
+        border-radius: 6px;
+        padding: 5px 11px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        color: var(--navy-deep);
+      }
+      .ps-built-word:hover {
+        background: var(--coral-light);
+        border-color: var(--coral);
+      }
+      .ps-field,
+      .ps-area {
+        width: 100%;
+        border: 1.5px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 10px 12px;
+        font-family: var(--font-outfit);
+        font-size: 0.92rem;
+        color: var(--slate-ink);
+        background: var(--white);
+      }
+      .ps-area {
+        min-height: 90px;
+        resize: vertical;
+        line-height: 1.5;
+      }
+      .ps-field:focus,
+      .ps-area:focus,
+      .ps-token:focus-visible,
+      .ps-pill:focus-visible,
+      .ps-btn:focus-visible,
+      .ps-built-word:focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 2px;
+      }
+      .ps-frame-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.92rem;
+        line-height: 1.7;
+        color: var(--slate-ink);
+      }
+      .ps-frame-row .ps-field {
+        width: auto;
+        flex: 1;
+        min-width: 120px;
+        display: inline-block;
+        padding: 6px 10px;
+      }
+      .ps-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--slate-muted);
+      }
+      .ps-hint {
+        font-size: 0.8rem;
+        color: var(--slate-muted);
+        background: var(--bg-canvas);
+        border-radius: var(--radius-field);
+        padding: 8px 12px;
+        line-height: 1.45;
+      }
+      .ps-hint b {
+        color: var(--primary-dark);
+      }
+      .ps-model {
+        font-size: 0.85rem;
+        font-style: italic;
+        color: var(--slate-ink);
+        background: var(--bg-studio);
+        border-left: 4px solid var(--primary);
+        border-radius: 4px;
+        padding: 10px 12px;
+        line-height: 1.55;
+      }
+      /* Order / drag-sort list */
+      .ps-sortlist {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .ps-sortitem {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--white);
+        border: 1.5px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 10px 12px;
+        font-size: 0.88rem;
+        cursor: grab;
+      }
+      .ps-sortitem[aria-grabbed="true"] {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-gaze);
+      }
+      .ps-sortitem.is-correct {
+        border-color: var(--green-success);
+        background: var(--green-light);
+      }
+      .ps-sortitem__role {
+        font-size: 0.6rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--slate-muted);
+      }
+      .ps-move {
+        margin-left: auto;
+        display: flex;
+        gap: 4px;
+      }
+      .ps-move button {
+        border: 1px solid var(--line-muted);
+        background: var(--bg-canvas);
+        border-radius: 6px;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        font-weight: 900;
+        color: var(--primary);
+      }
+      .ps-move button:hover {
+        background: var(--primary-light);
+      }
+      /* Edit & revise clickable tokens */
+      .ps-edit-text {
+        font-size: 1rem;
+        line-height: 2;
+        color: var(--slate-ink);
+      }
+      .ps-etok {
+        cursor: pointer;
+        padding: 1px 2px;
+        border-radius: 4px;
+        border-bottom: 2px dotted transparent;
+      }
+      .ps-etok:hover {
+        background: var(--amber-light);
+      }
+      .ps-etok.is-flagged {
+        background: var(--coral-light);
+        border-bottom: 2px solid var(--coral);
+      }
+      .ps-etok.is-rightflag {
+        background: var(--green-light);
+        border-bottom: 2px solid var(--green-success);
+      }
+      /* Rubric self-check */
+      .ps-rubric-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        border-bottom: 1px solid var(--line-muted);
+        padding: 8px 0;
+      }
+      .ps-rubric-row:last-of-type {
+        border-bottom: none;
+      }
+      .ps-stars {
+        display: flex;
+        gap: 4px;
+      }
+      .ps-star {
+        background: none;
+        border: none;
+        font-size: 1.3rem;
+        cursor: pointer;
+        filter: grayscale(1);
+        opacity: 0.4;
+        transition: var(--transition);
+        padding: 0;
+        line-height: 1;
+      }
+      .ps-star.is-on {
+        filter: none;
+        opacity: 1;
+        transform: scale(1.1);
+      }
+      .ps-feedback {
+        font-size: 0.86rem;
+        font-weight: 600;
+        border-radius: var(--radius-field);
+        padding: 10px 12px;
+        line-height: 1.5;
+      }
+      .ps-feedback--ok {
+        background: var(--green-light);
+        color: var(--green-success);
+      }
+      .ps-feedback--try {
+        background: var(--amber-light);
+        color: #92400e;
+      }
+      .ps-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .ps-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: var(--slate-muted);
+        font-weight: 600;
+        padding: 40px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ps-card,
+        .ps-token,
+        .ps-star,
+        .ps-progress-fill,
+        .ps-pill,
+        .ps-btn {
+          transition: none !important;
+        }
+        .ps-token:hover {
+          transform: none;
+        }
+      }
+      @media (max-width: 560px) {
+        .ps-toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1321,6 +1872,145 @@
         </div>
       </div>
     </main>
+
+    <!-- ════════ WRITING PRACTICE SUITE ════════ -->
+    <section class="ps-suite" aria-labelledby="ps-suite-heading">
+      <div class="ps-suite__intro">
+        <p
+          class="eyebrow"
+          style="
+            color: var(--amber);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.72rem;
+          "
+        >
+          Skill Builder
+        </p>
+        <h2 id="ps-suite-heading">✏️ Writing Practice Suite</h2>
+        <p>
+          Build writing skills one step at a time. Choose a writing type and
+          level, then practice with friendly, guided tasks — unscramble
+          sentences, add details, fix mistakes, organize paragraphs, and check
+          your work against a model.
+        </p>
+        <div class="ps-statbar">
+          <div class="ps-stat">
+            ✅
+            <span
+              ><b id="psDoneCount">0</b> of
+              <span id="psTotalCount">0</span> done</span
+            >
+          </div>
+          <div class="ps-stat">
+            ⭐ <span><b id="psPoints">0</b> points</span>
+          </div>
+          <div class="ps-stat">
+            🔥 <span><b id="psStreak">0</b> in a row</span>
+          </div>
+          <div class="ps-progress-track" aria-hidden="true">
+            <div class="ps-progress-fill" id="psProgressFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ps-toolbar" role="region" aria-label="Filter activities">
+        <div class="ps-filter-group">
+          <span id="psTypeLbl">Writing Type</span>
+          <div
+            class="ps-chips"
+            role="group"
+            aria-labelledby="psTypeLbl"
+            id="psTypeFilters"
+          >
+            <button
+              class="ps-pill"
+              data-filter="type"
+              data-value="all"
+              aria-pressed="true"
+            >
+              All
+            </button>
+            <button
+              class="ps-pill"
+              data-filter="type"
+              data-value="narrative"
+              aria-pressed="false"
+            >
+              📖 Narrative
+            </button>
+            <button
+              class="ps-pill"
+              data-filter="type"
+              data-value="informational"
+              aria-pressed="false"
+            >
+              🔬 Informational
+            </button>
+            <button
+              class="ps-pill"
+              data-filter="type"
+              data-value="opinion"
+              aria-pressed="false"
+            >
+              💬 Opinion
+            </button>
+          </div>
+        </div>
+        <div class="ps-filter-group">
+          <span id="psLvlLbl">Level</span>
+          <div
+            class="ps-chips"
+            role="group"
+            aria-labelledby="psLvlLbl"
+            id="psLevelFilters"
+          >
+            <button
+              class="ps-pill ps-pill--lvl"
+              data-filter="level"
+              data-value="all"
+              aria-pressed="true"
+            >
+              All
+            </button>
+            <button
+              class="ps-pill ps-pill--lvl"
+              data-filter="level"
+              data-value="1"
+              aria-pressed="false"
+            >
+              Level 1 · Support
+            </button>
+            <button
+              class="ps-pill ps-pill--lvl"
+              data-filter="level"
+              data-value="2"
+              aria-pressed="false"
+            >
+              Level 2 · Enrichment
+            </button>
+          </div>
+        </div>
+        <div class="ps-filter-group">
+          <span id="psKindLbl">Activity</span>
+          <div
+            class="ps-chips"
+            role="group"
+            aria-labelledby="psKindLbl"
+            id="psKindFilters"
+          ></div>
+        </div>
+      </div>
+
+      <div class="ps-grid" id="psGrid"></div>
+      <p
+        class="ps-sr-only"
+        role="status"
+        aria-live="polite"
+        id="psLiveRegion"
+      ></p>
+    </section>
 
     <div class="diag-overlay" id="diagTerminal">
       <div class="diag-head">
@@ -3490,6 +4180,1461 @@
           setTimeout(() => toast.remove(), 250);
         }, 2500);
       }
+    </script>
+
+    <!-- ════════ WRITING PRACTICE SUITE ENGINE (self-contained) ════════ -->
+    <script>
+      (function () {
+        "use strict";
+
+        // ── Activity type catalog ──
+        const KINDS = {
+          build: "🧩 Sentence Building",
+          expand: "➕ Sentence Expansion",
+          frame: "🔑 Sentence Frames",
+          paragraph: "📄 Paragraph Order",
+          edit: "🔍 Edit & Revise",
+          transition: "🔗 Transitions",
+          vocab: "📚 Vocabulary in Writing",
+          organizer: "🕸️ Organizer → Paragraph",
+          rubric: "🏆 Rubric Self-Check",
+        };
+        const TYPE_LABEL = {
+          narrative: "Narrative",
+          informational: "Informational",
+          opinion: "Opinion",
+        };
+
+        // ── ACTIVITY DATA ──────────────────────────────────────────
+        // type: narrative | informational | opinion
+        // level: 1 (support) | 2 (enrichment)
+        const ACTIVITIES = [
+          /* ───────── SENTENCE BUILDING ───────── */
+          {
+            id: "b1",
+            kind: "build",
+            type: "narrative",
+            level: 1,
+            title: "Build a Story Opener",
+            prompt:
+              "Unscramble the words to make a sentence about the start of a day.",
+            scramble: ["Yesterday", "morning", "I", "woke", "up", "early"],
+            answer: ["Yesterday", "morning", "I", "woke", "up", "early"],
+            hint: "Start with the time word. End with a period when you write it!",
+          },
+          {
+            id: "b2",
+            kind: "build",
+            type: "informational",
+            level: 1,
+            title: "Build a Science Fact",
+            prompt: "Put the words in order to state a true fact about plants.",
+            scramble: ["need", "Plants", "to", "sunlight", "grow"],
+            answer: ["Plants", "need", "sunlight", "to", "grow"],
+            hint: "Begin with the subject (who or what the sentence is about).",
+          },
+          {
+            id: "b3",
+            kind: "build",
+            type: "opinion",
+            level: 1,
+            title: "Build an Opinion",
+            prompt: "Unscramble the words to share what you think is best.",
+            scramble: ["best", "Recess", "the", "is", "part"],
+            answer: ["Recess", "is", "the", "best", "part"],
+            hint: "An opinion often uses the word 'is' to connect the topic to your feeling.",
+          },
+          {
+            id: "b4",
+            kind: "build",
+            type: "informational",
+            level: 2,
+            title: "Build a Cause-and-Effect Sentence",
+            prompt: "Arrange the words into a complex sentence about weather.",
+            scramble: [
+              "Because",
+              "the",
+              "clouds",
+              "filled",
+              "with",
+              "water,",
+              "rain",
+              "fell",
+            ],
+            answer: [
+              "Because",
+              "the",
+              "clouds",
+              "filled",
+              "with",
+              "water,",
+              "rain",
+              "fell",
+            ],
+            hint: "Cause-and-effect sentences can begin with 'Because…'.",
+          },
+          {
+            id: "b5",
+            kind: "build",
+            type: "narrative",
+            level: 2,
+            title: "Build a Vivid Action Sentence",
+            prompt: "Order the words to make a descriptive narrative sentence.",
+            scramble: [
+              "The",
+              "frightened",
+              "rabbit",
+              "darted",
+              "across",
+              "the",
+              "field",
+            ],
+            answer: [
+              "The",
+              "frightened",
+              "rabbit",
+              "darted",
+              "across",
+              "the",
+              "field",
+            ],
+            hint: "Adjectives (frightened) come right before the noun they describe (rabbit).",
+          },
+
+          /* ───────── SENTENCE EXPANSION ───────── */
+          {
+            id: "e1",
+            kind: "expand",
+            type: "narrative",
+            level: 1,
+            title: "Grow the Sentence: The Dog Ran",
+            prompt:
+              "Start with “The dog ran.” Add details to answer each question.",
+            base: "The dog ran",
+            slots: [
+              { q: "Who/What kind of dog?", placeholder: "a big brown dog" },
+              { q: "Where?", placeholder: "in the park" },
+              { q: "When?", placeholder: "this morning" },
+            ],
+            model: "This morning, the big brown dog ran quickly in the park.",
+          },
+          {
+            id: "e2",
+            kind: "expand",
+            type: "informational",
+            level: 1,
+            title: "Grow the Sentence: Bees Help",
+            prompt: "Start with “Bees help.” Add details to make it complete.",
+            base: "Bees help",
+            slots: [
+              { q: "Help what/who?", placeholder: "flowers grow" },
+              { q: "How?", placeholder: "by carrying pollen" },
+              { q: "Why is it important?", placeholder: "so we get food" },
+            ],
+            model: "Bees help flowers grow by carrying pollen, so we get food.",
+          },
+          {
+            id: "e3",
+            kind: "expand",
+            type: "opinion",
+            level: 2,
+            title: "Grow the Sentence: Reading Is Best",
+            prompt:
+              "Begin with “Reading is the best hobby.” Expand it with a reason and example.",
+            base: "Reading is the best hobby",
+            slots: [
+              {
+                q: "Why? (reason)",
+                placeholder: "because it takes me to new worlds",
+              },
+              {
+                q: "Example?",
+                placeholder: "for example, I traveled to space in a book",
+              },
+              {
+                q: "When/Where do you do it?",
+                placeholder: "every night before bed",
+              },
+            ],
+            model:
+              "Reading is the best hobby because it takes me to new worlds; for example, I traveled to space in a book I read every night before bed.",
+          },
+          {
+            id: "e4",
+            kind: "expand",
+            type: "informational",
+            level: 2,
+            title: "Grow the Sentence: The Volcano Erupted",
+            prompt:
+              "Expand “The volcano erupted.” with precise, academic details.",
+            base: "The volcano erupted",
+            slots: [
+              { q: "When?", placeholder: "after weeks of warning tremors" },
+              {
+                q: "How? (describe)",
+                placeholder: "with a violent burst of ash and lava",
+              },
+              {
+                q: "What was the result?",
+                placeholder: "forcing nearby villages to evacuate",
+              },
+            ],
+            model:
+              "After weeks of warning tremors, the volcano erupted with a violent burst of ash and lava, forcing nearby villages to evacuate.",
+          },
+
+          /* ───────── SENTENCE FRAMES ───────── */
+          {
+            id: "f1",
+            kind: "frame",
+            type: "opinion",
+            level: 1,
+            title: "Opinion Frame: My Favorite Season",
+            prompt: "Fill in the blanks to finish your opinion sentence.",
+            parts: [
+              "My favorite season is ",
+              { blank: "season", placeholder: "summer" },
+              " because ",
+              { blank: "reason", placeholder: "it is warm" },
+              ".",
+            ],
+            model: "My favorite season is summer because it is warm.",
+          },
+          {
+            id: "f2",
+            kind: "frame",
+            type: "narrative",
+            level: 1,
+            title: "Narrative Frame: A Surprise",
+            prompt: "Complete the story sentence by filling each blank.",
+            parts: [
+              "One day, ",
+              { blank: "who", placeholder: "my friend" },
+              " found ",
+              { blank: "what", placeholder: "a lost puppy" },
+              " at ",
+              { blank: "where", placeholder: "the bus stop" },
+              ".",
+            ],
+            model: "One day, my friend found a lost puppy at the bus stop.",
+          },
+          {
+            id: "f3",
+            kind: "frame",
+            type: "informational",
+            level: 2,
+            title: "Informational Frame: Compare & Contrast",
+            prompt: "Fill in the blanks to compare two things clearly.",
+            parts: [
+              "Although both ",
+              { blank: "a", placeholder: "frogs" },
+              " and ",
+              { blank: "b", placeholder: "toads" },
+              " are amphibians, ",
+              { blank: "a2", placeholder: "frogs" },
+              " have ",
+              { blank: "diff", placeholder: "smooth, moist skin" },
+              ", whereas ",
+              { blank: "b2", placeholder: "toads" },
+              " have ",
+              { blank: "diff2", placeholder: "dry, bumpy skin" },
+              ".",
+            ],
+            model:
+              "Although both frogs and toads are amphibians, frogs have smooth, moist skin, whereas toads have dry, bumpy skin.",
+          },
+          {
+            id: "f4",
+            kind: "frame",
+            type: "opinion",
+            level: 2,
+            title: "Opinion Frame: Persuade with Evidence",
+            prompt: "Build a strong claim by filling each blank.",
+            parts: [
+              "In my opinion, ",
+              { blank: "claim", placeholder: "schools should start later" },
+              " because ",
+              { blank: "reason", placeholder: "students need more sleep" },
+              ". For instance, ",
+              {
+                blank: "evidence",
+                placeholder: "studies show rested students focus better",
+              },
+              ".",
+            ],
+            model:
+              "In my opinion, schools should start later because students need more sleep. For instance, studies show rested students focus better.",
+          },
+
+          /* ───────── PARAGRAPH ORDER ───────── */
+          {
+            id: "p1",
+            kind: "paragraph",
+            type: "informational",
+            level: 1,
+            title: "Order the Paragraph: How to Plant a Seed",
+            prompt:
+              "Drag or use the arrows to put the paragraph in the best order.",
+            items: [
+              {
+                role: "Topic",
+                text: "Planting a seed is easy if you follow three steps.",
+              },
+              { role: "Detail", text: "First, make a small hole in the soil." },
+              {
+                role: "Detail",
+                text: "Next, drop the seed in and cover it gently.",
+              },
+              { role: "Closing", text: "Finally, water it and watch it grow!" },
+            ],
+          },
+          {
+            id: "p2",
+            kind: "paragraph",
+            type: "narrative",
+            level: 1,
+            title: "Order the Story: A Lost Mitten",
+            prompt: "Arrange the sentences so the story makes sense.",
+            items: [
+              {
+                role: "Beginning",
+                text: "On a snowy day, Mia lost her favorite mitten.",
+              },
+              {
+                role: "Middle",
+                text: "She looked under the slide and behind the bench.",
+              },
+              {
+                role: "Middle",
+                text: "At last, she spotted it stuck in a bush.",
+              },
+              {
+                role: "End",
+                text: "Mia smiled and walked home with warm hands.",
+              },
+            ],
+          },
+          {
+            id: "p3",
+            kind: "paragraph",
+            type: "opinion",
+            level: 2,
+            title: "Order the Opinion: Class Pets",
+            prompt: "Build a persuasive paragraph in the strongest order.",
+            items: [
+              {
+                role: "Claim",
+                text: "Every classroom should have a class pet.",
+              },
+              {
+                role: "Reason",
+                text: "First, caring for a pet teaches students responsibility.",
+              },
+              {
+                role: "Evidence",
+                text: "For example, students must remember to feed it each day.",
+              },
+              {
+                role: "Counter",
+                text: "Some say pets are messy, but a simple schedule keeps the cage clean.",
+              },
+              {
+                role: "Closing",
+                text: "For these reasons, a class pet would make our room a better place to learn.",
+              },
+            ],
+          },
+
+          /* ───────── EDIT & REVISE ───────── */
+          {
+            id: "ed1",
+            kind: "edit",
+            type: "narrative",
+            level: 1,
+            title: "Fix the Capitals & Periods",
+            prompt: "Tap each word or mark that has a mistake. Find 3 errors.",
+            tokens: [
+              { t: "my", err: "cap", fix: "My" },
+              { t: "dog", err: null },
+              { t: "max", err: "cap", fix: "Max" },
+              { t: "likes", err: null },
+              { t: "to", err: null },
+              { t: "run", err: null },
+              { t: ",", err: "punct", fix: "." },
+            ],
+            note: "Sentences begin with a capital letter, names are capitalized, and statements end with a period.",
+          },
+          {
+            id: "ed2",
+            kind: "edit",
+            type: "informational",
+            level: 1,
+            title: "Fix the Spelling",
+            prompt: "Tap the misspelled words. Find 2 errors.",
+            tokens: [
+              { t: "The", err: null },
+              { t: "sun", err: null },
+              { t: "givs", err: "spell", fix: "gives" },
+              { t: "us", err: null },
+              { t: "lite", err: "spell", fix: "light" },
+              { t: "and", err: null },
+              { t: "heat.", err: null },
+            ],
+            note: "Read slowly and listen for each sound. 'gives' and 'light' are common tricky words.",
+          },
+          {
+            id: "ed3",
+            kind: "edit",
+            type: "opinion",
+            level: 2,
+            title: "Fix the Run-On Sentence",
+            prompt:
+              "Tap the spot where two sentences are joined incorrectly. Find the run-on.",
+            tokens: [
+              { t: "Soccer", err: null },
+              { t: "is", err: null },
+              { t: "fun", err: null },
+              { t: "it", err: "runon", fix: "fun. It" },
+              { t: "keeps", err: null },
+              { t: "us", err: null },
+              { t: "active.", err: null },
+            ],
+            note: "A run-on jams two complete thoughts together. Split them with a period: 'Soccer is fun. It keeps us active.'",
+          },
+          {
+            id: "ed4",
+            kind: "edit",
+            type: "informational",
+            level: 2,
+            title: "Revise for Mechanics",
+            prompt:
+              "Tap every error: capitals, spelling, and punctuation. Find 4.",
+            tokens: [
+              { t: "water", err: "cap", fix: "Water" },
+              { t: "covers", err: null },
+              { t: "most", err: null },
+              { t: "of", err: null },
+              { t: "erth", err: "spell", fix: "Earth" },
+              { t: "scientists", err: "cap", fix: "Scientists" },
+              { t: "studie", err: "spell", fix: "study" },
+              { t: "it.", err: null },
+            ],
+            note: "Each new sentence needs a capital. 'Earth' is a proper noun. Watch for 'erth' and 'studie'.",
+          },
+
+          /* ───────── TRANSITIONS / CONNECTORS ───────── */
+          {
+            id: "t1",
+            kind: "transition",
+            type: "informational",
+            level: 1,
+            title: "Pick the Sequence Word",
+            prompt: "Choose the best word for each step in order.",
+            sentence: [
+              "___ you wake up. ___ you eat breakfast. ___ you go to school.",
+            ],
+            blanks: [
+              { options: ["First", "Finally"], answer: "First" },
+              { options: ["Next", "First"], answer: "Next" },
+              { options: ["Finally", "Next"], answer: "Finally" },
+            ],
+          },
+          {
+            id: "t2",
+            kind: "transition",
+            type: "opinion",
+            level: 1,
+            title: "Add a Reason Connector",
+            prompt: "Pick the word that adds a reason.",
+            sentence: ["I like winter ___ I can build snowmen."],
+            blanks: [
+              { options: ["because", "but", "before"], answer: "because" },
+            ],
+          },
+          {
+            id: "t3",
+            kind: "transition",
+            type: "opinion",
+            level: 2,
+            title: "Choose Academic Connectors",
+            prompt: "Select the connector that best links each idea.",
+            sentence: [
+              "Pizza is popular. ___, it is not the healthiest choice. ___, schools should offer it only once a week.",
+            ],
+            blanks: [
+              {
+                options: ["However", "Therefore", "For example"],
+                answer: "However",
+              },
+              {
+                options: ["Therefore", "However", "Meanwhile"],
+                answer: "Therefore",
+              },
+            ],
+          },
+          {
+            id: "t4",
+            kind: "transition",
+            type: "informational",
+            level: 2,
+            title: "Cause, Contrast, or Addition?",
+            prompt: "Match the right connector to each relationship.",
+            sentence: [
+              "Deserts get little rain. ___, few plants survive there. ___, cactuses store water in their stems.",
+            ],
+            blanks: [
+              {
+                options: ["As a result", "In contrast", "Similarly"],
+                answer: "As a result",
+              },
+              {
+                options: ["However", "Furthermore", "Because"],
+                answer: "However",
+              },
+            ],
+          },
+
+          /* ───────── VOCABULARY IN WRITING ───────── */
+          {
+            id: "v1",
+            kind: "vocab",
+            type: "informational",
+            level: 1,
+            title: "Use Science Words",
+            prompt: "Write one sentence that uses BOTH target words correctly.",
+            words: ["habitat", "survive"],
+            model: "Animals need the right habitat to find food and survive.",
+          },
+          {
+            id: "v2",
+            kind: "vocab",
+            type: "narrative",
+            level: 1,
+            title: "Use Feeling Words",
+            prompt: "Write a sentence about a character using both words.",
+            words: ["nervous", "finally"],
+            model:
+              "I felt nervous before the race, but I finally crossed the finish line.",
+          },
+          {
+            id: "v3",
+            kind: "vocab",
+            type: "opinion",
+            level: 2,
+            title: "Use Persuasive Words",
+            prompt:
+              "Write a strong opinion sentence using both academic words.",
+            words: ["essential", "furthermore"],
+            model:
+              "Clean parks are essential for a healthy community; furthermore, they give families a safe place to play.",
+          },
+          {
+            id: "v4",
+            kind: "vocab",
+            type: "informational",
+            level: 2,
+            title: "Use Social Studies Words",
+            prompt:
+              "Write a complete sentence that includes both terms accurately.",
+            words: ["citizen", "responsibility"],
+            model:
+              "Every citizen has the responsibility to follow the laws that keep the community safe.",
+          },
+
+          /* ───────── GRAPHIC ORGANIZER → PARAGRAPH ───────── */
+          {
+            id: "o1",
+            kind: "organizer",
+            type: "informational",
+            level: 1,
+            title: "Web → Paragraph: My Favorite Animal",
+            prompt: "Fill the web, then write a paragraph using your notes.",
+            center: "My favorite animal",
+            nodes: [
+              { q: "What animal?", placeholder: "a dolphin" },
+              { q: "Detail 1 (looks)", placeholder: "it is grey and smooth" },
+              { q: "Detail 2 (does)", placeholder: "it can jump high" },
+              { q: "Why I like it", placeholder: "it is smart and friendly" },
+            ],
+            model:
+              "My favorite animal is a dolphin. It is grey and smooth, and it can jump high out of the water. I like dolphins because they are smart and friendly.",
+          },
+          {
+            id: "o2",
+            kind: "organizer",
+            type: "opinion",
+            level: 2,
+            title: "Chart → Paragraph: A Better Lunch",
+            prompt:
+              "Plan your opinion in the chart, then assemble the paragraph.",
+            center: "Schools should serve healthier lunches",
+            nodes: [
+              {
+                q: "Your claim",
+                placeholder: "schools should serve healthier lunches",
+              },
+              { q: "Reason 1", placeholder: "healthy food helps us focus" },
+              { q: "Reason 2", placeholder: "it gives us energy to play" },
+              {
+                q: "Strong closing",
+                placeholder: "everyone deserves a meal that helps them learn",
+              },
+            ],
+            model:
+              "Schools should serve healthier lunches. First, healthy food helps us focus during class. Second, it gives us energy to play at recess. In the end, everyone deserves a meal that helps them learn.",
+          },
+          {
+            id: "o3",
+            kind: "organizer",
+            type: "narrative",
+            level: 1,
+            title: "Story Map → Paragraph",
+            prompt: "Fill the story map, then write your short narrative.",
+            center: "My small adventure",
+            nodes: [
+              { q: "Who?", placeholder: "my sister and I" },
+              { q: "Beginning", placeholder: "we built a fort" },
+              { q: "Middle", placeholder: "it started to rain" },
+              { q: "End", placeholder: "we read books inside the fort" },
+            ],
+            model:
+              "One afternoon, my sister and I built a fort out of blankets. In the middle of our game, it started to rain outside. In the end, we stayed cozy and read books inside the fort.",
+          },
+
+          /* ───────── RUBRIC SELF-CHECK ───────── */
+          {
+            id: "r1",
+            kind: "rubric",
+            type: "narrative",
+            level: 1,
+            title: "Self-Check a Story Model",
+            prompt:
+              "Read the model. Rate it on each part, then reveal the coach's score.",
+            model:
+              "Last summer my family went camping. We set up our tent near a lake. At night we told stories by the fire. It was the best trip ever.",
+            criteria: [
+              { name: "Has a clear beginning, middle, end", ideal: 3 },
+              { name: "Uses describing details", ideal: 2 },
+              { name: "Correct capitals & periods", ideal: 3 },
+            ],
+            coach:
+              "Strong beginning-middle-end and clean mechanics! To reach the next level, add more describing details — what did the lake look like? What sounds did you hear by the fire?",
+          },
+          {
+            id: "r2",
+            kind: "rubric",
+            type: "opinion",
+            level: 2,
+            title: "Self-Check an Opinion Model",
+            prompt: "Evaluate this opinion paragraph against the rubric.",
+            model:
+              "Recess should be longer because students need a break. When we move our bodies, our brains work better. Furthermore, longer recess gives shy students more time to make friends. For these reasons, the school day should include thirty minutes of recess.",
+            criteria: [
+              { name: "Clear claim/opinion", ideal: 3 },
+              { name: "Reasons + evidence", ideal: 3 },
+              { name: "Academic transitions", ideal: 3 },
+            ],
+            coach:
+              "Excellent work — a clear claim, two solid reasons, and the transition 'Furthermore' all earn top marks. A real essay would add a specific statistic or example as evidence to make the argument even stronger.",
+          },
+          {
+            id: "r3",
+            kind: "rubric",
+            type: "informational",
+            level: 2,
+            title: "Self-Check an Informational Model",
+            prompt:
+              "Score this informational paragraph, then compare with the coach.",
+            model:
+              "The water cycle moves water around our planet. First, the sun heats the ocean and water evaporates into the air. Next, the water vapor cools and condenses into clouds. Finally, the water falls back to Earth as rain, and the cycle begins again.",
+            criteria: [
+              { name: "Topic sentence + closing", ideal: 3 },
+              { name: "Domain vocabulary", ideal: 3 },
+              { name: "Sequence transitions", ideal: 3 },
+            ],
+            coach:
+              "Top scores all around — strong topic sentence, precise vocabulary (evaporates, condenses), and clear First/Next/Finally sequencing. This is a model of excellent informational writing!",
+          },
+        ];
+
+        // ── State ──
+        const STORE_KEY = "psWritingSuite_v1";
+        let done = {};
+        let points = 0;
+        let streak = 0;
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+          done = saved.done || {};
+          points = saved.points || 0;
+          streak = saved.streak || 0;
+        } catch (e) {}
+        const filters = { type: "all", level: "all", kind: "all" };
+
+        const $ = (id) => document.getElementById(id);
+        const grid = $("psGrid");
+        const live = $("psLiveRegion");
+        function announce(msg) {
+          if (live) {
+            live.textContent = "";
+            setTimeout(() => (live.textContent = msg), 30);
+          }
+        }
+        function esc(s) {
+          return String(s).replace(
+            /[&<>"]/g,
+            (c) =>
+              ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+          );
+        }
+        function persist() {
+          try {
+            localStorage.setItem(
+              STORE_KEY,
+              JSON.stringify({ done, points, streak }),
+            );
+          } catch (e) {}
+        }
+
+        function readAloud(text) {
+          if (!("speechSynthesis" in window)) {
+            announce("Read-aloud is not available in this browser.");
+            return;
+          }
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.rate = 0.85;
+          window.speechSynthesis.speak(u);
+        }
+
+        function awardComplete(id) {
+          const first = !done[id];
+          if (first) {
+            done[id] = true;
+            points += 15;
+            streak += 1;
+          }
+          persist();
+          updateStats();
+          return first;
+        }
+
+        function updateStats() {
+          const total = ACTIVITIES.length;
+          const count = Object.keys(done).filter((k) => done[k]).length;
+          $("psDoneCount").textContent = count;
+          $("psTotalCount").textContent = total;
+          $("psPoints").textContent = points;
+          $("psStreak").textContent = streak;
+          $("psProgressFill").style.width =
+            (total ? Math.round((count / total) * 100) : 0) + "%";
+        }
+
+        function celebrate(card, msg, first) {
+          if (card) card.classList.add("is-done");
+          announce(msg);
+          if (first) {
+            try {
+              if (typeof playChime === "function") playChime("success");
+            } catch (e) {}
+          }
+        }
+
+        // ── Build the activity filter pills (kinds) ──
+        function buildKindFilters() {
+          const wrap = $("psKindFilters");
+          const present = [...new Set(ACTIVITIES.map((a) => a.kind))];
+          let html =
+            '<button class="ps-pill" data-filter="kind" data-value="all" aria-pressed="true">All</button>';
+          present.forEach((k) => {
+            html += `<button class="ps-pill" data-filter="kind" data-value="${k}" aria-pressed="false">${KINDS[k]}</button>`;
+          });
+          wrap.innerHTML = html;
+        }
+
+        function visibleActivities() {
+          return ACTIVITIES.filter(
+            (a) =>
+              (filters.type === "all" || a.type === filters.type) &&
+              (filters.level === "all" || String(a.level) === filters.level) &&
+              (filters.kind === "all" || a.kind === filters.kind),
+          );
+        }
+
+        // ── Render the card grid ──
+        function render() {
+          const list = visibleActivities();
+          grid.innerHTML = "";
+          if (!list.length) {
+            grid.innerHTML =
+              '<p class="ps-empty">No activities match these filters. Try “All”.</p>';
+            return;
+          }
+          list.forEach((a) => {
+            const card = document.createElement("article");
+            card.className = "ps-card" + (done[a.id] ? " is-done" : "");
+            card.dataset.id = a.id;
+            const lvlClass = a.level === 1 ? "ps-tag--lvl1" : "ps-tag--lvl2";
+            const lvlText = a.level === 1 ? "Level 1" : "Level 2";
+            card.innerHTML = `
+              <div class="ps-card__head">
+                <div>
+                  <div class="ps-card__type">${KINDS[a.kind]}</div>
+                  <h3 class="ps-card__title">${esc(a.title)}</h3>
+                </div>
+                <div class="ps-card__meta">
+                  <span class="ps-tag ${lvlClass}">${lvlText}</span>
+                  <span class="ps-tag ps-tag--${a.type}">${TYPE_LABEL[a.type]}</span>
+                </div>
+              </div>
+              <p class="ps-card__prompt">${esc(a.prompt)}</p>
+              <div class="ps-card__foot">
+                <button class="ps-btn ps-btn--primary ps-start">Start activity</button>
+                <button class="ps-btn ps-btn--ghost ps-btn--sm ps-listen" aria-label="Read the prompt aloud">🔊 Listen</button>
+                ${done[a.id] ? '<span class="ps-done-flag">✓ Done</span>' : ""}
+              </div>
+              <div class="ps-work" hidden></div>`;
+            card
+              .querySelector(".ps-listen")
+              .addEventListener("click", () => readAloud(a.prompt));
+            card.querySelector(".ps-start").addEventListener("click", (ev) => {
+              const work = card.querySelector(".ps-work");
+              const open = work.hasAttribute("hidden");
+              if (open) {
+                work.removeAttribute("hidden");
+                renderWorkspace(a, work, card);
+                ev.target.textContent = "Hide activity";
+              } else {
+                work.setAttribute("hidden", "");
+                work.innerHTML = "";
+                ev.target.textContent = "Start activity";
+              }
+            });
+            grid.appendChild(card);
+          });
+        }
+
+        // ── Per-kind workspace renderers ──
+        function renderWorkspace(a, work, card) {
+          const fns = {
+            build: wsBuild,
+            expand: wsExpand,
+            frame: wsFrame,
+            paragraph: wsParagraph,
+            edit: wsEdit,
+            transition: wsTransition,
+            vocab: wsVocab,
+            organizer: wsOrganizer,
+            rubric: wsRubric,
+          };
+          (fns[a.kind] || (() => {}))(a, work, card);
+        }
+
+        function feedbackEl() {
+          const d = document.createElement("div");
+          d.className = "ps-feedback";
+          d.setAttribute("role", "status");
+          d.style.display = "none";
+          return d;
+        }
+        function showFeedback(el, ok, msg) {
+          el.style.display = "block";
+          el.className =
+            "ps-feedback " + (ok ? "ps-feedback--ok" : "ps-feedback--try");
+          el.textContent = msg;
+          announce(msg);
+        }
+
+        // SENTENCE BUILDING
+        function wsBuild(a, work) {
+          const built = [];
+          work.innerHTML = `
+            <span class="ps-label">Your sentence</span>
+            <div class="ps-build-line" aria-label="Sentence under construction"></div>
+            <span class="ps-label">Word bank (tap in order)</span>
+            <div class="ps-bank"></div>
+            <div class="ps-hint">💡 <b>Hint:</b> ${esc(a.hint)}</div>`;
+          const line = work.querySelector(".ps-build-line");
+          const bank = work.querySelector(".ps-bank");
+          const fb = feedbackEl();
+          work.appendChild(fb);
+
+          const pool = a.scramble
+            .map((w, i) => ({ w, i }))
+            .sort(() => Math.random() - 0.5);
+          pool.forEach(({ w, i }) => {
+            const tok = document.createElement("button");
+            tok.className = "ps-token";
+            tok.textContent = w;
+            tok.dataset.idx = i;
+            tok.addEventListener("click", () => {
+              if (tok.disabled) return;
+              tok.disabled = true;
+              built.push({ w, tok });
+              const bw = document.createElement("button");
+              bw.className = "ps-built-word";
+              bw.textContent = w;
+              bw.title = "Tap to remove";
+              bw.addEventListener("click", () => {
+                tok.disabled = false;
+                const idx = built.findIndex((b) => b.tok === tok);
+                if (idx > -1) built.splice(idx, 1);
+                bw.remove();
+                check();
+              });
+              line.appendChild(bw);
+              check();
+            });
+            bank.appendChild(tok);
+          });
+
+          function check() {
+            if (built.length !== a.answer.length) {
+              fb.style.display = "none";
+              return;
+            }
+            const ok = built.every((b, i) => b.w === a.answer[i]);
+            if (ok) {
+              const first = awardComplete(a.id);
+              const cardEl = work.closest(".ps-card");
+              celebrate(cardEl, "Correct! Sentence built perfectly. ⭐", first);
+              showFeedback(
+                fb,
+                true,
+                "🎉 Perfect! That sentence is in the right order.",
+              );
+            } else {
+              showFeedback(
+                fb,
+                false,
+                "Almost! Tap a word to remove it and try a new order.",
+              );
+            }
+          }
+        }
+
+        // SENTENCE EXPANSION
+        function wsExpand(a, work) {
+          let rows = a.slots
+            .map(
+              (s, i) => `
+            <div>
+              <span class="ps-label">${esc(s.q)}</span>
+              <input class="ps-field ps-exp" data-i="${i}" placeholder="e.g. ${esc(s.placeholder)}" aria-label="${esc(s.q)}" />
+            </div>`,
+            )
+            .join("");
+          work.innerHTML = `
+            <div class="ps-hint">Base sentence: <b>${esc(a.base)}.</b> Add details below.</div>
+            ${rows}
+            <button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check my sentence</button>
+            <button class="ps-btn ps-btn--ghost ps-btn--sm ps-model-btn">👀 See a model</button>
+            <div class="ps-model" hidden>💬 ${esc(a.model)}</div>`;
+          const fb = feedbackEl();
+          work.appendChild(fb);
+          const modelBox = work.querySelector(".ps-model");
+          work.querySelector(".ps-model-btn").addEventListener("click", () => {
+            modelBox.hidden = !modelBox.hidden;
+          });
+          work.querySelector(".ps-check").addEventListener("click", () => {
+            const inputs = [...work.querySelectorAll(".ps-exp")];
+            const filled = inputs.filter(
+              (i) => i.value.trim().length >= 2,
+            ).length;
+            if (filled >= a.slots.length) {
+              const first = awardComplete(a.id);
+              celebrate(work.closest(".ps-card"), "Great expansion! ⭐", first);
+              showFeedback(
+                fb,
+                true,
+                "🎉 You added every detail! Read your full sentence aloud to hear it.",
+              );
+            } else {
+              showFeedback(
+                fb,
+                false,
+                `Add a little more — fill all ${a.slots.length} detail boxes (at least a couple words each).`,
+              );
+            }
+          });
+        }
+
+        // SENTENCE FRAMES
+        function wsFrame(a, work) {
+          let html = '<div class="ps-frame-row">';
+          a.parts.forEach((part) => {
+            if (typeof part === "string") {
+              html += `<span>${esc(part)}</span>`;
+            } else {
+              html += `<input class="ps-field ps-fr" data-b="${part.blank}" placeholder="${esc(part.placeholder)}" aria-label="Fill in: ${esc(part.blank)}" />`;
+            }
+          });
+          html += "</div>";
+          work.innerHTML =
+            html +
+            `<button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check</button>
+             <button class="ps-btn ps-btn--ghost ps-btn--sm ps-model-btn">👀 See a model</button>
+             <div class="ps-model" hidden>💬 ${esc(a.model)}</div>`;
+          const fb = feedbackEl();
+          work.appendChild(fb);
+          const modelBox = work.querySelector(".ps-model");
+          work.querySelector(".ps-model-btn").addEventListener("click", () => {
+            modelBox.hidden = !modelBox.hidden;
+          });
+          work.querySelector(".ps-check").addEventListener("click", () => {
+            const inputs = [...work.querySelectorAll(".ps-fr")];
+            const ok = inputs.every((i) => i.value.trim().length >= 1);
+            if (ok) {
+              const first = awardComplete(a.id);
+              celebrate(work.closest(".ps-card"), "Frame complete! ⭐", first);
+              showFeedback(fb, true, "🎉 You completed the sentence frame!");
+            } else {
+              showFeedback(
+                fb,
+                false,
+                "Fill in every blank to finish the sentence.",
+              );
+            }
+          });
+        }
+
+        // PARAGRAPH ORDER
+        function wsParagraph(a, work) {
+          const order = a.items
+            .map((_, i) => i)
+            .sort(() => Math.random() - 0.5);
+          work.innerHTML = `
+            <div class="ps-hint">Put the parts in the best order. Use ▲ / ▼ or drag.</div>
+            <div class="ps-sortlist" role="list"></div>
+            <button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check order</button>`;
+          const list = work.querySelector(".ps-sortlist");
+          const fb = feedbackEl();
+          work.appendChild(fb);
+
+          function paint() {
+            list.innerHTML = "";
+            order.forEach((origIdx, pos) => {
+              const item = a.items[origIdx];
+              const row = document.createElement("div");
+              row.className = "ps-sortitem";
+              row.setAttribute("role", "listitem");
+              row.setAttribute("draggable", "true");
+              row.dataset.pos = pos;
+              row.innerHTML = `
+                <span class="ps-sortitem__role">${esc(item.role)}</span>
+                <span>${esc(item.text)}</span>
+                <span class="ps-move">
+                  <button type="button" aria-label="Move up" data-dir="-1">▲</button>
+                  <button type="button" aria-label="Move down" data-dir="1">▼</button>
+                </span>`;
+              row.querySelectorAll(".ps-move button").forEach((b) => {
+                b.addEventListener("click", () => {
+                  const dir = parseInt(b.dataset.dir, 10);
+                  const np = pos + dir;
+                  if (np < 0 || np >= order.length) return;
+                  [order[pos], order[np]] = [order[np], order[pos]];
+                  paint();
+                  fb.style.display = "none";
+                });
+              });
+              row.addEventListener("dragstart", (e) => {
+                row.setAttribute("aria-grabbed", "true");
+                e.dataTransfer.setData("text/plain", String(pos));
+              });
+              row.addEventListener("dragend", () =>
+                row.removeAttribute("aria-grabbed"),
+              );
+              row.addEventListener("dragover", (e) => e.preventDefault());
+              row.addEventListener("drop", (e) => {
+                e.preventDefault();
+                const from = parseInt(e.dataTransfer.getData("text/plain"), 10);
+                const to = pos;
+                if (isNaN(from) || from === to) return;
+                const moved = order.splice(from, 1)[0];
+                order.splice(to, 0, moved);
+                paint();
+                fb.style.display = "none";
+              });
+              list.appendChild(row);
+            });
+          }
+          paint();
+
+          work.querySelector(".ps-check").addEventListener("click", () => {
+            const ok = order.every((origIdx, pos) => origIdx === pos);
+            const rows = [...list.children];
+            rows.forEach((r, pos) =>
+              r.classList.toggle("is-correct", order[pos] === pos),
+            );
+            if (ok) {
+              const first = awardComplete(a.id);
+              celebrate(
+                work.closest(".ps-card"),
+                "Paragraph in order! ⭐",
+                first,
+              );
+              showFeedback(
+                fb,
+                true,
+                "🎉 Perfect order! Topic, details, then closing all line up.",
+              );
+            } else {
+              showFeedback(
+                fb,
+                false,
+                "Not quite. The green rows are correct — keep moving the others.",
+              );
+            }
+          });
+        }
+
+        // EDIT & REVISE
+        function wsEdit(a, work) {
+          const targetErrors = a.tokens.filter((t) => t.err).length;
+          work.innerHTML = `
+            <div class="ps-hint">Tap each mistake. <b>${targetErrors}</b> to find.</div>
+            <p class="ps-edit-text"></p>
+            <button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check my edits</button>
+            <div class="ps-model" hidden>📘 ${esc(a.note)}</div>`;
+          const p = work.querySelector(".ps-edit-text");
+          const note = work.querySelector(".ps-model");
+          const fb = feedbackEl();
+          work.appendChild(fb);
+          const flagged = new Set();
+
+          a.tokens.forEach((tk, i) => {
+            const span = document.createElement("span");
+            span.className = "ps-etok";
+            span.textContent = tk.t;
+            span.tabIndex = 0;
+            span.setAttribute("role", "button");
+            span.setAttribute(
+              "aria-label",
+              "Word: " + tk.t + ". Tap if it has a mistake.",
+            );
+            const toggle = () => {
+              if (flagged.has(i)) {
+                flagged.delete(i);
+                span.classList.remove("is-flagged");
+              } else {
+                flagged.add(i);
+                span.classList.add("is-flagged");
+              }
+              fb.style.display = "none";
+            };
+            span.addEventListener("click", toggle);
+            span.addEventListener("keydown", (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggle();
+              }
+            });
+            p.appendChild(span);
+            p.appendChild(document.createTextNode(" "));
+          });
+
+          work.querySelector(".ps-check").addEventListener("click", () => {
+            let correct = 0,
+              wrong = 0;
+            [...p.children].forEach((span, i) => {
+              const tk = a.tokens[i];
+              span.classList.remove("is-rightflag");
+              if (tk.err && flagged.has(i)) {
+                correct++;
+                span.classList.add("is-rightflag");
+                span.classList.remove("is-flagged");
+                span.textContent = tk.fix;
+              } else if (!tk.err && flagged.has(i)) {
+                wrong++;
+              }
+            });
+            if (correct === targetErrors && wrong === 0) {
+              const first = awardComplete(a.id);
+              celebrate(
+                work.closest(".ps-card"),
+                "All errors fixed! ⭐",
+                first,
+              );
+              showFeedback(
+                fb,
+                true,
+                "🎉 You found and fixed every mistake! See the green corrections.",
+              );
+              note.hidden = false;
+            } else {
+              showFeedback(
+                fb,
+                false,
+                `You marked ${correct} of ${targetErrors} real errors${wrong ? " and " + wrong + " correct word(s) by mistake" : ""}. Keep looking!`,
+              );
+            }
+          });
+        }
+
+        // TRANSITIONS
+        function wsTransition(a, work) {
+          let bi = 0;
+          const sentence = a.sentence[0];
+          const segs = sentence.split("___");
+          let html = '<div class="ps-frame-row" style="line-height:2.1;">';
+          segs.forEach((seg, idx) => {
+            html += `<span>${esc(seg)}</span>`;
+            if (idx < a.blanks.length) {
+              const b = a.blanks[bi++];
+              const opts = b.options
+                .map((o) => `<option value="${esc(o)}">${esc(o)}</option>`)
+                .join("");
+              html += `<select class="ps-field ps-tr" data-i="${idx}" aria-label="Choose connector ${idx + 1}" style="width:auto;display:inline-block;"><option value="">— pick —</option>${opts}</select>`;
+            }
+          });
+          html += "</div>";
+          work.innerHTML =
+            html +
+            '<button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check</button>';
+          const fb = feedbackEl();
+          work.appendChild(fb);
+          work.querySelector(".ps-check").addEventListener("click", () => {
+            const sels = [...work.querySelectorAll(".ps-tr")];
+            const ok = sels.every((s, i) => s.value === a.blanks[i].answer);
+            if (ok) {
+              const first = awardComplete(a.id);
+              celebrate(
+                work.closest(".ps-card"),
+                "Connectors correct! ⭐",
+                first,
+              );
+              showFeedback(
+                fb,
+                true,
+                "🎉 Great choices! Your transitions link the ideas smoothly.",
+              );
+            } else {
+              showFeedback(
+                fb,
+                false,
+                "Some connectors don't fit yet. Think about the relationship between the ideas (time, reason, contrast).",
+              );
+            }
+          });
+        }
+
+        // VOCABULARY IN WRITING
+        function wsVocab(a, work) {
+          work.innerHTML = `
+            <span class="ps-label">Target words (use both)</span>
+            <div class="ps-bank">${a.words.map((w) => `<span class="ps-token" aria-hidden="true">${esc(w)}</span>`).join("")}</div>
+            <textarea class="ps-area ps-vocab" placeholder="Write one complete sentence using both words..." aria-label="Write your sentence"></textarea>
+            <button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check my sentence</button>
+            <button class="ps-btn ps-btn--ghost ps-btn--sm ps-model-btn">👀 See a model</button>
+            <div class="ps-model" hidden>💬 ${esc(a.model)}</div>`;
+          const fb = feedbackEl();
+          work.appendChild(fb);
+          const modelBox = work.querySelector(".ps-model");
+          work.querySelector(".ps-model-btn").addEventListener("click", () => {
+            modelBox.hidden = !modelBox.hidden;
+          });
+          work.querySelector(".ps-check").addEventListener("click", () => {
+            const txt = work.querySelector(".ps-vocab").value.trim();
+            const lower = txt.toLowerCase();
+            const used = a.words.filter((w) =>
+              new RegExp(
+                "\\b" +
+                  w.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+                  "(s|es|ed|ing)?\\b",
+              ).test(lower),
+            );
+            const hasEnd = /[.!?]\s*$/.test(txt);
+            const longEnough = txt.split(/\s+/).filter(Boolean).length >= 5;
+            if (used.length === a.words.length && hasEnd && longEnough) {
+              const first = awardComplete(a.id);
+              celebrate(work.closest(".ps-card"), "Both words used! ⭐", first);
+              showFeedback(
+                fb,
+                true,
+                "🎉 You used both target words in a complete sentence!",
+              );
+            } else if (used.length < a.words.length) {
+              showFeedback(
+                fb,
+                false,
+                `Use both words: ${a.words.join(" and ")}. So far you used ${used.length}.`,
+              );
+            } else if (!hasEnd) {
+              showFeedback(
+                fb,
+                false,
+                "Nice — now end your sentence with a period, question mark, or exclamation point.",
+              );
+            } else {
+              showFeedback(
+                fb,
+                false,
+                "Try to write a fuller sentence (about 5+ words) that shows what the words mean.",
+              );
+            }
+          });
+        }
+
+        // ORGANIZER -> PARAGRAPH
+        function wsOrganizer(a, work) {
+          const nodeInputs = a.nodes
+            .map(
+              (n, i) => `
+            <div>
+              <span class="ps-label">${esc(n.q)}</span>
+              <input class="ps-field ps-org" data-i="${i}" placeholder="e.g. ${esc(n.placeholder)}" aria-label="${esc(n.q)}" />
+            </div>`,
+            )
+            .join("");
+          work.innerHTML = `
+            <div class="ps-hint">🕸️ Center idea: <b>${esc(a.center)}</b>. Fill each node, then assemble your paragraph.</div>
+            ${nodeInputs}
+            <span class="ps-label">Now write your paragraph using your notes</span>
+            <textarea class="ps-area ps-org-para" placeholder="Combine your notes into a paragraph..." aria-label="Write your paragraph"></textarea>
+            <button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check my paragraph</button>
+            <button class="ps-btn ps-btn--ghost ps-btn--sm ps-model-btn">👀 See a model</button>
+            <div class="ps-model" hidden>💬 ${esc(a.model)}</div>`;
+          const fb = feedbackEl();
+          work.appendChild(fb);
+          const modelBox = work.querySelector(".ps-model");
+          work.querySelector(".ps-model-btn").addEventListener("click", () => {
+            modelBox.hidden = !modelBox.hidden;
+          });
+          work.querySelector(".ps-check").addEventListener("click", () => {
+            const nodes = [...work.querySelectorAll(".ps-org")];
+            const filled = nodes.filter(
+              (n) => n.value.trim().length >= 2,
+            ).length;
+            const para = work.querySelector(".ps-org-para").value.trim();
+            const sentences = para
+              .split(/[.!?]+/)
+              .filter((s) => s.trim().length > 3).length;
+            if (filled === a.nodes.length && sentences >= 3) {
+              const first = awardComplete(a.id);
+              celebrate(
+                work.closest(".ps-card"),
+                "Organizer assembled! ⭐",
+                first,
+              );
+              showFeedback(
+                fb,
+                true,
+                "🎉 You planned and built a full paragraph with 3+ sentences!",
+              );
+            } else if (filled < a.nodes.length) {
+              showFeedback(
+                fb,
+                false,
+                "Fill in all the organizer notes first — they become your sentences.",
+              );
+            } else {
+              showFeedback(
+                fb,
+                false,
+                "Good notes! Now write at least 3 sentences in the paragraph box.",
+              );
+            }
+          });
+        }
+
+        // RUBRIC SELF-CHECK
+        function wsRubric(a, work) {
+          const rows = a.criteria
+            .map(
+              (c, i) => `
+            <div class="ps-rubric-row">
+              <span>${esc(c.name)}</span>
+              <div class="ps-stars" role="radiogroup" aria-label="${esc(c.name)}" data-i="${i}">
+                ${[1, 2, 3]
+                  .map(
+                    (n) =>
+                      `<button type="button" class="ps-star" data-n="${n}" role="radio" aria-checked="false" aria-label="${n} of 3 stars">⭐</button>`,
+                  )
+                  .join("")}
+              </div>
+            </div>`,
+            )
+            .join("");
+          work.innerHTML = `
+            <div class="ps-model">📝 Model: ${esc(a.model)}</div>
+            <button class="ps-btn ps-btn--ghost ps-btn--sm ps-listen2">🔊 Read model aloud</button>
+            <div>${rows}</div>
+            <button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Reveal coach's score</button>
+            <div class="ps-feedback ps-coach" style="display:none"></div>`;
+          work
+            .querySelector(".ps-listen2")
+            .addEventListener("click", () => readAloud(a.model));
+          const ratings = new Array(a.criteria.length).fill(0);
+          work.querySelectorAll(".ps-stars").forEach((group) => {
+            const gi = parseInt(group.dataset.i, 10);
+            const stars = [...group.querySelectorAll(".ps-star")];
+            stars.forEach((star) => {
+              star.addEventListener("click", () => {
+                const n = parseInt(star.dataset.n, 10);
+                ratings[gi] = n;
+                stars.forEach((s, idx) => {
+                  const on = idx < n;
+                  s.classList.toggle("is-on", on);
+                  s.setAttribute("aria-checked", String(idx === n - 1));
+                });
+              });
+            });
+          });
+          const coach = work.querySelector(".ps-coach");
+          work.querySelector(".ps-check").addEventListener("click", () => {
+            if (ratings.some((r) => r === 0)) {
+              coach.style.display = "block";
+              coach.className = "ps-feedback ps-feedback--try ps-coach";
+              coach.textContent =
+                "Rate every row (1–3 stars) before revealing the coach's score.";
+              announce("Please rate every row first.");
+              return;
+            }
+            const myTotal = ratings.reduce((x, y) => x + y, 0);
+            const idealTotal = a.criteria.reduce((x, c) => x + c.ideal, 0);
+            const first = awardComplete(a.id);
+            celebrate(
+              work.closest(".ps-card"),
+              "Self-check complete! ⭐",
+              first,
+            );
+            coach.style.display = "block";
+            coach.className = "ps-feedback ps-feedback--ok ps-coach";
+            coach.innerHTML = `<b>Your score: ${myTotal}/${idealTotal} · Coach's score: ${idealTotal}/${idealTotal}</b><br>${esc(a.coach)}`;
+            announce("Coach feedback revealed.");
+          });
+        }
+
+        // ── Filter wiring ──
+        function wireFilters() {
+          document
+            .querySelectorAll(".ps-toolbar .ps-pill")
+            .forEach((pill) => attachPill(pill));
+        }
+        function attachPill(pill) {
+          pill.addEventListener("click", () => {
+            const dim = pill.dataset.filter;
+            filters[dim] = pill.dataset.value;
+            pill.parentElement
+              .querySelectorAll(".ps-pill")
+              .forEach((p) => p.setAttribute("aria-pressed", "false"));
+            pill.setAttribute("aria-pressed", "true");
+            render();
+            announce(visibleActivities().length + " activities shown.");
+          });
+        }
+
+        function init() {
+          buildKindFilters();
+          wireFilters();
+          updateStats();
+          render();
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", init);
+        } else {
+          init();
+        }
+      })();
     </script>
   </body>
 </html>

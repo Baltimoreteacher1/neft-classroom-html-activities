@@ -592,6 +592,285 @@
         gap: 6px;
       }
 
+      /* ── Question-set engine additions ── */
+      .qtype-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.64rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--primary-dark);
+        background: var(--primary-light);
+        border: 1px solid var(--primary);
+        border-radius: 20px;
+        padding: 3px 10px;
+      }
+
+      .quiz-progress-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .quiz-dots {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+
+      .quiz-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--line-muted);
+        border: 1.5px solid var(--slate-muted);
+        transition: var(--transition);
+      }
+      .quiz-dot.done {
+        background: var(--green-success);
+        border-color: var(--green-success);
+      }
+      .quiz-dot.current {
+        background: var(--primary);
+        border-color: var(--primary-dark);
+        transform: scale(1.25);
+      }
+
+      .quiz-nav-btns {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .quiz-mini-btn {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: var(--radius-field);
+        font-weight: 800;
+        font-size: 0.82rem;
+        cursor: pointer;
+        border: 1.5px solid var(--line-muted);
+        background: var(--white);
+        color: var(--slate-ink);
+        transition: var(--transition);
+      }
+      .quiz-mini-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        background: var(--primary-light);
+        color: var(--primary-dark);
+      }
+      .quiz-mini-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .quiz-mini-btn.primary {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary-dark);
+      }
+      .quiz-mini-btn.primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .read-aloud-btn {
+        align-self: flex-start;
+        background: var(--navy);
+        color: var(--white);
+        border: none;
+        padding: 8px 14px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: var(--transition);
+      }
+      .read-aloud-btn:hover {
+        background: var(--navy-deep);
+        transform: translateY(-1px);
+      }
+      .read-aloud-btn[aria-pressed="true"] {
+        background: var(--coral);
+      }
+
+      .word-being-read {
+        background: #fde68a !important;
+        border-radius: 3px;
+      }
+
+      /* ── Graphic Organizer (drag-to-fill) ── */
+      .organizer-section {
+        max-width: 1440px;
+        margin: 28px auto 0;
+        padding: 0 24px;
+      }
+
+      .organizer-panel {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-premium);
+        padding: 28px;
+        box-shadow: var(--shadow-premium);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .organizer-typeswitch {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .organizer-typeswitch button {
+        border: 1.5px solid var(--line-muted);
+        background: var(--white);
+        color: var(--slate-ink);
+        font-weight: 800;
+        font-size: 0.8rem;
+        padding: 9px 16px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+      .organizer-typeswitch button.active {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary-dark);
+      }
+      .organizer-typeswitch button:hover:not(.active) {
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+
+      .organizer-board {
+        display: grid;
+        gap: 14px;
+      }
+      .organizer-board.web {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      .organizer-board.map {
+        grid-template-columns: 1fr;
+        max-width: 640px;
+      }
+      .organizer-board.tchart {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .org-slot {
+        border: 2px dashed var(--primary);
+        border-radius: var(--radius-field);
+        background: var(--primary-light);
+        padding: 14px;
+        min-height: 64px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        justify-content: center;
+        transition: var(--transition);
+      }
+      .org-slot .org-slot-label {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--primary-dark);
+      }
+      .org-slot.over {
+        background: var(--amber-light);
+        border-color: var(--amber);
+      }
+      .org-slot.filled-correct {
+        background: var(--green-light);
+        border: 2px solid var(--green-success);
+      }
+      .org-slot.filled-wrong {
+        background: var(--coral-light);
+        border: 2px solid var(--coral);
+      }
+      .org-slot .org-drop-zone {
+        min-height: 28px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .org-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px;
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        background: var(--bg-canvas);
+        min-height: 56px;
+      }
+
+      .org-token {
+        background: var(--white);
+        border: 1.5px solid var(--navy);
+        color: var(--navy-deep);
+        padding: 9px 14px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: grab;
+        transition: var(--transition);
+        user-select: none;
+      }
+      .org-token:hover,
+      .org-token:focus-visible {
+        background: var(--primary-light);
+        border-color: var(--primary);
+        color: var(--primary-dark);
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+      .org-token.selected {
+        background: var(--amber);
+        border-color: var(--amber);
+        color: var(--white);
+      }
+      .org-token.placed {
+        cursor: default;
+      }
+      .org-token.dragging {
+        opacity: 0.5;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        #spinnerNeedle {
+          transition: none !important;
+        }
+      }
+
       @media print {
         body {
           background: white !important;
@@ -877,10 +1156,21 @@
 
             <!-- Passage Display Canvas -->
             <div class="passage-card">
+              <button
+                type="button"
+                class="read-aloud-btn"
+                id="readAloudBtn"
+                aria-pressed="false"
+                onclick="togglePassageReadAloud()"
+              >
+                🔊 Read Passage Aloud
+              </button>
               <div
                 class="passage-viewport"
                 id="passageTextBox"
                 onscroll="trackPassageReadingScroll()"
+                tabindex="0"
+                aria-label="Reading passage. Scroll to the end to mark it read."
               >
                 Loading passage...
               </div>
@@ -921,12 +1211,53 @@
 
             <!-- Reading Comprehension Quiz Card -->
             <div class="quiz-card" id="quizCard" style="display: none">
-              <div class="quiz-question" id="quizQuestionText">
+              <div class="quiz-progress-row">
+                <span class="qtype-badge" id="quizTypeBadge">Main Idea</span>
+                <div
+                  class="quiz-dots"
+                  id="quizDots"
+                  role="group"
+                  aria-label="Question progress"
+                ></div>
+              </div>
+              <div
+                class="quiz-question"
+                id="quizQuestionText"
+                aria-live="polite"
+              >
                 Loading question...
               </div>
-              <div class="quiz-options" id="quizOptionsContainer"></div>
+              <div
+                class="quiz-options"
+                id="quizOptionsContainer"
+                role="group"
+                aria-label="Answer choices"
+              ></div>
               <!-- Live feedback banner -->
-              <div class="explanation-banner" id="explanationBanner"></div>
+              <div
+                class="explanation-banner"
+                id="explanationBanner"
+                role="status"
+                aria-live="polite"
+              ></div>
+              <div class="quiz-nav-btns">
+                <button
+                  type="button"
+                  class="quiz-mini-btn"
+                  id="quizPrevBtn"
+                  onclick="quizGoTo(-1)"
+                >
+                  ◀ Previous
+                </button>
+                <button
+                  type="button"
+                  class="quiz-mini-btn primary"
+                  id="quizNextBtn"
+                  onclick="quizGoTo(1)"
+                >
+                  Next Question ▶
+                </button>
+              </div>
             </div>
 
             <!-- WIDA Diagnostic Reading Strategy Scorer -->
@@ -1014,6 +1345,122 @@
           </div>
         </section>
       </div>
+
+      <!-- Drag-to-Fill Graphic Organizer -->
+      <section class="organizer-section" aria-label="Graphic Organizer Builder">
+        <div class="organizer-panel">
+          <div class="panel-meta">
+            <h3>
+              🧩 Graphic Organizer Builder
+              <span class="admin-pill" style="font-size: 0.64rem"
+                >Drag &amp; Drop</span
+              >
+            </h3>
+            <span class="admin-pill" id="organizerScoreBadge">0 / 0</span>
+          </div>
+
+          <p style="font-size: 0.84rem; color: var(--slate-muted); margin: 0">
+            Drag each card into the right box, or use the keyboard: press
+            <strong>Enter</strong>/<strong>Space</strong> on a card to pick it
+            up, then <strong>Enter</strong>/<strong>Space</strong> on a box to
+            drop it. Build a story map, a main-idea web, or a T-chart!
+          </p>
+
+          <div
+            class="organizer-typeswitch"
+            role="group"
+            aria-label="Choose an organizer"
+          >
+            <button
+              type="button"
+              class="active"
+              data-org="storymap"
+              onclick="loadOrganizer('storymap')"
+            >
+              📖 Story Map
+            </button>
+            <button
+              type="button"
+              data-org="mainweb"
+              onclick="loadOrganizer('mainweb')"
+            >
+              💡 Main-Idea Web
+            </button>
+            <button
+              type="button"
+              data-org="tchart"
+              onclick="loadOrganizer('tchart')"
+            >
+              ⚖️ Compare T-Chart
+            </button>
+          </div>
+
+          <div
+            id="organizerPrompt"
+            style="
+              font-size: 0.84rem;
+              font-weight: 700;
+              color: var(--primary-dark);
+              padding: 10px 14px;
+              background: var(--primary-light);
+              border-radius: 6px;
+              border-left: 3.5px solid var(--primary);
+            "
+          ></div>
+
+          <div class="org-board" id="organizerBoard"></div>
+
+          <div>
+            <div
+              style="
+                font-size: 0.72rem;
+                font-weight: 800;
+                color: var(--slate-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                margin-bottom: 6px;
+              "
+            >
+              🎒 Word Bank
+            </div>
+            <div
+              class="org-bank"
+              id="organizerBank"
+              aria-label="Word bank of cards to place"
+            ></div>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap">
+            <button
+              type="button"
+              class="action-btn btn-control"
+              onclick="checkOrganizer()"
+            >
+              ✓ Check My Organizer
+            </button>
+            <button
+              type="button"
+              class="action-btn"
+              style="
+                background: var(--white);
+                color: var(--slate-ink);
+                border: 1.5px solid var(--line-muted);
+              "
+              onclick="loadOrganizer(STORE.activeOrganizer)"
+            >
+              ↺ Reset
+            </button>
+          </div>
+
+          <div
+            class="explanation-banner"
+            id="organizerFeedback"
+            role="status"
+            aria-live="polite"
+          ></div>
+          <div id="organizerStatus" class="sr-only" aria-live="polite"></div>
+        </div>
+      </section>
 
       <!-- Diagnostics Terminal Overlay -->
       <div class="diag-overlay" id="diagTerminal">
@@ -1196,6 +1643,13 @@
         activeDictionaryLang: "en",
         sparkPoints: 1200,
         celebrationFired: false,
+
+        // Multi-question quiz state
+        quizIndex: 0,
+        quizAnswered: [],
+
+        // Graphic organizer state
+        organizerHeldToken: null,
 
         // Checklist flags
         questCompleted: false,
@@ -1963,6 +2417,2939 @@
         },
       ];
 
+      // ── Multi-question comprehension sets ──
+      // Each task gets a varied set of question types per tier (A = Level 1
+      // support, B = Level 2 enrichment). Question shape:
+      //   { type, q, opts:[], ans, expl:[], ev:"ev1|ev2|ev3" }
+      // The "ev" field tells the Evidence Highlighter which passage span to glow.
+      // Engine falls back to legacy single-question fields if a set is missing.
+      const C = (text) => "✅ Correct! " + text;
+      const X = (text) => "Not quite. " + text;
+
+      const WIDA_QUESTION_SETS = {
+        T1: {
+          A: [
+            {
+              type: "Main Idea",
+              q: "What is this passage mostly about?",
+              opts: [
+                "How to play soccer",
+                "The parts of a healthy lunch tray",
+                "A trip to the zoo",
+                "How to clean a desk",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("The passage is about food, not sports."),
+                C("It describes the three parts of a healthy tray."),
+                X("There is no zoo in the passage."),
+                X("The passage is about lunch, not cleaning."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "Which food helps build strong bones?",
+              opts: ["The apple", "The sandwich", "The milk", "The tray"],
+              ans: 2,
+              ev: "ev3",
+              expl: [
+                X("The apple is a fruit."),
+                X("The sandwich gives energy."),
+                C("The text says milk helps build strong bones."),
+                X("The tray holds the food."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "In this passage, the word 'tray' means —",
+              opts: [
+                "a flat dish that holds food",
+                "a kind of fruit",
+                "a school bus",
+                "a drink",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("A tray is a flat dish that holds the food."),
+                X("An apple is the fruit."),
+                X("A tray is not a bus."),
+                X("Milk is the drink."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "Which food does the passage name FIRST?",
+              opts: ["The apple", "The milk", "The sandwich", "The tray"],
+              ans: 2,
+              ev: "ev2",
+              expl: [
+                X("The apple is named last."),
+                X("Milk is named after the sandwich."),
+                C("The word 'First' tells us the sandwich comes first."),
+                X("The tray holds the food but is not a food."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Main Idea",
+              q: "What is the central idea of the passage?",
+              opts: [
+                "Students should skip lunch",
+                "A balanced lunch keeps students healthy and focused",
+                "Apples are the only healthy food",
+                "Milk tastes the best",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("The passage says the opposite."),
+                C("That is the main point of the whole passage."),
+                X("Apples are only one part."),
+                X("Taste is not the main idea."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "According to the text, what is the EFFECT of eating each part of the tray?",
+              opts: [
+                "Students get tired",
+                "Students stay focused all afternoon",
+                "Students stop learning",
+                "Students lose energy",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("The text says students stay focused, not tired."),
+                C("The last sentence names this effect."),
+                X("The opposite is stated."),
+                X("The sandwich gives lasting energy."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'balanced' in the first sentence means —",
+              opts: [
+                "having a good mix of different foods",
+                "standing on one foot",
+                "very heavy",
+                "very sweet",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("A balanced lunch has foods from different groups."),
+                X("That is balance of the body, not food."),
+                X("Weight is not the meaning here."),
+                X("Sweetness is the apple only."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author most likely write this passage?",
+              opts: [
+                "To tell a funny story",
+                "To explain why a balanced lunch matters",
+                "To sell milk",
+                "To describe a soccer game",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("It is informational, not a story."),
+                C("The author informs readers about healthy lunches."),
+                X("It is not an advertisement."),
+                X("There is no soccer game."),
+              ],
+            },
+          ],
+        },
+        T2: {
+          A: [
+            {
+              type: "Key Details",
+              q: "How many chapters are in the whole book?",
+              opts: ["Three", "Four", "Five", "Seven"],
+              ans: 2,
+              ev: "ev1",
+              expl: [
+                X("Three are finished, not the total."),
+                X("There are more than four."),
+                C("The book has five chapters."),
+                X("There are only five."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "How many chapters has the reader finished?",
+              opts: ["Two", "Three", "Five", "None"],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("The reader finished three."),
+                C("The text says three chapters are done."),
+                X("Five is the total, not what is finished."),
+                X("Some chapters are finished."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'character' in a story is —",
+              opts: [
+                "a person or animal in the story",
+                "the cover",
+                "the price",
+                "a page number",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("A character is a person or animal in the story."),
+                X("The cover is not a character."),
+                X("Price is not part of the story."),
+                X("Page numbers are not characters."),
+              ],
+            },
+            {
+              type: "Inference",
+              q: "The reader will most likely read which chapter next?",
+              opts: ["Chapter 1", "Chapter 3", "Chapter 4", "The last page"],
+              ans: 2,
+              ev: "ev2",
+              expl: [
+                X("Chapter 1 is already finished."),
+                X("Chapter 3 is the last one finished."),
+                C("After three chapters, chapter 4 comes next."),
+                X("The reader is not at the end yet."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Main Idea",
+              q: "What does this passage mainly describe?",
+              opts: [
+                "How a story is built from connected parts",
+                "How to print a book",
+                "A list of authors",
+                "How to draw a bar chart",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("It explains how story parts build the novel."),
+                X("Printing is not discussed."),
+                X("No author list appears."),
+                X("The chart only tracks progress."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "What does the author introduce in the first three chapters?",
+              opts: [
+                "Only the ending",
+                "The character, setting, and central problem",
+                "The author's name",
+                "A list of new words",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("The solution comes later."),
+                C("Character, setting, and problem are introduced."),
+                X("The author's name is not the focus."),
+                X("It is about story parts, not a word list."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "Which story part comes LAST?",
+              opts: ["Character", "Setting", "Problem", "Solution"],
+              ans: 3,
+              ev: "ev3",
+              expl: [
+                X("The character appears first."),
+                X("The setting appears early."),
+                X("The problem comes before the solution."),
+                C("The solution ends the story."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "What does the progress bar in the diagram help a reader do?",
+              opts: [
+                "See how many chapters are read",
+                "Buy the book",
+                "Find the author",
+                "Pick a color",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("The shaded bar shows reading progress."),
+                X("It is not a store."),
+                X("It does not name the author."),
+                X("Color choice is not its purpose."),
+              ],
+            },
+          ],
+        },
+        T3: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What heats the water in the ocean?",
+              opts: ["Cold wind", "The sun", "The rain", "The moon"],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("Wind moves clouds but does not heat water."),
+                C("The sun heats the ocean water."),
+                X("Rain comes later."),
+                X("The moon does not heat water."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "What does 'evaporation' mean in this text?",
+              opts: [
+                "water turning into gas",
+                "water freezing into ice",
+                "wind blowing clouds",
+                "rain falling down",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Evaporation is water turning into gas."),
+                X("Freezing is a different change."),
+                X("Wind is not evaporation."),
+                X("Rain is condensation that falls."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "What happens FIRST in the water cycle?",
+              opts: [
+                "Clouds form",
+                "The sun heats the water",
+                "Rain falls",
+                "Snow melts",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("Clouds form later."),
+                C("The sun heating the water starts the cycle."),
+                X("Rain comes near the end."),
+                X("Snow is not in the passage."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What causes clouds to form?",
+              opts: [
+                "Gas cooling in the sky",
+                "The moon rising",
+                "Fish swimming",
+                "Cold sand",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("When gas cools, condensation makes clouds."),
+                X("The moon is not the cause."),
+                X("Fish are not mentioned."),
+                X("Sand is not the cause."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Sequence",
+              q: "Which process turns gas back into tiny water drops?",
+              opts: [
+                "Evaporation",
+                "Condensation",
+                "Strong wind",
+                "Falling snow",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Evaporation turns liquid into gas."),
+                C("Condensation turns gas into water drops."),
+                X("Wind does not change gas into drops."),
+                X("Snow is not described."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'atmosphere' in the passage refers to —",
+              opts: [
+                "the air around the Earth",
+                "the bottom of the ocean",
+                "a kind of rock",
+                "a type of fish",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("The atmosphere is the air the gas rises into."),
+                X("That is the ocean floor."),
+                X("It is not a rock."),
+                X("It is not an animal."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What is the effect of the sun's heat on the ocean?",
+              opts: [
+                "It starts the water cycle",
+                "It freezes the water",
+                "It stops the rain",
+                "It makes the water colder",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The sun's heat starts the water cycle."),
+                X("Heat does not freeze water."),
+                X("It does not stop rain."),
+                X("Heat warms, not cools."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "The author wrote this passage mainly to —",
+              opts: [
+                "tell an exciting adventure",
+                "explain how the water cycle works",
+                "describe a vacation",
+                "give a recipe",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("It is not an adventure story."),
+                C("The author explains a science process."),
+                X("No vacation is described."),
+                X("It is not a recipe."),
+              ],
+            },
+          ],
+        },
+        T4: {
+          A: [
+            {
+              type: "Key Details",
+              q: "How many desks do you move across to reach Maya's desk?",
+              opts: ["One", "Two", "Three", "Five"],
+              ans: 2,
+              ev: "ev2",
+              expl: [
+                X("One is too few."),
+                X("Two is how many rows up."),
+                C("You move across three desks."),
+                X("Five is too many."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "What marks Maya's seat on the map?",
+              opts: ["A star", "A circle", "A square", "A letter"],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Her seat is marked with a star."),
+                X("It is not a circle."),
+                X("It is not a square."),
+                X("It is a star, not a letter."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'map' in this passage shows —",
+              opts: [
+                "where the desks are",
+                "the lunch menu",
+                "the weather",
+                "a story",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The map shows the classroom desks."),
+                X("There is no menu."),
+                X("Weather is not on this map."),
+                X("It is a map, not a story."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "What do you do FIRST to find Maya's desk?",
+              opts: [
+                "Move up two rows",
+                "Start at the door",
+                "Find the star",
+                "Leave the room",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("You move up after going across."),
+                C("You start at the door."),
+                X("You find the star at the end."),
+                X("You stay in the room."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Text Features",
+              q: "What explains the meaning of the star symbol?",
+              opts: [
+                "The door",
+                "The legend",
+                "The teacher's name",
+                "The window",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("The door is the start point."),
+                C("The legend explains the symbol."),
+                X("A name does not explain symbols."),
+                X("The window is not a key."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "In this passage, 'legend' means —",
+              opts: [
+                "a key that explains map symbols",
+                "an old hero tale",
+                "a famous person",
+                "a long road",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Here a legend is a map key."),
+                X("That is a different meaning of legend."),
+                X("It is not a person here."),
+                X("It is not a road."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "Put the steps in order: what comes SECOND?",
+              opts: [
+                "Start at the door",
+                "Move across three desks",
+                "Move up two rows",
+                "Find the star",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("That is the first step."),
+                C("Moving across three desks is the second step."),
+                X("That is the third step."),
+                X("That is the last step."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author include directions in this passage?",
+              opts: [
+                "To help the reader locate a desk on the map",
+                "To tell a scary story",
+                "To sell desks",
+                "To list spelling words",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("The directions help locate Maya's desk."),
+                X("It is not a story."),
+                X("Nothing is being sold."),
+                X("There is no spelling list."),
+              ],
+            },
+          ],
+        },
+        T5: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What did the two friends disagree about?",
+              opts: [
+                "Where to eat lunch",
+                "Which activity to do at recess",
+                "Who would be line leader",
+                "Which book to buy",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("Lunch is not mentioned."),
+                C("They disagreed about the recess activity."),
+                X("Line leader is not the conflict."),
+                X("Buying a book is not the issue."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'conflict' is —",
+              opts: [
+                "a problem or disagreement",
+                "a happy party",
+                "a kind of food",
+                "a sports score",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("A conflict is a problem or disagreement."),
+                X("It is not a party."),
+                X("It is not food."),
+                X("It is not a score."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What was the result of their fair decision?",
+              opts: [
+                "They stopped being friends",
+                "They played soccer first, then read",
+                "They went home",
+                "They argued more",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("They stayed friends."),
+                C("They agreed to soccer first, then reading."),
+                X("They did not go home."),
+                X("They stopped arguing."),
+              ],
+            },
+            {
+              type: "Inference",
+              q: "How did the friends most likely feel after their choice?",
+              opts: ["Angry", "Happy and fair", "Bored", "Scared"],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("A fair choice is not angry."),
+                C("A fair choice made both feel good."),
+                X("They were not bored."),
+                X("Nothing scary happened."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Cause & Effect",
+              q: "What was the consequence of their fair decision?",
+              opts: [
+                "They stopped being friends",
+                "Both friends felt respected",
+                "They missed recess",
+                "They argued all day",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("They stayed friends."),
+                C("The consequence was both felt respected."),
+                X("They did not miss recess."),
+                X("They stopped arguing."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "In the passage, 'courage' means —",
+              opts: [
+                "bravery to do something hard",
+                "a kind of game",
+                "feeling sleepy",
+                "a loud noise",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Courage is bravery; it took bravery to listen."),
+                X("It is not a game."),
+                X("It is not sleepiness."),
+                X("It is not a noise."),
+              ],
+            },
+            {
+              type: "Inference",
+              q: "What can you tell about Sam and Lee from the passage?",
+              opts: [
+                "They are good at solving problems together",
+                "They never talk",
+                "They dislike recess",
+                "They are not classmates",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("They listened and solved the problem fairly."),
+                X("They talked to each other."),
+                X("They both wanted a recess activity."),
+                X("They are classmates at recess."),
+              ],
+            },
+            {
+              type: "Summarize",
+              q: "Which sentence best summarizes the passage?",
+              opts: [
+                "Two friends solved a disagreement fairly and both felt respected.",
+                "A friend bought a new book.",
+                "A class learned about maps.",
+                "The sun heated the ocean.",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("That captures the whole passage."),
+                X("No book is bought."),
+                X("Maps are a different passage."),
+                X("That is the water cycle passage."),
+              ],
+            },
+          ],
+        },
+        T6: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What type of book was the most popular?",
+              opts: ["Poetry", "Adventure books", "Comic books", "Cookbooks"],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Poetry was least popular."),
+                C("Adventure books were most popular."),
+                X("Comics are not mentioned."),
+                X("Cookbooks are not mentioned."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'survey' is —",
+              opts: [
+                "a way to collect people's choices",
+                "a kind of bird",
+                "a math test",
+                "a library card",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("A survey collects people's choices."),
+                X("It is not a bird."),
+                X("It is not a test."),
+                X("It is not a card."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "Which book type was the LEAST popular?",
+              opts: ["Adventure", "Poetry", "Comics", "Mystery"],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Adventure was the most popular."),
+                C("Only one student chose poetry."),
+                X("Comics are not in the survey."),
+                X("Mystery is not in the survey."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "What does the dot plot diagram show?",
+              opts: [
+                "How many students chose each book type",
+                "The weather",
+                "A map of the school",
+                "A timeline",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("Each dot is a student's choice."),
+                X("It is not weather."),
+                X("It is not a map."),
+                X("It is not a timeline."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Key Details",
+              q: "How do you find the total number of students surveyed?",
+              opts: [
+                "By counting only the poetry vote",
+                "By adding all the votes together",
+                "By choosing the smallest group",
+                "By ignoring the data",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("That is only one vote."),
+                C("Add all the votes to get the total."),
+                X("The smallest group is not the total."),
+                X("You must use the data."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "In this passage, 'data' means —",
+              opts: [
+                "the information collected",
+                "a computer",
+                "a kind of fruit",
+                "a date on a calendar",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("Data is the information that was collected."),
+                X("Data is not the computer."),
+                X("It is not a fruit."),
+                X("It is not a calendar date."),
+              ],
+            },
+            {
+              type: "Compare & Contrast",
+              q: "How does adventure compare with poetry in the survey?",
+              opts: [
+                "Adventure got many more votes than poetry",
+                "They got the same votes",
+                "Poetry got more votes",
+                "Neither got any votes",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Adventure was most popular; poetry got one vote."),
+                X("They were not equal."),
+                X("Poetry got fewer."),
+                X("Both got votes."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author describe the survey?",
+              opts: [
+                "To show what books the class likes using data",
+                "To tell a fable",
+                "To explain gravity",
+                "To give directions",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The author shows class book preferences with data."),
+                X("It is not a fable."),
+                X("Gravity is a different passage."),
+                X("There are no directions."),
+              ],
+            },
+          ],
+        },
+        T7: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What two things does the beginning of a story show?",
+              opts: [
+                "The author and the price",
+                "The character and the setting",
+                "The cover and the title",
+                "The page count",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Not the author or price."),
+                C("The beginning shows character and setting."),
+                X("Not the cover and title."),
+                X("Page count is not a story part."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The 'setting' of a story is —",
+              opts: [
+                "where and when it happens",
+                "the main person",
+                "the price",
+                "the last page",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Setting is where and when the story happens."),
+                X("That is the character."),
+                X("Price is not a story part."),
+                X("That is not the setting."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "Which part of a story comes FIRST?",
+              opts: ["The solution", "The problem", "The beginning", "The end"],
+              ans: 2,
+              ev: "ev2",
+              expl: [
+                X("The solution comes last."),
+                X("The problem is in the middle."),
+                C("The beginning comes first."),
+                X("The end is last."),
+              ],
+            },
+            {
+              type: "Main Idea",
+              q: "This passage is mostly about —",
+              opts: [
+                "the parts of a story",
+                "how to bake bread",
+                "a soccer match",
+                "the water cycle",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("It explains the parts of a story."),
+                X("Baking is not the topic."),
+                X("No soccer here."),
+                X("That is a different passage."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Sequence",
+              q: "What does the ending of a story bring?",
+              opts: [
+                "A new character only",
+                "A solution that ties the story together",
+                "A second setting",
+                "A list of words",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Not a new character."),
+                C("The ending brings the solution."),
+                X("Not a second setting."),
+                X("Not a word list."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "Why does a story need a solution?",
+              opts: [
+                "To tie the whole story together",
+                "To start the story",
+                "To name the author",
+                "To add more pages",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("The solution ties the story together."),
+                X("The beginning starts the story."),
+                X("The solution is not the author's name."),
+                X("It is about meaning, not page count."),
+              ],
+            },
+            {
+              type: "Summarize",
+              q: "Which is the best summary of the passage?",
+              opts: [
+                "A story has a beginning, a middle problem, and an ending solution.",
+                "Stories are too long to read.",
+                "Authors never finish stories.",
+                "All stories are about animals.",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("That sums up the story parts."),
+                X("Length is not the point."),
+                X("The passage does not say that."),
+                X("Not all stories are about animals."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'introduces' in the passage means —",
+              opts: [
+                "presents for the first time",
+                "ends quickly",
+                "erases",
+                "sells",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("To introduce is to present for the first time."),
+                X("It does not mean to end."),
+                X("It does not mean erase."),
+                X("It does not mean sell."),
+              ],
+            },
+          ],
+        },
+        T8: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What was the student's best strategy?",
+              opts: [
+                "Skipping practice",
+                "Reading a little every night",
+                "Never reading",
+                "Only watching TV",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Skipping does not help."),
+                C("Reading a little every night was the strategy."),
+                X("Not reading does not help."),
+                X("Watching TV is not the strategy."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "Being 'patient' means —",
+              opts: [
+                "waiting calmly without giving up",
+                "running fast",
+                "being loud",
+                "skipping steps",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Patient means waiting calmly and not giving up."),
+                X("It is not about speed."),
+                X("It is not about being loud."),
+                X("It is the opposite of skipping."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What helped the student reach the goal?",
+              opts: [
+                "Being patient",
+                "Quitting early",
+                "Forgetting the goal",
+                "Reading nothing",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Being patient helped reach the goal."),
+                X("Quitting does not help."),
+                X("Forgetting does not help."),
+                X("Reading is the key."),
+              ],
+            },
+            {
+              type: "Inference",
+              q: "This passage suggests that growing as a reader takes —",
+              opts: ["steady practice", "no effort", "luck only", "one night"],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("Reading every night shows steady practice."),
+                X("Effort is needed."),
+                X("It is practice, not luck."),
+                X("It takes more than one night."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Cause & Effect",
+              q: "What lesson did being patient teach the student?",
+              opts: [
+                "That reading is impossible",
+                "That small steps lead to big progress",
+                "That goals do not matter",
+                "That nights are too short",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Reading is possible."),
+                C("Small steps lead to big progress."),
+                X("Goals do matter."),
+                X("Time was enough."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "What does the ladder diagram help show?",
+              opts: [
+                "Growth step by step",
+                "A shopping list",
+                "The weather",
+                "A map",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The ladder shows growth step by step."),
+                X("It is not a list."),
+                X("It is not weather."),
+                X("It is not a map."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'academic' in the passage relates to —",
+              opts: [
+                "schoolwork and learning",
+                "sports only",
+                "cooking",
+                "music",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("Academic skills are school and learning skills."),
+                X("It is more than sports."),
+                X("It is not cooking."),
+                X("It is not music."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author write this reflection?",
+              opts: [
+                "To share how setting goals helps reading",
+                "To complain about school",
+                "To sell books",
+                "To tell a joke",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The author shares how goals improve reading."),
+                X("It is not a complaint."),
+                X("Nothing is sold."),
+                X("It is not a joke."),
+              ],
+            },
+          ],
+        },
+        T9: {
+          A: [
+            {
+              type: "Key Details",
+              q: "Which recess sport is the most popular?",
+              opts: ["Running", "Soccer", "Basketball", "Jump rope"],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Running is not the top."),
+                C("Soccer is the most popular."),
+                X("Basketball is second."),
+                X("Jump rope is not shown."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "What kind of diagram shows this data?",
+              opts: ["A bar chart", "A timeline", "A map", "A story"],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("It is a bar chart."),
+                X("It is not a timeline."),
+                X("It is not a map."),
+                X("It is not a story."),
+              ],
+            },
+            {
+              type: "Compare & Contrast",
+              q: "Which bar is taller, soccer or running?",
+              opts: ["Soccer", "Running", "They are equal", "Neither"],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Soccer is the most popular, so its bar is taller."),
+                X("Running is shorter."),
+                X("They are not equal."),
+                X("Both have bars."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "'Popular' in this passage means —",
+              opts: ["liked by many", "very old", "very small", "broken"],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Popular means liked by many people."),
+                X("It is not about age."),
+                X("It is not about size."),
+                X("It is not broken."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Key Details",
+              q: "What does adding all the bars together show?",
+              opts: [
+                "The least popular sport",
+                "The total number of students surveyed",
+                "The smallest bar only",
+                "The teacher's choice",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("That is the smallest, not the sum."),
+                C("Adding bars gives the total surveyed."),
+                X("One bar is not the total."),
+                X("It is the students' choices."),
+              ],
+            },
+            {
+              type: "Compare & Contrast",
+              q: "How does soccer compare to the other sports?",
+              opts: [
+                "It has the most votes of all",
+                "It has the fewest votes",
+                "It ties with running",
+                "It got no votes",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Soccer leads all other sports."),
+                X("It has the most, not fewest."),
+                X("It does not tie running."),
+                X("It got many votes."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "Comparing the heights of the bars helps a reader —",
+              opts: [
+                "see which sport is most popular quickly",
+                "find the author",
+                "read the date",
+                "color the chart",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Bar height shows popularity at a glance."),
+                X("It does not name an author."),
+                X("There is no date."),
+                X("Coloring is not the purpose."),
+              ],
+            },
+            {
+              type: "Summarize",
+              q: "Which sentence best summarizes the passage?",
+              opts: [
+                "A bar chart of a recess survey shows soccer is most popular.",
+                "A tortoise won a race.",
+                "Plants make food from sunlight.",
+                "A town built an animal shelter.",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("That summarizes the survey passage."),
+                X("That is the fable."),
+                X("That is the plant passage."),
+                X("That is the shelter passage."),
+              ],
+            },
+          ],
+        },
+        T10: {
+          A: [
+            {
+              type: "Vocabulary in Context",
+              q: "What is a volunteer?",
+              opts: [
+                "A person who is paid a lot",
+                "A person who gives time without pay",
+                "A person who never helps",
+                "A person who lives far away",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("A volunteer is not paid."),
+                C("A volunteer gives time without pay."),
+                X("A volunteer helps others."),
+                X("Distance is not the meaning."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "Who do people help in this passage?",
+              opts: [
+                "Their community",
+                "Only themselves",
+                "No one",
+                "People far away only",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("People help in their community."),
+                X("It is about helping others."),
+                X("They do help."),
+                X("They help neighbors nearby."),
+              ],
+            },
+            {
+              type: "Main Idea",
+              q: "This passage is mostly about —",
+              opts: [
+                "helping in your community",
+                "playing video games",
+                "the water cycle",
+                "a fable",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("It is about helping the community."),
+                X("No games here."),
+                X("That is a different passage."),
+                X("It is not a fable."),
+              ],
+            },
+            {
+              type: "Inference",
+              q: "A person who helps a neighbor is probably —",
+              opts: ["kind and caring", "angry", "tired of people", "far away"],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Helping shows kindness and care."),
+                X("Helpers are not angry."),
+                X("They like helping people."),
+                X("They are nearby neighbors."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Key Details",
+              q: "What is one example of service in a community?",
+              opts: [
+                "Charging money to read",
+                "Helping a neighbor carry groceries",
+                "Ignoring the park",
+                "Staying home alone",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Service is given freely."),
+                C("Helping a neighbor is service."),
+                X("Ignoring is not service."),
+                X("Service means helping others."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'service' in this passage means —",
+              opts: [
+                "helpful work done for others",
+                "a tennis move",
+                "a TV show",
+                "a kind of food",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Service is helpful work for others."),
+                X("That is a different meaning."),
+                X("It is not a show."),
+                X("It is not food."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What is the effect when people do service in a community?",
+              opts: [
+                "The whole community gets better",
+                "The community gets worse",
+                "Nothing changes",
+                "People move away",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Service makes the community better."),
+                X("It does not get worse."),
+                X("It does make a change."),
+                X("It brings people together."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author write this passage?",
+              opts: [
+                "To encourage helping in the community",
+                "To describe a storm",
+                "To explain gravity",
+                "To tell a scary tale",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The author encourages community service."),
+                X("No storm here."),
+                X("Gravity is a different topic."),
+                X("It is not scary."),
+              ],
+            },
+          ],
+        },
+        T11: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What do green leaves use sunlight to make?",
+              opts: ["Plastic", "Food using light energy", "Rocks", "Rain"],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Leaves do not make plastic."),
+                C("Leaves use sunlight to make food."),
+                X("They do not make rocks."),
+                X("They do not make rain."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "In this passage, 'energy' means —",
+              opts: [
+                "the power a plant uses to make food",
+                "a loud sound",
+                "a color",
+                "a kind of rock",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Energy is the power used to make food."),
+                X("It is not a sound."),
+                X("It is not a color."),
+                X("It is not a rock."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What happens because green leaves catch sunlight?",
+              opts: [
+                "Plants can make food",
+                "Plants stop growing",
+                "Plants turn red",
+                "Plants float away",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("Catching sunlight lets plants make food."),
+                X("They keep growing."),
+                X("They stay green."),
+                X("They stay rooted."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "What happens FIRST when a plant makes food?",
+              opts: [
+                "Leaves catch sunlight",
+                "Plants give back fresh air",
+                "The plant dies",
+                "Rain falls",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("First the leaves catch sunlight."),
+                X("Fresh air comes after."),
+                X("The plant lives."),
+                X("Rain is not the first step."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Cause & Effect",
+              q: "What do plants give off as they grow?",
+              opts: [
+                "Dirty smoke",
+                "Fresh air for animals to breathe",
+                "Sand",
+                "Ice",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Plants do not give off smoke."),
+                C("Plants give off fresh air."),
+                X("They do not make sand."),
+                X("They do not make ice."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'survive' in the passage means —",
+              opts: ["to stay alive", "to fall down", "to sleep", "to sing"],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Survive means to stay alive."),
+                X("It does not mean to fall."),
+                X("It does not mean to sleep."),
+                X("It does not mean to sing."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "Which step happens LAST in the passage?",
+              opts: [
+                "Sunlight is captured",
+                "Sugar is made",
+                "Fresh air is given off for animals",
+                "Water is taken in",
+              ],
+              ans: 2,
+              ev: "ev3",
+              expl: [
+                X("Capturing sunlight is early."),
+                X("Sugar is made in the middle."),
+                C("Giving off fresh air comes last here."),
+                X("Water is taken in early."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "The author most likely wrote this to —",
+              opts: [
+                "explain how plants make food and help animals",
+                "tell a fable",
+                "give directions on a map",
+                "describe a survey",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The author explains how plants make food."),
+                X("It is not a fable."),
+                X("No map directions here."),
+                X("No survey here."),
+              ],
+            },
+          ],
+        },
+        T12: {
+          A: [
+            {
+              type: "Text Features",
+              q: "What does a timeline show?",
+              opts: [
+                "Events in no order",
+                "Events in the order they happened",
+                "Only future events",
+                "Only made-up stories",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("A timeline has order."),
+                C("A timeline shows events in order."),
+                X("It shows past events too."),
+                X("It shows real events."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'change' in this passage means —",
+              opts: [
+                "how things became different over time",
+                "coins",
+                "a new shirt",
+                "a TV channel",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Change means how the town became different."),
+                X("It is not money here."),
+                X("It is not clothing."),
+                X("It is not a TV channel."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "What are still part of the town today?",
+              opts: [
+                "Old traditions",
+                "Nothing",
+                "Only new buildings",
+                "Only maps",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Old traditions are still part of the culture."),
+                X("Some things remain."),
+                X("Traditions remain, not just buildings."),
+                X("Maps are not mentioned here."),
+              ],
+            },
+            {
+              type: "Sequence",
+              q: "On a timeline, how do you read the events?",
+              opts: [
+                "In the order they happened",
+                "Backwards only",
+                "In any random order",
+                "By color",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("You read them in time order."),
+                X("Not backwards only."),
+                X("Not randomly."),
+                X("Not by color."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Key Details",
+              q: "What does the timeline help us follow over many years?",
+              opts: [
+                "The weather each day",
+                "The change a town went through",
+                "A shopping list",
+                "A list of spelling words",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Not daily weather."),
+                C("It follows the town's change over years."),
+                X("Not a shopping list."),
+                X("Not a spelling list."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "Reading the timeline from left to right helps a reader —",
+              opts: [
+                "follow events in time order",
+                "find the price",
+                "draw a picture",
+                "skip the events",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Left to right shows time order."),
+                X("There is no price."),
+                X("It is not for drawing."),
+                X("You should not skip events."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'culture' in this passage means —",
+              opts: [
+                "the shared customs and traditions of a group",
+                "a kind of soup",
+                "a math problem",
+                "a single building",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Culture is the shared customs of a group."),
+                X("It is not food here."),
+                X("It is not math."),
+                X("It is more than one building."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author use a timeline in this passage?",
+              opts: [
+                "To show how a town changed over time",
+                "To sell a product",
+                "To tell a joke",
+                "To list animals",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The timeline shows change over time."),
+                X("Nothing is sold."),
+                X("It is not a joke."),
+                X("It does not list animals."),
+              ],
+            },
+          ],
+        },
+        T13: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What did the town build?",
+              opts: [
+                "A new school",
+                "An animal shelter",
+                "A bridge",
+                "A swimming pool",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("Not a school."),
+                C("The town built an animal shelter."),
+                X("Not a bridge."),
+                X("Not a pool."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "Why is the shelter important?",
+              opts: [
+                "It keeps lost pets safe and warm",
+                "It sells toys",
+                "It teaches math",
+                "It cooks food",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("The shelter keeps lost pets safe and warm."),
+                X("It does not sell toys."),
+                X("It is not a school."),
+                X("It is not a kitchen."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'shelter' is —",
+              opts: [
+                "a safe place that protects",
+                "a fast car",
+                "a math test",
+                "a song",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("A shelter is a safe, protecting place."),
+                X("It is not a car."),
+                X("It is not a test."),
+                X("It is not a song."),
+              ],
+            },
+            {
+              type: "Inference",
+              q: "How do the townspeople feel about animals?",
+              opts: [
+                "They care about them",
+                "They fear them",
+                "They ignore them",
+                "They dislike them",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Building a shelter shows they care."),
+                X("They are not afraid."),
+                X("They help, not ignore."),
+                X("They care for the animals."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Inference",
+              q: "What does the finished shelter show about the community?",
+              opts: [
+                "That the town does not care",
+                "That a caring community can solve a problem together",
+                "That pets are not welcome",
+                "That building is impossible",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("The town does care."),
+                C("It shows a caring community solving a problem."),
+                X("Pets are welcome."),
+                X("They did build it."),
+              ],
+            },
+            {
+              type: "Compare & Contrast",
+              q: "How are painting walls and feeding animals alike in the passage?",
+              opts: [
+                "Both are kinds of service done by volunteers",
+                "Both cost a lot of money",
+                "Both are done by machines",
+                "Neither helps the shelter",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Both are service jobs volunteers did."),
+                X("Cost is not the point."),
+                X("Volunteers did them, not machines."),
+                X("Both helped build the shelter."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'volunteer' in this passage is someone who —",
+              opts: [
+                "helps without being paid",
+                "owns the shelter",
+                "buys the pets",
+                "lives at the shelter",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("A volunteer helps without pay."),
+                X("They do not own it."),
+                X("They do not buy pets."),
+                X("They do not live there."),
+              ],
+            },
+            {
+              type: "Summarize",
+              q: "Which sentence best summarizes the passage?",
+              opts: [
+                "Volunteers worked together to build an animal shelter for lost pets.",
+                "A class took a reading survey.",
+                "The sun heated the ocean.",
+                "A tortoise raced a hare.",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("That summarizes the shelter passage."),
+                X("That is a different passage."),
+                X("That is the water cycle."),
+                X("That is the fable."),
+              ],
+            },
+          ],
+        },
+        T14: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What does the grass in the forest do?",
+              opts: [
+                "It eats other animals",
+                "It makes its own food",
+                "It hunts insects",
+                "It cannot grow",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Grass does not eat animals."),
+                C("Grass makes its own food."),
+                X("Grass does not hunt."),
+                X("Grass grows."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'habitat' is —",
+              opts: [
+                "the home where animals live",
+                "a kind of food",
+                "a tool",
+                "a season",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("A habitat is where animals live."),
+                X("It is not food."),
+                X("It is not a tool."),
+                X("It is not a season."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "Why do animals eat plants or other animals?",
+              opts: [
+                "To get energy to survive",
+                "To grow leaves",
+                "To make clouds",
+                "To build maps",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Animals eat to get energy to survive."),
+                X("Animals do not grow leaves."),
+                X("They do not make clouds."),
+                X("They do not build maps."),
+              ],
+            },
+            {
+              type: "Main Idea",
+              q: "This passage is mostly about —",
+              opts: [
+                "how a forest food chain works",
+                "how to read a map",
+                "branches of government",
+                "a lunch tray",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("It explains a forest food chain."),
+                X("Maps are a different passage."),
+                X("Government is different."),
+                X("Lunch is different."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Cause & Effect",
+              q: "Why do some animals migrate in winter?",
+              opts: [
+                "To play games",
+                "To find food and survive",
+                "To build houses",
+                "To go to school",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Not for games."),
+                C("They migrate to find food and survive."),
+                X("Not to build houses."),
+                X("Not for school."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'migrate' means —",
+              opts: [
+                "to move to a new area",
+                "to fall asleep",
+                "to make food",
+                "to grow taller",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Migrate means to move to a new area."),
+                X("It is not sleeping."),
+                X("It is not making food."),
+                X("It is not growing."),
+              ],
+            },
+            {
+              type: "Compare & Contrast",
+              q: "How are plants and animals different in the food chain?",
+              opts: [
+                "Plants make their own food; animals must eat to get energy",
+                "Both make their own food",
+                "Both must migrate",
+                "Neither needs energy",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Plants make food; animals must eat."),
+                X("Only plants make food."),
+                X("Only some animals migrate."),
+                X("All living things need energy."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "The arrows in the food-chain diagram show —",
+              opts: [
+                "how energy passes from one living thing to the next",
+                "the weather",
+                "a shopping list",
+                "the date",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Arrows trace energy through the chain."),
+                X("Not weather."),
+                X("Not a list."),
+                X("Not a date."),
+              ],
+            },
+          ],
+        },
+        T15: {
+          A: [
+            {
+              type: "Text Features",
+              q: "What does the reading goal tracker show?",
+              opts: [
+                "The lunch menu",
+                "How many books the class has read",
+                "The weather",
+                "The bus schedule",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("Not a menu."),
+                C("It shows how many books were read."),
+                X("Not weather."),
+                X("Not a bus schedule."),
+              ],
+            },
+            {
+              type: "Text Features",
+              q: "What does an open circle on the line mean?",
+              opts: [
+                "The class has not reached that book yet",
+                "The class is finished",
+                "It is lunchtime",
+                "The book is lost",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("An open circle means not reached yet."),
+                X("It is not finished."),
+                X("It is not about lunch."),
+                X("No book is lost."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "What number book is the class's goal?",
+              opts: ["Past book 3", "Book 1", "Book 10", "No goal"],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("The goal is past book number three."),
+                X("Not book 1."),
+                X("Not book 10."),
+                X("There is a goal."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'goal' in this passage is —",
+              opts: [
+                "something you are trying to reach",
+                "a soccer net only",
+                "a kind of book",
+                "a circle",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("A goal is something you try to reach."),
+                X("Here it is a reading goal, not a net."),
+                X("It is not a book."),
+                X("It is not the circle itself."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Key Details",
+              q: "What lesson does the tracker remind the class about?",
+              opts: [
+                "That reading is boring",
+                "That steady reading makes a real change over time",
+                "That goals are useless",
+                "That circles are red",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Reading is not called boring."),
+                C("Steady reading makes a real change."),
+                X("Goals are useful."),
+                X("Color is not the lesson."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'strategy' in this passage means —",
+              opts: [
+                "a plan to reach a goal",
+                "a kind of fruit",
+                "a fast car",
+                "a song",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("A strategy is a plan to reach a goal."),
+                X("It is not a fruit."),
+                X("It is not a car."),
+                X("It is not a song."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "According to the passage, what makes a real change over time?",
+              opts: [
+                "Steady reading",
+                "Skipping books",
+                "Reading once a year",
+                "Never trying",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Steady reading makes a real change."),
+                X("Skipping does not help."),
+                X("Once a year is not steady."),
+                X("You must try."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author describe the tracker?",
+              opts: [
+                "To encourage steady reading toward a goal",
+                "To sell a book",
+                "To explain the weather",
+                "To tell a fable",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The author encourages steady reading."),
+                X("Nothing is sold."),
+                X("Not about weather."),
+                X("Not a fable."),
+              ],
+            },
+          ],
+        },
+        T16: {
+          A: [
+            {
+              type: "Key Details",
+              q: "What kind of club did the student want to start?",
+              opts: [
+                "A cooking club",
+                "A clean-up club",
+                "A chess club",
+                "A music club",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("Not cooking."),
+                C("A clean-up club."),
+                X("Not chess."),
+                X("Not music."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What would the club do for the school yard?",
+              opts: [
+                "Keep it clean",
+                "Make it messy",
+                "Close it",
+                "Paint it black",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("The club would keep the yard clean."),
+                X("It would not make a mess."),
+                X("It would not close it."),
+                X("Painting is not the plan."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "'Service' to the community means —",
+              opts: [
+                "helpful work for others",
+                "a tennis serve",
+                "a meal",
+                "a song",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Service is helpful work for others."),
+                X("Not tennis."),
+                X("Not a meal."),
+                X("Not a song."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the student write the plan?",
+              opts: [
+                "To ask permission to start a helpful club",
+                "To tell a joke",
+                "To skip school",
+                "To draw a map",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The student asks to start a clean-up club."),
+                X("Not a joke."),
+                X("Not to skip school."),
+                X("Not a map."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Key Details",
+              q: "How did the student say the club would help the community?",
+              opts: [
+                "By charging money",
+                "By doing service and picking up litter",
+                "By closing the school",
+                "By ignoring the yard",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("No money is charged."),
+                C("By doing service and picking up litter."),
+                X("It does not close the school."),
+                X("It cleans the yard."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "What was the purpose of the student's meeting with the principal?",
+              opts: [
+                "To persuade the principal to allow the club",
+                "To complain about lunch",
+                "To take a test",
+                "To watch a movie",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The student wanted to persuade the principal."),
+                X("Not about lunch."),
+                X("Not a test."),
+                X("Not a movie."),
+              ],
+            },
+            {
+              type: "Inference",
+              q: "What can you tell about the student from the passage?",
+              opts: [
+                "The student cares about the school and community",
+                "The student dislikes school",
+                "The student is lazy",
+                "The student wants to leave",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Wanting to clean up shows the student cares."),
+                X("The student likes the school."),
+                X("Planning a club is not lazy."),
+                X("The student wants to help, not leave."),
+              ],
+            },
+            {
+              type: "Summarize",
+              q: "Which is the best summary?",
+              opts: [
+                "A student proposes a clean-up club to help the school community.",
+                "A tortoise won a race.",
+                "Plants make food from sunlight.",
+                "A map shows places from above.",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("That summarizes the proposal passage."),
+                X("That is the fable."),
+                X("That is the plant passage."),
+                X("That is the map passage."),
+              ],
+            },
+          ],
+        },
+        T17: {
+          A: [
+            {
+              type: "Text Features",
+              q: "What does the legend on a map tell you?",
+              opts: [
+                "The price of the map",
+                "What each picture means",
+                "Who drew the map",
+                "The time of day",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Not the price."),
+                C("The legend tells what each picture means."),
+                X("Not the author."),
+                X("Not the time."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'direction' on a map helps you —",
+              opts: [
+                "know which way to go",
+                "read a clock",
+                "count money",
+                "cook food",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Direction tells you which way to travel."),
+                X("Not a clock."),
+                X("Not money."),
+                X("Not cooking."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "What does a map show?",
+              opts: ["Places from above", "The future", "A story", "A song"],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("A map shows places from above."),
+                X("Not the future."),
+                X("Not a story."),
+                X("Not a song."),
+              ],
+            },
+            {
+              type: "Main Idea",
+              q: "This passage mostly explains —",
+              opts: [
+                "the parts of a map and how to use them",
+                "how plants grow",
+                "a fable",
+                "a survey",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("It explains map parts and use."),
+                X("Plants are a different passage."),
+                X("Not a fable."),
+                X("Not a survey."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Text Features",
+              q: "What does the legend explain?",
+              opts: [
+                "The weather",
+                "What every symbol on the map stands for",
+                "The map's color",
+                "The traveler's name",
+              ],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Not weather."),
+                C("The legend explains every symbol."),
+                X("Not the color."),
+                X("Not a name."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'symbol' on a map is —",
+              opts: [
+                "a small picture that stands for something real",
+                "a kind of music note",
+                "a math sign only",
+                "a road",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("A map symbol stands for a real thing."),
+                X("Not a music note here."),
+                X("Not only a math sign."),
+                X("A symbol is not the road itself."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What is the effect of following the correct direction?",
+              opts: [
+                "You find the shortest path between towns",
+                "You get lost",
+                "You stop moving",
+                "You change the map",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("The right direction gives the shortest path."),
+                X("You will not get lost."),
+                X("You keep moving."),
+                X("You do not change the map."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author write this passage?",
+              opts: [
+                "To explain how to read and use a map",
+                "To sell maps",
+                "To tell a sad story",
+                "To list animals",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The author explains how to use a map."),
+                X("Nothing is sold."),
+                X("Not a sad story."),
+                X("No animal list."),
+              ],
+            },
+          ],
+        },
+        T18: {
+          A: [
+            {
+              type: "Cause & Effect",
+              q: "What makes the toy car roll down the ramp?",
+              opts: ["A song", "A force called gravity", "A color", "A smell"],
+              ans: 1,
+              ev: "ev2",
+              expl: [
+                X("Not a song."),
+                C("A force called gravity makes it roll."),
+                X("Not a color."),
+                X("Not a smell."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'force' in this passage is —",
+              opts: [
+                "a push or pull that makes things move",
+                "a loud sound",
+                "a color",
+                "a type of food",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("A force is a push or pull."),
+                X("Not a sound."),
+                X("Not a color."),
+                X("Not food."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What does a rough surface do to the car's speed?",
+              opts: [
+                "Speeds it up",
+                "Slows it down",
+                "Turns it green",
+                "Stops gravity",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("A smooth surface speeds it up."),
+                C("A rough surface slows the car's speed."),
+                X("It does not change color."),
+                X("Gravity keeps pulling."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "Where is the toy car placed?",
+              opts: ["On a ramp", "In water", "In a tree", "On the moon"],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The car is placed on a ramp."),
+                X("Not in water."),
+                X("Not in a tree."),
+                X("Not on the moon."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Cause & Effect",
+              q: "What does a rough surface do to the car?",
+              opts: [
+                "Speeds it up",
+                "Reduces its speed",
+                "Turns it green",
+                "Stops gravity",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("A smooth surface lets it go faster."),
+                C("A rough surface reduces the car's speed."),
+                X("It does not change color."),
+                X("Gravity still pulls."),
+              ],
+            },
+            {
+              type: "Compare & Contrast",
+              q: "How does a rough surface compare with a smooth surface?",
+              opts: [
+                "Rough slows the car; smooth lets it move faster",
+                "Both speed the car up",
+                "Both stop the car",
+                "Rough makes the car faster",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Rough slows it; smooth lets it move faster."),
+                X("Rough does not speed it up."),
+                X("They do not both stop it."),
+                X("Rough slows it down."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'motion' in the passage means —",
+              opts: ["movement", "a color", "a sound", "a kind of food"],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Motion means movement."),
+                X("Not a color."),
+                X("Not a sound."),
+                X("Not food."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author write this passage?",
+              opts: [
+                "To explain how forces affect a car's motion",
+                "To tell a fable",
+                "To describe a community",
+                "To list book types",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The author explains forces and motion."),
+                X("Not a fable."),
+                X("Not about community."),
+                X("Not a book list."),
+              ],
+            },
+          ],
+        },
+        T19: {
+          A: [
+            {
+              type: "Key Details",
+              q: "How many branches does the government have?",
+              opts: [
+                "One branch",
+                "Three branches",
+                "Five branches",
+                "Ten branches",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("More than one."),
+                C("The government has three branches."),
+                X("Not five."),
+                X("Not ten."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "A 'citizen' is —",
+              opts: [
+                "a member of a country",
+                "a kind of tree",
+                "a building",
+                "a season",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("A citizen is a member of a country."),
+                X("Not a tree."),
+                X("Not a building."),
+                X("Not a season."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "What does one branch do?",
+              opts: [
+                "Writes the laws",
+                "Cooks food",
+                "Drives buses",
+                "Builds maps",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("One branch writes the laws."),
+                X("Not cooking."),
+                X("Not driving."),
+                X("Not maps."),
+              ],
+            },
+            {
+              type: "Main Idea",
+              q: "This passage is mostly about —",
+              opts: [
+                "the parts of the government",
+                "the water cycle",
+                "a lunch tray",
+                "a fable",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("It explains the parts of government."),
+                X("Not the water cycle."),
+                X("Not a lunch tray."),
+                X("Not a fable."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Key Details",
+              q: "How do citizens choose their leaders?",
+              opts: [
+                "By writing stories",
+                "By using their right to vote",
+                "By drawing maps",
+                "By staying silent",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Not by writing stories."),
+                C("Citizens vote to choose leaders."),
+                X("Not by drawing maps."),
+                X("Voting means speaking up."),
+              ],
+            },
+            {
+              type: "Compare & Contrast",
+              q: "How do the three branches differ?",
+              opts: [
+                "One makes laws, one carries them out, one decides what they mean",
+                "They all make laws",
+                "They all vote for leaders",
+                "They do the same job",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Each branch has a different job."),
+                X("Only one makes laws."),
+                X("Citizens vote, not the branches."),
+                X("Their jobs are different."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "Why does the government split power into three branches?",
+              opts: [
+                "To balance power and protect citizens",
+                "To make voting harder",
+                "To save paper",
+                "To choose a flag",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("The balance protects every citizen."),
+                X("It is not to make voting harder."),
+                X("It is not about paper."),
+                X("It is not about a flag."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why did the author write this passage?",
+              opts: [
+                "To explain how the three branches of government work",
+                "To tell a fable",
+                "To describe the weather",
+                "To give a recipe",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("The author explains the three branches."),
+                X("Not a fable."),
+                X("Not weather."),
+                X("Not a recipe."),
+              ],
+            },
+          ],
+        },
+        T20: {
+          A: [
+            {
+              type: "Vocabulary in Context",
+              q: "What is a fable?",
+              opts: [
+                "A long history book",
+                "A short story that teaches a lesson",
+                "A list of facts",
+                "A song",
+              ],
+              ans: 1,
+              ev: "ev1",
+              expl: [
+                X("A fable is short."),
+                C("A fable is a short story that teaches a lesson."),
+                X("It is a story, not a fact list."),
+                X("It is not a song."),
+              ],
+            },
+            {
+              type: "Key Details",
+              q: "Who raced the fast hare?",
+              opts: ["A slow tortoise", "A fox", "A bird", "A dog"],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("A slow tortoise raced the hare."),
+                X("Not a fox."),
+                X("Not a bird."),
+                X("Not a dog."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "Why did the patient tortoise win?",
+              opts: [
+                "It kept going steadily",
+                "It ran the fastest",
+                "It flew",
+                "It cheated",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("Being steady and patient won the race."),
+                X("It was slow, not fast."),
+                X("It did not fly."),
+                X("It did not cheat."),
+              ],
+            },
+            {
+              type: "Inference",
+              q: "What kind of animal is the tortoise in this fable?",
+              opts: ["Patient and steady", "Lazy", "Mean", "Fast"],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("The tortoise is patient and steady."),
+                X("It is not lazy; it keeps going."),
+                X("It is not mean."),
+                X("It is slow, not fast."),
+              ],
+            },
+          ],
+          B: [
+            {
+              type: "Summarize",
+              q: "What is the moral of this fable?",
+              opts: [
+                "Sleeping is best",
+                "Steady effort beats careless speed",
+                "Hares always win",
+                "Racing is not allowed",
+              ],
+              ans: 1,
+              ev: "ev3",
+              expl: [
+                X("Sleeping cost the hare the race."),
+                C("The moral is steady effort beats careless speed."),
+                X("The tortoise won, not the hare."),
+                X("Racing is allowed in the story."),
+              ],
+            },
+            {
+              type: "Vocabulary in Context",
+              q: "The word 'boastful' describes the hare as —",
+              opts: [
+                "bragging and overconfident",
+                "shy and quiet",
+                "tired and sick",
+                "kind and helpful",
+              ],
+              ans: 0,
+              ev: "ev2",
+              expl: [
+                C("Boastful means bragging and overconfident."),
+                X("The hare is not shy."),
+                X("It is not sick, just careless."),
+                X("It is not described as kind."),
+              ],
+            },
+            {
+              type: "Cause & Effect",
+              q: "What caused the hare to lose the race?",
+              opts: [
+                "Stopping to nap while the tortoise kept going",
+                "Running too fast the whole time",
+                "Getting lost",
+                "Being too patient",
+              ],
+              ans: 0,
+              ev: "ev3",
+              expl: [
+                C("The hare napped while the tortoise kept going."),
+                X("It did not run the whole time."),
+                X("It did not get lost."),
+                X("The tortoise was the patient one."),
+              ],
+            },
+            {
+              type: "Author's Purpose",
+              q: "Why do authors write fables like this one?",
+              opts: [
+                "To teach a lesson through a short story",
+                "To report the news",
+                "To give a math test",
+                "To sell tickets",
+              ],
+              ans: 0,
+              ev: "ev1",
+              expl: [
+                C("Fables teach a lesson through a story."),
+                X("It is not news."),
+                X("It is not a test."),
+                X("Nothing is sold."),
+              ],
+            },
+          ],
+        },
+      };
+
+      // ── Graphic Organizer data ──
+      const ORGANIZER_DATA = {
+        storymap: {
+          label: "📖 Story Map",
+          prompt:
+            "Story: A patient tortoise raced a boastful hare. The hare napped, the tortoise kept going, and the tortoise won. Drag each card to the matching story part.",
+          slots: [
+            {
+              id: "character",
+              label: "Characters",
+              answer: "Tortoise and Hare",
+            },
+            { id: "setting", label: "Setting", answer: "A racing path" },
+            {
+              id: "problem",
+              label: "Problem",
+              answer: "Who will win the race?",
+            },
+            {
+              id: "solution",
+              label: "Solution / Ending",
+              answer: "The steady tortoise wins",
+            },
+          ],
+        },
+        mainweb: {
+          label: "💡 Main-Idea Web",
+          prompt:
+            "Topic: A balanced school lunch. Place the MAIN IDEA in the center, then drag the three supporting details around it.",
+          slots: [
+            {
+              id: "main",
+              label: "Main Idea (center)",
+              answer: "A balanced lunch keeps students healthy",
+            },
+            { id: "d1", label: "Detail", answer: "The sandwich gives energy" },
+            {
+              id: "d2",
+              label: "Detail",
+              answer: "The milk builds strong bones",
+            },
+            {
+              id: "d3",
+              label: "Detail",
+              answer: "The apple adds fruit and fiber",
+            },
+          ],
+        },
+        tchart: {
+          label: "⚖️ Compare T-Chart",
+          prompt:
+            "Compare plants and animals in a food chain. Drag each card under the living thing it describes.",
+          slots: [
+            { id: "p1", label: "Plants", answer: "Make their own food" },
+            { id: "a1", label: "Animals", answer: "Must eat to get energy" },
+            { id: "p2", label: "Plants", answer: "Use sunlight to grow" },
+            { id: "a2", label: "Animals", answer: "May migrate to find food" },
+          ],
+        },
+      };
+
       // Inline SVGs Drawer Object (Identical to Speaking/Writing for visual matching!)
       const SVG_SPEAKING_DRAWER = {
         lunch: function () {
@@ -2429,6 +5816,7 @@
         populateSidebarCatalog();
         switchReadingTask(0);
         calculateReadingELP();
+        loadOrganizer("storymap");
       });
 
       function setupStreakAndXPStats() {
@@ -2469,6 +5857,9 @@
         STORE.checklistRead = false;
         STORE.checklistQuiz = false;
         STORE.celebrationFired = false;
+        STORE.quizIndex = 0;
+        STORE.quizAnswered = [];
+        stopPassageReadAloud();
 
         // Remove previous explanation banners
         const banner = document.getElementById("explanationBanner");
@@ -2632,6 +6023,251 @@
         window.speechSynthesis.speak(utterance);
       }
 
+      // ── Passage Read-Aloud (speechSynthesis) ──
+      function togglePassageReadAloud() {
+        const btn = document.getElementById("readAloudBtn");
+        if (!("speechSynthesis" in window)) {
+          showMinimalToast("Read-aloud is not supported in this browser.");
+          return;
+        }
+        if (window.speechSynthesis.speaking) {
+          stopPassageReadAloud();
+          return;
+        }
+        const box = document.getElementById("passageTextBox");
+        const text = (box.textContent || "").trim();
+        if (!text) return;
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.82;
+        utterance.pitch = 1.0;
+        utterance.onend = () => stopPassageReadAloud();
+        utterance.onerror = () => stopPassageReadAloud();
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+
+        btn.setAttribute("aria-pressed", "true");
+        btn.innerHTML = "⏹ Stop Reading";
+        logToTerminal("Passage read-aloud started.");
+      }
+
+      function stopPassageReadAloud() {
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        const btn = document.getElementById("readAloudBtn");
+        if (btn) {
+          btn.setAttribute("aria-pressed", "false");
+          btn.innerHTML = "🔊 Read Passage Aloud";
+        }
+      }
+
+      // ── Graphic Organizer (drag-to-fill, mouse + keyboard accessible) ──
+      function loadOrganizer(type) {
+        STORE.activeOrganizer = type;
+        STORE.organizerHeldToken = null;
+        const data = ORGANIZER_DATA[type];
+        if (!data) return;
+
+        // Toggle switch active state
+        document
+          .querySelectorAll(".organizer-typeswitch button")
+          .forEach((b) => b.classList.toggle("active", b.dataset.org === type));
+
+        document.getElementById("organizerPrompt").textContent = data.prompt;
+
+        const board = document.getElementById("organizerBoard");
+        const layoutClass =
+          type === "tchart" ? "tchart" : type === "mainweb" ? "web" : "map";
+        board.className = "org-board organizer-board " + layoutClass;
+        board.innerHTML = "";
+
+        data.slots.forEach((slot) => {
+          const slotEl = document.createElement("div");
+          slotEl.className = "org-slot";
+          slotEl.dataset.answer = slot.answer;
+          slotEl.setAttribute("role", "button");
+          slotEl.setAttribute("tabindex", "0");
+          slotEl.setAttribute(
+            "aria-label",
+            `${slot.label} box. Empty. Activate to drop the picked-up card here.`,
+          );
+          slotEl.innerHTML = `
+            <span class="org-slot-label">${slot.label}</span>
+            <div class="org-drop-zone"></div>
+          `;
+          // Mouse drag targets
+          slotEl.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            slotEl.classList.add("over");
+          });
+          slotEl.addEventListener("dragleave", () =>
+            slotEl.classList.remove("over"),
+          );
+          slotEl.addEventListener("drop", (e) => {
+            e.preventDefault();
+            slotEl.classList.remove("over");
+            const answer = e.dataTransfer.getData("text/plain");
+            placeTokenInSlot(answer, slotEl);
+          });
+          // Keyboard drop target
+          slotEl.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              if (STORE.organizerHeldToken) {
+                placeTokenInSlot(STORE.organizerHeldToken, slotEl);
+              }
+            }
+          });
+          board.appendChild(slotEl);
+        });
+
+        // Build the word bank with shuffled answers
+        const bank = document.getElementById("organizerBank");
+        bank.innerHTML = "";
+        const shuffled = data.slots
+          .map((s) => s.answer)
+          .sort(() => Math.random() - 0.5);
+        shuffled.forEach((answer) => bank.appendChild(makeOrgToken(answer)));
+
+        const fb = document.getElementById("organizerFeedback");
+        fb.className = "explanation-banner";
+        fb.innerHTML = "";
+        document.getElementById("organizerScoreBadge").textContent =
+          `0 / ${data.slots.length}`;
+        announceOrganizer(`${data.label} loaded. Drag cards into the boxes.`);
+      }
+
+      function makeOrgToken(answer) {
+        const token = document.createElement("span");
+        token.className = "org-token";
+        token.textContent = answer;
+        token.dataset.answer = answer;
+        token.setAttribute("draggable", "true");
+        token.setAttribute("tabindex", "0");
+        token.setAttribute("role", "button");
+        token.setAttribute(
+          "aria-label",
+          `Card: ${answer}. Activate to pick up.`,
+        );
+
+        token.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", answer);
+          token.classList.add("dragging");
+        });
+        token.addEventListener("dragend", () =>
+          token.classList.remove("dragging"),
+        );
+        // Keyboard pick-up
+        token.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            pickUpToken(token);
+          }
+        });
+        token.addEventListener("click", () => pickUpToken(token));
+        return token;
+      }
+
+      function pickUpToken(token) {
+        document
+          .querySelectorAll(".org-token.selected")
+          .forEach((t) => t.classList.remove("selected"));
+        if (STORE.organizerHeldToken === token.dataset.answer) {
+          STORE.organizerHeldToken = null;
+          announceOrganizer("Card put down.");
+          return;
+        }
+        STORE.organizerHeldToken = token.dataset.answer;
+        token.classList.add("selected");
+        announceOrganizer(
+          `Picked up ${token.dataset.answer}. Now choose a box and press Enter to drop it.`,
+        );
+      }
+
+      function placeTokenInSlot(answer, slotEl) {
+        if (!answer) return;
+        // Find a matching token still available (in the bank or another slot)
+        const allTokens = document.querySelectorAll(".org-token");
+        let token = null;
+        allTokens.forEach((t) => {
+          if (!token && t.dataset.answer === answer) token = t;
+        });
+        if (!token) return;
+
+        // Reset any previous result styling on this slot
+        slotEl.classList.remove("filled-correct", "filled-wrong");
+        const zone = slotEl.querySelector(".org-drop-zone");
+
+        // If slot already has a token, send it back to the bank
+        const existing = zone.querySelector(".org-token");
+        if (existing) {
+          existing.classList.remove("placed");
+          existing.setAttribute("draggable", "true");
+          document.getElementById("organizerBank").appendChild(existing);
+        }
+
+        token.classList.remove("selected", "dragging");
+        token.classList.add("placed");
+        zone.appendChild(token);
+        STORE.organizerHeldToken = null;
+        document
+          .querySelectorAll(".org-token.selected")
+          .forEach((t) => t.classList.remove("selected"));
+        announceOrganizer(`Placed ${answer}.`);
+      }
+
+      function checkOrganizer() {
+        const data = ORGANIZER_DATA[STORE.activeOrganizer];
+        const slots = document.querySelectorAll("#organizerBoard .org-slot");
+        let correct = 0;
+
+        slots.forEach((slotEl) => {
+          const zone = slotEl.querySelector(".org-drop-zone");
+          const placed = zone.querySelector(".org-token");
+          slotEl.classList.remove("filled-correct", "filled-wrong");
+          if (placed && placed.dataset.answer === slotEl.dataset.answer) {
+            slotEl.classList.add("filled-correct");
+            correct++;
+          } else if (placed) {
+            slotEl.classList.add("filled-wrong");
+          }
+        });
+
+        document.getElementById("organizerScoreBadge").textContent =
+          `${correct} / ${data.slots.length}`;
+
+        const fb = document.getElementById("organizerFeedback");
+        if (correct === data.slots.length) {
+          fb.className = "explanation-banner correct";
+          fb.innerHTML =
+            "🎉 <strong>Perfect!</strong> Every card is in the right box. Great organizing!";
+          playChime("success");
+          awardOrganizerXP();
+          announceOrganizer("All correct! Organizer complete.");
+        } else {
+          fb.className = "explanation-banner incorrect";
+          fb.innerHTML = `📝 <strong>${correct} of ${data.slots.length} correct.</strong> Green boxes are right. Move the cards in the orange boxes and try again.`;
+          announceOrganizer(
+            `${correct} of ${data.slots.length} correct. Keep trying.`,
+          );
+        }
+      }
+
+      function awardOrganizerXP() {
+        STORE.organizerSolved = STORE.organizerSolved || {};
+        if (STORE.organizerSolved[STORE.activeOrganizer]) return;
+        STORE.organizerSolved[STORE.activeOrganizer] = true;
+        STORE.sparkPoints = (STORE.sparkPoints || 1200) + 50;
+        document.getElementById("sparkXPCounter").textContent =
+          `✨ ${STORE.sparkPoints} SPARK XP`;
+        localStorage.setItem("widaXP", STORE.sparkPoints);
+        showMinimalToast("🧩 Organizer solved! +50 SPARK XP!");
+      }
+
+      function announceOrganizer(msg) {
+        const node = document.getElementById("organizerStatus");
+        if (node) node.textContent = msg;
+      }
+
       // Interactive SVG quest solving functions
       function tapReadingObject(type, desc) {
         playChime("success");
@@ -2734,48 +6370,141 @@
       }
 
       // Reveal comprehension checks
-      function showReadingQuizCard() {
+      // Build the active question list for the current task + tier.
+      // Prefers the rich WIDA_QUESTION_SETS; falls back to legacy single-question
+      // fields so any task without a set still works.
+      function getActiveQuestions() {
         const task = WIDA_READING_TASKS[STORE.activeTaskIdx];
+        const set = WIDA_QUESTION_SETS[task.id];
+        if (set && set[STORE.activeTier] && set[STORE.activeTier].length) {
+          return set[STORE.activeTier];
+        }
+        // Legacy fallback (one question)
+        return [
+          {
+            type: "Comprehension",
+            q: STORE.activeTier === "A" ? task.qA : task.qB,
+            opts: STORE.activeTier === "A" ? task.optsA : task.optsB,
+            ans: STORE.activeTier === "A" ? task.ansA : task.ansB,
+            expl: STORE.activeTier === "A" ? task.explA : task.explB,
+            ev: "ev1",
+          },
+        ];
+      }
+
+      function showReadingQuizCard() {
+        STORE.quizIndex = 0;
+        STORE.quizAnswered = [];
+        renderQuizQuestion();
+      }
+
+      function renderQuizQuestion() {
+        const questions = getActiveQuestions();
+        const idx = STORE.quizIndex;
+        const question = questions[idx];
+
         const card = document.getElementById("quizCard");
         const questionText = document.getElementById("quizQuestionText");
         const optionsContainer = document.getElementById(
           "quizOptionsContainer",
         );
+        const banner = document.getElementById("explanationBanner");
+        const typeBadge = document.getElementById("quizTypeBadge");
 
         card.style.display = "flex";
-        questionText.textContent = STORE.activeTier === "A" ? task.qA : task.qB;
+        banner.className = "explanation-banner";
+        banner.innerHTML = "";
+
+        typeBadge.textContent = question.type;
+        questionText.textContent = `Q${idx + 1} of ${questions.length}: ${question.q}`;
         optionsContainer.innerHTML = "";
 
-        const options = STORE.activeTier === "A" ? task.optsA : task.optsB;
-        const correctIdx = STORE.activeTier === "A" ? task.ansA : task.ansB;
+        // Progress dots
+        const dots = document.getElementById("quizDots");
+        dots.innerHTML = "";
+        questions.forEach((q, i) => {
+          const dot = document.createElement("span");
+          dot.className =
+            "quiz-dot" +
+            (STORE.quizAnswered[i] ? " done" : "") +
+            (i === idx ? " current" : "");
+          dot.setAttribute(
+            "aria-label",
+            `Question ${i + 1}${STORE.quizAnswered[i] ? " answered" : ""}`,
+          );
+          dots.appendChild(dot);
+        });
 
-        options.forEach((opt, idx) => {
+        const alreadyDone = STORE.quizAnswered[idx];
+
+        question.opts.forEach((opt, oi) => {
           const btn = document.createElement("button");
+          btn.type = "button";
           btn.className = "quiz-option";
+          btn.setAttribute(
+            "aria-label",
+            `Choice ${String.fromCharCode(65 + oi)}: ${opt}`,
+          );
           btn.innerHTML = `
-          <span>${String.fromCharCode(65 + idx)}. ${opt}</span>
+          <span>${String.fromCharCode(65 + oi)}. ${opt}</span>
           <span class="chk-status"></span>
         `;
-
-          // EVIDENCE HIGHLIGHTER MOUSE INTERACTION!
-          btn.onmouseenter = () => highlightEvidenceText(idx);
+          // Evidence Highlighter: glow the evidence span tied to this question.
+          btn.onmouseenter = () => highlightEvidenceText(question.ev);
           btn.onmouseleave = () => clearEvidenceHighlight();
+          btn.onfocus = () => highlightEvidenceText(question.ev);
+          btn.onblur = () => clearEvidenceHighlight();
 
-          btn.onclick = () => submitReadingAnswer(idx, correctIdx, btn);
+          if (alreadyDone) {
+            btn.classList.add("disabled");
+            if (oi === question.ans) btn.classList.add("correct");
+          } else {
+            btn.onclick = () => submitReadingAnswer(oi, question, btn);
+          }
           optionsContainer.appendChild(btn);
         });
+
+        if (alreadyDone) {
+          banner.className = "explanation-banner correct";
+          banner.innerHTML = `🎉 <strong>${question.expl[question.ans]}</strong>`;
+        }
+
+        // Nav buttons
+        const prevBtn = document.getElementById("quizPrevBtn");
+        const nextBtn = document.getElementById("quizNextBtn");
+        prevBtn.disabled = idx === 0;
+        if (idx === questions.length - 1) {
+          nextBtn.textContent = allAnswered()
+            ? "✓ Set Complete"
+            : "Answer to Finish";
+          nextBtn.disabled = true;
+        } else {
+          nextBtn.textContent = "Next Question ▶";
+          nextBtn.disabled = false;
+        }
       }
 
-      // Active Evidence Highlighter triggers
-      function highlightEvidenceText(idx) {
-        // Clear previous glows
+      function quizGoTo(delta) {
+        const questions = getActiveQuestions();
+        const next = STORE.quizIndex + delta;
+        if (next < 0 || next >= questions.length) return;
+        STORE.quizIndex = next;
         clearEvidenceHighlight();
+        renderQuizQuestion();
+      }
 
-        // Determine target evidence ID based on option indices
-        let targetId = "ev1";
-        if (idx === 1) targetId = "ev2";
-        if (idx === 2) targetId = "ev3";
+      function allAnswered() {
+        const questions = getActiveQuestions();
+        for (let i = 0; i < questions.length; i++) {
+          if (!STORE.quizAnswered[i]) return false;
+        }
+        return true;
+      }
 
+      // Active Evidence Highlighter triggers (now keyed by question.ev)
+      function highlightEvidenceText(targetId) {
+        clearEvidenceHighlight();
+        if (!targetId) return;
         const element = document.getElementById(targetId);
         if (element) {
           element.classList.add("evidence-glowing");
@@ -2788,32 +6517,54 @@
         elements.forEach((el) => el.classList.remove("evidence-glowing"));
       }
 
-      function submitReadingAnswer(selectedIdx, correctIdx, btnNode) {
-        const task = WIDA_READING_TASKS[STORE.activeTaskIdx];
-        const explanations = STORE.activeTier === "A" ? task.explA : task.explB;
+      function submitReadingAnswer(selectedIdx, question, btnNode) {
         const banner = document.getElementById("explanationBanner");
-
         const allBtns = document.querySelectorAll(".quiz-option");
         allBtns.forEach((b) => b.classList.add("disabled"));
 
-        if (selectedIdx === correctIdx) {
+        if (selectedIdx === question.ans) {
           btnNode.classList.add("correct");
           btnNode.querySelector(".chk-status").textContent = "🟢 Correct!";
           banner.className = "explanation-banner correct";
-          banner.innerHTML = `🎉 <strong>Correct!</strong> ${explanations[selectedIdx]}`;
+          banner.innerHTML = `🎉 <strong>${question.expl[selectedIdx]}</strong>`;
 
-          STORE.checklistQuiz = true;
-          updateChecklistUI();
+          STORE.quizAnswered[STORE.quizIndex] = true;
           playChime("success");
+
+          // Highlight the supporting evidence so students see WHY it is right.
+          highlightEvidenceText(question.ev);
+
+          // Whole question set finished -> mark the checklist item.
+          if (allAnswered()) {
+            STORE.checklistQuiz = true;
+            updateChecklistUI();
+          }
+
+          // Re-render to refresh dots + nav state.
+          const questions = getActiveQuestions();
+          if (STORE.quizIndex < questions.length - 1) {
+            const nextBtn = document.getElementById("quizNextBtn");
+            nextBtn.disabled = false;
+            nextBtn.textContent = "Next Question ▶";
+          }
+          const dots = document.getElementById("quizDots");
+          if (dots.children[STORE.quizIndex]) {
+            dots.children[STORE.quizIndex].classList.add("done");
+          }
+          if (STORE.quizIndex === questions.length - 1 && allAnswered()) {
+            const nextBtn = document.getElementById("quizNextBtn");
+            nextBtn.textContent = "✓ Set Complete";
+          }
         } else {
           btnNode.classList.add("incorrect");
           btnNode.querySelector(".chk-status").textContent = "🔴 Try Again";
           banner.className = "explanation-banner incorrect";
-          banner.innerHTML = `⚠️ <strong>Incorrect.</strong> ${explanations[selectedIdx]} Reread the highlighted text segment in the passage.`;
-
+          banner.innerHTML = `⚠️ <strong>${question.expl[selectedIdx]}</strong> Hover or focus a choice to highlight the evidence, then reread it.`;
           setTimeout(() => {
-            allBtns.forEach((b) => b.classList.remove("disabled"));
-          }, 1500);
+            document
+              .querySelectorAll(".quiz-option")
+              .forEach((b) => b.classList.remove("disabled"));
+          }, 1400);
         }
       }
 

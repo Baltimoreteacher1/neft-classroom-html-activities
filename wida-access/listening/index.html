@@ -576,6 +576,548 @@
         gap: 6px;
       }
 
+      /* ════════════════════════════════════════════
+         PRACTICE MODES SUITE (additive, self-contained)
+         ════════════════════════════════════════════ */
+      .pm-suite {
+        max-width: 1440px;
+        margin: 12px auto 0;
+        padding: 0 24px 80px;
+      }
+
+      .pm-shell {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-premium);
+        box-shadow: var(--shadow-premium);
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+
+      .pm-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 16px;
+        border-bottom: 2px solid var(--bg-studio);
+        padding-bottom: 18px;
+      }
+
+      .pm-head h2 {
+        font-family: var(--font-space);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        letter-spacing: -0.01em;
+        margin: 0 0 4px;
+      }
+
+      .pm-head p {
+        font-size: 0.9rem;
+        color: var(--slate-muted);
+        margin: 0;
+        max-width: 640px;
+      }
+
+      .pm-scorebar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .pm-stat {
+        background: var(--primary-light);
+        border: 1px solid var(--primary);
+        color: var(--primary-dark);
+        border-radius: 30px;
+        padding: 8px 16px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .pm-stat.amber {
+        background: var(--amber-light);
+        border-color: var(--amber);
+        color: #92400e;
+      }
+
+      /* Level toggle */
+      .pm-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .pm-level-switch {
+        display: inline-flex;
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 4px;
+        background: var(--bg-canvas);
+        gap: 4px;
+      }
+
+      .pm-level-btn {
+        border: none;
+        background: none;
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        border-radius: 6px;
+        cursor: pointer;
+        color: var(--slate-muted);
+        transition: var(--transition);
+      }
+
+      .pm-level-btn.active {
+        background: var(--primary);
+        color: var(--white);
+        box-shadow: var(--shadow-card);
+      }
+
+      .pm-rate-note {
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: var(--slate-muted);
+      }
+
+      /* Activity type tabs */
+      .pm-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pm-tab {
+        border: 1px solid var(--line-muted);
+        background: var(--white);
+        color: var(--slate-ink);
+        font-weight: 700;
+        font-size: 0.82rem;
+        padding: 9px 14px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: var(--shadow-card);
+      }
+
+      .pm-tab:hover {
+        border-color: var(--primary);
+        background: var(--primary-light);
+        color: var(--primary-dark);
+      }
+
+      .pm-tab.active {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary-dark);
+      }
+
+      .pm-tab .pm-tab-count {
+        font-size: 0.68rem;
+        font-weight: 900;
+        background: rgba(255, 255, 255, 0.25);
+        padding: 1px 7px;
+        border-radius: 20px;
+      }
+
+      .pm-tab:not(.active) .pm-tab-count {
+        background: var(--bg-studio);
+        color: var(--slate-muted);
+      }
+
+      /* Activity body */
+      .pm-body {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .pm-card {
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        background: var(--bg-canvas);
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .pm-typehead {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .pm-typehead .pm-type-emoji {
+        font-size: 1.8rem;
+        line-height: 1;
+      }
+
+      .pm-typehead h3 {
+        font-family: var(--font-space);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        margin: 0;
+      }
+
+      .pm-typehead .pm-type-sub {
+        font-size: 0.8rem;
+        color: var(--slate-muted);
+        font-weight: 600;
+      }
+
+      .pm-skill-pill {
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--white);
+        background: var(--navy);
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-left: auto;
+      }
+
+      .pm-audio-deck {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .pm-audio-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .pm-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 11px 18px;
+        border-radius: var(--radius-field);
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: var(--transition);
+        font-family: var(--font-outfit);
+      }
+
+      .pm-btn-primary {
+        background: var(--primary);
+        color: var(--white);
+      }
+      .pm-btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .pm-btn-ghost {
+        background: var(--white);
+        color: var(--slate-ink);
+        border-color: var(--line-muted);
+      }
+      .pm-btn-ghost:hover {
+        border-color: var(--primary);
+        color: var(--primary-dark);
+      }
+
+      .pm-transcript {
+        font-size: 0.92rem;
+        line-height: 1.7;
+        color: var(--slate-ink);
+        background: var(--bg-studio);
+        border: 1px dashed var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 12px 14px;
+        display: none;
+      }
+
+      .pm-transcript.show {
+        display: block;
+        animation: fadeIn 0.2s;
+      }
+
+      .pm-transcript .pm-tr-label {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--slate-muted);
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .pm-speaker-tag {
+        font-weight: 800;
+        color: var(--primary-dark);
+      }
+
+      .pm-prompt {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        line-height: 1.5;
+      }
+
+      .pm-prompt .pm-cloze-blank {
+        display: inline-block;
+        min-width: 64px;
+        border-bottom: 3px solid var(--amber);
+        text-align: center;
+        color: var(--amber);
+        font-weight: 900;
+      }
+
+      .pm-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .pm-opt {
+        background: var(--white);
+        border: 1.5px solid var(--line-muted);
+        padding: 12px 16px;
+        border-radius: var(--radius-field);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        text-align: left;
+        color: var(--slate-ink);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-family: var(--font-outfit);
+      }
+
+      .pm-opt:hover:not(:disabled) {
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+
+      .pm-opt:disabled {
+        cursor: default;
+      }
+
+      .pm-opt.correct {
+        background: var(--green-light);
+        border-color: var(--green-success);
+        color: var(--green-success);
+      }
+
+      .pm-opt.incorrect {
+        background: var(--coral-light);
+        border-color: var(--coral);
+        color: var(--coral);
+      }
+
+      .pm-opt .pm-opt-mark {
+        font-weight: 900;
+      }
+
+      /* Ordering (sequence) activity */
+      .pm-order-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .pm-order-item {
+        background: var(--white);
+        border: 1.5px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--slate-ink);
+      }
+
+      .pm-order-item .pm-order-num {
+        font-weight: 900;
+        color: var(--primary);
+        min-width: 22px;
+        text-align: center;
+      }
+
+      .pm-order-item .pm-order-text {
+        flex: 1;
+      }
+
+      .pm-order-btns {
+        display: flex;
+        gap: 4px;
+      }
+
+      .pm-order-btns button {
+        border: 1px solid var(--line-muted);
+        background: var(--bg-canvas);
+        color: var(--slate-ink);
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 900;
+        transition: var(--transition);
+        font-family: var(--font-outfit);
+      }
+
+      .pm-order-btns button:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary-dark);
+      }
+
+      .pm-order-btns button:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+
+      .pm-order-item.correct-slot {
+        background: var(--green-light);
+        border-color: var(--green-success);
+      }
+      .pm-order-item.wrong-slot {
+        background: var(--coral-light);
+        border-color: var(--coral);
+      }
+
+      /* Cloze typing */
+      .pm-cloze-controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .pm-cloze-input {
+        flex: 1;
+        min-width: 160px;
+        padding: 11px 14px;
+        border: 1.5px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        font-size: 0.92rem;
+        font-weight: 600;
+        font-family: var(--font-outfit);
+        color: var(--slate-ink);
+      }
+
+      .pm-cloze-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+      }
+
+      .pm-feedback {
+        padding: 14px;
+        border-radius: var(--radius-field);
+        font-size: 0.88rem;
+        line-height: 1.5;
+        display: none;
+        font-weight: 600;
+      }
+
+      .pm-feedback.correct {
+        background: var(--green-light);
+        border-left: 4px solid var(--green-success);
+        color: var(--green-success);
+        display: block;
+      }
+
+      .pm-feedback.incorrect {
+        background: var(--coral-light);
+        border-left: 4px solid var(--coral);
+        color: var(--coral);
+        display: block;
+      }
+
+      .pm-footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-top: 1px solid var(--line-muted);
+        padding-top: 14px;
+      }
+
+      .pm-progress-dots {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .pm-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--line-muted);
+        transition: var(--transition);
+      }
+      .pm-dot.done {
+        background: var(--green-success);
+      }
+      .pm-dot.current {
+        background: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-light);
+      }
+
+      .pm-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
+        }
+        #spinnerNeedle {
+          transition: none !important;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .pm-suite {
+          padding: 0 14px 60px;
+        }
+        .pm-shell {
+          padding: 18px;
+        }
+      }
+
       @media print {
         body {
           background: white !important;
@@ -591,7 +1133,8 @@
         .diag-overlay,
         .action-btn,
         .checklist-card,
-        .feedback-coach-card {
+        .feedback-coach-card,
+        .pm-suite {
           display: none !important;
         }
         .glass-panel {
@@ -1049,6 +1592,76 @@
           </div>
         </section>
       </div>
+
+      <!-- ════════ PRACTICE MODES SUITE (additive) ════════ -->
+      <section class="pm-suite" aria-labelledby="pmTitle">
+        <div class="pm-shell">
+          <div class="pm-head">
+            <div>
+              <h2 id="pmTitle">🎧 Listening Practice Modes</h2>
+              <p>
+                A full suite of academic-English listening activities. Listen
+                first, replay as needed, then answer. Level 1 plays slower with
+                shorter audio; Level 2 stretches your comprehension. Show the
+                text any time you need a fallback.
+              </p>
+            </div>
+            <div class="pm-scorebar">
+              <span class="pm-stat" id="pmScore">⭐ 0 pts</span>
+              <span class="pm-stat amber" id="pmStreak">🔥 0 streak</span>
+            </div>
+          </div>
+
+          <div class="pm-controls">
+            <div
+              class="pm-level-switch"
+              role="group"
+              aria-label="Choose practice level"
+            >
+              <button
+                class="pm-level-btn active"
+                id="pmLevel1"
+                type="button"
+                onclick="pmSetLevel(1)"
+                aria-pressed="true"
+              >
+                Level 1 · Support
+              </button>
+              <button
+                class="pm-level-btn"
+                id="pmLevel2"
+                type="button"
+                onclick="pmSetLevel(2)"
+                aria-pressed="false"
+              >
+                Level 2 · Enrichment
+              </button>
+            </div>
+            <span class="pm-rate-note" id="pmRateNote"
+              >🐢 Level 1 audio plays slower (0.75x) for easier listening.</span
+            >
+          </div>
+
+          <div
+            class="pm-tabs"
+            id="pmTabs"
+            role="tablist"
+            aria-label="Listening activity types"
+          ></div>
+
+          <div class="pm-body">
+            <div
+              class="pm-card"
+              role="tabpanel"
+              id="pmPanel"
+              aria-live="polite"
+            ></div>
+          </div>
+
+          <!-- polite live region for audio status -->
+          <div class="pm-sr-only" id="pmAudioStatus" aria-live="polite"></div>
+        </div>
+      </section>
 
       <!-- Diagnostics Terminal Overlay -->
       <div class="diag-overlay" id="diagTerminal">
@@ -3172,6 +3785,1020 @@
           setTimeout(() => toast.remove(), 250);
         }, 2500);
       }
+    </script>
+
+    <!-- ════════ PRACTICE MODES SUITE — standalone engine ════════ -->
+    <script>
+      (function () {
+        "use strict";
+
+        // ── Activity bank ──────────────────────────────────────────
+        // Each type has level 1 (support) and level 2 (enrichment) items.
+        // audio = what is spoken aloud. transcript = show-text fallback.
+        const PM_TYPES = [
+          {
+            key: "cloze",
+            emoji: "📝",
+            title: "Listening Cloze",
+            sub: "Type or choose the missing word you heard",
+            skill: "Word focus",
+            items: {
+              1: [
+                {
+                  audio:
+                    "The water cycle has three steps. First the sun heats the ocean. The water turns into a gas. This is called evaporation.",
+                  blankBefore: "The water turns into a",
+                  blankAfter: "when the sun heats it.",
+                  answer: "gas",
+                  choices: ["gas", "rock", "book"],
+                  hint: "The sun's heat changes liquid water into a __.",
+                },
+                {
+                  audio:
+                    "Look at the bar chart. Soccer has the tallest bar. More students chose soccer than any other sport.",
+                  blankBefore: "Soccer has the",
+                  blankAfter: "bar on the chart.",
+                  answer: "tallest",
+                  choices: ["tallest", "shortest", "widest"],
+                  hint: "The most popular choice has the highest bar.",
+                },
+                {
+                  audio:
+                    "A balance scale compares the weight of two things. When both sides are even, the scale is balanced.",
+                  blankBefore: "When both sides are even, the scale is",
+                  blankAfter: ".",
+                  answer: "balanced",
+                  choices: ["balanced", "broken", "heavy"],
+                  hint: "Even sides mean the scale is __.",
+                },
+                {
+                  audio:
+                    "Plants are producers. They make their own food from sunlight. Insects eat the plants.",
+                  blankBefore: "Plants are called",
+                  blankAfter: "because they make their own food.",
+                  answer: "producers",
+                  choices: ["producers", "consumers", "eaters"],
+                  hint: "Living things that make their own food are __.",
+                },
+              ],
+              2: [
+                {
+                  audio:
+                    "As the vapor rises, it cools high in the sky and changes back into tiny drops that form clouds. This change is called condensation.",
+                  blankBefore:
+                    "When vapor cools and forms clouds, the change is called",
+                  blankAfter: ".",
+                  answer: "condensation",
+                  choices: ["condensation", "evaporation", "precipitation"],
+                  hint: "Cooling vapor turning into cloud drops is __.",
+                },
+                {
+                  audio:
+                    "A timeline places events in chronological order, from the earliest to the latest. The marks are spaced at equal intervals of fifty years.",
+                  blankBefore: "A timeline places events in",
+                  blankAfter: "order.",
+                  answer: "chronological",
+                  choices: ["chronological", "alphabetical", "random"],
+                  hint: "Earliest to latest is __ order.",
+                },
+                {
+                  audio:
+                    "The government has a system of checks and balances. It keeps any one branch from gaining too much power.",
+                  blankBefore:
+                    "Checks and balances stop one branch from having too much",
+                  blankAfter: ".",
+                  answer: "power",
+                  choices: ["power", "money", "homework"],
+                  hint: "The system limits each branch's __.",
+                },
+                {
+                  audio:
+                    "On this map, the scale tells us that one inch stands for ten miles of real distance. Travelers use the scale to measure distance.",
+                  blankBefore: "The map scale connects the map to real",
+                  blankAfter: ".",
+                  answer: "distance",
+                  choices: ["distance", "weather", "color"],
+                  hint: "A scale measures real-world __.",
+                },
+                {
+                  audio:
+                    "Friction is a force that pushes against a moving block and acts like a brake, so the block slides more slowly down the ramp.",
+                  blankBefore:
+                    "Friction acts like a brake and slows the block's",
+                  blankAfter: ".",
+                  answer: "speed",
+                  choices: ["speed", "color", "size"],
+                  hint: "Friction reduces the block's __.",
+                },
+              ],
+            },
+          },
+          {
+            key: "purpose",
+            emoji: "🎙️",
+            title: "Speaker's Purpose & Tone",
+            sub: "Why is the speaker talking, and how do they sound?",
+            skill: "Purpose / tone",
+            items: {
+              1: [
+                {
+                  audio:
+                    "Boys and girls, please line up at the door quietly. Get your coats and stand in a straight line.",
+                  q: "Why is the teacher talking to the class?",
+                  opts: [
+                    "To tell a funny story",
+                    "To give directions to the class",
+                    "To ask a question about science",
+                  ],
+                  ans: 1,
+                  fb: "The teacher is telling students what to do, so the purpose is to give directions.",
+                },
+                {
+                  audio:
+                    "Wow, you all did such a wonderful job on the project! I am so proud of how hard everyone worked.",
+                  q: "How does the speaker sound?",
+                  opts: ["Angry", "Proud and happy", "Bored"],
+                  ans: 1,
+                  fb: "Words like 'wonderful' and 'proud' show the speaker is happy and proud.",
+                },
+                {
+                  audio:
+                    "Today I will explain how plants make their own food using sunlight, air, and water.",
+                  q: "What is the speaker's purpose?",
+                  opts: [
+                    "To explain how something works",
+                    "To sell a toy",
+                    "To say goodbye",
+                  ],
+                  ans: 0,
+                  fb: "The speaker says 'I will explain how,' so the purpose is to explain.",
+                },
+              ],
+              2: [
+                {
+                  audio:
+                    "I strongly believe our school should start a recycling club. If we work together, we can keep our planet cleaner for everyone.",
+                  q: "What is the speaker mainly trying to do?",
+                  opts: [
+                    "Describe the weather today",
+                    "Persuade listeners to support an idea",
+                    "Give step-by-step cooking directions",
+                  ],
+                  ans: 1,
+                  fb: "Phrases like 'I strongly believe' and 'we should' show the speaker is persuading the audience.",
+                },
+                {
+                  audio:
+                    "Unfortunately, the field trip has been canceled because of the storm. I know many of you were looking forward to it.",
+                  q: "What is the speaker's tone?",
+                  opts: ["Excited", "Apologetic and disappointed", "Joking"],
+                  ans: 1,
+                  fb: "'Unfortunately' and 'I know you were looking forward to it' show a disappointed, apologetic tone.",
+                },
+                {
+                  audio:
+                    "Let me walk you through the steps of the experiment so you can repeat it safely at your table.",
+                  q: "Why is the speaker giving this talk?",
+                  opts: [
+                    "To entertain with a poem",
+                    "To instruct listeners how to do something",
+                    "To complain about the lab",
+                  ],
+                  ans: 1,
+                  fb: "'Walk you through the steps' shows the purpose is to instruct.",
+                },
+                {
+                  audio:
+                    "Honestly, I am not sure this plan will work. There are still many problems we have not solved yet.",
+                  q: "How does the speaker feel about the plan?",
+                  opts: [
+                    "Certain and confident",
+                    "Doubtful and unsure",
+                    "Furious",
+                  ],
+                  ans: 1,
+                  fb: "'Not sure' and 'many problems' show the speaker feels doubtful and unsure.",
+                },
+              ],
+            },
+          },
+          {
+            key: "inference",
+            emoji: "🔮",
+            title: "Inference from Audio",
+            sub: "Figure out what is not said directly",
+            skill: "Inference",
+            items: {
+              1: [
+                {
+                  audio:
+                    "Maria put on her boots and raincoat. She grabbed her umbrella before she opened the front door.",
+                  q: "What is the weather probably like outside?",
+                  opts: ["Sunny and hot", "Rainy", "Snowy"],
+                  ans: 1,
+                  fb: "Raincoat and umbrella are clues that it is rainy, even though the speaker never says 'rain.'",
+                },
+                {
+                  audio:
+                    "Tom finished all his homework early. He smiled and told his mom he was ready for the test tomorrow.",
+                  q: "How does Tom most likely feel?",
+                  opts: ["Worried", "Confident", "Sleepy"],
+                  ans: 1,
+                  fb: "Finishing early and smiling show Tom feels confident about the test.",
+                },
+                {
+                  audio:
+                    "The classroom plant's leaves are turning brown and droopy. Nobody has watered it for two weeks.",
+                  q: "What will probably happen next if nothing changes?",
+                  opts: [
+                    "The plant will grow flowers",
+                    "The plant may die",
+                    "The plant will turn blue",
+                  ],
+                  ans: 1,
+                  fb: "Brown, droopy leaves and no water suggest the plant may die.",
+                },
+              ],
+              2: [
+                {
+                  audio:
+                    "The team had practiced every day for a month. When the final whistle blew, they jumped up and hugged each other, raising the trophy high.",
+                  q: "What can you infer about the game's result?",
+                  opts: [
+                    "The team lost the game",
+                    "The team won the game",
+                    "The game was canceled",
+                  ],
+                  ans: 1,
+                  fb: "Hugging and raising a trophy are clues that the team won, even though it is never stated.",
+                },
+                {
+                  audio:
+                    "The sky grew dark in the afternoon, the wind picked up, and the weather reporter told everyone to stay indoors.",
+                  q: "What is most likely about to happen?",
+                  opts: [
+                    "A storm is coming",
+                    "It will be a calm, sunny evening",
+                    "School will start early",
+                  ],
+                  ans: 0,
+                  fb: "Dark sky, strong wind, and a warning to stay inside all point to a coming storm.",
+                },
+                {
+                  audio:
+                    "Sam kept looking at the clock, tapping his pencil, and reading the same line over and over without turning the page.",
+                  q: "How does Sam most likely feel?",
+                  opts: ["Relaxed", "Nervous or distracted", "Excited"],
+                  ans: 1,
+                  fb: "Watching the clock and re-reading the same line are clues that Sam feels nervous or distracted.",
+                },
+                {
+                  audio:
+                    "When the scientist mixed the two liquids, bubbles formed quickly and the beaker became warm to the touch.",
+                  q: "What can you infer happened in the beaker?",
+                  opts: [
+                    "Nothing changed",
+                    "A chemical reaction took place",
+                    "The liquid froze solid",
+                  ],
+                  ans: 1,
+                  fb: "Bubbles and heat are signs that a chemical reaction took place.",
+                },
+              ],
+            },
+          },
+          {
+            key: "summarize",
+            emoji: "🗒️",
+            title: "Note-Taking & Summarize",
+            sub: "Listen, take notes, then pick the best summary",
+            skill: "Main idea",
+            items: {
+              1: [
+                {
+                  audio:
+                    "A balanced lunch has foods from different groups. The tray has a sandwich for grains and protein, milk for calcium, and an apple for fruit. Eating different groups gives you energy.",
+                  q: "Which sentence best summarizes the talk?",
+                  opts: [
+                    "Apples are red and round.",
+                    "A balanced lunch uses different food groups to give you energy.",
+                    "The milk carton is on the tray.",
+                  ],
+                  ans: 1,
+                  fb: "A good summary covers the main idea: different food groups give energy. The others are small details.",
+                },
+                {
+                  audio:
+                    "Our class read three chapters this week. We colored three boxes on the chart. The goal was to read three chapters before Friday, and we met it.",
+                  q: "What is the best summary?",
+                  opts: [
+                    "The class met its goal of reading three chapters this week.",
+                    "The chart has boxes.",
+                    "Friday comes after Thursday.",
+                  ],
+                  ans: 0,
+                  fb: "The main point is that the class met its three-chapter goal. The rest are minor or off-topic.",
+                },
+              ],
+              2: [
+                {
+                  audio:
+                    "A food web shows how energy moves through an ecosystem. Producers like grass make food from sunlight. Consumers like crickets eat the producers, and other consumers like frogs eat the crickets. Arrows show energy moving from food to eater.",
+                  q: "Which is the best summary of the talk?",
+                  opts: [
+                    "Frogs are green and live near water.",
+                    "A food web shows how energy moves from producers to consumers through an ecosystem.",
+                    "Crickets make a chirping sound at night.",
+                  ],
+                  ans: 1,
+                  fb: "The best summary captures the main idea — energy moving from producers to consumers — not a single detail.",
+                },
+                {
+                  audio:
+                    "The three branches of government share power. The legislative branch makes laws, the executive branch carries them out, and the judicial branch explains them. This system of checks and balances stops any one branch from getting too much power.",
+                  q: "Which sentence best summarizes the talk?",
+                  opts: [
+                    "The judicial branch explains laws.",
+                    "Three branches share power through checks and balances so no branch becomes too strong.",
+                    "Laws are written on paper.",
+                  ],
+                  ans: 1,
+                  fb: "The summary should state the big idea: shared power and checks and balances. Option A is just one detail.",
+                },
+                {
+                  audio:
+                    "To read a map, you use the legend and the scale. The legend explains the symbols, and the scale tells how map distance compares to real distance. Together they help travelers plan a trip.",
+                  q: "What is the best summary?",
+                  opts: [
+                    "Maps are colorful.",
+                    "A legend and a scale work together to help readers understand a map and plan a trip.",
+                    "One inch can equal ten miles.",
+                  ],
+                  ans: 1,
+                  fb: "The best summary joins both ideas — legend and scale helping readers — instead of one fact.",
+                },
+              ],
+            },
+          },
+          {
+            key: "compare",
+            emoji: "🗣️",
+            title: "Compare Two Speakers",
+            sub: "Listen to two accounts and compare them",
+            skill: "Compare / contrast",
+            items: {
+              1: [
+                {
+                  audio:
+                    "Speaker one says: My favorite season is summer because I can swim every day. Speaker two says: My favorite season is winter because I love to build snowmen.",
+                  q: "How are the two speakers different?",
+                  opts: [
+                    "They like the same season",
+                    "They each like a different season",
+                    "Neither speaker likes any season",
+                  ],
+                  ans: 1,
+                  fb: "Speaker one likes summer and speaker two likes winter, so they like different seasons.",
+                },
+                {
+                  audio:
+                    "Lily says she walks to school because it is close. Ben says he rides the bus because he lives far away.",
+                  q: "Why do Lily and Ben travel to school differently?",
+                  opts: [
+                    "They live different distances from school",
+                    "They both live next to the school",
+                    "Neither one goes to school",
+                  ],
+                  ans: 0,
+                  fb: "Lily lives close and Ben lives far, so the distance is why they travel differently.",
+                },
+              ],
+              2: [
+                {
+                  audio:
+                    "Speaker one describes the rainforest as warm and wet all year, with rain almost every day. Speaker two describes the desert as hot in the day but cold at night, with very little rain.",
+                  q: "What is one main difference between the two places?",
+                  opts: [
+                    "Both places get the same amount of rain",
+                    "The rainforest gets much more rain than the desert",
+                    "Both places are cold all the time",
+                  ],
+                  ans: 1,
+                  fb: "The rainforest gets rain almost daily while the desert gets very little, so rainfall is the key difference.",
+                },
+                {
+                  audio:
+                    "The first student says the class should plant a vegetable garden to grow healthy food. The second student says the class should plant flowers to make the school beautiful.",
+                  q: "How do the two students' ideas compare?",
+                  opts: [
+                    "Both want the exact same garden",
+                    "Both want a garden, but for different reasons",
+                    "Neither wants a garden at all",
+                  ],
+                  ans: 1,
+                  fb: "Both want a garden, but one wants food and the other wants beauty — same goal, different reasons.",
+                },
+                {
+                  audio:
+                    "One account says the storm caused the picnic to move indoors but everyone still had fun. Another account says the storm ended the picnic early and people went home sad.",
+                  q: "How are the two accounts of the storm different?",
+                  opts: [
+                    "They agree the picnic was a happy success",
+                    "One ended happily indoors; the other ended early and sadly",
+                    "Neither account mentions a storm",
+                  ],
+                  ans: 1,
+                  fb: "Both describe a storm, but one ends happily indoors and the other ends early and sad — different outcomes.",
+                },
+              ],
+            },
+          },
+          {
+            key: "sequence",
+            emoji: "🪜",
+            title: "Classroom Directions in Sequence",
+            sub: "Listen, then put the steps in the right order",
+            skill: "Sequence / directions",
+            items: {
+              1: [
+                {
+                  audio:
+                    "First, take out your notebook. Next, write the date at the top. Then open your book to page ten.",
+                  steps: [
+                    "Take out your notebook",
+                    "Write the date at the top",
+                    "Open your book to page ten",
+                  ],
+                },
+                {
+                  audio:
+                    "First, line up at the door. Next, walk quietly to the library. Last, find a seat at a table.",
+                  steps: [
+                    "Line up at the door",
+                    "Walk quietly to the library",
+                    "Find a seat at a table",
+                  ],
+                },
+              ],
+              2: [
+                {
+                  audio:
+                    "To start the experiment, first put on your safety goggles. Second, pour the water into the beaker. Third, add one spoon of salt. Finally, stir the mixture slowly until the salt disappears.",
+                  steps: [
+                    "Put on your safety goggles",
+                    "Pour the water into the beaker",
+                    "Add one spoon of salt",
+                    "Stir until the salt disappears",
+                  ],
+                },
+                {
+                  audio:
+                    "For the map project, begin by drawing the streets in pencil. Next, add a compass rose in the corner. Then color the parks green. After that, write the names of the streets. Last, draw a legend that explains your symbols.",
+                  steps: [
+                    "Draw the streets in pencil",
+                    "Add a compass rose in the corner",
+                    "Color the parks green",
+                    "Write the names of the streets",
+                    "Draw a legend for your symbols",
+                  ],
+                },
+                {
+                  audio:
+                    "To plant the seed, first fill the cup with soil. Next, push the seed gently into the soil. Then pour a little water on top. Finally, place the cup near a sunny window.",
+                  steps: [
+                    "Fill the cup with soil",
+                    "Push the seed into the soil",
+                    "Pour a little water on top",
+                    "Place the cup near a sunny window",
+                  ],
+                },
+              ],
+            },
+          },
+        ];
+
+        // ── State ──────────────────────────────────────────────────
+        const PM = {
+          level: 1,
+          typeIdx: 0,
+          itemIdx: 0,
+          answered: false,
+          score: Number(localStorage.getItem("pmListeningScore") || 0),
+          streak: Number(localStorage.getItem("pmListeningStreak") || 0),
+          order: [], // working order for sequence activity
+        };
+
+        function activeType() {
+          return PM_TYPES[PM.typeIdx];
+        }
+        function activeItems() {
+          return activeType().items[PM.level] || [];
+        }
+        function activeItem() {
+          const items = activeItems();
+          return items[Math.min(PM.itemIdx, items.length - 1)];
+        }
+
+        // ── Audio (speechSynthesis): replay + slower L1 rate + fallback ──
+        function pmSpeak(text) {
+          const status = document.getElementById("pmAudioStatus");
+          if (!("speechSynthesis" in window)) {
+            if (status)
+              status.textContent = "Speech not supported. Use Show Text.";
+            pmRevealTranscript();
+            return;
+          }
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.rate = PM.level === 1 ? 0.75 : 0.95;
+          u.onstart = function () {
+            if (status) status.textContent = "Audio playing.";
+            const btn = document.getElementById("pmPlayBtn");
+            if (btn) btn.textContent = "🔊 Playing…";
+          };
+          u.onend = u.onerror = function () {
+            if (status) status.textContent = "Audio finished.";
+            const btn = document.getElementById("pmPlayBtn");
+            if (btn) btn.textContent = "🔁 Replay Audio";
+          };
+          window.speechSynthesis.speak(u);
+        }
+
+        function pmRevealTranscript() {
+          const tr = document.getElementById("pmTranscript");
+          if (tr) tr.classList.add("show");
+          const btn = document.getElementById("pmShowTextBtn");
+          if (btn) btn.textContent = "📄 Text shown";
+        }
+
+        // ── Scoring ────────────────────────────────────────────────
+        function pmAward(correct) {
+          if (correct) {
+            PM.score += PM.level === 1 ? 10 : 15;
+            PM.streak += 1;
+          } else {
+            PM.streak = 0;
+          }
+          localStorage.setItem("pmListeningScore", String(PM.score));
+          localStorage.setItem("pmListeningStreak", String(PM.streak));
+          pmRenderScore();
+        }
+
+        function pmRenderScore() {
+          const s = document.getElementById("pmScore");
+          const k = document.getElementById("pmStreak");
+          if (s) s.textContent = "⭐ " + PM.score + " pts";
+          if (k) k.textContent = "🔥 " + PM.streak + " streak";
+        }
+
+        // ── Level + tabs ───────────────────────────────────────────
+        window.pmSetLevel = function (lvl) {
+          PM.level = lvl;
+          PM.itemIdx = 0;
+          document
+            .getElementById("pmLevel1")
+            .classList.toggle("active", lvl === 1);
+          document
+            .getElementById("pmLevel2")
+            .classList.toggle("active", lvl === 2);
+          document
+            .getElementById("pmLevel1")
+            .setAttribute("aria-pressed", String(lvl === 1));
+          document
+            .getElementById("pmLevel2")
+            .setAttribute("aria-pressed", String(lvl === 2));
+          document.getElementById("pmRateNote").textContent =
+            lvl === 1
+              ? "🐢 Level 1 audio plays slower (0.75x) for easier listening."
+              : "⚡ Level 2 audio plays at near-normal speed with longer passages.";
+          pmBuildTabs();
+          pmRenderItem();
+        };
+
+        function pmBuildTabs() {
+          const wrap = document.getElementById("pmTabs");
+          wrap.innerHTML = "";
+          PM_TYPES.forEach(function (t, i) {
+            const count = (t.items[PM.level] || []).length;
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "pm-tab" + (i === PM.typeIdx ? " active" : "");
+            b.setAttribute("role", "tab");
+            b.setAttribute("aria-selected", String(i === PM.typeIdx));
+            b.innerHTML =
+              "<span>" +
+              t.emoji +
+              " " +
+              t.title +
+              "</span><span class='pm-tab-count'>" +
+              count +
+              "</span>";
+            b.onclick = function () {
+              PM.typeIdx = i;
+              PM.itemIdx = 0;
+              pmBuildTabs();
+              pmRenderItem();
+            };
+            wrap.appendChild(b);
+          });
+        }
+
+        // ── Progress dots + footer nav ─────────────────────────────
+        function pmFooter() {
+          const items = activeItems();
+          let dots = "";
+          for (let i = 0; i < items.length; i++) {
+            let cls = "pm-dot";
+            if (i < PM.itemIdx) cls += " done";
+            else if (i === PM.itemIdx) cls += " current";
+            dots += "<span class='" + cls + "' aria-hidden='true'></span>";
+          }
+          const atEnd = PM.itemIdx >= items.length - 1;
+          return (
+            "<div class='pm-footer-row'>" +
+            "<div class='pm-progress-dots' aria-label='Item " +
+            (PM.itemIdx + 1) +
+            " of " +
+            items.length +
+            "'>" +
+            dots +
+            "</div>" +
+            "<button class='pm-btn pm-btn-ghost' type='button' id='pmNextBtn'>" +
+            (atEnd ? "↻ Restart this type" : "Next item →") +
+            "</button>" +
+            "</div>"
+          );
+        }
+
+        window.pmNext = function () {
+          const items = activeItems();
+          if (PM.itemIdx >= items.length - 1) PM.itemIdx = 0;
+          else PM.itemIdx += 1;
+          pmRenderItem();
+        };
+
+        // ── Common audio deck markup ───────────────────────────────
+        function pmAudioDeck(item) {
+          const speakerLine = item.audio.replace(
+            /Speaker one|Speaker two|The first student|The second student|One account|Another account/g,
+            function (m) {
+              return "<span class='pm-speaker-tag'>" + m + "</span>";
+            },
+          );
+          return (
+            "<div class='pm-audio-deck'>" +
+            "<div class='pm-audio-row'>" +
+            "<button class='pm-btn pm-btn-primary' type='button' id='pmPlayBtn'>🔊 Play Audio</button>" +
+            "<button class='pm-btn pm-btn-ghost' type='button' id='pmShowTextBtn'>📄 Show Text</button>" +
+            "</div>" +
+            "<div class='pm-transcript' id='pmTranscript'>" +
+            "<span class='pm-tr-label'>Transcript (fallback)</span>" +
+            speakerLine +
+            "</div>" +
+            "</div>"
+          );
+        }
+
+        function pmWireAudio() {
+          const item = activeItem();
+          const play = document.getElementById("pmPlayBtn");
+          if (play)
+            play.onclick = function () {
+              pmSpeak(item.audio);
+            };
+          const show = document.getElementById("pmShowTextBtn");
+          if (show)
+            show.onclick = function () {
+              const tr = document.getElementById("pmTranscript");
+              const shown = tr.classList.toggle("show");
+              show.textContent = shown ? "📄 Hide Text" : "📄 Show Text";
+            };
+          const next = document.getElementById("pmNextBtn");
+          if (next) next.onclick = window.pmNext;
+        }
+
+        // ── Renderers per type ─────────────────────────────────────
+        function pmRenderItem() {
+          const t = activeType();
+          const item = activeItem();
+          PM.answered = false;
+          const panel = document.getElementById("pmPanel");
+
+          const head =
+            "<div class='pm-typehead'>" +
+            "<span class='pm-type-emoji' aria-hidden='true'>" +
+            t.emoji +
+            "</span>" +
+            "<div><h3>" +
+            t.title +
+            "</h3><span class='pm-type-sub'>" +
+            t.sub +
+            "</span></div>" +
+            "<span class='pm-skill-pill'>" +
+            t.skill +
+            "</span>" +
+            "</div>";
+
+          let body = "";
+          if (t.key === "cloze") body = pmRenderCloze(item);
+          else if (t.key === "sequence") body = pmRenderSequence(item);
+          else body = pmRenderMcq(item); // purpose, inference, summarize, compare
+
+          panel.innerHTML =
+            head +
+            pmAudioDeck(item) +
+            body +
+            "<div class='pm-feedback' id='pmFeedback' role='status'></div>" +
+            pmFooter();
+
+          pmWireAudio();
+          if (t.key === "cloze") pmWireCloze(item);
+          else if (t.key === "sequence") pmWireSequence(item);
+          else pmWireMcq(item);
+
+          // auto-play the audio when a new item loads (gentle, listen-first)
+          pmSpeak(item.audio);
+        }
+
+        // MCQ-family (purpose / inference / summarize / compare)
+        function pmRenderMcq(item) {
+          let opts = "";
+          item.opts.forEach(function (o, i) {
+            opts +=
+              "<button class='pm-opt' type='button' data-i='" +
+              i +
+              "'><span>" +
+              String.fromCharCode(65 + i) +
+              ". " +
+              o +
+              "</span><span class='pm-opt-mark'></span></button>";
+          });
+          return (
+            "<p class='pm-prompt'>" +
+            item.q +
+            "</p><div class='pm-options' role='group' aria-label='Answer choices'>" +
+            opts +
+            "</div>"
+          );
+        }
+
+        function pmWireMcq(item) {
+          const btns = document.querySelectorAll("#pmPanel .pm-opt");
+          btns.forEach(function (b) {
+            b.onclick = function () {
+              if (PM.answered) return;
+              const i = Number(b.dataset.i);
+              const fb = document.getElementById("pmFeedback");
+              btns.forEach(function (x) {
+                x.disabled = true;
+              });
+              if (i === item.ans) {
+                PM.answered = true;
+                b.classList.add("correct");
+                b.querySelector(".pm-opt-mark").textContent = "✓";
+                fb.className = "pm-feedback correct";
+                fb.textContent = "🎉 Correct! " + item.fb;
+                pmAward(true);
+              } else {
+                b.classList.add("incorrect");
+                b.querySelector(".pm-opt-mark").textContent = "✗";
+                fb.className = "pm-feedback incorrect";
+                fb.textContent =
+                  "Not quite — listen again and try another answer.";
+                pmAward(false);
+                // re-enable the others for another try
+                setTimeout(function () {
+                  btns.forEach(function (x) {
+                    if (!x.classList.contains("incorrect")) x.disabled = false;
+                  });
+                }, 700);
+              }
+            };
+          });
+        }
+
+        // Cloze (type or choose)
+        function pmRenderCloze(item) {
+          let chips = "";
+          item.choices.forEach(function (c, i) {
+            chips +=
+              "<button class='pm-opt' type='button' data-w='" +
+              c +
+              "'><span>" +
+              String.fromCharCode(65 + i) +
+              ". " +
+              c +
+              "</span><span class='pm-opt-mark'></span></button>";
+          });
+          return (
+            "<p class='pm-prompt'>" +
+            item.blankBefore +
+            " <span class='pm-cloze-blank' id='pmClozeBlank'>?</span> " +
+            item.blankAfter +
+            "</p>" +
+            "<div class='pm-cloze-controls'>" +
+            "<input class='pm-cloze-input' id='pmClozeInput' type='text' " +
+            "placeholder='Type the missing word…' aria-label='Type the missing word' autocomplete='off' />" +
+            "<button class='pm-btn pm-btn-primary' type='button' id='pmClozeCheck'>Check</button>" +
+            "</div>" +
+            "<p class='pm-type-sub'>Or choose the word you heard:</p>" +
+            "<div class='pm-options' role='group' aria-label='Word choices'>" +
+            chips +
+            "</div>"
+          );
+        }
+
+        function pmWireCloze(item) {
+          const blank = document.getElementById("pmClozeBlank");
+          const fb = document.getElementById("pmFeedback");
+          const input = document.getElementById("pmClozeInput");
+          const chips = document.querySelectorAll("#pmPanel .pm-opt");
+
+          function resolve(value, sourceBtn) {
+            if (PM.answered) return;
+            const ok = value.trim().toLowerCase() === item.answer.toLowerCase();
+            if (ok) {
+              PM.answered = true;
+              blank.textContent = item.answer;
+              fb.className = "pm-feedback correct";
+              fb.textContent = "🎉 Correct! You heard “" + item.answer + ".”";
+              chips.forEach(function (c) {
+                c.disabled = true;
+                if (c.dataset.w === item.answer) c.classList.add("correct");
+              });
+              if (sourceBtn) sourceBtn.classList.add("correct");
+              pmAward(true);
+            } else {
+              fb.className = "pm-feedback incorrect";
+              fb.textContent = "Not yet — replay the audio. Hint: " + item.hint;
+              pmAward(false);
+              if (sourceBtn) {
+                sourceBtn.classList.add("incorrect");
+                setTimeout(function () {
+                  sourceBtn.classList.remove("incorrect");
+                }, 700);
+              }
+            }
+          }
+
+          document.getElementById("pmClozeCheck").onclick = function () {
+            resolve(input.value, null);
+          };
+          input.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") resolve(input.value, null);
+          });
+          chips.forEach(function (c) {
+            c.onclick = function () {
+              resolve(c.dataset.w, c);
+            };
+          });
+        }
+
+        // Sequence (order the steps)
+        function pmShuffle(arr) {
+          const a = arr.slice();
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const tmp = a[i];
+            a[i] = a[j];
+            a[j] = tmp;
+          }
+          // ensure not already in correct order
+          let same = true;
+          for (let i = 0; i < a.length; i++) if (a[i] !== i) same = false;
+          if (same && a.length > 1) {
+            a.push(a.shift());
+          }
+          return a;
+        }
+
+        function pmRenderSequence(item) {
+          // PM.order holds indices into item.steps in current display order
+          PM.order = pmShuffle(
+            item.steps.map(function (_, i) {
+              return i;
+            }),
+          );
+          return (
+            "<p class='pm-prompt'>Put the directions in the order you heard them. Use the arrows to move each step.</p>" +
+            "<div class='pm-order-list' id='pmOrderList'></div>" +
+            "<button class='pm-btn pm-btn-primary' type='button' id='pmOrderCheck' style='align-self:flex-start;'>Check Order</button>"
+          );
+        }
+
+        function pmDrawOrder(item) {
+          const list = document.getElementById("pmOrderList");
+          list.innerHTML = "";
+          PM.order.forEach(function (stepIdx, pos) {
+            const row = document.createElement("div");
+            row.className = "pm-order-item";
+            row.innerHTML =
+              "<span class='pm-order-num'>" +
+              (pos + 1) +
+              "</span>" +
+              "<span class='pm-order-text'>" +
+              item.steps[stepIdx] +
+              "</span>" +
+              "<span class='pm-order-btns'>" +
+              "<button type='button' aria-label='Move up' data-dir='-1' data-pos='" +
+              pos +
+              "'" +
+              (pos === 0 ? " disabled" : "") +
+              ">▲</button>" +
+              "<button type='button' aria-label='Move down' data-dir='1' data-pos='" +
+              pos +
+              "'" +
+              (pos === PM.order.length - 1 ? " disabled" : "") +
+              ">▼</button>" +
+              "</span>";
+            list.appendChild(row);
+          });
+          list.querySelectorAll("button[data-dir]").forEach(function (b) {
+            b.onclick = function () {
+              if (PM.answered) return;
+              const pos = Number(b.dataset.pos);
+              const dir = Number(b.dataset.dir);
+              const target = pos + dir;
+              if (target < 0 || target >= PM.order.length) return;
+              const tmp = PM.order[pos];
+              PM.order[pos] = PM.order[target];
+              PM.order[target] = tmp;
+              pmDrawOrder(item);
+            };
+          });
+        }
+
+        function pmWireSequence(item) {
+          pmDrawOrder(item);
+          document.getElementById("pmOrderCheck").onclick = function () {
+            if (PM.answered) return;
+            const fb = document.getElementById("pmFeedback");
+            let correct = true;
+            for (let i = 0; i < PM.order.length; i++) {
+              if (PM.order[i] !== i) correct = false;
+            }
+            const rows = document.querySelectorAll(
+              "#pmOrderList .pm-order-item",
+            );
+            rows.forEach(function (r, pos) {
+              r.classList.toggle("correct-slot", PM.order[pos] === pos);
+              r.classList.toggle("wrong-slot", PM.order[pos] !== pos);
+            });
+            if (correct) {
+              PM.answered = true;
+              fb.className = "pm-feedback correct";
+              fb.textContent =
+                "🎉 Perfect! The directions are in the right order.";
+              document
+                .querySelectorAll("#pmOrderList button[data-dir]")
+                .forEach(function (b) {
+                  b.disabled = true;
+                });
+              pmAward(true);
+            } else {
+              fb.className = "pm-feedback incorrect";
+              fb.textContent =
+                "Almost! The green rows are in place. Listen again for words like first, next, then, and last.";
+              pmAward(false);
+            }
+          };
+        }
+
+        // ── Init ───────────────────────────────────────────────────
+        window.addEventListener("DOMContentLoaded", function () {
+          if (!document.getElementById("pmPanel")) return;
+          pmRenderScore();
+          pmBuildTabs();
+          // render without auto-playing on first paint (no user gesture yet)
+          const t = activeType();
+          const item = activeItem();
+          const panel = document.getElementById("pmPanel");
+          const head =
+            "<div class='pm-typehead'><span class='pm-type-emoji' aria-hidden='true'>" +
+            t.emoji +
+            "</span><div><h3>" +
+            t.title +
+            "</h3><span class='pm-type-sub'>" +
+            t.sub +
+            "</span></div><span class='pm-skill-pill'>" +
+            t.skill +
+            "</span></div>";
+          let body = "";
+          if (t.key === "cloze") body = pmRenderCloze(item);
+          else if (t.key === "sequence") body = pmRenderSequence(item);
+          else body = pmRenderMcq(item);
+          panel.innerHTML =
+            head +
+            pmAudioDeck(item) +
+            body +
+            "<div class='pm-feedback' id='pmFeedback' role='status'></div>" +
+            pmFooter();
+          pmWireAudio();
+          if (t.key === "cloze") pmWireCloze(item);
+          else if (t.key === "sequence") pmWireSequence(item);
+          else pmWireMcq(item);
+        });
+      })();
     </script>
   </body>
 </html>
