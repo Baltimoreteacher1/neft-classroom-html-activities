@@ -3,158 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="WIDA ACCESS Listening practice studio for Grade 6 English learners. Listen to synthesized academic passages and complete interactive comprehension, sequencing, vocabulary, and labeling activities at Level 1 (support) and Level 2 (enrichment)."
-    />
-    <title>WIDA ACCESS Listening Practice Studio | Neft Teacher</title>
+    <meta name="robots" content="noindex, follow" />
+    <title>Moved — WIDA ACCESS Listening Practice Studio | Neft Teacher</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
+    <!-- This duplicate app has been retired. The canonical, up-to-date
+         WIDA ACCESS Listening Practice Studio now lives at /wida-access/listening/. -->
+    <link rel="canonical" href="/wida-access/listening/" />
+    <meta http-equiv="refresh" content="0; url=/wida-access/listening/" />
+
+    <style>
+      body {
+        font-family:
+          "Outfit",
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        background: #f1f5f9;
+        color: #1e293b;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        line-height: 1.6;
+      }
+      .redirect-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-top: 6px solid #0d9488;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px -10px rgba(13, 148, 136, 0.18);
+        max-width: 480px;
+        padding: 32px 28px;
+        text-align: center;
+      }
+      .redirect-card h1 {
+        font-size: 1.4rem;
+        margin: 0 0 12px;
+        color: #0b1f33;
+      }
+      .redirect-card p {
+        margin: 0 0 24px;
+        color: #475569;
+      }
+      .redirect-link {
+        display: inline-block;
+        background: #0d9488;
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 13px 26px;
+        border-radius: 8px;
+        min-height: 44px;
+        box-sizing: border-box;
+      }
+      .redirect-link:hover,
+      .redirect-link:focus {
+        background: #0f766e;
+      }
+    </style>
   </head>
   <body>
-    <!-- Screen-reader live region -->
-    <div
-      id="live-region"
-      class="sr-only"
-      aria-live="polite"
-      aria-atomic="true"
-    ></div>
-
-    <main class="page-shell">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Neft Hub</a>
-        <span>/</span>
-        <a href="../">WIDA ACCESS</a>
-        <span>/</span>
-        <span>Listening Practice Studio</span>
-      </nav>
-
-      <!-- Hero -->
-      <header class="hero">
-        <div class="hero-row">
-          <div>
-            <p class="eyebrow">Neft Teacher · Listening Suite</p>
-            <h1>WIDA Listening Practice Studio</h1>
-            <p class="hero-copy">
-              Listen first! Hear short academic passages about math, science,
-              and school, then complete fun, interactive activities. Every
-              passage can be replayed, slowed down, and shown as text. Choose
-              your level and pick an activity to begin.
-            </p>
-          </div>
-          <div class="scoreboard" aria-label="Your progress">
-            <div class="score-chip">
-              <span class="sc-v" id="score-points">0</span
-              ><span class="sc-l">Points</span>
-            </div>
-            <div class="score-chip">
-              <span class="sc-v" id="score-streak">0</span
-              ><span class="sc-l">Streak</span>
-            </div>
-            <span id="score-streak-badge" aria-hidden="true">🔥 On fire!</span>
-          </div>
-        </div>
-
-        <div class="level-bar">
-          <div
-            class="level-switch"
-            role="group"
-            aria-label="Choose difficulty level"
-          >
-            <button
-              class="level-btn active"
-              id="btn-level-1"
-              aria-pressed="true"
-            >
-              Level 1 · Support
-            </button>
-            <button class="level-btn" id="btn-level-2" aria-pressed="false">
-              Level 2 · Enrichment
-            </button>
-          </div>
-          <p class="level-note" id="level-note">
-            Level 1 · Support — shorter passages, slower speech, word banks,
-            unlimited replay.
-          </p>
-        </div>
-      </header>
-
-      <div id="speech-banner" role="alert">
-        🔇 Your browser cannot play spoken audio right now. Don't worry — the
-        passage text will be shown so you can read along and still do every
-        activity.
-      </div>
-
-      <!-- Activity menu -->
-      <section id="menu-view" aria-label="Activity menu">
-        <div class="menu-grid" id="menu-grid"></div>
-      </section>
-
-      <!-- Single activity view -->
-      <section id="activity-view" style="display: none" aria-label="Activity">
-        <div class="activity-panel">
-          <div class="activity-top">
-            <h2 id="activity-type-title">Activity</h2>
-            <div class="top-controls">
-              <button
-                class="btn btn-ghost btn-sm"
-                id="btn-back"
-                aria-label="Back to activity menu"
-              >
-                ‹ Menu
-              </button>
-              <button
-                class="btn btn-ghost btn-sm"
-                id="btn-prev"
-                aria-label="Previous activity"
-              >
-                ‹ Prev
-              </button>
-              <button
-                class="btn btn-ghost btn-sm"
-                id="btn-skip"
-                aria-label="Skip this activity"
-              >
-                Skip ›
-              </button>
-            </div>
-          </div>
-
-          <div class="progress-wrap">
-            <div class="progress-track">
-              <div
-                class="progress-fill"
-                id="progress-fill"
-                style="width: 0%"
-              ></div>
-            </div>
-            <div class="progress-meta">
-              <span id="progress-text">Activity 1</span>
-              <span
-                class="progress-dots"
-                id="progress-dots"
-                aria-hidden="true"
-              ></span>
-            </div>
-          </div>
-
-          <div id="stage"></div>
-        </div>
-      </section>
+    <main class="redirect-card">
+      <h1>This page has moved</h1>
+      <p>
+        The WIDA ACCESS Listening Practice Studio now lives at its permanent
+        home. You should be redirected automatically.
+      </p>
+      <a class="redirect-link" href="/wida-access/listening/"
+        >Open WIDA Listening →</a
+      >
     </main>
-
-    <footer>
-      Neft Teacher · WIDA ACCESS Listening Practice Studio · Spoken passages are
-      synthesized in your browser. No student data is collected.
-    </footer>
-
-    <script src="activities.js"></script>
-    <script src="app.js"></script>
   </body>
 </html>
