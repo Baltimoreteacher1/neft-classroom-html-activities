@@ -1,5 +1,35 @@
 # Noam School v10 Upgrade
 
+> **v11 (current): rebuilt as an executive-function planner + installable PWA.**
+> The app at `/noam-school-v10/` is now a multi-file, offline-first product
+> (`index.html` shell + `app.js` + `styles.css` + `sw.js` + `manifest.webmanifest`
+>
+> - `icons/`). Highlights for a middle-school student with EF challenges:
+>
+> * **Right Now** — surfaces the single highest-priority task so there's never a
+>   decision to make about what to start.
+> * **Break it down** — one-tap step templates (worksheet, essay, study, project…)
+>   turn a big task into small checkable steps.
+> * **Focus timer** — distraction-free overlay with focus/break cycles, partial
+>   credit, wake-lock, and points.
+> * **Daily routines** — morning / after-school / shutdown checklists.
+> * **Momentum** — streaks, points, and wins for motivation.
+> * **Accessibility** — light/dark/high-contrast themes, text scaling, readable
+>   font, reduced-motion, full keyboard + focus-trap + screen-reader support.
+> * **Offline & installable** — service worker caches the app shell; installs to
+>   desktop/home screen and runs with no internet.
+> * **Sync** — data lives in IndexedDB with a synchronous localStorage mirror
+>   (never loses the last action), a downloadable JSON backup for moving between
+>   devices, and **optional** Cloudflare-KV cloud sync (off by default, behind a
+>   12+ char secret code; backend at `functions/api/state.js`, needs a
+>   `NOAM_SCHOOL_KV` binding — degrades gracefully to local-only if absent).
+>
+> Validated in-browser: offline reload, install/manifest, persistence, focus
+> timer, anti-farming point logic, and zero console errors. Audited across
+> correctness, security, accessibility (WCAG 2.1 AA), and PWA dimensions.
+
+## v10 (original test version)
+
 This branch adds a safer test version of the Noam School app at:
 
 ```txt
