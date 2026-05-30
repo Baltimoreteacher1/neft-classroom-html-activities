@@ -31,7 +31,7 @@ const htmlFiles = walk(root).filter(path => extname(path) === '.html');
 for (const file of htmlFiles) {
   const content = readFileSync(file, 'utf8');
   const rel = file.replace(`${root}/`, '');
-  if (!content.includes('<!DOCTYPE html>')) errors.push(`${rel}: missing <!DOCTYPE html>`);
+  if (!/<!doctype html>/i.test(content)) errors.push(`${rel}: missing <!DOCTYPE html>`);
   if (!content.includes('<meta name="viewport"')) warnings.push(`${rel}: missing viewport meta tag`);
   if (!content.includes('<title>')) warnings.push(`${rel}: missing title tag`);
   const hrefs = [...content.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
