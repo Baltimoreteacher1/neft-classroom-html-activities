@@ -3,26 +3,25 @@
   <head>
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Expression Arena | Neft Teacher</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-<script>
-  // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-  // (document.write blocks parsing so the mirror is ready before the game script runs).
-  if (typeof Phaser === "undefined") {
-    document.write('<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>');
-  }
-  // If both CDNs are unreachable, show a clear message instead of a blank page.
-  window.addEventListener("load", function () {
-    if (typeof Phaser === "undefined") {
-      document.body.innerHTML =
-        '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-    }
-  });
-</script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
+      // (document.write blocks parsing so the mirror is ready before the game script runs).
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      // If both CDNs are unreachable, show a clear message instead of a blank page.
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
     <style>
       html,
       body {
@@ -44,10 +43,31 @@
         display: block;
         image-rendering: auto;
       }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
     </style>
   </head>
   <body>
-    <div id="game-container"></div>
+    <div
+      id="game-container"
+      role="application"
+      aria-label="Expression Arena — a Grade 6 math game for comparing algebraic expressions and equations (6.EE)."
+    >
+      <p class="sr-only">
+        Expression Arena is an interactive battle game. Evaluate and compare
+        expressions with variables, then choose the correct comparison to win
+        each round. Play with touch, mouse, or keyboard.
+      </p>
+    </div>
     <script>
       // ============================================================
       //  EXPRESSION ARENA — 6.EE Variable Comparison Battle Game

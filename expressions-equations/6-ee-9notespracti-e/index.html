@@ -1,8 +1,9 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>6.EE.9 – Independent & Dependent Variables</title>
     <style>
       * {
@@ -85,6 +86,47 @@
         font-size: 17px;
         font-weight: 800;
         margin-bottom: 8px;
+      }
+      h2.tab-title {
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 6px;
+      }
+      .tab-btn:focus-visible,
+      .btn:focus-visible,
+      select:focus-visible,
+      input:focus-visible,
+      .drag-card:focus-visible,
+      .sort-chip:focus-visible {
+        outline: 3px solid #1a1a1a;
+        outline-offset: 2px;
+        opacity: 1;
+      }
+      @media (max-width: 600px) {
+        .tab-btn {
+          padding: 10px 14px;
+          min-height: 44px;
+          font-size: 14px;
+        }
+        .def-grid,
+        .match-grid,
+        .sort-buckets,
+        .scenario-grid {
+          grid-template-columns: 1fr;
+        }
+        .card {
+          padding: 16px;
+        }
+        .btn {
+          min-height: 44px;
+        }
+        select,
+        input {
+          min-height: 40px;
+        }
+        table {
+          max-width: 100%;
+        }
       }
       p {
         font-size: 14px;
@@ -778,10 +820,15 @@
         background: #a5b4fc;
       }
     </style>
-    <div id="vocabSlideshowOverlay">
+    <div
+      id="vocabSlideshowOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Vocabulary introduction"
+    >
       <div class="vso-card">
         <div class="vso-progress" id="vsoProgress">Word 1 of 6</div>
-        <div class="vso-svg-wrap" id="vsoSvg"></div>
+        <div class="vso-svg-wrap" id="vsoSvg" aria-hidden="true"></div>
         <div class="vso-word" id="vsoWord"></div>
         <div class="vso-def" id="vsoDef"></div>
         <div class="vso-nav">
@@ -885,7 +932,7 @@
     </script>
     <!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
 
-    <div class="tab-bar" id="main">
+    <nav class="tab-bar" id="main" aria-label="Activity sections">
       <button class="tab-btn active" onclick="showTab('tab1', this)">
         📖 Definitions
       </button>
@@ -902,816 +949,825 @@
       <button class="tab-btn" onclick="showTab('tab6', this)">
         🔢 Equations
       </button>
-    </div>
+    </nav>
+    <main>
+      <!-- ══ TAB 1 – DEFINITIONS ══ -->
+      <div id="tab1" class="card active">
+        <h1>📖 What Are Independent &amp; Dependent Variables?</h1>
+        <p style="color: #666">
+          Standard 6.EE.9 – Learn the key vocabulary before diving into the
+          activities!
+        </p>
+        <div class="def-grid">
+          <div class="def-box ind">
+            <span class="emoji">🎮</span>
+            <h3>Independent Variable</h3>
+            <p>
+              The variable YOU <strong>control</strong> or change.<br />It is
+              the <strong>input</strong> — you choose it.<br />It does NOT
+              depend on anything else.<br />Goes in the
+              <strong>first column</strong> of a table.
+            </p>
+          </div>
+          <div class="def-box dep">
+            <span class="emoji">🎯</span>
+            <h3>Dependent Variable</h3>
+            <p>
+              The variable that <strong>changes because of</strong> the
+              independent variable.<br />It is the <strong>output</strong> —
+              it's the result.<br />It <strong>DEPENDS</strong> on the input.<br />Goes
+              in the <strong>second column</strong> of a table.
+            </p>
+          </div>
+        </div>
+        <div class="hint-box">
+          💡 <strong>Memory trick:</strong> Ask yourself —
+          <em>"Which variable CAUSES the change?"</em> That's the
+          <strong>Independent</strong>. The one that gets affected is the
+          <strong>Dependent</strong>.
+        </div>
+        <h2>🌍 Real-World Examples</h2>
+        <div class="scenario-grid">
+          <div class="scenario">
+            <div class="icon">🚗</div>
+            <strong>Road Trip</strong><br /><span class="ind-label"
+              >Independent:</span
+            >
+            hours driven<br /><span class="dep-label">Dependent:</span> miles
+            traveled<br /><em>Miles depend on how long you drive.</em>
+          </div>
+          <div class="scenario">
+            <div class="icon">🍕</div>
+            <strong>Pizza Party</strong><br /><span class="ind-label"
+              >Independent:</span
+            >
+            number of pizzas<br /><span class="dep-label">Dependent:</span>
+            total cost<br /><em>Cost depends on how many pizzas you order.</em>
+          </div>
+          <div class="scenario">
+            <div class="icon">🌱</div>
+            <strong>Plant Growth</strong><br /><span class="ind-label"
+              >Independent:</span
+            >
+            days of sunlight<br /><span class="dep-label">Dependent:</span>
+            height of plant<br /><em>Height depends on sunlight received.</em>
+          </div>
+          <div class="scenario">
+            <div class="icon">💰</div>
+            <strong>Babysitting</strong><br /><span class="ind-label"
+              >Independent:</span
+            >
+            hours worked<br /><span class="dep-label">Dependent:</span> money
+            earned<br /><em>Earnings depend on hours worked.</em>
+          </div>
+          <div class="scenario">
+            <div class="icon">📚</div>
+            <strong>Reading Challenge</strong><br /><span class="ind-label"
+              >Independent:</span
+            >
+            books read<br /><span class="dep-label">Dependent:</span> points
+            earned<br /><em>Points depend on books read.</em>
+          </div>
+          <div class="scenario">
+            <div class="icon">🎵</div>
+            <strong>Music Downloads</strong><br /><span class="ind-label"
+              >Independent:</span
+            >
+            songs downloaded<br /><span class="dep-label">Dependent:</span>
+            total data used<br /><em>Data used depends on songs downloaded.</em>
+          </div>
+        </div>
+        <div class="hint-box">
+          🔑 <strong>Key Questions:</strong><br />✅ "Which variable CAUSES a
+          change?" → <strong>Independent</strong><br />✅ "Which variable IS
+          CHANGED by the other?" → <strong>Dependent</strong><br />✅ "Which one
+          do you choose/control?" → <strong>Independent</strong>
+        </div>
+      </div>
 
-    <!-- ══ TAB 1 – DEFINITIONS ══ -->
-    <div id="tab1" class="card active">
-      <h1>📖 What Are Independent &amp; Dependent Variables?</h1>
-      <p style="color: #666">
-        Standard 6.EE.9 – Learn the key vocabulary before diving into the
-        activities!
-      </p>
-      <div class="def-grid">
-        <div class="def-box ind">
-          <span class="emoji">🎮</span>
-          <h3>Independent Variable</h3>
-          <p>
-            The variable YOU <strong>control</strong> or change.<br />It is the
-            <strong>input</strong> — you choose it.<br />It does NOT depend on
-            anything else.<br />Goes in the <strong>first column</strong> of a
-            table.
+      <!-- ══ TAB 2 – MATCHING ══ -->
+      <div id="tab2" class="card">
+        <h2 class="tab-title">🧩 Matching — Drag Into the Right Box</h2>
+        <div class="match-instructions">
+          👇
+          <strong>Each card below has a highlighted word or phrase.</strong>
+          That highlighted part is what you need to decide about.<br />
+          Drag the card into either the
+          <strong style="color: #b7770d">Independent Variable</strong> box or
+          the
+          <strong style="color: #1a7a40">Dependent Variable</strong> box.<br />
+          You'll find out right away if you're correct! ✅❌
+        </div>
+
+        <div class="score-box" id="matchScore"></div>
+
+        <!-- DRAG CARDS POOL -->
+        <div class="drag-cards" id="matchPool">
+          <div
+            class="drag-card"
+            id="mc1"
+            draggable="true"
+            ondragstart="mDragStart(event)"
+          >
+            🚗 A car travels for 3 hours. The longer you drive, the farther you
+            go. → <span class="focus-word">Hours driven</span>
+          </div>
+          <div
+            class="drag-card"
+            id="mc2"
+            draggable="true"
+            ondragstart="mDragStart(event)"
+          >
+            🚗 A car travels for 3 hours. The longer you drive, the farther you
+            go. → <span class="focus-word">Miles traveled</span>
+          </div>
+          <div
+            class="drag-card"
+            id="mc3"
+            draggable="true"
+            ondragstart="mDragStart(event)"
+          >
+            🍕 The more pizzas you order, the higher the bill. →
+            <span class="focus-word">Total cost</span>
+          </div>
+          <div
+            class="drag-card"
+            id="mc4"
+            draggable="true"
+            ondragstart="mDragStart(event)"
+          >
+            🌱 A plant gets more sunlight each day and grows taller. →
+            <span class="focus-word">Days of sunlight</span>
+          </div>
+          <div
+            class="drag-card"
+            id="mc5"
+            draggable="true"
+            ondragstart="mDragStart(event)"
+          >
+            💰 A babysitter earns $10 for each hour worked. →
+            <span class="focus-word">Money earned</span>
+          </div>
+          <div
+            class="drag-card"
+            id="mc6"
+            draggable="true"
+            ondragstart="mDragStart(event)"
+          >
+            📚 The more books a student reads, the more points they earn. →
+            <span class="focus-word">Number of books read</span>
+          </div>
+        </div>
+
+        <!-- BUCKETS -->
+        <div class="match-grid">
+          <div class="match-bucket ind-bucket">
+            <h3>
+              🟡 Independent Variable<br /><small
+                style="font-weight: 500; font-size: 12px"
+                >(the cause — what you control)</small
+              >
+            </h3>
+            <div
+              class="bucket-drop"
+              id="indDrop"
+              ondragover="mAllowDrop(event)"
+              ondrop="mDrop(event, 'ind')"
+            ></div>
+          </div>
+          <div class="match-bucket dep-bucket">
+            <h3>
+              🟢 Dependent Variable<br /><small
+                style="font-weight: 500; font-size: 12px"
+                >(the effect — what changes as a result)</small
+              >
+            </h3>
+            <div
+              class="bucket-drop"
+              id="depDrop"
+              ondragover="mAllowDrop(event)"
+              ondrop="mDrop(event, 'dep')"
+            ></div>
+          </div>
+        </div>
+
+        <div class="feedback" aria-live="polite" id="matchFeedback"></div>
+        <button
+          class="btn btn-orange"
+          onclick="resetMatch()"
+          style="margin-top: 6px"
+        >
+          🔄 Reset
+        </button>
+      </div>
+
+      <!-- ══ TAB 3 – SORT IT ══ -->
+      <div id="tab3" class="card">
+        <h2 class="tab-title">🗂️ Sort It!</h2>
+        <div class="match-instructions">
+          👇 Each card below shows a <strong>full scenario</strong>. The
+          <span class="focus-swatch">highlighted part</span> is what you need to
+          classify.<br />
+          Drag it into either
+          <strong style="color: #b7770d">Independent Variable</strong> or
+          <strong style="color: #1a7a40">Dependent Variable</strong>.<br />
+          You'll get instant feedback after each drop! ✅❌
+        </div>
+
+        <div class="sort-pool" id="sortPool">
+          <div
+            class="sort-chip"
+            id="sc1"
+            draggable="true"
+            ondragstart="sDragStart(event)"
+          >
+            🎸 The more hours Marcus practices guitar, the better he plays. →
+            <span class="focus-word">Hours of practice</span>
+          </div>
+          <div
+            class="sort-chip"
+            id="sc2"
+            draggable="true"
+            ondragstart="sDragStart(event)"
+          >
+            🎸 The more hours Marcus practices guitar, the better he plays. →
+            <span class="focus-word">Skill level gained</span>
+          </div>
+          <div
+            class="sort-chip"
+            id="sc3"
+            draggable="true"
+            ondragstart="sDragStart(event)"
+          >
+            🛢️ A truck uses more fuel the longer it drives. →
+            <span class="focus-word">Number of gallons used</span>
+          </div>
+          <div
+            class="sort-chip"
+            id="sc4"
+            draggable="true"
+            ondragstart="sDragStart(event)"
+          >
+            🍽️ A family buys more groceries when they eat more meals. →
+            <span class="focus-word">Number of meals</span>
+          </div>
+          <div
+            class="sort-chip"
+            id="sc5"
+            draggable="true"
+            ondragstart="sDragStart(event)"
+          >
+            🍽️ A family buys more groceries when they eat more meals. →
+            <span class="focus-word">Total grocery cost</span>
+          </div>
+          <div
+            class="sort-chip"
+            id="sc6"
+            draggable="true"
+            ondragstart="sDragStart(event)"
+          >
+            🚗 The farther you drive, the more miles you put on the odometer. →
+            <span class="focus-word">Total miles driven</span>
+          </div>
+          <div
+            class="sort-chip"
+            id="sc7"
+            draggable="true"
+            ondragstart="sDragStart(event)"
+          >
+            🍔 The more snacks you eat, the more calories you consume. →
+            <span class="focus-word">Total calories eaten</span>
+          </div>
+          <div
+            class="sort-chip"
+            id="sc8"
+            draggable="true"
+            ondragstart="sDragStart(event)"
+          >
+            🏷️ The more items you add to your cart, the higher the price. →
+            <span class="focus-word">Total price</span>
+          </div>
+        </div>
+
+        <div class="sort-buckets">
+          <div class="sort-bucket ind-bucket">
+            <h3>
+              🟡 Independent Variable<br /><small
+                style="font-weight: 500; font-size: 12px"
+                >(the cause — what you control)</small
+              >
+            </h3>
+            <div
+              class="sort-drop"
+              id="sIndDrop"
+              ondragover="sAllowDrop(event)"
+              ondrop="sDrop(event, 'ind')"
+            ></div>
+          </div>
+          <div class="sort-bucket dep-bucket">
+            <h3>
+              🟢 Dependent Variable<br /><small
+                style="font-weight: 500; font-size: 12px"
+                >(the effect — what changes as a result)</small
+              >
+            </h3>
+            <div
+              class="sort-drop"
+              id="sDepDrop"
+              ondragover="sAllowDrop(event)"
+              ondrop="sDrop(event, 'dep')"
+            ></div>
+          </div>
+        </div>
+
+        <div class="feedback" aria-live="polite" id="sortFeedback"></div>
+        <button class="btn btn-orange" onclick="resetSort()">🔄 Reset</button>
+      </div>
+
+      <!-- ══ TAB 4 – FILL IN THE BLANK ══ -->
+      <div id="tab4" class="card">
+        <h2 class="tab-title">✏️ Fill in the Blank</h2>
+        <p>
+          Read each scenario. The
+          <span class="focus-swatch">highlighted word or phrase</span> is
+          exactly what you need to classify. Choose Independent or Dependent!
+        </p>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="fillProgress" style="width: 0%"></div>
+        </div>
+        <div
+          id="fillScore"
+          style="font-size: 13px; color: #888; margin-bottom: 12px"
+        ></div>
+
+        <div class="fill-q">
+          <div class="fill-scenario">
+            🧮 In the equation <em>y = 4x</em>, you pick a number and substitute
+            it in for <span class="focus-word">x</span>. Then the equation
+            calculates the answer for y.
+          </div>
+          <div class="fill-question">
+            The variable <span class="focus-word">x</span> is the
+            <select onchange="checkFill(1, this, 'ind')">
+              <option value="">-- choose --</option>
+              <option value="ind">Independent variable</option>
+              <option value="dep">Dependent variable</option></select
+            ><span class="inline-result" id="fr1"></span>
+          </div>
+        </div>
+
+        <div class="fill-q">
+          <div class="fill-scenario">
+            🧮 In the equation <em>y = 4x</em>, after you substitute in x, the
+            equation calculates the value of
+            <span class="focus-word">y</span> as the result.
+          </div>
+          <div class="fill-question">
+            The variable <span class="focus-word">y</span> is the
+            <select onchange="checkFill(2, this, 'dep')">
+              <option value="">-- choose --</option>
+              <option value="ind">Independent variable</option>
+              <option value="dep">Dependent variable</option></select
+            ><span class="inline-result" id="fr2"></span>
+          </div>
+        </div>
+
+        <div class="fill-q">
+          <div class="fill-scenario">
+            🐶 Every time you give your dog a treat, it wags its tail more. You
+            decide how many treats to give — that's what you control. The
+            <span class="focus-word">number of treats you give</span> is what
+            causes the change.
+          </div>
+          <div class="fill-question">
+            <span class="focus-word">Number of treats</span> is the
+            <select onchange="checkFill(3, this, 'ind')">
+              <option value="">-- choose --</option>
+              <option value="ind">Independent variable</option>
+              <option value="dep">Dependent variable</option></select
+            ><span class="inline-result" id="fr3"></span>
+          </div>
+        </div>
+
+        <div class="fill-q">
+          <div class="fill-scenario">
+            🐶 You give your dog treats and notice its tail starts wagging. The
+            <span class="focus-word">number of tail wags</span> changes
+            depending on how many treats you give — you don't control it
+            directly.
+          </div>
+          <div class="fill-question">
+            <span class="focus-word">Tail wags</span> is the
+            <select onchange="checkFill(4, this, 'dep')">
+              <option value="">-- choose --</option>
+              <option value="ind">Independent variable</option>
+              <option value="dep">Dependent variable</option></select
+            ><span class="inline-result" id="fr4"></span>
+          </div>
+        </div>
+
+        <div class="fill-q">
+          <div class="fill-scenario">
+            🌡️ On a hot summer day, the temperature rises and ice cream sales go
+            up. The <span class="focus-word">temperature outside</span> is
+            what's causing people to buy more ice cream.
+          </div>
+          <div class="fill-question">
+            <span class="focus-word">Temperature</span> is the
+            <select onchange="checkFill(5, this, 'ind')">
+              <option value="">-- choose --</option>
+              <option value="ind">Independent variable</option>
+              <option value="dep">Dependent variable</option></select
+            ><span class="inline-result" id="fr5"></span>
+          </div>
+        </div>
+
+        <div class="fill-q">
+          <div class="fill-scenario">
+            🌡️ As the temperature rises, the shop owner notices
+            <span class="focus-word">ice cream sales increase</span>. This
+            number changes based on how hot it is outside — the shop owner
+            doesn't control the weather!
+          </div>
+          <div class="fill-question">
+            <span class="focus-word">Ice cream sales</span> is the
+            <select onchange="checkFill(6, this, 'dep')">
+              <option value="">-- choose --</option>
+              <option value="ind">Independent variable</option>
+              <option value="dep">Dependent variable</option></select
+            ><span class="inline-result" id="fr6"></span>
+          </div>
+        </div>
+
+        <div class="fill-q">
+          <div class="fill-scenario">
+            🛒 Every time you add another item to your grocery cart, the bill
+            goes up. You decide which items go in the cart — you're in control.
+            The
+            <span class="focus-word">number of items in the cart</span> is what
+            you choose.
+          </div>
+          <div class="fill-question">
+            <span class="focus-word">Items in cart</span> is the
+            <select onchange="checkFill(7, this, 'ind')">
+              <option value="">-- choose --</option>
+              <option value="ind">Independent variable</option>
+              <option value="dep">Dependent variable</option></select
+            ><span class="inline-result" id="fr7"></span>
+          </div>
+        </div>
+
+        <div class="fill-q">
+          <div class="fill-scenario">
+            🛒 You add items to your cart and watch the
+            <span class="focus-word">total grocery bill</span> go up with each
+            addition. You can't set the total directly — it's calculated based
+            on what you put in.
+          </div>
+          <div class="fill-question">
+            <span class="focus-word">Total grocery bill</span> is the
+            <select onchange="checkFill(8, this, 'dep')">
+              <option value="">-- choose --</option>
+              <option value="ind">Independent variable</option>
+              <option value="dep">Dependent variable</option></select
+            ><span class="inline-result" id="fr8"></span>
+          </div>
+        </div>
+
+        <div class="feedback" aria-live="polite" id="fillFeedback"></div>
+      </div>
+
+      <!-- ══ TAB 5 – TABLES ══ -->
+      <div id="tab5" class="card">
+        <h2 class="tab-title">📊 Variables in Tables</h2>
+        <p>
+          Read each scenario. The
+          <span class="focus-swatch">highlighted column name</span> is what you
+          need to label. Use the dropdown to identify it!
+        </p>
+
+        <h2>🚴 Table 1 — Biking</h2>
+        <div class="table-scenario">
+          Jada decides how many hours she bikes each day. The more hours she
+          bikes, the farther she goes. You need to label each column — ask
+          yourself: which one does Jada <em>control</em>?
+        </div>
+        <table>
+          <tr>
+            <th>
+              <span
+                style="
+                  background: #ffe082;
+                  color: #5a3e00;
+                  border-radius: 6px;
+                  padding: 2px 8px;
+                  font-weight: 900;
+                "
+                >Hours Biking</span
+              >
+            </th>
+            <th>
+              <span
+                style="
+                  background: #ffe082;
+                  color: #5a3e00;
+                  border-radius: 6px;
+                  padding: 2px 8px;
+                  font-weight: 900;
+                "
+                >Miles Traveled</span
+              >
+            </th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>30</td>
+          </tr>
+          <tr>
+            <td>
+              <select onchange="checkTableQ(1, this, 'ind')">
+                <option value="">Label this column...</option>
+                <option value="ind">Independent Variable</option>
+                <option value="dep">Dependent Variable</option></select
+              ><span class="inline-result" id="tr1"></span>
+            </td>
+            <td>
+              <select onchange="checkTableQ(2, this, 'dep')">
+                <option value="">Label this column...</option>
+                <option value="ind">Independent Variable</option>
+                <option value="dep">Dependent Variable</option></select
+              ><span class="inline-result" id="tr2"></span>
+            </td>
+          </tr>
+        </table>
+
+        <h2 style="margin-top: 18px">🍪 Table 2 — Cookies</h2>
+        <div class="table-scenario">
+          A baker controls how many cups of flour she uses. The more flour, the
+          more cookies. Which column is the cause and which is the effect?
+        </div>
+        <table>
+          <tr>
+            <th>
+              <span
+                style="
+                  background: #ffe082;
+                  color: #5a3e00;
+                  border-radius: 6px;
+                  padding: 2px 8px;
+                  font-weight: 900;
+                "
+                >Cups of Flour</span
+              >
+            </th>
+            <th>
+              <span
+                style="
+                  background: #ffe082;
+                  color: #5a3e00;
+                  border-radius: 6px;
+                  padding: 2px 8px;
+                  font-weight: 900;
+                "
+                >Cookies Made</span
+              >
+            </th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>12</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>24</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>36</td>
+          </tr>
+          <tr>
+            <td>
+              <select onchange="checkTableQ(3, this, 'ind')">
+                <option value="">Label this column...</option>
+                <option value="ind">Independent Variable</option>
+                <option value="dep">Dependent Variable</option></select
+              ><span class="inline-result" id="tr3"></span>
+            </td>
+            <td>
+              <select onchange="checkTableQ(4, this, 'dep')">
+                <option value="">Label this column...</option>
+                <option value="ind">Independent Variable</option>
+                <option value="dep">Dependent Variable</option></select
+              ><span class="inline-result" id="tr4"></span>
+            </td>
+          </tr>
+        </table>
+
+        <h2 style="margin-top: 18px">
+          💡 Table 3 — Light Bulbs
+          <span
+            style="
+              background: #fde8e8;
+              color: #c0392b;
+              border-radius: 8px;
+              padding: 2px 10px;
+              font-size: 13px;
+            "
+            >⚠️ Tricky!</span
+          >
+        </h2>
+        <div class="table-scenario">
+          ⚠️ <strong>Watch out!</strong> The first column is NOT always the
+          independent variable. A light bulb stays on for a certain number of
+          hours. The longer it's on, the more electricity it uses. Which column
+          is the CAUSE?
+        </div>
+        <table>
+          <tr>
+            <th>
+              <span
+                style="
+                  background: #ffe082;
+                  color: #5a3e00;
+                  border-radius: 6px;
+                  padding: 2px 8px;
+                  font-weight: 900;
+                "
+                >Electricity Used (kWh)</span
+              >
+            </th>
+            <th>
+              <span
+                style="
+                  background: #ffe082;
+                  color: #5a3e00;
+                  border-radius: 6px;
+                  padding: 2px 8px;
+                  font-weight: 900;
+                "
+                >Hours On</span
+              >
+            </th>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>2</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <td>
+              <select onchange="checkTableQ(5, this, 'dep')">
+                <option value="">Label this column...</option>
+                <option value="ind">Independent Variable</option>
+                <option value="dep">Dependent Variable</option></select
+              ><span class="inline-result" id="tr5"></span>
+            </td>
+            <td>
+              <select onchange="checkTableQ(6, this, 'ind')">
+                <option value="">Label this column...</option>
+                <option value="ind">Independent Variable</option>
+                <option value="dep">Dependent Variable</option></select
+              ><span class="inline-result" id="tr6"></span>
+            </td>
+          </tr>
+        </table>
+
+        <button
+          class="btn btn-purple"
+          onclick="checkAllTable()"
+          style="margin-top: 12px"
+        >
+          ✅ Check All Table Answers
+        </button>
+        <div class="feedback" aria-live="polite" id="tableFeedback"></div>
+      </div>
+
+      <!-- ══ TAB 6 – EQUATIONS ══ -->
+      <div id="tab6" class="card">
+        <h2 class="tab-title">🔢 Build the Equation!</h2>
+        <p>
+          Read each scenario. The
+          <span class="focus-swatch">highlighted variable</span> tells you which
+          one is which. Build the equation by choosing the correct variable for
+          each side!
+        </p>
+
+        <div class="eq-scenario">
+          <div class="fill-scenario">
+            🛵 <strong>Scenario 1:</strong> A scooter travels 15 miles for every
+            hour driven. You choose how many
+            <span class="focus-word">hours (h)</span> to drive — that's what you
+            control. The <span class="focus-word">distance (d)</span> depends on
+            how long you drive.
+          </div>
+          <p style="font-size: 13px; margin-bottom: 6px; color: #555">
+            Build it → <em>dependent variable</em> = 15 ×
+            <em>independent variable</em>
           </p>
+          <div class="eq-builder">
+            <select onchange="checkEq(1, 'dep', this, 'd')">
+              <option value="">? (output)</option>
+              <option value="d">d = distance</option>
+              <option value="h">h = hours</option>
+            </select>
+            <span class="eq-eq">=</span
+            ><span style="font-weight: 900; font-size: 20px; color: #333"
+              >15</span
+            ><span class="eq-sym">×</span>
+            <select onchange="checkEq(1, 'ind', this, 'h')">
+              <option value="">? (input)</option>
+              <option value="d">d = distance</option>
+              <option value="h">h = hours</option>
+            </select>
+          </div>
+          <div class="feedback" aria-live="polite" id="eqFb1"></div>
         </div>
-        <div class="def-box dep">
-          <span class="emoji">🎯</span>
-          <h3>Dependent Variable</h3>
-          <p>
-            The variable that <strong>changes because of</strong> the
-            independent variable.<br />It is the <strong>output</strong> — it's
-            the result.<br />It <strong>DEPENDS</strong> on the input.<br />Goes
-            in the <strong>second column</strong> of a table.
+
+        <div class="eq-scenario">
+          <div class="fill-scenario">
+            🎮 <strong>Scenario 2:</strong> A gamer earns 50 points per level.
+            The player decides how many
+            <span class="focus-word">levels (L)</span> to complete — that's the
+            input. The <span class="focus-word">total points (p)</span> earned
+            is the result.
+          </div>
+          <p style="font-size: 13px; margin-bottom: 6px; color: #555">
+            Build it → <em>dependent variable</em> = 50 ×
+            <em>independent variable</em>
           </p>
+          <div class="eq-builder">
+            <select onchange="checkEq(2, 'dep', this, 'p')">
+              <option value="">? (output)</option>
+              <option value="p">p = points</option>
+              <option value="L">L = levels</option>
+            </select>
+            <span class="eq-eq">=</span
+            ><span style="font-weight: 900; font-size: 20px; color: #333"
+              >50</span
+            ><span class="eq-sym">×</span>
+            <select onchange="checkEq(2, 'ind', this, 'L')">
+              <option value="">? (input)</option>
+              <option value="p">p = points</option>
+              <option value="L">L = levels</option>
+            </select>
+          </div>
+          <div class="feedback" aria-live="polite" id="eqFb2"></div>
+        </div>
+
+        <div class="eq-scenario">
+          <div class="fill-scenario">
+            🥤 <strong>Scenario 3:</strong> A smoothie needs 3 fruits per
+            serving. You pick how many
+            <span class="focus-word">servings (s)</span> to make — that's your
+            choice. The
+            <span class="focus-word">total fruits needed (f)</span> is
+            calculated from that.
+          </div>
+          <p style="font-size: 13px; margin-bottom: 6px; color: #555">
+            Build it → <em>dependent variable</em> = 3 ×
+            <em>independent variable</em>
+          </p>
+          <div class="eq-builder">
+            <select onchange="checkEq(3, 'dep', this, 'f')">
+              <option value="">? (output)</option>
+              <option value="f">f = fruits</option>
+              <option value="s">s = servings</option>
+            </select>
+            <span class="eq-eq">=</span
+            ><span style="font-weight: 900; font-size: 20px; color: #333"
+              >3</span
+            ><span class="eq-sym">×</span>
+            <select onchange="checkEq(3, 'ind', this, 's')">
+              <option value="">? (input)</option>
+              <option value="f">f = fruits</option>
+              <option value="s">s = servings</option>
+            </select>
+          </div>
+          <div class="feedback" aria-live="polite" id="eqFb3"></div>
+        </div>
+
+        <div class="hint-box" style="margin-top: 16px">
+          🔑 <strong>Pattern:</strong> Always →
+          <strong>dependent = rate × independent</strong>. The dependent
+          variable is always on the left side (it's the output/result)!
         </div>
       </div>
-      <div class="hint-box">
-        💡 <strong>Memory trick:</strong> Ask yourself —
-        <em>"Which variable CAUSES the change?"</em> That's the
-        <strong>Independent</strong>. The one that gets affected is the
-        <strong>Dependent</strong>.
-      </div>
-      <h2>🌍 Real-World Examples</h2>
-      <div class="scenario-grid">
-        <div class="scenario">
-          <div class="icon">🚗</div>
-          <strong>Road Trip</strong><br /><span class="ind-label"
-            >Independent:</span
-          >
-          hours driven<br /><span class="dep-label">Dependent:</span> miles
-          traveled<br /><em>Miles depend on how long you drive.</em>
-        </div>
-        <div class="scenario">
-          <div class="icon">🍕</div>
-          <strong>Pizza Party</strong><br /><span class="ind-label"
-            >Independent:</span
-          >
-          number of pizzas<br /><span class="dep-label">Dependent:</span> total
-          cost<br /><em>Cost depends on how many pizzas you order.</em>
-        </div>
-        <div class="scenario">
-          <div class="icon">🌱</div>
-          <strong>Plant Growth</strong><br /><span class="ind-label"
-            >Independent:</span
-          >
-          days of sunlight<br /><span class="dep-label">Dependent:</span> height
-          of plant<br /><em>Height depends on sunlight received.</em>
-        </div>
-        <div class="scenario">
-          <div class="icon">💰</div>
-          <strong>Babysitting</strong><br /><span class="ind-label"
-            >Independent:</span
-          >
-          hours worked<br /><span class="dep-label">Dependent:</span> money
-          earned<br /><em>Earnings depend on hours worked.</em>
-        </div>
-        <div class="scenario">
-          <div class="icon">📚</div>
-          <strong>Reading Challenge</strong><br /><span class="ind-label"
-            >Independent:</span
-          >
-          books read<br /><span class="dep-label">Dependent:</span> points
-          earned<br /><em>Points depend on books read.</em>
-        </div>
-        <div class="scenario">
-          <div class="icon">🎵</div>
-          <strong>Music Downloads</strong><br /><span class="ind-label"
-            >Independent:</span
-          >
-          songs downloaded<br /><span class="dep-label">Dependent:</span> total
-          data used<br /><em>Data used depends on songs downloaded.</em>
-        </div>
-      </div>
-      <div class="hint-box">
-        🔑 <strong>Key Questions:</strong><br />✅ "Which variable CAUSES a
-        change?" → <strong>Independent</strong><br />✅ "Which variable IS
-        CHANGED by the other?" → <strong>Dependent</strong><br />✅ "Which one
-        do you choose/control?" → <strong>Independent</strong>
-      </div>
-    </div>
-
-    <!-- ══ TAB 2 – MATCHING ══ -->
-    <div id="tab2" class="card">
-      <h1>🧩 Matching — Drag Into the Right Box</h1>
-      <div class="match-instructions">
-        👇
-        <strong>Each card below has a highlighted word or phrase.</strong> That
-        highlighted part is what you need to decide about.<br />
-        Drag the card into either the
-        <strong style="color: #b7770d">Independent Variable</strong> box or the
-        <strong style="color: #1a7a40">Dependent Variable</strong> box.<br />
-        You'll find out right away if you're correct! ✅❌
-      </div>
-
-      <div class="score-box" id="matchScore"></div>
-
-      <!-- DRAG CARDS POOL -->
-      <div class="drag-cards" id="matchPool">
-        <div
-          class="drag-card"
-          id="mc1"
-          draggable="true"
-          ondragstart="mDragStart(event)"
-        >
-          🚗 A car travels for 3 hours. The longer you drive, the farther you
-          go. → <span class="focus-word">Hours driven</span>
-        </div>
-        <div
-          class="drag-card"
-          id="mc2"
-          draggable="true"
-          ondragstart="mDragStart(event)"
-        >
-          🚗 A car travels for 3 hours. The longer you drive, the farther you
-          go. → <span class="focus-word">Miles traveled</span>
-        </div>
-        <div
-          class="drag-card"
-          id="mc3"
-          draggable="true"
-          ondragstart="mDragStart(event)"
-        >
-          🍕 The more pizzas you order, the higher the bill. →
-          <span class="focus-word">Total cost</span>
-        </div>
-        <div
-          class="drag-card"
-          id="mc4"
-          draggable="true"
-          ondragstart="mDragStart(event)"
-        >
-          🌱 A plant gets more sunlight each day and grows taller. →
-          <span class="focus-word">Days of sunlight</span>
-        </div>
-        <div
-          class="drag-card"
-          id="mc5"
-          draggable="true"
-          ondragstart="mDragStart(event)"
-        >
-          💰 A babysitter earns $10 for each hour worked. →
-          <span class="focus-word">Money earned</span>
-        </div>
-        <div
-          class="drag-card"
-          id="mc6"
-          draggable="true"
-          ondragstart="mDragStart(event)"
-        >
-          📚 The more books a student reads, the more points they earn. →
-          <span class="focus-word">Number of books read</span>
-        </div>
-      </div>
-
-      <!-- BUCKETS -->
-      <div class="match-grid">
-        <div class="match-bucket ind-bucket">
-          <h3>
-            🟡 Independent Variable<br /><small
-              style="font-weight: 500; font-size: 12px"
-              >(the cause — what you control)</small
-            >
-          </h3>
-          <div
-            class="bucket-drop"
-            id="indDrop"
-            ondragover="mAllowDrop(event)"
-            ondrop="mDrop(event, 'ind')"
-          ></div>
-        </div>
-        <div class="match-bucket dep-bucket">
-          <h3>
-            🟢 Dependent Variable<br /><small
-              style="font-weight: 500; font-size: 12px"
-              >(the effect — what changes as a result)</small
-            >
-          </h3>
-          <div
-            class="bucket-drop"
-            id="depDrop"
-            ondragover="mAllowDrop(event)"
-            ondrop="mDrop(event, 'dep')"
-          ></div>
-        </div>
-      </div>
-
-      <div class="feedback" aria-live="polite" id="matchFeedback"></div>
-      <button
-        class="btn btn-orange"
-        onclick="resetMatch()"
-        style="margin-top: 6px"
-      >
-        🔄 Reset
-      </button>
-    </div>
-
-    <!-- ══ TAB 3 – SORT IT ══ -->
-    <div id="tab3" class="card">
-      <h1>🗂️ Sort It!</h1>
-      <div class="match-instructions">
-        👇 Each card below shows a <strong>full scenario</strong>. The
-        <span class="focus-swatch">highlighted part</span> is what you need to
-        classify.<br />
-        Drag it into either
-        <strong style="color: #b7770d">Independent Variable</strong> or
-        <strong style="color: #1a7a40">Dependent Variable</strong>.<br />
-        You'll get instant feedback after each drop! ✅❌
-      </div>
-
-      <div class="sort-pool" id="sortPool">
-        <div
-          class="sort-chip"
-          id="sc1"
-          draggable="true"
-          ondragstart="sDragStart(event)"
-        >
-          🎸 The more hours Marcus practices guitar, the better he plays. →
-          <span class="focus-word">Hours of practice</span>
-        </div>
-        <div
-          class="sort-chip"
-          id="sc2"
-          draggable="true"
-          ondragstart="sDragStart(event)"
-        >
-          🎸 The more hours Marcus practices guitar, the better he plays. →
-          <span class="focus-word">Skill level gained</span>
-        </div>
-        <div
-          class="sort-chip"
-          id="sc3"
-          draggable="true"
-          ondragstart="sDragStart(event)"
-        >
-          🛢️ A truck uses more fuel the longer it drives. →
-          <span class="focus-word">Number of gallons used</span>
-        </div>
-        <div
-          class="sort-chip"
-          id="sc4"
-          draggable="true"
-          ondragstart="sDragStart(event)"
-        >
-          🍽️ A family buys more groceries when they eat more meals. →
-          <span class="focus-word">Number of meals</span>
-        </div>
-        <div
-          class="sort-chip"
-          id="sc5"
-          draggable="true"
-          ondragstart="sDragStart(event)"
-        >
-          🍽️ A family buys more groceries when they eat more meals. →
-          <span class="focus-word">Total grocery cost</span>
-        </div>
-        <div
-          class="sort-chip"
-          id="sc6"
-          draggable="true"
-          ondragstart="sDragStart(event)"
-        >
-          🚗 The farther you drive, the more miles you put on the odometer. →
-          <span class="focus-word">Total miles driven</span>
-        </div>
-        <div
-          class="sort-chip"
-          id="sc7"
-          draggable="true"
-          ondragstart="sDragStart(event)"
-        >
-          🍔 The more snacks you eat, the more calories you consume. →
-          <span class="focus-word">Total calories eaten</span>
-        </div>
-        <div
-          class="sort-chip"
-          id="sc8"
-          draggable="true"
-          ondragstart="sDragStart(event)"
-        >
-          🏷️ The more items you add to your cart, the higher the price. →
-          <span class="focus-word">Total price</span>
-        </div>
-      </div>
-
-      <div class="sort-buckets">
-        <div class="sort-bucket ind-bucket">
-          <h3>
-            🟡 Independent Variable<br /><small
-              style="font-weight: 500; font-size: 12px"
-              >(the cause — what you control)</small
-            >
-          </h3>
-          <div
-            class="sort-drop"
-            id="sIndDrop"
-            ondragover="sAllowDrop(event)"
-            ondrop="sDrop(event, 'ind')"
-          ></div>
-        </div>
-        <div class="sort-bucket dep-bucket">
-          <h3>
-            🟢 Dependent Variable<br /><small
-              style="font-weight: 500; font-size: 12px"
-              >(the effect — what changes as a result)</small
-            >
-          </h3>
-          <div
-            class="sort-drop"
-            id="sDepDrop"
-            ondragover="sAllowDrop(event)"
-            ondrop="sDrop(event, 'dep')"
-          ></div>
-        </div>
-      </div>
-
-      <div class="feedback" aria-live="polite" id="sortFeedback"></div>
-      <button class="btn btn-orange" onclick="resetSort()">🔄 Reset</button>
-    </div>
-
-    <!-- ══ TAB 4 – FILL IN THE BLANK ══ -->
-    <div id="tab4" class="card">
-      <h1>✏️ Fill in the Blank</h1>
-      <p>
-        Read each scenario. The
-        <span class="focus-swatch">highlighted word or phrase</span> is exactly
-        what you need to classify. Choose Independent or Dependent!
-      </p>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar" id="fillProgress" style="width: 0%"></div>
-      </div>
-      <div
-        id="fillScore"
-        style="font-size: 13px; color: #888; margin-bottom: 12px"
-      ></div>
-
-      <div class="fill-q">
-        <div class="fill-scenario">
-          🧮 In the equation <em>y = 4x</em>, you pick a number and substitute
-          it in for <span class="focus-word">x</span>. Then the equation
-          calculates the answer for y.
-        </div>
-        <div class="fill-question">
-          The variable <span class="focus-word">x</span> is the
-          <select onchange="checkFill(1, this, 'ind')">
-            <option value="">-- choose --</option>
-            <option value="ind">Independent variable</option>
-            <option value="dep">Dependent variable</option></select
-          ><span class="inline-result" id="fr1"></span>
-        </div>
-      </div>
-
-      <div class="fill-q">
-        <div class="fill-scenario">
-          🧮 In the equation <em>y = 4x</em>, after you substitute in x, the
-          equation calculates the value of <span class="focus-word">y</span> as
-          the result.
-        </div>
-        <div class="fill-question">
-          The variable <span class="focus-word">y</span> is the
-          <select onchange="checkFill(2, this, 'dep')">
-            <option value="">-- choose --</option>
-            <option value="ind">Independent variable</option>
-            <option value="dep">Dependent variable</option></select
-          ><span class="inline-result" id="fr2"></span>
-        </div>
-      </div>
-
-      <div class="fill-q">
-        <div class="fill-scenario">
-          🐶 Every time you give your dog a treat, it wags its tail more. You
-          decide how many treats to give — that's what you control. The
-          <span class="focus-word">number of treats you give</span> is what
-          causes the change.
-        </div>
-        <div class="fill-question">
-          <span class="focus-word">Number of treats</span> is the
-          <select onchange="checkFill(3, this, 'ind')">
-            <option value="">-- choose --</option>
-            <option value="ind">Independent variable</option>
-            <option value="dep">Dependent variable</option></select
-          ><span class="inline-result" id="fr3"></span>
-        </div>
-      </div>
-
-      <div class="fill-q">
-        <div class="fill-scenario">
-          🐶 You give your dog treats and notice its tail starts wagging. The
-          <span class="focus-word">number of tail wags</span> changes depending
-          on how many treats you give — you don't control it directly.
-        </div>
-        <div class="fill-question">
-          <span class="focus-word">Tail wags</span> is the
-          <select onchange="checkFill(4, this, 'dep')">
-            <option value="">-- choose --</option>
-            <option value="ind">Independent variable</option>
-            <option value="dep">Dependent variable</option></select
-          ><span class="inline-result" id="fr4"></span>
-        </div>
-      </div>
-
-      <div class="fill-q">
-        <div class="fill-scenario">
-          🌡️ On a hot summer day, the temperature rises and ice cream sales go
-          up. The <span class="focus-word">temperature outside</span> is what's
-          causing people to buy more ice cream.
-        </div>
-        <div class="fill-question">
-          <span class="focus-word">Temperature</span> is the
-          <select onchange="checkFill(5, this, 'ind')">
-            <option value="">-- choose --</option>
-            <option value="ind">Independent variable</option>
-            <option value="dep">Dependent variable</option></select
-          ><span class="inline-result" id="fr5"></span>
-        </div>
-      </div>
-
-      <div class="fill-q">
-        <div class="fill-scenario">
-          🌡️ As the temperature rises, the shop owner notices
-          <span class="focus-word">ice cream sales increase</span>. This number
-          changes based on how hot it is outside — the shop owner doesn't
-          control the weather!
-        </div>
-        <div class="fill-question">
-          <span class="focus-word">Ice cream sales</span> is the
-          <select onchange="checkFill(6, this, 'dep')">
-            <option value="">-- choose --</option>
-            <option value="ind">Independent variable</option>
-            <option value="dep">Dependent variable</option></select
-          ><span class="inline-result" id="fr6"></span>
-        </div>
-      </div>
-
-      <div class="fill-q">
-        <div class="fill-scenario">
-          🛒 Every time you add another item to your grocery cart, the bill goes
-          up. You decide which items go in the cart — you're in control. The
-          <span class="focus-word">number of items in the cart</span> is what
-          you choose.
-        </div>
-        <div class="fill-question">
-          <span class="focus-word">Items in cart</span> is the
-          <select onchange="checkFill(7, this, 'ind')">
-            <option value="">-- choose --</option>
-            <option value="ind">Independent variable</option>
-            <option value="dep">Dependent variable</option></select
-          ><span class="inline-result" id="fr7"></span>
-        </div>
-      </div>
-
-      <div class="fill-q">
-        <div class="fill-scenario">
-          🛒 You add items to your cart and watch the
-          <span class="focus-word">total grocery bill</span> go up with each
-          addition. You can't set the total directly — it's calculated based on
-          what you put in.
-        </div>
-        <div class="fill-question">
-          <span class="focus-word">Total grocery bill</span> is the
-          <select onchange="checkFill(8, this, 'dep')">
-            <option value="">-- choose --</option>
-            <option value="ind">Independent variable</option>
-            <option value="dep">Dependent variable</option></select
-          ><span class="inline-result" id="fr8"></span>
-        </div>
-      </div>
-
-      <div class="feedback" aria-live="polite" id="fillFeedback"></div>
-    </div>
-
-    <!-- ══ TAB 5 – TABLES ══ -->
-    <div id="tab5" class="card">
-      <h1>📊 Variables in Tables</h1>
-      <p>
-        Read each scenario. The
-        <span class="focus-swatch">highlighted column name</span> is what you
-        need to label. Use the dropdown to identify it!
-      </p>
-
-      <h2>🚴 Table 1 — Biking</h2>
-      <div class="table-scenario">
-        Jada decides how many hours she bikes each day. The more hours she
-        bikes, the farther she goes. You need to label each column — ask
-        yourself: which one does Jada <em>control</em>?
-      </div>
-      <table>
-        <tr>
-          <th>
-            <span
-              style="
-                background: #ffe082;
-                color: #5a3e00;
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-weight: 900;
-              "
-              >Hours Biking</span
-            >
-          </th>
-          <th>
-            <span
-              style="
-                background: #ffe082;
-                color: #5a3e00;
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-weight: 900;
-              "
-              >Miles Traveled</span
-            >
-          </th>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>10</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>20</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>30</td>
-        </tr>
-        <tr>
-          <td>
-            <select onchange="checkTableQ(1, this, 'ind')">
-              <option value="">Label this column...</option>
-              <option value="ind">Independent Variable</option>
-              <option value="dep">Dependent Variable</option></select
-            ><span class="inline-result" id="tr1"></span>
-          </td>
-          <td>
-            <select onchange="checkTableQ(2, this, 'dep')">
-              <option value="">Label this column...</option>
-              <option value="ind">Independent Variable</option>
-              <option value="dep">Dependent Variable</option></select
-            ><span class="inline-result" id="tr2"></span>
-          </td>
-        </tr>
-      </table>
-
-      <h2 style="margin-top: 18px">🍪 Table 2 — Cookies</h2>
-      <div class="table-scenario">
-        A baker controls how many cups of flour she uses. The more flour, the
-        more cookies. Which column is the cause and which is the effect?
-      </div>
-      <table>
-        <tr>
-          <th>
-            <span
-              style="
-                background: #ffe082;
-                color: #5a3e00;
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-weight: 900;
-              "
-              >Cups of Flour</span
-            >
-          </th>
-          <th>
-            <span
-              style="
-                background: #ffe082;
-                color: #5a3e00;
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-weight: 900;
-              "
-              >Cookies Made</span
-            >
-          </th>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>12</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>24</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>36</td>
-        </tr>
-        <tr>
-          <td>
-            <select onchange="checkTableQ(3, this, 'ind')">
-              <option value="">Label this column...</option>
-              <option value="ind">Independent Variable</option>
-              <option value="dep">Dependent Variable</option></select
-            ><span class="inline-result" id="tr3"></span>
-          </td>
-          <td>
-            <select onchange="checkTableQ(4, this, 'dep')">
-              <option value="">Label this column...</option>
-              <option value="ind">Independent Variable</option>
-              <option value="dep">Dependent Variable</option></select
-            ><span class="inline-result" id="tr4"></span>
-          </td>
-        </tr>
-      </table>
-
-      <h2 style="margin-top: 18px">
-        💡 Table 3 — Light Bulbs
-        <span
-          style="
-            background: #fde8e8;
-            color: #c0392b;
-            border-radius: 8px;
-            padding: 2px 10px;
-            font-size: 13px;
-          "
-          >⚠️ Tricky!</span
-        >
-      </h2>
-      <div class="table-scenario">
-        ⚠️ <strong>Watch out!</strong> The first column is NOT always the
-        independent variable. A light bulb stays on for a certain number of
-        hours. The longer it's on, the more electricity it uses. Which column is
-        the CAUSE?
-      </div>
-      <table>
-        <tr>
-          <th>
-            <span
-              style="
-                background: #ffe082;
-                color: #5a3e00;
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-weight: 900;
-              "
-              >Electricity Used (kWh)</span
-            >
-          </th>
-          <th>
-            <span
-              style="
-                background: #ffe082;
-                color: #5a3e00;
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-weight: 900;
-              "
-              >Hours On</span
-            >
-          </th>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>2</td>
-        </tr>
-        <tr>
-          <td>6</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>
-            <select onchange="checkTableQ(5, this, 'dep')">
-              <option value="">Label this column...</option>
-              <option value="ind">Independent Variable</option>
-              <option value="dep">Dependent Variable</option></select
-            ><span class="inline-result" id="tr5"></span>
-          </td>
-          <td>
-            <select onchange="checkTableQ(6, this, 'ind')">
-              <option value="">Label this column...</option>
-              <option value="ind">Independent Variable</option>
-              <option value="dep">Dependent Variable</option></select
-            ><span class="inline-result" id="tr6"></span>
-          </td>
-        </tr>
-      </table>
-
-      <button
-        class="btn btn-purple"
-        onclick="checkAllTable()"
-        style="margin-top: 12px"
-      >
-        ✅ Check All Table Answers
-      </button>
-      <div class="feedback" aria-live="polite" id="tableFeedback"></div>
-    </div>
-
-    <!-- ══ TAB 6 – EQUATIONS ══ -->
-    <div id="tab6" class="card">
-      <h1>🔢 Build the Equation!</h1>
-      <p>
-        Read each scenario. The
-        <span class="focus-swatch">highlighted variable</span> tells you which
-        one is which. Build the equation by choosing the correct variable for
-        each side!
-      </p>
-
-      <div class="eq-scenario">
-        <div class="fill-scenario">
-          🛵 <strong>Scenario 1:</strong> A scooter travels 15 miles for every
-          hour driven. You choose how many
-          <span class="focus-word">hours (h)</span> to drive — that's what you
-          control. The <span class="focus-word">distance (d)</span> depends on
-          how long you drive.
-        </div>
-        <p style="font-size: 13px; margin-bottom: 6px; color: #555">
-          Build it → <em>dependent variable</em> = 15 ×
-          <em>independent variable</em>
-        </p>
-        <div class="eq-builder">
-          <select onchange="checkEq(1, 'dep', this, 'd')">
-            <option value="">? (output)</option>
-            <option value="d">d = distance</option>
-            <option value="h">h = hours</option>
-          </select>
-          <span class="eq-eq">=</span
-          ><span style="font-weight: 900; font-size: 20px; color: #333">15</span
-          ><span class="eq-sym">×</span>
-          <select onchange="checkEq(1, 'ind', this, 'h')">
-            <option value="">? (input)</option>
-            <option value="d">d = distance</option>
-            <option value="h">h = hours</option>
-          </select>
-        </div>
-        <div class="feedback" aria-live="polite" id="eqFb1"></div>
-      </div>
-
-      <div class="eq-scenario">
-        <div class="fill-scenario">
-          🎮 <strong>Scenario 2:</strong> A gamer earns 50 points per level. The
-          player decides how many <span class="focus-word">levels (L)</span> to
-          complete — that's the input. The
-          <span class="focus-word">total points (p)</span> earned is the result.
-        </div>
-        <p style="font-size: 13px; margin-bottom: 6px; color: #555">
-          Build it → <em>dependent variable</em> = 50 ×
-          <em>independent variable</em>
-        </p>
-        <div class="eq-builder">
-          <select onchange="checkEq(2, 'dep', this, 'p')">
-            <option value="">? (output)</option>
-            <option value="p">p = points</option>
-            <option value="L">L = levels</option>
-          </select>
-          <span class="eq-eq">=</span
-          ><span style="font-weight: 900; font-size: 20px; color: #333">50</span
-          ><span class="eq-sym">×</span>
-          <select onchange="checkEq(2, 'ind', this, 'L')">
-            <option value="">? (input)</option>
-            <option value="p">p = points</option>
-            <option value="L">L = levels</option>
-          </select>
-        </div>
-        <div class="feedback" aria-live="polite" id="eqFb2"></div>
-      </div>
-
-      <div class="eq-scenario">
-        <div class="fill-scenario">
-          🥤 <strong>Scenario 3:</strong> A smoothie needs 3 fruits per serving.
-          You pick how many <span class="focus-word">servings (s)</span> to make
-          — that's your choice. The
-          <span class="focus-word">total fruits needed (f)</span> is calculated
-          from that.
-        </div>
-        <p style="font-size: 13px; margin-bottom: 6px; color: #555">
-          Build it → <em>dependent variable</em> = 3 ×
-          <em>independent variable</em>
-        </p>
-        <div class="eq-builder">
-          <select onchange="checkEq(3, 'dep', this, 'f')">
-            <option value="">? (output)</option>
-            <option value="f">f = fruits</option>
-            <option value="s">s = servings</option>
-          </select>
-          <span class="eq-eq">=</span
-          ><span style="font-weight: 900; font-size: 20px; color: #333">3</span
-          ><span class="eq-sym">×</span>
-          <select onchange="checkEq(3, 'ind', this, 's')">
-            <option value="">? (input)</option>
-            <option value="f">f = fruits</option>
-            <option value="s">s = servings</option>
-          </select>
-        </div>
-        <div class="feedback" aria-live="polite" id="eqFb3"></div>
-      </div>
-
-      <div class="hint-box" style="margin-top: 16px">
-        🔑 <strong>Pattern:</strong> Always →
-        <strong>dependent = rate × independent</strong>. The dependent variable
-        is always on the left side (it's the output/result)!
-      </div>
-    </div>
+    </main>
 
     <script>
       // ── TAB SWITCHING ──
