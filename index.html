@@ -3016,5 +3016,32 @@
         });
       })();
     </script>
+    <script>
+      /* Pre-Test cards: surface Level 1 (Support) / Level 2 (Enrichment) variants
+         under each base review card. Derives URLs from the card href so it stays
+         in sync with the pre-test/ folder; idempotent. */
+      (function () {
+        document
+          .querySelectorAll(
+            '#panel-pre-test a.card[href*="/pre-test/"][href$="-review.html"]',
+          )
+          .forEach((card) => {
+            if (card.dataset.levelLinks) return;
+            card.dataset.levelLinks = "1";
+            const base = card.getAttribute("href").replace(/\.html$/, "");
+            const row = document.createElement("div");
+            row.style.cssText =
+              "display:flex;gap:8px;justify-content:flex-end;margin:-4px 0 4px;padding:0 4px;font-size:.78rem";
+            row.innerHTML =
+              '<a href="' +
+              base +
+              '-level-1.html" style="color:var(--primary,#4338ca);text-decoration:none;padding:2px 8px;border:1px solid var(--line,#e2e8f0);border-radius:99px">Level 1 · Support</a>' +
+              '<a href="' +
+              base +
+              '-level-2.html" style="color:var(--accent,#d97706);text-decoration:none;padding:2px 8px;border:1px solid var(--line,#e2e8f0);border-radius:99px">Level 2 · Enrichment</a>';
+            card.insertAdjacentElement("afterend", row);
+          });
+      })();
+    </script>
   </body>
 </html>
