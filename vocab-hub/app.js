@@ -203,9 +203,9 @@
     });
 
     var units = uniqueSorted(
-      state.items.flatMap(function (i) {
-        return i.units;
-      }),
+      state.items.reduce(function (acc, i) {
+        return acc.concat(i.units || []);
+      }, [])
     );
     var unitSel = makeSelect(
       "Filter by unit / Unidad",
@@ -222,9 +222,9 @@
     );
 
     var stds = uniqueSorted(
-      state.items.flatMap(function (i) {
-        return i.standards;
-      }),
+      state.items.reduce(function (acc, i) {
+        return acc.concat(i.standards || []);
+      }, [])
     );
     var stdSel = makeSelect(
       "Filter by standard / Estándar",
@@ -988,7 +988,7 @@
     initTheme();
   }
 
-  fetch("vocab-bank.json")
+  fetch("/vocab-hub/vocab-bank.json")
     .then(function (r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();
