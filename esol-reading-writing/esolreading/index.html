@@ -1,701 +1,1071 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="/assets/shared.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reading & Recall: The Unconventional Interview</title>
     <style>
-        :root {
-            /* Light Theme */
-            --bg-color: #f8fafc;
-            --surface-color: #ffffff;
-            --surface-hover: #f1f5f9;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --primary-light: #eff6ff;
-            --success-color: #16a34a;
-            --error-color: #dc2626;
-            --border-color: #e2e8f0;
-            --highlight: #fef08a;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
+      :root {
+        /* Light Theme */
+        --bg-color: #f8fafc;
+        --surface-color: #ffffff;
+        --surface-hover: #f1f5f9;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --primary-light: #eff6ff;
+        --success-color: #16a34a;
+        --error-color: #dc2626;
+        --border-color: #e2e8f0;
+        --highlight: #fef08a;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      }
 
-        [data-theme="dark"] {
-            /* Dark Theme */
-            --bg-color: #0f172a;
-            --surface-color: #1e293b;
-            --surface-hover: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary-color: #3b82f6;
-            --primary-hover: #60a5fa;
-            --primary-light: rgba(59, 130, 246, 0.15);
-            --success-color: #22c55e;
-            --error-color: #ef4444;
-            --border-color: #334155;
-            --highlight: #854d0e;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-        }
+      [data-theme="dark"] {
+        /* Dark Theme */
+        --bg-color: #0f172a;
+        --surface-color: #1e293b;
+        --surface-hover: #334155;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --primary-color: #3b82f6;
+        --primary-hover: #60a5fa;
+        --primary-light: rgba(59, 130, 246, 0.15);
+        --success-color: #22c55e;
+        --error-color: #ef4444;
+        --border-color: #334155;
+        --highlight: #854d0e;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+      }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+      }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            transition: background-color 150ms ease, color 150ms ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            line-height: 1.6;
-            padding: 20px;
-        }
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        transition:
+          background-color 150ms ease,
+          color 150ms ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        line-height: 1.6;
+        padding: 20px;
+      }
 
-        /* Controlled Loading Screen */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: opacity 200ms ease;
+      /* Controlled Loading Screen */
+      #loader {
+        position: fixed;
+        inset: 0;
+        background: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        transition: opacity 200ms ease;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color);
+        border-top-color: var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
         }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border-color);
-            border-top-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+      }
 
-        /* Main App Container */
-        #app {
-            width: 100%;
-            max-width: 800px;
-            background: var(--surface-color);
-            border-radius: 12px;
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity 150ms ease;
-            display: none;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-        }
+      /* Main App Container */
+      #app {
+        width: 100%;
+        max-width: 800px;
+        background: var(--surface-color);
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        opacity: 0;
+        transition: opacity 150ms ease;
+        display: none;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-        #app.visible {
-            opacity: 1;
-        }
+      #app.visible {
+        opacity: 1;
+      }
 
-        /* Minimal Enterprise HUD */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--surface-color);
-            font-size: 0.9rem;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
+      /* Minimal Enterprise HUD */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--surface-color);
+        font-size: 0.9rem;
+        font-weight: 600;
+        flex-shrink: 0;
+      }
 
-        .hud-stats {
-            display: flex;
-            gap: 20px;
-            color: var(--text-muted);
-        }
+      .hud-stats {
+        display: flex;
+        gap: 20px;
+        color: var(--text-muted);
+      }
 
-        .hud-stats span {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+      .hud-stats span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
 
-        .hud-stats svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
+      .hud-stats svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+      }
 
-        .theme-toggle {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 4px;
-            transition: color 150ms ease;
-        }
-        .theme-toggle:hover { color: var(--primary-color); }
+      .theme-toggle {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 4px;
+        min-width: 44px;
+        min-height: 44px;
+        transition: color 150ms ease;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--blue, #2f6fdb);
+        outline-offset: 2px;
+      }
+      .theme-toggle:hover {
+        color: var(--primary-color);
+      }
 
-        /* Content Views */
-        .view-container {
-            flex-grow: 1;
-            overflow-y: auto;
-            position: relative;
-        }
+      /* Content Views */
+      .view-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        position: relative;
+      }
 
-        .view {
-            display: none;
-            padding: 32px 24px;
-            opacity: 0;
-            transition: opacity 150ms ease;
-        }
-        .view.active {
-            display: block;
-            opacity: 1;
-        }
+      .view {
+        display: none;
+        padding: 32px 24px;
+        opacity: 0;
+        transition: opacity 150ms ease;
+      }
+      .view.active {
+        display: block;
+        opacity: 1;
+      }
 
-        h1, h2, h3 { margin-bottom: 16px; color: var(--text-main); }
-        p { margin-bottom: 24px; font-size: 1.1rem; color: var(--text-main); }
+      h1,
+      h2,
+      h3 {
+        margin-bottom: 16px;
+        color: var(--text-main);
+      }
+      p {
+        margin-bottom: 24px;
+        font-size: 1.1rem;
+        color: var(--text-main);
+      }
 
-        /* Vocabulary Components */
-        .vocab-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
+      /* Vocabulary Components */
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
 
-        .vocab-card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            background: var(--bg-color);
-            transition: border-color 150ms ease;
-        }
-        .vocab-card:hover {
-            border-color: var(--primary-color);
-        }
+      .vocab-card {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        background: var(--bg-color);
+        transition: border-color 150ms ease;
+      }
+      .vocab-card:hover {
+        border-color: var(--primary-color);
+      }
 
-        .vocab-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
+      .vocab-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+      }
 
-        .vocab-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-light);
-            color: var(--primary-color);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .vocab-icon svg { width: 24px; height: 24px; fill: currentColor; }
+      .vocab-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-light);
+        color: var(--primary-color);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .vocab-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+      }
 
-        .vocab-term {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
+      .vocab-term {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
 
-        .vocab-detail {
-            display: grid;
-            grid-template-columns: 100px 1fr;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-        .vocab-label {
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            align-self: start;
-            padding-top: 2px;
-        }
+      .vocab-detail {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .vocab-label {
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        align-self: start;
+        padding-top: 2px;
+      }
 
-        .vocab-frame {
-            background: var(--surface-color);
-            padding: 12px;
-            border-radius: 6px;
-            border-left: 4px solid var(--primary-color);
-            font-family: monospace;
-            font-size: 1rem;
-            margin-top: 12px;
-        }
+      .vocab-frame {
+        background: var(--surface-color);
+        padding: 12px;
+        border-radius: 6px;
+        border-left: 4px solid var(--primary-color);
+        font-family: monospace;
+        font-size: 1rem;
+        margin-top: 12px;
+      }
 
-        /* Story Text */
-        .story-container {
-            background: var(--bg-color);
-            padding: 32px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            font-size: 1.15rem;
-            margin-bottom: 24px;
-            position: relative;
-        }
+      /* Story Text */
+      .story-container {
+        background: var(--bg-color);
+        padding: 32px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        font-size: 1.15rem;
+        margin-bottom: 24px;
+        position: relative;
+      }
 
-        .story-visual {
-            float: right;
-            margin: 0 0 16px 24px;
-            width: 120px;
-            height: 120px;
-            color: var(--primary-color);
-        }
+      .story-visual {
+        float: right;
+        margin: 0 0 16px 24px;
+        width: 120px;
+        height: 120px;
+        color: var(--primary-color);
+      }
 
-        .highlight-vocab {
-            background-color: var(--highlight);
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: help;
-            border-bottom: 2px dashed var(--primary-color);
-        }
+      .highlight-vocab {
+        background-color: var(--highlight);
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: help;
+        border-bottom: 2px dashed var(--primary-color);
+      }
 
-        /* Buttons & Interactions */
-        .btn-container {
-            position: sticky;
-            bottom: 0;
-            background: var(--surface-color);
-            padding: 16px 24px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            z-index: 10;
-        }
+      /* Buttons & Interactions */
+      .btn-container {
+        position: sticky;
+        bottom: 0;
+        background: var(--surface-color);
+        padding: 16px 24px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        z-index: 10;
+      }
 
-        button.btn-primary {
-            background: var(--primary-color);
-            color: #ffffff;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 150ms ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        button.btn-primary:hover { background: var(--primary-hover); }
-        button.btn-primary svg { width: 18px; height: 18px; fill: currentColor; }
+      button.btn-primary {
+        background: var(--primary-color);
+        color: #ffffff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 150ms ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      button.btn-primary:hover {
+        background: var(--primary-hover);
+      }
+      button.btn-primary svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+      }
 
-        /* Quiz Grid */
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
+      /* Quiz Grid */
+      .options-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
 
-        .option-btn {
-            background: var(--surface-color);
-            border: 2px solid var(--border-color);
-            color: var(--text-main);
-            padding: 16px 20px;
-            border-radius: 8px;
-            font-size: 1.05rem;
-            text-align: left;
-            cursor: pointer;
-            transition: all 150ms ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .option-btn {
+        background: var(--surface-color);
+        border: 2px solid var(--border-color);
+        color: var(--text-main);
+        padding: 16px 20px;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        text-align: left;
+        cursor: pointer;
+        transition: all 150ms ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .option-btn:hover:not(:disabled) {
-            border-color: var(--primary-color);
-            background: var(--bg-color);
-        }
+      .option-btn:hover:not(:disabled) {
+        border-color: var(--primary-color);
+        background: var(--bg-color);
+      }
 
-        .option-icon {
-            width: 24px;
-            height: 24px;
-            opacity: 0;
-            transition: opacity 150ms ease;
-        }
+      .option-icon {
+        width: 24px;
+        height: 24px;
+        opacity: 0;
+        transition: opacity 150ms ease;
+      }
 
-        .option-btn.correct {
-            border-color: var(--success-color);
-            background: rgba(22, 163, 74, 0.1);
-            color: var(--success-color);
-        }
-        .option-btn.correct .option-icon { opacity: 1; fill: var(--success-color); }
+      .option-btn.correct {
+        border-color: var(--success-color);
+        background: rgba(22, 163, 74, 0.1);
+        color: var(--success-color);
+      }
+      .option-btn.correct .option-icon {
+        opacity: 1;
+        fill: var(--success-color);
+      }
 
-        .option-btn.incorrect {
-            border-color: var(--error-color);
-            background: rgba(220, 38, 38, 0.1);
-            color: var(--error-color);
-            opacity: 0.8;
-        }
-        .option-btn.incorrect .option-icon { opacity: 1; fill: var(--error-color); }
+      .option-btn.incorrect {
+        border-color: var(--error-color);
+        background: rgba(220, 38, 38, 0.1);
+        color: var(--error-color);
+        opacity: 0.8;
+      }
+      .option-btn.incorrect .option-icon {
+        opacity: 1;
+        fill: var(--error-color);
+      }
 
-        .option-btn:disabled { cursor: default; }
+      .option-btn:disabled {
+        cursor: default;
+      }
 
-        /* Progress Bar */
-        .progress-container {
-            width: 100%;
-            height: 6px;
-            background: var(--border-color);
-            border-radius: 3px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: var(--primary-color);
-            width: 0%;
-            transition: width 300ms ease;
-        }
+      /* Progress Bar */
+      .progress-container {
+        width: 100%;
+        height: 6px;
+        background: var(--border-color);
+        border-radius: 3px;
+        margin-bottom: 24px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--primary-color);
+        width: 0%;
+        transition: width 300ms ease;
+      }
 
-        /* Results */
-        .results-card {
-            text-align: center;
-            padding: 48px 0;
-        }
-        .results-score {
-            font-size: 4rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 16px 0;
-        }
+      /* Results */
+      .results-card {
+        text-align: center;
+        padding: 48px 0;
+      }
+      .results-score {
+        font-size: 4rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin: 16px 0;
+      }
     </style>
-</head>
-<body>
-<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
-<style>
-#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
-#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
-.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
-@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
-.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
-.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
-.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
-.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
-.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
-.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
-.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
-.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
-.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
-.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
-.vso-dot.active{background:#6366F1;transform:scale(1.25)}
-.vso-dot.seen{background:#A5B4FC}
-</style>
-<div id="vocabSlideshowOverlay">
-<div class="vso-card">
-  <div class="vso-progress" id="vsoProgress">Word 1 of 4</div>
-  <div class="vso-svg-wrap" id="vsoSvg"></div>
-  <div class="vso-word" id="vsoWord"></div>
-  <div class="vso-def" id="vsoDef"></div>
-  <div class="vso-nav">
-    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
-    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
-    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
-  </div>
-  <div class="vso-dots" id="vsoDots"></div>
-</div>
-</div>
-<script>
-(function(){
-const VSO_ITEMS=[
-  {word: 'Main Idea', def: 'The most important point the author is making.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>'},
-  {word: 'Supporting Detail', def: 'A fact or example that helps explain the main idea.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>'},
-  {word: 'Context Clues', def: 'Words around an unknown word that help you figure out what it means.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>'},
-  {word: 'Inference', def: 'A conclusion you make based on clues in the text.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>'}
-];
-let vsoIdx=0,vsoSeen=new Set();
-function vsoRender(){
-  const it=VSO_ITEMS[vsoIdx];
-  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
-  document.getElementById('vsoWord').textContent=it.word;
-  document.getElementById('vsoDef').textContent=it.def;
-  document.getElementById('vsoSvg').innerHTML=it.svg;
-  vsoSeen.add(vsoIdx);
-  document.getElementById('vsoPrev').disabled=vsoIdx===0;
-  const isLast=vsoIdx===VSO_ITEMS.length-1;
-  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
-  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
-  const dots=document.getElementById('vsoDots');
-  dots.innerHTML='';
-  VSO_ITEMS.forEach(function(_,i){
-    const d=document.createElement('span');
-    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
-    d.onclick=function(){vsoIdx=i;vsoRender();};
-    dots.appendChild(d);
-  });
-}
-window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
-window.vsoClose=function(){
-  const el=document.getElementById('vocabSlideshowOverlay');
-  el.classList.add('vso-hidden');
-  setTimeout(function(){el.remove();},600);
-};
-vsoRender();
-})();
-</script>
-<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
-
-
+  </head>
+  <body>
+    <!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+    <style>
+      #vocabSlideshowOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Nunito", Arial, Helvetica, sans-serif;
+        transition: opacity 0.5s;
+      }
+      #vocabSlideshowOverlay.vso-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .vso-card {
+        background: #fff;
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 680px;
+        width: 92%;
+        padding: 40px 36px 32px;
+        text-align: center;
+        animation: vsoIn 0.4s ease-out;
+      }
+      @keyframes vsoIn {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      .vso-progress {
+        font-size: 14px;
+        font-weight: 700;
+        color: #8b5cf6;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+      }
+      .vso-word {
+        font-size: clamp(42px, 8vw, 68px);
+        font-weight: 900;
+        color: #1e293b;
+        margin: 10px 0 8px;
+        line-height: 1.1;
+      }
+      .vso-def {
+        font-size: clamp(17px, 3vw, 22px);
+        color: #475569;
+        font-weight: 600;
+        line-height: 1.5;
+        margin-bottom: 18px;
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .vso-svg-wrap {
+        margin: 0 auto 20px;
+        max-width: 300px;
+      }
+      .vso-svg-wrap svg {
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+      }
+      .vso-nav {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .vso-btn {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 50px;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #fff;
+      }
+      .vso-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+      }
+      .vso-btn-prev {
+        background: #94a3b8;
+      }
+      .vso-btn-next {
+        background: #6366f1;
+      }
+      .vso-btn-start {
+        background: #10b981;
+        font-size: 18px;
+        padding: 14px 36px;
+      }
+      .vso-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+        transform: none;
+      }
+      .vso-dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .vso-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        transition: all 0.3s;
+      }
+      .vso-dot.active {
+        background: #6366f1;
+        transform: scale(1.25);
+      }
+      .vso-dot.seen {
+        background: #a5b4fc;
+      }
+    </style>
+    <div id="vocabSlideshowOverlay">
+      <div class="vso-card">
+        <div class="vso-progress" id="vsoProgress">Word 1 of 4</div>
+        <div class="vso-svg-wrap" id="vsoSvg"></div>
+        <div class="vso-word" id="vsoWord"></div>
+        <div class="vso-def" id="vsoDef"></div>
+        <div class="vso-nav">
+          <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">
+            &#8592; Previous
+          </button>
+          <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">
+            Next &#8594;
+          </button>
+          <button
+            class="vso-btn vso-btn-start"
+            id="vsoStart"
+            style="display: none"
+            onclick="vsoClose()"
+          >
+            Start Activities &#8594;
+          </button>
+        </div>
+        <div class="vso-dots" id="vsoDots"></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const VSO_ITEMS = [
+          {
+            word: "Main Idea",
+            def: "The most important point the author is making.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>',
+          },
+          {
+            word: "Supporting Detail",
+            def: "A fact or example that helps explain the main idea.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>',
+          },
+          {
+            word: "Context Clues",
+            def: "Words around an unknown word that help you figure out what it means.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>',
+          },
+          {
+            word: "Inference",
+            def: "A conclusion you make based on clues in the text.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <circle cx="150" cy="120" r="60" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="150" y="130" text-anchor="middle" font-size="48" font-weight="900" fill="#6366F1" font-family="sans-serif">?</text>   <rect x="60" y="200" width="180" height="40" rx="10" fill="#F3F4F6"/>   <line x1="80" y1="220" x2="220" y2="220" stroke="#D1D5DB" stroke-width="2"/> </svg>',
+          },
+        ];
+        let vsoIdx = 0,
+          vsoSeen = new Set();
+        function vsoRender() {
+          const it = VSO_ITEMS[vsoIdx];
+          document.getElementById("vsoProgress").textContent =
+            "Word " + (vsoIdx + 1) + " of " + VSO_ITEMS.length;
+          document.getElementById("vsoWord").textContent = it.word;
+          document.getElementById("vsoDef").textContent = it.def;
+          document.getElementById("vsoSvg").innerHTML = it.svg;
+          vsoSeen.add(vsoIdx);
+          document.getElementById("vsoPrev").disabled = vsoIdx === 0;
+          const isLast = vsoIdx === VSO_ITEMS.length - 1;
+          document.getElementById("vsoNext").style.display = isLast
+            ? "none"
+            : "inline-block";
+          document.getElementById("vsoStart").style.display =
+            vsoSeen.size === VSO_ITEMS.length ? "inline-block" : "none";
+          const dots = document.getElementById("vsoDots");
+          dots.innerHTML = "";
+          VSO_ITEMS.forEach(function (_, i) {
+            const d = document.createElement("span");
+            d.className =
+              "vso-dot" +
+              (i === vsoIdx ? " active" : "") +
+              (vsoSeen.has(i) ? " seen" : "");
+            d.onclick = function () {
+              vsoIdx = i;
+              vsoRender();
+            };
+            dots.appendChild(d);
+          });
+        }
+        window.vsoGo = function (dir) {
+          vsoIdx = Math.max(0, Math.min(VSO_ITEMS.length - 1, vsoIdx + dir));
+          vsoRender();
+        };
+        window.vsoClose = function () {
+          const el = document.getElementById("vocabSlideshowOverlay");
+          el.classList.add("vso-hidden");
+          setTimeout(function () {
+            el.remove();
+          }, 600);
+        };
+        vsoRender();
+      })();
+    </script>
+    <!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
 
     <!-- Controlled Loading Screen -->
     <div id="loader"><div class="spinner"></div></div>
 
     <!-- Main Application -->
     <div id="app">
-        <header>
-            <div class="hud-stats">
-                <span id="hud-phase">
-                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Module: 1/3
-                </span>
-                <span id="hud-accuracy" style="display:none;">
-                    <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Accuracy: --%
-                </span>
-            </div>
-            <button class="theme-toggle" id="theme-btn" aria-label="Toggle Theme">🌓</button>
-        </header>
-
-        <div class="view-container">
-            <!-- View 1: Vocabulary Phase -->
-            <div id="view-vocab" class="view">
-                <h2>1. Core Vocabulary</h2>
-                <p>Review these important words before reading the story.</p>
-                <div class="vocab-grid" id="vocab-container">
-                    <!-- Vocab Cards Injected Here -->
-                </div>
-                <div class="btn-container">
-                    <button class="btn-primary" id="btn-to-reading">
-                        Continue to Story
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- View 2: Reading Phase -->
-            <div id="view-reading" class="view">
-                <h2>2. The Unconventional Interview</h2>
-                <p>Read the text carefully. Pay attention to the highlighted vocabulary words.</p>
-                <div class="story-container">
-                    <!-- Abstract Espresso Machine SVG -->
-                    <svg class="story-visual" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="20" y="20" width="60" height="70" rx="4" />
-                        <path d="M20 40h60M35 20v-10h30v10M40 40v20M60 40v20" />
-                        <circle cx="50" cy="75" r="10" />
-                        <path d="M45 50h10" />
-                    </svg>
-
-                    Maria was nervous. Her interview at TechNova was scheduled for 10:00 AM, but the train was <span class="highlight-vocab" title="Happening later than expected">delayed</span> by 15 minutes. She finally arrived at 9:55 AM, out of breath. The <span class="highlight-vocab" title="A person who greets visitors">receptionist</span>, a kind older man named Arthur, handed her a visitor badge (number 42).
-                    <br><br>
-                    When she entered the interview room, the hiring manager, Sarah, wasn't looking at a <span class="highlight-vocab" title="A document listing work experience">resume</span>. Instead, she was trying to fix a broken espresso machine. "Do you know anything about these?" Sarah asked, wiping her hands.
-                    <br><br>
-                    Maria, who had worked as a <span class="highlight-vocab" title="A person who makes and serves coffee">barista</span> for three years to pay for college, smiled. Not only did she fix the machine, but she also made them both perfect lattes. They ended up discussing the marketing position over coffee. It was an <span class="highlight-vocab" title="Different from what is usual">unconventional</span> interview, but she received a job offer the next morning.
-                </div>
-                <div class="btn-container">
-                    <button class="btn-primary" id="btn-start-recall">
-                        I'm ready to test my memory
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- View 3: Recall Phase -->
-            <div id="view-recall" class="view">
-                <div class="progress-container"><div id="progress-bar" class="progress-fill"></div></div>
-                <h3 id="question-text" style="margin-bottom: 20px;">Question text</h3>
-                <div id="options-container" class="options-grid">
-                    <!-- Options injected via JS -->
-                </div>
-                <div class="btn-container" id="next-btn-container" style="display: none;">
-                    <button class="btn-primary" id="btn-next">
-                        Next Question
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- View 4: Results Phase -->
-            <div id="view-results" class="view results-card">
-                <h2>Activity Complete</h2>
-                <p>Here is how well you remembered the details and vocabulary:</p>
-                <div class="results-score" id="final-score">0/5</div>
-                <p id="results-feedback" style="margin-bottom: 32px; font-weight: 600;"></p>
-                <button class="btn-primary" id="btn-restart" style="justify-content: center; width: auto; margin: 0 auto;">
-                    <svg viewBox="0 0 24 24" style="margin-right:8px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8M3 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Review & Retry
-                </button>
-            </div>
+      <header>
+        <h1
+          style="
+            font-size: 1.05rem;
+            margin: 0;
+            flex: 1 1 100%;
+            text-align: center;
+            order: -1;
+          "
+        >
+          Reading &amp; Recall: The Unconventional Interview
+        </h1>
+        <div class="hud-stats">
+          <span id="hud-phase">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Module: 1/3
+          </span>
+          <span id="hud-accuracy" style="display: none">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Accuracy: --%
+          </span>
         </div>
+        <button class="theme-toggle" id="theme-btn" aria-label="Toggle Theme">
+          🌓
+        </button>
+      </header>
+
+      <div class="view-container">
+        <!-- View 1: Vocabulary Phase -->
+        <div id="view-vocab" class="view">
+          <h2>1. Core Vocabulary</h2>
+          <p>Review these important words before reading the story.</p>
+          <div class="vocab-grid" id="vocab-container">
+            <!-- Vocab Cards Injected Here -->
+          </div>
+          <div class="btn-container">
+            <button class="btn-primary" id="btn-to-reading">
+              Continue to Story
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- View 2: Reading Phase -->
+        <div id="view-reading" class="view">
+          <h2>2. The Unconventional Interview</h2>
+          <p>
+            Read the text carefully. Pay attention to the highlighted vocabulary
+            words.
+          </p>
+          <div class="story-container">
+            <!-- Abstract Espresso Machine SVG -->
+            <svg
+              class="story-visual"
+              viewBox="0 0 100 100"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="20" y="20" width="60" height="70" rx="4" />
+              <path d="M20 40h60M35 20v-10h30v10M40 40v20M60 40v20" />
+              <circle cx="50" cy="75" r="10" />
+              <path d="M45 50h10" />
+            </svg>
+
+            Maria was nervous. Her interview at TechNova was scheduled for 10:00
+            AM, but the train was
+            <span class="highlight-vocab" title="Happening later than expected"
+              >delayed</span
+            >
+            by 15 minutes. She finally arrived at 9:55 AM, out of breath. The
+            <span class="highlight-vocab" title="A person who greets visitors"
+              >receptionist</span
+            >, a kind older man named Arthur, handed her a visitor badge (number
+            42). <br /><br />
+            When she entered the interview room, the hiring manager, Sarah,
+            wasn't looking at a
+            <span
+              class="highlight-vocab"
+              title="A document listing work experience"
+              >resume</span
+            >. Instead, she was trying to fix a broken espresso machine. "Do you
+            know anything about these?" Sarah asked, wiping her hands.
+            <br /><br />
+            Maria, who had worked as a
+            <span
+              class="highlight-vocab"
+              title="A person who makes and serves coffee"
+              >barista</span
+            >
+            for three years to pay for college, smiled. Not only did she fix the
+            machine, but she also made them both perfect lattes. They ended up
+            discussing the marketing position over coffee. It was an
+            <span class="highlight-vocab" title="Different from what is usual"
+              >unconventional</span
+            >
+            interview, but she received a job offer the next morning.
+          </div>
+          <div class="btn-container">
+            <button class="btn-primary" id="btn-start-recall">
+              I'm ready to test my memory
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- View 3: Recall Phase -->
+        <div id="view-recall" class="view">
+          <div class="progress-container">
+            <div id="progress-bar" class="progress-fill"></div>
+          </div>
+          <h3 id="question-text" style="margin-bottom: 20px">Question text</h3>
+          <div id="options-container" class="options-grid">
+            <!-- Options injected via JS -->
+          </div>
+          <div
+            class="btn-container"
+            id="next-btn-container"
+            style="display: none"
+          >
+            <button class="btn-primary" id="btn-next">
+              Next Question
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- View 4: Results Phase -->
+        <div id="view-results" class="view results-card">
+          <h2>Activity Complete</h2>
+          <p>Here is how well you remembered the details and vocabulary:</p>
+          <div class="results-score" id="final-score">0/5</div>
+          <p
+            id="results-feedback"
+            style="margin-bottom: 32px; font-weight: 600"
+          ></p>
+          <button
+            class="btn-primary"
+            id="btn-restart"
+            style="justify-content: center; width: auto; margin: 0 auto"
+          >
+            <svg viewBox="0 0 24 24" style="margin-right: 8px">
+              <path
+                d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8M3 3v5h5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Review & Retry
+          </button>
+        </div>
+      </div>
     </div>
 
     <script>
-        /**
-         * Structured Logging Utility
-         */
-        const Logger = {
-            info: (msg, data = '') => console.log(`[INFO] ${msg}`, data),
-            warn: (msg, data = '') => console.warn(`[WARN] ${msg}`, data),
-            error: (msg, data = '') => console.error(`[ERROR] ${msg}`, data)
-        };
+      /**
+       * Structured Logging Utility
+       */
+      const Logger = {
+        info: (msg, data = "") => console.log(`[INFO] ${msg}`, data),
+        warn: (msg, data = "") => console.warn(`[WARN] ${msg}`, data),
+        error: (msg, data = "") => console.error(`[ERROR] ${msg}`, data),
+      };
 
-        /**
-         * Application Data & Content
-         */
-        const AppData = {
-            vocabulary: [
-                {
-                    term: "Unconventional",
-                    icon: `<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
-                    definition: "Different from what is normally done or expected.",
-                    example: "Fixing an espresso machine during an interview is very unconventional.",
-                    nonExample: "A normal sit-down meeting where they ask standard questions.",
-                    frame: "An ____________ way to study for a test is to [action]."
-                },
-                {
-                    term: "Delayed",
-                    icon: `<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
-                    definition: "Happening later than expected or scheduled.",
-                    example: "The train was delayed by 15 minutes because of the rain.",
-                    nonExample: "Arriving exactly on time or early.",
-                    frame: "My flight was ____________, so I arrived at the hotel late."
-                },
-                {
-                    term: "Resume",
-                    icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
-                    definition: "A formal document that lists your work experience, education, and skills.",
-                    example: "The hiring manager usually reads your resume before asking questions.",
-                    nonExample: "A text message or a personal diary.",
-                    frame: "Before applying for a job, you need to update your ____________."
-                },
-                {
-                    term: "Barista",
-                    icon: `<path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
-                    definition: "A person whose job is to prepare and serve different types of coffee.",
-                    example: "Maria worked as a barista to help pay for her college classes.",
-                    nonExample: "A chef who cooks hot food in a restaurant kitchen.",
-                    frame: "The ____________ asked me if I wanted extra milk in my coffee."
-                }
+      /**
+       * Application Data & Content
+       */
+      const AppData = {
+        vocabulary: [
+          {
+            term: "Unconventional",
+            icon: `<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
+            definition: "Different from what is normally done or expected.",
+            example:
+              "Fixing an espresso machine during an interview is very unconventional.",
+            nonExample:
+              "A normal sit-down meeting where they ask standard questions.",
+            frame: "An ____________ way to study for a test is to [action].",
+          },
+          {
+            term: "Delayed",
+            icon: `<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
+            definition: "Happening later than expected or scheduled.",
+            example: "The train was delayed by 15 minutes because of the rain.",
+            nonExample: "Arriving exactly on time or early.",
+            frame:
+              "My flight was ____________, so I arrived at the hotel late.",
+          },
+          {
+            term: "Resume",
+            icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
+            definition:
+              "A formal document that lists your work experience, education, and skills.",
+            example:
+              "The hiring manager usually reads your resume before asking questions.",
+            nonExample: "A text message or a personal diary.",
+            frame:
+              "Before applying for a job, you need to update your ____________.",
+          },
+          {
+            term: "Barista",
+            icon: `<path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
+            definition:
+              "A person whose job is to prepare and serve different types of coffee.",
+            example:
+              "Maria worked as a barista to help pay for her college classes.",
+            nonExample: "A chef who cooks hot food in a restaurant kitchen.",
+            frame:
+              "The ____________ asked me if I wanted extra milk in my coffee.",
+          },
+        ],
+        questions: [
+          {
+            q: "What time did Maria finally arrive at the office?",
+            options: ["10:00 AM", "9:55 AM", "10:15 AM", "9:45 AM"],
+            answer: 1,
+          },
+          {
+            q: "What was the name of the receptionist?",
+            options: ["Albert", "Arthur", "Anthony", "Andrew"],
+            answer: 1,
+          },
+          {
+            q: "Why was Maria's interview considered 'unconventional'?",
+            options: [
+              "She arrived late.",
+              "They drank tea instead of coffee.",
+              "She fixed a machine instead of just answering questions.",
+              "She forgot to bring her resume.",
             ],
-            questions: [
-                { q: "What time did Maria finally arrive at the office?", options: ["10:00 AM", "9:55 AM", "10:15 AM", "9:45 AM"], answer: 1 },
-                { q: "What was the name of the receptionist?", options: ["Albert", "Arthur", "Anthony", "Andrew"], answer: 1 },
-                { q: "Why was Maria's interview considered 'unconventional'?", options: ["She arrived late.", "They drank tea instead of coffee.", "She fixed a machine instead of just answering questions.", "She forgot to bring her resume."], answer: 2 },
-                { q: "What was the hiring manager doing when Maria walked in?", options: ["Reading her resume", "Making a phone call", "Fixing an espresso machine", "Drinking a latte"], answer: 2 },
-                { q: "How did Maria know how to fix the machine?", options: ["She read the manual.", "She worked as a barista for three years.", "She studied engineering.", "She guessed how it worked."], answer: 1 }
-            ]
-        };
+            answer: 2,
+          },
+          {
+            q: "What was the hiring manager doing when Maria walked in?",
+            options: [
+              "Reading her resume",
+              "Making a phone call",
+              "Fixing an espresso machine",
+              "Drinking a latte",
+            ],
+            answer: 2,
+          },
+          {
+            q: "How did Maria know how to fix the machine?",
+            options: [
+              "She read the manual.",
+              "She worked as a barista for three years.",
+              "She studied engineering.",
+              "She guessed how it worked.",
+            ],
+            answer: 1,
+          },
+        ],
+      };
 
-        const State = {
-            currentView: 'vocab',
-            currentIndex: 0,
-            score: 0,
-            attempts: 0
-        };
+      const State = {
+        currentView: "vocab",
+        currentIndex: 0,
+        score: 0,
+        attempts: 0,
+      };
 
-        /**
-         * DOM Elements
-         */
-        const DOM = {
-            loader: document.getElementById('loader'),
-            app: document.getElementById('app'),
-            themeBtn: document.getElementById('theme-btn'),
-            hudPhase: document.getElementById('hud-phase'),
-            hudAccuracy: document.getElementById('hud-accuracy'),
-            views: {
-                vocab: document.getElementById('view-vocab'),
-                reading: document.getElementById('view-reading'),
-                recall: document.getElementById('view-recall'),
-                results: document.getElementById('view-results')
-            },
-            vocabContainer: document.getElementById('vocab-container'),
-            recall: {
-                progress: document.getElementById('progress-bar'),
-                question: document.getElementById('question-text'),
-                options: document.getElementById('options-container'),
-                nextBtnContainer: document.getElementById('next-btn-container'),
-                nextBtn: document.getElementById('btn-next')
-            },
-            results: {
-                score: document.getElementById('final-score'),
-                feedback: document.getElementById('results-feedback'),
-                restartBtn: document.getElementById('btn-restart')
-            },
-            btns: {
-                toReading: document.getElementById('btn-to-reading'),
-                startRecall: document.getElementById('btn-start-recall')
-            }
-        };
+      /**
+       * DOM Elements
+       */
+      const DOM = {
+        loader: document.getElementById("loader"),
+        app: document.getElementById("app"),
+        themeBtn: document.getElementById("theme-btn"),
+        hudPhase: document.getElementById("hud-phase"),
+        hudAccuracy: document.getElementById("hud-accuracy"),
+        views: {
+          vocab: document.getElementById("view-vocab"),
+          reading: document.getElementById("view-reading"),
+          recall: document.getElementById("view-recall"),
+          results: document.getElementById("view-results"),
+        },
+        vocabContainer: document.getElementById("vocab-container"),
+        recall: {
+          progress: document.getElementById("progress-bar"),
+          question: document.getElementById("question-text"),
+          options: document.getElementById("options-container"),
+          nextBtnContainer: document.getElementById("next-btn-container"),
+          nextBtn: document.getElementById("btn-next"),
+        },
+        results: {
+          score: document.getElementById("final-score"),
+          feedback: document.getElementById("results-feedback"),
+          restartBtn: document.getElementById("btn-restart"),
+        },
+        btns: {
+          toReading: document.getElementById("btn-to-reading"),
+          startRecall: document.getElementById("btn-start-recall"),
+        },
+      };
 
-        /**
-         * SVG Icons for Quiz Feedback
-         */
-        const Icons = {
-            correct: `<svg class="option-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-            incorrect: `<svg class="option-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`
-        };
+      /**
+       * SVG Icons for Quiz Feedback
+       */
+      const Icons = {
+        correct: `<svg class="option-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+        incorrect: `<svg class="option-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+      };
 
-        /**
-         * Core Logic & Controllers
-         */
-        const AppController = {
-            init() {
-                Logger.info("Initializing Application");
-                this.detectTheme();
-                this.buildVocabCards();
-                this.bindEvents();
+      /**
+       * Core Logic & Controllers
+       */
+      const AppController = {
+        init() {
+          Logger.info("Initializing Application");
+          this.detectTheme();
+          this.buildVocabCards();
+          this.bindEvents();
 
-                // Controlled load delay
-                setTimeout(() => {
-                    DOM.loader.style.opacity = '0';
-                    setTimeout(() => {
-                        DOM.loader.style.display = 'none';
-                        DOM.app.classList.add('visible');
-                        this.transitionTo('vocab');
-                    }, 200);
-                }, 400);
-            },
+          // Controlled load delay
+          setTimeout(() => {
+            DOM.loader.style.opacity = "0";
+            setTimeout(() => {
+              DOM.loader.style.display = "none";
+              DOM.app.classList.add("visible");
+              this.transitionTo("vocab");
+            }, 200);
+          }, 400);
+        },
 
-            detectTheme() {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (prefersDark) document.documentElement.setAttribute('data-theme', 'dark');
-            },
+        detectTheme() {
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          if (prefersDark)
+            document.documentElement.setAttribute("data-theme", "dark");
+        },
 
-            toggleTheme() {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', newTheme);
-            },
+        toggleTheme() {
+          const currentTheme =
+            document.documentElement.getAttribute("data-theme");
+          const newTheme = currentTheme === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", newTheme);
+        },
 
-            bindEvents() {
-                DOM.themeBtn.addEventListener('click', () => this.toggleTheme());
-                DOM.btns.toReading.addEventListener('click', () => this.transitionTo('reading'));
-                DOM.btns.startRecall.addEventListener('click', () => this.startRecall());
-                DOM.recall.nextBtn.addEventListener('click', () => this.nextQuestion());
-                DOM.results.restartBtn.addEventListener('click', () => this.resetApp());
-            },
+        bindEvents() {
+          DOM.themeBtn.addEventListener("click", () => this.toggleTheme());
+          DOM.btns.toReading.addEventListener("click", () =>
+            this.transitionTo("reading"),
+          );
+          DOM.btns.startRecall.addEventListener("click", () =>
+            this.startRecall(),
+          );
+          DOM.recall.nextBtn.addEventListener("click", () =>
+            this.nextQuestion(),
+          );
+          DOM.results.restartBtn.addEventListener("click", () =>
+            this.resetApp(),
+          );
+        },
 
-            buildVocabCards() {
-                AppData.vocabulary.forEach(v => {
-                    const card = document.createElement('div');
-                    card.className = 'vocab-card';
-                    card.innerHTML = `
+        buildVocabCards() {
+          AppData.vocabulary.forEach((v) => {
+            const card = document.createElement("div");
+            card.className = "vocab-card";
+            card.innerHTML = `
                         <div class="vocab-header">
                             <div class="vocab-icon"><svg viewBox="0 0 24 24">${v.icon}</svg></div>
                             <div class="vocab-term">${v.term}</div>
@@ -705,147 +1075,158 @@ vsoRender();
                         <div class="vocab-detail"><div class="vocab-label">Not Example</div><div>${v.nonExample}</div></div>
                         <div class="vocab-frame">${v.frame}</div>
                     `;
-                    DOM.vocabContainer.appendChild(card);
-                });
-            },
+            DOM.vocabContainer.appendChild(card);
+          });
+        },
 
-            transitionTo(viewName) {
-                Logger.info(`Transition to: ${viewName}`);
-                Object.values(DOM.views).forEach(el => el.classList.remove('active'));
+        transitionTo(viewName) {
+          Logger.info(`Transition to: ${viewName}`);
+          Object.values(DOM.views).forEach((el) =>
+            el.classList.remove("active"),
+          );
 
-                // Update HUD Phase Logic
-                if (viewName === 'vocab') {
-                    DOM.hudPhase.innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Module: 1/3`;
-                    DOM.hudAccuracy.style.display = 'none';
-                } else if (viewName === 'reading') {
-                    DOM.hudPhase.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Module: 2/3`;
-                    DOM.hudAccuracy.style.display = 'none';
-                } else if (viewName === 'recall') {
-                    DOM.hudPhase.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Module: 3/3`;
-                    DOM.hudAccuracy.style.display = 'flex';
-                }
+          // Update HUD Phase Logic
+          if (viewName === "vocab") {
+            DOM.hudPhase.innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Module: 1/3`;
+            DOM.hudAccuracy.style.display = "none";
+          } else if (viewName === "reading") {
+            DOM.hudPhase.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Module: 2/3`;
+            DOM.hudAccuracy.style.display = "none";
+          } else if (viewName === "recall") {
+            DOM.hudPhase.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Module: 3/3`;
+            DOM.hudAccuracy.style.display = "flex";
+          }
 
-                // Scroll to top of container
-                document.querySelector('.view-container').scrollTop = 0;
+          // Scroll to top of container
+          document.querySelector(".view-container").scrollTop = 0;
 
-                setTimeout(() => {
-                    DOM.views[viewName].classList.add('active');
-                    State.currentView = viewName;
-                }, 150);
-            },
+          setTimeout(() => {
+            DOM.views[viewName].classList.add("active");
+            State.currentView = viewName;
+          }, 150);
+        },
 
-            updateHUD() {
-                if (State.attempts === 0) {
-                    DOM.hudAccuracy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Accuracy: --%`;
-                } else {
-                    const accuracy = Math.round((State.score / State.attempts) * 100);
-                    DOM.hudAccuracy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Accuracy: ${accuracy}%`;
-                }
-            },
+        updateHUD() {
+          if (State.attempts === 0) {
+            DOM.hudAccuracy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Accuracy: --%`;
+          } else {
+            const accuracy = Math.round((State.score / State.attempts) * 100);
+            DOM.hudAccuracy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Accuracy: ${accuracy}%`;
+          }
+        },
 
-            startRecall() {
-                State.currentIndex = 0;
-                State.score = 0;
-                State.attempts = 0;
-                this.updateHUD();
-                this.renderQuestion();
-                this.transitionTo('recall');
-            },
+        startRecall() {
+          State.currentIndex = 0;
+          State.score = 0;
+          State.attempts = 0;
+          this.updateHUD();
+          this.renderQuestion();
+          this.transitionTo("recall");
+        },
 
-            renderQuestion() {
-                const qData = AppData.questions[State.currentIndex];
-                DOM.recall.question.textContent = `${State.currentIndex + 1}. ${qData.q}`;
-                DOM.recall.options.innerHTML = '';
-                DOM.recall.nextBtnContainer.style.display = 'none';
+        renderQuestion() {
+          const qData = AppData.questions[State.currentIndex];
+          DOM.recall.question.textContent = `${State.currentIndex + 1}. ${qData.q}`;
+          DOM.recall.options.innerHTML = "";
+          DOM.recall.nextBtnContainer.style.display = "none";
 
-                // Update Progress
-                const progressPercent = ((State.currentIndex) / AppData.questions.length) * 100;
-                DOM.recall.progress.style.width = `${progressPercent}%`;
+          // Update Progress
+          const progressPercent =
+            (State.currentIndex / AppData.questions.length) * 100;
+          DOM.recall.progress.style.width = `${progressPercent}%`;
 
-                qData.options.forEach((optText, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'option-btn';
-                    btn.innerHTML = `<span>${optText}</span> ${Icons.correct}`; // Setup structure
+          qData.options.forEach((optText, index) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerHTML = `<span>${optText}</span> ${Icons.correct}`; // Setup structure
 
-                    btn.addEventListener('click', () => this.handleAnswer(index, btn));
-                    DOM.recall.options.appendChild(btn);
-                });
-            },
+            btn.addEventListener("click", () => this.handleAnswer(index, btn));
+            DOM.recall.options.appendChild(btn);
+          });
+        },
 
-            handleAnswer(selectedIndex, btnElement) {
-                const qData = AppData.questions[State.currentIndex];
-                const buttons = Array.from(DOM.recall.options.children);
+        handleAnswer(selectedIndex, btnElement) {
+          const qData = AppData.questions[State.currentIndex];
+          const buttons = Array.from(DOM.recall.options.children);
 
-                // Lock selection
-                buttons.forEach(b => b.disabled = true);
-                State.attempts++;
+          // Lock selection
+          buttons.forEach((b) => (b.disabled = true));
+          State.attempts++;
 
-                if (selectedIndex === qData.answer) {
-                    btnElement.classList.add('correct');
-                    State.score++;
-                } else {
-                    btnElement.classList.add('incorrect');
-                    btnElement.innerHTML = `<span>${qData.options[selectedIndex]}</span> ${Icons.incorrect}`;
+          if (selectedIndex === qData.answer) {
+            btnElement.classList.add("correct");
+            State.score++;
+          } else {
+            btnElement.classList.add("incorrect");
+            btnElement.innerHTML = `<span>${qData.options[selectedIndex]}</span> ${Icons.incorrect}`;
 
-                    // Show correct answer explicitly
-                    buttons[qData.answer].classList.add('correct');
-                }
+            // Show correct answer explicitly
+            buttons[qData.answer].classList.add("correct");
+          }
 
-                this.updateHUD();
-                DOM.recall.nextBtnContainer.style.display = 'flex';
+          this.updateHUD();
+          DOM.recall.nextBtnContainer.style.display = "flex";
 
-                // Scroll down to ensure Next button is visible
-                setTimeout(() => {
-                    document.querySelector('.view-container').scrollTop = document.querySelector('.view-container').scrollHeight;
-                }, 50);
-            },
+          // Scroll down to ensure Next button is visible
+          setTimeout(() => {
+            document.querySelector(".view-container").scrollTop =
+              document.querySelector(".view-container").scrollHeight;
+          }, 50);
+        },
 
-            nextQuestion() {
-                State.currentIndex++;
-                if (State.currentIndex >= AppData.questions.length) {
-                    this.showResults();
-                } else {
-                    DOM.recall.options.style.opacity = '0';
-                    DOM.recall.question.style.opacity = '0';
-                    setTimeout(() => {
-                        this.renderQuestion();
-                        DOM.recall.options.style.opacity = '1';
-                        DOM.recall.question.style.opacity = '1';
-                    }, 150);
-                }
-            },
+        nextQuestion() {
+          State.currentIndex++;
+          if (State.currentIndex >= AppData.questions.length) {
+            this.showResults();
+          } else {
+            DOM.recall.options.style.opacity = "0";
+            DOM.recall.question.style.opacity = "0";
+            setTimeout(() => {
+              this.renderQuestion();
+              DOM.recall.options.style.opacity = "1";
+              DOM.recall.question.style.opacity = "1";
+            }, 150);
+          }
+        },
 
-            showResults() {
-                DOM.recall.progress.style.width = '100%';
+        showResults() {
+          DOM.recall.progress.style.width = "100%";
 
-                setTimeout(() => {
-                    DOM.results.score.textContent = `${State.score} / ${AppData.questions.length}`;
+          setTimeout(() => {
+            DOM.results.score.textContent = `${State.score} / ${AppData.questions.length}`;
 
-                    const accuracy = (State.score / AppData.questions.length) * 100;
-                    let feedbackText = "";
-                    if (accuracy === 100) feedbackText = "Mastery achieved! Excellent recall of both details and vocabulary.";
-                    else if (accuracy >= 80) feedbackText = "Great job! Strong comprehension and vocabulary retention.";
-                    else if (accuracy >= 60) feedbackText = "Solid productive struggle. Review the vocabulary frames one more time.";
-                    else feedbackText = "Keep practicing! Reviewing the vocabulary section first will help anchor the details.";
+            const accuracy = (State.score / AppData.questions.length) * 100;
+            let feedbackText = "";
+            if (accuracy === 100)
+              feedbackText =
+                "Mastery achieved! Excellent recall of both details and vocabulary.";
+            else if (accuracy >= 80)
+              feedbackText =
+                "Great job! Strong comprehension and vocabulary retention.";
+            else if (accuracy >= 60)
+              feedbackText =
+                "Solid productive struggle. Review the vocabulary frames one more time.";
+            else
+              feedbackText =
+                "Keep practicing! Reviewing the vocabulary section first will help anchor the details.";
 
-                    DOM.results.feedback.textContent = feedbackText;
-                    this.transitionTo('results');
-                }, 200);
-            },
+            DOM.results.feedback.textContent = feedbackText;
+            this.transitionTo("results");
+          }, 200);
+        },
 
-            resetApp() {
-                State.currentIndex = 0;
-                State.score = 0;
-                State.attempts = 0;
-                this.updateHUD();
-                DOM.recall.progress.style.width = '0%';
-                this.transitionTo('vocab');
-            }
-        };
+        resetApp() {
+          State.currentIndex = 0;
+          State.score = 0;
+          State.attempts = 0;
+          this.updateHUD();
+          DOM.recall.progress.style.width = "0%";
+          this.transitionTo("vocab");
+        },
+      };
 
-        // Boot
-        document.addEventListener('DOMContentLoaded', () => AppController.init());
-
+      // Boot
+      document.addEventListener("DOMContentLoaded", () => AppController.init());
     </script>
-</body>
+  </body>
 </html>

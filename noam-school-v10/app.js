@@ -531,7 +531,7 @@
           ? "#06101a"
           : s.theme === "contrast"
             ? "#000000"
-            : "#16324a";
+            : "#1e293b";
     $("#brandName").textContent =
       (s.studentName || "Noam").split(" ")[0] + " School";
   }
@@ -809,7 +809,7 @@
             const n = daysUntil(a.due);
             const stateCls =
               n !== null && n < 0 ? "overdue" : n === 0 ? "today-due" : "";
-            return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}">✏️</button></div></div></div>`;
+            return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}" aria-label="Edit ${esc(a.title)}">✏️</button></div></div></div>`;
           })
           .join("")
       : emptyState("🎉", "No assignments due. You're caught up!");
@@ -945,8 +945,8 @@
         .sort((a, b) => (b.completedAt > a.completedAt ? 1 : -1))
         .slice(0, 6);
       return `
-        <div class="row" style="justify-content:space-between;margin-bottom:6px">
-          <h2 style="margin:0;color:var(--navy);font-size:1.2rem">All tasks</h2>
+        <div class="view-head">
+          <h2 class="view-title">All tasks</h2>
           <button class="btn primary" data-act="open-task">＋ Add assignment</button>
         </div>
         ${open.length === 0 ? emptyState("🎉", "No open tasks. Add one or paste from Classroom (More tab).") : ""}
@@ -968,11 +968,11 @@
     routines() {
       const log = state.routineLog[todayKey()] || {};
       return `
-        <div class="row" style="justify-content:space-between;margin-bottom:6px">
-          <h2 style="margin:0;color:var(--navy);font-size:1.2rem">Daily routines</h2>
-          <button class="btn sm" data-act="add-routine">＋ New routine</button>
+        <div class="view-head">
+          <h2 class="view-title">Daily routines</h2>
+          <button class="btn sm primary" data-act="add-routine">＋ New routine</button>
         </div>
-        <p class="muted" style="margin-top:0">Same steps every day means less to remember. Check things off as you go.</p>
+        <p class="view-intro">Same steps every day means less to remember. Check things off as you go.</p>
         ${state.routines
           .map((r) => {
             const done = log[r.id] || [];
@@ -1004,14 +1004,13 @@
       const grid = (items) =>
         `<div class="grid g2">${items
           .map(
-            (
-              i,
-            ) => `<button class="btn block" style="justify-content:flex-start;text-align:left;height:auto;padding:16px" data-act="${i.act}" ${i.arg ? `data-arg="${i.arg}"` : ""}>
-              <span style="font-size:1.4rem;margin-right:8px">${i.ic}</span><span><b style="display:block">${i.title}</b><small class="muted">${i.sub}</small></span></button>`,
+            (i) =>
+              `<button class="btn block menu-tile" data-act="${i.act}" ${i.arg ? `data-arg="${i.arg}"` : ""}>
+              <span class="menu-ic" aria-hidden="true">${i.ic}</span><span><b>${i.title}</b><small>${i.sub}</small></span></button>`,
           )
           .join("")}</div>`;
       return `
-        <h2 style="margin:0 0 10px;color:var(--navy);font-size:1.2rem">More</h2>
+        <div class="view-head"><h2 class="view-title">More</h2></div>
         ${grid([
           {
             act: "view-classes",
@@ -1045,9 +1044,9 @@
           },
           {
             act: "view-sync",
-            ic: "🔄",
+            ic: "☁️",
             title: "Backup & sync",
-            sub: "Save or move your data",
+            sub: "Back up, or sync across devices",
           },
         ])}
         <div class="section-title">App</div>
@@ -1197,34 +1196,35 @@ Due May 31"></textarea>
 
     sync() {
       const s = state.settings.sync;
+      const status = s.enabled
+        ? '<span class="pill green">● Sync is on</span>'
+        : '<span class="pill">Off by default</span>';
       return (
         backHeader("Backup & sync", "more") +
-        card(
-          "file",
-          "💾 Save a backup file",
-          "The simplest way to move your data to another computer. Always works, even offline.",
-          `
-          <p class="sub">Download a file with everything in this app. Keep it safe, or open it on another device to load your data.</p>
-          <div class="row"><button class="btn primary" data-act="export">⬇️ Download backup</button><button class="btn" data-act="import">⬆️ Load from file</button></div>
-          <input type="file" id="importFile" accept="application/json,.json" hidden>
-        `,
-        ) +
-        card(
-          "cloud",
-          "☁️ Cloud sync (beta)",
-          "Keep this app in sync across devices automatically.",
-          `
-          <p class="sub">Enter the same secret code on every device to share data. ${cloud.available() ? "" : "<b>Note:</b> the cloud service isn't set up on this site yet, so this stays local until it is."}</p>
-          <div class="field"><label>Secret sync code (12+ characters)</label><input id="syncCode" value="${esc(s.code)}" placeholder="Tap 🎲 to make a strong code"></div>
+        `<p class="view-intro">Your work is always saved on this device. Choose how you want to back it up or carry it to another device.</p>` +
+        // Cloud sync surfaced first, highlighted, with a plain-language explanation.
+        `<section class="card feature" data-card="cloud">
+          <div class="head"><div><h3>☁️ Sync across your devices</h3><p class="sub">Optional — work on your phone and laptop and see the same tasks everywhere.</p></div>${status}</div>
+          <p class="sub" style="margin-top:0">Pick one secret code and type it on every device you use. They'll keep each other up to date automatically — no account, no email, no password to remember. ${cloud.available() ? "" : "<b>Heads up:</b> this site isn't set up for cloud sync yet, so your code is saved and ready, but data stays on this device until it is."}</p>
+          <div class="field"><label>Secret sync code (12+ characters)</label><input id="syncCode" value="${esc(s.code)}" placeholder="Tap “Make a code” for a strong one"></div>
           <div class="row">
             <button class="btn" data-act="gen-code">🎲 Make a code</button>
             <button class="btn ${s.enabled ? "danger" : "primary"}" data-act="toggle-sync">${s.enabled ? "Turn off sync" : "Turn on sync"}</button>
             ${s.enabled ? `<button class="btn navy" data-act="sync-now">🔄 Sync now</button>` : ""}
           </div>
           ${s.lastAt ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(new Date(s.lastAt).toLocaleString())}</p>` : ""}
+        </section>` +
+        card(
+          "file",
+          "💾 Save a backup file",
+          "Always works, even offline.",
+          `
+          <p class="sub" style="margin-top:0">Download one file with everything in the app. Keep it somewhere safe, or open it on another device to load your data.</p>
+          <div class="row"><button class="btn primary" data-act="export">⬇️ Download backup</button><button class="btn" data-act="import">⬆️ Load from file</button></div>
+          <input type="file" id="importFile" accept="application/json,.json" hidden>
         `,
         ) +
-        `<div class="note">Your data is stored privately on this device. Backups only leave this device when <b>you</b> download a file or turn on cloud sync.</div>`
+        `<div class="note">Your data is stored privately on this device. It only leaves when <b>you</b> download a backup or turn on cloud sync.</div>`
       );
     },
 
@@ -1256,7 +1256,7 @@ Due May 31"></textarea>
   };
 
   function backHeader(title, back) {
-    return `<div class="row" style="margin-bottom:10px"><button class="btn sm" data-act="nav" data-arg="${back}">←</button><h2 style="margin:0;color:var(--navy);font-size:1.2rem">${esc(title)}</h2></div>`;
+    return `<div class="view-head"><div class="row" style="gap:10px"><button class="btn sm ghost" data-act="nav" data-arg="${back}" aria-label="Back to More">← Back</button><h2 class="view-title">${esc(title)}</h2></div></div>`;
   }
 
   function routineCard(r) {
@@ -1429,7 +1429,7 @@ Due May 31"></textarea>
       <div class="field"><label>Class name</label><input id="cName" value="${esc(c.name || "")}"></div>
       <div class="field"><label>Teacher</label><input id="cTeacher" value="${esc(c.teacher || "")}"></div>
       <div class="field"><label>Teacher email</label><input id="cEmail" value="${esc(c.email || "")}" placeholder="teacher@school.org"></div>
-      <div class="field"><label>Color</label><input type="color" id="cColor" value="${esc(c.color || "#147c78")}" style="height:48px"></div>
+      <div class="field"><label>Color</label><input type="color" id="cColor" value="${esc(c.color || "#0d9488")}" style="height:48px"></div>
       <button class="btn primary block" data-act="save-class" data-id="${esc(c.id || "")}">Save class</button>`;
   }
 

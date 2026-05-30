@@ -87,24 +87,25 @@ function resLink(label, href, exists, sub = "") {
 function unitResources(unit) {
   const pills = [];
 
-  // Graphic novels (Level 1 support + Level 2 enrichment)
+  // Graphic novels (#1 Level 1 support + #2 Level 2 enrichment).
+  // Existence-checked so no dead links appear.
   if (has("graphic-novels", `unit${unit}`, "graphic-novel-1.html")) {
     pills.push(
       resLink(
-        "Graphic Novel 1",
+        "Graphic Novel #1",
         `/graphic-novels/unit${unit}/graphic-novel-1.html`,
         true,
-        "Level 1"
+        "Level 1 · Support"
       )
     );
   }
   if (has("graphic-novels", `unit${unit}`, "graphic-novel-2.html")) {
     pills.push(
       resLink(
-        "Graphic Novel 2",
+        "Graphic Novel #2",
         `/graphic-novels/unit${unit}/graphic-novel-2.html`,
         true,
-        "Level 2"
+        "Level 2 · Enrichment"
       )
     );
   }
