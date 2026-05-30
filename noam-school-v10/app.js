@@ -136,6 +136,9 @@
   // ---------------------------------------------------------------------------
   const CARDS = [
     ["glance", "Today at a glance"],
+    ["calendar", "Calendar"],
+    ["todos", "To-do list"],
+    ["assignments", "Assignment list"],
     ["routine", "Right routine"],
     ["momentum", "Momentum"],
     ["soon", "Coming up"],
@@ -265,6 +268,7 @@
         c("Social Studies", "#d99028"),
       ],
       assignments: [],
+      todos: [], // [{ id, text, done, date, createdAt }] quick daily to-dos
       routines: DEFAULT_ROUTINES(),
       routineLog: {}, // { dateKey: { routineId: [doneItemIds] } }
       activity: {}, // { dateKey: { tasks, focusMin, routines } }
@@ -302,6 +306,7 @@
       assignments: Array.isArray(x.assignments)
         ? x.assignments.map(normalizeTask)
         : [],
+      todos: Array.isArray(x.todos) ? x.todos.map(normalizeTodo) : [],
       routines:
         Array.isArray(x.routines) && x.routines.length
           ? x.routines
@@ -369,6 +374,17 @@
     };
   }
 
+  function normalizeTodo(t) {
+    t = t || {};
+    return {
+      id: t.id || uid("td"),
+      text: String(t.text || "").slice(0, 200),
+      done: !!t.done,
+      date: DATE_RE.test(t.date) ? t.date : todayKey(),
+      createdAt: t.createdAt || Date.now(),
+    };
+  }
+
   let state = seed();
   const MIRROR_KEY = "noam-school:state"; // synchronous, never-lose-data fallback
   let saveTimer = null;
@@ -402,6 +418,32 @@
       color: "#147c78",
     };
   const openTasks = () => state.assignments.filter((a) => a.status !== "done");
+  // Today's to-dos = those dated today plus any still-open from earlier days.
+  const todaysTodos = () => {
+    const t = todayKey();
+    return state.todos
+      .filter((td) => td.date === t || (!td.done && td.date < t))
+      .sort((a, b) =>
+        a.done === b.done ? a.createdAt - b.createdAt : a.done ? 1 : -1,
+      );
+  };
+  // Upcoming assignment due dates (today onward), soonest first.
+  function upcomingItems(limit = 15) {
+    const t = todayKey();
+    return state.assignments
+      .filter((a) => a.status !== "done" && a.due && a.due >= t)
+      .map((a) => ({
+        id: a.id,
+        title: a.title,
+        date: a.due,
+        time: a.dueTime || "",
+        classId: a.classId,
+      }))
+      .sort(
+        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time),
+      )
+      .slice(0, limit);
+  }
   const stepPct = (a) =>
     a.steps.length
       ? Math.round(
@@ -455,6 +497,7 @@
     ["home", "Now", "🎯"],
     ["today", "Today", "📅"],
     ["tasks", "Tasks", "✅"],
+    ["calendar", "Calendar", "📆"],
     ["routines", "Routines", "🔁"],
     ["more", "More", "⋯"],
   ];
@@ -639,6 +682,152 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Calendar / To-do / Assignment cards (home + dedicated Calendar view)
+  // ---------------------------------------------------------------------------
+  let calMonthOffset = 0; // 0 = current month, ±n to page through months
+  let calSelected = ""; // selected ISO day in the calendar (shows that day's items)
+
+  const isoFor = (y, m, d) =>
+    `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+  // Days in the visible month that have an open assignment due.
+  function dueDaySet() {
+    return new Set(
+      state.assignments
+        .filter((a) => a.status !== "done" && a.due)
+        .map((a) => a.due),
+    );
+  }
+
+  function calendarCard({ full = false } = {}) {
+    const base = startOfToday();
+    base.setDate(1);
+    base.setMonth(base.getMonth() + calMonthOffset);
+    const year = base.getFullYear();
+    const month = base.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthName = base.toLocaleDateString(undefined, {
+      month: "long",
+      year: "numeric",
+    });
+    const due = dueDaySet();
+
+    let cells = ["S", "M", "T", "W", "T", "F", "S"]
+      .map((d) => `<div class="cal-head" aria-hidden="true">${d}</div>`)
+      .join("");
+    for (let i = 0; i < firstDay; i++) cells += `<div class="cal-pad"></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = isoFor(year, month, d);
+      const isToday = ds === todayKey();
+      const hasDue = due.has(ds);
+      const isSel = ds === calSelected;
+      const cnt = hasDue
+        ? state.assignments.filter((a) => a.status !== "done" && a.due === ds)
+            .length
+        : 0;
+      cells += `<button type="button" class="cal-day${isToday ? " is-today" : ""}${isSel ? " is-sel" : ""}${hasDue ? " has-due" : ""}" data-act="cal-pick" data-arg="${ds}" aria-pressed="${isSel}" aria-label="${esc(niceDate(ds))}${hasDue ? `, ${cnt} due` : ""}">${d}${hasDue ? '<span class="cal-dot" aria-hidden="true"></span>' : ""}</button>`;
+    }
+
+    const grid = `
+      <div class="cal-nav">
+        <button class="btn sm" data-act="cal-prev" aria-label="Previous month">‹</button>
+        <strong class="cal-month">${esc(monthName)}</strong>
+        <button class="btn sm" data-act="cal-next" aria-label="Next month">›</button>
+      </div>
+      <div class="cal-grid" role="grid" aria-label="${esc(monthName)}">${cells}</div>
+      <div class="cal-legend"><span><span class="sw today"></span>Today</span><span><span class="sw due"></span>Assignment due</span></div>`;
+
+    // Selected-day detail (defaults to today's due items when nothing picked).
+    const sel = calSelected || todayKey();
+    const dayItems = state.assignments.filter(
+      (a) => a.status !== "done" && a.due === sel,
+    );
+    const detail = `
+      <div class="cal-detail">
+        <div class="section-title" style="margin-top:14px">${esc(niceDate(sel))}</div>
+        ${
+          dayItems.length
+            ? dayItems
+                .map((a) => {
+                  const c = cls(a.classId);
+                  return `<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button></div></div></div>`;
+                })
+                .join("")
+            : `<p class="muted" style="font-size:.84rem;margin:4px">Nothing due this day.</p>`
+        }
+      </div>`;
+
+    const body =
+      grid +
+      detail +
+      (full
+        ? ""
+        : `<button class="btn sm" data-act="nav" data-arg="calendar" style="margin-top:10px">Open full calendar →</button>`);
+    return card(
+      "calendar",
+      "📆 Calendar",
+      "Tap a day to see what's due.",
+      body,
+    );
+  }
+
+  function todoCard() {
+    const list = todaysTodos();
+    const openCount = list.filter((t) => !t.done).length;
+    const rows = list.length
+      ? `<ul class="steps">${list
+          .map(
+            (t) =>
+              `<li><input class="check" type="checkbox" data-check="todo" data-id="${t.id}" ${t.done ? "checked" : ""} aria-label="${esc(t.text)}"><span class="steptext ${t.done ? "done" : ""}">${esc(t.text)}</span><button class="btn danger sm" data-act="del-todo" data-id="${t.id}" aria-label="Delete to-do: ${esc(t.text)}">✕</button></li>`,
+          )
+          .join("")}</ul>`
+      : emptyState("📝", "No to-dos yet. Add a quick one below.");
+    return card(
+      "todos",
+      "📝 To-do list",
+      openCount ? `${openCount} left today` : "Today's quick to-dos.",
+      `${rows}
+       <div class="row" style="margin-top:10px">
+         <input id="todoInput" placeholder="Add a quick to-do…" style="flex:1" aria-label="New to-do">
+         <button class="btn primary" data-act="add-todo">＋ Add</button>
+       </div>`,
+    );
+  }
+
+  function assignmentListCard() {
+    const open = openTasks();
+    const overdue = sortByUrgency(open.filter((a) => daysUntil(a.due) < 0));
+    const upcoming = sortByUrgency(
+      open.filter((a) => daysUntil(a.due) !== null && daysUntil(a.due) >= 0),
+    );
+    const show = [...overdue, ...upcoming].slice(0, 5);
+    const rows = show.length
+      ? show
+          .map((a) => {
+            const c = cls(a.classId);
+            const n = daysUntil(a.due);
+            const stateCls =
+              n !== null && n < 0 ? "overdue" : n === 0 ? "today-due" : "";
+            return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}">✏️</button></div></div></div>`;
+          })
+          .join("")
+      : emptyState("🎉", "No assignments due. You're caught up!");
+    return card(
+      "assignments",
+      "📚 Assignment list",
+      overdue.length
+        ? `${overdue.length} overdue · ${upcoming.length} upcoming`
+        : "Upcoming and overdue.",
+      `${rows}
+       <div class="row" style="margin-top:10px">
+         <button class="btn primary" data-act="open-task">＋ Add assignment</button>
+         <button class="btn sm" data-act="nav" data-arg="tasks">See all →</button>
+       </div>`,
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------
   const VIEWS = {
@@ -660,6 +849,9 @@
             ? today.map((a) => taskItem(a)).join("")
             : emptyState("🌤", "Nothing is due today. Nice."),
         ),
+        calendar: calendarCard(),
+        todos: todoCard(),
+        assignments: assignmentListCard(),
         routine: routineCard(routine),
         momentum: momentumCard(),
         soon: card(
@@ -675,6 +867,27 @@
         (k) => !state.settings.hiddenCards.includes(k),
       );
       return `<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
+    },
+
+    calendar() {
+      const upcoming = upcomingItems(20);
+      return `
+        ${calendarCard({ full: true })}
+        <div class="section-title">Upcoming (${upcoming.length})</div>
+        ${
+          upcoming.length
+            ? upcoming
+                .map((x) => {
+                  const c = x.classId ? cls(x.classId) : null;
+                  return `<div class="item"><div class="head"><div><h4>${esc(x.title)}</h4><p class="meta">${dueIcon(daysUntil(x.date))} ${esc(dueLabel(x.date, x.time))}${c ? " · " + esc(c.name) : ""}</p></div><div class="row"><span class="pill red">Due</span></div></div></div>`;
+                })
+                .join("")
+            : emptyState(
+                "📭",
+                "Nothing upcoming. Add an assignment with a due date.",
+              )
+        }
+      `;
     },
 
     today() {
@@ -1798,6 +2011,38 @@ Due May 31"></textarea>
       save();
       toast("Goal saved 🌟");
     },
+
+    // ---- Calendar ----
+    "cal-pick": (_, arg) => {
+      calSelected = calSelected === arg ? "" : arg;
+      render();
+    },
+    "cal-prev": () => {
+      calMonthOffset--;
+      render();
+    },
+    "cal-next": () => {
+      calMonthOffset++;
+      render();
+    },
+
+    // ---- To-dos ----
+    "add-todo": () => {
+      const inp = $("#todoInput");
+      const v = (inp?.value || "").trim();
+      if (!v) return;
+      state.todos.push(normalizeTodo({ text: v, date: todayKey() }));
+      save();
+      render();
+      const again = $("#todoInput");
+      if (again) again.focus();
+      toast("To-do added 📝");
+    },
+    "del-todo": (id) => {
+      state.todos = state.todos.filter((t) => t.id !== id);
+      save();
+      render();
+    },
     "add-win": () => {
       const v = $("#winInput").value.trim();
       if (v) {
@@ -2032,6 +2277,27 @@ Due May 31"></textarea>
         const label = box.parentElement.querySelector(".steptext");
         if (label) label.classList.toggle("done", box.checked);
         updateProgressBars();
+      } else if (kind === "todo") {
+        const td = state.todos.find((t) => t.id === id);
+        if (td) {
+          td.done = box.checked;
+          if (box.checked) {
+            state.points += 1;
+            bumpActivity("tasks");
+          }
+          save();
+          const label = box.parentElement.querySelector(".steptext");
+          if (label) label.classList.toggle("done", box.checked);
+          renderHero();
+        }
+      }
+    });
+
+    // Enter key submits the quick to-do input
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" && ev.target.id === "todoInput") {
+        ev.preventDefault();
+        ACTIONS["add-todo"]();
       }
     });
 
