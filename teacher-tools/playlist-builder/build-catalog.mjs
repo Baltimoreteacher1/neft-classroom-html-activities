@@ -268,6 +268,7 @@ const REVIEW_ROOT_DIRS = [
   "unit-5-practice",
   "practice",
   "practice-engine",
+  "summer-bridge",
 ];
 for (const dir of REVIEW_ROOT_DIRS) {
   if (hasIndex(dir)) {

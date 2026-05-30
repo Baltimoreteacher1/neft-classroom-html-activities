@@ -1,0 +1,1254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📐 MCAP Review: Expressions &amp; Equations</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-light: #dbeafe;
+        --bg: #f0f9ff;
+        --card: #ffffff;
+        --text: #1e293b;
+        --muted: #6b7280;
+        --line: #d1d5db;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --amber: #f59e0b;
+        --amber-bg: #fef3c7;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+      }
+      input,
+      select {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      .screen {
+        display: none;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 24px 16px 80px;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      .mcap-badge {
+        display: inline-block;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 4px 12px;
+        border-radius: 99px;
+        margin-bottom: 14px;
+      }
+
+      .login-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 40px 32px;
+        text-align: center;
+        margin-top: 40px;
+      }
+      .login-card h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+      .login-card .subtitle {
+        color: var(--muted);
+        margin-bottom: 28px;
+        font-size: 15px;
+      }
+      .login-card .emoji-hero {
+        font-size: 56px;
+        margin-bottom: 16px;
+      }
+      .form-group {
+        margin-bottom: 16px;
+        text-align: left;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border 0.2s;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+      .btn-outline:hover {
+        background: var(--primary-light);
+      }
+      .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+      }
+
+      .progress-bar {
+        background: #e5e7eb;
+        border-radius: 99px;
+        height: 10px;
+        margin: 16px 0 8px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .progress-text {
+        font-size: 13px;
+        color: var(--muted);
+        text-align: right;
+      }
+
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-desc {
+        background: var(--primary-light);
+        padding: 12px 20px;
+        font-size: 14px;
+        color: var(--text);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .q-card {
+        background: var(--card);
+        border-radius: 0 0 var(--radius) var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .q-card:first-of-type {
+        border-radius: var(--radius);
+      }
+      .q-body {
+        padding: 20px;
+      }
+      .q-number {
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .q-prompt {
+        font-size: 16px;
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+
+      .mc-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .mc-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 15px;
+      }
+      .mc-option:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+      .mc-option.selected {
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+      .mc-option.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .mc-option.incorrect {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .mc-option.show-correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .mc-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        transition: all 0.2s;
+      }
+      .mc-option.selected .mc-dot {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+      .mc-option.correct .mc-dot {
+        border-color: var(--success);
+        background: var(--success);
+        color: #fff;
+      }
+      .mc-option.incorrect .mc-dot {
+        border-color: var(--error);
+        background: var(--error);
+        color: #fff;
+      }
+
+      .fill-input {
+        width: 160px;
+        padding: 8px 12px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: center;
+        transition: border 0.2s;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .fill-input.incorrect {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .fill-unit {
+        font-size: 14px;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .feedback.incorrect {
+        display: block;
+        background: var(--error-bg);
+        color: var(--error);
+      }
+
+      .q-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      .results-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 32px;
+        margin-bottom: 20px;
+      }
+      .results-card h2 {
+        font-size: 22px;
+        margin-bottom: 16px;
+      }
+      .score-ring {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 20px;
+        position: relative;
+      }
+      .score-ring svg {
+        transform: rotate(-90deg);
+      }
+      .score-ring .ring-label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        font-weight: 800;
+      }
+      .score-ring .ring-label span {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--muted);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .section-score:last-child {
+        border-bottom: none;
+      }
+      .section-name {
+        font-weight: 600;
+      }
+      .section-result {
+        font-weight: 700;
+      }
+      .tip-box {
+        background: var(--amber-bg);
+        border-left: 4px solid var(--amber);
+        padding: 16px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 16px;
+      }
+      .tip-box h3 {
+        font-size: 15px;
+        margin-bottom: 6px;
+        color: #92400e;
+      }
+      .tip-box ul {
+        margin-left: 20px;
+        font-size: 14px;
+        color: #78350f;
+      }
+      .tip-box li {
+        margin-bottom: 4px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 24px 16px;
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 40px;
+      }
+
+      @media print {
+        .screen {
+          display: block !important;
+          padding: 12px;
+        }
+        .btn,
+        .q-nav {
+          display: none !important;
+        }
+        .q-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN -->
+    <div id="loginScreen" class="screen active">
+      <div class="login-card">
+        <div class="emoji-hero">📐</div>
+        <span class="mcap-badge">Maryland MCAP · Grade 6 · 6.EE</span>
+        <h1>MCAP Review: Expressions &amp; Equations</h1>
+        <p class="subtitle">
+          6.EE.A&ndash;C &mdash; Exponents, Writing &amp; Evaluating
+          Expressions, Equivalent Expressions, Solving Equations &amp;
+          Inequalities, Dependent &amp; Independent Variables
+        </p>
+        <p class="subtitle" style="margin-bottom: 24px">
+          18 Problems &bull; 4 Sections &bull; Immediate Feedback
+        </p>
+        <div class="form-group">
+          <label for="studentName">Your Name</label>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="First and Last Name"
+            autocomplete="name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="studentPeriod">Class Period</label>
+          <select id="studentPeriod">
+            <option value="">Select Period</option>
+            <option>Period 1</option>
+            <option>Period 2</option>
+            <option>Period 3</option>
+            <option>Period 4</option>
+            <option>Period 5</option>
+            <option>Period 6</option>
+            <option>Period 7</option>
+          </select>
+        </div>
+        <button
+          class="btn btn-primary"
+          style="width: 100%; margin-top: 8px"
+          onclick="startReview()"
+          id="startBtn"
+          disabled
+        >
+          Start Review
+        </button>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quizScreen" class="screen">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+        "
+      >
+        <h2 id="sectionTitle" style="font-size: 18px"></h2>
+        <span id="qCount" style="font-size: 14px; color: var(--muted)"></span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text" id="progressText"></p>
+      <div id="questionArea"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsScreen" class="screen">
+      <div class="results-card" style="text-align: center">
+        <div class="emoji-hero" style="font-size: 48px; margin-bottom: 8px">
+          📐
+        </div>
+        <h2>MCAP Review Complete!</h2>
+        <p
+          id="resultsName"
+          style="color: var(--muted); margin-bottom: 16px"
+        ></p>
+        <div id="scoreRing" class="score-ring"></div>
+      </div>
+      <div class="results-card">
+        <h2>Section Scores</h2>
+        <div id="sectionScores"></div>
+      </div>
+      <div class="results-card">
+        <h2>Study Tips</h2>
+        <div id="studyTips"></div>
+      </div>
+      <div class="results-card" style="text-align: center">
+        <h2 style="margin-bottom: 12px">Review Your Answers</h2>
+        <button class="btn btn-outline" onclick="showReviewAll()">
+          View All Questions &amp; Answers
+        </button>
+      </div>
+      <div id="reviewAllArea" style="display: none"></div>
+      <div
+        style="
+          text-align: center;
+          margin-top: 20px;
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          flex-wrap: wrap;
+        "
+      >
+        <button class="btn btn-primary" onclick="exportResults()">
+          Export Results
+        </button>
+        <button class="btn btn-primary" onclick="downloadResultsCSV()">
+          Download Results (CSV for teacher)
+        </button>
+        <button class="btn btn-outline" onclick="retakeReview()">
+          Retake Review
+        </button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      Neft Teacher &mdash; Maryland MCAP · Grade 6 · 6.EE Expressions &amp;
+      Equations Review
+    </footer>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script>
+      const STORAGE_KEY = "mcapExpressionsEquations_v1";
+
+      const sections = [
+        {
+          name: "Vocabulary",
+          icon: "📖",
+          desc: "Match each Expressions & Equations term to its meaning. Choose the best answer.",
+          questions: [
+            {
+              type: "mc",
+              prompt:
+                "In the expression 5⁴, the number 5 is called the <strong>base</strong>. What does the base tell you?",
+              choices: [
+                "How many times to multiply the factor by itself",
+                "The factor that is multiplied repeatedly",
+                "The sum of the digits",
+                "The value of the variable",
+              ],
+              answer: 1,
+              explain:
+                "The base is the repeated factor. In 5⁴ the base is 5 and the exponent 4 tells how many times to use 5 as a factor: 5 × 5 × 5 × 5.",
+            },
+            {
+              type: "mc",
+              prompt: "A <strong>term</strong> in an expression is:",
+              choices: [
+                "Only the numbers, never the variables",
+                "A part of an expression separated by + or − signs",
+                "The same thing as a coefficient",
+                "Always equal to zero",
+              ],
+              answer: 1,
+              explain:
+                "Terms are the parts of an expression separated by + or − signs. In 4x + 7, the terms are 4x and 7.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "An <strong>inequality</strong> such as x &gt; 5 represents:",
+              choices: [
+                "Exactly one value of x",
+                "All values of x that make the statement true",
+                "Only whole-number values",
+                "A single point on a number line",
+              ],
+              answer: 1,
+              explain:
+                "An inequality describes a range of values. x > 5 is true for every number greater than 5 (5.1, 6, 100, …), so it has infinitely many solutions.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "In the equation d = 60t, time <em>t</em> is the input you choose and distance <em>d</em> is calculated from it. Which statement is correct?",
+              choices: [
+                "t is the dependent variable; d is the independent variable",
+                "t is the independent variable; d is the dependent variable",
+                "Both are independent variables",
+                "Neither is a variable",
+              ],
+              answer: 1,
+              explain:
+                "The independent variable is the one you change freely (t). The dependent variable (d) depends on t, because distance is determined by the time chosen.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "Two expressions are <strong>equivalent</strong> when they:",
+              choices: [
+                "Look exactly the same",
+                "Have the same number of terms",
+                "Name the same value for every value of the variable",
+                "Both contain parentheses",
+              ],
+              answer: 2,
+              explain:
+                "Equivalent expressions produce the same result for every value of the variable. For example, 2(x + 3) and 2x + 6 are equivalent.",
+            },
+          ],
+        },
+        {
+          name: "Quick Check",
+          icon: "⚡",
+          desc: "Evaluate, write, and simplify. Pick the correct answer for each problem.",
+          questions: [
+            {
+              type: "mc",
+              prompt: "What is the value of 3⁴?",
+              choices: ["12", "27", "64", "81"],
+              answer: 3,
+              explain: "3⁴ = 3 × 3 × 3 × 3 = 81.",
+            },
+            {
+              type: "mc",
+              prompt: "Evaluate 2x² when x = 3.",
+              choices: ["12", "18", "36", "6"],
+              answer: 1,
+              explain:
+                "Apply the exponent before multiplying: x² = 3² = 9, then 2 × 9 = 18.",
+            },
+            {
+              type: "mc",
+              prompt: "Which expression represents “8 less than a number n”?",
+              choices: ["8 − n", "n − 8", "8n", "n + 8"],
+              answer: 1,
+              explain:
+                "“8 less than n” means you start with n and subtract 8: n − 8. (Order matters — it is not 8 − n.)",
+            },
+            {
+              type: "mc",
+              prompt: "Which expression is equivalent to 4(2x + 5)?",
+              choices: ["8x + 5", "6x + 9", "8x + 20", "2x + 20"],
+              answer: 2,
+              explain: "Distribute the 4: 4 · 2x + 4 · 5 = 8x + 20.",
+            },
+            {
+              type: "mc",
+              prompt: "Which value of x makes the equation x + 7 = 12 true?",
+              choices: ["19", "5", "84", "7"],
+              answer: 1,
+              explain:
+                "Subtract 7 from both sides: x = 12 − 7 = 5. Check: 5 + 7 = 12. ✓",
+            },
+          ],
+        },
+        {
+          name: "Practice",
+          icon: "✏️",
+          desc: "Solve and simplify. Type your answer as a number (no units needed).",
+          questions: [
+            {
+              type: "fill",
+              prompt: "Solve for x: 4x = 36",
+              answer: "9",
+              unit: "",
+              explain: "Divide both sides by 4: x = 36 ÷ 4 = 9.",
+            },
+            {
+              type: "fill",
+              prompt: "Solve for x: x − 6 = 15",
+              answer: "21",
+              unit: "",
+              explain: "Add 6 to both sides: x = 15 + 6 = 21.",
+            },
+            {
+              type: "fill",
+              prompt: "Evaluate: 2³ + 5 × 2",
+              answer: "18",
+              unit: "",
+              explain:
+                "Order of operations: exponent first (2³ = 8), then multiply (5 × 2 = 10), then add: 8 + 10 = 18.",
+            },
+            {
+              type: "fill",
+              prompt:
+                "Simplify by combining like terms: 7x + 4 + 2x − 1. Enter the coefficient of x.",
+              answer: "9",
+              unit: "",
+              explain:
+                "Combine like terms: (7x + 2x) + (4 − 1) = 9x + 3. The coefficient of x is 9.",
+            },
+            {
+              type: "fill",
+              prompt: "Solve for x: x/3 = 7",
+              answer: "21",
+              unit: "",
+              explain: "Multiply both sides by 3: x = 7 × 3 = 21.",
+            },
+          ],
+        },
+        {
+          name: "Challenge",
+          icon: "🏆",
+          desc: "Apply expressions, equations, and inequalities to real situations. Read carefully.",
+          questions: [
+            {
+              type: "mc",
+              prompt:
+                "A taxi charges a $4 flat fee plus $2 for each mile <em>m</em>. Which equation gives the total cost <em>c</em>?",
+              choices: ["c = 4m + 2", "c = 2m + 4", "c = 6m", "c = 2 + 4 + m"],
+              answer: 1,
+              explain:
+                "$2 per mile is 2m, plus the flat $4 fee: c = 2m + 4. Here m is independent and c is dependent.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A ride requires a height of at least 48 inches. If <em>h</em> is a rider’s height, which inequality shows who may ride?",
+              choices: ["h < 48", "h ≤ 48", "h ≥ 48", "h = 48"],
+              answer: 2,
+              explain:
+                "“At least 48” means 48 or more, so h ≥ 48 (greater than or equal to 48).",
+            },
+            {
+              type: "mc",
+              prompt:
+                "Tickets cost $9 each. Sara has $54. The equation 9t = 54 models how many tickets <em>t</em> she can buy. How many tickets is that?",
+              choices: ["5 tickets", "6 tickets", "7 tickets", "486 tickets"],
+              answer: 1,
+              explain:
+                "Solve 9t = 54 by dividing both sides by 9: t = 54 ÷ 9 = 6 tickets.",
+            },
+            {
+              type: "mc",
+              prompt:
+                "A rectangle has length (x + 4) and width 3. Which expression gives its area, fully simplified?",
+              choices: ["x + 7", "3x + 4", "3x + 12", "x + 12"],
+              answer: 2,
+              explain:
+                "Area = length × width = 3(x + 4). Distribute: 3 · x + 3 · 4 = 3x + 12.",
+            },
+            {
+              type: "fill",
+              prompt:
+                "A plant grows 2 cm each week. Its height is h = 5 + 2w, where w is weeks. What is the height (in cm) after 6 weeks?",
+              answer: "17",
+              unit: "cm",
+              explain:
+                "Substitute w = 6: h = 5 + 2(6) = 5 + 12 = 17 cm. (w is independent, h is dependent.)",
+            },
+          ],
+        },
+      ];
+
+      // STATE
+      let student = { name: "", period: "" };
+      let currentSection = 0;
+      let currentQ = 0;
+      let globalQ = 0;
+      let answers = [];
+      let locked = [];
+      let lastResults = null;
+
+      // LOGIN
+      const nameInput = document.getElementById("studentName");
+      const periodInput = document.getElementById("studentPeriod");
+      const startBtn = document.getElementById("startBtn");
+
+      function checkLogin() {
+        startBtn.disabled = !(nameInput.value.trim() && periodInput.value);
+      }
+      nameInput.addEventListener("input", checkLogin);
+      periodInput.addEventListener("change", checkLogin);
+
+      function startReview() {
+        student.name = nameInput.value.trim();
+        student.period = periodInput.value;
+        currentSection = 0;
+        currentQ = 0;
+        globalQ = 0;
+        answers = [];
+        locked = [];
+        for (let s of sections) for (let q of s.questions) locked.push(false);
+        showScreen("quizScreen");
+        renderQuestion();
+      }
+
+      // NAVIGATION
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function getGlobalIndex(sec, qi) {
+        let idx = 0;
+        for (let i = 0; i < sec; i++) idx += sections[i].questions.length;
+        return idx + qi;
+      }
+
+      function totalQuestions() {
+        return sections.reduce((s, sec) => s + sec.questions.length, 0);
+      }
+
+      // RENDER
+      function renderQuestion() {
+        const sec = sections[currentSection];
+        const q = sec.questions[currentQ];
+        const gi = getGlobalIndex(currentSection, currentQ);
+        globalQ = gi;
+
+        document.getElementById("sectionTitle").textContent =
+          sec.icon + " " + sec.name;
+        document.getElementById("qCount").textContent =
+          `Question ${gi + 1} of ${totalQuestions()}`;
+        const pct = (gi / totalQuestions()) * 100;
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressText").textContent =
+          `${gi} of ${totalQuestions()} completed`;
+
+        const area = document.getElementById("questionArea");
+        let html = "";
+
+        if (currentQ === 0) {
+          html += `<div class="section-header">${sec.icon} Section ${currentSection + 1}: ${sec.name}</div>`;
+          html += `<div class="section-desc">${sec.desc}</div>`;
+        }
+
+        html += `<div class="q-card" ${currentQ > 0 ? 'style="border-radius:var(--radius)"' : ""}>`;
+        html += `<div class="q-body">`;
+        html += `<div class="q-number">Question ${gi + 1}</div>`;
+        html += `<div class="q-prompt">${q.prompt}</div>`;
+
+        if (q.type === "mc") {
+          html += `<div class="mc-options" id="mcOptions">`;
+          q.choices.forEach((c, i) => {
+            html += `<div class="mc-option" data-idx="${i}" onclick="selectMC(${i})">`;
+            html += `<div class="mc-dot"></div><span>${c}</span></div>`;
+          });
+          html += `</div>`;
+        } else if (q.type === "fill") {
+          html += `<div style="margin-top:8px"><input type="text" class="fill-input" id="fillInput" placeholder="?" autocomplete="off">`;
+          html += `<span class="fill-unit">${q.unit || ""}</span></div>`;
+        }
+
+        html += `<div class="feedback" id="feedback"></div>`;
+        html += `<div class="q-nav">`;
+        if (gi > 0)
+          html += `<button class="btn btn-outline btn-sm" onclick="prevQuestion()">Back</button>`;
+        else html += `<span></span>`;
+        html += `<button class="btn btn-primary btn-sm" id="checkBtn" onclick="checkAnswer()" disabled>Check Answer</button>`;
+        html += `</div></div></div>`;
+
+        area.innerHTML = html;
+
+        const prev = answers.find(
+          (a) => a.section === currentSection && a.qIndex === currentQ,
+        );
+        if (prev) restoreAnswered(prev);
+        else if (q.type === "fill") {
+          document
+            .getElementById("fillInput")
+            .addEventListener("input", function () {
+              document.getElementById("checkBtn").disabled = !this.value.trim();
+            });
+          document
+            .getElementById("fillInput")
+            .addEventListener("keydown", function (e) {
+              if (e.key === "Enter" && this.value.trim()) checkAnswer();
+            });
+        }
+      }
+
+      function selectMC(idx) {
+        const gi = getGlobalIndex(currentSection, currentQ);
+        if (locked[gi]) return;
+        document
+          .querySelectorAll(".mc-option")
+          .forEach((o) => o.classList.remove("selected"));
+        document
+          .querySelector(`.mc-option[data-idx="${idx}"]`)
+          .classList.add("selected");
+        document.getElementById("checkBtn").disabled = false;
+      }
+
+      // CHECK ANSWER
+      function checkAnswer() {
+        const gi = getGlobalIndex(currentSection, currentQ);
+        if (locked[gi]) {
+          nextQuestion();
+          return;
+        }
+
+        const sec = sections[currentSection];
+        const q = sec.questions[currentQ];
+        let correct = false,
+          userAnswer = "";
+
+        if (q.type === "mc") {
+          const sel = document.querySelector(".mc-option.selected");
+          if (!sel) return;
+          const idx = parseInt(sel.dataset.idx);
+          userAnswer = q.choices[idx];
+          correct = idx === q.answer;
+
+          document.querySelectorAll(".mc-option").forEach((o) => {
+            const oi = parseInt(o.dataset.idx);
+            if (oi === q.answer) o.classList.add("correct");
+            else if (oi === idx && !correct) o.classList.add("incorrect");
+            o.style.pointerEvents = "none";
+          });
+        } else if (q.type === "fill") {
+          const input = document.getElementById("fillInput");
+          userAnswer = input.value.trim();
+          correct = normalizeFill(userAnswer) === normalizeFill(q.answer);
+          input.classList.add(correct ? "correct" : "incorrect");
+          input.disabled = true;
+          if (!correct) {
+            const corrSpan = document.createElement("span");
+            corrSpan.style.cssText =
+              "margin-left:12px;color:var(--success);font-weight:600";
+            corrSpan.textContent =
+              "Correct answer: " + q.answer + (q.unit ? " " + q.unit : "");
+            input.parentNode.appendChild(corrSpan);
+          }
+        }
+
+        const fb = document.getElementById("feedback");
+        fb.className = "feedback " + (correct ? "correct" : "incorrect");
+        fb.innerHTML = (correct ? "✓ Correct! " : "✗ Incorrect. ") + q.explain;
+
+        locked[gi] = true;
+        answers = answers.filter(
+          (a) => !(a.section === currentSection && a.qIndex === currentQ),
+        );
+        answers.push({
+          section: currentSection,
+          qIndex: currentQ,
+          correct,
+          userAnswer,
+        });
+
+        const btn = document.getElementById("checkBtn");
+        btn.textContent = gi < totalQuestions() - 1 ? "Next →" : "See Results";
+        btn.disabled = false;
+        btn.onclick = gi < totalQuestions() - 1 ? nextQuestion : showResults;
+      }
+
+      // Normalize fill answers: trim, lowercase, drop commas/spaces for forgiving numeric matching
+      function normalizeFill(v) {
+        return String(v).trim().toLowerCase().replace(/[,\s]/g, "");
+      }
+
+      function restoreAnswered(prev) {
+        const q = sections[prev.section].questions[prev.qIndex];
+        const gi = getGlobalIndex(prev.section, prev.qIndex);
+
+        if (q.type === "mc") {
+          const choiceIdx = q.choices.indexOf(prev.userAnswer);
+          document.querySelectorAll(".mc-option").forEach((o) => {
+            const oi = parseInt(o.dataset.idx);
+            if (oi === q.answer) o.classList.add("correct");
+            if (oi === choiceIdx && !prev.correct) o.classList.add("incorrect");
+            if (oi === choiceIdx) o.classList.add("selected");
+            o.style.pointerEvents = "none";
+          });
+        } else if (q.type === "fill") {
+          const input = document.getElementById("fillInput");
+          input.value = prev.userAnswer;
+          input.classList.add(prev.correct ? "correct" : "incorrect");
+          input.disabled = true;
+          if (!prev.correct) {
+            const corrSpan = document.createElement("span");
+            corrSpan.style.cssText =
+              "margin-left:12px;color:var(--success);font-weight:600";
+            corrSpan.textContent =
+              "Correct answer: " + q.answer + (q.unit ? " " + q.unit : "");
+            input.parentNode.appendChild(corrSpan);
+          }
+        }
+
+        const fb = document.getElementById("feedback");
+        fb.className = "feedback " + (prev.correct ? "correct" : "incorrect");
+        fb.innerHTML =
+          (prev.correct ? "✓ Correct! " : "✗ Incorrect. ") + q.explain;
+
+        const btn = document.getElementById("checkBtn");
+        btn.textContent = gi < totalQuestions() - 1 ? "Next →" : "See Results";
+        btn.disabled = false;
+        btn.onclick = gi < totalQuestions() - 1 ? nextQuestion : showResults;
+      }
+
+      // NAV
+      function nextQuestion() {
+        currentQ++;
+        if (currentQ >= sections[currentSection].questions.length) {
+          currentSection++;
+          currentQ = 0;
+        }
+        if (currentSection >= sections.length) {
+          showResults();
+          return;
+        }
+        renderQuestion();
+      }
+
+      function prevQuestion() {
+        currentQ--;
+        if (currentQ < 0) {
+          currentSection--;
+          if (currentSection < 0) {
+            currentSection = 0;
+            currentQ = 0;
+            return;
+          }
+          currentQ = sections[currentSection].questions.length - 1;
+        }
+        renderQuestion();
+      }
+
+      // RESULTS
+      function showResults() {
+        showScreen("resultsScreen");
+        const total = totalQuestions();
+        const correctCount = answers.filter((a) => a.correct).length;
+        const pct = Math.round((correctCount / total) * 100);
+
+        document.getElementById("resultsName").textContent =
+          student.name + " — " + student.period;
+
+        // Score ring (SVG)
+        const ringColor =
+          pct >= 80
+            ? "var(--success)"
+            : pct >= 60
+              ? "var(--amber)"
+              : "var(--error)";
+        const r = 64;
+        const circ = 2 * Math.PI * r;
+        const dash = (pct / 100) * circ;
+        document.getElementById("scoreRing").innerHTML =
+          `<svg width="150" height="150" viewBox="0 0 150 150">` +
+          `<circle cx="75" cy="75" r="${r}" fill="none" stroke="#e5e7eb" stroke-width="12"></circle>` +
+          `<circle cx="75" cy="75" r="${r}" fill="none" stroke="${ringColor}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${dash} ${circ}"></circle>` +
+          `</svg>` +
+          `<div class="ring-label" style="color:${ringColor}">${pct}%<span>${correctCount} / ${total}</span></div>`;
+
+        let scoresHTML = "";
+        const sectionResults = [];
+        sections.forEach((sec, si) => {
+          const secAnswers = answers.filter((a) => a.section === si);
+          const secCorrect = secAnswers.filter((a) => a.correct).length;
+          const secTotal = sec.questions.length;
+          const secPct = Math.round((secCorrect / secTotal) * 100);
+          sectionResults.push({
+            name: sec.name,
+            correct: secCorrect,
+            total: secTotal,
+            pct: secPct,
+          });
+          const color =
+            secPct >= 80
+              ? "var(--success)"
+              : secPct >= 60
+                ? "var(--amber)"
+                : "var(--error)";
+          scoresHTML += `<div class="section-score"><span class="section-name">${sec.icon} ${sec.name}</span><span class="section-result" style="color:${color}">${secCorrect}/${secTotal} (${secPct}%)</span></div>`;
+        });
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+
+        let tips = "";
+        if (sectionResults[0].pct < 80) {
+          tips += `<div class="tip-box"><h3>📖 Vocabulary</h3><ul>
+      <li>Review: base, exponent, term, coefficient, variable, equivalent.</li>
+      <li>An inequality (&gt;, &lt;, ≥, ≤) describes a range of values, not just one.</li>
+      <li>The independent variable is the input you choose; the dependent variable depends on it.</li></ul></div>`;
+        }
+        if (sectionResults[1].pct < 80) {
+          tips += `<div class="tip-box"><h3>⚡ Writing &amp; Evaluating</h3><ul>
+      <li>Exponents: aⁿ means use a as a factor n times (3⁴ = 3×3×3×3).</li>
+      <li>Watch word order: "8 less than n" is n − 8, not 8 − n.</li>
+      <li>Use the distributive property to expand a(b + c) = ab + ac.</li>
+      <li>Solve x + 7 = 12 by undoing the operation (subtract 7).</li></ul></div>`;
+        }
+        if (sectionResults[2].pct < 80) {
+          tips += `<div class="tip-box"><h3>✏️ Solving &amp; Simplifying</h3><ul>
+      <li>To solve one-step equations, do the inverse operation to both sides.</li>
+      <li>Follow PEMDAS: parentheses, exponents, ×/÷, then +/−.</li>
+      <li>Combine like terms by adding the coefficients of matching variables.</li></ul></div>`;
+        }
+        if (sectionResults[3].pct < 80) {
+          tips += `<div class="tip-box"><h3>🏆 Real-World Problems</h3><ul>
+      <li>Identify the flat amount (constant) and the per-unit rate (coefficient).</li>
+      <li>"At least" means ≥, "at most" means ≤, "more than" means &gt;.</li>
+      <li>Set up an equation, then solve with inverse operations.</li>
+      <li>Check by substituting your answer back into the situation.</li></ul></div>`;
+        }
+        if (!tips) {
+          tips = `<div class="tip-box" style="border-left-color:var(--success);background:var(--success-bg)"><h3 style="color:var(--success)">Great job!</h3><ul style="color:var(--text)"><li>You scored 80% or above in all sections.</li><li>You're MCAP-ready on 6.EE — keep practicing equations and inequalities!</li></ul></div>`;
+        }
+        document.getElementById("studyTips").innerHTML = tips;
+        lastResults = {
+          sections: sectionResults.map((s) => ({
+            name: s.name,
+            correct: s.correct,
+            total: s.total,
+          })),
+          correct: correctCount,
+          total: total,
+        };
+        saveResults();
+      }
+
+      // CSV EXPORT (teacher-importable, via shared NTResults module)
+      function downloadResultsCSV() {
+        if (!lastResults || typeof NTResults === "undefined") return;
+        NTResults.finish({
+          student: student.name,
+          assessment: "MCAP Review — Expressions & Equations",
+          standard: "6.EE",
+          class: student.period,
+          sections: lastResults.sections,
+          correct: lastResults.correct,
+          total: lastResults.total,
+        });
+      }
+
+      // REVIEW ALL
+      function showReviewAll() {
+        const area = document.getElementById("reviewAllArea");
+        if (area.style.display === "block") {
+          area.style.display = "none";
+          return;
+        }
+        let html = "";
+        let gi = 0;
+        sections.forEach((sec, si) => {
+          html += `<div class="results-card"><h2>${sec.icon} ${sec.name}</h2>`;
+          sec.questions.forEach((q, qi) => {
+            gi++;
+            const ans = answers.find(
+              (a) => a.section === si && a.qIndex === qi,
+            );
+            const icon = ans && ans.correct ? "✓" : "✗";
+            const color =
+              ans && ans.correct ? "var(--success)" : "var(--error)";
+            html += `<div style="padding:12px 0;border-bottom:1px solid var(--line)">`;
+            html += `<div style="font-weight:700;color:${color};margin-bottom:4px">${icon} Q${gi}: ${q.prompt}</div>`;
+            if (q.type === "mc") {
+              html += `<div style="font-size:14px;color:var(--muted)">Your answer: ${ans ? ans.userAnswer : "—"}</div>`;
+              html += `<div style="font-size:14px;color:var(--success)">Correct: ${q.choices[q.answer]}</div>`;
+            } else {
+              html += `<div style="font-size:14px;color:var(--muted)">Your answer: ${ans ? ans.userAnswer : "—"} ${q.unit || ""}</div>`;
+              html += `<div style="font-size:14px;color:var(--success)">Correct: ${q.answer} ${q.unit || ""}</div>`;
+            }
+            html += `<div style="font-size:13px;margin-top:4px;color:var(--text)">${q.explain}</div></div>`;
+          });
+          html += `</div>`;
+        });
+        area.innerHTML = html;
+        area.style.display = "block";
+      }
+
+      // EXPORT
+      function exportResults() {
+        const total = totalQuestions();
+        const correctCount = answers.filter((a) => a.correct).length;
+        const pct = Math.round((correctCount / total) * 100);
+        let text = `MCAP Review — Expressions & Equations (Grade 6 · 6.EE) — Results\n`;
+        text += `Student: ${student.name}\nPeriod: ${student.period}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Score: ${correctCount}/${total} (${pct}%)\n\n`;
+
+        sections.forEach((sec, si) => {
+          const secAns = answers.filter((a) => a.section === si);
+          const secCorr = secAns.filter((a) => a.correct).length;
+          text += `--- ${sec.name}: ${secCorr}/${sec.questions.length} ---\n`;
+          sec.questions.forEach((q, qi) => {
+            const ans = secAns.find((a) => a.qIndex === qi);
+            const mark = ans && ans.correct ? "✓" : "✗";
+            const stripHTML = q.prompt.replace(/<[^>]*>/g, "");
+            text += `${mark} Q${getGlobalIndex(si, qi) + 1}: ${stripHTML}\n`;
+            if (q.type === "mc") {
+              text += `   Your answer: ${ans ? ans.userAnswer : "—"}\n`;
+              text += `   Correct: ${q.choices[q.answer]}\n`;
+            } else {
+              text += `   Your answer: ${ans ? ans.userAnswer : "—"} ${q.unit || ""}\n`;
+              text += `   Correct: ${q.answer} ${q.unit || ""}\n`;
+            }
+          });
+          text += `\n`;
+        });
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `MCAP-Expressions-Equations-${student.name.replace(/\s+/g, "-")}.txt`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+
+      // STORAGE
+      function saveResults() {
+        const data = {
+          student,
+          answers,
+          timestamp: new Date().toISOString(),
+          score: answers.filter((a) => a.correct).length,
+          total: totalQuestions(),
+        };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+
+      function retakeReview() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+        showScreen("loginScreen");
+      }
+    </script>
+  </body>
+</html>

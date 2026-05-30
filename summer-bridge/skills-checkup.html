@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grade 6 Skills Checkup</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --primary: #0d9488;
+        --primary-light: #2dd4bf;
+        --primary-dark: #0f766e;
+        --accent: #d97706;
+        --accent-light: #f59e0b;
+        --bg: #f0fdfa;
+        --card: #ffffff;
+        --text: #1e293b;
+        --text-light: #64748b;
+        --success: #16a34a;
+        --error: #dc2626;
+        --border: #e2e8f0;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 16px;
+        width: 100%;
+      }
+      h1 {
+        font-size: 1.5rem;
+        color: var(--primary);
+        text-align: center;
+      }
+      h2 {
+        font-size: 1.25rem;
+        color: var(--primary);
+        margin-bottom: 12px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        margin-bottom: 16px;
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+      .btn-accent {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-accent:hover {
+        background: #b45309;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+      .btn-outline:hover {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border 0.2s;
+      }
+      input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+      /* Login */
+      #loginScreen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+      }
+      .login-box {
+        text-align: center;
+        max-width: 420px;
+        width: 100%;
+      }
+      .login-box .emoji {
+        font-size: 3rem;
+        margin-bottom: 8px;
+      }
+      .login-box input {
+        margin: 12px 0;
+      }
+      .login-box .btn {
+        width: 100%;
+        margin-top: 4px;
+      }
+      /* Progress */
+      .progress-bar {
+        height: 8px;
+        background: var(--border);
+        border-radius: 4px;
+        margin: 12px 0;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+      .section-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .badge-fd {
+        background: #ccfbf1;
+        color: var(--primary-dark);
+      }
+      .badge-rp {
+        background: #fef3c7;
+        color: var(--accent);
+      }
+      .badge-ee {
+        background: #ede9fe;
+        color: #6d28d9;
+      }
+      .badge-gd {
+        background: #fee2e2;
+        color: var(--error);
+      }
+      /* Question */
+      .q-number {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 4px;
+      }
+      .q-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .option-btn {
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        text-align: left;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .option-btn:hover:not(.locked) {
+        border-color: var(--primary-light);
+        background: #f0fdfa;
+      }
+      .option-btn.selected {
+        border-color: var(--primary);
+        background: #f0fdfa;
+        font-weight: 600;
+      }
+      .option-btn.correct {
+        border-color: var(--success);
+        background: #f0fdf4;
+      }
+      .option-btn.incorrect {
+        border-color: var(--error);
+        background: #fef2f2;
+      }
+      .option-btn.locked {
+        cursor: default;
+      }
+      .feedback-box {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        display: none;
+      }
+      .feedback-correct {
+        background: #f0fdf4;
+        color: var(--success);
+        border: 1px solid #bbf7d0;
+        display: block;
+      }
+      .feedback-incorrect {
+        background: #fef2f2;
+        color: var(--error);
+        border: 1px solid #fecaca;
+        display: block;
+      }
+      .fill-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .fill-row input {
+        max-width: 180px;
+      }
+      .fill-row .btn {
+        white-space: nowrap;
+      }
+      /* Nav */
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+      /* Summary */
+      .score-ring {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 16px;
+      }
+      .score-ring svg {
+        transform: rotate(-90deg);
+      }
+      .score-ring circle {
+        fill: none;
+        stroke-width: 10;
+      }
+      .score-ring .bg {
+        stroke: var(--border);
+      }
+      .score-ring .fg {
+        stroke: var(--primary);
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.8s ease;
+      }
+      .score-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-score:last-child {
+        border: none;
+      }
+      .tip-box {
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-top: 12px;
+        color: #92400e;
+        font-size: 0.95rem;
+      }
+      .footer {
+        text-align: center;
+        padding: 16px;
+        color: var(--text-light);
+        font-size: 0.8rem;
+        margin-top: auto;
+      }
+      .fraction {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        vertical-align: middle;
+        margin: 0 3px;
+        line-height: 1.1;
+        font-size: 0.95em;
+      }
+      .fraction .num,
+      .fraction .den {
+        display: block;
+        text-align: center;
+        padding: 0 2px;
+      }
+      .fraction .num {
+        border-bottom: 1.5px solid currentColor;
+      }
+      @media (max-width: 480px) {
+        .container {
+          padding: 12px;
+        }
+        .card {
+          padding: 16px;
+        }
+        .q-text {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN -->
+    <div id="loginScreen" class="screen active">
+      <div class="container">
+        <div class="card login-box">
+          <div class="emoji">🎒</div>
+          <h1>Grade 6 Skills Checkup</h1>
+          <p style="color: var(--text-light); margin: 4px 0 16px">
+            End-of-Year Review &mdash; Show what you've got! 🌞
+          </p>
+          <p
+            style="
+              color: var(--text-light);
+              margin: 0 0 12px;
+              font-size: 0.9rem;
+            "
+          >
+            A friendly, low-stakes check of the big Grade 6 skills you'll carry
+            into Grade 7. Take your time and do your best!
+          </p>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="Enter your name"
+            autocomplete="off"
+          />
+          <button class="btn btn-primary" onclick="startReview()">
+            Start Checkup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quizScreen" class="screen">
+      <div class="container">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+          "
+        >
+          <h2 id="sectionTitle"></h2>
+          <span
+            id="qCount"
+            style="color: var(--text-light); font-size: 0.85rem"
+          ></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="card" id="questionCard"></div>
+        <div class="nav-row">
+          <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)">
+            &#8592; Back
+          </button>
+          <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">
+            Next &#8594;
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div id="summaryScreen" class="screen">
+      <div class="container">
+        <div class="card" style="text-align: center">
+          <h2>🎉 Checkup Complete!</h2>
+          <p
+            id="summaryName"
+            style="color: var(--text-light); margin-bottom: 16px"
+          ></p>
+          <div class="score-ring" style="position: relative">
+            <svg viewBox="0 0 120 120">
+              <circle class="bg" cx="60" cy="60" r="50" />
+              <circle class="fg" id="scoreArc" cx="60" cy="60" r="50" />
+            </svg>
+            <div class="score-label" id="scoreLabel"></div>
+          </div>
+          <p
+            id="encourageMsg"
+            style="color: var(--text-light); margin-top: 4px"
+          ></p>
+        </div>
+        <div class="card">
+          <h2>Section Scores</h2>
+          <div id="sectionScores"></div>
+        </div>
+        <div class="card">
+          <h2>Summer Study Tips</h2>
+          <div id="tipsList"></div>
+        </div>
+        <div
+          style="
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+          "
+        >
+          <button class="btn btn-accent" onclick="exportResults()">
+            Export Results
+          </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
+          <button class="btn btn-outline" onclick="retryReview()">
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">Neft Teacher &copy; 2026</footer>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script>
+      const STORAGE_KEY = "g6SkillsCheckup_v1";
+      const TOTAL = 20;
+
+      /* ── fraction helper ── */
+      function frac(n, d) {
+        return `<span class="fraction"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+      }
+
+      /* ── QUESTIONS ── */
+      const questions = [
+        /* ─── FRACTIONS & DECIMALS (0-4) ─── */
+        {
+          section: "Fractions & Decimals",
+          badge: "badge-fd",
+          type: "mc",
+          text: "Solve: " + frac(3, 4) + " &divide; " + frac(1, 2),
+          options: ["1 " + frac(1, 2), frac(3, 8), frac(2, 3), "2"],
+          answer: 0,
+          explain:
+            "Keep-Change-Flip: " +
+            frac(3, 4) +
+            " &times; " +
+            frac(2, 1) +
+            " = " +
+            frac(6, 4) +
+            " = 1 " +
+            frac(1, 2) +
+            ". You've got this!",
+        },
+        {
+          section: "Fractions & Decimals",
+          badge: "badge-fd",
+          type: "fill",
+          text: "Solve: 2.5 &times; 0.4 = ?",
+          accept: ["1", "1.0"],
+          answer: "1",
+          explain:
+            "25 &times; 4 = 100. There are 2 decimal places total (one in 2.5, one in 0.4), so 100 becomes 1.00 = 1.",
+        },
+        {
+          section: "Fractions & Decimals",
+          badge: "badge-fd",
+          type: "mc",
+          text: "Solve: 6.4 &minus; 2.75",
+          options: ["3.65", "4.35", "3.75", "4.65"],
+          answer: 0,
+          explain:
+            "Line up the decimals and subtract: 6.40 &minus; 2.75 = 3.65. Lining up the points keeps it easy.",
+        },
+        {
+          section: "Fractions & Decimals",
+          badge: "badge-fd",
+          type: "fill",
+          text: "Solve: 7.2 &divide; 0.9 = ?",
+          accept: ["8", "8.0"],
+          answer: "8",
+          explain:
+            "Multiply both numbers by 10: 72 &divide; 9 = 8. Moving the decimal the same way in both keeps the answer correct.",
+        },
+        {
+          section: "Fractions & Decimals",
+          badge: "badge-fd",
+          type: "mc",
+          text:
+            "A ribbon is " +
+            frac(7, 8) +
+            " yard long. You cut pieces that are " +
+            frac(1, 4) +
+            " yard each. How many full pieces can you cut?",
+          options: ["2", "3", "4", "1"],
+          answer: 1,
+          explain:
+            frac(7, 8) +
+            " &divide; " +
+            frac(1, 4) +
+            " = " +
+            frac(7, 8) +
+            " &times; " +
+            frac(4, 1) +
+            " = " +
+            frac(28, 8) +
+            " = 3 " +
+            frac(1, 2) +
+            ", so you can cut 3 full pieces.",
+        },
+
+        /* ─── RATIOS & PERCENTS (5-9) ─── */
+        {
+          section: "Ratios & Percents",
+          badge: "badge-rp",
+          type: "mc",
+          text: "A recipe uses 3 cups of flour for every 2 cups of sugar. What is the ratio of sugar to flour?",
+          options: ["2 to 3", "3 to 2", "5 to 2", "2 to 5"],
+          answer: 0,
+          explain:
+            "Order matters! Sugar comes first, then flour: 2 to 3 (or 2:3).",
+        },
+        {
+          section: "Ratios & Percents",
+          badge: "badge-rp",
+          type: "fill",
+          text: "A car travels 150 miles in 3 hours. What is the unit rate in miles per hour?",
+          accept: ["50", "50 mph", "50 miles per hour"],
+          answer: "50",
+          explain:
+            "Unit rate = 150 &divide; 3 = 50 miles per hour. A unit rate is the amount for just 1 unit.",
+        },
+        {
+          section: "Ratios & Percents",
+          badge: "badge-rp",
+          type: "mc",
+          text: "What is 25% of 80?",
+          options: ["15", "20", "25", "40"],
+          answer: 1,
+          explain:
+            "25% = " +
+            frac(1, 4) +
+            ", and 80 &divide; 4 = 20. So 25% of 80 is 20.",
+        },
+        {
+          section: "Ratios & Percents",
+          badge: "badge-rp",
+          type: "fill",
+          text: "8 pens cost $6. At the same rate, how much do 12 pens cost (in dollars)?",
+          accept: ["9", "$9", "9.00", "9 dollars"],
+          answer: "9",
+          explain:
+            "Each pen costs $6 &divide; 8 = $0.75. Then 12 &times; $0.75 = $9. Unit rate makes scaling easy!",
+        },
+        {
+          section: "Ratios & Percents",
+          badge: "badge-rp",
+          type: "mc",
+          text: "A shirt is $40. It is on sale for 15% off. How much money do you save?",
+          options: ["$4", "$6", "$15", "$34"],
+          answer: 1,
+          explain:
+            "15% of 40 = 0.15 &times; 40 = $6 saved. (The sale price would be $40 &minus; $6 = $34.)",
+        },
+
+        /* ─── EXPRESSIONS & EQUATIONS (10-14) ─── */
+        {
+          section: "Expressions & Equations",
+          badge: "badge-ee",
+          type: "mc",
+          text: "Evaluate the expression 3x + 5 when x = 4.",
+          options: ["12", "17", "15", "27"],
+          answer: 1,
+          explain:
+            "Substitute x = 4: 3(4) + 5 = 12 + 5 = 17. Multiply before you add (order of operations).",
+        },
+        {
+          section: "Expressions & Equations",
+          badge: "badge-ee",
+          type: "fill",
+          text: "Solve for x: x + 7 = 19. x = ?",
+          accept: ["12"],
+          answer: "12",
+          explain:
+            "Subtract 7 from both sides: x = 19 &minus; 7 = 12. Whatever you do to one side, do to the other.",
+        },
+        {
+          section: "Expressions & Equations",
+          badge: "badge-ee",
+          type: "fill",
+          text: "Solve for x: 6x = 54. x = ?",
+          accept: ["9"],
+          answer: "9",
+          explain:
+            "Divide both sides by 6: x = 54 &divide; 6 = 9. Division undoes multiplication.",
+        },
+        {
+          section: "Expressions & Equations",
+          badge: "badge-ee",
+          type: "mc",
+          text: 'Which expression means "5 less than a number n"?',
+          options: ["5 &minus; n", "n &minus; 5", "5n", "n + 5"],
+          answer: 1,
+          explain:
+            '"5 less than n" starts with n and takes away 5: n &minus; 5. Order matters with subtraction!',
+        },
+        {
+          section: "Expressions & Equations",
+          badge: "badge-ee",
+          type: "mc",
+          text: "Simplify by combining like terms: 4x + 3 + 2x.",
+          options: ["6x + 3", "9x", "6x", "4x + 5"],
+          answer: 0,
+          explain:
+            "Combine the x-terms: 4x + 2x = 6x. The 3 has no x, so it stays: 6x + 3.",
+        },
+
+        /* ─── GEOMETRY & DATA (15-19) ─── */
+        {
+          section: "Geometry & Data",
+          badge: "badge-gd",
+          type: "fill",
+          text: "A rectangle is 8 cm long and 5 cm wide. What is its area in square centimeters?",
+          accept: ["40", "40 cm2", "40 square cm"],
+          answer: "40",
+          explain:
+            "Area of a rectangle = length &times; width = 8 &times; 5 = 40 square cm.",
+        },
+        {
+          section: "Geometry & Data",
+          badge: "badge-gd",
+          type: "mc",
+          text: "A triangle has a base of 10 in and a height of 6 in. What is its area?",
+          options: ["30 in&sup2;", "60 in&sup2;", "16 in&sup2;", "26 in&sup2;"],
+          answer: 0,
+          explain:
+            "Area of a triangle = " +
+            frac(1, 2) +
+            " &times; base &times; height = " +
+            frac(1, 2) +
+            " &times; 10 &times; 6 = 30 in&sup2;.",
+        },
+        {
+          section: "Geometry & Data",
+          badge: "badge-gd",
+          type: "fill",
+          text: "A box is 3 cm by 4 cm by 2 cm. What is its volume in cubic centimeters?",
+          accept: ["24", "24 cm3", "24 cubic cm"],
+          answer: "24",
+          explain:
+            "Volume of a rectangular prism = length &times; width &times; height = 3 &times; 4 &times; 2 = 24 cubic cm.",
+        },
+        {
+          section: "Geometry & Data",
+          badge: "badge-gd",
+          type: "fill",
+          text: "Find the mean (average) of: 4, 8, 6, 10, 2.",
+          accept: ["6", "6.0"],
+          answer: "6",
+          explain:
+            "Add them: 4 + 8 + 6 + 10 + 2 = 30. Divide by how many (5): 30 &divide; 5 = 6.",
+        },
+        {
+          section: "Geometry & Data",
+          badge: "badge-gd",
+          type: "mc",
+          text: "Find the median of: 7, 3, 9, 5, 11.",
+          options: ["5", "7", "9", "11"],
+          answer: 1,
+          explain:
+            "Put them in order: 3, 5, 7, 9, 11. The median is the middle value: 7.",
+        },
+      ];
+
+      /* ── SECTION DEFINITIONS ── */
+      const SECTIONS = [
+        { name: "Fractions & Decimals", range: [0, 5], badge: "badge-fd" },
+        { name: "Ratios & Percents", range: [5, 10], badge: "badge-rp" },
+        { name: "Expressions & Equations", range: [10, 15], badge: "badge-ee" },
+        { name: "Geometry & Data", range: [15, 20], badge: "badge-gd" },
+      ];
+
+      /* ── STATE ── */
+      let state = {
+        name: "",
+        current: 0,
+        answers: Array(TOTAL).fill(null),
+        correct: Array(TOTAL).fill(false),
+      };
+
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+      function load() {
+        try {
+          const d = localStorage.getItem(STORAGE_KEY);
+          if (d) {
+            state = JSON.parse(d);
+            return true;
+          }
+        } catch (e) {}
+        return false;
+      }
+
+      /* ── LOGIN ── */
+      function startReview() {
+        const name = document.getElementById("studentName").value.trim();
+        if (!name) {
+          document.getElementById("studentName").style.borderColor =
+            "var(--error)";
+          return;
+        }
+        if (
+          load() &&
+          state.name === name &&
+          state.answers.some((a) => a !== null)
+        ) {
+          showScreen("quizScreen");
+          render();
+          return;
+        }
+        state.name = name;
+        state.current = 0;
+        state.answers = Array(TOTAL).fill(null);
+        state.correct = Array(TOTAL).fill(false);
+        save();
+        showScreen("quizScreen");
+        render();
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      /* ── RENDER ── */
+      function render() {
+        const q = questions[state.current];
+        const i = state.current;
+        document.getElementById("sectionTitle").innerHTML =
+          `<span class="section-badge ${q.badge}">${q.section}</span>`;
+        document.getElementById("qCount").textContent = `${i + 1} / ${TOTAL}`;
+        document.getElementById("progressFill").style.width =
+          ((i + 1) / TOTAL) * 100 + "%";
+
+        const card = document.getElementById("questionCard");
+        let html = `<div class="q-number">Question ${i + 1}</div><div class="q-text">${q.text}</div>`;
+
+        if (q.type === "mc") {
+          html += '<div class="options">';
+          q.options.forEach((o, j) => {
+            const answered = state.answers[i] !== null;
+            let cls = "option-btn";
+            if (answered) {
+              cls += " locked";
+              if (j === q.answer) cls += " correct";
+              else if (j === state.answers[i]) cls += " incorrect";
+            } else if (j === state.answers[i]) {
+              cls += " selected";
+            }
+            html += `<button class="${cls}" onclick="selectMC(${j})" ${answered ? "disabled" : ""}>${o}</button>`;
+          });
+          html += "</div>";
+        } else {
+          const answered = state.answers[i] !== null;
+          html += `<div class="fill-row">
+      <input type="text" id="fillInput" placeholder="Type your answer" ${answered ? 'disabled value="' + state.answers[i] + '"' : ""} onkeydown="if(event.key==='Enter')checkFill()">
+      <button class="btn btn-primary" onclick="checkFill()" ${answered ? "disabled" : ""}>Check</button>
+    </div>`;
+          html += `<p style="color:var(--text-light);font-size:.8rem;margin-top:6px">Enter fractions as a/b and mixed numbers as "2 1/3". Decimals and whole numbers are fine too.</p>`;
+        }
+
+        /* feedback */
+        if (state.answers[i] !== null) {
+          const ok = state.correct[i];
+          html += `<div class="feedback-box ${ok ? "feedback-correct" : "feedback-incorrect"}">${ok ? "✓ Nice work!" : "Not quite — here's how it works:"} ${q.explain}</div>`;
+        }
+
+        card.innerHTML = html;
+
+        /* nav buttons */
+        document.getElementById("prevBtn").disabled = i === 0;
+        const nextBtn = document.getElementById("nextBtn");
+        if (i === TOTAL - 1 && state.answers[i] !== null) {
+          nextBtn.textContent = "Finish →";
+          nextBtn.onclick = () => showSummary();
+        } else {
+          nextBtn.textContent = "Next →";
+          nextBtn.onclick = () => navigate(1);
+        }
+      }
+
+      function selectMC(j) {
+        const i = state.current;
+        if (state.answers[i] !== null) return;
+        state.answers[i] = j;
+        state.correct[i] = j === questions[i].answer;
+        save();
+        render();
+      }
+
+      function checkFill() {
+        const i = state.current;
+        if (state.answers[i] !== null) return;
+        const v = document.getElementById("fillInput").value.trim();
+        if (!v) return;
+        const q = questions[i];
+        const norm = (s) => String(s).replace(/\s+/g, " ").trim().toLowerCase();
+        state.answers[i] = v;
+        state.correct[i] = q.accept.some((a) => norm(a) === norm(v));
+        save();
+        render();
+      }
+
+      function navigate(dir) {
+        const next = state.current + dir;
+        if (next < 0 || next > TOTAL - 1) return;
+        state.current = next;
+        save();
+        render();
+      }
+
+      /* ── SUMMARY ── */
+      function showSummary() {
+        showScreen("summaryScreen");
+        const total = state.correct.filter(Boolean).length;
+        const pct = Math.round((total / TOTAL) * 100);
+
+        document.getElementById("summaryName").textContent = state.name;
+        document.getElementById("scoreLabel").textContent = pct + "%";
+
+        let msg;
+        if (pct >= 85)
+          msg = "Outstanding! You're more than ready for Grade 7. 🚀";
+        else if (pct >= 70)
+          msg = "Great work! A little summer practice and you'll shine. 🌟";
+        else if (pct >= 50)
+          msg =
+            "Solid effort! Use the tips below to build your skills this summer. 💪";
+        else
+          msg =
+            "Every mathematician starts somewhere — the tips below are your summer game plan. 🌱";
+        document.getElementById("encourageMsg").textContent = msg;
+
+        const circ = 2 * Math.PI * 50;
+        const arc = document.getElementById("scoreArc");
+        arc.style.strokeDasharray = circ;
+        arc.style.strokeDashoffset = circ;
+        requestAnimationFrame(() => {
+          arc.style.strokeDashoffset = circ - (circ * pct) / 100;
+        });
+
+        let scoresHTML = "";
+        const tips = [];
+        SECTIONS.forEach((s) => {
+          const got = state.correct
+            .slice(s.range[0], s.range[1])
+            .filter(Boolean).length;
+          const of5 = got + "/5";
+          const color =
+            got >= 4
+              ? "var(--success)"
+              : got >= 3
+                ? "var(--accent)"
+                : "var(--error)";
+          scoresHTML += `<div class="section-score"><span><span class="section-badge ${s.badge}">${s.name}</span></span><span style="font-weight:700;color:${color}">${of5}</span></div>`;
+          if (got < 4) {
+            if (s.name === "Fractions & Decimals")
+              tips.push(
+                "Fractions & Decimals: Practice dividing fractions with Keep-Change-Flip, and line up decimal points when adding or subtracting.",
+              );
+            if (s.name === "Ratios & Percents")
+              tips.push(
+                "Ratios & Percents: Find the unit rate (the amount for 1) to compare and scale. Remember 50% = " +
+                  frac(1, 2) +
+                  ", 25% = " +
+                  frac(1, 4) +
+                  ".",
+              );
+            if (s.name === "Expressions & Equations")
+              tips.push(
+                "Expressions & Equations: To solve a one-step equation, do the inverse operation to BOTH sides. Combine like terms by matching the variable.",
+              );
+            if (s.name === "Geometry & Data")
+              tips.push(
+                "Geometry & Data: Rectangle area = l × w, triangle area = ½ × b × h, volume = l × w × h. Mean = add then divide; median = middle of the ordered list.",
+              );
+          }
+        });
+
+        document.getElementById("sectionScores").innerHTML = scoresHTML;
+        if (tips.length === 0)
+          tips.push(
+            "Amazing! You've got a strong grip on every Grade 6 skill. Have a wonderful summer! ☀️",
+          );
+        document.getElementById("tipsList").innerHTML = tips
+          .map(
+            (t) =>
+              `<div class="tip-box" style="margin-bottom:8px">💡 ${t}</div>`,
+          )
+          .join("");
+      }
+
+      /* ── EXPORT (student-friendly text) ── */
+      function exportResults() {
+        const total = state.correct.filter(Boolean).length;
+        const pct = Math.round((total / TOTAL) * 100);
+        let txt = `Grade 6 Skills Checkup\nStudent: ${state.name}\nDate: ${new Date().toLocaleDateString()}\nOverall: ${total}/${TOTAL} (${pct}%)\n\n`;
+        SECTIONS.forEach((s) => {
+          const got = state.correct
+            .slice(s.range[0], s.range[1])
+            .filter(Boolean).length;
+          txt += `${s.name}: ${got}/5\n`;
+        });
+        txt += "\nDetailed Results:\n";
+        questions.forEach((q, i) => {
+          const plain = q.text.replace(/<[^>]*>/g, "");
+          const status = state.correct[i] ? "CORRECT" : "INCORRECT";
+          const given =
+            state.answers[i] !== null
+              ? q.type === "mc"
+                ? q.options[state.answers[i]].replace(/<[^>]*>/g, "")
+                : state.answers[i]
+              : "No answer";
+          const right =
+            q.type === "mc"
+              ? q.options[q.answer].replace(/<[^>]*>/g, "")
+              : q.answer;
+          txt += `\n${i + 1}. ${plain}\n   Your answer: ${given} | Correct: ${right} | ${status}\n`;
+        });
+        txt += "\n— Neft Teacher";
+        const blob = new Blob([txt], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Grade6-Skills-Checkup-${state.name.replace(/\s+/g, "-")}.txt`;
+        a.click();
+      }
+
+      /* ── CSV EXPORT (teacher / graded pipeline) ── */
+      function downloadResultsCSV() {
+        const sections = SECTIONS.map((s) => ({
+          name: s.name,
+          correct: state.correct.slice(s.range[0], s.range[1]).filter(Boolean)
+            .length,
+          total: 5,
+        }));
+        const total = state.correct.filter(Boolean).length;
+        NTResults.finish({
+          student: state.name,
+          assessment: "Grade 6 Skills Checkup",
+          standard: "6.Grade",
+          sections: sections,
+          correct: total,
+          total: TOTAL,
+        });
+      }
+
+      function retryReview() {
+        state.current = 0;
+        state.answers = Array(TOTAL).fill(null);
+        state.correct = Array(TOTAL).fill(false);
+        save();
+        showScreen("quizScreen");
+        render();
+      }
+
+      /* ── INIT ── */
+      (function () {
+        if (load() && state.name) {
+          document.getElementById("studentName").value = state.name;
+        }
+        document
+          .getElementById("studentName")
+          .addEventListener("keydown", (e) => {
+            if (e.key === "Enter") startReview();
+          });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCAP Review: Ratios &amp; Proportional Relationships</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --primary: #0d9488;
+        --primary-light: #14b8a6;
+        --primary-dark: #0f766e;
+        --bg: #fffbeb;
+        --text: #1e293b;
+        --card: #ffffff;
+        --correct: #16a34a;
+        --incorrect: #dc2626;
+        --border: #e2e8f0;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: var(--primary-dark);
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 4px;
+      }
+      .subtitle {
+        text-align: center;
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+      }
+      .mcap-note {
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: var(--primary-dark);
+        background: #f0fdfa;
+        border: 1px solid #99f6e4;
+        border-radius: 20px;
+        padding: 5px 14px;
+        display: inline-block;
+        margin-bottom: 14px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+      .section-header {
+        background: var(--primary);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-header .badge {
+        background: rgba(255, 255, 255, 0.25);
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-left: auto;
+      }
+      .question-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 14px;
+        transition: border-color 0.3s;
+      }
+      .question-card.answered-correct {
+        border-color: var(--correct);
+        background: #f0fdf4;
+      }
+      .question-card.answered-incorrect {
+        border-color: var(--incorrect);
+        background: #fef2f2;
+      }
+      .q-number {
+        display: inline-block;
+        background: var(--primary);
+        color: #fff;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-right: 8px;
+      }
+      .q-text {
+        font-weight: 600;
+        margin-bottom: 12px;
+        font-size: 1rem;
+      }
+      .tech-tag {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--primary-dark);
+        background: #ccfbf1;
+        border-radius: 6px;
+        padding: 1px 7px;
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .option {
+        padding: 10px 14px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .option:hover:not(.disabled) {
+        border-color: var(--primary);
+        background: #f0fdfa;
+      }
+      .option.selected {
+        border-color: var(--primary);
+        background: #ccfbf1;
+      }
+      .option.correct-answer {
+        border-color: var(--correct);
+        background: #dcfce7;
+      }
+      .option.wrong-answer {
+        border-color: var(--incorrect);
+        background: #fee2e2;
+      }
+      .option.disabled {
+        cursor: default;
+        opacity: 0.85;
+      }
+      .option .radio {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #94a3b8;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .option.selected .radio,
+      .option.correct-answer .radio {
+        border-color: var(--primary);
+        background: var(--primary);
+      }
+      .option.wrong-answer .radio {
+        border-color: var(--incorrect);
+        background: var(--incorrect);
+      }
+      .radio-dot {
+        width: 8px;
+        height: 8px;
+        background: #fff;
+        border-radius: 50%;
+        display: none;
+      }
+      .option.selected .radio-dot,
+      .option.correct-answer .radio-dot,
+      .option.wrong-answer .radio-dot {
+        display: block;
+      }
+      .fill-input {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px 14px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct-input {
+        border-color: var(--correct);
+        background: #f0fdf4;
+      }
+      .fill-input.incorrect-input {
+        border-color: var(--incorrect);
+        background: #fef2f2;
+      }
+      .fill-unit {
+        margin-left: 8px;
+        color: #64748b;
+        font-size: 0.95rem;
+      }
+      .check-btn {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        margin-top: 8px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .check-btn:hover {
+        background: var(--primary-dark);
+      }
+      .check-btn:disabled {
+        background: #94a3b8;
+        cursor: default;
+      }
+      .feedback {
+        margin-top: 10px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+      .feedback.incorrect {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+      .progress-bar {
+        background: #e2e8f0;
+        border-radius: 20px;
+        height: 10px;
+        margin: 16px 0;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        border-radius: 20px;
+        transition: width 0.5s ease;
+      }
+      .progress-text {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 12px;
+      }
+      .login-screen {
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .login-screen .emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .login-input {
+        width: 100%;
+        max-width: 320px;
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .login-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .login-btn {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        font-weight: 700;
+        transition: background 0.2s;
+      }
+      .login-btn:hover {
+        background: var(--primary-dark);
+      }
+      .login-btn:disabled {
+        background: #94a3b8;
+        cursor: default;
+      }
+      .summary-screen {
+        display: none;
+      }
+      .score-circle {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .score-circle.high {
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+      }
+      .score-circle.mid {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      }
+      .score-circle.low {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+      }
+      .score-circle .label {
+        font-size: 0.75rem;
+        font-weight: 400;
+        opacity: 0.9;
+      }
+      .section-score {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-score:last-child {
+        border-bottom: none;
+      }
+      .section-score .name {
+        font-weight: 600;
+      }
+      .section-score .score {
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+      .study-tips {
+        background: #f0fdfa;
+        border: 1px solid #99f6e4;
+        border-radius: 10px;
+        padding: 16px;
+        margin-top: 16px;
+      }
+      .study-tips h3 {
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+        font-size: 1rem;
+      }
+      .study-tips ul {
+        padding-left: 20px;
+        font-size: 0.9rem;
+      }
+      .study-tips li {
+        margin-bottom: 6px;
+      }
+      .export-btn {
+        background: var(--primary-dark);
+        color: #fff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        margin: 8px;
+        transition: background 0.2s;
+      }
+      .export-btn:hover {
+        background: #0a5e56;
+      }
+      .restart-btn {
+        background: #64748b;
+        color: #fff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        margin: 8px;
+      }
+      .restart-btn:hover {
+        background: #475569;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        margin-top: 20px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .nav-btns {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      @media (max-width: 600px) {
+        .container {
+          padding: 12px;
+        }
+        h1 {
+          font-size: 1.4rem;
+        }
+        .card {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- LOGIN -->
+      <div id="loginScreen" class="card login-screen">
+        <div class="emoji">🦀</div>
+        <span class="mcap-note">Maryland MCAP · Grade 6 · 6.RP.A</span>
+        <h1>MCAP Review: Ratios &amp; Proportional Relationships</h1>
+        <p class="subtitle">
+          Grade 6 &bull; 6.RP.A &bull; <span id="loginCount"></span> Questions
+        </p>
+        <p style="margin: 16px 0; color: #64748b; font-size: 0.95rem">
+          Enter your name to begin the practice set.
+        </p>
+        <input
+          type="text"
+          id="nameInput"
+          class="login-input"
+          placeholder="Your Name"
+          maxlength="40"
+          autocomplete="off"
+        />
+        <br />
+        <button
+          id="startBtn"
+          class="login-btn"
+          disabled
+          onclick="startReview()"
+        >
+          Start Practice
+        </button>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="quizScreen" class="hidden">
+        <div style="text-align: center">
+          <span class="mcap-note">Maryland MCAP · Grade 6 · 6.RP.A</span>
+        </div>
+        <h1>🦀 Ratios &amp; Proportional Relationships</h1>
+        <p class="subtitle" id="studentLabel"></p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <p class="progress-text" id="progressText">0 answered</p>
+        <div id="quizContent"></div>
+        <div class="nav-btns">
+          <button
+            class="export-btn"
+            id="finishBtn"
+            style="display: none"
+            onclick="showSummary()"
+          >
+            See My Results
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summaryScreen" class="summary-screen">
+        <div style="text-align: center">
+          <span class="mcap-note">Maryland MCAP · Grade 6 · 6.RP.A</span>
+        </div>
+        <h1>🦀 Practice Complete!</h1>
+        <p class="subtitle" id="summaryLabel"></p>
+        <div class="card" id="summaryCard"></div>
+        <div class="nav-btns">
+          <button class="export-btn" onclick="exportResults()">
+            Export Results
+          </button>
+          <button class="export-btn" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
+          <button class="restart-btn" onclick="restartReview()">Restart</button>
+        </div>
+      </div>
+
+      <div class="footer">
+        Neft Teacher &bull; Maryland MCAP · Grade 6 · 6.RP.A &bull; Ratios &amp;
+        Proportional Relationships
+      </div>
+    </div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script>
+      const STORAGE_KEY = "mcapRP_ratios_v1";
+      let studentName = "";
+      let answers = {};
+      let totalAnswered = 0;
+
+      const questions = [
+        // === SECTION 1: Vocabulary (1-5) ===
+        {
+          id: 1,
+          section: "Vocabulary",
+          type: "mc",
+          text: "Which statement correctly describes a ratio?",
+          options: [
+            "A comparison of two quantities by division",
+            "The total when two quantities are added",
+            "A quantity multiplied by itself",
+            "The amount one quantity exceeds another",
+          ],
+          answer: 0,
+          explanation:
+            "A ratio is a comparison of two quantities using division, written as a:b, a to b, or a/b.",
+        },
+        {
+          id: 2,
+          section: "Vocabulary",
+          type: "mc",
+          text: "A unit rate is best described as:",
+          options: [
+            "A ratio that compares a number to 100",
+            "A rate written so the second quantity is 1",
+            "Any ratio that can be simplified",
+            "A ratio equal to exactly 1",
+          ],
+          answer: 1,
+          explanation:
+            "A unit rate is a rate with a denominator of 1, such as 8 crabs per 1 bushel or 55 miles per 1 hour.",
+        },
+        {
+          id: 3,
+          section: "Vocabulary",
+          type: "mc",
+          text: 'The word "percent" means "per hundred." Which ratio equals 35%?',
+          options: ["35:10", "35:100", "100:35", "35:1"],
+          answer: 1,
+          explanation:
+            "Percent means per hundred, so 35% is the ratio 35 to 100, or 35/100.",
+        },
+        {
+          id: 4,
+          section: "Vocabulary",
+          type: "fill",
+          text: "Equivalent ratios express the same relationship. Write a ratio equivalent to 2:3 by multiplying both terms by 4. (Form a:b)",
+          tech: "type the ratio",
+          answer: "8:12",
+          accept: ["8:12", "8 : 12", "8/12"],
+          explanation:
+            "Multiply both terms by 4: 2×4 = 8 and 3×4 = 12, giving the equivalent ratio 8:12.",
+        },
+        {
+          id: 5,
+          section: "Vocabulary",
+          type: "mc",
+          text: "On a vacation map of Maryland, a scale of 1 inch : 20 miles is an example of what?",
+          options: [
+            "A percent",
+            "A rate comparing two different units",
+            "A ratio comparing the same unit",
+            "A unit fraction",
+          ],
+          answer: 1,
+          explanation:
+            "A rate compares two quantities with different units. 1 inch : 20 miles compares inches to miles, so it is a rate.",
+        },
+
+        // === SECTION 2: Quick Check (6-10) ===
+        {
+          id: 6,
+          section: "Quick Check",
+          type: "mc",
+          text: "Simplify the ratio 18:24 to lowest terms.",
+          options: ["9:12", "6:8", "3:4", "4:3"],
+          answer: 2,
+          explanation:
+            "The GCF of 18 and 24 is 6. 18÷6 = 3 and 24÷6 = 4, so 18:24 = 3:4.",
+        },
+        {
+          id: 7,
+          section: "Quick Check",
+          type: "mc",
+          text: "A vendor at the Inner Harbor sells 5 soft pretzels for $4. What is the unit price per pretzel?",
+          options: ["$0.80", "$1.25", "$1.00", "$0.75"],
+          answer: 0,
+          explanation:
+            "Unit price = total cost ÷ number of pretzels = $4 ÷ 5 = $0.80 per pretzel.",
+        },
+        {
+          id: 8,
+          section: "Quick Check",
+          type: "fill",
+          text: "Complete the equivalent ratio: 3:5 = ?:25. Type only the missing number.",
+          tech: "type a number",
+          answer: "15",
+          accept: ["15"],
+          explanation:
+            "Since 5 × 5 = 25, multiply the first term by 5 as well: 3 × 5 = 15. So 3:5 = 15:25.",
+        },
+        {
+          id: 9,
+          section: "Quick Check",
+          type: "mc",
+          text: "What is 25% of 80 crabs?",
+          options: ["16", "20", "25", "32"],
+          answer: 1,
+          explanation:
+            "25% = 25/100 = 1/4. One fourth of 80 is 80 ÷ 4 = 20 crabs.",
+        },
+        {
+          id: 10,
+          section: "Quick Check",
+          type: "fill",
+          text: "Convert 3 feet to inches. (1 foot = 12 inches.) Type only the number of inches.",
+          tech: "type a number",
+          answer: "36",
+          accept: ["36"],
+          explanation:
+            "Each foot is 12 inches, so 3 feet = 3 × 12 = 36 inches.",
+        },
+
+        // === SECTION 3: Practice (11-15) ===
+        {
+          id: 11,
+          section: "Practice",
+          type: "fill",
+          text: "A crab cake recipe uses 4 ounces of crab meat for every 6 crab cakes. How many ounces of crab meat are needed for 18 crab cakes? Type only the number of ounces.",
+          tech: "type a number",
+          answer: "12",
+          accept: ["12"],
+          explanation:
+            "The ratio is 4 oz : 6 cakes. Since 6 × 3 = 18 cakes, multiply 4 × 3 = 12 ounces.",
+        },
+        {
+          id: 12,
+          section: "Practice",
+          type: "mc",
+          text: "A boat on the Chesapeake Bay travels 84 miles in 3 hours at a steady speed. What is its unit rate?",
+          options: [
+            "24 miles per hour",
+            "28 miles per hour",
+            "30 miles per hour",
+            "42 miles per hour",
+          ],
+          answer: 1,
+          explanation:
+            "Unit rate = distance ÷ time = 84 ÷ 3 = 28 miles per hour.",
+        },
+        {
+          id: 13,
+          section: "Practice",
+          type: "fill",
+          text: "A spice shop sells Old Bay in two sizes. Use a ratio table: if 6 ounces cost $3.00, what do 10 ounces cost at the same rate? Type the cost in dollars (e.g., 5).",
+          tech: "type a number",
+          answer: "5",
+          accept: ["5", "5.00", "$5", "$5.00"],
+          explanation:
+            "Unit price = $3.00 ÷ 6 oz = $0.50 per ounce. For 10 ounces: 10 × $0.50 = $5.00.",
+        },
+        {
+          id: 14,
+          section: "Practice",
+          type: "mc",
+          text: "A class of 30 students voted, and 60% chose a field trip to the Maryland Science Center. How many students chose the science center?",
+          options: ["12", "15", "18", "20"],
+          answer: 2,
+          explanation:
+            "60% = 60/100 = 0.6. 0.6 × 30 = 18 students chose the science center.",
+        },
+        {
+          id: 15,
+          section: "Practice",
+          type: "fill",
+          text: "Convert 2 gallons to quarts. (1 gallon = 4 quarts.) Type only the number of quarts.",
+          tech: "type a number",
+          answer: "8",
+          accept: ["8"],
+          explanation:
+            "Each gallon is 4 quarts, so 2 gallons = 2 × 4 = 8 quarts.",
+        },
+
+        // === SECTION 4: Challenge (16-20) ===
+        {
+          id: 16,
+          section: "Challenge",
+          type: "mc",
+          text: "At a crab feast, the ratio of steamed crabs to bushels is 84:7. How many crabs are in 1 bushel (the unit rate)?",
+          options: ["10", "12", "14", "7"],
+          answer: 1,
+          explanation:
+            "Unit rate = 84 crabs ÷ 7 bushels = 12 crabs per bushel.",
+        },
+        {
+          id: 17,
+          section: "Challenge",
+          type: "mc",
+          text: "Store A sells 6 cans of Old Bay for $9. Store B sells 10 cans for $14. Which store has the lower unit price per can?",
+          options: [
+            "Store A ($1.50 each)",
+            "Store B ($1.40 each)",
+            "Both cost the same per can",
+            "It cannot be determined",
+          ],
+          answer: 1,
+          explanation:
+            "Store A: $9 ÷ 6 = $1.50 per can. Store B: $14 ÷ 10 = $1.40 per can. Store B is cheaper.",
+        },
+        {
+          id: 18,
+          section: "Challenge",
+          type: "fill",
+          text: "The ratio of sailboats to motorboats in the Inner Harbor is 4:5. If there are 36 sailboats, how many motorboats are there? Type only the number.",
+          tech: "type a number",
+          answer: "45",
+          accept: ["45"],
+          explanation:
+            "4:5 with 36 sailboats means the multiplier is 36 ÷ 4 = 9. Motorboats = 5 × 9 = 45.",
+        },
+        {
+          id: 19,
+          section: "Challenge",
+          type: "mc",
+          text: "A scale map reads 1 inch : 25 miles. Baltimore and Ocean City are 5.2 inches apart on the map. What is the actual distance?",
+          options: ["100 miles", "125 miles", "130 miles", "150 miles"],
+          answer: 2,
+          explanation:
+            "Multiply map inches by the scale: 5.2 × 25 = 130 miles.",
+        },
+        {
+          id: 20,
+          section: "Challenge",
+          type: "fill",
+          text: "A vendor mixes lemonade and iced tea in a ratio of 3:5 to make 40 cups of an Inner Harbor cooler. How many cups of lemonade are needed? Type only the number.",
+          tech: "type a number",
+          answer: "15",
+          accept: ["15"],
+          explanation:
+            "Total parts = 3 + 5 = 8. Each part = 40 ÷ 8 = 5 cups. Lemonade = 3 × 5 = 15 cups.",
+        },
+      ];
+
+      const SECTIONS = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
+      const TOTAL_Q = questions.length;
+
+      // Login
+      const nameInput = document.getElementById("nameInput");
+      const startBtn = document.getElementById("startBtn");
+      document.getElementById("loginCount").textContent = TOTAL_Q;
+      nameInput.addEventListener("input", () => {
+        startBtn.disabled = nameInput.value.trim().length < 1;
+      });
+      nameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && nameInput.value.trim()) startReview();
+      });
+
+      function startReview() {
+        studentName = nameInput.value.trim();
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        document.getElementById("studentLabel").textContent =
+          studentName + " • Show your work and take your time!";
+        renderQuiz();
+        loadProgress();
+      }
+
+      function renderQuiz() {
+        const sectionEmoji = {
+          Vocabulary: "📖",
+          "Quick Check": "⚡",
+          Practice: "✍️",
+          Challenge: "🏆",
+        };
+        let html = "";
+        SECTIONS.forEach((sec) => {
+          const qs = questions.filter((q) => q.section === sec);
+          html += `<div class="section-header">${sectionEmoji[sec] || ""} ${sec}<span class="badge">${qs.length} questions</span></div>`;
+          qs.forEach((q) => {
+            html += `<div class="question-card" id="qcard-${q.id}">`;
+            html += `<div class="q-text"><span class="q-number">${q.id}</span>${q.text}${q.type === "fill" ? `<span class="tech-tag">${q.tech || "type your answer"}</span>` : ""}</div>`;
+            if (q.type === "mc") {
+              html += `<div class="options" id="opts-${q.id}">`;
+              q.options.forEach((opt, i) => {
+                html += `<div class="option" id="opt-${q.id}-${i}" onclick="selectMC(${q.id},${i})"><span class="radio"><span class="radio-dot"></span></span>${opt}</div>`;
+              });
+              html += `</div>`;
+            } else {
+              html += `<input type="text" class="fill-input" id="fill-${q.id}" placeholder="Type your answer..." autocomplete="off" onkeydown="if(event.key==='Enter')checkFill(${q.id})">`;
+              html += `<br><button class="check-btn" id="checkbtn-${q.id}" onclick="checkFill(${q.id})">Check</button>`;
+            }
+            html += `<div class="feedback" id="fb-${q.id}"></div>`;
+            html += `</div>`;
+          });
+        });
+        document.getElementById("quizContent").innerHTML = html;
+      }
+
+      function selectMC(qid, idx) {
+        const q = questions.find((x) => x.id === qid);
+        if (answers[qid] !== undefined) return;
+        answers[qid] = idx;
+        const isCorrect = idx === q.answer;
+        const opts = document.querySelectorAll(`#opts-${qid} .option`);
+        opts.forEach((o, i) => {
+          o.classList.add("disabled");
+          if (i === q.answer) o.classList.add("correct-answer");
+          if (i === idx && !isCorrect) o.classList.add("wrong-answer");
+          if (i === idx) o.classList.add("selected");
+        });
+        showFeedback(qid, isCorrect, q.explanation);
+        updateProgress();
+        saveProgress();
+      }
+
+      function checkFill(qid) {
+        const q = questions.find((x) => x.id === qid);
+        if (answers[qid] !== undefined) return;
+        const inp = document.getElementById(`fill-${qid}`);
+        const val = inp.value.trim();
+        if (!val) return;
+        const isCorrect = q.accept.some(
+          (a) => a.toLowerCase() === val.toLowerCase(),
+        );
+        answers[qid] = val;
+        inp.disabled = true;
+        document.getElementById(`checkbtn-${qid}`).disabled = true;
+        inp.classList.add(isCorrect ? "correct-input" : "incorrect-input");
+        showFeedback(
+          qid,
+          isCorrect,
+          q.explanation +
+            (isCorrect ? "" : ` The correct answer is ${q.answer}.`),
+        );
+        const card = document.getElementById(`qcard-${qid}`);
+        card.classList.add(
+          isCorrect ? "answered-correct" : "answered-incorrect",
+        );
+        updateProgress();
+        saveProgress();
+      }
+
+      function showFeedback(qid, isCorrect, explanation) {
+        const fb = document.getElementById(`fb-${qid}`);
+        fb.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
+        fb.innerHTML = `<strong>${isCorrect ? "✅ Correct!" : "❌ Incorrect."}</strong> ${explanation}`;
+        const card = document.getElementById(`qcard-${qid}`);
+        if (questions.find((x) => x.id === qid).type === "mc")
+          card.classList.add(
+            isCorrect ? "answered-correct" : "answered-incorrect",
+          );
+      }
+
+      function updateProgress() {
+        totalAnswered = Object.keys(answers).length;
+        document.getElementById("progressFill").style.width =
+          `${(totalAnswered / TOTAL_Q) * 100}%`;
+        document.getElementById("progressText").textContent =
+          `${totalAnswered} of ${TOTAL_Q} answered`;
+        document.getElementById("finishBtn").style.display =
+          totalAnswered === TOTAL_Q ? "inline-block" : "none";
+      }
+
+      function getScore(section) {
+        const qs = questions.filter((q) => q.section === section);
+        let correct = 0;
+        qs.forEach((q) => {
+          if (q.type === "mc" && answers[q.id] === q.answer) correct++;
+          if (
+            q.type === "fill" &&
+            q.accept.some(
+              (a) =>
+                a.toLowerCase() ===
+                (answers[q.id] || "").toString().toLowerCase(),
+            )
+          )
+            correct++;
+        });
+        return { correct, total: qs.length };
+      }
+
+      function showSummary() {
+        document.getElementById("quizScreen").classList.add("hidden");
+        const sum = document.getElementById("summaryScreen");
+        sum.style.display = "block";
+        document.getElementById("summaryLabel").textContent = studentName;
+
+        let totalCorrect = 0,
+          totalQ = 0;
+        let secHTML = "";
+        let weakSections = [];
+        SECTIONS.forEach((s) => {
+          const sc = getScore(s);
+          totalCorrect += sc.correct;
+          totalQ += sc.total;
+          const pct = Math.round((sc.correct / sc.total) * 100);
+          secHTML += `<div class="section-score"><span class="name">${s}</span><span class="score">${sc.correct}/${sc.total} (${pct}%)</span></div>`;
+          if (pct < 60) weakSections.push(s);
+        });
+
+        const pct = Math.round((totalCorrect / totalQ) * 100);
+        const grade = pct >= 80 ? "high" : pct >= 60 ? "mid" : "low";
+        let tips = [];
+        if (weakSections.includes("Vocabulary"))
+          tips.push(
+            "Review ratio vocabulary: ratio, rate, unit rate, equivalent ratios, and percent (per hundred).",
+          );
+        if (weakSections.includes("Quick Check"))
+          tips.push(
+            "Practice simplifying ratios with the GCF, finding unit prices, and basic percent and measurement conversions.",
+          );
+        if (weakSections.includes("Practice"))
+          tips.push(
+            "Work through ratio tables, unit rates, percent of a quantity, and unit conversions step by step.",
+          );
+        if (weakSections.includes("Challenge"))
+          tips.push(
+            "Practice multi-step problems: find the multiplier or unit rate first, then solve for the missing value.",
+          );
+        if (tips.length === 0)
+          tips.push(
+            "Excellent work! You are ready for 6.RP.A items on the Maryland MCAP. Keep practicing to stay sharp.",
+          );
+
+        let html = `<div class="score-circle ${grade}">${pct}%<span class="label">${totalCorrect}/${totalQ}</span></div>`;
+        html += secHTML;
+        html += `<div class="study-tips"><h3>💡 Study Tips</h3><ul>`;
+        tips.forEach((t) => (html += `<li>${t}</li>`));
+        html += `</ul></div>`;
+        document.getElementById("summaryCard").innerHTML = html;
+        saveProgress();
+      }
+
+      function exportResults() {
+        let text = `MCAP REVIEW: RATIOS & PROPORTIONAL RELATIONSHIPS\nStandard: 6.RP.A (Maryland MCAP, Grade 6)\nStudent: ${studentName}\nDate: ${new Date().toLocaleDateString()}\n${"=".repeat(48)}\n\n`;
+        let totalC = 0,
+          totalQ = 0;
+        SECTIONS.forEach((s) => {
+          const sc = getScore(s);
+          totalC += sc.correct;
+          totalQ += sc.total;
+          text += `${s}: ${sc.correct}/${sc.total}\n`;
+        });
+        text += `\nOVERALL: ${totalC}/${totalQ} (${Math.round((totalC / totalQ) * 100)}%)\n\n`;
+        text += `DETAILS:\n${"-".repeat(48)}\n`;
+        questions.forEach((q) => {
+          const userAns = answers[q.id];
+          let correct = false;
+          let userStr = "";
+          if (q.type === "mc") {
+            correct = userAns === q.answer;
+            userStr = q.options[userAns] || "No answer";
+          } else {
+            correct = q.accept.some(
+              (a) =>
+                a.toLowerCase() === (userAns || "").toString().toLowerCase(),
+            );
+            userStr = userAns || "No answer";
+          }
+          text += `Q${q.id}. ${q.text}\n   Your answer: ${userStr} ${correct ? "✅" : "❌"}\n`;
+          if (!correct)
+            text += `   Correct answer: ${q.type === "mc" ? q.options[q.answer] : q.answer}\n`;
+          text += "\n";
+        });
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `MCAP_Ratios_${studentName.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      function downloadResultsCSV() {
+        let totalCorrect = 0,
+          totalQ = 0;
+        const secData = SECTIONS.map((s) => {
+          const sc = getScore(s);
+          totalCorrect += sc.correct;
+          totalQ += sc.total;
+          return { name: s, correct: sc.correct, total: sc.total };
+        });
+        NTResults.finish({
+          student: studentName,
+          assessment: "MCAP Review — Ratios & Proportional Relationships",
+          standard: "6.RP.A",
+          sections: secData,
+          correct: totalCorrect,
+          total: totalQ,
+        });
+      }
+
+      function restartReview() {
+        answers = {};
+        totalAnswered = 0;
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById("summaryScreen").style.display = "none";
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuiz();
+        updateProgress();
+      }
+
+      function saveProgress() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ name: studentName, answers }),
+        );
+      }
+
+      function loadProgress() {
+        try {
+          const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (d && d.name === studentName && d.answers) {
+            answers = d.answers;
+            Object.keys(answers).forEach((qid) => {
+              const q = questions.find((x) => x.id === parseInt(qid));
+              if (!q) return;
+              if (q.type === "mc") {
+                const idx = answers[qid];
+                const isCorrect = idx === q.answer;
+                const opts = document.querySelectorAll(`#opts-${qid} .option`);
+                opts.forEach((o, i) => {
+                  o.classList.add("disabled");
+                  if (i === q.answer) o.classList.add("correct-answer");
+                  if (i === idx && !isCorrect) o.classList.add("wrong-answer");
+                  if (i === idx) o.classList.add("selected");
+                });
+                showFeedback(parseInt(qid), isCorrect, q.explanation);
+              } else {
+                const inp = document.getElementById(`fill-${qid}`);
+                inp.value = answers[qid];
+                inp.disabled = true;
+                document.getElementById(`checkbtn-${qid}`).disabled = true;
+                const isCorrect = q.accept.some(
+                  (a) =>
+                    a.toLowerCase() === answers[qid].toString().toLowerCase(),
+                );
+                inp.classList.add(
+                  isCorrect ? "correct-input" : "incorrect-input",
+                );
+                showFeedback(
+                  parseInt(qid),
+                  isCorrect,
+                  q.explanation +
+                    (isCorrect ? "" : ` The correct answer is ${q.answer}.`),
+                );
+                const card = document.getElementById(`qcard-${qid}`);
+                card.classList.add(
+                  isCorrect ? "answered-correct" : "answered-incorrect",
+                );
+              }
+            });
+            updateProgress();
+          }
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>
