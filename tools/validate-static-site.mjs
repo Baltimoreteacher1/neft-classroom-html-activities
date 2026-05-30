@@ -72,7 +72,7 @@ if (warnings.length) {
 
 function walk(dir) {
   return readdirSync(dir).flatMap(name => {
-    if (name === '.git' || name === 'node_modules') return [];
+    if (name === '.git' || name === 'node_modules' || name === 'dist' || name === '.vite') return [];
     const full = join(dir, name);
     return statSync(full).isDirectory() ? walk(full) : [full];
   });
