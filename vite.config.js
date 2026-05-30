@@ -29,7 +29,7 @@ function copyStandaloneHtml() {
     "scripts",
     "docs",
   ]);
-  const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt"];
+  const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
   // folders and loose markdown docs (QA reports, READMEs) should never ship.
   const SKIP_COPY_RE =
