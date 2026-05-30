@@ -38,6 +38,7 @@ This file maps classroom activity source repository names into the organized sta
 | `ParallelogramandRhombusGame` | `/unit-5/parallelogramandrhombusgame/` |
 | `SurfaceAreaReview` | `/surface-area-review/` |
 | `GeometryPrep` | `/geometry-prep/` |
+| `Unit5Practice` | `/unit-5-practice/` |
 
 ## Statistics and Data
 | Source repository name | Target folder |
