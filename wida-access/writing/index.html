@@ -776,6 +776,38 @@
         .canvas-layout {
           grid-template-columns: 1fr;
         }
+        /* Allow grid/flex tracks + their children to shrink below
+           content min-content width (prevents mobile h-scroll). */
+        .studio-shell {
+          width: 100%;
+          max-width: 100%;
+        }
+        .studio-shell,
+        .canvas-layout,
+        .studio-shell > *,
+        .canvas-layout > *,
+        .sidebar-wrapper,
+        .glass-panel,
+        .rubric-grid,
+        .rubric-criterion {
+          min-width: 0;
+        }
+        .sidebar-wrapper,
+        .glass-panel,
+        .canvas-layout,
+        .concept-card,
+        .concept-card .task-title,
+        .concept-card .task-domain {
+          max-width: 100%;
+          overflow-wrap: anywhere;
+        }
+        .rubric-criterion select {
+          width: 100%;
+          max-width: 100%;
+        }
+        .model-viewport svg {
+          width: 100%;
+        }
       }
 
       /* ════════════════════════════════════════════════════
@@ -1505,7 +1537,7 @@
               >
             </div>
 
-            <!-- ESOL Interactive Dictionary and Highlight Tracker -->
+            <!-- Multilingual Interactive Dictionary and Highlight Tracker -->
             <div class="scaffold-card">
               <div class="vocab-lang-selector" id="langTabs">
                 <button class="lang-chip active" data-lang="en">
@@ -1710,11 +1742,20 @@
                   <span id="wordsCounter">0 words</span>
                   <span>&middot;</span>
                   <span id="charsCounter">0 chars</span>
+                  <span>&middot;</span>
+                  <span
+                    id="draftSaveStatus"
+                    role="status"
+                    aria-live="polite"
+                    style="color: var(--green-success)"
+                    >Auto-save on</span
+                  >
                 </div>
               </div>
               <textarea
                 class="rehearsal-area"
                 id="rehearsalDraftBox"
+                aria-label="Your writing draft"
                 placeholder="Write your paragraph response here. Include at least 2 word-wall vocabulary terms and connect them with academic transitions..."
               ></textarea>
 
@@ -1796,7 +1837,6 @@
                 </button>
               </div>
             </div>
-
 
             <!-- Sentence frame builders -->
             <div class="scaffold-card">
@@ -3496,9 +3536,8 @@
 
         updateChecklistUI();
 
-        // Reset text box
-        document.getElementById("rehearsalDraftBox").value = "";
-        checkVocabUseInDraft();
+        // Restore any saved draft for this task + tier
+        restoreActiveDraft();
 
         logToTerminal(`Loaded WIDA task ${idx + 1}: [${task.title}]`);
       }
@@ -3709,6 +3748,59 @@
         STORE.checklistRecord = usedCount >= 2;
         analyzeWritingComplexity(draft);
         updateChecklistUI();
+      }
+
+      // ── Local draft persistence (per task + tier) ──
+      const DRAFT_STORE_KEY = "widaWritingDrafts_v1";
+      let draftSaveTimer = null;
+
+      function getDraftKey() {
+        const task = WIDA_SPEAKING_TASKS[STORE.activeTaskIdx];
+        return `${task.id}_${STORE.activeTier}`;
+      }
+
+      function readDraftStore() {
+        try {
+          return JSON.parse(localStorage.getItem(DRAFT_STORE_KEY) || "{}");
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function setDraftSaveStatus(text) {
+        const el = document.getElementById("draftSaveStatus");
+        if (el) el.textContent = text;
+      }
+
+      function saveActiveDraft() {
+        const box = document.getElementById("rehearsalDraftBox");
+        if (!box) return;
+        setDraftSaveStatus("Saving…");
+        clearTimeout(draftSaveTimer);
+        draftSaveTimer = setTimeout(() => {
+          const store = readDraftStore();
+          const value = box.value;
+          if (value.trim().length === 0) {
+            delete store[getDraftKey()];
+          } else {
+            store[getDraftKey()] = value;
+          }
+          try {
+            localStorage.setItem(DRAFT_STORE_KEY, JSON.stringify(store));
+            setDraftSaveStatus("Saved ✓");
+          } catch (e) {
+            setDraftSaveStatus("Save unavailable");
+          }
+        }, 400);
+      }
+
+      function restoreActiveDraft() {
+        const box = document.getElementById("rehearsalDraftBox");
+        if (!box) return;
+        const store = readDraftStore();
+        box.value = store[getDraftKey()] || "";
+        setDraftSaveStatus(box.value ? "Saved ✓" : "Auto-save on");
+        checkVocabUseInDraft();
       }
 
       // ── Simulated WIDA Test Administrator prompt speaker ──
@@ -3944,7 +4036,9 @@
       function downloadWritingPortfolio() {
         var draft = document.getElementById("rehearsalDraftBox").value.trim();
         if (!draft) {
-          showMinimalToast("Please write a draft before downloading your portfolio.");
+          showMinimalToast(
+            "Please write a draft before downloading your portfolio.",
+          );
           return;
         }
 
@@ -3954,11 +4048,11 @@
         var domain = task.domain;
         var promptText = STORE.activeTier === "A" ? task.promptA : task.promptB;
         var tier = STORE.activeTier;
-        
+
         var wordsCount = document.getElementById("wordsCounter").textContent;
         var charsCount = document.getElementById("charsCounter").textContent;
         var levelLabel = document.getElementById("discourseBadge").textContent;
-        
+
         // Rubric scores
         var rubricLing = document.getElementById("rubricLinguistic");
         var rubricLingText = rubricLing.options[rubricLing.selectedIndex].text;
@@ -3967,12 +4061,13 @@
         var rubricCtrl = document.getElementById("rubricControl");
         var rubricCtrlText = rubricCtrl.options[rubricCtrl.selectedIndex].text;
         var overallRating = document.getElementById("liveELPBadge").textContent;
-        
-        var coachContent = document.getElementById("widaCoachContent").innerHTML;
+
+        var coachContent =
+          document.getElementById("widaCoachContent").innerHTML;
 
         // Vocabulary word wall usage check
         var usedTerms = [];
-        task.terms.forEach(function(word) {
+        task.terms.forEach(function (word) {
           var regex = new RegExp("\\b" + word + "(s|es|ed|ing)?\\b", "i");
           if (regex.test(draft)) {
             usedTerms.push(word);
@@ -3981,10 +4076,12 @@
         var usedTermsStr = usedTerms.length > 0 ? usedTerms.join(", ") : "None";
 
         var today = new Date();
-        var dateString = today.toLocaleDateString() + " " + today.toLocaleTimeString();
+        var dateString =
+          today.toLocaleDateString() + " " + today.toLocaleTimeString();
 
         // Building high-fidelity MHTML/XML content
-        var htmlContent = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>\n" +
+        var htmlContent =
+          "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>\n" +
           "<head>\n" +
           "  <meta charset='utf-8'>\n" +
           "  <title>WIDA ACCESS Student Writing Portfolio</title>\n" +
@@ -4023,34 +4120,62 @@
           "  \n" +
           "  <table>\n" +
           "    <tr>\n" +
-          "      <td width='50%'><span class='meta-label'>Task ID & Title:</span><br><strong>" + taskId + " · " + title + "</strong></td>\n" +
-          "      <td width='50%'><span class='meta-label'>Submission Date:</span><br>" + dateString + "</td>\n" +
+          "      <td width='50%'><span class='meta-label'>Task ID & Title:</span><br><strong>" +
+          taskId +
+          " · " +
+          title +
+          "</strong></td>\n" +
+          "      <td width='50%'><span class='meta-label'>Submission Date:</span><br>" +
+          dateString +
+          "</td>\n" +
           "    </tr>\n" +
           "    <tr>\n" +
-          "      <td><span class='meta-label'>WIDA Domain:</span><br>" + domain + "</td>\n" +
-          "      <td><span class='meta-label'>ELP Tier:</span><br>Tier " + tier + "</td>\n" +
+          "      <td><span class='meta-label'>WIDA Domain:</span><br>" +
+          domain +
+          "</td>\n" +
+          "      <td><span class='meta-label'>ELP Tier:</span><br>Tier " +
+          tier +
+          "</td>\n" +
           "    </tr>\n" +
           "    <tr>\n" +
-          "      <td><span class='meta-label'>Text Length:</span><br>" + wordsCount + " / " + charsCount + "</td>\n" +
-          "      <td><span class='meta-label'>Complexity Level:</span><br><span class='badge badge-primary'>" + levelLabel + "</span></td>\n" +
+          "      <td><span class='meta-label'>Text Length:</span><br>" +
+          wordsCount +
+          " / " +
+          charsCount +
+          "</td>\n" +
+          "      <td><span class='meta-label'>Complexity Level:</span><br><span class='badge badge-primary'>" +
+          levelLabel +
+          "</span></td>\n" +
           "    </tr>\n" +
           "  </table>\n" +
           "  \n" +
           "  <h2>📋 Task Writing Prompt</h2>\n" +
-          "  <p style='font-style: italic; color: #374151; font-size: 10.5pt;'>" + promptText + "</p>\n" +
+          "  <p style='font-style: italic; color: #374151; font-size: 10.5pt;'>" +
+          promptText +
+          "</p>\n" +
           "  \n" +
           "  <h2>✍️ Essay Response Draft</h2>\n" +
-          "  <div class='essay-box'>" + draft + "</div>\n" +
+          "  <div class='essay-box'>" +
+          draft +
+          "</div>\n" +
           "  \n" +
           "  <h2>🎯 Vocabulary Word Wall Report</h2>\n" +
           "  <table>\n" +
           "    <tr>\n" +
           "      <th width='30%'>Required Vocabulary</th>\n" +
-          "      <td width='70%'>" + task.terms.join(", ") + "</td>\n" +
+          "      <td width='70%'>" +
+          task.terms.join(", ") +
+          "</td>\n" +
           "    </tr>\n" +
           "    <tr>\n" +
           "      <th>Used Vocabulary</th>\n" +
-          "      <td><strong>" + usedTermsStr + "</strong> (" + usedTerms.length + " of " + task.terms.length + " used)</td>\n" +
+          "      <td><strong>" +
+          usedTermsStr +
+          "</strong> (" +
+          usedTerms.length +
+          " of " +
+          task.terms.length +
+          " used)</td>\n" +
           "    </tr>\n" +
           "  </table>\n" +
           "  \n" +
@@ -4062,24 +4187,34 @@
           "    </tr>\n" +
           "    <tr>\n" +
           "      <td><strong>Linguistic Complexity</strong></td>\n" +
-          "      <td>" + rubricLingText + "</td>\n" +
+          "      <td>" +
+          rubricLingText +
+          "</td>\n" +
           "    </tr>\n" +
           "    <tr>\n" +
           "      <td><strong>Vocabulary Usage</strong></td>\n" +
-          "      <td>" + rubricVocText + "</td>\n" +
+          "      <td>" +
+          rubricVocText +
+          "</td>\n" +
           "    </tr>\n" +
           "    <tr>\n" +
           "      <td><strong>Language Control</strong></td>\n" +
-          "      <td>" + rubricCtrlText + "</td>\n" +
+          "      <td>" +
+          rubricCtrlText +
+          "</td>\n" +
           "    </tr>\n" +
           "    <tr style='background-color: #f9fafb;'>\n" +
           "      <td><strong>Overall Rating</strong></td>\n" +
-          "      <td><span class='badge badge-success'>" + overallRating + "</span></td>\n" +
+          "      <td><span class='badge badge-success'>" +
+          overallRating +
+          "</span></td>\n" +
           "    </tr>\n" +
           "  </table>\n" +
           "  \n" +
           "  <h2>💡 WIDA Writing Coach Advice</h2>\n" +
-          "  <div class='coach-box'>" + coachContent + "</div>\n" +
+          "  <div class='coach-box'>" +
+          coachContent +
+          "</div>\n" +
           "  \n" +
           "  <div class='footer'>\n" +
           "    <p>Generated by NeftOS Educational Suite &middot; Private, Client-Side, Local-First Architecture</p>\n" +
@@ -4087,7 +4222,9 @@
           "</body>\n" +
           "</html>";
 
-        var blob = new Blob(["\ufeff" + htmlContent], { type: "application/msword;charset=utf-8" });
+        var blob = new Blob(["\ufeff" + htmlContent], {
+          type: "application/msword;charset=utf-8",
+        });
         var url = URL.createObjectURL(blob);
         var a = document.createElement("a");
         a.href = url;
@@ -4100,7 +4237,6 @@
       }
 
       function playChime(type) {
-
         if (!window.AudioContext && !window.webkitAudioContext) return;
         try {
           const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -4276,6 +4412,7 @@
         if (draftBox) {
           draftBox.addEventListener("input", () => {
             checkVocabUseInDraft();
+            saveActiveDraft();
           });
         }
 
