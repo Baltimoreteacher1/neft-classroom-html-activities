@@ -508,6 +508,9 @@
           <button class="btn btn-primary" onclick="exportResults()">
             Export Results
           </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
           <button class="btn btn-accent" onclick="resetReview()">
             Retake Review
           </button>
@@ -517,6 +520,7 @@
 
     <div class="footer">Neft Teacher &middot; Grade 6 Math Review</div>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       // ============================================================
       // DATA
@@ -716,6 +720,8 @@
       let answers = new Array(20).fill(null); // null = unanswered
       let results = new Array(20).fill(null); // true/false
       let answered = new Array(20).fill(false);
+      let lastSectionResults = []; // captured on summary for CSV export
+      let lastTotalCorrect = 0;
 
       // ============================================================
       // INIT
@@ -985,6 +991,10 @@
           .map((t) => `<li>${t}</li>`)
           .join("");
 
+        // Capture tallies for the teacher CSV export.
+        lastSectionResults = sectionResults;
+        lastTotalCorrect = total;
+
         saveProgress();
       }
 
@@ -1023,6 +1033,33 @@
         a.href = URL.createObjectURL(blob);
         a.download = `Unit9-Review-${studentName.replace(/\s+/g, "_")}.txt`;
         a.click();
+      }
+
+      // Teacher-importable CSV (neft-data-studio schema) via shared module.
+      function downloadResultsCSV() {
+        if (typeof NTResults === "undefined") return;
+        const total =
+          lastTotalCorrect || results.filter((r) => r === true).length;
+        const sections = (
+          lastSectionResults.length
+            ? lastSectionResults
+            : SECTIONS.map((sec, si) => {
+                let correct = 0;
+                let qIdx = 0;
+                for (let i = 0; i < si; i++) qIdx += SECTIONS[i].count;
+                for (let i = 0; i < sec.count; i++)
+                  if (results[qIdx + i]) correct++;
+                return { name: sec.name, correct, total: sec.count };
+              })
+        ).map((s) => ({ name: s.name, correct: s.correct, total: s.total }));
+        NTResults.finish({
+          student: studentName,
+          assessment: "Unit 9 Review",
+          standard: "6.NS.6",
+          sections,
+          correct: total,
+          total: 20,
+        });
       }
 
       // ============================================================

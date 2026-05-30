@@ -441,6 +441,9 @@
           <button class="btn btn-accent" onclick="exportResults()">
             Export Results
           </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
           <button class="btn btn-outline" onclick="retryReview()">
             Try Again
           </button>
@@ -450,6 +453,7 @@
 
     <footer class="footer">Neft Teacher &copy; 2026</footer>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       const STORAGE_KEY = "unit2Review_v1";
 
@@ -1066,6 +1070,30 @@
         a.href = URL.createObjectURL(blob);
         a.download = `Unit2-Review-${state.name.replace(/\s+/g, "-")}.txt`;
         a.click();
+      }
+
+      /* ── CSV EXPORT (teacher) ── */
+      function downloadResultsCSV() {
+        const ranges = [
+          { name: "Vocabulary", r: [0, 5] },
+          { name: "Quick Check", r: [5, 10] },
+          { name: "Practice", r: [10, 15] },
+          { name: "Challenge", r: [15, 20] },
+        ];
+        const sections = ranges.map((s) => ({
+          name: s.name,
+          correct: state.correct.slice(s.r[0], s.r[1]).filter(Boolean).length,
+          total: 5,
+        }));
+        const total = state.correct.filter(Boolean).length;
+        NTResults.finish({
+          student: state.name,
+          assessment: "Unit 2 Review",
+          standard: "6.NS.1",
+          sections: sections,
+          correct: total,
+          total: 20,
+        });
       }
 
       function retryReview() {
