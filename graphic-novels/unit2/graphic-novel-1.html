@@ -980,7 +980,24 @@
             fracciones para servir a todos. &iexcl;Excelente trabajo!</i
           >
         </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Scale the recipe: divide <strong>2/3 cup</strong> of milk into portion bowls of <strong>1/6 cup</strong> each. Solve $\frac{2}{3} \div \frac{1}{6}$.<span class="es">Divide 2/3 de taza de leche en tazones de 1/6 de taza cada uno. Resuelve 2/3 ÷ 1/6.</span>
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) 1/9 bowl &nbsp;(multiplied denominators incorrectly)</button>
+            <button class="choice" data-correct="true">B) 4 bowls &nbsp;($\frac{2}{3} \times \frac{6}{1} = 4$) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) 2 bowls &nbsp;(incorrect reciprocal multiplication)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
         <button class="restart" id="restart-btn">Cook again &#8635;</button>
+    
       </section>
 
       <!-- ============ GLOSSARY ============ -->
@@ -1491,9 +1508,40 @@
         initAct1();
         initAct2();
         initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
         refreshLocks();
         updateProgress();
       })();
     </script>
+    
   </body>
 </html>
