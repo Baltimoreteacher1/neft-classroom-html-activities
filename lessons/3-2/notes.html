@@ -60,6 +60,7 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
 .ak-list{padding-left:22px;}
 .ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
@@ -81,13 +82,54 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
 .enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
 .sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
 @media print{
-  @page{size:letter;margin:0.75in;}
-  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
-  .topbar,.print-btn,.no-print{display:none !important;}
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Ratio Tables · Standard 6.RP.3a";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
   .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
   .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
-  .answer-key h2,.vocab-term{color:#000;}
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
   header.packet{border-bottom:2px solid #000;}
@@ -98,15 +140,31 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
-  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
   .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  footer.packet{display:none;}
 }
 </style>
 </head>
 <body>
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Notes Packet</span>
-  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="3-2-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/3-2-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/3-2-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
 </div>
 <main class="sheet">
   <header class="packet">
@@ -124,43 +182,43 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/ratio.svg" alt="Illustration of Ratio table: A table of equivalent ratios that shows a pattern between two quantities" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/ratio.svg" alt="Illustration of Ratio table: A table of equal ratios that shows a pattern." onerror="this.style.display='none'" />
     <p class="vocab-caption">Cups of juice: 2, 4, 6 | Cups of water: 3, 6, 9</p>
   </div>
   <h3 class="vocab-term">Ratio table</h3>
-  <p class="vocab-def">A table of equivalent ratios that shows a pattern between two quantities</p>
+  <p class="vocab-def">A table of equal ratios that shows a pattern.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/ratio.svg" alt="Illustration of Equivalent ratio: Two ratios that express the same relationship between quantities" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/ratio.svg" alt="Illustration of Equivalent ratio: Two ratios that mean the same thing, like 1:2 and 2:4." onerror="this.style.display='none'" />
     <p class="vocab-caption">2:3 = 4:6 = 6:9</p>
   </div>
   <h3 class="vocab-term">Equivalent ratio</h3>
-  <p class="vocab-def">Two ratios that express the same relationship between quantities</p>
+  <p class="vocab-def">Two ratios that mean the same thing, like 1:2 and 2:4.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/scale-factor.svg" alt="Illustration of Scale factor: The number you multiply both parts of a ratio by to get an equivalent ratio" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/scale-factor.svg" alt="Illustration of Scale factor: The number you multiply both parts of a ratio by to get an equal ratio." onerror="this.style.display='none'" />
     <p class="vocab-caption">2:3 × 2 → 4:6 (scale factor is 2)</p>
   </div>
   <h3 class="vocab-term">Scale factor</h3>
-  <p class="vocab-def">The number you multiply both parts of a ratio by to get an equivalent ratio</p>
+  <p class="vocab-def">The number you multiply both parts of a ratio by to get an equal ratio.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/pattern.svg" alt="Illustration of Pattern: A repeated or predictable relationship between numbers" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/pattern.svg" alt="Illustration of Pattern: A rule that numbers follow again and again." onerror="this.style.display='none'" />
     <p class="vocab-caption">Each row adds 2 cups juice and 3 cups water</p>
   </div>
   <h3 class="vocab-term">Pattern</h3>
-  <p class="vocab-def">A repeated or predictable relationship between numbers</p>
+  <p class="vocab-def">A rule that numbers follow again and again.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/pattern.svg" alt="Illustration of Additive pattern: Adding the same amounts to both quantities in a ratio table to generate new rows" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/pattern.svg" alt="Illustration of Additive pattern: Adding the same amount to both parts of a ratio table to make new rows." onerror="this.style.display='none'" />
     <p class="vocab-caption">2:3 → 4:6 → 6:9 (add 2 and 3 each time)</p>
   </div>
   <h3 class="vocab-term">Additive pattern</h3>
-  <p class="vocab-def">Adding the same amounts to both quantities in a ratio table to generate new rows</p>
+  <p class="vocab-def">Adding the same amount to both parts of a ratio table to make new rows.</p>
 </div>
   </div>
 </section>
@@ -197,6 +255,77 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="ex-answer"><strong>Answer:</strong> A. 12:28</p>
 </div>
 </section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain my table using the words ratio table, equivalent ratio, scale factor, and pattern.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Ratio table is a table of equal ratios that shows a pattern.<span class="twr-es">Tabla de razones es una tabla de razones iguales que muestra un patrón.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about ratio table. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre tabla de razones. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Ratio table matters in math<span class="twr-es">Tabla de razones importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Ratio table matters in math because ___.</span><span class="twr-es">Tabla de razones importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Ratio table matters in math, but ___.</span><span class="twr-es">Tabla de razones importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Ratio table matters in math, so ___.</span><span class="twr-es">Tabla de razones importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about ratio table.<span class="twr-es">Di un hecho verdadero sobre ratio table.</span></p>
+        <p class="twr-frame"><span class="twr-en">Ratio table ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about ratio table.<span class="twr-es">Haz una pregunta sobre ratio table.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about ratio table.<span class="twr-es">Muestra entusiasmo sobre ratio table.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with ratio table.<span class="twr-es">Dile a un compañero qué hacer con ratio table.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">I multiplied both numbers by ___.</span><span class="twr-es">Multipliqué ambos números por ___.</span></p><p class="twr-frame"><span class="twr-en">The ratios are equal because ___.</span><span class="twr-es">Las razones son iguales porque ___.</span></p><p class="twr-frame"><span class="twr-en">A table helps when ___.</span><span class="twr-es">Una tabla ayuda cuando ___.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
   <section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
@@ -226,8 +355,9 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </section>
   <section class="answer-key">
-  <h2>Answer Key</h2>
+  <h2>Answer Key &amp; Teacher Guide</h2>
   <ol class="ak-list"><li><strong>Try It 1:</strong> A. 3 <span class="ak-why">— From 5 to 15: 15 ÷ 5 = 3. From 8 to 24: 24 ÷ 8 = 3. The scale factor is 3.</span></li><li><strong>Try It 2:</strong> The last row is wrong. The pattern multiplies by the same scale factor. 4×1=4, 4×2=8, 4×3=12, so the 4th row should be 4×4=16 cups of flour and 3×4=12 cups of sugar → 16:12. The student added 2 to 12 instead of adding 4. Or: 12+4=16, not 12+2=14.</li><li><strong>Exit Ticket:</strong> A. 8 <span class="ak-why">— Scale factor: 20 ÷ 5 = 4. Multiply oil by 4: 2 × 4 = 8 tablespoons of oil.</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Ratio table is a table of equal ratios that shows a pattern.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 3-2 · Standard 6.RP.3a</footer>
 </main>
