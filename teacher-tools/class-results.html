@@ -309,6 +309,10 @@
             <div class="v" id="statAvg">—</div>
             <div class="l">Avg overall %</div>
           </div>
+          <div class="stat">
+            <div class="v" id="statGN">0</div>
+            <div class="l">Graphic novel completions</div>
+          </div>
         </div>
       </header>
 
@@ -320,6 +324,16 @@
           placeholder="Filter by student, assessment, or standard…"
           aria-label="Filter results"
         />
+        <select
+          class="search"
+          id="typeFilter"
+          aria-label="Filter by activity type"
+          style="flex: 0 0 auto; min-width: 180px"
+        >
+          <option value="all">All activities</option>
+          <option value="gn">Graphic novels</option>
+          <option value="test">Pre / Post-Tests</option>
+        </select>
         <button class="btn" id="exportBtn" type="button">
           Export Combined CSV
         </button>
@@ -381,6 +395,12 @@
       var sortKey = "Date";
       var sortDir = -1; // -1 = desc, 1 = asc
       var filterText = "";
+      var typeFilter = "all"; // "all" | "gn" | "test"
+
+      // A row is a graphic-novel completion if its Assessment is tagged so.
+      function isGraphicNovel(r) {
+        return /^Graphic Novel\b/i.test(r["Assessment"] || "");
+      }
 
       function rows() {
         return NTResults.readLog();
@@ -427,6 +447,8 @@
       }
 
       function matchesFilter(r) {
+        if (typeFilter === "gn" && !isGraphicNovel(r)) return false;
+        if (typeFilter === "test" && isGraphicNovel(r)) return false;
         if (!filterText) return true;
         var hay =
           (r["Student Name"] || "") +
@@ -494,9 +516,16 @@
         document.getElementById("resultsTable").style.display = all.length
           ? ""
           : "none";
-        document.getElementById("caption").textContent = filterText
-          ? "Showing " + data.length + " of " + all.length + " logged rows"
-          : "All logged attempts (" + all.length + " rows)";
+        var typeLabel =
+          typeFilter === "gn"
+            ? "graphic-novel completions"
+            : typeFilter === "test"
+              ? "pre/post-test rows"
+              : "logged rows";
+        document.getElementById("caption").textContent =
+          filterText || typeFilter !== "all"
+            ? "Showing " + data.length + " of " + all.length + " " + typeLabel
+            : "All logged attempts (" + all.length + " rows)";
 
         updateStats(all);
         document.getElementById("exportBtn").disabled = all.length === 0;
@@ -507,7 +536,8 @@
         var students = {},
           assessments = {},
           overallPctSum = 0,
-          overallCount = 0;
+          overallCount = 0,
+          gnCompletions = 0;
         all.forEach(function (r) {
           if (r["Student Name"]) students[r["Student Name"]] = 1;
           if (r["Assessment"]) assessments[r["Assessment"]] = 1;
@@ -517,6 +547,8 @@
               overallPctSum += p;
               overallCount++;
             }
+            // One "Overall" row per finished activity → count GN completions.
+            if (isGraphicNovel(r)) gnCompletions++;
           }
         });
         document.getElementById("statAttempts").textContent = all.length;
@@ -527,6 +559,7 @@
         document.getElementById("statAvg").textContent = overallCount
           ? Math.round(overallPctSum / overallCount) + "%"
           : "—";
+        document.getElementById("statGN").textContent = gnCompletions;
       }
 
       function escapeHtml(s) {
@@ -546,6 +579,12 @@
         filterText = e.target.value.trim().toLowerCase();
         render();
       });
+      document
+        .getElementById("typeFilter")
+        .addEventListener("change", function (e) {
+          typeFilter = e.target.value;
+          render();
+        });
       document.getElementById("refreshBtn").addEventListener("click", render);
       document
         .getElementById("exportBtn")

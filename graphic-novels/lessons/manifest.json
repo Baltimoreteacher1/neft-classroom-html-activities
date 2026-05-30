@@ -1,0 +1,1456 @@
+{
+  "_doc": "Neft Teacher — per-lesson graphic-novel rollout manifest. Extends the per-UNIT novels to a finer per-lesson grain. Generated/consumed by scripts/generate-lesson-novels.mjs.",
+  "_groupingLogic": "Lessons are read from lessons/<id>/config.json (non-flagship) and sorted by unit then lesson. Consecutive lessons in the SAME unit that share the SAME full standard code (e.g. both 6.NS.3) are merged into one 2-lesson novel group; otherwise a lesson stands alone as a 1-lesson group. This yields 46 groups across the 64 lessons. groupId = u<unit>-l<lesson>[l<lesson>]. Each group reuses its unit's existing theme/themeEmoji from the configs (e.g. Unit 1 = space-station). Per group the generator emits Graphic Novel #1 (Support) and #2 (Enrichment).",
+  "_artNote": "Art is referenced by path under graphic-novels/_art/lessons/<groupId>/ (cover.png, act1.png, act2.png, final.png, complete.png). Until those PNGs exist the novels use the same graceful diagonal-stripe dark fallback as units 8/9, showing the alt text. Mass art generation is DEFERRED because the image API is spend-capped.",
+  "_rollout": "2 of 46 groups are flagged generate:true as working samples (u1-l5l6 and u1-l7 — the Unit 1 decimal lessons not covered by the existing anchor novels). The remaining 44 are data-only stubs (generate:false, novels:[]); author their novels[] with the same shape and flip generate:true to mass-run once the art budget reopens.",
+  "generatedFrom": "lessons/*/config.json",
+  "groupCount": 46,
+  "groups": [
+    {
+      "groupId": "u1-l1l2",
+      "unit": 1,
+      "theme": "space-station",
+      "themeEmoji": "🚀",
+      "standard": "6.NS.4",
+      "title": "Prime Factorization / Greatest Common Factor",
+      "lessons": [
+        "1-1",
+        "1-2"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u1-l3",
+      "unit": 1,
+      "theme": "space-station",
+      "themeEmoji": "🚀",
+      "standard": "6.NS.4",
+      "title": "Least Common Multiple",
+      "lessons": [
+        "1-3"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u1-l4",
+      "unit": 1,
+      "theme": "space-station",
+      "themeEmoji": "🚀",
+      "standard": "6.NS.2",
+      "title": "Divide Multi-Digit Numbers",
+      "lessons": [
+        "1-4"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u1-l5l6",
+      "unit": 1,
+      "theme": "space-station",
+      "themeEmoji": "🚀",
+      "standard": "6.NS.3",
+      "title": "Add and Subtract Decimals / Multiply Decimals",
+      "lessons": [
+        "1-5",
+        "1-6"
+      ],
+      "generate": true,
+      "novels": [
+        {
+          "tier": 1,
+          "levelWord": "Support",
+          "title": "Decimal Docking Bay",
+          "cover": {
+            "artAlt": "A space cadet stands at a glowing docking-bay console covered in decimal fuel readouts",
+            "blurb": "The station's fuel computer is glitching! Only correct decimal math can dock the supply ship. Line up those decimal points and save the crew, Cadet.",
+            "blurbEs": "¡La computadora de combustible falla! Solo las matematicas con decimales pueden acoplar la nave. Alinea los puntos decimales y salva a la tripulacion.",
+            "startLabel": "Start Mission 🚀"
+          },
+          "acts": [
+            {
+              "kind": "act",
+              "tabLabel": "Act 1: Fuel Totals",
+              "title": "Fuel Totals",
+              "lessonRef": "Lesson 1-5",
+              "art": "../../_art/lessons/u1-l5l6/act1.png",
+              "artAlt": "Two fuel tanks with decimal gauges glowing on the bridge",
+              "advanceLabel": "Lock in the total",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Cadet! Tank A holds 3.4 liters, Tank B holds 2.75 liters. I need the TOTAL fuel to dock.",
+                  "es": "¡Cadete! El tanque A tiene 3.4 litros y el B tiene 2.75. Necesito el TOTAL para acoplar.",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "To add decimals I line up the decimal points first. I can annex a zero so 3.4 becomes 3.40.",
+                  "es": "Para sumar decimales alineo los puntos primero. Puedo agregar un cero: 3.4 es 3.40."
+                }
+              ],
+              "interlude": {
+                "who": "Cadet",
+                "en": "Total locked in! Now a leak — I must subtract what we lost.",
+                "es": "¡Total listo! Ahora hay una fuga: debo restar lo que perdimos."
+              },
+              "challenges": [
+                {
+                  "lockTitle": "⛽ Fuel Lock #1 — Add Decimals",
+                  "prompt": "Add the two tanks: 3.4 + 2.75. Line up the decimal points. What is the total?",
+                  "promptEs": "Suma los dos tanques: 3.4 + 2.75. Alinea los puntos. ¿Cuál es el total?",
+                  "hint": "Annex a zero so both have 2 places: 3.40 + 2.75. Add hundredths, tenths, then ones.",
+                  "frame": "I lined up the decimal points and added to get ____ liters.",
+                  "startLabel": "Add the fuel ▶",
+                  "choices": [
+                    {
+                      "text": "6.15 liters  (3.40 + 2.75)",
+                      "correct": true
+                    },
+                    {
+                      "text": "5.79 liters",
+                      "correct": false
+                    },
+                    {
+                      "text": "6.9 liters  (added without lining up)",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Correct! 3.40 + 2.75 = 6.15 liters. Lining up the points keeps each place value matched.",
+                  "goodEs": "¡Correcto! 3.40 + 2.75 = 6.15 litros.",
+                  "badEn": "❌ Check your places. Annex a zero (3.40) and line up the decimal points, then add.",
+                  "badEs": "❌ Revisa los valores posicionales. Agrega un cero (3.40) y alinea los puntos."
+                },
+                {
+                  "lockTitle": "⛽ Fuel Lock #2 — Subtract Decimals",
+                  "prompt": "A leak drains fuel. Start with 8.5 liters and subtract 3.27 liters. How much is left?",
+                  "promptEs": "Una fuga drena combustible. De 8.5 litros resta 3.27. ¿Cuánto queda?",
+                  "hint": "Annex a zero: 8.50 - 3.27. Line up the points and subtract place by place.",
+                  "frame": "After lining up the points, 8.50 - 3.27 = ____ liters.",
+                  "choices": [
+                    {
+                      "text": "5.23 liters  (8.50 - 3.27)",
+                      "correct": true
+                    },
+                    {
+                      "text": "5.27 liters",
+                      "correct": false
+                    },
+                    {
+                      "text": "4.23 liters",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Yes! 8.50 - 3.27 = 5.23 liters. The decimal points stay lined up in the answer too.",
+                  "goodEs": "¡Sí! 8.50 - 3.27 = 5.23 litros.",
+                  "badEn": "❌ Annex a zero (8.50) and subtract place by place, keeping the decimal points aligned.",
+                  "badEs": "❌ Agrega un cero (8.50) y resta posición por posición."
+                }
+              ]
+            },
+            {
+              "kind": "act",
+              "tabLabel": "Act 2: Power Boost",
+              "title": "Power Boost",
+              "lessonRef": "Lesson 1-6",
+              "art": "../../_art/lessons/u1-l5l6/act2.png",
+              "artAlt": "A glowing reactor core multiplying decimal energy values",
+              "advanceLabel": "Charge the core",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Docking complete. Now multiply decimals to set the reactor power. No lining up needed — count the decimal places!",
+                  "es": "Acople listo. Ahora multiplica decimales para la potencia. No alineas: ¡cuenta los lugares decimales!",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "Right — I multiply like whole numbers, then place the decimal point using the total number of decimal places.",
+                  "es": "Claro: multiplico como enteros y luego coloco el punto usando el total de lugares decimales."
+                }
+              ],
+              "interlude": {
+                "who": "Cadet",
+                "en": "Core stable! One more: a smaller setting with extra decimal places.",
+                "es": "¡Núcleo estable! Una más: un ajuste pequeño con más decimales."
+              },
+              "challenges": [
+                {
+                  "lockTitle": "⚡ Power Lock #1 — Multiply Decimals",
+                  "prompt": "Set the reactor: 0.6 × 0.4. Multiply, then place the decimal point. What is the product?",
+                  "promptEs": "Ajusta el reactor: 0.6 × 0.4. Multiplica y coloca el punto. ¿Cuál es el producto?",
+                  "hint": "6 × 4 = 24. There is 1 decimal place in 0.6 and 1 in 0.4 — that's 2 places total, so the product has 2 places.",
+                  "frame": "0.6 has 1 place and 0.4 has 1 place, so the product 0.24 has ____ decimal places.",
+                  "startLabel": "Multiply ▶",
+                  "choices": [
+                    {
+                      "text": "0.24  (2 decimal places)",
+                      "correct": true
+                    },
+                    {
+                      "text": "2.4",
+                      "correct": false
+                    },
+                    {
+                      "text": "0.024",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Correct! 6×4=24, and 1+1=2 decimal places gives 0.24.",
+                  "goodEs": "¡Correcto! 6×4=24, y 1+1=2 lugares: 0.24.",
+                  "badEn": "❌ Multiply 6×4=24, then count decimal places: 1+1=2, so the answer is 0.24.",
+                  "badEs": "❌ Multiplica 6×4=24 y cuenta los lugares: 1+1=2, así que es 0.24."
+                },
+                {
+                  "lockTitle": "⚡ Power Lock #2 — Place the Point",
+                  "prompt": "Fine-tune the power: 1.2 × 0.05. Multiply, then place the decimal point correctly.",
+                  "promptEs": "Ajuste fino: 1.2 × 0.05. Multiplica y coloca bien el punto.",
+                  "hint": "12 × 5 = 60. Places: 1 (in 1.2) + 2 (in 0.05) = 3. You may need to annex a zero in front.",
+                  "frame": "1.2 (1 place) × 0.05 (2 places) needs ____ decimal places, so the product is 0.06.",
+                  "choices": [
+                    {
+                      "text": "0.06  (3 decimal places, annex a zero)",
+                      "correct": true
+                    },
+                    {
+                      "text": "0.6",
+                      "correct": false
+                    },
+                    {
+                      "text": "0.006",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Yes! 12×5=60; with 3 decimal places that is 0.060 = 0.06. Reactor tuned!",
+                  "goodEs": "¡Sí! 12×5=60; con 3 lugares es 0.060 = 0.06.",
+                  "badEn": "❌ 12×5=60. Count places: 1+2=3, so write 0.060 = 0.06.",
+                  "badEs": "❌ 12×5=60. Cuenta lugares: 1+2=3, así que 0.060 = 0.06."
+                }
+              ]
+            },
+            {
+              "kind": "final",
+              "tabLabel": "Final: Launch Code",
+              "title": "The Launch Code",
+              "lessonRef": "Lessons 1-5 & 1-6",
+              "art": "../../_art/lessons/u1-l5l6/final.png",
+              "artAlt": "A glowing launch console asking for one combined decimal code",
+              "advanceLabel": "Launch! 🌟",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Final launch code, Cadet! It uses BOTH skills — add, then multiply.",
+                  "es": "¡Código final, Cadete! Usa AMBAS destrezas: suma y luego multiplica.",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "First I add 4.5 + 1.5, then multiply the sum by 0.5. Order matters!",
+                  "es": "Primero sumo 4.5 + 1.5, luego multiplico por 0.5. ¡El orden importa!"
+                }
+              ],
+              "challenges": [
+                {
+                  "lockTitle": "🔒 Launch Code — Add then Multiply",
+                  "prompt": "Compute (4.5 + 1.5) × 0.5. Add first, then multiply. Which line is fully correct?",
+                  "promptEs": "Calcula (4.5 + 1.5) × 0.5. Suma primero, luego multiplica. ¿Cuál línea es correcta?",
+                  "hint": "4.5 + 1.5 = 6.0. Then 6.0 × 0.5 = 3.0 (half of 6).",
+                  "frame": "4.5 + 1.5 = ____, and that sum × 0.5 = ____.",
+                  "startLabel": "Enter the code ▶",
+                  "choices": [
+                    {
+                      "text": "4.5 + 1.5 = 6.0, then 6.0 × 0.5 = 3.0",
+                      "correct": true
+                    },
+                    {
+                      "text": "4.5 + 1.5 = 6.0, then 6.0 × 0.5 = 30",
+                      "correct": false
+                    },
+                    {
+                      "text": "4.5 + 1.5 = 5.0, then 5.0 × 0.5 = 2.5",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ CODE ACCEPTED! 6.0 × 0.5 = 3.0 — exactly half of 6. Launch sequence go!",
+                  "goodEs": "¡CÓDIGO ACEPTADO! 6.0 × 0.5 = 3.0. ¡Lanzamiento listo!",
+                  "badEn": "❌ Add first: 4.5 + 1.5 = 6.0. Then 6.0 × 0.5 is HALF of 6, which is 3.0 — not 30.",
+                  "badEs": "❌ Suma primero: 4.5 + 1.5 = 6.0. Luego × 0.5 es la MITAD de 6, o sea 3.0."
+                }
+              ]
+            }
+          ],
+          "complete": {
+            "artAlt": "The cadet watches the supply ship launch safely into a star field",
+            "heading": "Mission Complete!",
+            "text": "You added and subtracted decimals to dock the ship and multiplied decimals to power the launch. The station is fueled and flying. Great work, Cadet!",
+            "textEs": "¡Sumaste, restaste y multiplicaste decimales para salvar la estación! Excelente trabajo.",
+            "bonus": {
+              "prompt": "Master check: 2.5 × 0.4. Multiply, then place the decimal point. What is the product?",
+              "promptEs": "Reto maestro: 2.5 × 0.4. Multiplica y coloca el punto. ¿Cuál es el producto?",
+              "choices": [
+                {
+                  "text": "1  (25 × 4 = 100, 2 decimal places → 1.00)",
+                  "correct": true
+                },
+                {
+                  "text": "10",
+                  "correct": false
+                },
+                {
+                  "text": "0.1",
+                  "correct": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "tier": 2,
+          "levelWord": "Enrichment",
+          "title": "Decimal Docking Bay: Deep Space",
+          "cover": {
+            "artAlt": "A confident cadet commands a deep-space station with multi-step decimal mission boards",
+            "blurb": "Command rank, Cadet. These missions chain several decimal operations and ask you to reason about place value, not just compute. Think it through and launch the fleet.",
+            "blurbEs": "Rango de mando, Cadete. Estas misiones encadenan operaciones con decimales y piden razonar sobre el valor posicional. Piensa bien y lanza la flota.",
+            "startLabel": "Begin Command 🚀"
+          },
+          "acts": [
+            {
+              "kind": "act",
+              "tabLabel": "Act 1: Supply Manifest",
+              "title": "The Supply Manifest",
+              "lessonRef": "Lesson 1-5",
+              "art": "../../_art/lessons/u1-l5l6/act1.png",
+              "artAlt": "A holographic manifest listing several decimal supply masses",
+              "advanceLabel": "Confirm the manifest",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Commander, three crates: 2.45 kg, 1.8 kg, and 0.75 kg. I need the exact combined mass.",
+                  "es": "Comandante, tres cajas: 2.45 kg, 1.8 kg y 0.75 kg. Necesito la masa combinada exacta.",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "I'll annex zeros so every value has two decimal places, then add carefully.",
+                  "es": "Agregaré ceros para que todos tengan dos decimales y luego sumaré con cuidado."
+                }
+              ],
+              "interlude": {
+                "who": "Cadet",
+                "en": "Manifest confirmed. Now find the difference from our 6 kg limit.",
+                "es": "Manifiesto confirmado. Ahora halla la diferencia con el límite de 6 kg."
+              },
+              "challenges": [
+                {
+                  "lockTitle": "📦 Manifest Lock #1 — Add Three Decimals",
+                  "prompt": "Add all three crates: 2.45 + 1.8 + 0.75. What is the total mass?",
+                  "promptEs": "Suma las tres cajas: 2.45 + 1.8 + 0.75. ¿Cuál es la masa total?",
+                  "hint": "Annex a zero so 1.8 = 1.80. Then 2.45 + 1.80 + 0.75. Add the hundredths first.",
+                  "frame": "Lining up all three, 2.45 + 1.80 + 0.75 = ____ kg.",
+                  "startLabel": "Add the crates ▶",
+                  "choices": [
+                    {
+                      "text": "5.00 kg  (2.45 + 1.80 + 0.75)",
+                      "correct": true
+                    },
+                    {
+                      "text": "4.98 kg",
+                      "correct": false
+                    },
+                    {
+                      "text": "5.28 kg",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Exactly! 2.45 + 1.80 + 0.75 = 5.00 kg. Annexing 1.8 → 1.80 kept the places aligned.",
+                  "goodEs": "¡Exacto! 2.45 + 1.80 + 0.75 = 5.00 kg.",
+                  "badEn": "❌ Annex a zero (1.80) and add the hundredths column first: 5 + 0 + 5 = 10, carry the tenth.",
+                  "badEs": "❌ Agrega un cero (1.80) y suma primero las centésimas."
+                },
+                {
+                  "lockTitle": "📦 Manifest Lock #2 — Remaining Capacity",
+                  "prompt": "The cargo limit is 6 kg. With 5.00 kg loaded, how much more mass can you add?",
+                  "promptEs": "El límite es 6 kg. Con 5.00 kg cargados, ¿cuánta masa más cabe?",
+                  "hint": "Subtract: 6.00 - 5.00. Annex zeros so both have two decimal places.",
+                  "frame": "6.00 - 5.00 = ____ kg of room left.",
+                  "choices": [
+                    {
+                      "text": "1.00 kg",
+                      "correct": true
+                    },
+                    {
+                      "text": "0.10 kg",
+                      "correct": false
+                    },
+                    {
+                      "text": "11 kg",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Right! 6.00 - 5.00 = 1.00 kg of room remains.",
+                  "goodEs": "¡Correcto! 6.00 - 5.00 = 1.00 kg de espacio.",
+                  "badEn": "❌ Subtract 5.00 from 6.00: that leaves 1.00 kg.",
+                  "badEs": "❌ Resta 5.00 de 6.00: queda 1.00 kg."
+                }
+              ]
+            },
+            {
+              "kind": "act",
+              "tabLabel": "Act 2: Thruster Calibration",
+              "title": "Thruster Calibration",
+              "lessonRef": "Lesson 1-6",
+              "art": "../../_art/lessons/u1-l5l6/act2.png",
+              "artAlt": "A cadet calibrating thrusters with decimal multiplier dials",
+              "advanceLabel": "Calibrate thrusters",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Each thruster uses 0.25 units of plasma. We are firing 1.2 thruster-seconds. How much plasma?",
+                  "es": "Cada propulsor usa 0.25 de plasma. Encenderemos 1.2 segundos. ¿Cuánto plasma?",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "Multiply like whole numbers, then count three decimal places total.",
+                  "es": "Multiplico como enteros y cuento tres lugares decimales en total."
+                }
+              ],
+              "interlude": {
+                "who": "Cadet",
+                "en": "Calibrated! Now scale it up for the whole array.",
+                "es": "¡Calibrado! Ahora escálalo para todo el arreglo."
+              },
+              "challenges": [
+                {
+                  "lockTitle": "🔥 Thruster Lock #1 — Multiply Decimals",
+                  "prompt": "Compute 1.2 × 0.25 to find the plasma used. What is the product?",
+                  "promptEs": "Calcula 1.2 × 0.25 para el plasma usado. ¿Cuál es el producto?",
+                  "hint": "12 × 25 = 300. Decimal places: 1 (in 1.2) + 2 (in 0.25) = 3, so 0.300 = 0.3.",
+                  "frame": "12 × 25 = 300, and with 3 decimal places that is 0.3 units.",
+                  "startLabel": "Calibrate ▶",
+                  "choices": [
+                    {
+                      "text": "0.3 units  (0.300)",
+                      "correct": true
+                    },
+                    {
+                      "text": "3.0 units",
+                      "correct": false
+                    },
+                    {
+                      "text": "0.03 units",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Yes! 12×25=300; 3 decimal places gives 0.300 = 0.3 units of plasma.",
+                  "goodEs": "¡Sí! 12×25=300; 3 lugares dan 0.300 = 0.3.",
+                  "badEn": "❌ 12×25=300. Count places: 1+2=3, so 0.300 = 0.3.",
+                  "badEs": "❌ 12×25=300. Cuenta lugares: 1+2=3, así que 0.3."
+                },
+                {
+                  "lockTitle": "🔥 Thruster Lock #2 — Scale the Array",
+                  "prompt": "The array has 4 thrusters. If one uses 0.3 units, the array uses 4 × 0.3. How much plasma total?",
+                  "promptEs": "El arreglo tiene 4 propulsores. Si uno usa 0.3, el arreglo usa 4 × 0.3. ¿Cuánto total?",
+                  "hint": "4 × 3 = 12, and 0.3 has 1 decimal place, so the product has 1 decimal place: 1.2.",
+                  "frame": "4 × 0.3 = ____ units of plasma for the whole array.",
+                  "choices": [
+                    {
+                      "text": "1.2 units",
+                      "correct": true
+                    },
+                    {
+                      "text": "0.12 units",
+                      "correct": false
+                    },
+                    {
+                      "text": "12 units",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Correct! 4 × 0.3 = 1.2 units. Array calibrated!",
+                  "goodEs": "¡Correcto! 4 × 0.3 = 1.2 unidades.",
+                  "badEn": "❌ 4 × 3 = 12, with 1 decimal place that is 1.2.",
+                  "badEs": "❌ 4 × 3 = 12, con 1 lugar decimal es 1.2."
+                }
+              ]
+            },
+            {
+              "kind": "final",
+              "tabLabel": "Final: Fleet Launch",
+              "title": "The Fleet Launch Code",
+              "lessonRef": "Lessons 1-5 & 1-6",
+              "art": "../../_art/lessons/u1-l5l6/final.png",
+              "artAlt": "A commander entering a multi-step decimal launch code for a fleet",
+              "advanceLabel": "Launch the fleet! 🌟",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Final code, Commander: it chains a sum and a product. Reason carefully.",
+                  "es": "Código final, Comandante: encadena una suma y un producto. Razona con cuidado.",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "Add 3.25 + 0.75 first, then multiply that sum by 0.5.",
+                  "es": "Sumo 3.25 + 0.75 primero, luego multiplico por 0.5."
+                }
+              ],
+              "challenges": [
+                {
+                  "lockTitle": "🔒 Fleet Code — Multi-Step",
+                  "prompt": "Compute (3.25 + 0.75) × 0.5. Which line is fully correct?",
+                  "promptEs": "Calcula (3.25 + 0.75) × 0.5. ¿Cuál línea es correcta?",
+                  "hint": "3.25 + 0.75 = 4.00. Then 4.00 × 0.5 = 2.0 (half of 4).",
+                  "frame": "3.25 + 0.75 = ____, and that sum × 0.5 = ____.",
+                  "startLabel": "Enter the code ▶",
+                  "choices": [
+                    {
+                      "text": "3.25 + 0.75 = 4.00, then 4.00 × 0.5 = 2.0",
+                      "correct": true
+                    },
+                    {
+                      "text": "3.25 + 0.75 = 4.00, then 4.00 × 0.5 = 20",
+                      "correct": false
+                    },
+                    {
+                      "text": "3.25 + 0.75 = 3.90, then 3.90 × 0.5 = 1.95",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ FLEET CODE ACCEPTED! 4.00 × 0.5 = 2.0 — exactly half of 4. The fleet launches!",
+                  "goodEs": "¡CÓDIGO ACEPTADO! 4.00 × 0.5 = 2.0. ¡La flota despega!",
+                  "badEn": "❌ Add first: 3.25 + 0.75 = 4.00. Then × 0.5 is HALF of 4, which is 2.0 — not 20.",
+                  "badEs": "❌ Suma primero: 3.25 + 0.75 = 4.00. Luego × 0.5 es la MITAD de 4, o sea 2.0."
+                }
+              ]
+            }
+          ],
+          "complete": {
+            "artAlt": "A proud commander salutes as a fleet of ships launches into deep space",
+            "heading": "Fleet Launched!",
+            "text": "You chained decimal addition, subtraction, and multiplication across the whole mission. Command rank earned, Commander!",
+            "textEs": "¡Encadenaste sumas, restas y multiplicaciones con decimales en toda la misión! Rango de mando ganado.",
+            "bonus": {
+              "prompt": "Command challenge: (1.5 + 2.5) × 0.25. What is the result?",
+              "promptEs": "Reto de mando: (1.5 + 2.5) × 0.25. ¿Cuál es el resultado?",
+              "choices": [
+                {
+                  "text": "1  (4 × 0.25 = 1.00)",
+                  "correct": true
+                },
+                {
+                  "text": "10",
+                  "correct": false
+                },
+                {
+                  "text": "0.4",
+                  "correct": false
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "groupId": "u1-l7",
+      "unit": 1,
+      "theme": "space-station",
+      "themeEmoji": "🚀",
+      "standard": "6.NS.3",
+      "title": "Divide Decimals",
+      "lessons": [
+        "1-7"
+      ],
+      "generate": true,
+      "novels": [
+        {
+          "tier": 1,
+          "levelWord": "Support",
+          "title": "Decimal Division Drive",
+          "cover": {
+            "artAlt": "A space cadet at a navigation drive that divides decimal distances into equal jumps",
+            "blurb": "The hyperdrive splits long decimal distances into equal jumps. To divide with decimals, make the divisor a whole number first. Pilot us home, Cadet!",
+            "blurbEs": "El hiperimpulsor divide distancias decimales en saltos iguales. Para dividir, primero haz que el divisor sea entero. ¡Llévanos a casa, Cadete!",
+            "startLabel": "Start Mission 🚀"
+          },
+          "acts": [
+            {
+              "kind": "act",
+              "tabLabel": "Act 1: Equal Jumps",
+              "title": "Equal Jumps",
+              "lessonRef": "Lesson 1-7",
+              "art": "../../_art/lessons/u1-l7/act1.png",
+              "artAlt": "A navigation screen splitting a decimal distance into equal jump markers",
+              "advanceLabel": "Plot the jumps",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Cadet, we must cross 4.5 light-units in jumps of 0.5 each. How MANY jumps?",
+                  "es": "Cadete, cruzamos 4.5 unidades en saltos de 0.5. ¿CUÁNTOS saltos?",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "To divide by a decimal, I make the divisor whole. Multiply BOTH numbers by 10: 4.5 ÷ 0.5 becomes 45 ÷ 5.",
+                  "es": "Para dividir entre un decimal, hago el divisor entero. Multiplico AMBOS por 10: 4.5 ÷ 0.5 es 45 ÷ 5."
+                }
+              ],
+              "interlude": {
+                "who": "Cadet",
+                "en": "Course plotted! Now a longer leg with a tighter jump.",
+                "es": "¡Rumbo trazado! Ahora un tramo más largo con saltos más cortos."
+              },
+              "challenges": [
+                {
+                  "lockTitle": "🚀 Jump Lock #1 — Divide by a Decimal",
+                  "prompt": "Compute 4.5 ÷ 0.5. Make the divisor a whole number first. How many jumps?",
+                  "promptEs": "Calcula 4.5 ÷ 0.5. Haz el divisor entero primero. ¿Cuántos saltos?",
+                  "hint": "Multiply both by 10: 4.5 ÷ 0.5 = 45 ÷ 5 = 9.",
+                  "frame": "I multiplied both numbers by 10, so 4.5 ÷ 0.5 = 45 ÷ 5 = ____.",
+                  "startLabel": "Divide ▶",
+                  "choices": [
+                    {
+                      "text": "9 jumps  (45 ÷ 5)",
+                      "correct": true
+                    },
+                    {
+                      "text": "0.9 jumps",
+                      "correct": false
+                    },
+                    {
+                      "text": "90 jumps",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Correct! Multiply both by 10: 45 ÷ 5 = 9 jumps. Same answer, easier division.",
+                  "goodEs": "¡Correcto! ×10 en ambos: 45 ÷ 5 = 9 saltos.",
+                  "badEn": "❌ Make the divisor whole: multiply both by 10 to get 45 ÷ 5 = 9.",
+                  "badEs": "❌ Haz el divisor entero: ×10 en ambos para 45 ÷ 5 = 9."
+                },
+                {
+                  "lockTitle": "🚀 Jump Lock #2 — Tighter Jumps",
+                  "prompt": "Now cross 9.6 light-units in jumps of 0.8. Compute 9.6 ÷ 0.8.",
+                  "promptEs": "Ahora cruza 9.6 unidades en saltos de 0.8. Calcula 9.6 ÷ 0.8.",
+                  "hint": "Multiply both by 10: 9.6 ÷ 0.8 = 96 ÷ 8 = 12.",
+                  "frame": "Multiplying both by 10, 9.6 ÷ 0.8 = 96 ÷ 8 = ____.",
+                  "choices": [
+                    {
+                      "text": "12 jumps  (96 ÷ 8)",
+                      "correct": true
+                    },
+                    {
+                      "text": "1.2 jumps",
+                      "correct": false
+                    },
+                    {
+                      "text": "8 jumps",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Yes! 96 ÷ 8 = 12 jumps. The decimal point moved the same way in both numbers.",
+                  "goodEs": "¡Sí! 96 ÷ 8 = 12 saltos.",
+                  "badEn": "❌ Multiply both by 10: 9.6 ÷ 0.8 = 96 ÷ 8 = 12.",
+                  "badEs": "❌ ×10 en ambos: 9.6 ÷ 0.8 = 96 ÷ 8 = 12."
+                }
+              ]
+            },
+            {
+              "kind": "final",
+              "tabLabel": "Final: Home Jump",
+              "title": "The Home Jump",
+              "lessonRef": "Lesson 1-7",
+              "art": "../../_art/lessons/u1-l7/final.png",
+              "artAlt": "The final hyperspace jump home shown as a decimal division on the console",
+              "advanceLabel": "Jump home! 🌟",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Final leg, Cadet: 7.2 light-units in jumps of 0.9. Get us home!",
+                  "es": "Tramo final, Cadete: 7.2 unidades en saltos de 0.9. ¡Llévanos a casa!",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "Multiply both by 10 and divide. Here we go!",
+                  "es": "Multiplico ambos por 10 y divido. ¡Vamos!"
+                }
+              ],
+              "challenges": [
+                {
+                  "lockTitle": "🔒 Home Jump — Divide Decimals",
+                  "prompt": "Compute 7.2 ÷ 0.9. Make the divisor whole first. Which line is correct?",
+                  "promptEs": "Calcula 7.2 ÷ 0.9. Haz el divisor entero. ¿Cuál línea es correcta?",
+                  "hint": "Multiply both by 10: 7.2 ÷ 0.9 = 72 ÷ 9 = 8.",
+                  "frame": "7.2 ÷ 0.9 = 72 ÷ 9 = ____ jumps.",
+                  "startLabel": "Plot the jump ▶",
+                  "choices": [
+                    {
+                      "text": "7.2 ÷ 0.9 = 72 ÷ 9 = 8 jumps",
+                      "correct": true
+                    },
+                    {
+                      "text": "7.2 ÷ 0.9 = 72 ÷ 9 = 0.8 jumps",
+                      "correct": false
+                    },
+                    {
+                      "text": "7.2 ÷ 0.9 = 7.2 ÷ 9 = 0.8 jumps",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ HOME JUMP LOCKED! 72 ÷ 9 = 8 jumps. You moved the decimal in BOTH numbers. We're home!",
+                  "goodEs": "¡SALTO LISTO! 72 ÷ 9 = 8 saltos. ¡Llegamos a casa!",
+                  "badEn": "❌ Move the decimal in BOTH numbers (×10): 7.2 ÷ 0.9 = 72 ÷ 9 = 8, not 0.8.",
+                  "badEs": "❌ Mueve el punto en AMBOS números (×10): 72 ÷ 9 = 8, no 0.8."
+                }
+              ]
+            }
+          ],
+          "complete": {
+            "artAlt": "The cadet arrives home as the station glows safely in orbit",
+            "heading": "Mission Complete!",
+            "text": "You divided decimals by making each divisor a whole number, then dividing. Every jump landed perfectly and you piloted the crew home. Great work, Cadet!",
+            "textEs": "¡Dividiste decimales haciendo el divisor entero y luego dividiendo! Llevaste a la tripulación a casa.",
+            "bonus": {
+              "prompt": "Master check: 6.4 ÷ 0.4. Make the divisor whole first. What is the quotient?",
+              "promptEs": "Reto maestro: 6.4 ÷ 0.4. Haz el divisor entero. ¿Cuál es el cociente?",
+              "choices": [
+                {
+                  "text": "16  (64 ÷ 4)",
+                  "correct": true
+                },
+                {
+                  "text": "1.6",
+                  "correct": false
+                },
+                {
+                  "text": "160",
+                  "correct": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "tier": 2,
+          "levelWord": "Enrichment",
+          "title": "Decimal Division Drive: Deep Space",
+          "cover": {
+            "artAlt": "A commander planning multi-jump routes that divide decimal distances and check the math",
+            "blurb": "Command rank, Cadet. Plan multi-jump routes and reason about why moving the decimal keeps the quotient the same. Then check your own answer with multiplication.",
+            "blurbEs": "Rango de mando, Cadete. Planea rutas de varios saltos y razona por qué mover el punto no cambia el cociente. Luego comprueba con multiplicación.",
+            "startLabel": "Begin Command 🚀"
+          },
+          "acts": [
+            {
+              "kind": "act",
+              "tabLabel": "Act 1: Route Planning",
+              "title": "Route Planning",
+              "lessonRef": "Lesson 1-7",
+              "art": "../../_art/lessons/u1-l7/act1.png",
+              "artAlt": "A holographic route map dividing a long decimal distance into equal legs",
+              "advanceLabel": "Confirm the route",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Commander, plan a route of 12.6 light-units in legs of 0.6 each. How many legs?",
+                  "es": "Comandante, planea una ruta de 12.6 unidades en tramos de 0.6. ¿Cuántos tramos?",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "Multiply both by 10 to get 126 ÷ 6. Moving the decimal the same way in both keeps the quotient identical.",
+                  "es": "Multiplico ambos por 10: 126 ÷ 6. Mover el punto igual en ambos no cambia el cociente."
+                }
+              ],
+              "interlude": {
+                "who": "Cadet",
+                "en": "Route set. Now I'll check it with multiplication.",
+                "es": "Ruta lista. Ahora la compruebo con multiplicación."
+              },
+              "challenges": [
+                {
+                  "lockTitle": "🛰️ Route Lock #1 — Divide Decimals",
+                  "prompt": "Compute 12.6 ÷ 0.6 to count the legs. Make the divisor whole first.",
+                  "promptEs": "Calcula 12.6 ÷ 0.6 para contar los tramos. Haz el divisor entero primero.",
+                  "hint": "Multiply both by 10: 12.6 ÷ 0.6 = 126 ÷ 6 = 21.",
+                  "frame": "12.6 ÷ 0.6 = 126 ÷ 6 = ____ legs.",
+                  "startLabel": "Plan the route ▶",
+                  "choices": [
+                    {
+                      "text": "21 legs  (126 ÷ 6)",
+                      "correct": true
+                    },
+                    {
+                      "text": "2.1 legs",
+                      "correct": false
+                    },
+                    {
+                      "text": "12 legs",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Exactly! 126 ÷ 6 = 21 legs. Same decimal shift in both keeps the quotient equal.",
+                  "goodEs": "¡Exacto! 126 ÷ 6 = 21 tramos.",
+                  "badEn": "❌ Multiply both by 10: 12.6 ÷ 0.6 = 126 ÷ 6 = 21.",
+                  "badEs": "❌ ×10 en ambos: 12.6 ÷ 0.6 = 126 ÷ 6 = 21."
+                },
+                {
+                  "lockTitle": "🛰️ Route Lock #2 — Check by Multiplying",
+                  "prompt": "Check your answer: if 12.6 ÷ 0.6 = 21, then 21 × 0.6 should equal 12.6. What is 21 × 0.6?",
+                  "promptEs": "Comprueba: si 12.6 ÷ 0.6 = 21, entonces 21 × 0.6 debe ser 12.6. ¿Cuánto es 21 × 0.6?",
+                  "hint": "21 × 6 = 126, and 0.6 has 1 decimal place, so 21 × 0.6 = 12.6.",
+                  "frame": "21 × 0.6 = ____, which matches the original distance, so the division checks out.",
+                  "choices": [
+                    {
+                      "text": "12.6  (so the quotient is correct)",
+                      "correct": true
+                    },
+                    {
+                      "text": "1.26",
+                      "correct": false
+                    },
+                    {
+                      "text": "126",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ Yes! 21 × 0.6 = 12.6 matches the original distance — your division is confirmed.",
+                  "goodEs": "¡Sí! 21 × 0.6 = 12.6 coincide con la distancia original.",
+                  "badEn": "❌ 21 × 6 = 126; with 1 decimal place that is 12.6, which matches the start.",
+                  "badEs": "❌ 21 × 6 = 126; con 1 lugar decimal es 12.6."
+                }
+              ]
+            },
+            {
+              "kind": "final",
+              "tabLabel": "Final: Precision Jump",
+              "title": "The Precision Jump",
+              "lessonRef": "Lesson 1-7",
+              "art": "../../_art/lessons/u1-l7/final.png",
+              "artAlt": "A precise final jump computed by dividing a hundredths decimal distance",
+              "advanceLabel": "Execute the jump! 🌟",
+              "dialogue": [
+                {
+                  "who": "Station AI",
+                  "en": "Precision leg, Commander: 1.25 light-units in jumps of 0.25. How many?",
+                  "es": "Tramo de precisión, Comandante: 1.25 unidades en saltos de 0.25. ¿Cuántos?",
+                  "cap": true
+                },
+                {
+                  "who": "Cadet",
+                  "en": "These have hundredths, so I multiply both by 100 to make the divisor whole.",
+                  "es": "Tienen centésimas, así que multiplico ambos por 100 para hacer el divisor entero."
+                }
+              ],
+              "challenges": [
+                {
+                  "lockTitle": "🔒 Precision Jump — Hundredths Divisor",
+                  "prompt": "Compute 1.25 ÷ 0.25. The divisor has hundredths. Which line is correct?",
+                  "promptEs": "Calcula 1.25 ÷ 0.25. El divisor tiene centésimas. ¿Cuál línea es correcta?",
+                  "hint": "Multiply both by 100: 1.25 ÷ 0.25 = 125 ÷ 25 = 5.",
+                  "frame": "1.25 ÷ 0.25 = 125 ÷ 25 = ____ jumps.",
+                  "startLabel": "Plot the jump ▶",
+                  "choices": [
+                    {
+                      "text": "1.25 ÷ 0.25 = 125 ÷ 25 = 5 jumps",
+                      "correct": true
+                    },
+                    {
+                      "text": "1.25 ÷ 0.25 = 125 ÷ 25 = 50 jumps",
+                      "correct": false
+                    },
+                    {
+                      "text": "1.25 ÷ 0.25 = 12.5 ÷ 25 = 0.5 jumps",
+                      "correct": false
+                    }
+                  ],
+                  "goodEn": "✅ PRECISION JUMP LOCKED! Multiply both by 100: 125 ÷ 25 = 5 jumps. Flawless navigation, Commander!",
+                  "goodEs": "¡SALTO DE PRECISIÓN! ×100 en ambos: 125 ÷ 25 = 5 saltos.",
+                  "badEn": "❌ Both numbers have hundredths — multiply both by 100: 125 ÷ 25 = 5, not 50.",
+                  "badEs": "❌ Ambos tienen centésimas — ×100 en ambos: 125 ÷ 25 = 5."
+                }
+              ]
+            }
+          ],
+          "complete": {
+            "artAlt": "A commander confirms the fleet's safe arrival after precise decimal jumps",
+            "heading": "Precision Achieved!",
+            "text": "You divided decimals by shifting the point in both numbers, checked your work by multiplying, and even handled hundredths. Command rank earned, Commander!",
+            "textEs": "¡Dividiste decimales moviendo el punto en ambos, comprobaste multiplicando y manejaste centésimas! Rango de mando ganado.",
+            "bonus": {
+              "prompt": "Command challenge: 3.6 ÷ 0.12. Make the divisor whole (×100). What is the quotient?",
+              "promptEs": "Reto de mando: 3.6 ÷ 0.12. Haz el divisor entero (×100). ¿Cuál es el cociente?",
+              "choices": [
+                {
+                  "text": "30  (360 ÷ 12)",
+                  "correct": true
+                },
+                {
+                  "text": "3",
+                  "correct": false
+                },
+                {
+                  "text": "300",
+                  "correct": false
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "groupId": "u2-l1l2",
+      "unit": 2,
+      "theme": "detective-agency",
+      "themeEmoji": "🔍",
+      "standard": "6.NS.1",
+      "title": "Interpret Division of Fractions / Divide Whole Numbers by Fractions",
+      "lessons": [
+        "2-1",
+        "2-2"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u2-l3l4",
+      "unit": 2,
+      "theme": "detective-agency",
+      "themeEmoji": "🔍",
+      "standard": "6.NS.1",
+      "title": "Divide Fractions / Divide Mixed Numbers",
+      "lessons": [
+        "2-3",
+        "2-4"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u2-l5",
+      "unit": 2,
+      "theme": "detective-agency",
+      "themeEmoji": "🔍",
+      "standard": "6.NS.1",
+      "title": "Fraction Division Problem Solving",
+      "lessons": [
+        "2-5"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u3-l1",
+      "unit": 3,
+      "theme": "culinary-academy",
+      "themeEmoji": "👨‍🍳",
+      "standard": "6.RP.1",
+      "title": "Understand Ratios",
+      "lessons": [
+        "3-1"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u3-l2l3",
+      "unit": 3,
+      "theme": "culinary-academy",
+      "themeEmoji": "👨‍🍳",
+      "standard": "6.RP.3a",
+      "title": "Ratio Tables / Graph Ratio Tables",
+      "lessons": [
+        "3-2",
+        "3-3"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u3-l4l5",
+      "unit": 3,
+      "theme": "culinary-academy",
+      "themeEmoji": "👨‍🍳",
+      "standard": "6.RP.3",
+      "title": "Equivalent Ratios / Compare Ratios",
+      "lessons": [
+        "3-4",
+        "3-5"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u3-l6l7",
+      "unit": 3,
+      "theme": "culinary-academy",
+      "themeEmoji": "👨‍🍳",
+      "standard": "6.RP.3",
+      "title": "Use Ratio Reasoning / Ratio and Rate Problem Solving",
+      "lessons": [
+        "3-6",
+        "3-7"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u4-l1",
+      "unit": 4,
+      "theme": "arcade-builder",
+      "themeEmoji": "🕹️",
+      "standard": "6.RP.2",
+      "title": "Rates and Unit Rates",
+      "lessons": [
+        "4-1"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u4-l2l3",
+      "unit": 4,
+      "theme": "arcade-builder",
+      "themeEmoji": "🕹️",
+      "standard": "6.RP.3c",
+      "title": "Relate Fractions, Decimals, and Percents / Percents Greater Than 100% and Less Than 1%",
+      "lessons": [
+        "4-2",
+        "4-3"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u4-l4l5",
+      "unit": 4,
+      "theme": "arcade-builder",
+      "themeEmoji": "🕹️",
+      "standard": "6.RP.3c",
+      "title": "Find the Percent of a Number / Use Percent to Solve Problems",
+      "lessons": [
+        "4-4",
+        "4-5"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u4-l6",
+      "unit": 4,
+      "theme": "arcade-builder",
+      "themeEmoji": "🕹️",
+      "standard": "6.RP.3d",
+      "title": "Convert Measurement Units",
+      "lessons": [
+        "4-6"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u4-l7",
+      "unit": 4,
+      "theme": "arcade-builder",
+      "themeEmoji": "🕹️",
+      "standard": "6.RP.3b",
+      "title": "Solve Problems with Unit Rates",
+      "lessons": [
+        "4-7"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u5-l1l2",
+      "unit": 5,
+      "theme": "architecture-firm",
+      "themeEmoji": "📐",
+      "standard": "6.G.1",
+      "title": "Area of Parallelograms / Area of Trapezoids",
+      "lessons": [
+        "5-1",
+        "5-2"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u5-l3l4",
+      "unit": 5,
+      "theme": "architecture-firm",
+      "themeEmoji": "📐",
+      "standard": "6.G.1",
+      "title": "Area of Triangles / Area of Regular Polygons",
+      "lessons": [
+        "5-3",
+        "5-4"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u5-l5",
+      "unit": 5,
+      "theme": "architecture-firm",
+      "themeEmoji": "📐",
+      "standard": "6.G.1",
+      "title": "Area of Composite Figures",
+      "lessons": [
+        "5-5"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u6-l1",
+      "unit": 6,
+      "theme": "music-studio",
+      "themeEmoji": "🎵",
+      "standard": "6.EE.1",
+      "title": "Powers and Exponents",
+      "lessons": [
+        "6-1"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u6-l2",
+      "unit": 6,
+      "theme": "music-studio",
+      "themeEmoji": "🎵",
+      "standard": "6.EE.2c",
+      "title": "Evaluate Expressions",
+      "lessons": [
+        "6-2"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u6-l3",
+      "unit": 6,
+      "theme": "music-studio",
+      "themeEmoji": "🎵",
+      "standard": "6.EE.2a",
+      "title": "Write Algebraic Expressions",
+      "lessons": [
+        "6-3"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u6-l4l5",
+      "unit": 6,
+      "theme": "music-studio",
+      "themeEmoji": "🎵",
+      "standard": "6.EE.3",
+      "title": "Properties of Operations / The Distributive Property",
+      "lessons": [
+        "6-4",
+        "6-5"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u6-l6",
+      "unit": 6,
+      "theme": "music-studio",
+      "themeEmoji": "🎵",
+      "standard": "6.EE.4",
+      "title": "Equivalent Expressions",
+      "lessons": [
+        "6-6"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u6-l7",
+      "unit": 6,
+      "theme": "music-studio",
+      "themeEmoji": "🎵",
+      "standard": "6.EE.3",
+      "title": "Simplify Algebraic Expressions",
+      "lessons": [
+        "6-7"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u7-l1",
+      "unit": 7,
+      "theme": "detective-agency",
+      "themeEmoji": "🔍",
+      "standard": "6.EE.6",
+      "title": "Write Equations",
+      "lessons": [
+        "7-1"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u7-l2l3",
+      "unit": 7,
+      "theme": "detective-agency",
+      "themeEmoji": "🔍",
+      "standard": "6.EE.7",
+      "title": "Solve One-Step Addition and Subtraction Equations / Solve Multiplication and Division Equations",
+      "lessons": [
+        "7-2",
+        "7-3"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u7-l4l5",
+      "unit": 7,
+      "theme": "detective-agency",
+      "themeEmoji": "🔍",
+      "standard": "6.EE.8",
+      "title": "Write Inequalities / Graph Inequalities",
+      "lessons": [
+        "7-4",
+        "7-5"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u7-l6",
+      "unit": 7,
+      "theme": "detective-agency",
+      "themeEmoji": "🔍",
+      "standard": "6.EE.5",
+      "title": "Solve and Graph Inequalities",
+      "lessons": [
+        "7-6"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u7-l7",
+      "unit": 7,
+      "theme": "detective-agency",
+      "themeEmoji": "🔍",
+      "standard": "6.EE.7",
+      "title": "Equations and Inequalities Problem Solving",
+      "lessons": [
+        "7-7"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u8-l1",
+      "unit": 8,
+      "theme": "sports-analytics",
+      "themeEmoji": "🏀",
+      "standard": "6.SP.1",
+      "title": "Statistical Questions and Data",
+      "lessons": [
+        "8-1"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u8-l2",
+      "unit": 8,
+      "theme": "sports-analytics",
+      "themeEmoji": "🏀",
+      "standard": "6.SP.3",
+      "title": "Mean, Median, and Mode",
+      "lessons": [
+        "8-2"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u8-l3",
+      "unit": 8,
+      "theme": "sports-analytics",
+      "themeEmoji": "🏀",
+      "standard": "6.SP.5c",
+      "title": "Mean Absolute Deviation",
+      "lessons": [
+        "8-3"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u8-l4",
+      "unit": 8,
+      "theme": "sports-analytics",
+      "themeEmoji": "🏀",
+      "standard": "6.SP.5d",
+      "title": "Appropriate Measures",
+      "lessons": [
+        "8-4"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u8-l5l6",
+      "unit": 8,
+      "theme": "sports-analytics",
+      "themeEmoji": "🏀",
+      "standard": "6.SP.4",
+      "title": "Display Data: Box Plots / Display Data: Histograms",
+      "lessons": [
+        "8-5",
+        "8-6"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u8-l7",
+      "unit": 8,
+      "theme": "sports-analytics",
+      "themeEmoji": "🏀",
+      "standard": "6.SP.2",
+      "title": "Shape of Data Distributions",
+      "lessons": [
+        "8-7"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u9-l1",
+      "unit": 9,
+      "theme": "treasure-map",
+      "themeEmoji": "🗺️",
+      "standard": "6.NS.6",
+      "title": "Graph on the Coordinate Plane",
+      "lessons": [
+        "9-1"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u9-l2l3",
+      "unit": 9,
+      "theme": "treasure-map",
+      "themeEmoji": "🗺️",
+      "standard": "6.NS.7",
+      "title": "Integers and Absolute Value / Compare and Order Integers",
+      "lessons": [
+        "9-2",
+        "9-3"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u9-l4",
+      "unit": 9,
+      "theme": "treasure-map",
+      "themeEmoji": "🗺️",
+      "standard": "6.NS.6",
+      "title": "Rational Numbers on the Number Line",
+      "lessons": [
+        "9-4"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u9-l5",
+      "unit": 9,
+      "theme": "treasure-map",
+      "themeEmoji": "🗺️",
+      "standard": "6.NS.6b",
+      "title": "Ordered Pairs in All Four Quadrants",
+      "lessons": [
+        "9-5"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u9-l6",
+      "unit": 9,
+      "theme": "treasure-map",
+      "themeEmoji": "🗺️",
+      "standard": "6.NS.8",
+      "title": "Distance on the Coordinate Plane",
+      "lessons": [
+        "9-6"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u9-l7",
+      "unit": 9,
+      "theme": "treasure-map",
+      "themeEmoji": "🗺️",
+      "standard": "6.NS.6b",
+      "title": "Reflect Points Across Axes",
+      "lessons": [
+        "9-7"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u10-l1l2",
+      "unit": 10,
+      "theme": "time-capsule",
+      "themeEmoji": "📦",
+      "standard": "6.G.2",
+      "title": "Volume with Whole Number Edges / Volume of Rectangular Prisms",
+      "lessons": [
+        "10-1",
+        "10-2"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u10-l3l4",
+      "unit": 10,
+      "theme": "time-capsule",
+      "themeEmoji": "📦",
+      "standard": "6.G.4",
+      "title": "Surface Area Using Nets / Surface Area of Prisms",
+      "lessons": [
+        "10-3",
+        "10-4"
+      ],
+      "generate": false,
+      "novels": []
+    },
+    {
+      "groupId": "u10-l5",
+      "unit": 10,
+      "theme": "time-capsule",
+      "themeEmoji": "📦",
+      "standard": "6.G.4",
+      "title": "Surface Area of Pyramids",
+      "lessons": [
+        "10-5"
+      ],
+      "generate": false,
+      "novels": []
+    }
+  ]
+}
